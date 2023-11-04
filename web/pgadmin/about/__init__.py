@@ -59,46 +59,50 @@ def index():
     info = {}
     # Get OS , NW.js, Browser details
     browser, os_details, nwjs_version = detect_browser(request)
+    admin = is_admin(current_user.email)
 
     if nwjs_version:
         info['nwjs'] = nwjs_version
 
-    info['browser_details'] = browser
-    info['os_details'] = os_details
-    info['config_db'] = config.SQLITE_PATH
-    info['log_file'] = config.LOG_FILE
-    info['version'] = config.APP_VERSION
-
     if config.SERVER_MODE:
         info['app_mode'] = gettext('Server')
-        admin = is_admin(current_user.email)
-        info['admin'] = admin
     else:
         info['app_mode'] = gettext('Desktop')
 
+    info['browser_details'] = browser
+    info['version'] = config.APP_VERSION
+    info['admin'] = admin
     info['current_user'] = current_user.email
 
-    settings = ""
-    for setting in dir(config):
-        if not setting.startswith('_') and setting.isupper() and \
-            setting not in ['CSRF_SESSION_KEY',
-                            'SECRET_KEY',
-                            'SECURITY_PASSWORD_SALT',
-                            'SECURITY_PASSWORD_HASH',
-                            'ALLOWED_HOSTS',
-                            'MAIL_PASSWORD',
-                            'LDAP_BIND_PASSWORD',
-                            'SECURITY_PASSWORD_HASH']:
-            if isinstance(getattr(config, setting), str):
-                settings = \
-                    settings + '{} = "{}"\n'.format(
-                        setting, getattr(config, setting))
-            else:
-                settings = \
-                    settings + '{} = {}\n'.format(
-                        setting, getattr(config, setting))
+    if admin:
+        settings = ""
+        info['os_details'] = os_details
+        info['log_file'] = config.LOG_FILE
 
-    info['settings'] = settings
+        # If external datbase is used do not display SQLITE_PATH
+        if not config.CONFIG_DATABASE_URI:
+            info['config_db'] = config.SQLITE_PATH
+
+        for setting in dir(config):
+            if not setting.startswith('_') and setting.isupper() and \
+                setting not in ['CSRF_SESSION_KEY',
+                                'SECRET_KEY',
+                                'SECURITY_PASSWORD_SALT',
+                                'SECURITY_PASSWORD_HASH',
+                                'ALLOWED_HOSTS',
+                                'MAIL_PASSWORD',
+                                'LDAP_BIND_PASSWORD',
+                                'SECURITY_PASSWORD_HASH']:
+                if isinstance(getattr(config, setting), str):
+                    settings = \
+                        settings + '{} = "{}"\n'.format(
+                            setting, getattr(config, setting))
+                else:
+                    settings = \
+                        settings + '{} = {}\n'.format(
+                            setting, getattr(config, setting))
+
+        info['settings'] = settings
 
     return make_json_response(
         data=info,

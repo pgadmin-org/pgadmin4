@@ -19,7 +19,6 @@ def validate_email(email):
             email, check_deliverability=config.CHECK_EMAIL_DELIVERABILITY)
 
         # Update with the normalized form.
-        email = valid.email
         return True
     except EmailNotValidError as e:
         # email is not valid, exception message is human-readable

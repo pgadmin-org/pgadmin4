@@ -37,14 +37,6 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Required for Oauth2
 class GooglePostgresqlModule(PgAdminModule):
     """Cloud module to deploy on Google Cloud"""
 
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
-
     def get_exposed_url_endpoints(self):
         return ['google.verify_credentials',
                 'google.projects',

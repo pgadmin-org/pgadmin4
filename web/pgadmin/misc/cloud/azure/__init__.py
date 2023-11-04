@@ -39,14 +39,6 @@ MODULE_NAME = 'azure'
 class AzurePostgresqlModule(PgAdminModule):
     """Cloud module to deploy on Azure Postgresql"""
 
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
-
     def get_exposed_url_endpoints(self):
         return ['azure.verify_credentials',
                 'azure.check_cluster_name_availability',

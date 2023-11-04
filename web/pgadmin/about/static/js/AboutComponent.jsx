@@ -101,32 +101,37 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.browser_details}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0} style={{marginBottom: '8px'}}>
-        <Grid item lg={3} md={3} sm={3} xs={12}>
-          <InputLabel style={{fontWeight: 'bold'}}>{gettext('Operating System')}</InputLabel>
+      { aboutData.os_details &&
+        <Grid container spacing={0} style={{marginBottom: '8px'}}>
+          <Grid item lg={3} md={3} sm={3} xs={12}>
+            <InputLabel style={{fontWeight: 'bold'}}>{gettext('Operating System')}</InputLabel>
+          </Grid>
+          <Grid item lg={9} md={9} sm={9} xs={12}>
+            <InputLabel>{aboutData.os_details}</InputLabel>
+          </Grid>
         </Grid>
-        <Grid item lg={9} md={9} sm={9} xs={12}>
-          <InputLabel>{aboutData.os_details}</InputLabel>
+      }
+      { aboutData.config_db &&
+        <Grid container spacing={0} style={{marginBottom: '8px'}}>
+          <Grid item lg={3} md={3} sm={3} xs={12}>
+            <InputLabel style={{fontWeight: 'bold'}}>{gettext('pgAdmin Database File')}</InputLabel>
+          </Grid>
+          <Grid item lg={9} md={9} sm={9} xs={12}>
+            <InputLabel>{aboutData.config_db}</InputLabel>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={0} style={{marginBottom: '8px'}}>
-        <Grid item lg={3} md={3} sm={3} xs={12}>
-          <InputLabel style={{fontWeight: 'bold'}}>{gettext('pgAdmin Database File')}</InputLabel>
+      }
+      { aboutData.log_file &&
+        <Grid container spacing={0} style={{marginBottom: '8px'}}>
+          <Grid item lg={3} md={3} sm={3} xs={12}>
+            <InputLabel style={{fontWeight: 'bold'}}>{gettext('Log File')}</InputLabel>
+          </Grid>
+          <Grid item lg={9} md={9} sm={9} xs={12}>
+            <InputLabel>{aboutData.log_file}</InputLabel>
+          </Grid>
         </Grid>
-        <Grid item lg={9} md={9} sm={9} xs={12}>
-          <InputLabel>{aboutData.config_db}</InputLabel>
-        </Grid>
-      </Grid>
-      <Grid container spacing={0} style={{marginBottom: '8px'}}>
-        <Grid item lg={3} md={3} sm={3} xs={12}>
-          <InputLabel style={{fontWeight: 'bold'}}>{gettext('Log File')}</InputLabel>
-        </Grid>
-        <Grid item lg={9} md={9} sm={9} xs={12}>
-          <InputLabel>{aboutData.log_file}</InputLabel>
-        </Grid>
-      </Grid>
-      { (aboutData.app_mode == 'Desktop' || (aboutData.app_mode == 'Server' && aboutData.admin)) &&
-      <>
+      }
+      { aboutData.settings &&
         <Box flexGrow="1" display="flex" flexDirection="column">
           <Box>
             <span style={{fontWeight: 'bold'}}>{gettext('Server Configuration')}</span>
@@ -141,7 +146,6 @@ export default function AboutComponent() {
               value={aboutData.settings}/>
           </Box>
         </Box>
-      </>
       }
     </Box>
   );

@@ -36,9 +36,6 @@ class PreferencesModule(PgAdminModule):
     And, allows the user to modify (not add/remove) as per their requirement.
     """
 
-    def get_own_stylesheets(self):
-        return []
-
     def get_own_menuitems(self):
         return {}
 

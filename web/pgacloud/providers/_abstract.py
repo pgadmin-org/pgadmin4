@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+
 class AbsProvider:
     """ Abstract provider """
     parser = None

@@ -1,8 +1,14 @@
-
-
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL License
+#
+##########################################################################
 import logging
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Lock
 
 from flask import current_app
@@ -31,7 +37,7 @@ class PasswordExec:
                 if not self.cmd:
                     return None
                 current_app.logger.info('Calling passexec')
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 try:
                     p = subprocess.run(
                         self.cmd,
@@ -55,7 +61,7 @@ class PasswordExec:
         if self.expiration_seconds is None:
             return False
         return self.last_result is not None and\
-            datetime.utcnow() - self.last_result \
+            datetime.now(timezone.utc) - self.last_result \
             >= timedelta(seconds=self.expiration_seconds)
 
     def create_logger(self):

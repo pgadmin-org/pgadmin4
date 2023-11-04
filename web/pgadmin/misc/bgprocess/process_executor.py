@@ -33,7 +33,7 @@ OUTDIR - Output directory
 # To make print function compatible with python2 & python3
 import sys
 import os
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, timedelta, tzinfo, timezone
 from subprocess import Popen, PIPE
 from threading import Thread
 import signal
@@ -133,9 +133,7 @@ class UTC(tzinfo):
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
-    return datetime.utcnow().replace(
-        tzinfo=UTC()
-    ).strftime(format)
+    return datetime.now(timezone.utc).strftime(format)
 
 
 class ProcessLogger(Thread):

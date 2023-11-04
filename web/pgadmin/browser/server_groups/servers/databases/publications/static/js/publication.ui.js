@@ -161,7 +161,7 @@ export default class PublicationSchema extends BaseUISchema {
       name: undefined,
       pubowner: (node_info) ? node_info['node_info']?.user.name: undefined,
       pubtable: [],
-      pubtable_names: [],
+      pubtable_names: '',
       pubschema: undefined,
       all_table: false,
       evnt_insert:true,
@@ -282,15 +282,7 @@ export default class PublicationSchema extends BaseUISchema {
       min_version: 150000, 
     },
     {
-      id: 'pubtable_names', label: gettext('Tables'), cell: 'string',
-      type: (state)=>{
-        let table= (!_.isUndefined(state?.pubtable_names) && state?.pubtable_names.length > 0) ? state?.pubtable_names : [];
-        return {
-          type: 'select',
-          options: table,
-          controlProps: { allowClear: true, multiple: true, creatable: true },
-        };
-      },  
+      id: 'pubtable_names', label: gettext('Tables'), type: 'text', 
       group: gettext('Tables'), mode: ['properties'],
       deps: ['all_table'], disabled: obj.isAllTable,
     },

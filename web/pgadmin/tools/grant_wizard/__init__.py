@@ -42,14 +42,6 @@ class GrantWizardModule(PgAdminModule):
         javascript file.
     """
 
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
-
     def show_system_objects(self):
         """
         return system preference objects
