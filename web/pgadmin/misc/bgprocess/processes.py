@@ -309,6 +309,8 @@ class BatchProcess:
         if self.env:
             env.update(self.env)
 
+        current_app.logger.debug(self.env)
+
         if cb is not None:
             cb(env)
         if os.name == 'nt':
@@ -839,8 +841,10 @@ class BatchProcess:
                 isinstance(self.manager_obj.connection_params, dict) and \
                 'passfile' in self.manager_obj.connection_params and \
                     self.manager_obj.connection_params['passfile']:
-                self.env['PGPASSFILE'] = get_complete_file_path(
+                pgpasspath = get_complete_file_path(
                     self.manager_obj.connection_params['passfile'])
+                if pgpasspath is not None:
+                    self.env['PGPASSFILE'] = pgpasspath
 
             # Check for connection timeout and if it is greater than 0 then
             # set the environment variable PGCONNECT_TIMEOUT.
