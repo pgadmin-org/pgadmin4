@@ -310,13 +310,17 @@ export function SchemaDiffCompare({ params }) {
       try {
         setCompareOptions(compareParams);
         socket = await openSocket('/schema_diff');
-        socket.on('compare_status', res=>{
+        const compareStatus = _.debounce(res=>{
           let msg = res.compare_msg;
           msg = msg + gettext(` (this may take a few minutes)... ${Math.round(res.diff_percentage)} %`);
           setLoaderText(msg);
-        });
+        }, 250);
+        socket.on('compare_status', compareStatus);
         resData = await socketApiGet(socket, socketEndpoint, url_params);
         setShowResultGrid(true);
+        // stop the listeners
+        socket.off('compare_status', compareStatus);
+        compareStatus.cancel();
         setLoaderText(null);
         setFilterOptions(filterParams);
         getResultGridData(resData, filterParams);

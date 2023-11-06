@@ -22,6 +22,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
 
 export default class SchemaDiff {
@@ -102,10 +103,12 @@ export default class SchemaDiff {
   load(container, trans_id) {
     ReactDOM.render(
       <Theme>
-        <ModalProvider>
-          <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-          <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin }}></SchemaDiffComponent>
-        </ModalProvider>
+        <PgAdminContext.Provider value={pgAdmin}>
+          <ModalProvider>
+            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+            <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin }}></SchemaDiffComponent>
+          </ModalProvider>
+        </PgAdminContext.Provider>
       </Theme>,
       container
     );

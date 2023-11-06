@@ -83,7 +83,7 @@ function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
     <div>
       <div className={classes.helpGroup}>
         <span className='fa fa-question-circle'></span>
-          &nbsp;HELP ARTICLES
+          &nbsp;HELP ARTICLES&nbsp;
         {Object.keys(helpSearchResult.data).length > 10
           ? '(10 of ' + Object.keys(helpSearchResult.data).length + ')'
           : '(' + Object.keys(helpSearchResult.data).length + ')'
@@ -301,8 +301,7 @@ export default function QuickSearch({closeModal}) {
                 <div>
                   <div className={classes.helpGroup}>
                     <span className='fa fa-question-circle'></span> &nbsp;{gettext('HELP ARTICLES')} {Object.keys(helpSearchResult.data).length > 10 ?
-                      <span>(10 of {Object.keys(helpSearchResult.data).length} )
-                      </span>:
+                      <span> (10 of {Object.keys(helpSearchResult.data).length})</span>:
                       '(' + Object.keys(helpSearchResult.data).length + ')'}&nbsp;
                     { !helpSearchResult.clearedPooling ? <CircularProgress style={{height: '18px', width: '18px'}} /> :''}
                     { Object.keys(helpSearchResult.data).length > 10 ? <a href={helpSearchResult.url} className={classes.showAll} target='_blank' rel='noreferrer'>{gettext('Show all')} &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''}

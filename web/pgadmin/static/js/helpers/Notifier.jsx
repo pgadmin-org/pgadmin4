@@ -25,7 +25,7 @@ import { parseApiError } from '../api_instance';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
-const FinalNotifyContent = React.forwardRef(({children}, ref) => {
+export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
   return <SnackbarContent style= {{justifyContent:'end', maxWidth: '700px'}} ref={ref}>{children}</SnackbarContent>;
 });
 FinalNotifyContent.displayName = 'FinalNotifyContent';

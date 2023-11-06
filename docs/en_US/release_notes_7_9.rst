@@ -39,5 +39,9 @@ Bug fixes
   | `Issue #6487 <https://github.com/pgadmin-org/pgadmin4/issues/6487>`_ -  Fixed restoration of query tool database connection after dropping and re-creating the database with the same name.
   | `Issue #6602 <https://github.com/pgadmin-org/pgadmin4/issues/6602>`_ -  Fix an issue where the default server-group is being deleted if the load-server json file contains no servers.
   | `Issue #6720 <https://github.com/pgadmin-org/pgadmin4/issues/6720>`_ -  Fix an issue of the incorrect format (no indent) of SQL stored functions/procedures.
+  | `Issue #6769 <https://github.com/pgadmin-org/pgadmin4/issues/6769>`_ -  Server config information in the about dialog should be only visible to admin users.
   | `Issue #6784 <https://github.com/pgadmin-org/pgadmin4/issues/6784>`_ -  Fixed an issue where Schema Diff does not work when the user language is set to any language other than English in Preferences.
+  | `Issue #6817 <https://github.com/pgadmin-org/pgadmin4/issues/6817>`_ -  Fixed the query generated when creating subscription where copy_data parameter was missing. 
+  | `Issue #6820 <https://github.com/pgadmin-org/pgadmin4/issues/6820>`_ -  Ensure backup/restore/maintenance works with invalid pgpass file parameter.
   | `Issue #6874 <https://github.com/pgadmin-org/pgadmin4/issues/6874>`_ -  Fix an issue where the browser window stuck on spinning with an Oauth user without email.
+  | `Issue #6877 <https://github.com/pgadmin-org/pgadmin4/issues/6877>`_ -  Remove the max length of 255 from password exec command in server configuration dialog.

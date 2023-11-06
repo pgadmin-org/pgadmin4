@@ -704,7 +704,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   const onManageMacros = useCallback(()=>{
-    const onClose = ()=>LayoutDocker.close(docker.current, 'manage-macros');
+    const onClose = ()=>docker.current.close('manage-macros');
     docker.current.openDialog({
       id: 'manage-macros',
       title: gettext('Manage Macros'),
@@ -723,7 +723,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   }, [qtState.preferences.browser]);
 
   const onFilterClick = useCallback(()=>{
-    const onClose = ()=>LayoutDocker.close(docker.current, 'filter-dialog');
+    const onClose = ()=>docker.current.close('filter-dialog');
     docker.current.openDialog({
       id: 'filter-dialog',
       title: gettext('Sort/Filter options'),
