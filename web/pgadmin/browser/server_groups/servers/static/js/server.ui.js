@@ -335,7 +335,7 @@ export default class ServerSchema extends BaseUISchema {
       },
       {
         id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
-        group: gettext('Advanced'),
+        group: gettext('Advanced'), controlProps: {maxLength: null},
         mode: ['properties', 'edit', 'create'],
         disabled: pgAdmin.server_mode == 'True',
       },
