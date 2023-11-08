@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+      minHeight: 0,
     },
     preferences: {
       borderColor: theme.otherVars.borderColor,

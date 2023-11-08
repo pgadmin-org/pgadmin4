@@ -422,7 +422,7 @@ export function StorageWrapper(props) {
             return label;
           },
           label: function (context) {
-            return (context.dataset?.label ?? 'Total space: ') + toPrettySize(context.raw);
+            return `${context.dataset?.label ?? gettext('Total space')}: ${toPrettySize(context.raw)}`;
           },
         },
       },

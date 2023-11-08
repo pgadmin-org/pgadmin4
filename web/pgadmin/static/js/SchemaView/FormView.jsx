@@ -50,6 +50,10 @@ const useStyles = makeStyles((theme)=>({
   },
   sqlTabInput: {
     border: 0,
+  },
+  nonTabPanel: {
+    padding: 0,
+    background: 'inherit',
   }
 }));
 
@@ -453,12 +457,15 @@ export default function FormView({
     let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
     return (
       <>
-        <Box height="100%" display="flex" flexDirection="column" className={clsx(className, contentClassName)} ref={formRef} data-test="form-view">
-          {Object.keys(finalTabs).map((tabName)=>{
-            return (
-              <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
-            );
-          })}
+        <Box height="100%" display="flex" flexDirection="column" className={clsx(className)} ref={formRef} data-test="form-view">
+          <TabPanel value={tabValue} index={0} classNameRoot={classes.nonTabPanel}
+            className={clsx(contentClassName)}>
+            {Object.keys(finalTabs).map((tabName)=>{
+              return (
+                <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
+              );
+            })}
+          </TabPanel>
         </Box>
       </>);
   }

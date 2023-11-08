@@ -25,7 +25,7 @@ export default function withStandardTabInfo(Component, tabId) {
     useEffect(()=>{
       const i = pgAdmin.Browser.tree?.selected();
       if(i) {
-        setNodeInfo([i, pgAdmin.Browser.tree.itemData(i)]);
+        setNodeInfo([true, i, pgAdmin.Browser.tree.itemData(i)]);
       }
       setIsActive(layoutDocker.isTabVisible(tabId));
 
@@ -41,7 +41,7 @@ export default function withStandardTabInfo(Component, tabId) {
         setNodeInfo([true, item, data]);
       });
       let deregisterTreeUpdate = pgAdmin.Browser.Events.on('pgadmin-browser:tree:updated', (item, data)=>{
-        setNodeInfo([item, data]);
+        setNodeInfo([true, item, data]);
       });
       let deregisterActive = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
       // if there is any dock changes to the tab and it appears to be active/inactive
