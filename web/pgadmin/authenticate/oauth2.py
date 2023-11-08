@@ -122,7 +122,6 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
-        current_app.logger.warning(profile)
         email_key = \
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
@@ -155,27 +154,29 @@ class OAuth2Authentication(BaseAuthentication):
         additinal_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
                 self.oauth2_current_client]:
-            
+
             additinal_claims = self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
+        current_app.logger.debug(f"profile claims: {profile}")
         valid_profile, reason = self.__is_any_claim_valid(profile,
                                                           additinal_claims)
 
         id_token_claims = session.get('oauth2_token', {}).get('userinfo',{})
-
+        current_app.logger.debug(f"idtoken claims: {id_token_claims}")
 
         valid_idtoken, reason = self.__is_any_claim_valid(id_token_claims,
                                                           additinal_claims)
 
         if not valid_profile and not valid_idtoken:
             return_msg = "The user is not authorized to login" \
-                " based on the claims in the profile." \
+                " based on your identity profile." \
                 " Please contact your administrator."
             audit_msg = f"The authenticated user {username} is not" \
                 " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: {reason}"
+                f"Reason: additional claim required {additinal_claims}, " \
+                f"profile claims {profile}, idtoken cliams {id_token_claims}."
             current_app.logger.warning(audit_msg)
             return False, return_msg
 

@@ -786,7 +786,7 @@ OAUTH2_CONFIG = [
         # UI button colour, ex: #0000ff
         'OAUTH2_BUTTON_COLOR': None,
         # The additional claims to check on user ID Token or Userinfo response.
-        #  This is useful to provide additional authorization checks 
+        # This is useful to provide additional authorization checks
         # before allowing access.
         # Example for GitLab: allowing all maintainers teams, and a specific
         # developers group to access pgadmin:
