@@ -28,6 +28,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
 export default class DebuggerModule {
   static instance;
@@ -588,18 +589,20 @@ export default class DebuggerModule {
 
     ReactDOM.render(
       <Theme>
-        <ModalProvider>
-          <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-          <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo}
-            panelId={`${BROWSER_PANELS.DEBUGGER_TOOL}_${this.trans_id}`}
-            panelDocker={pgWindow.pgAdmin.Browser.docker}
-            layout={layout} params={{
-              transId: trans_id,
-              directDebugger: this,
-              funcArgsInstance: this.funcArgs
-            }}
-          />
-        </ModalProvider>
+        <PgAdminContext.Provider value={pgAdmin}>
+          <ModalProvider>
+            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+            <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo}
+              panelId={`${BROWSER_PANELS.DEBUGGER_TOOL}_${this.trans_id}`}
+              panelDocker={pgWindow.pgAdmin.Browser.docker}
+              layout={layout} params={{
+                transId: trans_id,
+                directDebugger: this,
+                funcArgsInstance: this.funcArgs
+              }}
+            />
+          </ModalProvider>
+        </PgAdminContext.Provider>
       </Theme>,
       container
     );

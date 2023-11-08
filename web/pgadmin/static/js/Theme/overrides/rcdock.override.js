@@ -11,6 +11,7 @@ export default function rcdockOverride(theme) {
   return {
     '.dock-layout': {
       height: '100%',
+      ...theme.mixins.panelBorder.top,
       '& .dock-ink-bar': {
         height: '2px',
         backgroundColor: theme.otherVars.activeBorder,

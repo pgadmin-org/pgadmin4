@@ -86,7 +86,7 @@ export default function(basicSettings) {
       },
       borderColor: '#dde0e6',
       loader: {
-        backgroundColor: alpha('#000', 0.65),
+        backgroundColor: alpha('#090d11', 0.6),
         color: '#fff',
       },
       errorColor: '#E53935',
