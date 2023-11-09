@@ -1810,12 +1810,27 @@ class ServerNode(PGChildNodeView):
             elif request.data:
                 data = json.loads(request.data)
 
-            crypt_key = get_crypt_key()[1]
+            crypt_key = None
+
+            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                # Get enc key
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    raise CryptKeyMissing
 
             # Fetch Server Details
             server = Server.query.filter_by(id=sid).first()
+
             if server is None:
                 return bad_request(self.not_found_error_msg())
+
+            spassword = None
+            if not config.DISABLED_LOCAL_PASSWORD_STORAGE and \
+                    bool(server.save_password):
+                sname = KEY_RING_USERNAME_FORMAT.format(server.name,
+                                                        server.id)
+                spassword = keyring.get_password(
+                    KEY_RING_SERVICE_NAME, sname)
 
             # Fetch User Details.
             user = User.query.filter_by(id=current_user.id).first()
@@ -1828,9 +1843,9 @@ class ServerNode(PGChildNodeView):
 
             # If there is no password found for the server
             # then check for pgpass file
-            if not server.password and not manager.password and \
-                hasattr(server, 'connection_params') and \
-                'passfile' in server.connection_params and \
+            if (not server.password or spassword) and \
+                not manager.password and hasattr(server, 'connection_params') \
+                and 'passfile' in server.connection_params and \
                 manager.get_connection_param_value('passfile') and \
                 server.connection_params['passfile'] == \
                     manager.get_connection_param_value('passfile'):
@@ -1870,10 +1885,16 @@ class ServerNode(PGChildNodeView):
 
             # Check against old password only if no pgpass file
             if not is_passfile:
-                decrypted_password = decrypt(manager.password, crypt_key)
+                if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                    if spassword:
+                        decrypted_password = spassword
+                    else:
+                        decrypted_password = manager.password
+                else:
+                    decrypted_password = decrypt(manager.password, crypt_key)
 
-                if isinstance(decrypted_password, bytes):
-                    decrypted_password = decrypted_password.decode()
+                    if isinstance(decrypted_password, bytes):
+                        decrypted_password = decrypted_password.decode()
 
                 password = data['password']
 
@@ -1906,7 +1927,17 @@ class ServerNode(PGChildNodeView):
 
             # Store password in sqlite only if no pgpass file
             if not is_passfile:
-                password = encrypt(data['newPassword'], crypt_key)
+                if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                    password = encrypt(data['newPassword'], crypt_key)
+                elif not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                    if config.ALLOW_SAVE_PASSWORD and bool(
+                            server.save_password):
+                        keyring.set_password(
+                            KEY_RING_SERVICE_NAME,
+                            KEY_RING_USERNAME_FORMAT.format(server.name,
+                                                            server.id),
+                            data['newPassword'])
+                    password = data['newPassword']
                 # Check if old password was stored in pgadmin4 sqlite database.
                 # If yes then update that password.
                 if server.password is not None and config.ALLOW_SAVE_PASSWORD:
