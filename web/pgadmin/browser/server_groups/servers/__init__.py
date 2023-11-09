@@ -2128,9 +2128,9 @@ class ServerNode(PGChildNodeView):
 
             if config.DISABLED_LOCAL_PASSWORD_STORAGE:
                 if server.shared and server.user_id != current_user.id:
-                    setattr(shared_server, 'save_password', None)
+                    setattr(shared_server, 'password', None)
                 else:
-                    setattr(server, 'save_password', None)
+                    setattr(server, 'password', None)
             else:
                 try:
                     server_name = KEY_RING_USERNAME_FORMAT.format(server.name,
