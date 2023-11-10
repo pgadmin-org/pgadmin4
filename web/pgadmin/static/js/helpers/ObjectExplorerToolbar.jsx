@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePgAdmin } from '../BrowserComponent';
 import { Box } from '@material-ui/core';
 import { QueryToolIcon, RowFilterIcon, TerminalIcon, ViewDataIcon } from '../components/ExternalIcon';
@@ -51,12 +51,11 @@ export default function ObjectExplorerToolbar() {
 
   useEffect(()=>{
     const deregister = pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(checkMenuState, 100));
+    checkMenuState();
     return ()=>{
       deregister();
     };
   }, []);
-
-  useLayoutEffect(_.debounce(checkMenuState, 100), []);
 
   return (
     <Box display="flex" alignItems="center" gridGap={'2px'}>
@@ -65,7 +64,7 @@ export default function ObjectExplorerToolbar() {
         <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context_table']} />
         <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context_table']} />
         <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} />
-        <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />
+        {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />}
       </PgButtonGroup>
     </Box>
   );

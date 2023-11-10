@@ -20,6 +20,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
 export function setPanelTitle(docker, panelId, panelTitle) {
   docker.setTitle(panelId, panelTitle);
@@ -142,16 +143,18 @@ export default class ERDModule {
     await listenPreferenceBroadcast();
     ReactDOM.render(
       <Theme>
-        <ModalProvider>
-          <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
-          <ERDTool
-            params={params}
-            pgWindow={pgWindow}
-            pgAdmin={this.pgAdmin}
-            panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
-            panelDocker={pgWindow.pgAdmin.Browser.docker}
-          />
-        </ModalProvider>
+        <PgAdminContext.Provider value={pgAdmin}>
+          <ModalProvider>
+            <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
+            <ERDTool
+              params={params}
+              pgWindow={pgWindow}
+              pgAdmin={this.pgAdmin}
+              panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
+              panelDocker={pgWindow.pgAdmin.Browser.docker}
+            />
+          </ModalProvider>
+        </PgAdminContext.Provider>
       </Theme>,
       container
     );

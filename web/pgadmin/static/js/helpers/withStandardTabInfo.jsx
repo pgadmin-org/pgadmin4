@@ -15,7 +15,7 @@ import { usePgAdmin } from '../../../static/js/BrowserComponent';
 export default function withStandardTabInfo(Component, tabId) {
   // eslint-disable-next-line react/display-name
   const HOCComponent = (props)=>{
-    const [[isStale, nodeItem, nodeData], setNodeInfo] = useState([]);
+    const [[isStale, nodeItem, nodeData], setNodeInfo] = useState([true, undefined, undefined]);
     const pgAdmin = usePgAdmin();
     const node = nodeData && pgAdmin.Browser.Nodes[nodeData?._type];
     const treeNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(nodeItem);
@@ -29,11 +29,11 @@ export default function withStandardTabInfo(Component, tabId) {
       }
       setIsActive(layoutDocker.isTabVisible(tabId));
 
-      const onTabActive = _.debounce((currentTabId)=>{
-        if(currentTabId == tabId) {
-          setIsActive(true);
+      const onTabActive = _.debounce(()=>{
+        if(layoutDocker.isTabVisible(tabId)) {
+          !isActive && setIsActive(true);
         } else {
-          setIsActive(false);
+          isActive && setIsActive(false);
         }
       }, 100);
 
@@ -45,14 +45,7 @@ export default function withStandardTabInfo(Component, tabId) {
       });
       let deregisterActive = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
       // if there is any dock changes to the tab and it appears to be active/inactive
-      let deregisterChange = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.CHANGE, (currentTabId)=>{
-        if(currentTabId != tabId) return;
-        if(layoutDocker.isTabVisible(tabId) && !isActive) {
-          setIsActive(true);
-        } else {
-          setIsActive(false);
-        }
-      });
+      let deregisterChange = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.CHANGE, onTabActive);
 
       return ()=>{
         onTabActive?.cancel();

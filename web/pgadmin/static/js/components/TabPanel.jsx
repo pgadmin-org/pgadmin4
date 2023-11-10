@@ -17,9 +17,6 @@ export const tabPanelStyles = makeStyles((theme)=>({
   root: {
     ...theme.mixins.tabPanel,
   },
-  content: {
-    height: '100%',
-  }
 }));
 
 /* Material UI does not have any tabpanel component, we create one for us */

@@ -590,6 +590,11 @@ function getFinalTheme(baseTheme) {
             color: baseTheme.otherVars.activeColor,
           },
         }
+      },
+      MuiBackdrop: {
+        root: {
+          backgroundColor: baseTheme.otherVars.loader.backgroundColor,
+        }
       }
     }
   }, baseTheme);

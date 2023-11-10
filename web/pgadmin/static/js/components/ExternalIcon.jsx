@@ -35,7 +35,7 @@ ExternalIcon.propTypes = {
 export const QueryToolIcon = ({style})=><ExternalIcon Icon={QueryToolSvg} style={{height: '1rem', ...style}} data-label="QueryToolIcon" />;
 QueryToolIcon.propTypes = {style: PropTypes.object};
 
-export const ViewDataIcon = ({style})=><ExternalIcon Icon={ViewDataSvg} style={{height: '0.8rem', ...style}} data-label="ViewDataIcon" />;
+export const ViewDataIcon = ({style})=><ExternalIcon Icon={ViewDataSvg} style={{height: '0.85rem', ...style}} data-label="ViewDataIcon" />;
 ViewDataIcon.propTypes = {style: PropTypes.object};
 
 export const SaveDataIcon = ({style})=><ExternalIcon Icon={SaveDataSvg} style={{height: '1rem', ...style}} data-label="SaveDataIcon" />;

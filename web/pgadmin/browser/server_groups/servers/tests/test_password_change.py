@@ -60,6 +60,8 @@ class DBPasswordChange(BaseTestGenerator):
             def __init__(self, name, sid, password, passfile):
                 self.name = name
                 self.sid = sid
+                self.id = sid
+                self.save_password = False
                 self.password = password
                 self.passfile = passfile
 
