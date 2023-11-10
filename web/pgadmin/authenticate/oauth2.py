@@ -159,15 +159,18 @@ class OAuth2Authentication(BaseAuthentication):
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
-        current_app.logger.debug(f"profile claims: {profile}")
+        # checking oauth provider userinfo response
         valid_profile, reason = self.__is_any_claim_valid(profile,
                                                           additinal_claims)
+        current_app.logger.debug(f"profile claims: {profile}")
+        current_app.logger.debug(f"reason: {reason}")
 
+        # checking oauth provider idtoken claims
         id_token_claims = session.get('oauth2_token', {}).get('userinfo',{})
-        current_app.logger.debug(f"idtoken claims: {id_token_claims}")
-
         valid_idtoken, reason = self.__is_any_claim_valid(id_token_claims,
                                                           additinal_claims)
+        current_app.logger.debug(f"idtoken claims: {id_token_claims}")
+        current_app.logger.debug(f"reason: {reason}")
 
         if not valid_profile and not valid_idtoken:
             return_msg = "The user is not authorized to login" \
@@ -250,7 +253,7 @@ class OAuth2Authentication(BaseAuthentication):
                 continue
             authorized_claims = additional_claims.get(key)
             if any(item in authorized_claims for item in claim):
-                reason = "Claim match found. Authorizing."
+                reason = "Claim match found. Authorized access."
                 return (True, reason)
         reason = f"No match was found."
         return (False, reason)
