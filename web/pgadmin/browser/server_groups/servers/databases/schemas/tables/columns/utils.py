@@ -339,7 +339,7 @@ def parse_format_columns(data, mode=None):
         final_columns = []
 
         for c in columns:
-            if 'inheritedfrom' not in c:
+            if c.get('inheritedfrom', None) is None:
                 final_columns.append(c)
 
         # Now we have all lis of columns which we need
