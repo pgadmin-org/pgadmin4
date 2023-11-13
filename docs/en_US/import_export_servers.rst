@@ -170,6 +170,7 @@ The following example shows both a minimally defined and a fully defined server:
                 "SSLCrl": "/path/to/sslcrl.crl",
                 "SSLCompression": 1,
                 "Shared": false,
+                "SharedUsername": "postgres",
                 "BGColor": "#ff9900",
                 "FGColor": "#000000",
                 "Service": "postgresql-10",
