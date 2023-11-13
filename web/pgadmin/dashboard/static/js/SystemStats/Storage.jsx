@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -442,7 +450,7 @@ export function StorageWrapper(props) {
           <Grid item md={6} sm={12}>
             <ChartContainer
               id='t-space-graph'
-              title={gettext('')}
+              title={''}
               datasets={props.diskStats.map((item, index) => ({
                 borderColor: colors[(index + 2) % colors.length],
                 label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
@@ -466,7 +474,7 @@ export function StorageWrapper(props) {
             </ChartContainer>
           </Grid>
           <Grid item md={6} sm={12}>
-            <ChartContainer id='ua-space-graph' title={gettext('')} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
+            <ChartContainer id='ua-space-graph' title={''} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
               <BarChart data={{
                 labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
                 datasets: [

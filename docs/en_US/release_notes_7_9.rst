@@ -46,3 +46,7 @@ Bug fixes
   | `Issue #6874 <https://github.com/pgadmin-org/pgadmin4/issues/6874>`_ -  Fix an issue where the browser window stuck on spinning with an Oauth user without email.
   | `Issue #6875 <https://github.com/pgadmin-org/pgadmin4/issues/6875>`_ -  Fix an issue where import/export data is not working for shared servers.
   | `Issue #6877 <https://github.com/pgadmin-org/pgadmin4/issues/6877>`_ -  Remove the max length of 255 from password exec command in server configuration dialog.
+  | `Issue #6884 <https://github.com/pgadmin-org/pgadmin4/issues/6884>`_ -  Remove gettext from empty strings in the title of the storage graph.
+  | `Issue #6902 <https://github.com/pgadmin-org/pgadmin4/issues/6902>`_ -  Fixed an issue where the change server password is not working in desktop mode.
+  | `Issue #6920 <https://github.com/pgadmin-org/pgadmin4/issues/6920>`_ -  Fix an issue in ERD tool where SQL generated is missing columns for the table.
+  | `Issue #6934 <https://github.com/pgadmin-org/pgadmin4/issues/6934>`_ -  Clear the password field in the config database on clear saved server password.
