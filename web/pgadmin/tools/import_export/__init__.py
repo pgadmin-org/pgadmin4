@@ -10,15 +10,14 @@
 """A blueprint module implementing the import and export functionality"""
 
 import json
-import os
 import copy
-from flask import url_for, Response, render_template, request, current_app
+
+from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, IS_WIN, does_utility_exist, \
-    filename_with_file_manager_path, get_complete_file_path
+from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
+    does_utility_exist, get_server, filename_with_file_manager_path
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -382,9 +381,8 @@ def check_utility_exists(sid):
     Returns:
         None
     """
-    server = Server.query.filter_by(
-        id=sid, user_id=current_user.id
-    ).first()
+
+    server = get_server(sid)
 
     if server is None:
         return make_json_response(
