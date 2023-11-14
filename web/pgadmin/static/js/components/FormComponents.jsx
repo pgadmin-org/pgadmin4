@@ -555,7 +555,7 @@ FormInputSwitch.propTypes = {
   controlGridBasis: PropTypes.number,
 };
 
-export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, ...props }) {
+export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
   controlProps = controlProps || {};
   return (
     <FormControlLabel
@@ -569,6 +569,7 @@ export function InputCheckbox({ cid, helpid, value, onChange, controlProps, read
           {...props} />
       }
       label={controlProps.label}
+      labelPlacement={labelPlacement}
     />
   );
 }
@@ -579,6 +580,7 @@ InputCheckbox.propTypes = {
   controlProps: PropTypes.object,
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
+  labelPlacement: PropTypes.string
 };
 
 export function FormInputCheckbox({ hasError, required, label,
@@ -599,7 +601,7 @@ FormInputCheckbox.propTypes = {
   testcid: PropTypes.string,
 };
 
-export function InputRadio({ helpid, value, onChange, controlProps, readonly, ...props }) {
+export function InputRadio({ helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
   const classes = useStyles();
   controlProps = controlProps || {};
   return (
@@ -622,6 +624,7 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, ..
 
       }
       label={controlProps.label}
+      labelPlacement={labelPlacement}
       className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
     />
   );

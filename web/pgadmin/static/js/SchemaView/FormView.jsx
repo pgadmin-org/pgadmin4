@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme)=>({
   nonTabPanel: {
     padding: 0,
     background: 'inherit',
+  },
+  nonTabPanelContent: {
+    height: 'unset'
   }
 }));
 
@@ -454,7 +457,7 @@ export default function FormView({
         </Box>
       </>);
   } else {
-    let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
+    let contentClassName = [classes.nonTabPanelContent, stateUtils.formErr.message ? classes.errorMargin : null];
     return (
       <>
         <Box height="100%" display="flex" flexDirection="column" className={clsx(className)} ref={formRef} data-test="form-view">

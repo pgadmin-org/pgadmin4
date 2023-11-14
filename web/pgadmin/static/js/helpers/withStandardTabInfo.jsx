@@ -37,10 +37,14 @@ export default function withStandardTabInfo(Component, tabId) {
         }
       }, 100);
 
-      let deregisterTree = pgAdmin.Browser.Events.on('pgadmin-browser:node:selected', (item, data)=>{
+      const onUpdate =  (item, data)=>{
         setNodeInfo([true, item, data]);
-      });
-      let deregisterTreeUpdate = pgAdmin.Browser.Events.on('pgadmin-browser:tree:updated', (item, data)=>{
+      };
+
+      let deregisterTree = pgAdmin.Browser.Events.on('pgadmin-browser:node:selected', onUpdate);
+      let deregisterTreeUpdate = pgAdmin.Browser.Events.on('pgadmin-browser:tree:updated', onUpdate);
+      let deregisterDbConnected = pgAdmin.Browser.Events.on('pgadmin:database:connected', onUpdate);
+      let deregisterServerConnected = pgAdmin.Browser.Events.on('pgadmin:server:connected', (_sid, item, data)=>{
         setNodeInfo([true, item, data]);
       });
       let deregisterActive = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
@@ -51,6 +55,8 @@ export default function withStandardTabInfo(Component, tabId) {
         onTabActive?.cancel();
         deregisterTree();
         deregisterTreeUpdate();
+        deregisterDbConnected();
+        deregisterServerConnected();
         deregisterActive();
         deregisterChange();
       };

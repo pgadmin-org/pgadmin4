@@ -80,7 +80,7 @@ function getColumn(data, singleLineStatistics, prettifyFields=[]) {
       {
         Header: 'Value',
         accessor: 'value',
-        sortable: true,
+        sortable: false,
         resizable: true,
         disableGlobalFilter: false,
       },

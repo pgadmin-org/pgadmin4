@@ -16,13 +16,14 @@ import { showRenameTab } from '../../Dialogs';
 import usePreferences from '../../../../preferences/static/js/store';
 import _ from 'lodash';
 
-function TabTitle({id, icon, title, closable, tooltip}) {
-  const [attrs, setAttrs] = useState({
-    icon: icon,
-    title: title,
-    tooltip: tooltip??title,
-  });
+function TabTitle({id, closable, defaultInternal}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
+  const internal = layoutDocker?.find(id)?.internal ?? defaultInternal;
+  const [attrs, setAttrs] = useState({
+    icon: internal.icon,
+    title: internal.title,
+    tooltip: internal.tooltip ?? internal.title,
+  });
   const onContextMenu = useCallback((e)=>{
     const g = layoutDocker.find(id)?.group??'';
     if((layoutDocker.noContextGroups??[]).includes(g)) return;
@@ -32,17 +33,21 @@ function TabTitle({id, icon, title, closable, tooltip}) {
   }, []);
 
   useEffect(()=>{
-    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
-      if(panelId == id) {
-        const p = layoutDocker.find(id)?.internal??{};
-        setAttrs({
-          icon: p.icon,
-          title: p.title,
-          tooltip: p.tooltip??p.title
-        });
-      }
-    }, 100));
-    return deregister;
+    let deregister;
+    if(internal.renamable) {
+      deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
+        if(panelId == id) {
+          const internal = layoutDocker?.find(id)?.internal??{};
+          setAttrs({
+            icon: internal.icon,
+            title: internal.title,
+            tooltip: internal.tooltip ?? internal.title,
+          });
+        }
+      }, 100));
+    }
+
+    return ()=>deregister?.();
   }, []);
 
   return (
@@ -58,10 +63,8 @@ function TabTitle({id, icon, title, closable, tooltip}) {
 
 TabTitle.propTypes = {
   id: PropTypes.string,
-  icon: PropTypes.string,
-  title: PropTypes.string,
   closable: PropTypes.bool,
-  tooltip: PropTypes.string
+  defaultInternal: PropTypes.object
 };
 
 export class LayoutDocker {
@@ -259,21 +262,22 @@ export class LayoutDocker {
   }
 
   static getPanel({icon, title, closable, tooltip, renamable, manualClose, ...attrs}) {
+    const internal = {
+      icon: icon,
+      title: title,
+      tooltip: tooltip,
+      closable: _.isUndefined(closable) ? manualClose : closable,
+      renamable: renamable,
+      manualClose: manualClose,
+    };
     return {
       cached: true,
       group: 'default',
       minWidth: 200,
       ...attrs,
       closable: false,
-      title: <TabTitle id={attrs.id} icon={icon} title={title} closable={attrs.group!='dialogs' && closable} tooltip={tooltip} />,
-      internal: {
-        icon: icon,
-        title: title,
-        tooltip: tooltip,
-        closable: _.isUndefined(closable) ? manualClose : closable,
-        renamable: renamable,
-        manualClose: manualClose,
-      }
+      title: <TabTitle id={attrs.id} closable={attrs.group!='dialogs' && closable} defaultInternal={internal}/>,
+      internal: internal
     };
   }
 

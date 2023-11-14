@@ -677,7 +677,7 @@ define('pgadmin.node.server', [
             );
             // Generate the event that database is connected
             pgBrowser.Events.trigger(
-              'pgadmin:database:connected', _data._id, _data.db, _item, _data
+              'pgadmin:database:connected', _item, _data
             );
 
             // Load dashboard
