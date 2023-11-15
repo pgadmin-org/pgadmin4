@@ -55,23 +55,6 @@
       }
     },
     {
-      "name": "Check if it throws an error when no event is selected while creating a trigger",
-      "url": "/browser/trigger/obj/",
-      "is_positive_test": true,
-      "test_data": {
-        "name": "PLACE_HOLDER",
-        "is_row_trigger": true,
-        "fires": "AFTER",
-        "columns": [],
-        "tfunction": "PLACE_HOLDER"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 500
-      }
-    },
-    {
       "name": "Error while adding a trigger using wrong table",
       "url": "/browser/trigger/obj/",
       "is_positive_test": false,

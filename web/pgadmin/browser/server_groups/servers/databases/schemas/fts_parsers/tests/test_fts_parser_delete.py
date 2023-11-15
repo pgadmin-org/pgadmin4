@@ -25,7 +25,7 @@ class FtsParserDeleteTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS parser node.
-        ('Fetch FTS parser Node URL', dict(url='/browser/fts_parser/obj/'))
+        ('Delete FTS Parser Node', dict(url='/browser/fts_parser/obj/'))
     ]
 
     def setUp(self):

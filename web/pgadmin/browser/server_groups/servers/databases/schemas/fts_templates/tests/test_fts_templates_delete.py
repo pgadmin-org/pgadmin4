@@ -25,7 +25,7 @@ class FtsTemplateDeleteTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS template node.
-        ('Fetch FTS template Node URL', dict(url='/browser/fts_template/obj/'))
+        ('Delete FTS template Node', dict(url='/browser/fts_template/obj/'))
     ]
 
     def setUp(self):

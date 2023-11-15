@@ -27,7 +27,7 @@ class FtsDictionaryAddTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS dictionary node.
-        ('Fetch FTS dictionary Node URL', dict(
+        ('Add FTS dictionary', dict(
             url='/browser/fts_dictionary/obj/'))
     ]
 

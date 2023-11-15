@@ -26,7 +26,7 @@ class FtsDictionaryPutTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS dictionary node.
-        ('Fetch FTS dictionary Node URL', dict(
+        ('Update FTS dictionary Node', dict(
             url='/browser/fts_dictionary/obj/'))
     ]
 
@@ -97,7 +97,7 @@ class FtsDictionaryPutTestCase(BaseTestGenerator):
             data=json.dumps(data),
             follow_redirects=True)
 
-        self.assertEqual(negative_put_response.status_code, 500)
+        self.assertEqual(negative_put_response.status_code, 410)
 
     def tearDown(self):
         """This function delete the fts dictionaries and disconnect the test

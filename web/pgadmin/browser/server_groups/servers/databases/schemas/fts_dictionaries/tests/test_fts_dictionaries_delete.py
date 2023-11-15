@@ -25,7 +25,7 @@ class FtsDictionaryDeleteTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for FTS dictionary node.
-        ('Fetch FTS dictionary Node URL', dict(
+        ('Delete FTS dictionary', dict(
             url='/browser/fts_dictionary/obj/'))
     ]
 

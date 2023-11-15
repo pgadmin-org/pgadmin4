@@ -264,6 +264,9 @@ def properties(sid, did, node_id, node_type):
 
     res_data, msg = get_data(sid, did, node_id, node_type, server_info)
 
+    if res_data is None and isinstance(msg, Response):
+        return msg
+
     return make_json_response(
         result=res_data,
         info=msg,
@@ -292,7 +295,7 @@ def get_data(sid, did, node_id, node_type, server_data):
     status, res = conn.execute_dict(sql)
 
     if not status:
-        return internal_server_error(errormsg=res)
+        return None, internal_server_error(errormsg=res)
     node_types = res['rows']
 
     def _append_rows(status, res, disp_type):

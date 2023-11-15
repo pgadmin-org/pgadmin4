@@ -1587,7 +1587,6 @@ class ServerNode(PGChildNodeView):
                 server, 428, prompt_password, prompt_tunnel_password
             )
 
-        status = True
         try:
             status, errmsg = conn.connect(
                 password=password,
@@ -1596,12 +1595,10 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
-            current_app.logger.exception(e)
             return self.get_response_for_password(
                 server, 401, True, True, getattr(e, 'message', str(e)))
 
         if not status:
-
             current_app.logger.error(
                 "Could not connect to server(#{0}) - '{1}'.\nError: {2}"
                 .format(server.id, server.name, errmsg)
@@ -2099,10 +2096,12 @@ class ServerNode(PGChildNodeView):
                 "prompt_password": prompt_password,
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
+                    'allow_save_password' in session and
                     session['allow_save_password'] else False,
                 "allow_save_tunnel_password":
                     True if config.ALLOW_SAVE_TUNNEL_PASSWORD and
-                    session['allow_save_password'] else False
+                    'allow_save_tunnel_password' in session and
+                    session['allow_save_tunnel_password'] else False
             }
             return make_json_response(
                 success=0,
@@ -2118,6 +2117,7 @@ class ServerNode(PGChildNodeView):
                 "prompt_password": True,
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
+                    'allow_save_password' in session and
                     session['allow_save_password'] else False,
             }
             return make_json_response(
