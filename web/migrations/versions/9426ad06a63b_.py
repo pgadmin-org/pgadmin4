@@ -13,7 +13,7 @@ Revision ID: 9426ad06a63b
 Revises: f656e56dfdc8
 Create Date: 2023-10-09 15:09:50.773035
 """
-from alembic import op
+from alembic import op, context
 import sqlalchemy as sa
 
 
@@ -31,7 +31,8 @@ def upgrade():
     # batch_alter_table
     with op.batch_alter_table(
             "server", table_kwargs={'sqlite_autoincrement': True}) as batch_op:
-        batch_op.alter_column('id', autoincrement=True)
+        if context.get_impl().bind.dialect.name == "sqlite":
+            batch_op.alter_column('id', autoincrement=True)
         batch_op.add_column(sa.Column('shared_username', sa.String(64), nullable=True))
 
 

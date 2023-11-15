@@ -1844,7 +1844,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
         for i in range(0, len(data)):
             dbg_func_args_exists = int(
                 DebuggerFunctionArguments.query.filter_by(
-                    server_id=data[i]['server_id'],
+                    server_id=int(data[i]['server_id']),
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
@@ -1863,7 +1863,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
             # existing value otherwise add the new value
             if dbg_func_args_exists:
                 dbg_func_args = DebuggerFunctionArguments.query.filter_by(
-                    server_id=data[i]['server_id'],
+                    server_id=int(data[i]['server_id']),
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
@@ -1876,7 +1876,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                 dbg_func_args.value = array_string
             else:
                 debugger_func_args = DebuggerFunctionArguments(
-                    server_id=data[i]['server_id'],
+                    server_id=int(data[i]['server_id']),
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
