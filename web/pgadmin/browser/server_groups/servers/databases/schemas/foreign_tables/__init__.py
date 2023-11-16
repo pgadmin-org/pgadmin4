@@ -1422,7 +1422,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
             for column in cols:
                 edit_type_list = edit_types[column['atttypid']]
-                edit_type_list.append(column['fulltype'])
+                edit_type_list.append(column['cltype'])
                 column['edit_types'] = sorted(edit_type_list)
                 column['cltype'] = \
                     DataTypeReader.parse_type_name(column['cltype'])

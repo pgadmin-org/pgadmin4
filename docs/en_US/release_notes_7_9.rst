@@ -52,3 +52,4 @@ Bug fixes
   | `Issue #6904 <https://github.com/pgadmin-org/pgadmin4/issues/6904>`_ -  Fix a crash issue occurring when debugging a function with arguments when using pgAdmin with external config database.
   | `Issue #6920 <https://github.com/pgadmin-org/pgadmin4/issues/6920>`_ -  Fix an issue in ERD tool where SQL generated is missing columns for the table.
   | `Issue #6934 <https://github.com/pgadmin-org/pgadmin4/issues/6934>`_ -  Clear the password field in the config database on clear saved server password.
+  | `Issue #6962 <https://github.com/pgadmin-org/pgadmin4/issues/6962>`_ -  Fixed an issue where the data type of the array type was not visible for the column in the Foreign Table dialog.
