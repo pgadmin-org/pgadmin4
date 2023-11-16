@@ -18,21 +18,6 @@
     min-height: 100% !important;
 }
 
-/*
- * Remove border right from "CodeMirror-gutters"
- * class because its height doesn't increase
- * with every new line added, instead add border
- * right to ".CodeMirror-linenumber" class which
- * adds a new div for every new line added
- */
-.sql_field_layout .CodeMirror-gutters {
-    border-right: none;
-}
-
-.sql_field_layout .CodeMirror-linenumber {
-    border-right: 1px solid $color-gray-lighter;
-}
-
 /* class to disable Codemirror editor */
 .cm_disabled {
   background: $input-disabled-bg;
@@ -100,6 +85,8 @@
 
 .CodeMirror-linenumber {
   color: $color-fg;
+  font-size: 0.85em;
+  padding: 0;
 }
 
 .debugger-container .breakpoints {

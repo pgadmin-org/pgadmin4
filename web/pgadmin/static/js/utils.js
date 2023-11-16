@@ -24,38 +24,6 @@ export function parseShortcutValue(obj) {
   return shortcut;
 }
 
-export function findAndSetFocus(container) {
-  if (container.length == 0) {
-    return;
-  }
-  setTimeout(function() {
-    let first_el = container
-      .find('button.fa-plus:first');
-
-    /* Adding the tabindex condition makes sure that
-     * when testing accessibility it works consistently across all
-     * browser. For eg, in safari focus() works only when element has
-     * tabindex="0", whereas in Chrome it works in any case
-     */
-
-    if (first_el.length == 0) {
-      first_el = container
-        .find(`
-          .pgadmin-controls:first .btn:not(.toggle),
-          .pgadmin-controls:first,
-          .ajs-commands:first,
-          .CodeMirror-scroll,
-          .pgadmin-wizard`)
-        .find('*[tabindex]:not([tabindex="-1"]),input:enabled');
-    }
-    if(first_el.length > 0) {
-      first_el[0].focus();
-    } else {
-      container[0].focus();
-    }
-  }, 200);
-}
-
 export function getEpoch(inp_date) {
   let date_obj = inp_date ? inp_date : new Date();
   return parseInt(date_obj.getTime()/1000);

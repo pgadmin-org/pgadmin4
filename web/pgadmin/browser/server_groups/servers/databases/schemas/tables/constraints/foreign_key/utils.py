@@ -159,6 +159,21 @@ def get_parent(conn, tid, template_path=None):
     return schema, table
 
 
+@get_template_path
+def get_delete_sql(conn, fk_data, template_path=None):
+    """
+    This function will generate sql from model data.
+    :param conn: Connection Object
+    :param data: data
+    :param template_path: Template Path
+    :return:
+    """
+    return render_template("/".join(
+        [template_path,
+         'delete.sql']),
+        data=fk_data, conn=conn).strip('\n')
+
+
 def _get_sql_for_delete_fk_constraint(data, constraint, sql, template_path,
                                       conn):
     """

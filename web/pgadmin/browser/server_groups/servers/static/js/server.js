@@ -43,9 +43,9 @@ define('pgadmin.node.server', [
       },
       title: function(d, action) {
         if(action == 'create') {
-          return gettext('Register - %s', this.label);
+          return gettext('Register - %s', this._label);
         }
-        return d.label??'';
+        return d._label??'';
       },
       Init: function() {
         /* Avoid multiple registration of same menus */

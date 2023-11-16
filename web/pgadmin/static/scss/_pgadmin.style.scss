@@ -271,38 +271,6 @@
   }
 }
 
-.pgadmin-controls {
-    padding-right: 0px;
-    padding-left: 0px;
-}
-
-.pgadmin-controls.SQL {
-  padding-right: 3px;
-  padding-left: 1px;
-  height: 100%;
-}
-.pgadmin-controls > textarea.form-control,
-.pgadmin-controls > textarea.form-control:disabled {
-   min-width: 100%;
-   max-width: 100%;
-}
-.pgadmin-controls > div.checkbox, .pgadmin-controls > div.checkbox[disabled] {
-    height: 28px;
-}
-
-.pgadmin-controls > .uneditable-input, .pgadmin-controls > .pgadmin-node-select,
-.pgadmin-controls > input.form-control, .pgadmin-controls > select.form-control,
-.pgadmin-controls > .uneditable-input:disabled,
-.pgadmin-controls > .pgadmin-node-select:disabled,
-.pgadmin-controls > input.form-control:disabled,
-.pgadmin-controls > select.form-control:disabled {
-    min-height: 28px;
-}
-
-.pgadmin-controls > span.select2 {
-    width: 100%;
-}
-
 fieldset.inline-fieldset {
     padding: 10px;
     border-radius: $card-border-radius;
@@ -407,32 +375,6 @@ fieldset.inline-fieldset > div {
   }
 }
 
-.pgadmin-controls input[type=checkbox]{
-  margin-left: 0 !important;
-  margin-top: 10px !important;
-}
-
-/* custom-control-label is used for checkbox */
-.pgadmin-controls .custom-control-label{
-  margin-left: 0 !important;
-  margin-top: 5px !important;
-}
-
-.pgadmin-controls.sql_field_layout {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.pgadmin-controls.focused,
-.pgadmin-controls:focus {
-  border-color: $input-focus-border-color !important;
-  outline: 0;
-  -webkit-box-shadow: $input-focus-box-shadow;
-  box-shadow: $input-focus-box-shadow;
-}
-
 .dashboard-tab-container,
 .pg-panel-statistics-container,
 .pg-panel-dependencies-container,
@@ -495,13 +437,6 @@ fieldset.inline-fieldset > div {
 .width_percent_95 { width: 95%; }
 .width_percent_99 { width: 99%; }
 .width_percent_100 { width: 100%; }
-
-
-.sql_field_layout {
-    border: $input-border-width solid $input-border-color !important;
-    border-radius: $input-border-radius;
-    padding: 0px;
-}
 
 .navtab-inline-controls {
 
@@ -894,25 +829,6 @@ table.table-empty-rows{
   }
 }
 
-.pgadmin-controls-radio-none {
-  & input[type="radio"] {
-    display: none;
-  }
-}
-
-.backform-tab{
-  & > .nav.nav-tabs {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-  & > .tab-content {
-    position: absolute;
-    top: $title-height;
-    bottom: $footer-height-calc;
-  }
-}
 .ajs-content {
   .tab-content {
     bottom: 0;

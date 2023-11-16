@@ -77,6 +77,9 @@ export default function rcdockOverride(theme) {
               color: theme.palette.text.primary,
             }
           },
+          '& .dock-nav-more': {
+            display: 'none',
+          }
         },
         '& .dock-tabpane': {
           backgroundColor: theme.palette.background.default,
