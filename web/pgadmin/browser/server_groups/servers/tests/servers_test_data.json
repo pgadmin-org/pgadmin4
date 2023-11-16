@@ -589,7 +589,7 @@
         "manager": {
           "server_type": "pg",
           "password": "my_postgres",
-          "sversion": 100000,
+          "sversion": 150000,
           "connection_connect_return_value": "psycopg.OperationalError()"
         }
       },
@@ -630,7 +630,7 @@
         "manager": {
           "server_type": "pg",
           "password": "my_postgres",
-          "sversion": 100000,
+          "sversion": 150000,
           "connection_connect_return_value": "OperationalError()"
         }
       },
@@ -1118,7 +1118,7 @@
         "manager": {
           "server_type": "pg",
           "password": "my_postgres",
-          "sversion": 100000,
+          "sversion": 150000,
           "connection_execute_scalar_return_value": "(True, {'rows': []})"
         }
       },

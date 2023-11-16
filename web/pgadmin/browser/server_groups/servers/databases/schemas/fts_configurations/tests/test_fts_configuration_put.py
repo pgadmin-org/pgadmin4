@@ -30,7 +30,7 @@ class FTSConfPutTestCase(BaseTestGenerator):
 
     scenarios = [
         # Fetching default URL for fts_configuration node.
-        ('Fetch FTS configuration Node URL',
+        ('Update FTS Configuration Node',
          dict(url='/browser/fts_configuration/obj/'))
     ]
 

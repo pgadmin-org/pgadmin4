@@ -380,9 +380,10 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         if len(res['rows']) == 0:
             return False, gone(self._NOT_FOUND_LANG_INFORMATION)
 
-        res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
-            self.datistemplate)
+        if isinstance(res['rows'], list):
+            res['rows'][0]['is_sys_obj'] = (
+                res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+                self.datistemplate)
 
         sql = render_template(
             "/".join([self.template_path, self._ACL_SQL]),

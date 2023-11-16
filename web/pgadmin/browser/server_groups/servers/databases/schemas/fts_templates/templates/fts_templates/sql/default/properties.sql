@@ -15,14 +15,14 @@ ON
     AND des.classoid='pg_ts_template'::regclass
     )
 WHERE
-{% if scid %}
+{% if scid is defined %}
     tmpl.tmplnamespace = {{scid}}::OID
 {% endif %}
-{% if name %}
-    {% if scid %}AND {% endif %}tmpl.tmplname = {{name|qtLiteral(conn)}}
+{% if name is defined %}
+    {% if scid is defined %}AND {% endif %}tmpl.tmplname = {{name|qtLiteral(conn)}}
 {% endif %}
-{% if tid %}
-    {% if name %}AND {% else %}{% if scid %}AND {% endif %}{% endif %}tmpl.oid = {{tid}}::OID
+{% if tid is defined %}
+    {% if name is defined %}AND {% else %}{% if scid is defined %}AND {% endif %}{% endif %}tmpl.oid = {{tid}}::OID
 {% endif %}
 ORDER BY
     tmpl.tmplname

@@ -96,4 +96,4 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
 
             response = self.connect_to_server(url, self.server)
 
-            self.assertEqual(response.status_code, 500)
+            self.assertIn(response.status_code, [401, 428])

@@ -13,14 +13,14 @@ FROM
     LEFT OUTER JOIN pg_catalog.pg_ts_template t ON t.oid=dict.dicttemplate
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=dict.oid AND des.classoid='pg_ts_dict'::regclass)
 WHERE
-{% if scid %}
+{% if scid is defined %}
     dict.dictnamespace = {{scid}}::OID
 {% endif %}
-{% if name %}
-    {% if scid %}AND {% endif %}dict.dictname = {{name|qtLiteral(conn)}}
+{% if name is defined %}
+    {% if scid is defined %}AND {% endif %}dict.dictname = {{name|qtLiteral(conn)}}
 {% endif %}
-{% if dcid %}
-    {% if scid %}AND {% else %}{% if name %}AND {% endif %}{% endif %}dict.oid = {{dcid}}::OID
+{% if dcid is defined %}
+    {% if scid is defined %}AND {% else %}{% if name is defined %}AND {% endif %}{% endif %}dict.oid = {{dcid}}::OID
 {% endif %}
 ORDER BY
     dict.dictname
