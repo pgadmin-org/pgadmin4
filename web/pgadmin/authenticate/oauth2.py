@@ -240,6 +240,8 @@ class OAuth2Authentication(BaseAuthentication):
             claim = profile.get(key)
             if claim is None:
                 continue
+            if not isinstance(claim, list):
+                claim = [claim]
             authorized_claims = additional_claims.get(key)
             if any(item in authorized_claims for item in claim):
                 reason = "Claim match found. Authorizing"
