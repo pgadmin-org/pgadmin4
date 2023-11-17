@@ -87,14 +87,8 @@ export default function CollectionNodeProperties({
   const [data, setData] = React.useState([]);
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
   const [selectedObject, setSelectedObject] = React.useState([]);
-  const [reload, setReload] = React.useState(false);
   const [loaderText, setLoaderText] = React.useState('');
   const schemaRef = React.useRef();
-
-  //Reload the collection node on refresh or change in children count
-  React.useEffect(() => {
-    setReload(!reload);
-  }, [nodeItem?._children]);
 
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
@@ -174,19 +168,20 @@ export default function CollectionNodeProperties({
           contentType: 'application/json; charset=utf-8',
         })
         .then(function (res) {
-          setLoaderText('');
           if (res.success == 0) {
             pgAdmin.Browser.notifier.alert(res.errormsg, res.info);
           }
           pgAdmin.Browser.tree.refresh(selItem);
-          setReload(!reload);
+          setIsStale(true);
         })
         .catch(function (error) {
-          setLoaderText('');
           pgAdmin.Browser.notifier.alert(
             gettext('Error deleting %s', selectedItemData._label.toLowerCase()),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
+        })
+        .then(()=>{
+          setLoaderText('');
         });
     };
 
@@ -280,7 +275,7 @@ export default function CollectionNodeProperties({
         });
       setIsStale(false);
     }
-  }, [nodeData, node, nodeItem, reload]);
+  }, [nodeData, node, nodeItem, isStale]);
 
   const CustomHeader = () => {
     const canDrop = evalFunc(node, node.canDrop, nodeData, nodeItem, treeNodeInfo);

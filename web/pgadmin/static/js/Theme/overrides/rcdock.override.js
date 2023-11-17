@@ -56,6 +56,9 @@ export default function rcdockOverride(theme) {
           },
           '& .dock-tab-btn': {
             pointerEvents: 'none',
+          },
+          '& .dock-nav-more': {
+            display: 'none',
           }
         },
         '&.dock-style-dialogs': {

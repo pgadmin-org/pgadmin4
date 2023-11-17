@@ -376,7 +376,6 @@ export function GeometryViewer({rows, columns, column}) {
   const contentRef = React.useRef();
   const data = parseData(rows, columns, column);
   const queryToolCtx = React.useContext(QueryToolContext);
-  const crs = data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple;
 
   useEffect(()=>{
     let timeoutId;
@@ -391,10 +390,11 @@ export function GeometryViewer({rows, columns, column}) {
     contentResizeObserver.observe(contentRef.current);
   }, []);
 
+  // Dyanmic CRS is not supported. Use srid as key and recreate the map on change
   return (
-    <Box ref={contentRef} width="100%" height="100%">
+    <Box ref={contentRef} width="100%" height="100%" key={data.selectedSRID}>
       <MapContainer
-        crs={crs}
+        crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
         preferCanvas={true}
         className={classes.mapContainer}
