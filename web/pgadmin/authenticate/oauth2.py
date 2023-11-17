@@ -243,6 +243,8 @@ class OAuth2Authentication(BaseAuthentication):
             if not isinstance(claim, list):
                 claim = [claim]
             authorized_claims = additional_claims.get(key)
+            if not isinstance(authorized_claims, list):
+                authorized_claims = [authorized_claims]
             if any(item in authorized_claims for item in claim):
                 reason = "Claim match found. Authorizing"
                 return (True, reason)
