@@ -122,7 +122,6 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
-        current_app.logger.warning(profile)
         email_key = \
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
@@ -155,20 +154,32 @@ class OAuth2Authentication(BaseAuthentication):
         additinal_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
                 self.oauth2_current_client]:
+
             additinal_claims = self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
-        (valid, reason) = self.__is_additional_claims_valid(profile,
-                                                            additinal_claims)
+        # checking oauth provider userinfo response
+        valid_profile, reason = self.__is_any_claim_valid(profile,
+                                                          additinal_claims)
+        current_app.logger.debug(f"profile claims: {profile}")
+        current_app.logger.debug(f"reason: {reason}")
 
-        if not valid:
+        # checking oauth provider idtoken claims
+        id_token_claims = session.get('oauth2_token', {}).get('userinfo',{})
+        valid_idtoken, reason = self.__is_any_claim_valid(id_token_claims,
+                                                          additinal_claims)
+        current_app.logger.debug(f"idtoken claims: {id_token_claims}")
+        current_app.logger.debug(f"reason: {reason}")
+
+        if not valid_profile and not valid_idtoken:
             return_msg = "The user is not authorized to login" \
-                " based on the claims in the profile." \
+                " based on your identity profile." \
                 " Please contact your administrator."
             audit_msg = f"The authenticated user {username} is not" \
                 " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: {reason}"
+                f"Reason: additional claim required {additinal_claims}, " \
+                f"profile claims {profile}, idtoken cliams {id_token_claims}."
             current_app.logger.warning(audit_msg)
             return False, return_msg
 
@@ -226,7 +237,7 @@ class OAuth2Authentication(BaseAuthentication):
 
         return True, {'username': username}
 
-    def __is_additional_claims_valid(self, profile, additional_claims):
+    def __is_any_claim_valid(self, identity, additional_claims):
         if additional_claims is None:
             reason = "Additional claim config is None, no check to do."
             return (True, reason)
@@ -237,7 +248,7 @@ class OAuth2Authentication(BaseAuthentication):
             reason = "Additional claim check config dict is empty."
             return (False, reason)
         for key in additional_claims.keys():
-            claim = profile.get(key)
+            claim = identity.get(key)
             if claim is None:
                 continue
             if not isinstance(claim, list):
@@ -246,7 +257,7 @@ class OAuth2Authentication(BaseAuthentication):
             if not isinstance(authorized_claims, list):
                 authorized_claims = [authorized_claims]
             if any(item in authorized_claims for item in claim):
-                reason = "Claim match found. Authorizing"
+                reason = "Claim match found. Authorized access."
                 return (True, reason)
-        reason = f"Profile does not have any of given additional claims."
+        reason = f"No match was found."
         return (False, reason)
