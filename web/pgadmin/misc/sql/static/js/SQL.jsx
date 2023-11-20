@@ -79,7 +79,7 @@ function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
               gettext(e.response.data.errormsg)
             );
             // show failed message.
-            setNodeSQL([gettext('Failed to retrieve data from the server.'), true]);
+            setNodeSQL(gettext('Failed to retrieve data from the server.'));
             setLoaderText('');
           }).then(()=>{
             setLoaderText('');

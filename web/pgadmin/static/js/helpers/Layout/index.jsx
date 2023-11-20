@@ -33,19 +33,16 @@ function TabTitle({id, closable, defaultInternal}) {
   }, []);
 
   useEffect(()=>{
-    let deregister;
-    if(internal.renamable) {
-      deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
-        if(panelId == id) {
-          const internal = layoutDocker?.find(id)?.internal??{};
-          setAttrs({
-            icon: internal.icon,
-            title: internal.title,
-            tooltip: internal.tooltip ?? internal.title,
-          });
-        }
-      }, 100));
-    }
+    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
+      if(panelId == id) {
+        const internal = layoutDocker?.find(id)?.internal??{};
+        setAttrs({
+          icon: internal.icon,
+          title: internal.title,
+          tooltip: internal.tooltip ?? internal.title,
+        });
+      }
+    }, 100));
 
     return ()=>deregister?.();
   }, []);

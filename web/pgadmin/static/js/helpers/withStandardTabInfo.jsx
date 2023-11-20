@@ -11,6 +11,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutDockerContext, LAYOUT_EVENTS } from './Layout';
 import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import ErrorBoundary from './ErrorBoundary';
 
 export default function withStandardTabInfo(Component, tabId) {
   // eslint-disable-next-line react/display-name
@@ -63,16 +64,18 @@ export default function withStandardTabInfo(Component, tabId) {
     }, []);
 
     return (
-      <Component
-        {...props}
-        nodeItem={nodeItem}
-        nodeData={nodeData}
-        node={node}
-        treeNodeInfo={treeNodeInfo}
-        isActive={isActive}
-        isStale={isStale}
-        setIsStale={(v)=>setNodeInfo((prev)=>[v, prev[1], prev[2]])}
-      />
+      <ErrorBoundary>
+        <Component
+          {...props}
+          nodeItem={nodeItem}
+          nodeData={nodeData}
+          node={node}
+          treeNodeInfo={treeNodeInfo}
+          isActive={isActive}
+          isStale={isStale}
+          setIsStale={(v)=>setNodeInfo((prev)=>[v, prev[1], prev[2]])}
+        />
+      </ErrorBoundary>
     );
   };
 
