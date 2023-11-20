@@ -45,6 +45,7 @@ Bug fixes
   | `Issue #6784 <https://github.com/pgadmin-org/pgadmin4/issues/6784>`_ -  Fixed an issue where Schema Diff does not work when the user language is set to any language other than English in Preferences.
   | `Issue #6817 <https://github.com/pgadmin-org/pgadmin4/issues/6817>`_ -  Fixed the query generated when creating subscription where copy_data parameter was missing.
   | `Issue #6820 <https://github.com/pgadmin-org/pgadmin4/issues/6820>`_ -  Ensure backup/restore/maintenance works with invalid pgpass file parameter.
+  | `Issue #6835 <https://github.com/pgadmin-org/pgadmin4/issues/6835>`_ -  Fix an issue where OAUTH_ADDITIONAL_CLAIMS does not recognise AzureAD with > 150 groups.
   | `Issue #6874 <https://github.com/pgadmin-org/pgadmin4/issues/6874>`_ -  Fix an issue where the browser window stuck on spinning with an Oauth user without email.
   | `Issue #6875 <https://github.com/pgadmin-org/pgadmin4/issues/6875>`_ -  Fix an issue where import/export data is not working for shared servers.
   | `Issue #6877 <https://github.com/pgadmin-org/pgadmin4/issues/6877>`_ -  Remove the max length of 255 from password exec command in server configuration dialog.
