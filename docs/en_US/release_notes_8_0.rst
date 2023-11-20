@@ -29,6 +29,7 @@ Housekeeping
 
   | `Issue #6441 <https://github.com/pgadmin-org/pgadmin4/issues/6441>`_ -  Update app bundle built to use notarytool instead of altool.
   | `Issue #6479 <https://github.com/pgadmin-org/pgadmin4/issues/6479>`_ -  Replace the current layout library wcDocker with ReactJS based rc-dock.
+  | `Issue #6850 <https://github.com/pgadmin-org/pgadmin4/issues/6850>`_ -  Upgrade Flask, Werkzeug and other modules depends on the latest version of Flask.
 
 Bug fixes
 *********
@@ -46,6 +47,7 @@ Bug fixes
   | `Issue #6817 <https://github.com/pgadmin-org/pgadmin4/issues/6817>`_ -  Fixed the query generated when creating subscription where copy_data parameter was missing.
   | `Issue #6820 <https://github.com/pgadmin-org/pgadmin4/issues/6820>`_ -  Ensure backup/restore/maintenance works with invalid pgpass file parameter.
   | `Issue #6835 <https://github.com/pgadmin-org/pgadmin4/issues/6835>`_ -  Fix an issue where OAUTH_ADDITIONAL_CLAIMS does not recognise AzureAD with > 150 groups.
+  | `Issue #6840 <https://github.com/pgadmin-org/pgadmin4/issues/6840>`_ -  Fixed circular import error occurring while deploying cloud PostgreSQL instance from pgAdmin.
   | `Issue #6874 <https://github.com/pgadmin-org/pgadmin4/issues/6874>`_ -  Fix an issue where the browser window stuck on spinning with an Oauth user without email.
   | `Issue #6875 <https://github.com/pgadmin-org/pgadmin4/issues/6875>`_ -  Fix an issue where import/export data is not working for shared servers.
   | `Issue #6877 <https://github.com/pgadmin-org/pgadmin4/issues/6877>`_ -  Remove the max length of 255 from password exec command in server configuration dialog.
