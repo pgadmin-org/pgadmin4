@@ -8,9 +8,9 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 11, 12, 13, 14, 15, and 16
+**PostgreSQL**: 12, 13, 14, 15, and 16
 
-**EDB Advanced Server**: 11, 12, 13, 14 and 15
+**EDB Advanced Server**: 12, 13, 14, 15, and 16
 
 Bundled PostgreSQL Utilities
 ****************************
