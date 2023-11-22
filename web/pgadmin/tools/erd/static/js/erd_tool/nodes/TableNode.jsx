@@ -289,7 +289,7 @@ class TableNodeWidgetRaw extends React.Component {
           <Box margin="auto 0">
             <span data-test="column-name">{col.name}</span>&nbsp;
             {this.state.show_details &&
-            <span data-test="column-type">{cltype}</span>}
+            <span data-test="column-type">{cltype + (col.colconstype == 'i' ? ` (${gettext('IDENTITY')})`:'')}</span>}
           </Box>
         </Box>
         <Box marginLeft="auto" padding="0" minHeight="0" display="flex" alignItems="center">

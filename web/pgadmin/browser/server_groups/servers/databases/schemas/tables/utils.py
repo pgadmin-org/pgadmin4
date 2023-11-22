@@ -164,7 +164,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return wrap
 
-    def _formatter(self, did, scid, tid, data):
+    def _formatter(self, did, scid, tid, data, with_serial_cols=False):
         """
         Args:
             data: dict of query result
@@ -234,7 +234,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # columns properties.sql, so we need to set template path
         data = column_utils.get_formatted_columns(self.conn, tid,
                                                   data, other_columns,
-                                                  table_or_type)
+                                                  table_or_type,
+                                                  with_serial=with_serial_cols)
 
         self._add_constrints_to_output(data, did, tid)
 
@@ -493,7 +494,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
         return condition
 
-    def fetch_tables(self, sid, did, scid, tid=None):
+    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=False):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -502,6 +503,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         :param did: Database Id
         :param scid: Schema Id
         :param tid: Table Id
+        :param with_serial_cols: Boolean
         :return: Table dataset
         """
 
@@ -513,7 +515,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             data = BaseTableView.properties(
                 self, 0, sid, did, scid, tid, res=data,
-                return_ajax_response=False
+                with_serial_cols=with_serial_cols,
+                return_ajax_response=False,
             )
 
             return True, data
@@ -534,6 +537,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 if status:
                     data = BaseTableView.properties(
                         self, 0, sid, did, scid, row['oid'], res=data,
+                        with_serial_cols=with_serial_cols,
                         return_ajax_response=False
                     )
 
@@ -1750,6 +1754,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         """
         res = kwargs.get('res')
         return_ajax_response = kwargs.get('return_ajax_response', True)
+        with_serial_cols = kwargs.get('with_serial_cols', False)
 
         data = res['rows'][0]
 
@@ -1768,7 +1773,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             'vacuum_settings_str'
         ].replace('=', ' = ')
 
-        data = self._formatter(did, scid, tid, data)
+        data = self._formatter(did, scid, tid, data,
+                               with_serial_cols=with_serial_cols)
 
         # Fetch partition of this table if it is partitioned table.
         if 'is_partitioned' in data and data['is_partitioned']:
