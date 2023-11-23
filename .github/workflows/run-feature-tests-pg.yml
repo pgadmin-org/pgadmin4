@@ -139,6 +139,11 @@ jobs:
           }
           EOF
 
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 3
+
       - name: Build the JS bundle
         run: |
           cd web
