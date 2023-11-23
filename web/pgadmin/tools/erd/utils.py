@@ -40,7 +40,8 @@ class ERDTableView(BaseTableView, DataTypeReader):
         all_tables = []
         for row in schemas['rows']:
             status, res = \
-                BaseTableView.fetch_tables(self, sid, did, row['oid'])
+                BaseTableView.fetch_tables(self, sid, did, row['oid'],
+                                           with_serial_cols=True)
             if not status:
                 return status, res
 
@@ -53,7 +54,8 @@ class ERDTableView(BaseTableView, DataTypeReader):
                                 tid=None, related={}, maxdepth=0, currdepth=0):
 
         status, res = \
-            BaseTableView.fetch_tables(self, sid, did, scid, tid=tid)
+            BaseTableView.fetch_tables(self, sid, did, scid, tid=tid,
+                                       with_serial_cols=True)
 
         if not status:
             return status, res

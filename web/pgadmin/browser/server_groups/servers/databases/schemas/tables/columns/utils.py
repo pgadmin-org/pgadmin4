@@ -17,6 +17,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
+from pgadmin.browser.server_groups.servers.databases.utils \
+    import make_object_name
 from functools import wraps
 
 
@@ -225,7 +227,8 @@ def parse_options_for_column(db_variables):
 
 @get_template_path
 def get_formatted_columns(conn, tid, data, other_columns,
-                          table_or_type, template_path=None):
+                          table_or_type, template_path=None,
+                          with_serial=False):
     """
     This function will iterate and return formatted data for all
     the columns.
@@ -253,6 +256,28 @@ def get_formatted_columns(conn, tid, data, other_columns,
             if col['name'] == other_col['name']:
                 col['inheritedfrom' + table_or_type] = \
                     other_col['inheritedfrom']
+
+        if with_serial:
+            # Here we assume if a column is serial
+            serial_seq_name = make_object_name(
+                data['name'], col['name'], 'seq')
+            # replace the escaped quotes for comparison
+            defval = (col.get('defval', '') or '').replace("''", "'").\
+                replace('""', '"')
+
+            if serial_seq_name in defval and defval.startswith("nextval('")\
+                    and col['typname'] in ('integer', 'smallint', 'bigint'):
+
+                serial_type = {
+                    'integer': 'serial',
+                    'smallint': 'smallserial',
+                    'bigint': 'bigserial'
+                }[col['typname']]
+
+                col['displaytypname'] = serial_type
+                col['cltype'] = serial_type
+                col['typname'] = serial_type
+                col['defval'] = ''
 
     data['columns'] = all_columns
 

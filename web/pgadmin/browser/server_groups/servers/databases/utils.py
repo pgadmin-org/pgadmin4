@@ -126,3 +126,26 @@ def get_attributes_from_db_info(manager, kwargs):
         return datistemplate, datallowconn
     else:
         return False, True
+
+
+def make_object_name(name1: str, name2: str, label: str) -> str:
+    """
+    This function is python port for makeObjectName in postgres.
+    https://github.com/postgres/postgres/blob/master/src/backend/commands/indexcmds.c
+    It is used by postgres to generate index name for auto index,
+    sequence name for serial columns.
+    :param name1: generally table name
+    :param name2: generally column name
+    :param label: a suffix
+    :return: name string
+    """
+    namedatalen: int = 63
+    result = '{0}_{1}_{2}'.format(name1, name2, label)
+    while len(result) > namedatalen:
+        if len(name1) > len(name2):
+            name1 = name1[:-1]
+        else:
+            name2 = name2[:-1]
+        result = '{0}_{1}_{2}'.format(name1, name2, label)
+
+    return result
