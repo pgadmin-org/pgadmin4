@@ -459,18 +459,19 @@ function getRuntimeMenu() {
     },
   }));
   subMenus.append(new nw.MenuItem({ type: 'separator' }));
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['enter_full_screen'].label,
-    enabled: runtimeSubMenus['enter_full_screen'].enable,
-    priority: runtimeSubMenus['enter_full_screen'].priority,
-    type: 'normal',
-    checked: false,
-    key: runtimeSubMenus['enter_full_screen'].key,
-    modifiers: runtimeSubMenus['enter_full_screen'].modifiers,
-    click: function () {
-      misc.toggleFullScreen();
-    },
-  }));
+    subMenus.append(new gui.MenuItem({
+      label: pgAdminMainScreen?.isFullscreen ? runtimeSubMenus['exit_full_screen'].label : runtimeSubMenus['enter_full_screen'].label,
+      enabled: runtimeSubMenus['enter_full_screen'].enable,
+      priority: runtimeSubMenus['enter_full_screen'].priority,
+      type: 'normal',
+      checked: false,
+      key: runtimeSubMenus['enter_full_screen'].key,
+      modifiers: runtimeSubMenus['enter_full_screen'].modifiers,
+      click: function () {
+        this.label = !pgAdminMainScreen?.isFullscreen ? runtimeSubMenus['exit_full_screen'].label : runtimeSubMenus['enter_full_screen'].label;
+        misc.toggleFullScreen();
+      },
+    }));
   subMenus.append(new gui.MenuItem({
     label: runtimeSubMenus['actual_size'].label,
     enabled: runtimeSubMenus['actual_size'].enable,

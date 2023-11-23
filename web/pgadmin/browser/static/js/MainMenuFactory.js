@@ -35,6 +35,7 @@ if (browser == 'Nwjs') {
         configure: { label: gettext('Configure...'), name: 'configure', priority: 0, enable: true},
         view_log: { label: gettext('View log...'), name: 'view_log', priority: 1, enable: true},
         enter_full_screen: { label: gettext('Enter Full Screen'), name: 'enter_full_screen', enable: true, priority: 2, key: fullScreenKey, modifiers: isMac() ?`${controlKey}+ctrl` : controlKey},
+        exit_full_screen: { label: gettext('Exit Full Screen'), name: 'exit_full_screen', enable: true, priority: 2, key: fullScreenKey, modifiers: isMac() ?`${controlKey}+ctrl` : controlKey},
         actual_size: { label: gettext('Actual Size'), name: 'actual_size', priority: 3, enable: true, key: '0', modifiers: controlKey},
         zoom_in: { label: gettext('Zoom In'), name: 'zoom_in', priority: 4, enable: true, key: '+', modifiers: controlKey},
         zoom_out: { label: gettext('Zoom Out'), name: 'zoom_out', enable: true, priority: 5, key: '-', modifiers: controlKey},
