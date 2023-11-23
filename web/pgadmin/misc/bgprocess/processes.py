@@ -478,7 +478,7 @@ class BatchProcess:
             return 0, True
 
         with open(logfile, 'rb') as f:
-            eofs = os.fstat(f.fileno()).st_size
+            eofs = os.path.getsize(logfile)
             f.seek(pos, 0)
             if pos == eofs and ecode is None:
                 completed = False
