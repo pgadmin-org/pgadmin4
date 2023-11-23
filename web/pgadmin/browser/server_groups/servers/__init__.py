@@ -36,7 +36,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
     KEY_RING_USERNAME_FORMAT, KEY_RING_TUNNEL_FORMAT, KEY_RING_DESKTOP_USER
 from .... import socketio as sio
-
+from pgadmin.utils import get_complete_file_path
 import keyring
 
 
@@ -1543,7 +1543,8 @@ class ServerNode(PGChildNodeView):
                     server.passexec_cmd is None and \
                     server.service is None:
                 prompt_password = True
-            elif passfile_param and passfile_param != '':
+            elif passfile_param and passfile_param != '' and \
+                    get_complete_file_path(passfile_param):
                 passfile = passfile_param
             else:
                 if config.DISABLED_LOCAL_PASSWORD_STORAGE:
