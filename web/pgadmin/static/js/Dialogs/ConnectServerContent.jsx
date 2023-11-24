@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import gettext from 'sources/gettext';
 import { Box } from '@material-ui/core';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
@@ -44,11 +44,10 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
     }
   };
 
-  useEffect(()=>{
-    setTimeout(()=>{
-      firstEleRef.current && firstEleRef.current.focus();
-    }, 350);
-  }, [firstEleRef.current]);
+
+  useLayoutEffect(()=>{
+    firstEleRef.current?.focus();
+  }, []);
 
   useEffect(()=>{
     setHeight?.(containerRef.current?.offsetHeight);
