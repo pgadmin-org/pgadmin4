@@ -28,6 +28,7 @@ RUN apk add --no-cache \
     nasm \
     nodejs \
     npm \
+    tzdata \
     yarn \
     zlib-dev
 
