@@ -192,7 +192,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                     height: '100%',
                     width: '100%',
                     resize: 'none'
-                  }}/>
+                  }} title={gettext('Scratch Pad')}/>
                 }),
               ]
             }

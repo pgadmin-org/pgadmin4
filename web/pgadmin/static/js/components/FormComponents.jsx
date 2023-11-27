@@ -397,7 +397,8 @@ export const InputText = forwardRef(({
         ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
         style: inputStyle || {},
         autoComplete: 'new-password',
-        'data-testid': 'input-text'
+        'data-testid': 'input-text',
+        title: controlProps?.title,
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}
@@ -565,7 +566,7 @@ export function InputCheckbox({ cid, helpid, value, onChange, controlProps, read
           checked={Boolean(value)}
           onChange={readonly ? () => {/*This is intentional (SonarQube)*/ } : onChange}
           color="primary"
-          inputProps={{ 'aria-describedby': helpid }}
+          inputProps={{ 'aria-describedby': helpid, 'title': controlProps.label}}
           {...props} />
       }
       label={controlProps.label}
@@ -1265,7 +1266,7 @@ export function NotifierMessage({
     <Box className={clsx(classes.container, classes[`container${type}`])} style={style} data-test="notifier-message">
       {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
       <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
-      {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
+      {closable && <IconButton title={gettext('Close Message')} className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}
     </Box>
