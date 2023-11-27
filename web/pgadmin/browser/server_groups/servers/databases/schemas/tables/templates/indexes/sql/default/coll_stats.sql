@@ -1,9 +1,9 @@
 SELECT
     indexrelname AS {{ conn|qtIdent(_('Index name')) }},
+    pg_catalog.pg_relation_size(indexrelid) AS {{ conn|qtIdent(_('Size')) }},
     idx_scan AS {{ conn|qtIdent(_('Index scans')) }},
     idx_tup_read AS {{ conn|qtIdent(_('Index tuples read')) }},
-    idx_tup_fetch AS {{ conn|qtIdent(_('Index tuples fetched')) }},
-    pg_catalog.pg_relation_size(indexrelid) AS {{ conn|qtIdent(_('Size')) }}
+    idx_tup_fetch AS {{ conn|qtIdent(_('Index tuples fetched')) }}
 FROM
     pg_catalog.pg_stat_all_indexes stat
     JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid

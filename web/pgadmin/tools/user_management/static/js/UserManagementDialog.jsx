@@ -20,6 +20,7 @@ import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from '../../../../static/js/validators';
 import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import _ from 'lodash';
 
 class UserManagementCollection extends BaseUISchema {
   constructor(authSources, roleOptions) {
@@ -57,8 +58,20 @@ class UserManagementCollection extends BaseUISchema {
     let obj = this;
     return [
       {
-        id: 'auth_source', label: gettext('Authentication source'), cell: 'select',
-        options: obj.authSources, minWidth: 110, width: 110,
+        id: 'auth_source', label: gettext('Authentication source'),
+        cell: (state)=> {
+          return {
+            cell: 'select',
+            options: ()=> {
+              if (obj.isNew(state)) {
+                return Promise.resolve(obj.authSources.filter((s)=> current_user['auth_sources'].includes(s.value)));
+              }
+              return Promise.resolve(obj.authSources);
+            },
+            optionsReloadBasis: obj.isNew(state)
+          };
+        },
+        minWidth: 110, width: 110,
         controlProps: {
           allowClear: false,
           openOnEnter: false,
@@ -242,6 +255,10 @@ class UserManagementSchema extends BaseUISchema {
           return row['id'] != current_user['id'];
         },
         onDelete: (row, deleteRow)=> {
+          if (_.isUndefined(row['id'])) {
+            deleteRow();
+            return;
+          }
           let deletedUser = {'id': row['id'], 'name': !isEmptyString(row['email']) ? row['email'] : row['username']};
           api.get(url_for('user_management.shared_servers', {'uid': row['id']}))
             .then((res)=>{
@@ -259,14 +276,14 @@ class UserManagementSchema extends BaseUISchema {
                     );
                   })
                   .catch((err)=>{
-                    pgAdmin.Browser.notifier.error(err);
+                    pgAdmin.Browser.notifier.error(parseApiError(err));
                   });
               } else {
                 obj.deleteUser(deleteRow);
               }
             })
             .catch((err)=>{
-              pgAdmin.Browser.notifier.error(err);
+              pgAdmin.Browser.notifier.error(parseApiError(err));
               obj.deleteUser(deleteRow);
             });
         },
@@ -413,5 +430,5 @@ export function showUserManagement() {
         onClose={()=>{pgAdmin.Browser.docker.close(panelId);}}
       />
     )
-  }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
+  }, pgAdmin.Browser.stdW.lg, pgAdmin.Browser.stdH.md);
 }
