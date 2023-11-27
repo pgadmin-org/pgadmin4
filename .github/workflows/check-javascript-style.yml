@@ -19,6 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 3
+
       - name: Install Node modules
         run: |
           cd web
