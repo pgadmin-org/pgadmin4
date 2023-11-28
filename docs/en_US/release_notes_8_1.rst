@@ -29,6 +29,7 @@ Bug fixes
 *********
 
   | `Issue #6803 <https://github.com/pgadmin-org/pgadmin4/issues/6803>`_ -  Fixed an issue where reading process logs throws an error when DATA_DIR is moved to a networked drive.
+  | `Issue #6854 <https://github.com/pgadmin-org/pgadmin4/issues/6854>`_ -  Add support for creating a function with custom return type.
   | `Issue #6887 <https://github.com/pgadmin-org/pgadmin4/issues/6887>`_ -  Fixed an issue where syntax error was not highlighting in query tool.
   | `Issue #6921 <https://github.com/pgadmin-org/pgadmin4/issues/6921>`_ -  Fixed an issue where on entering full screen, the option label is not changed to 'Exit Full Screen' in desktop mode.
   | `Issue #6950 <https://github.com/pgadmin-org/pgadmin4/issues/6950>`_ -  Ensure that the Authentication Source in the drop-down of the UserManagement dialog aligns with the entries specified for AUTHENTICATION_SOURCES in the configuration file.
