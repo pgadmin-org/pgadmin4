@@ -18,7 +18,14 @@ The Entity-Relationship Diagram (ERD) tool is a database design tool that provid
     :alt: ERD tool window
     :align: center
 
-You can open multiple copies of the ERD tool in individual tabs simultaneously. To close a copy of the ERD tool, click the *X* in the upper-right hand corner of the tab bar.
+You can open multiple copies of the ERD tool in individual tabs simultaneously.
+You can also generate an ERD from a database, schema or a table.
+
+* The ERD for database will fetch all the tables from all the schemas of the database and plot them with foreign key links.
+* The ERD for schema will fetch all the tables from a schema and plot them with foreign key links. If any table refers to a table in another
+  schema, then that link/foreign key will be removed.
+* The ERD for table will fetch all the tables linked directly or indirectly to mentioned table. You can change the depth of traversal from :ref:`Preferences <preferences>`.
+
 
 Toolbar
 *******

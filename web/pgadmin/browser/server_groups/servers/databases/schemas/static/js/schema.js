@@ -13,8 +13,8 @@ import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 
 define('pgadmin.node.schema', [
   'sources/gettext', 'sources/url_for',
-  'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, url_for, pgBrowser) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for schema collection
   if (!pgBrowser.Nodes['coll-schema']) {
@@ -61,11 +61,24 @@ define('pgadmin.node.schema', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Schema...'),
           data: {action: 'create'}, enable: 'can_create_schema',
-        },
-        ]);
+        },{
+          name: 'generate_erd', node: 'schema', module: this,
+          applies: ['object', 'context'], callback: 'generate_erd',
+          category: 'erd', priority: 5, label: gettext('ERD For Schema')
+        }]);
       },
       can_create_schema: function(node) {
         return pgBrowser.Nodes['database'].is_conn_allow.call(this, node);
+      },
+      callbacks: {
+        /* Generate the ERD */
+        generate_erd: function(args) {
+          let input = args || {},
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i ? t.itemData(i) : undefined;
+          pgAdmin.Tools.ERD.showErdTool(d, i, true);
+        },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
         let schemaObj = pgBrowser.Nodes['schema'];
