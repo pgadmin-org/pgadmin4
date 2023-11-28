@@ -90,7 +90,7 @@ define('pgadmin.browser.node', [
 
     title: function(d, action) {
       if(action == 'create') {
-        return gettext('Create - %s', this._label);
+        return gettext('Create - %s', this.label);
       }
       return d._label??'';
     },

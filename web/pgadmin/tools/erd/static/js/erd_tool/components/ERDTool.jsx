@@ -85,7 +85,6 @@ const styles = ((theme)=>({
     width: '100%',
     height: '100%',
     color: theme.palette.text.primary,
-    fontFamily: 'sans-serif',
     backgroundColor: theme.otherVars.erdCanvasBg,
     backgroundImage: getCanvasGrid(theme),
     cursor: 'unset',
