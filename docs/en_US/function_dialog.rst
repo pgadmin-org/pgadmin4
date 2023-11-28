@@ -35,8 +35,10 @@ Click the *Definition* tab to continue.
 
 Use the fields in the *Definition* tab to define the function:
 
+* Move the *Custom return type?* switch to provide a user defined return type.
 * Use the drop-down listbox next to *Return type* to select the data type
-  returned by the function, if any.
+  returned by the function, if any. If *Custom return type?* is enabled this field
+  will change to an input text field.
 * Use the drop-down listbox next to *Language* to select the implementation
   language. The default is *sql*.
 * Use the fields in the *Arguments* to define an argument. Click the *Add*

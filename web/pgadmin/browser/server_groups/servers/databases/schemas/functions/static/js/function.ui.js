@@ -125,6 +125,7 @@ export default class FunctionSchema extends BaseUISchema {
       acl: [],
       sysfunc: undefined,
       sysproc: undefined,
+      customreturn: false,
       ...initValues
     });
 
@@ -245,11 +246,32 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'proargtypenames', label: gettext('Signature arguments'), cell:
       'string', type: 'text', group: gettext('Definition'), mode: ['properties'],
     },{
+      id: 'customreturn', label: gettext('Custom return type?'), type: 'switch',
+      mode: ['create'], group: gettext('Definition'), readonly: obj.isReadonly,
+      visible: obj.isVisible,
+    },{
       id: 'prorettypename', label: gettext('Return type'), cell: 'string',
-      type: 'select', group: gettext('Definition'),
-      options: this.fieldOptions.getTypes,
+      type: state => {
+        if(state.customreturn) {
+          return {
+            type: 'text',
+          };
+        } else {
+          return {
+            type: 'select',
+            options: this.fieldOptions.getTypes,
+          };
+        }
+      }, group: gettext('Definition'), deps:['customreturn'],
       readonly: obj.isReadonly, first_empty: true,
       mode: ['create'], visible: obj.isVisible,
+      depChange: (state, source) => {
+        if(source[0] === 'customreturn') {
+          return {
+            prorettypename: undefined
+          };
+        }
+      },
     },{
       id: 'prorettypename', label: gettext('Return type'), cell: 'string',
       type: 'text', group: gettext('Definition'),

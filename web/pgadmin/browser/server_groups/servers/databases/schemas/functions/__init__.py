@@ -762,7 +762,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             fnid: Function Id
         """
 
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             sql = render_template("/".join([self.sql_template_path,
                                             'get_languages.sql'])
