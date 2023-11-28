@@ -28,7 +28,6 @@ RUN apk add --no-cache \
     nasm \
     nodejs \
     npm \
-    tzdata \
     yarn \
     zlib-dev
 
@@ -194,6 +193,7 @@ RUN apk add \
         libjpeg-turbo \
         shadow \
         sudo \
+        tzdata \
         libedit \
         libldap \
         libcap && \
