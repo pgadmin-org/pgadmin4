@@ -615,7 +615,7 @@ export default class ERDCore {
     _.forIn(tableNodesDict, (node, uid)=>{
       let nodeData = node.getData();
       if(nodeData.foreign_key) {
-        nodeData.foreign_key.forEach((theFk)=>{
+        nodeData.foreign_key = nodeData.foreign_key.filter((theFk)=>{
           delete theFk.oid;
           theFk = theFk.columns[0];
           theFk.references = oidUidMap[theFk.references];
@@ -627,11 +627,17 @@ export default class ERDCore {
           };
           let sourceNode = tableNodesDict[newData.referenced_table_uid];
           let targetNode = tableNodesDict[newData.local_table_uid];
+          // When generating for schema, there may be a reference to another schema table
+          // We'll remove the FK completely in such cases.
+          if(!sourceNode || !targetNode) {
+            return false;
+          }
 
           newData.local_column_attnum = _.find(targetNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
           newData.referenced_column_attnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
 
           this.addLink(newData, 'onetomany');
+          return true;
         });
       }
     });

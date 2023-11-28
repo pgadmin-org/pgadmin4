@@ -131,9 +131,11 @@ export default class ERDModule {
       +`&did=${parentData.database._id}`
       +`&gen=${gen}`;
 
+    if(parentData.schema) {
+      openUrl += `&scid=${parentData.schema._id}`;
+    }
     if(parentData.table) {
-      openUrl += `&scid=${parentData.schema._id}`
-      +`&tid=${parentData.table._id}`;
+      openUrl += `&tid=${parentData.table._id}`;
     }
 
     return openUrl;
