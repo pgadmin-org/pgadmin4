@@ -193,6 +193,7 @@ RUN apk add \
         libjpeg-turbo \
         shadow \
         sudo \
+        tzdata \
         libedit \
         libldap \
         libcap && \
