@@ -78,8 +78,7 @@ define('pgadmin.node.synonym', [
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {
-              cacheLevel: 'database',
-              cacheNode: 'database'
+              cacheLevel: 'database'
             }),
             synobjschema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
               // Exclude PPAS catalogs

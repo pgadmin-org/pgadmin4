@@ -35,8 +35,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
     {
       relowner: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
       schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {
-        cacheLevel: 'database',
-        cacheNode: 'database',
+        cacheLevel: 'database'
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
         return !(d && d.label.match(/^pg_/));

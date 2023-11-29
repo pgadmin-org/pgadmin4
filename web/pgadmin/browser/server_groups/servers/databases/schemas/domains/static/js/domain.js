@@ -75,8 +75,7 @@ define('pgadmin.node.domain', [
           {
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {
-              cacheLevel: 'database',
-              cacheNode: 'database'
+              cacheLevel: 'database'
             }),
             basetype: ()=>getNodeAjaxOptions('get_types', this, treeNodeInfo, itemNodeData, {
               cacheNode: 'type'
