@@ -12,7 +12,9 @@ FROM pg_catalog.pg_index idx
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=cls.oid AND des.classoid='pg_class'::regclass)
     LEFT OUTER JOIN pg_catalog.pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0 AND desp.classoid='pg_constraint'::regclass)
 WHERE indrelid = {{tid}}::OID
+{% if not show_sys_objects %}
     AND conname is NULL
+{% endif %}
 {% if idx %}
     AND cls.oid = {{ idx }}::OID
 {% endif %}

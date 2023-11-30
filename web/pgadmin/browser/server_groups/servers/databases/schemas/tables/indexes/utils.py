@@ -15,6 +15,12 @@ from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
+AUTO_CREATE_INDEX_MSG = "-- This primary key index is automatically " \
+    "generated from a constraint with an identical name.\n-- " \
+    "For more details, refer to the Constraints node. Note that this type " \
+    "of index is only visible \n-- when the 'Show system objects?' is set " \
+    "to True in the Preferences.\n\n"
+
 
 def get_template_path(f):
     """
@@ -233,12 +239,14 @@ def get_sql(conn, **kwargs):
     mode = kwargs.get('mode', None)
     template_path = kwargs.get('template_path', None)
     if_exists_flag = kwargs.get('if_exists_flag', False)
+    show_sys_obj = kwargs.get('show_sys_objects', False)
 
     name = data['name'] if 'name' in data else None
     if idx is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
                               did=did, tid=tid, idx=idx,
-                              datlastsysoid=datlastsysoid)
+                              datlastsysoid=datlastsysoid,
+                              show_sys_objects=show_sys_obj)
 
         status, res = conn.execute_dict(sql)
         if not status:
@@ -300,10 +308,12 @@ def get_reverse_engineered_sql(conn, **kwargs):
     template_path = kwargs.get('template_path', None)
     with_header = kwargs.get('with_header', True)
     if_exists_flag = kwargs.get('add_not_exists_clause', False)
+    show_sys_obj = kwargs.get('show_sys_objects', False)
 
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, idx=idx,
-                          datlastsysoid=datlastsysoid)
+                          datlastsysoid=datlastsysoid,
+                          show_sys_objects=show_sys_obj)
 
     status, res = conn.execute_dict(SQL)
     if not status:
@@ -336,7 +346,12 @@ def get_reverse_engineered_sql(conn, **kwargs):
                         if_exists_flag=if_exists_flag)
 
     if with_header:
-        sql_header = "-- Index: {0}\n\n-- ".format(data['name'])
+        sql_header = ''
+        # Add a Note if index is automatically created.
+        if 'conname' in data and data['conname'] is not None:
+            sql_header += AUTO_CREATE_INDEX_MSG
+
+        sql_header += "-- Index: {0}\n\n-- ".format(data['name'])
 
         sql_header += render_template("/".join([template_path, 'delete.sql']),
                                       data=data, conn=conn)
