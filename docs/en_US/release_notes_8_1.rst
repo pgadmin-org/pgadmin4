@@ -39,3 +39,4 @@ Bug fixes
   | `Issue #6984 <https://github.com/pgadmin-org/pgadmin4/issues/6984>`_ -  Fixed an issue where the Vacuum option INDEX_CLEANUP have an incorrect value ('AUTO') for database versions < 14.
   | `Issue #6989 <https://github.com/pgadmin-org/pgadmin4/issues/6989>`_ -  Fixed an issue where the pgAdmin page went blank when clicking the delete button in the User Management dialog.
   | `Issue #7000 <https://github.com/pgadmin-org/pgadmin4/issues/7000>`_ -  Ensure that correct timezone is set for Docker deployments.
+  | `Issue #7017 <https://github.com/pgadmin-org/pgadmin4/issues/7017>`_ -  Fixed an issue where schema diff tool is not loading preferences on start.

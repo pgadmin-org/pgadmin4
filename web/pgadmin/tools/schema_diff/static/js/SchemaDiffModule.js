@@ -20,7 +20,7 @@ import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import SchemaDiffComponent from './components/SchemaDiffComponent';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
-import usePreferences from '../../../../preferences/static/js/store';
+import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
@@ -100,7 +100,9 @@ export default class SchemaDiff {
     return true;
   }
 
-  load(container, trans_id) {
+  async load(container, trans_id) {
+    await listenPreferenceBroadcast();
+
     ReactDOM.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
