@@ -34,6 +34,7 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import db, Server, Database
+from pgadmin.browser.utils import underscore_escape
 
 
 class DatabaseModule(CollectionNodeModule):
@@ -1041,7 +1042,8 @@ class DatabaseView(PGChildNodeView):
                                                    auto_reconnect=True)
                     status, errmsg = conn.connect()
 
-                    return internal_server_error(errormsg=msg)
+                    return internal_server_error(
+                        errormsg=underscore_escape(msg))
 
         return make_json_response(success=1)
 

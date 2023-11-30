@@ -35,6 +35,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
+import CloseRunningDialog from '../dialogs/CloseRunningDialog';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -288,8 +289,22 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
   };
   const warnTxnClose = ()=>{
     if(!isInTxn() || !queryToolCtx.preferences?.sqleditor.prompt_commit_transaction) {
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
-      return;
+      /* This will show Close query tool dialog if there is any query running and transaction is active i.e queryToolConnCtx.connectionStatus is 1 */
+      if(queryToolConnCtx.connectionStatus==CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE){
+        queryToolCtx.modal.showModal(gettext('Close query tool?'), (closeModal)=>(
+          <CloseRunningDialog
+            closeModal={closeModal}
+            text={gettext('There is an active query running currently. Are you sure you want to close?')}
+            onYes={()=>{
+              eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+            }}
+          />
+        ));
+        return;
+      } else {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
+        return;
+      }
     }
     queryToolCtx.modal.showModal(gettext('Commit transaction?'), (closeModal)=>(
       <ConfirmTransactionContent
