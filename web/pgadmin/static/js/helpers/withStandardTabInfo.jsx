@@ -32,9 +32,9 @@ export default function withStandardTabInfo(Component, tabId) {
 
       const onTabActive = _.debounce(()=>{
         if(layoutDocker.isTabVisible(tabId)) {
-          !isActive && setIsActive(true);
+          setIsActive(true);
         } else {
-          isActive && setIsActive(false);
+          setIsActive(false);
         }
       }, 100);
 

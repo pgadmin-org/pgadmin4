@@ -59,7 +59,7 @@ export default function SchemaDiffComponent({params}) {
     api: api,
     modal: modal,
     preferences_schema_diff: preferencesStore.getPreferencesForModule('schema_diff'),
-  }), [preferencesStore]);
+  }), []);
 
   registerUnload();
 

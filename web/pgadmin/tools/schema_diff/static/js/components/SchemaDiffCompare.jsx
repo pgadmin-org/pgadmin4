@@ -715,9 +715,8 @@ export function SchemaDiffCompare({ params }) {
           container
           direction="row"
           alignItems="center"
-          key={_.uniqueId('c')}
         >
-          <Grid item lg={7} md={7} sm={10} xs={10} key={_.uniqueId('c')}>
+          <Grid item lg={7} md={7} sm={10} xs={10}>
             <InputComponent
               label={gettext('Select Source')}
               serverList={sourceGroupServerList}
@@ -729,7 +728,7 @@ export function SchemaDiffCompare({ params }) {
               diff_type={TYPE.SOURCE}
             ></InputComponent>
           </Grid>
-          <Grid item lg={5} md={5} sm={2} xs={2} key={_.uniqueId('c')} className={classes.helpBtn}>
+          <Grid item lg={5} md={5} sm={2} xs={2} className={classes.helpBtn}>
             <PgButtonGroup size="small">
               <PgIconButton data-test='schema-diff-help' title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
             </PgButtonGroup>
@@ -739,9 +738,8 @@ export function SchemaDiffCompare({ params }) {
           container
           direction="row"
           alignItems="center"
-          key={_.uniqueId('c')}
         >
-          <Grid item lg={7} md={7} sm={10} xs={10} key={_.uniqueId('c')}>
+          <Grid item lg={7} md={7} sm={10} xs={10}>
             <InputComponent
               label={gettext('Select Target')}
               serverList={sourceGroupServerList}
@@ -754,7 +752,7 @@ export function SchemaDiffCompare({ params }) {
             ></InputComponent>
           </Grid>
 
-          <Grid item lg={5} md={5} sm={12} xs={12} key={_.uniqueId('c')} className={classes.diffBtn}>
+          <Grid item lg={5} md={5} sm={12} xs={12} className={classes.diffBtn}>
             <SchemaDiffButtonComponent
               sourceData={{
                 'sid': selectedSourceSid,
