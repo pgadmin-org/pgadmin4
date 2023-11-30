@@ -357,7 +357,7 @@ def register_query_tool_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'execute_query',
-        gettext('Execute query'),
+        gettext('Execute script'),
         'keyboardshortcut',
         {
             'alt': False,

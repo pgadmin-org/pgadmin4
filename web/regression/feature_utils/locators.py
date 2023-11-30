@@ -213,7 +213,7 @@ class QueryToolLocators:
 
     btn_load_file_css = "button[data-label='Open File']"
 
-    btn_execute_query_css = "button[data-label='Execute/Refresh']"
+    btn_execute_query_css = "button[data-label='Execute script']"
 
     folder_path_css = \
         "div[data-label='file-path'] input"
