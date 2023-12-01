@@ -4,7 +4,7 @@ SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, 
         (SELECT sp.spcname FROM pg_catalog.pg_database dtb
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
         WHERE dtb.oid = {{ did }}::oid)
-    END as spcname,
+    END as spcname, conname,
     tab.relname as tabname, indclass, con.oid AS conoid,
     CASE WHEN contype IN ('p', 'u', 'x') THEN desp.description
          ELSE des.description END AS description,
@@ -23,6 +23,8 @@ FROM pg_catalog.pg_index idx
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=cls.oid AND des.classoid='pg_class'::regclass)
     LEFT OUTER JOIN pg_catalog.pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0 AND desp.classoid='pg_constraint'::regclass)
 WHERE indrelid = {{tid}}::OID
+{% if not show_sys_objects %}
     AND conname is NULL
+{% endif %}
     {% if idx %}AND cls.oid = {{idx}}::OID {% endif %}
     ORDER BY cls.relname

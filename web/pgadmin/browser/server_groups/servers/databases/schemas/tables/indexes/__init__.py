@@ -384,7 +384,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         SQL = render_template(
-            "/".join([self.template_path, self._NODES_SQL]), tid=tid
+            "/".join([self.template_path, self._NODES_SQL]), tid=tid,
+            show_sys_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -414,7 +415,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
-            tid=tid, idx=idx
+            tid=tid, idx=idx,
+            show_sys_objects=self.blueprint.show_system_objects
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -453,7 +455,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template(
-            "/".join([self.template_path, self._NODES_SQL]), tid=tid
+            "/".join([self.template_path, self._NODES_SQL]), tid=tid,
+            show_sys_objects=self.blueprint.show_system_objects
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -511,7 +514,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, tid=tid, idx=idx,
-            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            show_sys_objects=self.blueprint.show_system_objects
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -717,7 +721,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
-                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                    show_sys_objects=self.blueprint.show_system_objects
                 )
 
                 status, res = self.conn.execute_dict(SQL)
@@ -774,7 +779,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             SQL, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                show_sys_objects=self.blueprint.show_system_objects)
             if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -839,7 +845,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create',
+                show_sys_objects=self.blueprint.show_system_objects)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -869,7 +876,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = index_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, did=did,
             tid=tid, idx=idx, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
-            add_not_exists_clause=True
+            add_not_exists_clause=True,
+            show_sys_objects=self.blueprint.show_system_objects
         )
 
         return ajax_response(response=SQL)
@@ -899,7 +907,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create',
+                show_sys_objects=self.blueprint.show_system_objects)
 
             sql = sql.strip('\n').strip(' ')
 
@@ -909,7 +918,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 table=self.table, did=did, tid=tid, idx=idx,
                 datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=False,
-                add_not_exists_clause=True
+                add_not_exists_clause=True,
+                show_sys_objects=self.blueprint.show_system_objects
             )
 
         drop_sql = ''
@@ -1004,7 +1014,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
-                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                    show_sys_objects=self.blueprint.show_system_objects
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
