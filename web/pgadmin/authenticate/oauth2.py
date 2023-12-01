@@ -106,7 +106,9 @@ class OAuth2Authentication(BaseAuthentication):
                 authorize_url=oauth2_config['OAUTH2_AUTHORIZATION_URL'],
                 api_base_url=oauth2_config['OAUTH2_API_BASE_URL'],
                 client_kwargs={'scope': oauth2_config.get(
-                    'OAUTH2_SCOPE', 'email profile')},
+                    'OAUTH2_SCOPE', 'email profile'),
+                    'verify': oauth2_config.get(
+                    'OAUTH2_SSL_CERT_VERIFICATION', True)},
                 server_metadata_url=oauth2_config.get(
                     'OAUTH2_SERVER_METADATA_URL', None)
             )

@@ -808,6 +808,11 @@ OAUTH2_CONFIG = [
         #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
         # }
         'OAUTH2_ADDITIONAL_CLAIMS': None,
+        # Set this variable to False to disable SSL certificate verification
+        # for OAuth2 provider.
+        # This may need to set False, in case of self-signed certificates.
+        # Ref: https://github.com/psf/requests/issues/6071
+        'OAUTH2_SSL_CERT_VERIFICATION': True
     }
 ]
 
