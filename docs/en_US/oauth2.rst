@@ -46,6 +46,8 @@ and modify the values for the following parameters:
     "OAUTH2_ADDITIONAL_CLAIMS", "If a dictionary is provided, pgAdmin will check for a matching key and value on the userinfo endpoint 
     and in the Id Token. In case there is no match with the provided config, the user will receive an authorization error.
     Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
+    "OAUTH2_SSL_CERT_VERIFICATION", "Set this variable to False to disable SSL certificate verification for OAuth2 provider.
+    This may need to set False, in case of self-signed certificates."
 
 Redirect URL
 ============
