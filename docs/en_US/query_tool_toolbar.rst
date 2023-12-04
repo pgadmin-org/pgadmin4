@@ -116,7 +116,7 @@ Query Execution
    +======================+===================================================================================================+================+
    | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     | Accesskey + Q  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Execute/Refresh*    | Click the *Execute/Refresh* icon to either execute or refresh the query highlighted in the SQL    | F5             |
+   | *Execute script*     | Click the *Execute script* icon to either execute or refresh the query highlighted in the SQL     | F5             |
    |                      | editor panel. Click the down arrow to access other execution options:                             |                |
    |                      |                                                                                                   |                |
    |                      |  * Add a check next to *Auto rollback on error?* to instruct the server to automatically roll back|                |

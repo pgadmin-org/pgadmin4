@@ -73,11 +73,11 @@ key combination to select from a popup menu of autocomplete options.
     :alt: Query tool autocomplete feature
     :align: center
 
-After entering a query, select the *Execute/Refresh* icon from the toolbar. The
+After entering a query, select the *Execute script* icon from the toolbar. The
 complete contents of the SQL editor panel will be sent to the database server
 for execution. To execute only a section of the code that is displayed in the
 SQL editor, highlight the text that you want the server to execute, and click
-the *Execute/Refresh* icon.
+the *Execute script* icon.
 
 .. image:: images/query_execute_section.png
     :alt: Query tool execute query section
@@ -159,7 +159,7 @@ The *Data Output* tab displays the result set of the query in a table format.
 You can:
 
 * Select and copy from the displayed result set.
-* Use the *Execute/Refresh* options to retrieve query execution information and
+* Use the *Execute script* options to retrieve query execution information and
   set query execution options.
 * Use the *Save results to file* icon to save the content of the *Data Output*
   tab as a comma-delimited file.

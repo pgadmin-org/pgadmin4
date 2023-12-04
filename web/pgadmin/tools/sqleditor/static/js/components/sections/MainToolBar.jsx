@@ -537,7 +537,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
             onClick={cancelQuery} disabled={buttonsDisabled['cancel']} accesskey={shortcut_key(queryToolPref.btn_cancel_query)} />
-          <PgIconButton title={gettext('Execute/Refresh')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
+          <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
             onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_delete_row)}
