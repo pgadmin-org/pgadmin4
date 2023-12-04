@@ -100,7 +100,8 @@ setup(
     },
 
     entry_points={
-        'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4:main'],
+        'console_scripts': ['pgadmin4=pgadmin4.pgAdmin4:main',
+                            'pgadmin4-cli=pgadmin4.setup:main'],
     },
 
 )

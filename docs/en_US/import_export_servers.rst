@@ -108,19 +108,19 @@ desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken. For exam
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py --load-servers input_file.json
+    /path/to/python /path/to/setup.py load-servers input_file.json
 
     # or, to replace the list of servers with the newly imported one:
 
-    /path/to/python /path/to/setup.py --load-servers input_file.json --replace
+    /path/to/python /path/to/setup.py load-servers input_file.json --replace
 
     # or, to specify a non-default user name to own the new servers:
 
-    /path/to/python /path/to/setup.py --load-servers input_file.json --user user@example.com
+    /path/to/python /path/to/setup.py load-servers input_file.json --user user@example.com
 
     # to specify a pgAdmin config DB file:
 
-    /path/to/python /path/to/setup.py --load-servers input_file.json --sqlite-path /path/to/pgadmin4.db
+    /path/to/python /path/to/setup.py load-servers input_file.json --sqlite-path /path/to/pgadmin4.db
 
 If any Servers are defined with a Server Group that is not already present in
 the configuration database, the required Group will be created.

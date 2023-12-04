@@ -105,7 +105,7 @@ app = create_app()
 app.config['sessions'] = dict()
 
 if setup_db_required:
-    setup.setup_db(app)
+    setup.setup_db()
 
 # Authentication sources
 if len(config.AUTHENTICATION_SOURCES) > 0:

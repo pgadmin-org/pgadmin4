@@ -41,6 +41,7 @@ class _PGCSRFProtect(CSRFProtect):
             'pgadmin.authenticate.login',
             'pgadmin.tools.erd.panel',
             'pgadmin.tools.psql.panel',
+            'pgadmin.preferences.get_all_cli',
         ]
 
         for exempt in exempt_views:

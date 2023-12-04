@@ -47,7 +47,8 @@ class PreferencesModule(PgAdminModule):
         return [
             'preferences.index',
             'preferences.get_by_name',
-            'preferences.get_all'
+            'preferences.get_all',
+            'preferences.get_all_cli',
         ]
 
 
@@ -179,6 +180,28 @@ def preferences_s():
     )
 
 
+@blueprint.route("/get_all_cli", methods=["GET"], endpoint='get_all_cli')
+def get_all_cli():
+    """Fetch all preferences for caching."""
+    # Load Preferences
+    pref = Preferences.preferences()
+    res = {}
+
+    for m in pref:
+        if len(m['categories']):
+            for c in m['categories']:
+                for p in c['preferences']:
+                    p['module'] = m['name']
+                    res["{0}:{1}:{2}".format(m['label'], p['label'], c['label']
+                                             )] = "{0}:{1}:{2}".format(
+                        p['module'],c['name'],p['name'])
+
+    return ajax_response(
+        response=res,
+        status=200
+    )
+
+
 def get_data():
     """
     Get preferences data.
@@ -245,3 +268,46 @@ def save():
                             **domain)
 
     return response
+
+
+def save_pref(data):
+    """
+    Save a specific preference.
+    """
+
+    if data['name'] in ['vw_edt_tab_title_placeholder',
+                        'qt_tab_title_placeholder',
+                        'debugger_tab_title_placeholder'] \
+            and data['value'].isspace():
+        data['value'] = ''
+
+    res, msg = Preferences.save_cli(
+        data['mid'], data['category_id'], data['id'], data['user_id'],
+        data['value'])
+
+    if not res:
+        return False
+    return True
+
+
+def get_cli_prefs():
+    module_prefs = ModulePrefTable.query.all()
+    cat_prefs = PrefCategoryTbl.query.all()
+    prefs = PrefTable.query.all()
+    if id:
+        all_preferences = {}
+    else:
+        all_preferences = []
+    for i in module_prefs:
+        for j in cat_prefs:
+            if i.id == j.mid:
+                for k in prefs:
+                    if k.cid == j.id:
+                        if id:
+                            all_preferences["{0}:{1}:{2}".format(
+                                i.name, j.name, k.name)
+                            ] = "{0}:{1}:{2}".format(i.id, j.id, k.id)
+                        else:
+                            all_preferences.append("{0}:{1}:{2}".format(
+                                i.name, j.name, k.name)
+                            )

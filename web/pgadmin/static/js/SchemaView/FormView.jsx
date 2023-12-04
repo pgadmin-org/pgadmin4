@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Box, makeStyles, Tab, Tabs } from '@material-ui/core';
+import { Box, makeStyles, Tab, Tabs, Tooltip } from '@material-ui/core';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -358,6 +358,10 @@ export default function FormView({
             ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
           ]}
         />;
+
+        if(field.tooltip) {
+          currentControl = <Tooltip title={field.tooltip} arrow>{currentControl}</Tooltip>;
+        }
 
         if(field.isFullTab && field.helpMessage) {
           currentControl = (<React.Fragment key={`coll-${field.id}`}>
