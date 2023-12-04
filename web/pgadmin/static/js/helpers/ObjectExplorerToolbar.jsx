@@ -23,8 +23,8 @@ ToolbarButton.propTypes = {
 export default function ObjectExplorerToolbar() {
   const [menus, setMenus] = useState({
     'query_tool': undefined,
-    'view_all_rows_context_table': undefined,
-    'view_filtered_rows_context_table': undefined,
+    'view_all_rows_context': undefined,
+    'view_filtered_rows_context': undefined,
     'search_objects': undefined,
     'psql': undefined,
   });
@@ -42,8 +42,8 @@ export default function ObjectExplorerToolbar() {
 
     setMenus({
       'query_tool': toolsMenus?.find((m)=>(m.name=='query_tool')),
-      'view_all_rows_context_table': viewMenus?.find((m)=>(m.name=='view_all_rows_context_table')),
-      'view_filtered_rows_context_table': viewMenus?.find((m)=>(m.name=='view_filtered_rows_context_table')),
+      'view_all_rows_context': viewMenus?.find((m)=>(m.name=='view_all_rows_context_' + m.node)),
+      'view_filtered_rows_context': viewMenus?.find((m)=>(m.name=='view_filtered_rows_context_' + m.node)),
       'search_objects': toolsMenus?.find((m)=>(m.name=='search_objects')),
       'psql': toolsMenus?.find((m)=>(m.name=='psql'))
     });
@@ -61,8 +61,8 @@ export default function ObjectExplorerToolbar() {
     <Box display="flex" alignItems="center" gridGap={'2px'}>
       <PgButtonGroup size="small">
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} />
-        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context_table']} />
-        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context_table']} />
+        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context']} />
+        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context']} />
         <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} />
         {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />}
       </PgButtonGroup>
