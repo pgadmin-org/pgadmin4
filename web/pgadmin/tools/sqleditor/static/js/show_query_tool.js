@@ -47,7 +47,7 @@ function hasServerInformations(parentData) {
   return parentData.server === undefined;
 }
 
-function generateTitle(pgBrowser, treeIdentifier) {
+export function generateTitle(pgBrowser, treeIdentifier) {
   return getPanelTitle(pgBrowser, treeIdentifier);
 }
 

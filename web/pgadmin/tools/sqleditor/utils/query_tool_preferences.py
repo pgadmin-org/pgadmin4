@@ -181,6 +181,17 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.view_edit_promotion_warning = self.preference.register(
+        'Editor', 'view_edit_promotion_warning',
+        gettext("Show View/Edit Data Promotion Warning?"),
+        'boolean', True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'If set to True, View/Edit Data tool will show promote to '
+            'Query tool confirm dialog on query edit.'
+        )
+    )
+
     self.csv_quoting = self.preference.register(
         'CSV_output', 'csv_quoting',
         gettext("CSV quoting"), 'options', 'strings',
