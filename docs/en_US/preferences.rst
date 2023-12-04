@@ -563,10 +563,10 @@ Using 'setup.py' command line script
 
 
 Manage Preferences
-*****************
+******************
 
 Get Preferences
-**************
+***************
 To get all the preferences listed, invoke ``setup.py`` with ``get-prefs`` command line option.
 You can also get this mapping by hovering the individual preference in the Preference UI dialog.
 
@@ -575,7 +575,7 @@ You can also get this mapping by hovering the individual preference in the Prefe
     /path/to/python /path/to/setup.py get-prefs
 
 Save Preferences
-**************
+****************
 To save the preferences, invoke ``setup.py`` with ``set-prefs`` command line option, followed by username,
 preference_key=value and auth_source. Multiple preference can be given too by a space separated.
 If auth_source is not given, Internal authentication will be consider by default.
