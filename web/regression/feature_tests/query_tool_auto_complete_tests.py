@@ -172,8 +172,8 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
             ActionChains(self.page.driver).key_down(
                 Keys.CONTROL).send_keys(Keys.SPACE).key_up(
                 Keys.CONTROL).perform()
-            if self.page.check_if_element_exist_by_xpath(
-                    QueryToolLocators.code_mirror_hint_box_xpath, 15):
+            if self.page.check_if_element_exist_by_css_selector(
+                    QueryToolLocators.code_mirror_hint_box, 15):
                 hint_displayed = True
                 break
             else:
@@ -186,12 +186,11 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         else:
             # if no IntelliSense is present it means there is only one option
             #  so check if required string is present in codeMirror
-            code_mirror = self.driver.find_elements(
-                By.XPATH, QueryToolLocators.code_mirror_data_xpath)
-            for data in code_mirror:
-                code_mirror_text = data.text
-                print("Single entry..........")
-                if expected_string not in code_mirror_text:
-                    print("single entry exception.........")
-                    raise RuntimeError("Required String %s is not "
-                                       "present" % expected_string)
+            code_mirror_text = self.driver.find_element(
+                By.CSS_SELECTOR, QueryToolLocators.code_mirror_content
+                .format('#id-query')).text
+
+            if expected_string not in code_mirror_text:
+                print("single entry exception.........")
+                raise RuntimeError("Required String %s is not "
+                                   "present" % expected_string)

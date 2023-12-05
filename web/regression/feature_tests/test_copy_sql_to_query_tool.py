@@ -51,18 +51,14 @@ class CopySQLFeatureTest(BaseFeatureTest):
         self.page.click_tab("SQL")
         # Wait till data is displayed in SQL Tab
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            "//*[contains(@class,'CodeMirror-lines') and "
+            "//*[contains(@class,'cm-line') and "
             "contains(.,'CREATE TABLE IF NOT EXISTS public.%s')]"
             % self.test_table_name, 10), "No data displayed in SQL tab")
 
         # Fetch the inner html & check for escaped characters
-        source_code = self.driver.find_elements(
-            By.XPATH, QueryToolLocators.code_mirror_data_xpath)
-
-        sql_query = ''
-        for data in source_code:
-            sql_query += data.text
-            sql_query += '\n'
+        sql_query = self.driver.find_element(
+            By.CSS_SELECTOR, QueryToolLocators.code_mirror_content
+            .format('#id-sql')).text
 
         return sql_query
 
@@ -76,12 +72,9 @@ class CopySQLFeatureTest(BaseFeatureTest):
         self.driver.switch_to.frame(
             self.driver.find_element(By.TAG_NAME, "iframe"))
 
-        code_mirror = self.driver.find_elements(
-            By.XPATH, QueryToolLocators.code_mirror_data_xpath)
-        query_tool_result = ''
-        for data in code_mirror:
-            query_tool_result += data.text
-            query_tool_result += '\n'
+        query_tool_result = self.driver.find_element(
+            By.CSS_SELECTOR, QueryToolLocators.code_mirror_content
+            .format('#id-query')).text
 
         return query_tool_result
 

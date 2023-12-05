@@ -35,14 +35,6 @@
     font-size: inherit;
 }
 
-#server_activity .CodeMirror,
-#database_activity .CodeMirror,
-#server_activity .CodeMirror-scroll,
-#database_activity .CodeMirror-scroll {
-    height: auto;
-    max-height:100px;
-}
-
 .dashboard-hidden {
   display: none;
 }

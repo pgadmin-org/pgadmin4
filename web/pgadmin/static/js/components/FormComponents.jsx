@@ -32,7 +32,7 @@ import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPick
 import DateFnsUtils from '@date-io/date-fns';
 import * as DateFns from 'date-fns';
 
-import CodeMirror from './CodeMirror';
+import CodeMirror from './ReactCodeMirror';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import { DefaultButton, PrimaryButton, PgIconButton } from './Buttons';
@@ -127,7 +127,7 @@ FormIcon.propTypes = {
 };
 
 /* Wrapper on any form component to add label, error indicator and help message */
-export function FormInput({ children, error, className, label, helpMessage, required, testcid, withContainer=true, labelGridBasis=3, controlGridBasis=9 }) {
+export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9 }) {
   const classes = useStyles();
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
@@ -135,7 +135,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
     return (
       <>
         <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
-          <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+          <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
             {label}
             <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
           </InputLabel>
@@ -152,7 +152,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
   return (
     <Grid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
-        <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+        <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
           {label}
           <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
         </InputLabel>
@@ -174,6 +174,7 @@ FormInput.propTypes = {
   helpMessage: PropTypes.string,
   required: PropTypes.bool,
   testcid: PropTypes.any,
+  lid: PropTypes.any,
   withContainer: PropTypes.bool,
   labelGridBasis: PropTypes.number,
   controlGridBasis: PropTypes.number,
@@ -191,16 +192,10 @@ export function InputSQL({ value, options, onChange, className, controlProps, in
       }}
       value={value || ''}
       options={{
-        lineNumbers: true,
-        mode: 'text/x-pgsql',
         ...options,
       }}
       className={clsx(classes.sql, className)}
-      events={{
-        change: (cm) => {
-          onChange?.(cm.getValue());
-        },
-      }}
+      onChange={onChange}
       {...controlProps}
       {...props}
     />
@@ -220,9 +215,10 @@ export function FormInputSQL({ hasError, required, label, className, helpMessage
   if (noLabel) {
     return <InputSQL value={value} options={controlProps} {...props} />;
   } else {
+    const lid = _.uniqueId('l');
     return (
-      <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
-        <InputSQL value={value} options={controlProps} {...props} />
+      <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} lid={lid}>
+        <InputSQL value={value} options={controlProps} labelledBy={lid} {...props} />
       </FormInput>
     );
   }

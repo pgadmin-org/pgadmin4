@@ -838,10 +838,6 @@ table.table-empty-rows{
 
 .filter-textarea {
     height: 100%;
-    & .CodeMirror-scroll {
-      min-height: 120px;
-      max-height: 120px;
-    }
 }
 
 .dataview_filter_dialog {
