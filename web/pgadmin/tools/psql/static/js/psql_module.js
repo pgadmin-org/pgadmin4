@@ -283,7 +283,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       });
 
       term.onKey(function (ev) {
-        socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
+        socket.emit('socket_input', {'input': ev.domEvent.key, 'key_name': ev.domEvent.code});
       });
     },
     check_db_name_change: function(db_name, o_db_name) {
