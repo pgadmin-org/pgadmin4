@@ -457,8 +457,8 @@ def dump_database_servers(output_file, selected_servers,
     servers = Server.query.filter_by(user_id=user_id).all()
     server_dict = {}
     for server in servers:
-        if selected_servers is None or (type(selected_servers) == list
-                                        and len(selected_servers) == 0
+        if selected_servers is None or (
+            isinstance(selected_servers, list) and len(selected_servers) == 0
         ) or str(server.id) in selected_servers:
             # Get the group name
             group_name = ServerGroup.query.filter_by(
