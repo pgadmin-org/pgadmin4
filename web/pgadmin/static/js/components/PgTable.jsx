@@ -185,7 +185,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }, ref) => {
+  ({ indeterminate, label, ...rest }, ref) => {
     const defaultRef = React.useRef();
     const resolvedRef = ref || defaultRef;
 
@@ -197,6 +197,7 @@ const IndeterminateCheckbox = React.forwardRef(
         <Checkbox
           color="primary"
           ref={resolvedRef} {...rest}
+          inputProps={{'aria-label': label}}
         />
       </>
     );
@@ -210,6 +211,7 @@ IndeterminateCheckbox.propTypes = {
   rest: PropTypes.func,
   getToggleAllRowsSelectedProps: PropTypes.func,
   row: PropTypes.object,
+  label: PropTypes.string,
 };
 
 const ROW_HEIGHT = 34;
@@ -405,6 +407,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                     }
                     onChange={modifiedOnChange}
                     checked={checked}
+                    label={gettext('Select All Rows')}
                     />
                   </div>
                 );},
@@ -414,6 +417,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                 <div className={classes.selectCell}>
                   <IndeterminateCheckbox {...row.getToggleRowSelectedProps()}
                     disabled={!_.isUndefined(row.original.canDrop) ? !(row.original.canDrop) : false}
+                    label={gettext('Select Row')}
                   />
                 </div>
               ),
@@ -465,7 +469,8 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
         {props.CustomHeader && (<Box className={classes.customHeader}> <props.CustomHeader /></Box>)}
         <Box marginLeft="auto">
           <InputText
-            placeholder={'Search'}
+            placeholder={gettext('Search')}
+            controlProps={{title: gettext('Search')}}
             className={classes.searchInput}
             value={searchVal}
             onChange={(val) => {

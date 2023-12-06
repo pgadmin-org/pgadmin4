@@ -1,6 +1,7 @@
 import React from 'react';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './Menu';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 export default function ContextMenu({menuItems, position, onClose, label='context'}) {
   const getPgMenuItem = (menuItem, i)=>{
@@ -42,6 +43,10 @@ export default function ContextMenu({menuItems, position, onClose, label='contex
         }
         return getPgMenuItem(menuItem, i);
       })}
+      {menuItems.length == 0 && getPgMenuItem({
+        label: gettext('No options'),
+        isDisabled: true,
+      }, 0)}
     </PgMenu>
   );
 }
