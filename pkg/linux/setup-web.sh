@@ -72,7 +72,7 @@ fi
 
 # Run setup script first:
 echo "Creating configuration database..."
-if ! /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py;
+if ! /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py setup-db;
 then
 	echo "Error setting up server mode. Please examine the output above."
 	exit 1

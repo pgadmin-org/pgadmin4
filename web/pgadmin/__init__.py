@@ -216,6 +216,7 @@ def create_app(app_name=None):
     app.config.from_object(config)
     app.config.update(dict(PROPAGATE_EXCEPTIONS=True))
 
+    config.SETTINGS_SCHEMA_VERSION = CURRENT_SCHEMA_VERSION
     ##########################################################################
     # Setup logging and log the application startup
     ##########################################################################
