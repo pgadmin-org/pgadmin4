@@ -26,10 +26,12 @@ New features
 Housekeeping
 ************
 
+  | `Issue #6991 <https://github.com/pgadmin-org/pgadmin4/issues/6991>`_ -  Fixed several accessibility-related issues for enhanced usability.
 
 Bug fixes
 *********
 
+  | `Issue #5471 <https://github.com/pgadmin-org/pgadmin4/issues/5471>`_ -  Ensure focus is not changed to ssh tunnel password input when user explicitly focus on server password input.
   | `Issue #6095 <https://github.com/pgadmin-org/pgadmin4/issues/6095>`_ -  Provide a way to bypass the SSL cert verification for OAuth2 provider.
   | `Issue #6488 <https://github.com/pgadmin-org/pgadmin4/issues/6488>`_ -  Fixed an issue where database name was missing in an error message if name contains any special characters.
   | `Issue #6717 <https://github.com/pgadmin-org/pgadmin4/issues/6717>`_ -  Ensure that indexes created by constraints are visible in the object explorer when "Show system objects" is enabled.
