@@ -25,3 +25,17 @@ def apply_explain_plan_wrapper_if_needed(manager, sql):
         return render_template(template_path, sql=sql['sql'], **explain_plan)
     else:
         return sql['sql']
+
+
+def get_explain_query_length(query_obj):
+    """
+    This method returns query length if it is explain query.
+
+    Args:
+        query_obj: sql query
+    """
+    query = query_obj.query.decode()
+    if query.startswith("EXPLAIN"):
+        return len(query)
+    else:
+        return 0

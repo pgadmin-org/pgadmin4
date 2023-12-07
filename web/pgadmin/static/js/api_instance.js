@@ -23,12 +23,16 @@ export default function getApiInstance(headers={}) {
   });
 }
 
-export function parseApiError(error) {
+export function parseApiError(error, withData=false) {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     if(error.response.headers['content-type'] == 'application/json') {
-      return error.response.data.errormsg;
+      let errormsg = error.response.data.errormsg;
+      let data = error.response.data.data;
+      // If we want to use data which came with error set withData 
+      // flag to true.
+      return withData ? {errormsg, data} : errormsg;
     } else {
       return error.response.statusText;
     }
