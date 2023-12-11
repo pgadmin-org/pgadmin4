@@ -253,17 +253,20 @@ export default function Query() {
     cmObj.removeLineClass(markedLine.current, 'wrap', 'CodeMirror-activeline-background');
     markedLine.current = 0;
   };
-  const highlightError = (cmObj, result)=>{
+  const highlightError = (cmObj, {errormsg: result, data})=>{
     let errorLineNo = 0,
       startMarker = 0,
       endMarker = 0,
-      selectedLineNo = 0;
+      selectedLineNo = 0,
+      origQueryLen = cmObj.getValue().length;
 
     removeHighlightError(cmObj);
 
     // In case of selection we need to find the actual line no
-    if (cmObj.getSelection().length > 0)
+    if (cmObj.getSelection().length > 0) {
       selectedLineNo = cmObj.getCursor(true).line;
+      origQueryLen = cmObj.getLine(selectedLineNo).length;
+    }
 
     // Fetch the LINE string using regex from the result
     let line = /LINE (\d+)/.exec(result),
@@ -274,6 +277,14 @@ export default function Query() {
     if (line != null && char != null) {
       errorLineNo = (parseInt(line[1]) - 1) + selectedLineNo;
       let errorCharNo = (parseInt(char[1]) - 1);
+
+      /* If explain query has been run we need to
+        calculate the character number.
+      */
+      if(data.explain_query_length) {
+        let explainQueryLen = data.explain_query_length - parseInt(char[1]);
+        errorCharNo = origQueryLen - explainQueryLen - 1;
+      }
 
       /* We need to loop through each line till the error line and
         * count the total no of character to figure out the actual
@@ -312,7 +323,7 @@ export default function Query() {
       markedLine.current = errorLineNo;
       cmObj.addLineClass(errorLineNo, 'wrap', 'CodeMirror-activeline-background');
       cmObj.focus();
-      cmObj.setCursor(errorLineNo, 0);
+      cmObj.setCursor(errorLineNo, endMarker);
     }
   };
 

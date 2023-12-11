@@ -57,6 +57,8 @@ from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
+from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
+    get_explain_query_length
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -956,7 +958,12 @@ def poll(trans_id):
                     gettext('******* Error *******'),
                     result
                 )
-            return internal_server_error(result)
+            query_len_data = {
+                'explain_query_length':
+                get_explain_query_length(
+                    conn._Connection__async_cursor._query)
+            }
+            return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
             status = 'Success'
             rows_affected = conn.rows_affected()

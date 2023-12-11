@@ -284,7 +284,7 @@ export class ResultSetUtils {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_INERROR);
     if (!flags.external) {
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, parseApiError(error));
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, parseApiError(error, true));
     }
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_HISTORY, {
       status: false,
