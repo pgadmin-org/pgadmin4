@@ -70,7 +70,7 @@ export default class CopyData {
   stringQuoteCell(value, column) {
     if (value && _.isObject(value)) {
       value = this.CSVOptions.quote_char + JSONBigNumber.stringify(value) + this.CSVOptions.quote_char;
-    } else if (value && column.cell != 'number' && column.cell != 'boolean') {
+    } else if (value && column.cell != 'number' && column.cell != 'boolean' && column.cell != 'Json') {
       value = this.CSVOptions.quote_char + this.escape(value.toString()) + this.CSVOptions.quote_char;
     } else if (column.cell == 'string' && _.isNull(value)){
       value = null;
