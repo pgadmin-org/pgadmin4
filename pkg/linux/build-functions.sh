@@ -86,7 +86,7 @@ _create_python_virtualenv() {
 
     # Figure out some paths for use when completing the venv
     # Use "python3" here as we want the venv path
-    DIR_PYMODULES_PATH=$(python3 -c "from sysconfig import get_path; print(get_path('stdlib'))")
+    DIR_PYMODULES_PATH=$(python3 -c "from sysconfig import get_path; print(get_path('platstdlib'))")
 
     # Use {SYSTEM_PYTHON_PATH} here as we want the system path
     if [ "$1" == "debian" ]; then
