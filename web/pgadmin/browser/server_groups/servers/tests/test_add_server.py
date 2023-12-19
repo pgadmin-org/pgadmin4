@@ -47,6 +47,8 @@ class AddServerTest(BaseTestGenerator):
             self.server['tunnel_host'] = self.test_data['tunnel_host']
             self.server['tunnel_port'] = self.test_data['tunnel_port']
             self.server['tunnel_username'] = self.test_data['tunnel_username']
+            self.server['tunnel_keep_alive'] = \
+                self.test_data['tunnel_keep_alive']
 
             if self.with_password:
                 self.server['tunnel_authentication'] = self.test_data[

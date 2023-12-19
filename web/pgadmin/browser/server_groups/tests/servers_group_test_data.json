@@ -17,6 +17,7 @@
         "tunnel_authentication": 1,
         "tunnel_password": "user123",
         "tunnel_identity_file": "pkey_rsa",
+        "tunnel_keep_alive": 0,
         "service": null,
         "fgcolor":"#B6D7A8",
         "bgcolor": "#0C343D",

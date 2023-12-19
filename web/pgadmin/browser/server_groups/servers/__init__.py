@@ -390,6 +390,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 tunnel_username=None,
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
+                tunnel_keep_alive=0,
                 shared=True,
                 connection_params=data.connection_params,
                 prepare_threshold=data.prepare_threshold
@@ -814,6 +815,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_username': 'tunnel_username',
             'tunnel_authentication': 'tunnel_authentication',
             'tunnel_identity_file': 'tunnel_identity_file',
+            'tunnel_keep_alive': 'tunnel_keep_alive',
             'shared': 'shared',
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
@@ -1061,6 +1063,7 @@ class ServerNode(PGChildNodeView):
         tunnel_port = 22
         tunnel_username = None
         tunnel_authentication = False
+        tunnel_keep_alive = 0
         connection_params = \
             self.convert_connection_parameter(server.connection_params)
 
@@ -1070,6 +1073,7 @@ class ServerNode(PGChildNodeView):
             tunnel_port = server.tunnel_port
             tunnel_username = server.tunnel_username
             tunnel_authentication = bool(server.tunnel_authentication)
+            tunnel_keep_alive = server.tunnel_keep_alive
 
         response = {
             'id': server.id,
@@ -1106,6 +1110,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_identity_file': server.tunnel_identity_file
             if server.tunnel_identity_file else None,
             'tunnel_authentication': tunnel_authentication,
+            'tunnel_keep_alive': tunnel_keep_alive,
             'kerberos_conn': bool(server.kerberos_conn),
             'gss_authenticated': manager.gss_authenticated,
             'gss_encrypted': manager.gss_encrypted,
@@ -1201,6 +1206,7 @@ class ServerNode(PGChildNodeView):
                 tunnel_authentication=1 if data.get('tunnel_authentication',
                                                     False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
+                tunnel_keep_alive=data.get('tunnel_keep_alive', 0),
                 shared=data.get('shared', None),
                 shared_username=data.get('shared_username', None),
                 passexec_cmd=data.get('passexec_cmd', None),
@@ -2091,6 +2097,7 @@ class ServerNode(PGChildNodeView):
                 "tunnel_username": server.tunnel_username,
                 "tunnel_host": server.tunnel_host,
                 "tunnel_identity_file": server.tunnel_identity_file,
+                "tunnel_keep_alive": server.tunnel_keep_alive,
                 "errmsg": errmsg,
                 "service": server.service,
                 "prompt_tunnel_password": prompt_tunnel_password,

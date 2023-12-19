@@ -181,6 +181,10 @@ not be able to connect directly.
   password for future use. Use
   :ref:`Clear SSH Tunnel Password <clear_saved_passwords>` to remove the saved
   password.
+* Use the *Keep alive* field to specify interval in seconds defining the period
+  in which, if no data was sent over the connection, a ‘keepalive’ packet will
+  be sent (and ignored by the remote host). This can be useful to keep
+  connections alive over a NAT. You can set to 0 for disable keepalive.
 
 
 Click the *Advanced* tab to continue.

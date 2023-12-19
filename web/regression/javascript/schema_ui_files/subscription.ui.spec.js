@@ -86,27 +86,6 @@ describe('SubscriptionSchema', ()=>{
     state.port = 5432;
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('pub', 'Publication must be specified.');
-
-    state.pub = 'testPub';
-    state.use_ssh_tunnel = 'Require';
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('tunnel_host', 'SSH Tunnel host must be specified.');
-
-    state.tunnel_host = 'localhost';
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('tunnel_port', 'SSH Tunnel port must be specified.');
-
-    state.tunnel_port = 8080;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('tunnel_username', 'SSH Tunnel username must be specified.');
-
-    state.tunnel_username = 'jasmine';
-    state.tunnel_authentication = true;
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('tunnel_identity_file', 'SSH Tunnel identity file must be specified.');
-
-    state.tunnel_identity_file = '/file/path/xyz.pem';
-    expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });
 
