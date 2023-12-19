@@ -1465,7 +1465,7 @@ Failed to reset the connection to the server due to following error:
     def _wait(self, conn):
         pass  # This function is empty
 
-    def _wait_timeout(self, conn):
+    def _wait_timeout(self, conn, time):
         pass  # This function is empty
 
     def poll(self, formatted_exception_msg=False, no_result=False):

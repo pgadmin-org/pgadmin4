@@ -30,12 +30,12 @@ from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import PasswordExec
 from psycopg.conninfo import make_conninfo
-import keyring
-from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
-    KEY_RING_USERNAME_FORMAT, KEY_RING_TUNNEL_FORMAT
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
+
+CONN_STRING = 'CONN:{0}'
+DB_STRING = 'DB:{0}'
 
 
 class ServerManager(object):
@@ -98,6 +98,7 @@ class ServerManager(object):
                 else server.tunnel_authentication
             self.tunnel_identity_file = server.tunnel_identity_file
             self.tunnel_password = server.tunnel_password
+            self.tunnel_keep_alive = server.tunnel_keep_alive
         else:
             self.use_ssh_tunnel = 0
             self.tunnel_host = None
@@ -106,6 +107,7 @@ class ServerManager(object):
             self.tunnel_authentication = None
             self.tunnel_identity_file = None
             self.tunnel_password = None
+            self.tunnel_keep_alive = 0
 
         self.kerberos_conn = server.kerberos_conn
         self.gss_authenticated = False
@@ -204,7 +206,7 @@ class ServerManager(object):
             if did is not None and did in self.db_info:
                 self.db_info[did]['datname'] = database
         else:
-            conn_str = 'CONN:{0}'.format(conn_id)
+            conn_str = CONN_STRING.format(conn_id)
             if did is None:
                 database = self.db
             elif did in self.db_info:
@@ -212,7 +214,7 @@ class ServerManager(object):
             elif conn_id and conn_str in self.connections:
                 database = self.connections[conn_str].db
             else:
-                maintenance_db_id = 'DB:{0}'.format(self.db)
+                maintenance_db_id = DB_STRING.format(self.db)
                 if maintenance_db_id in self.connections:
                     conn = self.connections[maintenance_db_id]
                     # try to connect maintenance db if not connected
@@ -252,8 +254,8 @@ WHERE db.oid = {0}""".format(did))
             else:
                 raise ConnectionLost(self.sid, None, None)
 
-        my_id = ('CONN:{0}'.format(conn_id)) if conn_id is not None else \
-            ('DB:{0}'.format(database))
+        my_id = (CONN_STRING.format(conn_id)) if conn_id is not None else \
+            (DB_STRING.format(database))
 
         self.pinged = datetime.datetime.now()
 
@@ -321,8 +323,7 @@ WHERE db.oid = {0}""".format(did))
                 # Check SSH Tunnel needs to be created
                 if self.use_ssh_tunnel == 1 and \
                         not self.tunnel_created:
-                    status, error = self.create_ssh_tunnel(
-                        data['tunnel_password'])
+                    self.create_ssh_tunnel(data['tunnel_password'])
 
                     # Check SSH Tunnel is alive or not.
                     self.check_ssh_tunnel_alive()
@@ -400,9 +401,7 @@ WHERE db.oid = {0}""".format(did))
                     # Check SSH Tunnel needs to be created
                     if self.use_ssh_tunnel == 1 and \
                        not self.tunnel_created:
-                        status, error = self.create_ssh_tunnel(
-                            self.tunnel_password
-                        )
+                        self.create_ssh_tunnel(self.tunnel_password)
 
                         # Check SSH Tunnel is alive or not.
                         self.check_ssh_tunnel_alive()
@@ -451,9 +450,9 @@ WHERE db.oid = {0}""".format(did))
                 return True, False, my_id
 
         if conn_id is not None:
-            my_id = 'CONN:{0}'.format(conn_id)
+            my_id = CONN_STRING.format(conn_id)
         elif database is not None:
-            my_id = 'DB:{0}'.format(database)
+            my_id = DB_STRING.format(database)
 
         return False, True, my_id
 
@@ -599,7 +598,8 @@ WHERE db.oid = {0}""".format(did))
                     ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
                     ssh_private_key_password=tunnel_password,
                     remote_bind_address=(self.host, self.port),
-                    logger=ssh_logger
+                    logger=ssh_logger,
+                    set_keepalive=int(self.tunnel_keep_alive)
                 )
             else:
                 self.tunnel_object = SSHTunnelForwarder(
@@ -607,7 +607,8 @@ WHERE db.oid = {0}""".format(did))
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
                     remote_bind_address=(self.host, self.port),
-                    logger=ssh_logger
+                    logger=ssh_logger,
+                    set_keepalive=int(self.tunnel_keep_alive)
                 )
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True

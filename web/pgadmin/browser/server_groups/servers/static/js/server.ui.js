@@ -44,6 +44,7 @@ export default class ServerSchema extends BaseUISchema {
       tunnel_identity_file: undefined,
       tunnel_password: undefined,
       tunnel_authentication: false,
+      tunnel_keep_alive: 0,
       save_tunnel_password: false,
       connection_string: undefined,
       connection_params: [
@@ -328,6 +329,15 @@ export default class ServerSchema extends BaseUISchema {
         },
       },
       {
+        id: 'tunnel_keep_alive', label: gettext('Keep alive (seconds)'),
+        type: 'int', group: gettext('SSH Tunnel'), min: 0,
+        mode: ['properties', 'edit', 'create'], deps: ['use_ssh_tunnel'],
+        disabled: function(state) {
+          return !state.use_ssh_tunnel;
+        },
+        readonly: obj.isConnected,
+      },
+      {
         id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
         options: [],
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, controlProps: {
@@ -435,6 +445,14 @@ export default class ServerSchema extends BaseUISchema {
         } else {
           setError('tunnel_identity_file', null);
         }
+      }
+
+      if(isEmptyString(state.tunnel_keep_alive)) {
+        errmsg = gettext('Keep alive must be specified. Specify 0 for no keep alive.');
+        setError('tunnel_keep_alive', errmsg);
+        return true;
+      } else {
+        setError('tunnel_keep_alive', null);
       }
     }
     return false;

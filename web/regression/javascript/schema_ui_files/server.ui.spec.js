@@ -73,6 +73,10 @@ describe('ServerSchema', ()=>{
     expect(setError).toHaveBeenCalledWith('tunnel_identity_file', 'SSH Tunnel identity file must be specified.');
 
     state.tunnel_identity_file = '/file/path/xyz.pem';
+    schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('tunnel_keep_alive', 'Keep alive must be specified. Specify 0 for no keep alive.');
+
+    state.tunnel_keep_alive = 0;
     expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });

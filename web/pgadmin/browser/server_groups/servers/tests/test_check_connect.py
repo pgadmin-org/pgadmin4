@@ -30,6 +30,7 @@ class ServersConnectTestCase(BaseTestGenerator):
         self.server.tunnel_host = '127.0.0.1'
         self.server.tunnel_port = 22
         self.server.tunnel_username = 'user'
+        self.server.tunnel_keep_alive = 0
         if hasattr(self, 'with_password') and self.with_password:
             self.server.tunnel_authentication = 0
         else:

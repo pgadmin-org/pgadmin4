@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 38
+SCHEMA_VERSION = 39
 
 ##########################################################################
 #
@@ -201,6 +201,7 @@ class Server(db.Model):
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(PgAdminDbBinaryString())
+    tunnel_keep_alive = db.Column(db.Integer(), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
     shared_username = db.Column(db.String(64), nullable=True)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
@@ -413,6 +414,7 @@ class SharedServer(db.Model):
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(PgAdminDbBinaryString())
+    tunnel_keep_alive = db.Column(db.Integer(), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
     prepare_threshold = db.Column(db.Integer(), nullable=True)
