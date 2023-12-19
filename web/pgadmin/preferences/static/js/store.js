@@ -13,6 +13,12 @@ const usePreferences = create((set, get)=>({
       get().data, {'module': module, 'name': preference}
     );
   },
+  setPreference: (data)=> {
+    // Update Preferences and then refresh cache.
+    getApiInstance().put(url_for('preferences.update_pref'), data).then(()=> {
+      preferenceChangeBroadcast.postMessage('refresh');
+    });
+  },
   getPreferencesForModule: function(module) {
     let preferences = {};
     _.forEach(
@@ -61,6 +67,9 @@ export function setupPreferenceBroadcast() {
   preferenceChangeBroadcast.onmessage = (ev)=>{
     if(ev.data == 'sync') {
       broadcast(usePreferences.getState());
+    }
+    if(ev.data == 'refresh') {
+      usePreferences.getState().cache();
     }
   };
 }

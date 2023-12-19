@@ -182,7 +182,7 @@ export class ResultSetUtils {
   }
 
   async startExecution(query, explainObject, onIncorrectSQL, flags={
-    isQueryTool: true, external: false, reconnect: false,
+    isQueryTool: true, external: false, reconnect: false
   }) {
     let startTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
