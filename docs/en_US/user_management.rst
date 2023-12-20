@@ -107,9 +107,10 @@ email and password. role and active will be optional fields.
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password
 
-    # to specify a role, 1 for admin user, 2 for non-admin user:
+    # to specify a role, admin and non-admin users:
 
-    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role 1
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --nonadmin
 
     # to specify user's status
 
@@ -119,7 +120,7 @@ email and password. role and active will be optional fields.
 Add External User
 *****************
 
-To add external authentication user, invoke ``setup.py`` with ``add_external_user`` command line option,
+To add external authentication user, invoke ``setup.py`` with ``add-external-user`` command line option,
 followed by email, password and authentication source. email, role and status will be optional fields.
 
 .. code-block:: bash
@@ -130,9 +131,10 @@ followed by email, password and authentication source. email, role and status wi
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
 
-    # to specify a role, 1 for admin user, 2 for non-admin user:
+    # to specify a role, admin and non-admin user:
 
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap --role 1
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --nonadmin
 
     # to specify user's status
 
@@ -149,9 +151,10 @@ email address. password, role and active are updatable fields.
 
     /path/to/python /path/to/setup.py update-user user1@gmail.com --password new-password
 
-    # to specify a role, 1 for admin user, 2 for non-admin user:
+    # to specify a role, admin and non-admin user:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role 1
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
 
     # to specify user's status
 
@@ -170,9 +173,10 @@ followed by username and auth source. email, password, role and active are updat
 
     /path/to/python /path/to/setup.py update-external-user ldap ldapuser --email newemail@gmail.com
 
-    # to change a role:
+    # to specify a role, admin and non-admin user:
 
-    /path/to/python /path/to/setup.py update-user ldap ldapuser --role 2
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
 
     # to change user's status
 
@@ -187,8 +191,8 @@ username and auth_source. For Internal users, email adress will be used instead 
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py delete-user user1@gmail.com internal
-    /path/to/python /path/to/setup.py delete-user ldapuser  ldap
+    /path/to/python /path/to/setup.py delete-user user1@gmail.com --auth-source internal
+    /path/to/python /path/to/setup.py delete-user ldapuser --auth-source ldap
 
 
 Get User

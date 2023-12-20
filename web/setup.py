@@ -15,7 +15,7 @@ import sys
 import typer
 from rich.console import Console
 from rich.table import Table
-from rich import box
+from rich import box, print
 import json as jsonlib
 
 console = Console()
@@ -49,14 +49,16 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2,\
 from pgadmin.tools.user_management import create_user, delete_user, update_user
 from enum import Enum
 
+app = typer.Typer(pretty_exceptions_show_locals=False)
+
 
 class ManageServers:
 
     @app.command()
-    def dump_servers(dump_servers: str, user: Optional[str] = None,
+    def dump_servers(output_file: str, user: Optional[str] = None,
                      auth_source: Optional[str] = INTERNAL,
                      sqlite_path: Optional[str] = None,
-                     servers: List[int] = None):
+                     server: List[int] = None):
         """Dump the server groups and servers. """
 
         # What user?
@@ -74,11 +76,11 @@ class ManageServers:
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            dump_database_servers(dump_servers, servers, dump_user, True,
+            dump_database_servers(output_file, server, dump_user, True,
                                   auth_source)
 
     @app.command()
-    def load_servers(loadservers: str, user: Optional[str] = None,
+    def load_servers(input_file: str, user: Optional[str] = None,
                      auth_source: Optional[str] = INTERNAL,
                      sqlite_path: Optional[str] = None,
                      replace: Optional[bool] = False
@@ -100,21 +102,27 @@ class ManageServers:
         print('----------')
 
         app = create_app(config.APP_NAME + '-cli')
-        if replace:
-            with app.app_context():
+        with app.test_request_context():
+            if replace:
                 clear_database_servers(load_user, True, auth_source)
-        else:
-            with app.test_request_context():
-                load_database_servers(loadservers, None, load_user, True,
-                                      auth_source)
+            load_database_servers(input_file, None, load_user, True,
+                                  auth_source)
 
 
-class authType(str, Enum):
-    internal = INTERNAL
+class AuthExtTypes(str, Enum):
     oauth2 = OAUTH2
     ldap = LDAP
     kerberos = KERBEROS
     webserver = WEBSERVER
+
+
+# Enum class can not be extended
+class AuthType(str, Enum):
+    oauth2 = OAUTH2
+    ldap = LDAP
+    kerberos = KERBEROS
+    webserver = WEBSERVER
+    internal = INTERNAL
 
 
 class ManageUsers:
@@ -123,19 +131,18 @@ class ManageUsers:
     def add_user(email: str, password: str,
                  role: Annotated[Optional[bool], typer.Option(
                      "--admin/--nonadmin")] = False,
-                 auth_source: Optional[str] = INTERNAL,
                  active: Annotated[Optional[bool],
                                    typer.Option("--active/--inactive")] = True,
                  console: Optional[bool] = True,
                  json: Optional[bool] = False
                  ):
-        """Add user. """
+        """Add Internal user. """
 
         data = {
             'email': email,
             'role': 1 if role else 2,
             'active': active,
-            'auth_source': auth_source,
+            'auth_source': INTERNAL,
             'newPassword': password,
             'confirmPassword': password,
         }
@@ -143,7 +150,7 @@ class ManageUsers:
 
     @app.command()
     def add_external_user(username: str,
-                          auth_source: authType = authType.oauth2,
+                          auth_source: AuthExtTypes = AuthExtTypes.oauth2,
                           email: Optional[str] = None,
                           role: Annotated[Optional[bool],
                                           typer.Option(
@@ -154,7 +161,8 @@ class ManageUsers:
                           console: Optional[bool] = True,
                           json: Optional[bool] = False
                           ):
-        """Add user. """
+        """Add external user, other than Internal like
+        Ldap, Ouath2, Kerberos, Webserver. """
 
         data = {
             'username': username,
@@ -166,37 +174,46 @@ class ManageUsers:
         ManageUsers.create_user(data, console, json)
 
     @app.command()
-    def delete_user(username: str, auth_source: authType = authType.internal):
-        """Delete user. """
-        app = create_app(config.APP_NAME + '-cli')
-        with app.test_request_context():
-            uid = ManageUsers.get_user(username=username,
-                                       auth_source=auth_source)
-            if not uid:
-                print("User not found")
-            else:
-                status, msg = delete_user(uid)
-                if status:
-                    print('User deleted successfully.')
+    def delete_user(username: str, auth_source: AuthType = AuthType.internal):
+        """Delete the user. """
+        delete = typer.confirm("Are you sure you want to delete it?")
+
+        if delete:
+            app = create_app(config.APP_NAME + '-cli')
+            with app.test_request_context():
+                uid = ManageUsers.get_user(username=username,
+                                           auth_source=auth_source)
+                if not uid:
+                    print("User not found")
                 else:
-                    print('Something went wrong. ' + str(msg))
+                    status, msg = delete_user(uid)
+                    if status:
+                        print('User deleted successfully.')
+                    else:
+                        print('Something went wrong. ' + str(msg))
 
     @app.command()
     def update_user(email: str,
                     password: Optional[str] = None,
                     role: Annotated[Optional[bool],
                                     typer.Option("--admin/--nonadmin"
-                                                 )] = False,
+                                                 )] = None,
                     active: Annotated[Optional[bool],
                                       typer.Option("--active/--inactive"
                                                    )] = None,
                     console: Optional[bool] = True,
                     json: Optional[bool] = False
                     ):
+        """Update internal user."""
+
         data = dict()
         if password:
+            if len(password) < 6:
+                print("Password must be at least 6 characters long.")
+                exit()
             data['password'] = password
-        if role:
+
+        if role is not None:
             data['role'] = 1 if role else 2
         if active is not None:
             data['active'] = active
@@ -219,16 +236,21 @@ class ManageUsers:
 
     @app.command()
     def get_users(username:Optional[str] = None,
-                  auth_source: authType = authType.internal,
+                  auth_source: AuthType = None,
                   console:Optional[bool] = True,
                   json:Optional[bool] = False
                   ):
+        """Get user(s) details."""
         app = create_app(config.APP_NAME + '-cli')
         usr = None
         with app.test_request_context():
-            if username:
+            if username and auth_source:
                 users = User.query.filter_by(username=username,
                                              auth_source=auth_source)
+            elif not username and auth_source:
+                users = User.query.filter_by(auth_source=auth_source)
+            elif username and not auth_source:
+                users = User.query.filter_by(username=username)
             else:
                 users = User.query.all()
             users_data = []
@@ -249,23 +271,25 @@ class ManageUsers:
 
     @app.command()
     def update_external_user(username: str,
-                             auth_source: authType = authType.oauth2,
+                             auth_source: AuthExtTypes = AuthExtTypes.oauth2,
                              email: Optional[str] = None,
-                             password: Optional[str] = None,
-                             role: Optional[str] = None,
+                             role: Annotated[Optional[bool],
+                                             typer.Option("--admin/--nonadmin"
+                                                          )] = None,
                              active: Annotated[
                                  Optional[bool],
                                  typer.Option("--active/--inactive")] = None,
                              console: Optional[bool] = True,
                              json: Optional[bool] = False
                              ):
+        """Update external users other than Internal like
+         Ldap, Ouath2, Kerberos, Webserver."""
+
         data = dict()
         if email:
             data['email'] = email
-        if password:
-            data['password'] = password
-        if role:
-            data['role'] = role
+        if role is not None:
+            data['role'] = 1 if role else 2
         if active is not None:
             data['active'] = active
 
@@ -278,7 +302,7 @@ class ManageUsers:
             else:
                 status, msg = update_user(uid, data)
                 if status:
-                    _user = ManageUsers.get_users(username=email,
+                    _user = ManageUsers.get_users(username=username,
                                                   auth_source=auth_source,
                                                   console=False)
                     ManageUsers.display_user(_user[0], console, json)
@@ -288,6 +312,18 @@ class ManageUsers:
     def create_user(data, console, json):
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
+            username = data['username'] if 'username' in data else\
+                data['email']
+            uid = ManageUsers.get_user(username=username,
+                                       auth_source=data['auth_source'])
+            if uid:
+                print("User already exists.")
+                exit()
+
+            if 'newPassword' in data and len(data['newPassword']) < 6:
+                print("Password must be at least 6 characters long.")
+                exit()
+
             status, msg = create_user(data)
             if status:
                 ManageUsers.display_user(data, console, json)
@@ -341,6 +377,7 @@ class ManagePreferences:
 
     @app.command()
     def get_prefs(id: Optional[bool] = None, json: Optional[bool] = False):
+        """Get Preferences List."""
         app = create_app(config.APP_NAME + '-cli')
         table = Table(title="Pref Details", box=box.ASCII)
         table.add_column("Preference", style="green")
@@ -388,8 +425,9 @@ class ManagePreferences:
 
     @app.command()
     def set_prefs(username, pref_options: List[str],
-                  auth_source: authType = authType.internal,
+                  auth_source: AuthType = AuthType.internal,
                   json: Optional[bool] = False):
+        """Set User preferences."""
         user_id = ManagePreferences.get_user(username, auth_source)
         app = create_app(config.APP_NAME + '-cli')
         table = Table(title="Pref Details", box=box.ASCII)
@@ -494,9 +532,5 @@ def setup_db():
         run_migration_for_sqlite()
 
 
-def main():
-    app()
-
-
 if __name__ == "__main__":
-    main()
+    app()

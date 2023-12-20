@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function KeyboardShortcuts({ value, onChange, fields, ...props }) {
+export default function KeyboardShortcuts({ value, onChange, fields, title }) {
   const classes = useStyles();
   const keyCid = _.uniqueId('c');
   const keyhelpid = `h${keyCid}`;
@@ -91,7 +91,7 @@ export default function KeyboardShortcuts({ value, onChange, fields, ...props })
                 {
                   onKeyDown: onKeyDown,
                 }
-              } {...props} />
+              } title={title} />
             </Grid>
           </Grid>;
         } else if (element.name == 'shift') {
@@ -129,5 +129,6 @@ KeyboardShortcuts.propTypes = {
   value: PropTypes.object,
   onChange: PropTypes.func,
   controlProps: PropTypes.object,
-  fields: PropTypes.array
+  fields: PropTypes.array,
+  title: PropTypes.string
 };

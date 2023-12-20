@@ -55,7 +55,7 @@ describe('KeyboardShortcuts', () => {
           fields={fields}
           controlProps={{
             extraprop: 'test',
-            keyDown: onChange
+            'keydown': onChange
           }}
           onChange={onChange}
         />);

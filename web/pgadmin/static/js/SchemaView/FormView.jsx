@@ -360,7 +360,7 @@ export default function FormView({
         />;
 
         if(field.tooltip) {
-          currentControl = <Tooltip title={field.tooltip} arrow>{currentControl}</Tooltip>;
+          currentControl = <Tooltip title={field.tooltip} aria-label={field.tooltip}>{currentControl}</Tooltip>;
         }
 
         if(field.isFullTab && field.helpMessage) {

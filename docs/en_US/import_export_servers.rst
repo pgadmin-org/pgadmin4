@@ -61,7 +61,7 @@ Exporting Servers
 *****************
 
 To export the servers defined in an installation, simply invoke ``setup.py`` with
-the ``--dump-servers`` command line option, followed by the name (and if required,
+the ``dump-servers`` command line option, followed by the name (and if required,
 path) to the desired output file. By default, servers owned by the desktop mode
 user will be dumped (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
@@ -73,28 +73,28 @@ For example:
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py --dump-servers output_file.json
+    /path/to/python /path/to/setup.py dump-servers output_file.json
 
-    # or, to specify a non-default user name:
+    # or, to specify a non-default user name and auth source (the default is Internal):
 
-    /path/to/python /path/to/setup.py --dump-servers output_file.json --user user@example.com
+    /path/to/python /path/to/setup.py dump-servers output_file.json --user user@example.com --auth_source ldap
 
     # to specify a pgAdmin config DB file:
 
-    /path/to/python /path/to/setup.py --dump-servers output_file.json --sqlite-path /path/to/pgadmin4.db
+    /path/to/python /path/to/setup.py dump-servers output_file.json --sqlite-path /path/to/pgadmin4.db
 
-To export only certain servers, use the ``--servers`` option and list one or
+To export only certain servers, use the ``--server`` option and list one or
 more server IDs. For example:
 
 .. code-block:: bash
 
-    /path/to/python /path/to/setup.py --dump-servers output_file.json --server 1 2 5
+    /path/to/python /path/to/setup.py dump-servers output_file.json --server 1 --server 2 --server 5
 
 Importing Servers
 *****************
 
 To import the servers defined in a JSON file, simply invoke ``setup.py`` with
-the ``--load-servers`` command line option, followed by the name (and if required,
+the ``load-servers`` command line option, followed by the name (and if required,
 path) of the JSON file containing the server definitions. Servers will be owned
 by the desktop mode user (pgadmin4@pgadmin.org by default - see the DESKTOP_USER
 setting in ``config.py``). This can be overridden with the ``--user`` command
@@ -114,7 +114,7 @@ desktop mode. By default SQLITE_PATH setting in ``config.py`` is taken. For exam
 
     /path/to/python /path/to/setup.py load-servers input_file.json --replace
 
-    # or, to specify a non-default user name to own the new servers:
+    # or, to specify a non-default user name and auth source (the default is Internal) to own the new servers:
 
     /path/to/python /path/to/setup.py load-servers input_file.json --user user@example.com
 
