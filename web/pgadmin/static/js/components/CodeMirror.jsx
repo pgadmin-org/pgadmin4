@@ -259,6 +259,10 @@ export function FindDialog({editor, show, replace, onClose, selFindVal}) {
         inputRef={(ele)=>{findInputRef.current = ele;}}
         onChange={(value)=>setFindVal(value)}
         onKeyPress={onFindEnter}
+        placeholder={gettext('Find text')}
+        controlProps={{
+          title: gettext('Find text')
+        }}
         endAdornment={
           <InputAdornment position="end">
             <PgIconButton data-test="case" title="Match case" icon={<FormatCaseIcon />} size="xs" noBorder
@@ -273,6 +277,10 @@ export function FindDialog({editor, show, replace, onClose, selFindVal}) {
         className={classes.marginTop}
         onChange={(value)=>setReplaceVal(value)}
         onKeyPress={onReplaceEnter}
+        placeholder={gettext('Replace value')}
+        controlProps={{
+          title: gettext('Replace value')
+        }}
       />}
 
       <Box display="flex" className={classes.marginTop}>
@@ -554,7 +562,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     >
       <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} selFindVal={editor.current?.getSelection() && editor.current.getSelection().length > 0 ? editor.current.getSelection() : ''}/>
       <CopyButton editor={editor.current} show={showCopy} copyText={value}></CopyButton>
-      <textarea ref={taRef} name={name}
+      <textarea ref={taRef} name={name} title={gettext('SQL editor')}
         id={cid} aria-describedby={helpid} value={value??''} onChange={()=>{/* dummy */}}
       />
     </div>

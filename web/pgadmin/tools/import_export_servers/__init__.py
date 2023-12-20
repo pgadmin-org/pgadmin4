@@ -190,6 +190,9 @@ def save():
     status = False
     errmsg = None
     if data['type'] == 'export':
+        file_ext = os.path.splitext(data['filename'])[-1].lower()
+        if file_ext != '.json':
+            data['filename'] = data['filename'] + '.json'
         status, errmsg = \
             dump_database_servers(data['filename'], data['selected_sever_ids'])
     elif data['type'] == 'import':

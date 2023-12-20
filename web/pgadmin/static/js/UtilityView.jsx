@@ -69,7 +69,6 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
   const pgAdmin = usePgAdmin();
   const serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
   pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
-  const inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
   const api = getApiInstance();
   const url = ()=>{
     return urlBase;
@@ -144,7 +143,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
       type: serverInfo.server_type,
       version: serverInfo.version,
     }: undefined,
-    inCatalog: inCatalog,
+    inCatalog: false,
   };
 
   let initData = ()=>new Promise((resolve, reject)=>{

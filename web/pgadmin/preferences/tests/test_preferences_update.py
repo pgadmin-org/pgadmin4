@@ -38,7 +38,10 @@ class GetPreferencesTest(BaseTestGenerator):
         parent_node_dict['preferences'] = response.data
 
     def runTest(self):
-        self.update_preferences()
+        if self.update_spec_pref:
+            self.update_preference()
+        else:
+            self.update_preferences()
 
     def update_preferences(self):
         if 'preferences' in parent_node_dict:
@@ -58,3 +61,12 @@ class GetPreferencesTest(BaseTestGenerator):
             self.assertTrue(response.status_code, 200)
         else:
             self.fail('Preferences not found')
+
+    def update_preference(self):
+        updated_data = [{'name': 'view_edit_promotion_warning',
+                         'value': False,
+                         'module': 'sqleditor'}]
+        response = self.tester.put(self.url,
+                                   data=json.dumps(updated_data),
+                                   content_type='html/json')
+        self.assertTrue(response.status_code, 200)

@@ -31,6 +31,7 @@ const fromTextAreaRet = {
   'scrollIntoView': jest.fn(),
   'getWrapperElement': ()=>document.createElement('div'),
   'on': jest.fn(),
+  'off': jest.fn(),
   'toTextArea': jest.fn(),
 };
 module.exports = {

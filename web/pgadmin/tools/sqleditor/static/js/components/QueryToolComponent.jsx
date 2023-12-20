@@ -102,6 +102,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       title: _.unescape(params.title),
       is_query_tool: params.is_query_tool == 'true' ? true : false,
       node_name: retrieveNodeName(selectedNodeInfo),
+      dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo)
     },
     connection_list: [{
       sgid: params.sgid,
@@ -192,7 +193,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                     height: '100%',
                     width: '100%',
                     resize: 'none'
-                  }}/>
+                  }} title={gettext('Scratch Pad')}/>
                 }),
               ]
             }
@@ -746,7 +747,37 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     modal: modal,
     params: qtState.params,
     preferences: qtState.preferences,
-    mainContainerRef: containerRef
+    mainContainerRef: containerRef,
+    toggleQueryTool: () => setQtState((prev)=>{
+      return {
+        ...prev,
+        params: {
+          ...prev.params,
+          is_query_tool: true
+        }
+      };
+    }),
+    updateTitle: (title) => {
+      setPanelTitle(qtPanelDocker, qtPanelId, title, qtState, isDirtyRef.current);
+      setQtState((prev) => {
+        // Update connection Title
+        let newConnList = [...prev.connection_list];
+        newConnList.forEach((conn) => {
+          if (conn.sgid == params.sgid && conn.sid == params.sid && conn.did == params.did) {
+            conn.title = title;
+            conn.conn_title = title;
+          }
+        });
+        return {
+          ...prev,
+          params: {
+            ...prev.params,
+            title: title
+          },
+          connection_list: newConnList,
+        };
+      });
+    },
   }), [qtState.params, qtState.preferences, containerRef.current]);
 
   const queryToolConnContextValue = React.useMemo(()=>({

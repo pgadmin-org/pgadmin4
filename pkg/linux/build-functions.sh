@@ -68,6 +68,7 @@ _create_python_virtualenv() {
 
     # Make sure we have the wheel package present, as well as the latest pip
     pip3 install --upgrade pip
+    pip3 install setuptools
     pip3 install wheel
 
     # Install the requirements
@@ -86,8 +87,7 @@ _create_python_virtualenv() {
 
     # Figure out some paths for use when completing the venv
     # Use "python3" here as we want the venv path
-    PYMODULES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-    DIR_PYMODULES_PATH=$(dirname "${PYMODULES_PATH}")
+    DIR_PYMODULES_PATH=$(python3 -c "from sysconfig import get_path; print(get_path('platstdlib'))")
 
     # Use {SYSTEM_PYTHON_PATH} here as we want the system path
     if [ "$1" == "debian" ]; then

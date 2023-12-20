@@ -66,12 +66,14 @@ class StartRunningQuery:
                 manager = get_driver(
                     PG_DEFAULT_DRIVER).connection_manager(
                     transaction_object.sid)
-                conn = manager.connection(did=transaction_object.did,
-                                          database=transaction_object.dbname,
-                                          conn_id=self.connection_id,
-                                          auto_reconnect=False,
-                                          use_binary_placeholder=True,
-                                          array_to_string=True)
+                conn = manager.connection(
+                    did=transaction_object.did,
+                    conn_id=self.connection_id,
+                    auto_reconnect=False,
+                    use_binary_placeholder=True,
+                    array_to_string=True,
+                    **({"database": transaction_object.dbname} if hasattr(
+                        transaction_object,'dbname') else {}))
             except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
                 raise
             except Exception as e:
@@ -126,7 +128,8 @@ class StartRunningQuery:
     def __execute_query(self, conn, session_obj, sql, trans_id, trans_obj):
         # on successful connection set the connection id to the
         # transaction object
-        trans_obj.set_connection_id(self.connection_id)
+        if hasattr(trans_obj, 'set_connection_id'):
+            trans_obj.set_connection_id(self.connection_id)
 
         StartRunningQuery.save_transaction_in_session(session_obj,
                                                       trans_id, trans_obj)

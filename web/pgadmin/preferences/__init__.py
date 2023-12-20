@@ -20,7 +20,7 @@ from flask_security import login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error
-from pgadmin.utils.menu import MenuItem
+from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.browser.server_groups import ServerGroupModule as sgm
@@ -49,6 +49,7 @@ class PreferencesModule(PgAdminModule):
             'preferences.get_by_name',
             'preferences.get_all',
             'preferences.get_all_cli',
+            'preferences.update_pref'
         ]
 
 
@@ -288,26 +289,30 @@ def save_pref(data):
     if not res:
         return False
     return True
-
-
-def get_cli_prefs():
-    module_prefs = ModulePrefTable.query.all()
-    cat_prefs = PrefCategoryTbl.query.all()
-    prefs = PrefTable.query.all()
-    if id:
-        all_preferences = {}
-    else:
-        all_preferences = []
-    for i in module_prefs:
-        for j in cat_prefs:
-            if i.id == j.mid:
-                for k in prefs:
-                    if k.cid == j.id:
-                        if id:
-                            all_preferences["{0}:{1}:{2}".format(
-                                i.name, j.name, k.name)
-                            ] = "{0}:{1}:{2}".format(i.id, j.id, k.id)
-                        else:
-                            all_preferences.append("{0}:{1}:{2}".format(
-                                i.name, j.name, k.name)
                             )
+
+@blueprint.route("/update", methods=["PUT"], endpoint="update_pref")
+@login_required
+def update():
+    """
+    Update a specific preference.
+    """
+    pref_data = get_data()
+    pref_data = json.loads(pref_data['pref_data'])
+
+    for data in pref_data:
+        if data['name'] in ['vw_edt_tab_title_placeholder',
+                            'qt_tab_title_placeholder',
+                            'debugger_tab_title_placeholder'] \
+                and data['value'].isspace():
+            data['value'] = ''
+
+        pref_module = Preferences.module(data['module'])
+        pref = pref_module.preference(data['name'])
+        # set user preferences
+        pref.set(data['value'])
+
+    return make_json_response(
+        data={'data': 'Success'},
+        status=200
+    )

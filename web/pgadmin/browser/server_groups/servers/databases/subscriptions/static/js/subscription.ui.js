@@ -494,43 +494,6 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('pub', null);
     }
 
-    if (state.use_ssh_tunnel) {
-      if(isEmptyString(state.tunnel_host)) {
-        errmsg = gettext('SSH Tunnel host must be specified.');
-        setError('tunnel_host', errmsg);
-        return true;
-      } else {
-        setError('tunnel_host', null);
-      }
-
-      if(isEmptyString(state.tunnel_port)) {
-        errmsg = gettext('SSH Tunnel port must be specified.');
-        setError('tunnel_port', errmsg);
-        return true;
-      } else {
-        setError('tunnel_port', null);
-      }
-
-      if(isEmptyString(state.tunnel_username)) {
-        errmsg = gettext('SSH Tunnel username must be specified.');
-        setError('tunnel_username', errmsg);
-        return true;
-      } else {
-        setError('tunnel_username', null);
-      }
-
-      if (state.tunnel_authentication) {
-        if(isEmptyString(state.tunnel_identity_file)) {
-          errmsg = gettext('SSH Tunnel identity file must be specified.');
-          setError('tunnel_identity_file', errmsg);
-          return true;
-        } else {
-          setError('tunnel_identity_file', null);
-        }
-      }
-    }
-
-
     return false;
   }
 

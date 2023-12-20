@@ -57,6 +57,8 @@ from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
+from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
+    get_explain_query_length
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -413,7 +415,11 @@ def _connect(conn, **kwargs):
 
 def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     # Create asynchronous connection using random connection id.
-    conn_id = str(secrets.choice(range(1, 9999999)))
+    conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else str(
+        secrets.choice(range(1, 9999999)))
+    if 'conn_id' in kwargs:
+        kwargs.pop('conn_id')
+
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
 
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -423,7 +429,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     try:
         command_obj = ObjectRegistry.get_object(
             'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did,
-            conn_id_ac=conn_id_ac
+            conn_id_ac=conn_id_ac, **kwargs
         )
     except Exception as e:
         current_app.logger.error(e)
@@ -866,6 +872,24 @@ def start_query_tool(trans_id):
     )
 
     connect = 'connect' in request.args and request.args['connect'] == '1'
+    if 'gridData' in session and str(trans_id) in session['gridData']:
+        data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
+        if data.object_type == 'table':
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                data.sid)
+            default_conn = manager.connection(conn_id=data.conn_id,
+                                              did=data.did)
+            kwargs = {
+                'user': default_conn.manager.user,
+                'role': default_conn.manager.role,
+                'password': default_conn.manager.password,
+                'conn_id': data.conn_id
+            }
+            is_error, errmsg, conn_id, version = _init_sqleditor(
+                trans_id, connect, data.sgid, data.sid, data.did, **kwargs)
+
+            if is_error:
+                return errmsg
 
     return StartRunningQuery(blueprint, current_app.logger).execute(
         sql, trans_id, session, connect
@@ -956,7 +980,12 @@ def poll(trans_id):
                     gettext('******* Error *******'),
                     result
                 )
-            return internal_server_error(result)
+            query_len_data = {
+                'explain_query_length':
+                get_explain_query_length(
+                    conn._Connection__async_cursor._query)
+            }
+            return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
             status = 'Success'
             rows_affected = conn.rows_affected()

@@ -57,7 +57,8 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
                 def __init__(self, name, id, username, use_ssh_tunnel,
                              tunnel_host, tunnel_port,
                              tunnel_username, tunnel_authentication,
-                             tunnel_identity_file, tunnel_password, service):
+                             tunnel_identity_file, tunnel_password,
+                             tunnel_keep_alive, service):
                     self.name = name
                     self.id = id
                     self.username = username
@@ -71,6 +72,7 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
                     self.tunnel_identity_file = \
                         tunnel_identity_file
                     self.tunnel_password = tunnel_password
+                    self.tunnel_keep_alive = tunnel_keep_alive
                     self.service = service
                     self.shared = None
 
@@ -85,6 +87,7 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
                 self.mock_data['tunnel_authentication'],
                 self.mock_data['tunnel_identity_file'],
                 self.mock_data['tunnel_password'],
+                self.mock_data['tunnel_keep_alive'],
                 self.mock_data['service'],
             )
 

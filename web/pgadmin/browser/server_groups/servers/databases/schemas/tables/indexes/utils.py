@@ -15,7 +15,7 @@ from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
 
-AUTO_CREATE_INDEX_MSG = "-- This primary key index is automatically " \
+AUTO_CREATE_INDEX_MSG = "-- This constraint index is automatically " \
     "generated from a constraint with an identical name.\n-- " \
     "For more details, refer to the Constraints node. Note that this type " \
     "of index is only visible \n-- when the 'Show system objects?' is set " \

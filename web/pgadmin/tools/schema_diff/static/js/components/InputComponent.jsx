@@ -83,6 +83,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
         <Grid item lg={4} md={4} sm={4} xs={4} className={classes.inputLabel}>
           <InputSelect
             options={serverList}
+            optionsReloadBasis={serverList?.length}
             onChange={changeServer}
             value={selectedServer}
             controlProps={
@@ -97,6 +98,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
         <Grid item lg={3} md={3} sm={3} xs={3} className={classes.inputLabel}>
           <InputSelect
             options={databaseList}
+            optionsReloadBasis={databaseList?.length}
             onChange={changeDatabase}
             value={selectedDatabase}
             controlProps={
@@ -112,6 +114,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
         <Grid item lg={3} md={3} sm={3} xs={3} className={classes.inputLabel}>
           <InputSelect
             options={schemaList}
+            optionsReloadBasis={schemaList?.length}
             onChange={changeSchema}
             value={selectedSchema}
             controlProps={

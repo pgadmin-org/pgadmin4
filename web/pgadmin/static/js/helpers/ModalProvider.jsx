@@ -271,7 +271,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       return;
     }
     useModalRef.closeModal(id);
-    if(reason == 'escapeKeyDown') {
+    if(reason == 'escapeKeyDown' || reason == undefined) {
       onClose?.();
     }
   };

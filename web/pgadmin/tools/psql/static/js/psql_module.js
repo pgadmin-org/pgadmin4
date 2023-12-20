@@ -161,7 +161,6 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       // theme colors
       return new terminal({
         cursorBlink: true,
-        macOptionIsMeta: true,
         scrollback: 5000,
       });
     },
