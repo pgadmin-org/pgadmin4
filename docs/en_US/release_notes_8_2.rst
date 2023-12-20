@@ -30,3 +30,4 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #6781 <https://github.com/pgadmin-org/pgadmin4/issues/6781>`_ -  Fixed an issue where export servers was not adding extension if not specified.
