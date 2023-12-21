@@ -472,10 +472,11 @@ class ManagePreferences:
 
 
 @app.command()
-def setup_db():
+def setup_db(app: Annotated[str, typer.Argument(
+        help="This argument doesn't require in CLI mode.")] = None):
     """Setup the configuration database."""
 
-    app = create_app()
+    app = app or create_app()
     create_app_data_directory(config)
 
     print("pgAdmin 4 - Application Initialisation")
