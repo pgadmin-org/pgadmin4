@@ -82,7 +82,7 @@ define('pgadmin.node.synonym', [
             }),
             synobjschema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
               // Exclude PPAS catalogs
-              let exclude_catalogs = ['pg_catalog', 'sys', 'dbo', 'pgagent', 'information_schema', 'dbms_job_procedure'];
+              let exclude_catalogs = ['pg_catalog', 'sys', 'pgagent', 'information_schema', 'dbms_job_procedure'];
               return m && _.indexOf(exclude_catalogs, m.label) == -1;
             }),
             getTargetObjectOptions: (targettype, synobjschema) =>

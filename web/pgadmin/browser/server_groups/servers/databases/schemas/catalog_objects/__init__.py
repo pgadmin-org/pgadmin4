@@ -49,9 +49,9 @@ class CatalogObjectModule(SchemaChildModule):
     # Flag for not to show node under Schema/Catalog node
     # By default its set to True to display node in schema/catalog
     # We do not want to display 'Catalog Objects' under Schema/Catalog
-    # but only in information_schema/sys/dbo
+    # but only in information_schema/sys
     CATALOG_DB_SUPPORTED = False
-    SUPPORTED_SCHEMAS = ['information_schema', 'sys', 'dbo']
+    SUPPORTED_SCHEMAS = ['information_schema', 'sys']
 
     def __init__(self, *args, **kwargs):
         """

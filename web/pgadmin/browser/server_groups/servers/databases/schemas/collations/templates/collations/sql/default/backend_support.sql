@@ -1,5 +1,5 @@
 SELECT
-     CASE WHEN nsp.nspname IN ('sys', 'dbo', 'information_schema') THEN true ELSE false END AS dbSupport
+     CASE WHEN nsp.nspname IN ('sys', 'information_schema') THEN true ELSE false END AS dbSupport
 FROM pg_catalog.pg_namespace nsp
 WHERE nsp.oid={{scid}}::oid
 AND (
