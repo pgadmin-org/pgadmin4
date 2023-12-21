@@ -30,5 +30,6 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #6781 <https://github.com/pgadmin-org/pgadmin4/issues/6193>`_ -  Fixed an issue where query tool title did not change after "Save As" until any new change is made.
+  | `Issue #6193 <https://github.com/pgadmin-org/pgadmin4/issues/6193>`_ -  Fixed an issue where query tool title did not change after "Save As" until any new change is made.
   | `Issue #6781 <https://github.com/pgadmin-org/pgadmin4/issues/6781>`_ -  Fixed an issue where export servers was not adding extension if not specified.
+  | `Issue #7070 <https://github.com/pgadmin-org/pgadmin4/issues/7070>`_ -  Fixed an issue where pgAgent job schedule dialog is not opening for edit.

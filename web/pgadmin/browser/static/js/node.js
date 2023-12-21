@@ -15,6 +15,7 @@ import ObjectNodeProperties from '../../../misc/properties/ObjectNodeProperties'
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 import toPx from '../../../static/js/to_px';
 import usePreferences from '../../../preferences/static/js/store';
+import { evalFunc } from '../../../static/js/utils';
 
 define('pgadmin.browser.node', [
   'sources/gettext', 'sources/pgadmin',
@@ -772,7 +773,7 @@ define('pgadmin.browser.node', [
         id: panelId,
         title: panelTitle,
         manualClose: true,
-        icon: `dialog-node-icon ${this.node_image?.(dialogProps.itemNodeData) ?? ('icon-' + this.type)}`,
+        icon: `dialog-node-icon ${evalFunc(this, this.node_image, dialogProps.itemNodeData) ?? ('icon-' + this.type)}`,
         content: (
           <ErrorBoundary>
             <ObjectNodeProperties
