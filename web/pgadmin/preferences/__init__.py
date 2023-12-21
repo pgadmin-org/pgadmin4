@@ -289,7 +289,7 @@ def save_pref(data):
     if not res:
         return False
     return True
-                            )
+
 
 @blueprint.route("/update", methods=["PUT"], endpoint="update_pref")
 @login_required
