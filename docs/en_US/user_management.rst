@@ -75,3 +75,142 @@ users, but otherwise have the same capabilities as those with the *User* role.
 * Click the *Help* button (?) to access online help.
 * Click the *Close* button to save work. You will be prompted to return to the
   dialog if your selections cannot be saved.
+
+
+Using 'setup.py' command line script
+####################################
+
+.. note:: To manage users using ``setup.py`` script, you must use
+        the Python interpreter that is normally used to run pgAdmin to ensure
+        that the required Python packages are available. In most packages, this
+        can be found in the Python Virtual Environment that can be found in the
+        installation directory. When using platform-native packages, the system
+        installation of Python may be the one used by pgAdmin.
+
+        When using PIP wheel package to install pgadmin, all the commands can be used
+        without Python interpreter.
+
+        Some of the examples:
+        pgadmin4-cli add-user user1@gmail.com password --role 1
+        pgadmin4-cli get-prefs
+
+Manage Users
+*************
+
+Add User
+*********
+
+To add user, invoke ``setup.py`` with ``add-user`` command line option, followed by
+email and password. role and active will be optional fields.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password
+
+    # to specify a role, admin and non-admin users:
+
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --nonadmin
+
+    # to specify user's status
+
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --active
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --inactive
+
+Add External User
+*****************
+
+To add external authentication user, invoke ``setup.py`` with ``add-external-user`` command line option,
+followed by email, password and authentication source. email, role and status will be optional fields.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap
+
+    # to specify an email:
+
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
+
+    # to specify a role, admin and non-admin user:
+
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --nonadmin
+
+    # to specify user's status
+
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap --active
+    /path/to/python /path/to/setup.py add-external-user user1@gmail.com ldap --inactive
+
+Update User
+***********
+
+To update user, invoke ``setup.py`` with ``update-user`` command line option, followed by
+email address. password, role and active are updatable fields.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py update-user user1@gmail.com --password new-password
+
+    # to specify a role, admin and non-admin user:
+
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+
+    # to specify user's status
+
+   /path/to/python /path/to/setup.py update-user user1@gmail.com password --active
+   /path/to/python /path/to/setup.py update-user user1@gmail.com password --inactive
+
+Update External User
+********************
+
+To update the external user, invoke ``setup.py`` with ``update-external-user`` command line option,
+followed by username and auth source. email, password, role and active are updatable fields.
+
+.. code-block:: bash
+
+    # to change email address:
+
+    /path/to/python /path/to/setup.py update-external-user ldap ldapuser --email newemail@gmail.com
+
+    # to specify a role, admin and non-admin user:
+
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+
+    # to change user's status
+
+   /path/to/python /path/to/setup.py update-user ldap ldapuser --active
+   /path/to/python /path/to/setup.py update-user ldap ldapuser --inactive
+
+Delete User
+***********
+
+To delete the user, invoke ``setup.py`` with ``delete-user`` command line option, followed by
+username and auth_source. For Internal users, email adress will be used instead of username.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py delete-user user1@gmail.com --auth-source internal
+    /path/to/python /path/to/setup.py delete-user ldapuser --auth-source ldap
+
+
+Get User
+********
+
+To get the user details, invoke ``setup.py`` with ``get-users`` command line option, followed by
+username/email address.
+
+.. code-block:: bash
+
+    # to list all the users:
+    /path/to/python /path/to/setup.py get-users
+
+    # to get the user's details:
+    /path/to/python /path/to/setup.py get-users --username user1@gmail.com
+
+
+Output
+******
+
+Each command output can be seen in the json format too by adding --json command line option.

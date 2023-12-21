@@ -24,7 +24,7 @@ from threading import Lock
 from .paths import get_storage_directory
 from .preferences import Preferences
 from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
-    MY_STORAGE, ACCESS_DENIED_MESSAGE
+    MY_STORAGE, ACCESS_DENIED_MESSAGE, INTERNAL
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
@@ -439,10 +439,11 @@ def add_value(attr_dict, key, value):
 
 
 def dump_database_servers(output_file, selected_servers,
-                          dump_user=current_user, from_setup=False):
+                          dump_user=current_user, from_setup=False,
+                          auth_source=INTERNAL):
     """Dump the server groups and servers.
     """
-    user = _does_user_exist(dump_user, from_setup)
+    user = _does_user_exist(dump_user, from_setup, auth_source)
     if user is None:
         return False, USER_NOT_FOUND % dump_user
 
@@ -456,7 +457,10 @@ def dump_database_servers(output_file, selected_servers,
     servers = Server.query.filter_by(user_id=user_id).all()
     server_dict = {}
     for server in servers:
-        if selected_servers is None or str(server.id) in selected_servers:
+        if selected_servers is None or (
+            isinstance(selected_servers, list) and len(selected_servers) == 0)\
+                or str(server.id) in selected_servers\
+                or server.id in selected_servers:
             # Get the group name
             group_name = ServerGroup.query.filter_by(
                 user_id=user_id, id=server.servergroup_id).first().name
@@ -592,10 +596,11 @@ def validate_json_data(data, is_admin):
 
 
 def load_database_servers(input_file, selected_servers,
-                          load_user=current_user, from_setup=False):
+                          load_user=current_user, from_setup=False,
+                          auth_source=INTERNAL):
     """Load server groups and servers.
     """
-    user = _does_user_exist(load_user, from_setup)
+    user = _does_user_exist(load_user, from_setup, auth_source)
     if user is None:
         return False, USER_NOT_FOUND % load_user
 
@@ -745,10 +750,11 @@ def load_database_servers(input_file, selected_servers,
     return True, msg
 
 
-def clear_database_servers(load_user=current_user, from_setup=False):
+def clear_database_servers(load_user=current_user, from_setup=False,
+                           auth_source=INTERNAL):
     """Clear groups and servers configurations.
     """
-    user = _does_user_exist(load_user, from_setup)
+    user = _does_user_exist(load_user, from_setup, auth_source)
     if user is None:
         return False
 
@@ -782,14 +788,16 @@ def clear_database_servers(load_user=current_user, from_setup=False):
         return False, error_msg
 
 
-def _does_user_exist(user, from_setup):
+def _does_user_exist(user, from_setup, auth_source=INTERNAL):
     """
     This function will check user is exist or not. If exist then return
     """
     if isinstance(user, User):
-        user = user.email
+        user = user.username
+        auth_source = user.auth_source
 
-    new_user = User.query.filter_by(email=user).first()
+    new_user = User.query.filter_by(username=user,
+                                    auth_source=auth_source).first()
 
     if new_user is None:
         print(USER_NOT_FOUND % user)

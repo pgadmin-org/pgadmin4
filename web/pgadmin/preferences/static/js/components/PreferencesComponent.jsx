@@ -378,6 +378,7 @@ export default function PreferencesComponent({ ...props }) {
           if(field.visible && _.isNull(firstElement)) {
             firstElement = field;
           }
+          field.tooltip = item._parent._metadata.data.name + ':' + item._metadata.data.name + ':' + field.name;
         });
         setLoadTree(crypto.getRandomValues(new Uint16Array(1)));
         initTreeTimeout = setTimeout(() => {
@@ -598,6 +599,10 @@ export default function PreferencesComponent({ ...props }) {
     window.open(url_for('help.static', { 'filename': 'preferences.html' }), 'pgadmin_help');
   };
 
+  const onDialogHelpCli = () => {
+    window.open(url_for('preferences.get_all_cli'), 'pgadmin_help');
+  };
+
   return (
     <Box height={'100%'}>
       <Box className={classes.root}>
@@ -623,6 +628,7 @@ export default function PreferencesComponent({ ...props }) {
         <Box className={classes.footer}>
           <Box>
             <PgIconButton data-test="dialog-help" onClick={onDialogHelp} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
+            <PgIconButton data-test="dialog-help-cli" onClick={onDialogHelpCli} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
           </Box>
           <Box className={classes.actionBtn} marginLeft="auto">
             <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>

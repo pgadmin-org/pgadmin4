@@ -549,3 +549,40 @@ Use the fields on the *Options* panel to specify storage preferences.
 
 * When the *Show hidden files and folders?* switch is set to *True*, the file
   manager will display hidden files and folders.
+
+
+Using 'setup.py' command line script
+####################################
+
+.. note:: To manage preferences using ``setup.py`` script, you must use
+        the Python interpreter that is normally used to run pgAdmin to ensure
+        that the required Python packages are available. In most packages, this
+        can be found in the Python Virtual Environment that can be found in the
+        installation directory. When using platform-native packages, the system
+        installation of Python may be the one used by pgAdmin.
+
+
+Manage Preferences
+******************
+
+Get Preferences
+***************
+To get all the preferences listed, invoke ``setup.py`` with ``get-prefs`` command line option.
+You can also get this mapping by hovering the individual preference in the Preference UI dialog.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py get-prefs
+
+Save Preferences
+****************
+To save the preferences, invoke ``setup.py`` with ``set-prefs`` command line option, followed by username,
+preference_key=value and auth_source. Multiple preference can be given too by a space separated.
+If auth_source is not given, Internal authentication will be consider by default.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true
+
+    # to specify an auth_source
+    /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true --auth-source=ldap

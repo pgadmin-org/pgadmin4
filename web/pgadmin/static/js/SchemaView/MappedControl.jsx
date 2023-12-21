@@ -212,7 +212,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
   'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName', 'hidden',
-  'withContainer', 'controlGridBasis', 'hasCheckbox', 'treeData'
+  'withContainer', 'controlGridBasis', 'hasCheckbox', 'treeData', 'title'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [

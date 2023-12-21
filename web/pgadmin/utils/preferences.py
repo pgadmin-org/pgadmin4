@@ -595,6 +595,34 @@ class Preferences():
         return None
 
     @classmethod
+    def save_cli(cls, mid, cid, pid, user_id, value):
+        """
+        save
+        Update the value for the preference in the configuration database.
+
+        :param mid: Module ID
+        :param cid: Category ID
+        :param pid: Preference ID
+        :param value: Value for the options
+        """
+
+        pref = UserPrefTable.query.filter_by(
+            pid=pid
+        ).filter_by(uid=user_id).first()
+
+        value = "{}".format(value)
+        if pref is None:
+            pref = UserPrefTable(
+                uid=user_id, pid=pid, value=value
+            )
+            db.session.add(pref)
+        else:
+            pref.value = value
+        db.session.commit()
+
+        return True, None
+
+    @classmethod
     def save(cls, mid, cid, pid, value):
         """
         save

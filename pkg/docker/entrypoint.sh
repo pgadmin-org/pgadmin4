@@ -70,9 +70,9 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
         # When running in Desktop mode, no user is created
         # so we have to import servers anonymously
         if [ "${PGADMIN_CONFIG_SERVER_MODE}" = "False" ]; then
-            /venv/bin/python3 /pgadmin4/setup.py --load-servers "${PGADMIN_SERVER_JSON_FILE}"
+            /venv/bin/python3 /pgadmin4/setup.py load-servers "${PGADMIN_SERVER_JSON_FILE}"
         else
-            /venv/bin/python3 /pgadmin4/setup.py --load-servers "${PGADMIN_SERVER_JSON_FILE}" --user "${PGADMIN_DEFAULT_EMAIL}"
+            /venv/bin/python3 /pgadmin4/setup.py load-servers "${PGADMIN_SERVER_JSON_FILE}" --user "${PGADMIN_DEFAULT_EMAIL}"
         fi
     fi
 fi

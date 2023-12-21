@@ -23,6 +23,7 @@ import threading
 import time
 import unittest
 import asyncio
+
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 if sys.platform == "win32":
@@ -89,9 +90,6 @@ if pgadmin_credentials and \
     os.environ['PGADMIN_SETUP_PASSWORD'] = str(pgadmin_credentials[
         'login_password'])
 
-# Execute the setup file
-exec(open("setup.py").read())
-
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
@@ -110,7 +108,6 @@ config.CONSOLE_LOG_LEVEL = WARNING
 
 # Create the app
 from pgAdmin4 import app
-# app = create_app()
 app.app_context().push()
 
 app.PGADMIN_INT_KEY = ''
