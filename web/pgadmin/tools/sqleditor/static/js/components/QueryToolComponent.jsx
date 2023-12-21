@@ -457,7 +457,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           current_file: fileName,
         });
         isDirtyRef.current = false;
-        setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName});
+        setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };

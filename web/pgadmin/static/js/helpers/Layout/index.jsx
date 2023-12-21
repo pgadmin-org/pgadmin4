@@ -146,7 +146,6 @@ export class LayoutDocker {
       ...panelData.internal,
       ...attrs,
     };
-    this.eventBus.fireEvent(LAYOUT_EVENTS.REFRESH_TITLE, panelId);
   }
 
   getInternalAttrs(panelId) {

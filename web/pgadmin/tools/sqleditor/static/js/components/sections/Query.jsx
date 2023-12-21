@@ -396,7 +396,6 @@ export default function Query() {
       }).then(()=>{
         lastSavedText.current = editorValue;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirty());
         pgAdmin.Browser.notifier.success(gettext('File saved successfully.'));
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false);
