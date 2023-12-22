@@ -12,7 +12,7 @@
 import ssl
 import config
 from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES, ANONYMOUS,\
-    SIMPLE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
+    SIMPLE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, set_config_parameter
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
@@ -32,6 +32,10 @@ ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
 
 ERROR_CONNECTING_LDAP_SERVER = gettext(
     "Error connecting to the LDAP server: {}\n")
+
+if config.LDAP_IGNORE_MALFORMED_SCHEMA:
+    set_config_parameter('IGNORE_MALFORMED_SCHEMA',
+                         config.LDAP_IGNORE_MALFORMED_SCHEMA)
 
 
 class LDAPAuthentication(BaseAuthentication):
