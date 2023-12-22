@@ -13,6 +13,7 @@ from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
 from flask_babel import gettext
 from flask_security import current_user, login_required
+from psycopg.conninfo import make_conninfo, conninfo_to_dict
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
@@ -1052,6 +1053,10 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
         connected = conn.connected()
 
+        # Get updated connection string to show on UI, if user change host,
+        # port and user when server is connected
+        display_connection_str = self.update_connection_string(manager, server)
+
         if server.shared and server.user_id != current_user.id:
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
@@ -1116,11 +1121,24 @@ class ServerNode(PGChildNodeView):
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
-            'connection_string': manager.display_connection_string,
+            'connection_string': display_connection_str,
             'prepare_threshold': server.prepare_threshold
         }
 
         return ajax_response(response)
+
+    @staticmethod
+    def update_connection_string(manager, server):
+        # Get current connection info in dict.
+        con_info = conninfo_to_dict(manager.display_connection_string)
+
+        # Update host, port and user
+        con_info['host'] = server.host
+        con_info['port'] = server.port
+        con_info['user'] = server.username
+
+        display_conn_string = make_conninfo(**con_info)
+        return display_conn_string
 
     @login_required
     def create(self, gid):

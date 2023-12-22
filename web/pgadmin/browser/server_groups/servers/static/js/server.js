@@ -210,6 +210,8 @@ define('pgadmin.node.server', [
                   d = t.itemData(i);
                   t.removeIcon(i);
                   d.connected = false;
+                  // Update server tree node data after server diconnected.
+                  t.update(i,d);
 
                   // Generate the event that server is disconnected
                   pgBrowser.Events.trigger(

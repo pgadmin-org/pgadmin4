@@ -20,7 +20,7 @@ import usePreferences from '../../preferences/static/js/store';
 import PropTypes from 'prop-types';
 
 export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeData, actionType, formType, onEdit, onSave, onClose,
-  isActive, setIsStale}) {
+  isActive, setIsStale, isStale}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
   const nodeType = nodeData?._type;
   const pgAdmin = usePgAdmin();
@@ -29,6 +29,8 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
   let urlBase = generateNodeUrl.call(node, treeNodeInfo, actionType, nodeData, false, node.url_jump_after_node);
   const api = getApiInstance();
+  // To check node data is updated or not
+  const staleCounter = useRef(0);
   const url = (isNew)=>{
     return urlBase + (isNew ? '' : nodeData._id);
   };
@@ -196,15 +198,24 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
     && formType !== 'tab') {
     schema.filterGroups = [gettext('Security')];
   }
+  // Reset stale counter.
+  useEffect(()=> {
+    staleCounter.current = 0;
+  }, [nodeData?._id]);
 
   const key = useMemo(()=>{
+    // If node data is updated increase the counter to show updated data.
+    if(isStale){
+      staleCounter.current += 1;
+    }
     if( actionType != 'properties' || isActive) {
-      return nodeData?._id;
+      // Not required any action.
     } else {
       initData = ()=>Promise.resolve({});
-      return nodeData?._id + '-0';
     }
-  }, [isActive, nodeData?._id]);
+
+    return nodeData?._id + '-' + staleCounter.current;
+  }, [isActive, nodeData?._id, isStale]);
 
   /* Fire at will, mount the DOM */
   return (
@@ -243,4 +254,5 @@ ObjectNodeProperties.propTypes = {
   onClose: PropTypes.func,
   isActive: PropTypes.bool,
   setIsStale: PropTypes.func,
+  isStale: PropTypes.bool,
 };
