@@ -378,7 +378,8 @@ def get_storage_params(amname):
         "heap": [],
         "ivfflat": ['lists']
     }
-    return storage_parameters[amname]
+    return [] if amname not in storage_parameters else \
+        storage_parameters[amname]
 
 
 def _get_column_details_to_update(old_data, data):
