@@ -7,7 +7,7 @@ const webpackAliasToJestModules = ()=>{
   Object.keys(webpackShimAlias).forEach((an)=>{
     // eg - sources: ./pgadmin/static/js/ to '^sources/(.*)$': '<rootDir>/pgadmin/static/js/$1'
     let ap = webpackShimAlias[an].replace(__dirname, '<rootDir>');
-    if(ap.endsWith('/')) {
+    if(ap.endsWith('/') || ap.endsWith('\\')) {
       ret[`^${an}/(.*)$`] = ap + '$1';
       return;
     }
