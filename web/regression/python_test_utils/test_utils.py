@@ -50,8 +50,23 @@ COVERAGE_CONFIG_FILE = os.path.join(CURRENT_PATH, ".coveragerc")
 file_name = os.path.realpath(__file__)
 
 
-def get_db_connection(db, username, password, host, port, sslmode="prefer"):
+def get_db_connection(db, username, password, host, port, sslmode="prefer",
+                      max_connections=None):
     """This function returns the connection object of psycopg"""
+    if max_connections:
+        with psycopg.connect(
+            dbname=db,
+            user=username,
+            password=password,
+            host=host,
+            port=port,
+            sslmode=sslmode,
+            autocommit=True,
+        ) as conn:
+            cur = conn.cursor()
+            cur.execute('ALTER SYSTEM SET max_connections TO 100;')
+            cur.execute('SELECT pg_reload_conf();')
+
     connection = psycopg.connect(
         dbname=db,
         user=username,

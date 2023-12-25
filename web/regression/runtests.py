@@ -496,7 +496,8 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
             server_passed['db_password'],
             server_passed['host'],
             server_passed['port'],
-            server_passed['sslmode']
+            server_passed['sslmode'],
+            max_connections=100
         )
 
         # Add the server version in server information
