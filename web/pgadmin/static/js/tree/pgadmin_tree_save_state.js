@@ -57,29 +57,47 @@ _.extend(pgBrowser.browserTreeState, {
 
   init: function() {
 
-    const save_tree_state_period = usePreferences.getState().getPreferences('browser', 'browser_tree_state_save_interval');
+    let saveIntervalId, offExpandFromPrevState, offRemoveFromTreeState, offUpdateTreeState;
+    usePreferences.subscribe((prefStore)=>{
+      // Subscribe to listen for preferences change
+      const save_tree_state_period = prefStore.getPreferences('browser', 'browser_tree_state_save_interval')?.value;
+      if (saveIntervalId) {
+        clearInterval(saveIntervalId);
+        saveIntervalId = null;
+        offEventListener();
+      }
+      if (!_.isUndefined(save_tree_state_period) &&  save_tree_state_period !== -1) {
+        // Save the tree state at given save_tree_state_period
+        saveIntervalId = setInterval(this.save_state, (save_tree_state_period) * 1000);
+        this.fetch_state.apply(this);
+        onEventListener();
+      } else if (!_.isUndefined(save_tree_state_period)) {
+        offEventListener();
+        getApiInstance().delete(url_for('settings.reset_tree_state'))
+          .catch(function(error) {
+            console.warn(
+              gettext('Error resetting the tree saved state."'), error);
+          });
+      }
+    });
 
-    if (!_.isUndefined(save_tree_state_period) &&  save_tree_state_period.value !== -1) {
-      // Save the tree state every 30 seconds
-      setInterval(this.save_state, (save_tree_state_period.value) * 1000);
-
-      // Fetch the tree last state while loading the browser tree
-      this.fetch_state.apply(this);
-
-      pgBrowser.Events.on('pgadmin:browser:tree:expand-from-previous-tree-state',
+    const onEventListener = () => {
+      // Register event listener
+      offExpandFromPrevState = pgBrowser.Events.on('pgadmin:browser:tree:expand-from-previous-tree-state',
         this.expand_from_previous_state.bind(this));
-      pgBrowser.Events.on('pgadmin:browser:tree:remove-from-tree-state',
+      offRemoveFromTreeState = pgBrowser.Events.on('pgadmin:browser:tree:remove-from-tree-state',
         this.remove_from_cache.bind(this));
-      pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
+      offUpdateTreeState = pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
         this.update_cache.bind(this));
-    } else if (!_.isUndefined(save_tree_state_period)) {
-      getApiInstance().delete(url_for('settings.reset_tree_state'))
-        .catch(function(error) {
-          console.warn(
-            gettext('Error resetting the tree saved state."'), error);
-        });
-    }
+    };
 
+    const offEventListener = () => {
+      // Deregister event listener
+      offExpandFromPrevState?.();
+      offRemoveFromTreeState?.();
+      offUpdateTreeState?.();
+    };
+    
   },
   save_state: function() {
 
