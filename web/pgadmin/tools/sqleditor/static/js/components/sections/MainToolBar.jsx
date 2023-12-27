@@ -275,6 +275,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.PROMOTE_TO_QUERY_TOOL, ()=>{
       setDisableButton('filter', true);
+      setHighlightFilter(false);
       setDisableButton('limit', true);
 
       setDisableButton('execute', false);

@@ -50,6 +50,9 @@ DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE = 'timestamp without time zone'
 ERROR_MSG_TRANS_ID_NOT_FOUND = gettext(
     'Transaction ID not found in the session.')
 
+ERROR_MSG_FAIL_TO_PROMOTE_QT = gettext('FAIL TO PROMOTE VIEW/EDIT DATA '
+                                       'TO QUERY TOOL')
+
 # Role module constant
 ERROR_FETCHING_ROLE_INFORMATION = gettext(
     'Error fetching role information from the database server.')

@@ -52,7 +52,8 @@ from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, \
-    ERROR_FETCHING_DATA, MY_STORAGE, ACCESS_DENIED_MESSAGE
+    ERROR_FETCHING_DATA, MY_STORAGE, ACCESS_DENIED_MESSAGE, \
+    ERROR_MSG_FAIL_TO_PROMOTE_QT
 from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
@@ -872,24 +873,11 @@ def start_query_tool(trans_id):
     )
 
     connect = 'connect' in request.args and request.args['connect'] == '1'
-    if 'gridData' in session and str(trans_id) in session['gridData']:
-        data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
-        if data.object_type == 'table':
-            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
-                data.sid)
-            default_conn = manager.connection(conn_id=data.conn_id,
-                                              did=data.did)
-            kwargs = {
-                'user': default_conn.manager.user,
-                'role': default_conn.manager.role,
-                'password': default_conn.manager.password,
-                'conn_id': data.conn_id
-            }
-            is_error, errmsg, conn_id, version = _init_sqleditor(
-                trans_id, connect, data.sgid, data.sid, data.did, **kwargs)
-
-            if is_error:
-                return errmsg
+    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
+    if is_error:
+        return make_json_response(success=0, errormsg=errmsg,
+                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
+                                  status=404)
 
     return StartRunningQuery(blueprint, current_app.logger).execute(
         sql, trans_id, session, connect
@@ -1734,6 +1722,29 @@ def get_object_name(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
+def check_and_upgrade_to_qt(trans_id, connect):
+    is_error = False
+    errmsg = None
+
+    if 'gridData' in session and str(trans_id) in session['gridData']:
+        data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
+        if data.object_type == 'table':
+            manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
+                data.sid)
+            default_conn = manager.connection(conn_id=data.conn_id,
+                                              did=data.did)
+            kwargs = {
+                'user': default_conn.manager.user,
+                'role': default_conn.manager.role,
+                'password': default_conn.manager.password,
+                'conn_id': data.conn_id
+            }
+            is_error, errmsg, conn_id, version = _init_sqleditor(
+                trans_id, connect, data.sgid, data.sid, data.did, **kwargs)
+
+    return is_error, errmsg
+
+
 @blueprint.route(
     '/auto_commit/<int:trans_id>',
     methods=["PUT", "POST"], endpoint='auto_commit'
@@ -1750,6 +1761,14 @@ def set_auto_commit(trans_id):
         auto_commit = json.loads(request.data)
     else:
         auto_commit = request.args or request.form
+
+    connect = 'connect' in request.args and request.args['connect'] == '1'
+
+    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
+    if is_error:
+        return make_json_response(success=0, errormsg=errmsg,
+                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
+                                  status=404)
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -1795,6 +1814,14 @@ def set_auto_rollback(trans_id):
         auto_rollback = json.loads(request.data)
     else:
         auto_rollback = request.args or request.form
+
+    connect = 'connect' in request.args and request.args['connect'] == '1'
+
+    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
+    if is_error:
+        return make_json_response(success=0, errormsg=errmsg,
+                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
+                                  status=404)
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -1847,6 +1874,14 @@ def auto_complete(trans_id):
     if len(data) > 0:
         full_sql = data[0]
         text_before_cursor = data[1]
+
+    connect = 'connect' in request.args and request.args['connect'] == '1'
+
+    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
+    if is_error:
+        return make_json_response(success=0, errormsg=errmsg,
+                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
+                                  status=404)
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
