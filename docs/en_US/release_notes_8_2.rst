@@ -35,5 +35,8 @@ Bug fixes
   | `Issue #6781 <https://github.com/pgadmin-org/pgadmin4/issues/6781>`_ -  Fixed an issue where export servers was not adding extension if not specified.
   | `Issue #6815 <https://github.com/pgadmin-org/pgadmin4/issues/6815>`_ -  Fixed an issue where pgAdmin imports servers to the wrong accounts for the external authentication.
   | `Issue #7002 <https://github.com/pgadmin-org/pgadmin4/issues/7002>`_ -  Fixed an issue where an error occurred in the SQL tab when using an extended index(pgroonga).
+  | `Issue #7041 <https://github.com/pgadmin-org/pgadmin4/issues/7041>`_ -  Fixed an issue where changes done to a node using edit dialog are not reflecting on the properties tab if the properties tab is active.
   | `Issue #7061 <https://github.com/pgadmin-org/pgadmin4/issues/7061>`_ -  Ensure that the 'Dbo' schema is displayed as a regular schema rather than a system catalog schema.
+  | `Issue #7064 <https://github.com/pgadmin-org/pgadmin4/issues/7064>`_ -  Fixed an error-'amname' when generating ERD for database containing parition tables.
+  | `Issue #7066 <https://github.com/pgadmin-org/pgadmin4/issues/7066>`_ -  Fixed an issue where object explorer last tree state was not saving.
   | `Issue #7070 <https://github.com/pgadmin-org/pgadmin4/issues/7070>`_ -  Fixed an issue where pgAgent job schedule dialog is not opening for edit.
