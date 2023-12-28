@@ -122,13 +122,17 @@ class UserManagementCollection extends BaseUISchema {
         }
       }, {
         id: 'newPassword', label: gettext('New password'), cell: 'password',
-        minWidth: 90, width: 90, deps: ['auth_source'],
+        minWidth: 90, width: 90, deps: ['auth_source'], controlProps: {
+          autoComplete: 'new-password',
+        },
         editable: (state)=> {
           return obj.isEditable(state) && state.auth_source == AUTH_METHODS['INTERNAL'];
         }
       }, {
         id: 'confirmPassword', label: gettext('Confirm password'), cell: 'password',
-        minWidth: 90, width: 90, deps: ['auth_source'],
+        minWidth: 90, width: 90, deps: ['auth_source'], controlProps: {
+          autoComplete: 'new-password',
+        },
         editable: (state)=> {
           return obj.isEditable(state) && state.auth_source == AUTH_METHODS['INTERNAL'];
         }

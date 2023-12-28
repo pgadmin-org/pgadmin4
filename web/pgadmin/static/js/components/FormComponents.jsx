@@ -396,7 +396,7 @@ export const InputText = forwardRef(({
         'aria-describedby': helpid,
         ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
         style: inputStyle || {},
-        autoComplete: 'new-password',
+        autoComplete: _.isUndefined(controlProps?.autoComplete) ? 'nope' : controlProps?.autoComplete,
         'data-testid': 'input-text',
         title: controlProps?.title,
       }}
@@ -812,7 +812,7 @@ OptionView.propTypes = {
 function CustomSelectInput(props) {
   const { maxLength } = props.selectProps;
   return (
-    <RSComponents.Input {...props} maxLength={maxLength} />
+    <RSComponents.Input {...props} maxLength={maxLength} autoComplete='off' autoCorrect='off' spellCheck='off' />
   );
 }
 CustomSelectInput.propTypes = {

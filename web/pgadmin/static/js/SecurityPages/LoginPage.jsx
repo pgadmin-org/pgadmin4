@@ -10,7 +10,7 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
   const [form, setForm] = useState(({email: '', password: '', language: userLanguage}));
 
   // Hide login form if auth source is only oauth2 and/or kerberos. #5386
-  const showLoginForm = !((authSources?.includes('oauth2') || authSources?.includes('kerberos')) && authSources?.length == 1 || (authSources?.includes('oauth2') 
+  const showLoginForm = !((authSources?.includes('oauth2') || authSources?.includes('kerberos')) && authSources?.length == 1 || (authSources?.includes('oauth2')
   && authSources?.includes('kerberos')) && authSources?.length == 2);
 
   const onTextChange = (n, val)=>{
@@ -33,8 +33,10 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
           {showLoginForm &&
           <>
             <input name="csrf_token" defaultValue={csrfToken} hidden/>
-            <InputText name="email" value={form.email} onChange={(v)=>onTextChange('email', v)} placeholder={gettext('Email Address / Username')} autoFocus />
-            <InputText name="password" value={form.password} onChange={(v)=>onTextChange('password', v)} type="password" placeholder={gettext('Password')} />
+            <InputText name="email" value={form.email} onChange={(v)=>onTextChange('email', v)} placeholder={gettext('Email Address / Username')} autoFocus
+              controlProps={{autoComplete: null}} />
+            <InputText name="password" value={form.password} onChange={(v)=>onTextChange('password', v)} type="password" placeholder={gettext('Password')}
+              controlProps={{autoComplete: null}} />
             <Box textAlign="right" marginTop="-10px">
               <a style={{color: 'inherit'}} href={forgotPassUrl}>{gettext('Forgotten your password?')}</a>
             </Box>
