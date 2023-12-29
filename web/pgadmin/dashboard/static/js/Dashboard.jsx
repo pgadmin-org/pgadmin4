@@ -695,6 +695,8 @@ function Dashboard({
         ? treeNodeInfo.server.user.can_signal_backend
         : false;
 
+    let maintenanceActiveSessions = dashData.filter((data) => data.state === 'active'&&
+      maintenance_database === data.datname);
     if (
       treeNodeInfo.server &&
       treeNodeInfo.server.user &&
@@ -727,7 +729,8 @@ function Dashboard({
       // If it is the last active connection on maintenance db then error out
     } else if (
       maintenance_database == row.original.datname &&
-      row.original.state == 'active'
+      row.original.state == 'active' &&
+      maintenanceActiveSessions.length === 1
     ) {
       if (is_cancel_session) {
         txtMessage = gettext(
