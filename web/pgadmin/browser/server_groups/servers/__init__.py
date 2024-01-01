@@ -8,6 +8,7 @@
 ##########################################################################
 
 import json
+from collections import OrderedDict
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
@@ -1131,13 +1132,21 @@ class ServerNode(PGChildNodeView):
     def update_connection_string(manager, server):
         # Get current connection info in dict.
         con_info = conninfo_to_dict(manager.display_connection_string)
+        db_name = con_info['dbname'] if 'dbname' in con_info else None
 
-        # Update host, port and user
-        con_info['host'] = server.host
-        con_info['port'] = server.port
-        con_info['user'] = server.username
+        if 'host' in con_info and 'port' in con_info and 'user' in con_info:
+            con_info.pop('host')
+            con_info.pop('port')
+            con_info.pop('user')
 
-        display_conn_string = make_conninfo(**con_info)
+        # Create ordered dict to maintain the order of updated host, port,
+        # dbname, user.
+        con_info_ord = OrderedDict([('host', server.host),
+                                    ('port', server.port),
+                                    ('dbname', db_name),
+                                    ('user', server.username)])
+        con_info_ord.update(con_info)
+        display_conn_string = make_conninfo(**con_info_ord)
         return display_conn_string
 
     @login_required
