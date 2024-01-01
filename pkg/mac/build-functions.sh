@@ -266,8 +266,8 @@ _complete_bundle() {
     sed -i '' "s/%APPVER%/${APP_LONG_VERSION}/g" "${BUNDLE_DIR}/Contents/Info.plist"
     sed -i '' "s/%APPID%/org.pgadmin.pgadmin4/g" "${BUNDLE_DIR}/Contents/Info.plist"
     for FILE in "${BUNDLE_DIR}"/Contents/Resources/*.lproj/InfoPlist.strings; do
-        sed -i '' 's/CFBundleGetInfoString =.*/CFBundleGetInfoString = "Copyright (C) 2013 - 2023, The pgAdmin Development Team";/g' "${FILE}"
-        sed -i '' 's/NSHumanReadableCopyright =.*/NSHumanReadableCopyright = "Copyright (C) 2013 - 2023, The pgAdmin Development Team";/g' "${FILE}"
+        sed -i '' 's/CFBundleGetInfoString =.*/CFBundleGetInfoString = "Copyright (C) 2013 - 2024, The pgAdmin Development Team";/g' "${FILE}"
+        sed -i '' 's/NSHumanReadableCopyright =.*/NSHumanReadableCopyright = "Copyright (C) 2013 - 2024, The pgAdmin Development Team";/g' "${FILE}"
         echo CFBundleDisplayName = \""${APP_NAME}"\"\; >> "${FILE}"
     done
 
