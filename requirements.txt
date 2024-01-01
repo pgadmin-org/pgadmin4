@@ -41,7 +41,7 @@ cryptography==41.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
-eventlet==0.33.3
+eventlet==0.34.2
 httpagentparser==1.9.*
 user-agents==2.2.0
 pywinpty==2.0.*; sys_platform=="win32"

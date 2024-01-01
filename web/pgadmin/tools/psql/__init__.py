@@ -11,12 +11,8 @@ import os
 import select
 import struct
 import config
-import sys
-if sys.version_info >= (3, 12):
-    import subprocess
-else:
-    from eventlet.green import subprocess
 import re
+from eventlet.green import subprocess
 from sys import platform as _platform
 from config import PG_DEFAULT_DRIVER
 from flask import Response, request
