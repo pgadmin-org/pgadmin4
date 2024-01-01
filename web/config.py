@@ -721,6 +721,13 @@ LDAP_CERT_FILE = ''
 LDAP_KEY_FILE = ''
 
 ##########################################################################
+
+# Some flaky LDAP servers returns malformed schema. If True, no exception
+# will be raised and schema is thrown away but authentication will be done.
+# This parameter should remain False, as recommended.
+LDAP_IGNORE_MALFORMED_SCHEMA = False
+
+##########################################################################
 # Kerberos Configuration
 ##########################################################################
 
