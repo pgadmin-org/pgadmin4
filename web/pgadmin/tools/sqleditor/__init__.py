@@ -436,6 +436,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         current_app.logger.error(e)
         return True, internal_server_error(errormsg=str(e)), '', ''
 
+    pref = Preferences.module('sqleditor')
+
+    if kwargs.get('auto_commit', None) is None:
+        kwargs['auto_commit'] = pref.preference('auto_commit').get()
+    if kwargs.get('auto_rollback', None) is None:
+        kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
+
     try:
         conn = manager.connection(conn_id=conn_id,
                                   auto_reconnect=False,
@@ -443,12 +450,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                                   array_to_string=True,
                                   **({"database": dbname} if dbname is not None
                                      else {"did": did}))
-        pref = Preferences.module('sqleditor')
 
         if connect:
-            kwargs['auto_commit'] = pref.preference('auto_commit').get()
-            kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
-
             status, msg, is_ask_password, user, role, password = _connect(
                 conn, **kwargs)
             if not status:
@@ -496,8 +499,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         sql_grid_data = session['gridData']
 
     # Set the value of auto commit and auto rollback specified in Preferences
-    command_obj.set_auto_commit(pref.preference('auto_commit').get())
-    command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
+    command_obj.set_auto_commit(kwargs['auto_commit'])
+    command_obj.set_auto_rollback(kwargs['auto_rollback'])
 
     # Set the value of database name, that will be used later
     command_obj.dbname = dbname if dbname else None
@@ -540,11 +543,17 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
                 req_args['recreate'] == '1'):
             connect = False
 
+        # Old transaction
+        _, _, _, trans_obj, session_obj = \
+            check_transaction_status(trans_id)
+
         new_trans_id = str(secrets.choice(range(1, 9999999)))
         kwargs = {
             'user': data['user'],
             'role': data['role'] if 'role' in data else None,
-            'password': data['password'] if 'password' in data else None
+            'password': data['password'] if 'password' in data else None,
+            'auto_commit': getattr(trans_obj, 'auto_commit', None),
+            'auto_rollback': getattr(trans_obj, 'auto_rollback', None),
         }
 
         is_error, errmsg, conn_id, version = _init_sqleditor(
@@ -555,11 +564,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
             return errmsg
         else:
             try:
-                # Check the transaction and connection status
-                status, error_msg, conn, trans_obj, session_obj = \
-                    check_transaction_status(trans_id)
-
-                status, error_msg, new_conn, new_trans_obj, new_session_obj = \
+                _, _, _, new_trans_obj, new_session_obj = \
                     check_transaction_status(new_trans_id)
 
                 new_session_obj['primary_keys'] = session_obj[
