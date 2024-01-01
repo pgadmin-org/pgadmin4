@@ -37,6 +37,7 @@ Bug fixes
   | `Issue #6815 <https://github.com/pgadmin-org/pgadmin4/issues/6815>`_ -  Fixed an issue where pgAdmin imports servers to the wrong accounts for the external authentication.
   | `Issue #7002 <https://github.com/pgadmin-org/pgadmin4/issues/7002>`_ -  Fixed an issue where an error occurred in the SQL tab when using an extended index(pgroonga).
   | `Issue #7041 <https://github.com/pgadmin-org/pgadmin4/issues/7041>`_ -  Fixed an issue where changes done to a node using edit dialog are not reflecting on the properties tab if the properties tab is active.
+  | `Issue #7059 <https://github.com/pgadmin-org/pgadmin4/issues/7059>`_ -  Fixed an issue where DB Restrictions were not visible on the server dialog.
   | `Issue #7061 <https://github.com/pgadmin-org/pgadmin4/issues/7061>`_ -  Ensure that the 'Dbo' schema is displayed as a regular schema rather than a system catalog schema.
   | `Issue #7062 <https://github.com/pgadmin-org/pgadmin4/issues/7062>`_ -  Introduce LDAP configuration parameter LDAP_IGNORE_MALFORMED_SCHEMA to ignore fetching schema from the LDAP server.
   | `Issue #7064 <https://github.com/pgadmin-org/pgadmin4/issues/7064>`_ -  Fixed an error-'amname' when generating ERD for database containing partition tables.

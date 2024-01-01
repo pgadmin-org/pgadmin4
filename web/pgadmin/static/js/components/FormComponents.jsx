@@ -853,7 +853,7 @@ export function flattenSelectOptions(options) {
 
 function getRealValue(options, value, creatable, formatter) {
   let realValue = null;
-  if(options?.length == 0) {
+  if(options?.length == 0 && !creatable) {
     return realValue;
   }
   if (_.isArray(value)) {
