@@ -331,7 +331,7 @@ function UserManagementDialog({onClose}) {
           setRoles(res.data);
         })
         .catch((err)=>{
-          pgAdmin.Browser.notifier.error(err);
+          pgAdmin.Browser.notifier.error(parseApiError(err));
         });
     } catch (error) {
       pgAdmin.Browser.notifier.error(parseApiError(error));

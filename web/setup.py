@@ -36,15 +36,15 @@ if 'SERVER_MODE' in globals():
 else:
     builtins.SERVER_MODE = None
 
-from pgadmin.model import db, Version, User,\
+from pgadmin.model import db, Version, User, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
-from pgadmin.utils import clear_database_servers, dump_database_servers,\
+from pgadmin.utils import clear_database_servers, dump_database_servers, \
     load_database_servers
 from pgadmin.setup import db_upgrade, create_app_data_directory
 from typing import Optional, List
 from typing_extensions import Annotated
-from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2,\
+from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
 from pgadmin.tools.user_management import create_user, delete_user, update_user
 from enum import Enum
@@ -74,10 +74,13 @@ class ManageServers:
         print('SQLite pgAdmin config:', config.SQLITE_PATH)
         print('----------')
 
-        app = create_app(config.APP_NAME + '-cli')
-        with app.test_request_context():
-            dump_database_servers(output_file, server, dump_user, True,
-                                  auth_source)
+        try:
+            app = create_app(config.APP_NAME + '-cli')
+            with app.test_request_context():
+                dump_database_servers(output_file, server, dump_user, True,
+                                      auth_source)
+        except Exception as e:
+            print(str(e))
 
     @app.command()
     def load_servers(input_file: str, user: Optional[str] = None,
@@ -101,12 +104,15 @@ class ManageServers:
         print('SQLite pgAdmin config:', config.SQLITE_PATH)
         print('----------')
 
-        app = create_app(config.APP_NAME + '-cli')
-        with app.test_request_context():
-            if replace:
-                clear_database_servers(load_user, True, auth_source)
-            load_database_servers(input_file, None, load_user, True,
-                                  auth_source)
+        try:
+            app = create_app(config.APP_NAME + '-cli')
+            with app.test_request_context():
+                if replace:
+                    clear_database_servers(load_user, True, auth_source)
+                load_database_servers(input_file, None, load_user, True,
+                                      auth_source)
+        except Exception as e:
+            print(str(e))
 
 
 class AuthExtTypes(str, Enum):
@@ -227,19 +233,26 @@ class ManageUsers:
             else:
                 status, msg = update_user(uid, data)
                 if status:
-                    _user = ManageUsers.get_users(username=email,
-                                                  auth_source=INTERNAL,
-                                                  console=False)
+                    _user = ManageUsers.get_users_from_db(username=email,
+                                                          auth_source=INTERNAL,
+                                                          console=False)
                     ManageUsers.display_user(_user[0], console, json)
                 else:
                     print('Something went wrong. ' + str(msg))
 
     @app.command()
-    def get_users(username:Optional[str] = None,
+    def get_users(username: Optional[str] = None,
                   auth_source: AuthType = None,
-                  console:Optional[bool] = True,
-                  json:Optional[bool] = False
+                  json: Optional[bool] = False
                   ):
+        ManageUsers.get_users_from_db(username, auth_source, True, json)
+
+    @app.command()
+    def get_users_from_db(username: Optional[str] = None,
+                          auth_source: AuthType = None,
+                          console: Optional[bool] = True,
+                          json: Optional[bool] = False
+                          ):
         """Get user(s) details."""
         app = create_app(config.APP_NAME + '-cli')
         usr = None
@@ -264,9 +277,9 @@ class ManageUsers:
                          'locked': u.locked
                          }
                 users_data.append(_data)
-                if console:
-                    ManageUsers.display_user(_data, False, json)
-            if not console:
+            if console:
+                ManageUsers.display_user(users_data, console, json)
+            else:
                 return users_data
 
     @app.command()
@@ -312,7 +325,7 @@ class ManageUsers:
     def create_user(data, console, json):
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            username = data['username'] if 'username' in data else\
+            username = data['username'] if 'username' in data else \
                 data['email']
             uid = ManageUsers.get_user(username=username,
                                        auth_source=data['auth_source'])
@@ -342,25 +355,30 @@ class ManageUsers:
             return usr.id
 
     def display_user(data, _console, _json):
-        if _json:
-            json_formatted_str = jsonlib.dumps(data, indent=0)
-            console.print(json_formatted_str)
-        else:
-            table = Table(title="User Details", box=box.ASCII)
-            table.add_column("Field", style="green")
-            table.add_column("Value", style="green")
+        if _console:
+            if _json:
+                json_formatted_str = jsonlib.dumps(data, indent=0)
+                console.print(json_formatted_str)
+            else:
+                if isinstance(data, dict):
+                    data = [data]
+                for _data in data:
+                    table = Table(title="User Details", box=box.ASCII)
+                    table.add_column("Field", style="green")
+                    table.add_column("Value", style="green")
 
-            if 'username' in data:
-                table.add_row("Username", data['username'])
-            if 'email' in data:
-                table.add_row("Email", data['email'])
-            table.add_row("auth_source", data['auth_source'])
-            table.add_row("role",
-                          "Admin" if data['role'] and data['role'] != 2 else
-                          "Non-admin")
-            table.add_row("active",
-                          'True' if data['active'] else 'False')
-            console.print(table)
+                    if 'username' in _data:
+                        table.add_row("Username", _data['username'])
+                    if 'email' in _data:
+                        table.add_row("Email", _data['email'])
+                    table.add_row("auth_source", _data['auth_source'])
+                    table.add_row("role",
+                                  "Admin" if _data['role'] and
+                                  _data['role'] != 2 else
+                                  "Non-admin")
+                    table.add_row("active",
+                                  'True' if _data['active'] else 'False')
+                    console.print(table)
 
 
 class ManagePreferences:
@@ -376,7 +394,10 @@ class ManagePreferences:
             return usr.id
 
     @app.command()
-    def get_prefs(id: Optional[bool] = None, json: Optional[bool] = False):
+    def get_prefs(json: Optional[bool] = False):
+        return ManagePreferences.fetch_prefs()
+
+    def fetch_prefs(id: Optional[bool] = None, json: Optional[bool] = False):
         """Get Preferences List."""
         app = create_app(config.APP_NAME + '-cli')
         table = Table(title="Pref Details", box=box.ASCII)
@@ -419,13 +440,14 @@ class ManagePreferences:
                     json_formatted_str = jsonlib.dumps(
                         {"Preferences": all_preferences},
                         indent=0)
-                    console.print(json_formatted_str)
+                    print(json_formatted_str)
                 else:
-                    console.print(table)
+                    print(table)
 
     @app.command()
     def set_prefs(username, pref_options: List[str],
                   auth_source: AuthType = AuthType.internal,
+                  console: Optional[bool] = True,
                   json: Optional[bool] = False):
         """Set User preferences."""
         user_id = ManagePreferences.get_user(username, auth_source)
@@ -436,24 +458,23 @@ class ManagePreferences:
             print("User not found.")
             return
 
-        prefs = ManagePreferences.get_prefs(True)
+        prefs = ManagePreferences.fetch_prefs(True)
         app = create_app(config.APP_NAME + '-cli')
+        invalid_prefs = []
+        valid_prefs = []
         with app.app_context():
             from pgadmin.preferences import save_pref
             for opt in pref_options:
                 val = opt.split("=")
+                if len(val) <= 1:
+                    print('Preference key=value is required, example: '
+                          '[green]sqleditor:editor:comma_first=true[/green]')
+                    return
                 final_opt = val[0].split(":")
                 val = val[1]
                 f = ":".join(final_opt)
                 if f in prefs:
                     ids = prefs[f].split(":")
-                    save_pref({
-                        'mid': ids[0],
-                        'category_id': ids[1],
-                        'id': ids[2],
-                        'name': final_opt[2],
-                        'user_id': user_id,
-                        'value': val})
                     _row = {
                         'mid': ids[0],
                         'category_id': ids[1],
@@ -461,14 +482,23 @@ class ManagePreferences:
                         'name': final_opt[2],
                         'user_id': user_id,
                         'value': val}
-                    if json:
-                        json_formatted_str = jsonlib.dumps(_row, indent=0)
-                        console.print(json_formatted_str)
-                    else:
-                        table.add_row(jsonlib.dumps(_row))
+                    save_pref(_row)
+                    valid_prefs.append(_row)
 
-            if not json:
-                console.print(table)
+                    if not json:
+                        table.add_row(jsonlib.dumps(_row))
+                else:
+                    invalid_prefs.append(f)
+
+            if len(invalid_prefs) >= 1:
+                print("Preference(s) [red]{0}[/red] not found.".format(
+                    (', ').join(
+                        invalid_prefs)))
+
+            if not json and console:
+                print(table)
+            elif json and console:
+                print(jsonlib.dumps(valid_prefs, indent=2))
 
 
 @app.command()
