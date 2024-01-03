@@ -793,8 +793,8 @@ def _does_user_exist(user, from_setup, auth_source=INTERNAL):
     This function will check user is exist or not. If exist then return
     """
     if isinstance(user, User):
-        user = user.username
         auth_source = user.auth_source
+        user = user.username
 
     new_user = User.query.filter_by(username=user,
                                     auth_source=auth_source).first()
