@@ -36,15 +36,15 @@ if 'SERVER_MODE' in globals():
 else:
     builtins.SERVER_MODE = None
 
-from pgadmin.model import db, Version, User,\
+from pgadmin.model import db, Version, User, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
-from pgadmin.utils import clear_database_servers, dump_database_servers,\
+from pgadmin.utils import clear_database_servers, dump_database_servers, \
     load_database_servers
 from pgadmin.setup import db_upgrade, create_app_data_directory
 from typing import Optional, List
 from typing_extensions import Annotated
-from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2,\
+from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
 from pgadmin.tools.user_management import create_user, delete_user, update_user
 from enum import Enum
@@ -234,25 +234,25 @@ class ManageUsers:
                 status, msg = update_user(uid, data)
                 if status:
                     _user = ManageUsers.get_users_from_db(username=email,
-                                                  auth_source=INTERNAL,
-                                                  console=False)
+                                                          auth_source=INTERNAL,
+                                                          console=False)
                     ManageUsers.display_user(_user[0], console, json)
                 else:
                     print('Something went wrong. ' + str(msg))
 
     @app.command()
-    def get_users(username:Optional[str] = None,
+    def get_users(username: Optional[str] = None,
                   auth_source: AuthType = None,
-                  json:Optional[bool] = False
+                  json: Optional[bool] = False
                   ):
         ManageUsers.get_users_from_db(username, auth_source, True, json)
 
     @app.command()
-    def get_users_from_db(username:Optional[str] = None,
-                  auth_source: AuthType = None,
-                  console:Optional[bool] = True,
-                  json:Optional[bool] = False
-                  ):
+    def get_users_from_db(username: Optional[str] = None,
+                          auth_source: AuthType = None,
+                          console: Optional[bool] = True,
+                          json: Optional[bool] = False
+                          ):
         """Get user(s) details."""
         app = create_app(config.APP_NAME + '-cli')
         usr = None
@@ -325,7 +325,7 @@ class ManageUsers:
     def create_user(data, console, json):
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
-            username = data['username'] if 'username' in data else\
+            username = data['username'] if 'username' in data else \
                 data['email']
             uid = ManageUsers.get_user(username=username,
                                        auth_source=data['auth_source'])
@@ -373,7 +373,8 @@ class ManageUsers:
                         table.add_row("Email", _data['email'])
                     table.add_row("auth_source", _data['auth_source'])
                     table.add_row("role",
-                                  "Admin" if _data['role'] and _data['role'] != 2 else
+                                  "Admin" if _data['role'] and
+                                  _data['role'] != 2 else
                                   "Non-admin")
                     table.add_row("active",
                                   'True' if _data['active'] else 'False')
@@ -490,8 +491,9 @@ class ManagePreferences:
                     invalid_prefs.append(f)
 
             if len(invalid_prefs) >= 1:
-                print("Preference(s) [red]{0}[/red] not found.".format((', ').join(
-                    invalid_prefs)))
+                print("Preference(s) [red]{0}[/red] not found.".format(
+                    (', ').join(
+                        invalid_prefs)))
 
             if not json and console:
                 print(table)
