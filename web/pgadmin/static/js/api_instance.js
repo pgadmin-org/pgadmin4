@@ -28,11 +28,16 @@ export function parseApiError(error, withData=false) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     if(error.response.headers['content-type'] == 'application/json') {
-      let errormsg = error.response.data.errormsg;
-      let data = error.response.data.data;
-      // If we want to use data which came with error set withData 
-      // flag to true.
-      return withData ? {errormsg, data} : errormsg;
+      let err_resp_data = error.response.data;
+      if (err_resp_data.response != undefined && Array.isArray(err_resp_data.response.errors)) {
+        return err_resp_data.response.errors[0];
+      } else {
+        let errormsg = err_resp_data.errormsg;
+        let data = error.response.data.data;
+        // If we want to use data which came with error set withData
+        // flag to true.
+        return withData ? {errormsg, data} : errormsg;
+      }
     } else {
       return error.response.statusText;
     }

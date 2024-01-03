@@ -584,5 +584,8 @@ If auth_source is not given, Internal authentication will be consider by default
 
     /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true
 
+    # To specify multiple preferences options
+    /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true sqleditor:keyboard_shortcuts:toggle_case=true
+
     # to specify an auth_source
     /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true --auth-source=ldap
