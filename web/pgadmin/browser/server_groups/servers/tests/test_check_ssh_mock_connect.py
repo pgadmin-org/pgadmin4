@@ -74,6 +74,7 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
                     self.tunnel_password = tunnel_password
                     self.tunnel_keep_alive = tunnel_keep_alive
                     self.service = service
+                    self.save_password = 0
                     self.shared = None
 
             mock_server_obj = TestMockServer(

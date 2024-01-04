@@ -1519,14 +1519,21 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
 
         crypt_key = None
-        if config.DISABLED_LOCAL_PASSWORD_STORAGE or \
-                not keyring.get_password(KEY_RING_SERVICE_NAME,
-                                         KEY_RING_DESKTOP_USER.format(
-                                             current_user.username)):
-            # Get enc key
-            crypt_key_present, crypt_key = get_crypt_key()
-            if not crypt_key_present:
-                raise CryptKeyMissing
+        if server.save_password:
+            if config.DISABLED_LOCAL_PASSWORD_STORAGE or \
+                not keyring.get_password(
+                    KEY_RING_SERVICE_NAME,
+                    KEY_RING_DESKTOP_USER.format(current_user.username)):
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    raise CryptKeyMissing
+
+        else:
+            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                # Get enc key
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    raise CryptKeyMissing
 
         # If server using SSH Tunnel
         if server.use_ssh_tunnel:
