@@ -269,22 +269,11 @@
                 }
               ],
               "name": "emp",
-              "cltype": "\"char\"",
-              "typdefault": null,
-              "attnotnull": false,
-              "collname": "pg_catalog.\"default\"",
+              "cltype": "text",
+              "attlen": null,
               "attnum": 1,
-              "inheritedfrom": null,
-              "inheritedid": null,
-              "attstattarget": -1,
-              "attoptions": null,
-              "attfdwoptions": [
-                "column_name=ColOptionValue"
-              ],
-              "attndims": 0,
-              "atttypmod": -1,
-              "fulltype": "text",
-              "isdup": false
+              "attnotnull": false,
+              "typdefault": null
             }
           ]
         }
