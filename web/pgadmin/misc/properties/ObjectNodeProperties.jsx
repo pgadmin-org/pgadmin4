@@ -27,17 +27,29 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
       pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
-  let urlBase = generateNodeUrl.call(node, treeNodeInfo, actionType, nodeData, false, node.url_jump_after_node);
+  let isActionTypeCopy = actionType == 'copy';
+  // If the actionType is set to 'copy' it is necessary to retrieve the details
+  // of the existing node. Therefore, specify the actionType as 'edit' to
+  // facilitate this process.
+  let urlBase = generateNodeUrl.call(node, treeNodeInfo, isActionTypeCopy ? 'edit' : actionType, nodeData, false, node.url_jump_after_node);
   const api = getApiInstance();
   // To check node data is updated or not
   const staleCounter = useRef(0);
   const url = (isNew)=>{
     return urlBase + (isNew ? '' : nodeData._id);
   };
-  const isDirty = useRef(false); // usefull for warnings
+  const isDirty = useRef(false); // useful for warnings
   let warnOnCloseFlag = true;
   const confirmOnCloseReset = usePreferences().getPreferencesForModule('browser').confirm_on_properties_close;
   let updatedData =  ['table', 'partition'].includes(nodeType) && !_.isEmpty(nodeData.rows_cnt) ? {rows_cnt: nodeData.rows_cnt} : undefined;
+  let schema = node.getSchema.call(node, treeNodeInfo, nodeData);
+
+  // We only have two actionTypes, 'create' and 'edit' to initiate the dialog,
+  // so if isActionTypeCopy is true, we should revert back to "create" since
+  // we are duplicating the node.
+  if (isActionTypeCopy) {
+    actionType = 'create';
+  }
 
   let onError = (err)=> {
     if(err.response){
@@ -51,7 +63,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
 
   /* Called when dialog is opened in edit mode, promise required */
   let initData = ()=>new Promise((resolve, reject)=>{
-    if(actionType === 'create') {
+    if(actionType === 'create' && !isActionTypeCopy) {
       resolve({});
     } else {
       // Do not call the API if tab is not active.
@@ -60,7 +72,13 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
       }
       api.get(url(false))
         .then((res)=>{
-          resolve(res.data);
+          let data = res.data;
+          if (isActionTypeCopy) {
+            // Delete the idAttribute while copying the node.
+            delete data[schema.idAttribute];
+            data = node.copy(data);
+          }
+          resolve(data);
         })
         .catch((err)=>{
           pgAdmin.Browser.notifier.pgNotifier('error', err, gettext('Failed to fetch data'), function(msg) {
@@ -192,7 +210,6 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
     inCatalog: inCatalog,
   };
 
-  let schema = node.getSchema.call(node, treeNodeInfo, nodeData);
   // Show/Hide security group for nodes under the catalog
   if('catalog' in treeNodeInfo
     && formType !== 'tab') {

@@ -44,8 +44,27 @@ define('pgadmin.node.server', [
       title: function(d, action) {
         if(action == 'create') {
           return gettext('Register - %s', this.label);
+        } else if (action == 'copy') {
+          return gettext('Copy Server - %s', d.label);
         }
         return d._label??'';
+      },
+      copy: function(d) {
+        // This function serves the purpose of facilitating modifications
+        // during the server copying process.
+
+        // Changing the name of the server to "Copy of <existing name>"
+        d.name = gettext('Copy of %s', d.name);
+        // If existing server is a shared server from another user then
+        // copy this server as a local server for the current user.
+        if (d?.shared && d.user_id != current_user?.id) {
+          d.gid = null;
+          d.user_id = current_user?.id;
+          d.shared = false;
+          d.server_owner = null;
+          d.shared_username = null;
+        }
+        return d;
       },
       Init: function() {
         /* Avoid multiple registration of same menus */
@@ -135,6 +154,11 @@ define('pgadmin.node.server', [
           data: {
             data_disabled: gettext('SSH Tunnel password is not saved for selected server.'),
           },
+        }, {
+          name: 'copy_server', node: 'server', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          label: gettext('Copy Server...'), data: {action: 'copy'},
+          priority: 4,
         }]);
 
         _.bindAll(this, 'connection_lost');
@@ -501,7 +525,9 @@ define('pgadmin.node.server', [
       },
       getSchema: (treeNodeInfo, itemNodeData)=>{
         return new ServerSchema(
-          getNodeListById(pgBrowser.Nodes['server_group'], treeNodeInfo, itemNodeData),
+          getNodeListById(pgBrowser.Nodes['server_group'], treeNodeInfo, itemNodeData, {},
+          // Filter out shared servers group, it should not be visible.
+            (server)=> !server.is_shared),
           itemNodeData.user_id,
           {
             gid: treeNodeInfo['server_group']._id,

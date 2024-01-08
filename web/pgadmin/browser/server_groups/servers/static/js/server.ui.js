@@ -370,6 +370,14 @@ export default class ServerSchema extends BaseUISchema {
   validate(state, setError) {
     let errmsg = null;
 
+    if(isEmptyString(state.gid)) {
+      errmsg = gettext('Server group must be specified.');
+      setError('gid', errmsg);
+      return true;
+    } else {
+      setError('gid', null);
+    }
+
     if (isEmptyString(state.service)) {
       errmsg = gettext('Either Host name or Service must be specified.');
       if(isEmptyString(state.host)) {

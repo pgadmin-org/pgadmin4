@@ -11,6 +11,7 @@ import CloudWizard from './CloudWizard';
 import getApiInstance from '../../../../static/js/api_instance';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import pgAdmin from 'sources/pgadmin';
+import current_user from 'pgadmin.user_management.current_user';
 
 // Cloud Wizard
 define('pgadmin.misc.cloud', [
@@ -43,7 +44,7 @@ define('pgadmin.misc.cloud', [
         priority: 15,
         label: gettext('Deploy Cloud Instance...'),
         icon: 'wcTabIcon icon-server',
-        enable: true,
+        enable: 'canCreate',
         data: {action: 'create'},
         category: 'register',
         node: 'server_group',
@@ -55,7 +56,7 @@ define('pgadmin.misc.cloud', [
         priority: 15,
         label: gettext('Deploy Cloud Instance...'),
         icon: 'wcTabIcon icon-server',
-        enable: true,
+        enable: 'canCreate',
         data: {action: 'create'},
         category: 'register',
         node: 'server',
@@ -63,6 +64,10 @@ define('pgadmin.misc.cloud', [
 
       pgBrowser.add_menus(menus);
       return this;
+    },
+    canCreate: function(node){
+      let serverOwner = node.user_id;
+      return (serverOwner == current_user.id || _.isUndefined(serverOwner));
     },
 
     // Callback to draw Wizard Dialog

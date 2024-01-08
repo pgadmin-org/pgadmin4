@@ -39,8 +39,9 @@ def get_icon_css_class(group_id, group_user_id,
         group_user_id != current_user.id and
             ServerGroupModule.has_shared_server(group_id)):
         default_val = 'icon-server_group_shared'
+        return default_val, True
 
-    return default_val
+    return default_val, False
 
 
 SG_NOT_FOUND_ERROR = 'The specified server group could not be found.'
@@ -86,14 +87,16 @@ class ServerGroupModule(BrowserPluginModule):
             ).order_by("id")
 
         for idx, group in enumerate(groups):
+            icon_class, is_shared = get_icon_css_class(group.id, group.user_id)
             yield self.generate_browser_node(
                 "%d" % (group.id), None,
                 group.name,
-                get_icon_css_class(group.id, group.user_id),
+                icon_class,
                 True,
                 self.node_type,
                 can_delete=True if idx > 0 else False,
-                user_id=group.user_id
+                user_id=group.user_id,
+                is_shared=is_shared
             )
 
     @property
@@ -264,15 +267,17 @@ class ServerGroupView(NodeView):
                     status=410, success=0, errormsg=e.message
                 )
 
+        icon_class, is_shared = get_icon_css_class(gid, servergroup.user_id)
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 gid,
                 None,
                 servergroup.name,
-                get_icon_css_class(gid, servergroup.user_id),
+                icon_class,
                 True,
                 self.node_type,
-                can_delete=True  # This is user created hence can deleted
+                can_delete=True,  # This is user created hence can delete
+                is_shared=is_shared
             )
         )
 
@@ -311,16 +316,18 @@ class ServerGroupView(NodeView):
                 data['id'] = sg.id
                 data['name'] = sg.name
 
+                icon_class, is_shared = get_icon_css_class(sg.id, sg.user_id)
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
                         "%d" % sg.id,
                         None,
                         sg.name,
-                        get_icon_css_class(sg.id, sg.user_id),
+                        icon_class,
                         True,
                         self.node_type,
                         # This is user created hence can deleted
-                        can_delete=True
+                        can_delete=True,
+                        is_shared=is_shared
                     )
                 )
             except exc.IntegrityError:
@@ -399,14 +406,17 @@ class ServerGroupView(NodeView):
                 groups = ServerGroup.query.filter_by(user_id=current_user.id)
 
             for group in groups:
+                icon_class, is_shared = get_icon_css_class(group.id,
+                                                           group.user_id)
                 nodes.append(
                     self.blueprint.generate_browser_node(
                         "%d" % group.id,
                         None,
                         group.name,
-                        get_icon_css_class(group.id, group.user_id),
+                        icon_class,
                         True,
-                        self.node_type
+                        self.node_type,
+                        is_shared=is_shared
                     )
                 )
         else:
@@ -417,12 +427,15 @@ class ServerGroupView(NodeView):
                     errormsg=gettext("Could not find the server group.")
                 )
 
+            icon_class, is_shared = get_icon_css_class(group.id,
+                                                       group.user_id)
             nodes = self.blueprint.generate_browser_node(
                 "%d" % (group.id), None,
                 group.name,
-                get_icon_css_class(group.id, group.user_id),
+                icon_class,
                 True,
-                self.node_type
+                self.node_type,
+                is_shared=is_shared
             )
 
         return make_json_response(data=nodes)

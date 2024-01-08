@@ -95,6 +95,11 @@ define('pgadmin.browser.node', [
       }
       return d._label??'';
     },
+    copy: function(d) {
+      // This function serves the purpose of facilitating modifications
+      // during the copying process of any node.
+      return d;
+    },
     hasId: true,
     ///////
     // Initialization function
@@ -404,6 +409,36 @@ define('pgadmin.browser.node', [
             item: nodeItem,
             nodeData: nodeData,
             actionType: 'create',
+            onSave: onSave,
+            onClose: onClose,
+          });
+        } else if (args.action == 'copy') {
+          // This else-if block is used to copy the existing object and
+          // open the respective dialog. Add the copied object into the object
+          // browser tree upon the 'Save' button click.
+          treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
+          const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
+          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onSave = (newNodeData)=>{
+            // Clear the cache for this node now.
+            setTimeout(()=>{
+              this.clear_cache.apply(this, item);
+            }, 0);
+            try {
+              pgBrowser.Events.trigger(
+                'pgadmin:browser:tree:add', _.clone(newNodeData.node),
+                {'server_group': treeNodeInfo['server_group']}
+              );
+            } catch (e) {
+              console.warn(e.stack || e);
+            }
+            onClose();
+          };
+          this.showPropertiesDialog(panelId, panelTitle, {
+            treeNodeInfo: treeNodeInfo,
+            item: nodeItem,
+            nodeData: nodeData,
+            actionType: 'copy',
             onSave: onSave,
             onClose: onClose,
           });

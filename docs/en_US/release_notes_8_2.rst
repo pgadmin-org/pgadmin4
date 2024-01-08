@@ -22,6 +22,7 @@ New features
 
   | `Issue #2483 <https://github.com/pgadmin-org/pgadmin4/issues/2483>`_ -  Administer pgAdmin Users and Preferences Using the Command Line Interface (CLI).
   | `Issue #5908 <https://github.com/pgadmin-org/pgadmin4/issues/5908>`_ -  Allow users to convert View/Edit table into a Query tool to enable editing the SQL generated.
+  | `Issue #6085 <https://github.com/pgadmin-org/pgadmin4/issues/6085>`_ -  Added copy server support, allowing the duplication of existing servers with the option to make certain modifications.
   | `Issue #7016 <https://github.com/pgadmin-org/pgadmin4/issues/7016>`_ -  Added keep-alive support for SSH sessions when connecting to a PostgreSQL server via an SSH tunnel.
 
 Housekeeping
