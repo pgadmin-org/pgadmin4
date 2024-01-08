@@ -724,18 +724,19 @@ def set_master_password():
 
         try:
             all_server = Server.query.all()
+            saved_password_servers = [server for server in all_server if
+                                      server.save_password]
             # pgAdmin will use the OS password manager to store the server
             # password, here migrating the existing saved server password to
             # OS password manager
-            if keyring.get_password(
+            if len(saved_password_servers) > 0 and (keyring.get_password(
                     KEY_RING_SERVICE_NAME, KEY_RING_DESKTOP_USER.format(
-                        desktop_user.username)) or enc_key:
+                        desktop_user.username)) or enc_key):
                 is_migrated = False
 
-                for server in all_server:
+                for server in saved_password_servers:
                     if enc_key:
-                        if server.password and config.ALLOW_SAVE_PASSWORD \
-                                and server.save_password:
+                        if server.password and config.ALLOW_SAVE_PASSWORD:
                             name = KEY_RING_USERNAME_FORMAT.format(server.name,
                                                                    server.id)
                             password = decrypt(server.password,
