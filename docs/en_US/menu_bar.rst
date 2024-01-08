@@ -42,6 +42,12 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | Option                      | Action                                                                                                                   |
 +=============================+==========================================================================================================================+
+| *Register*                  |                                                                                                                          |
+|                             |                                                                                                                          |
+|   1) *Server*               | Click to open the :ref:`Server <server_dialog>` dialog to register a server.                                             |
+|                             |                                                                                                                          |
+|   2) *Deploy Cloud Instance*| Click to open the :ref:`Cloud Deployment <cloud_deployment>` dialog to deploy an cloud instance.                         |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Change Password...*        | Click to open the :ref:`Change Password... <change_password_dialog>` dialog to change your password.                     |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Clear Saved Password*      | If you have saved the database server password, click to clear the saved password.                                       |
@@ -51,6 +57,8 @@ following options (in alphabetical order):
 |                             | Enable only when password is already saved.                                                                              |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Connect Server*            | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Copy Server...*            | Click to copy the currently selected server.                                                                             |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
 |                             | Your selection opens a *Create* dialog for creating a new object.                                                        |

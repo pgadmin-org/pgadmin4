@@ -43,6 +43,10 @@ describe('ServerSchema', ()=>{
     let setError = jest.fn();
 
     schemaObj.validate(state, setError);
+    expect(setError).toHaveBeenCalledWith('gid', 'Server group must be specified.');
+
+    state.gid = 1;
+    schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('host', 'Either Host name or Service must be specified.');
 
     state.host = '127.0.0.1';

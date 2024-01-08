@@ -1201,7 +1201,7 @@ class ServerNode(PGChildNodeView):
             )
 
         # To check ssl configuration
-        is_ssl, connection_params = self.check_ssl_fields(connection_params)
+        _, connection_params = self.check_ssl_fields(connection_params)
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
@@ -1221,8 +1221,8 @@ class ServerNode(PGChildNodeView):
                 config.ALLOW_SAVE_PASSWORD else 0,
                 comment=data.get('comment', None),
                 role=data.get('role', None),
-                db_res=','.join(data['db_res'])
-                if 'db_res' in data else None,
+                db_res=','.join(data['db_res']) if 'db_res' in data and
+                isinstance(data['db_res'], list) else None,
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
@@ -1763,7 +1763,7 @@ class ServerNode(PGChildNodeView):
 
         if conn.connected():
             # Execute the command for reload configuration for the server
-            status, rid = conn.execute_scalar("SELECT pg_reload_conf();")
+            status, _ = conn.execute_scalar("SELECT pg_reload_conf();")
 
             if not status:
                 return internal_server_error(
@@ -1782,7 +1782,7 @@ class ServerNode(PGChildNodeView):
 
     def create_restore_point(self, gid, sid):
         """
-        This method will creates named restore point
+        This method will create named restore point
 
         Args:
             gid: Server group ID
