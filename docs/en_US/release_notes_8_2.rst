@@ -46,3 +46,4 @@ Bug fixes
   | `Issue #7078 <https://github.com/pgadmin-org/pgadmin4/issues/7078>`_ -  Fixed an issue where user is not able to cancel or terminate active queries from dashboard.
   | `Issue #7082 <https://github.com/pgadmin-org/pgadmin4/issues/7082>`_ -  Fixed browser autocomplete related issues on pgAdmin authentication related pages.
   | `Issue #7091 <https://github.com/pgadmin-org/pgadmin4/issues/7091>`_ -  Fixed an issue where auto commit/rollback setting not persisting across query tool connection change.
+  | `Issue #7104 <https://github.com/pgadmin-org/pgadmin4/issues/7104>`_ -  Fixed an issue where Schema Diff not generating difference for missing columns.

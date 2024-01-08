@@ -663,7 +663,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             )
 
         except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, exc_value, _ = sys.exc_info()
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -702,7 +702,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     status=200
                 )
         except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, exc_value, _ = sys.exc_info()
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -726,8 +726,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         try:
             # Get SQL to create Foreign Table
-            SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=self.request)
+            SQL, _ = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                  data=self.request)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -904,7 +904,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         col_data = []
         for c in data['columns']:
-            if ('inheritedfrom' not in c) or (c['inheritedfrom'] is None):
+            if c.get('inheritedfrom', None) is None:
                 col_data.append(c)
 
         data['columns'] = col_data
@@ -974,8 +974,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             except TypeError:
                 data[k] = v
         try:
-            SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=data, foid=foid)
+            SQL, _ = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                  data=data, foid=foid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -1189,8 +1189,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 c['schema'] = data['schema']
                 c['table'] = data['name']
                 # Sql for drop column
-                if 'inheritedfrom' not in c or \
-                        ('inheritedfrom' in c and c['inheritedfrom'] is None):
+                if c.get('inheritedfrom', None) is None:
                     column_sql += render_template("/".join(
                         [self.foreign_table_column_template_path,
                          self._DELETE_SQL]),
@@ -1233,8 +1232,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                         old_col_data['cltype'])
 
                 # Sql for alter column
-                if 'inheritedfrom' not in c and \
-                        'inheritedfromtable' not in c:
+                if c.get('inheritedfrom', None) is None and \
+                        c.get('inheritedfromtable', None) is None:
                     column_sql += render_template("/".join(
                         [self.foreign_table_column_template_path,
                          self._UPDATE_SQL]),
@@ -1251,8 +1250,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
                 c = column_utils.convert_length_precision_to_string(c)
 
-                if 'inheritedfrom' not in c and \
-                        'inheritedfromtable' not in c:
+                if c.get('inheritedfrom', None) is None and \
+                        c.get('inheritedfromtable', None) is None:
                     column_sql += render_template("/".join(
                         [self.foreign_table_column_template_path,
                          self._CREATE_SQL]),
@@ -1416,7 +1415,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                             'edit_mode_types_multi.sql']),
                                   type_ids=",".join(map(lambda x: str(x),
                                                         edit_types.keys())))
-            status, res = self.conn.execute_2darray(SQL)
+            _, res = self.conn.execute_2darray(SQL)
             for row in res['rows']:
                 edit_types[row['main_oid']] = sorted(row['edit_types'])
 
@@ -1759,9 +1758,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=data, foid=oid,
-                                     is_schema_diff=True)
+            sql, _ = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                  data=data, foid=oid, is_schema_diff=True)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

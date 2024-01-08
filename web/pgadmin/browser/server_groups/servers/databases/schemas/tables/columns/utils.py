@@ -336,7 +336,7 @@ def _parse_format_col_for_edit(data, columns, column_acl):
         if action in columns:
             final_columns = []
             for c in columns[action]:
-                if 'inheritedfrom' not in c:
+                if c.get('inheritedfrom', None) is None:
                     final_columns.append(c)
 
             _parse_column_actions(final_columns, column_acl)
@@ -440,7 +440,7 @@ def fetch_length_precision(data):
     length = False
     precision = False
     if 'elemoid' in data:
-        length, precision, typeval = \
+        length, precision, _ = \
             DataTypeReader.get_length_precision(data['elemoid'])
 
     # Set length and precision to None
