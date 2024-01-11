@@ -24,13 +24,13 @@ export default class RoleSchema extends BaseUISchema {
       rolcreaterole: false,
       rolcreatedb: false,
       rolinherit: true,
-      rolcatupdate: false,
       rolreplication: false,
       rolmembership: [],
       rolmembers: [],
       rolvaliduntil: null,
       seclabels: [],
       variables: [],
+      rolbypassrls: false,
     });
     this.getVariableSchema = getVariableSchema;
     this.getMembershipSchema = getMembershipSchema;
@@ -124,7 +124,7 @@ export default class RoleSchema extends BaseUISchema {
         type: 'switch',
         group: gettext('Privileges'),
         depChange: (state) => {
-          state.rolcatupdate = state.rolcreaterole = state.rolcreatedb =  state.rolsuper;
+          state.rolcreaterole = state.rolcreatedb = state.rolbypassrls = state.rolsuper;
         },
         disabled: obj.readOnly,
       },
@@ -141,18 +141,6 @@ export default class RoleSchema extends BaseUISchema {
         disabled: obj.readOnly,
       },
       {
-        id: 'rolcatupdate', label: gettext('Update catalog?'),
-        max_version: 90400,
-        group: gettext('Privileges'),
-        type: 'switch',
-        disabled: (state) => {
-          return !state.rolsuper;
-        },
-        readonly: () => {
-          return !(obj.user.is_superuser || obj.user.can_create_role);
-        }
-      },
-      {
         id: 'rolinherit', group: gettext('Privileges'),
         label: gettext('Inherit rights from the parent roles?'),
         type: 'switch',
@@ -163,6 +151,12 @@ export default class RoleSchema extends BaseUISchema {
         label: gettext('Can initiate streaming replication and backups?'),
         type: 'switch',
         min_version: 90100,
+        disabled: obj.readOnly,
+      },
+      {
+        id: 'rolbypassrls', group: gettext('Privileges'),
+        label: gettext('Bypass RLS?'),
+        type: 'switch',
         disabled: obj.readOnly,
       },
       {

@@ -33,7 +33,11 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 
 {% if data.rolreplication %}
 	REPLICATION{% else %}
-	NOREPLICATION{% endif %}{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
+	NOREPLICATION{% endif %}{% endif %}{% if 'rolbypassrls' in data %}
+
+{% if data.rolbypassrls %}
+	BYPASSRLS{% else %}
+	NOBYPASSRLS{% endif %}{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}
 {% endif %}{% if 'rolvaliduntil' in data %}

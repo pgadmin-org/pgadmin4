@@ -631,7 +631,6 @@ rolmembership:{
 
             self.role = row['rolname']
             self.rolCanLogin = row['rolcanlogin']
-            self.rolCatUpdate = row['rolcatupdate']
             self.rolSuper = row['rolsuper']
 
         return False, ''
@@ -677,7 +676,8 @@ rolmembership:{
                 self.alterKeys = [
                     'rolcanlogin', 'rolsuper', 'rolcreatedb',
                     'rolcreaterole', 'rolinherit', 'rolreplication',
-                    'rolconnlimit', 'rolvaliduntil', 'rolpassword'
+                    'rolconnlimit', 'rolvaliduntil', 'rolpassword',
+                    'rolbypassrls'
                 ] if self.manager.version >= 90200 else [
                     'rolcanlogin', 'rolsuper', 'rolcreatedb',
                     'rolcreaterole', 'rolinherit', 'rolconnlimit',
@@ -977,7 +977,6 @@ rolmembership:{
             conn=self.conn,
             role=self.role,
             rolCanLogin=self.rolCanLogin,
-            rolCatUpdate=self.rolCatUpdate,
             rolSuper=self.rolSuper,
             alterKeys=self.alterKeys
         )
@@ -1034,7 +1033,6 @@ rolmembership:{
                     conn=self.conn,
                     role=self.role,
                     rolCanLogin=self.rolCanLogin,
-                    rolCatUpdate=self.rolCatUpdate,
                     rolSuper=self.rolSuper,
                     alterKeys=self.alterKeys
                 ).strip('\n')

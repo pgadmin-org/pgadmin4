@@ -57,15 +57,13 @@ Use the *Privileges* tab to grant privileges to the role.
   drop roles. The default value is *No*.
 * Move the *Create databases* switch to the *Yes* position to control whether a
   role can create databases. The default value is *No*.
-* The *Update catalog?* switch is disabled until the role is given superuser
-  privileges. Move the *Update catalogs?* switch to the *No* position to control
-  whether a role can update catalogs. The default value is *Yes* when the
-  *Superuser* switch is in the *Yes* position.
 * Move the *Inherit rights from the parent roles?* switch to the *No* position
   if a role does not inherit privileges. The default value is *Yes*.
 * Move the *Can initiate streaming replication and backups?* switch to the *Yes*
   position to control whether a role can initiate streaming replication or put
   the system in and out of backup mode. The default value is *No*.
+* Move the *Bypass RLS?* switch to the *Yes* position to control whether a
+  role can bypasses every row-level security (RLS) policy. The default value is *No*.
 
 .. image:: images/role_membership.png
     :alt: Role dialog membership tab

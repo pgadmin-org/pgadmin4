@@ -808,7 +808,7 @@ define('pgadmin.browser.node', [
         id: panelId,
         title: panelTitle,
         manualClose: true,
-        icon: `dialog-node-icon ${evalFunc(this, this.node_image, dialogProps.itemNodeData) ?? ('icon-' + this.type)}`,
+        icon: `dialog-node-icon ${evalFunc(this, this.node_image, dialogProps.nodeData) ?? ('icon-' + this.type)}`,
         content: (
           <ErrorBoundary>
             <ObjectNodeProperties

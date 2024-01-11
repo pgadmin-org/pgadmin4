@@ -13,7 +13,8 @@ FROM
 		CASE WHEN rolcreatedb THEN 'CREATEDB' ELSE 'NOCREATEDB' END || E'\n  ' ||
 		CASE WHEN rolcreaterole THEN 'CREATEROLE' ELSE 'NOCREATEROLE' END || E'\n  ' ||
 		-- PostgreSQL >=  9.1
-		CASE WHEN rolreplication THEN 'REPLICATION' ELSE 'NOREPLICATION' END ||
+		CASE WHEN rolreplication THEN 'REPLICATION' ELSE 'NOREPLICATION' END || E'\n  ' ||
+		CASE WHEN rolbypassrls THEN 'BYPASSRLS' ELSE 'NOBYPASSRLS' END ||
 		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
 {% if show_password %}
         (SELECT CASE
