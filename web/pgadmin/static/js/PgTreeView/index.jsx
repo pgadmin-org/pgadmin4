@@ -198,7 +198,7 @@ function CollectionArrow({ node, tree, selectedNodeIds }) {
   };
   return (
     <span onClick={toggleNode} >
-      {node.isInternal ? <ToggleArrowIcon node={node} /> : null}
+      {node.isInternal && node?.children.length > 0 ? <ToggleArrowIcon node={node} /> : null}
     </span>
   );
 }

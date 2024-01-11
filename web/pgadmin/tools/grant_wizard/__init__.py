@@ -274,7 +274,8 @@ def properties(sid, did, node_id, node_type):
     )
 
 
-def get_data(sid, did, node_id, node_type, server_data):
+def get_data(sid, did, node_id, node_type, server_data,
+             return_emtpy_schema=False):
     get_schema_sql_url = '/sql/get_schemas.sql'
 
     # unquote encoded url parameter
@@ -306,46 +307,80 @@ def get_data(sid, did, node_id, node_type, server_data):
             if len(res) > 0:
                 res_data.extend(res['rows'])
 
+    empty_schema_list = []
     for row in node_types:
+        is_empty_schema = True
         if 'oid' in row:
             node_id = row['oid']
 
         if ntype == 'schema':
             status, res = _get_rows_for_type(
                 conn, 'function', server_prop, node_id)
+
             _append_rows(status, res, 'function')
 
             status, res = _get_rows_for_type(
                 conn, 'procedure', server_prop, node_id)
+
             _append_rows(status, res, 'procedure')
 
             status, res = _get_rows_for_type(
                 conn, 'trigger_function', server_prop, node_id)
+
             _append_rows(status, res, 'trigger function')
 
             status, res = _get_rows_for_type(
                 conn, 'sequence', server_prop, node_id)
+
+            if len(res['rows']):
+                is_empty_schema = False
+
             _append_rows(status, res, 'sequence')
 
             status, res = _get_rows_for_type(
                 conn, 'table', server_prop, node_id)
+
+            if len(res['rows']):
+                is_empty_schema = False
+
             _append_rows(status, res, 'table')
 
             status, res = _get_rows_for_type(
                 conn, 'view', server_prop, node_id)
+
+            if len(res['rows']):
+                is_empty_schema = False
+
             _append_rows(status, res, 'view')
 
             status, res = _get_rows_for_type(
                 conn, 'mview', server_prop, node_id)
+
+            if len(res['rows']):
+                is_empty_schema = False
+
             _append_rows(status, res, 'materialized view')
 
             status, res = _get_rows_for_type(
                 conn, 'foreign_table', server_prop, node_id)
+
+            if len(res['rows']):
+                is_empty_schema = False
+
             _append_rows(status, res, 'foreign table')
 
             status, res = _get_rows_for_type(
                 conn, 'package', server_prop, node_id)
+
+            if (type(res) is list and len(res) > 0) or (
+                    'rows' in res and len(res['rows']) > 0):
+                is_empty_schema = False
+
             _append_rows(status, res, 'package')
+
+            if is_empty_schema and row['name'] not in empty_schema_list:
+                empty_schema_list.append(row['name'])
+
         else:
             status, res = _get_rows_for_type(conn, ntype, server_prop, node_id)
             _append_rows(status, res, 'function')
@@ -355,6 +390,9 @@ def get_data(sid, did, node_id, node_type, server_data):
         msg = gettext('Unable to fetch the {} objects'.format(
             ", ".join(failed_objects))
         )
+    if return_emtpy_schema:
+        return res_data, msg, empty_schema_list
+
     return res_data, msg
 
 
