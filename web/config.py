@@ -910,6 +910,14 @@ AUTO_DISCOVER_SERVERS = True
 SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 
 #############################################################################
+# ENABLE_SERVER_PASS_EXEC_CMD is used to enable/disable Password exec command
+# field in server properties. This is used to specify a shell command to be
+# executed to retrieve a password to be used for server authentication.
+# This setting is applicable only for server mode.
+#############################################################################
+ENABLE_SERVER_PASS_EXEC_CMD = False
+
+#############################################################################
 # Patch the default config with custom config and other manipulations
 #############################################################################
 from pgadmin.evaluate_config import evaluate_and_patch_config

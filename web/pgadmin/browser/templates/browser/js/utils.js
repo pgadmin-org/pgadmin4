@@ -71,6 +71,9 @@ define('pgadmin.browser.utils',
   /* Minimum password length */
   pgAdmin['password_length_min'] = '{{password_length_min}}';
 
+  /* Enable server password exec command */
+  pgAdmin['enable_server_passexec_cmd'] = '{{enable_server_passexec_cmd}}';
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',

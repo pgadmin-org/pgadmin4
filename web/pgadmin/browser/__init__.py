@@ -568,6 +568,7 @@ def utils():
             shared_storage_list=shared_storage_list,
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
+            enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
