@@ -58,8 +58,8 @@ export default class RoleSchema extends BaseUISchema {
   memberDataFormatter(rawData) {
     let members = '';
     if(_.isObject(rawData)) {
-      let withAdmin = '';
       rawData.forEach(member => {
+        let withAdmin = '';
         if(member.admin) { withAdmin = ' [WITH ADMIN]';}
 
         if (members.length > 0) { members += ', '; }
