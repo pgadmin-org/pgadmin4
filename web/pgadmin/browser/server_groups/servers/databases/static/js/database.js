@@ -421,7 +421,7 @@ define('pgadmin.node.database', [
                 setTimeout(function() {
                   if (msg == 'CRYPTKEY_SET') {
                     connect_to_database(_model, _data, _tree, _item, _wasConnected);
-                  } else {
+                  } else if (msg != 'ALERT_CALLED') {
                     showServerPassword(
                       gettext('Connect to database'),
                       msg, _model, _data, _tree, _item, _status,
