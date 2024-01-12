@@ -580,8 +580,9 @@ def objects(sid, did, scid=None):
         server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
             server_info['version'])
 
-    res, msg = get_data(sid, did, scid, 'schema' if scid else 'database',
-                        server_info)
+    res, msg, empty_schema_list = get_data(sid, did, scid,
+                                           'schema' if scid else 'database',
+                                           server_info, True)
 
     tree_data = {
         'table': [],
@@ -643,6 +644,14 @@ def objects(sid, did, scid=None):
 
         ch['children'] = children
 
+    for empty_schema in empty_schema_list:
+        schema_group.append({
+            'id': empty_schema,
+            'name': empty_schema,
+            'icon': 'icon-schema',
+            'children': [],
+            'is_schema': True,
+        })
     return make_json_response(
         data=schema_group,
         success=200
