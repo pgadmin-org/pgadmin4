@@ -324,7 +324,11 @@ export default function FormView({
         let currentControl = <MappedFormControl
           inputRef={(ele)=>{
             if(firstEleRef && firstEleID.current === field.id) {
-              firstEleRef.current = ele;
+              if(typeof firstEleRef == 'function') {
+                firstEleRef(ele);
+              } else {
+                firstEleRef.current = ele;
+              }
             }
           }}
           state={value}
