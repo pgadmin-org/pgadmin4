@@ -44,8 +44,6 @@ class PSQLSocketDisconnect(BaseTestGenerator):
         self.test_client.emit('start_process', data, namespace='/pty')
         self.test_client.get_received('/pty')
 
-        self.test_client.disconnect(namespace='/pty')
-
     def tearDown(self):
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
@@ -53,3 +51,4 @@ class PSQLSocketDisconnect(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
+        connection.close()
