@@ -496,11 +496,6 @@ def create_app(app_name=None):
         'SECURITY_EMAIL_VALIDATOR_ARGS': config.SECURITY_EMAIL_VALIDATOR_ARGS
     }))
 
-    if 'SCRIPT_NAME' in os.environ and os.environ["SCRIPT_NAME"]:
-        app.config.update(dict({
-            'APPLICATION_ROOT': os.environ["SCRIPT_NAME"]
-        }))
-
     app.config.update(dict({
         'INTERNAL': INTERNAL,
         'LDAP': LDAP,
@@ -833,7 +828,7 @@ def create_app(app_name=None):
                     config.COOKIE_DEFAULT_DOMAIN != 'localhost':
                 domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
             response.set_cookie('PGADMIN_INT_KEY', value=request.args['key'],
-                                path=config.COOKIE_DEFAULT_PATH,
+                                path=config.SESSION_COOKIE_PATH,
                                 secure=config.SESSION_COOKIE_SECURE,
                                 httponly=config.SESSION_COOKIE_HTTPONLY,
                                 samesite=config.SESSION_COOKIE_SAMESITE,
