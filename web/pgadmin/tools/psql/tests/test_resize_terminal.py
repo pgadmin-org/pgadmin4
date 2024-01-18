@@ -22,7 +22,6 @@ class PSQLResizeTerminal(BaseTestGenerator):
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.sgid = config_data["server_group"]
         config.ENABLE_PSQL = True
-        self.server_con = server_utils.connect_server(self, self.sid)
 
     def runTest(self):
         if sys.platform == 'win32':
@@ -50,8 +49,6 @@ class PSQLResizeTerminal(BaseTestGenerator):
 
         self.test_client.emit('resize', self.input_data, namespace='/pty')
 
-        self.test_client.disconnect(namespace='/pty')
-
     def tearDown(self):
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
@@ -59,3 +56,4 @@ class PSQLResizeTerminal(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
+        connection.close()

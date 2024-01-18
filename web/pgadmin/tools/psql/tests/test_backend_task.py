@@ -79,7 +79,6 @@ class PSQLBackend(BaseTestGenerator):
         }
         self.test_client.emit('socket_input', input_data, namespace='/pty')
         self.test_client.get_received('/pty')
-        self.test_client.disconnect(namespace='/pty')
 
     def tearDown(self):
         connection = utils.get_db_connection(self.server['db'],
@@ -88,3 +87,4 @@ class PSQLBackend(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
+        connection.close()

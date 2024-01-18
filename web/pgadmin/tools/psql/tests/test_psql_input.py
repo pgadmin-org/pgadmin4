@@ -22,7 +22,6 @@ class PSQLInput(BaseTestGenerator):
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.sgid = config_data["server_group"]
         config.ENABLE_PSQL = True
-        self.server_con = server_utils.connect_server(self, self.sid)
 
     def runTest(self):
         if sys.platform == 'win32':
@@ -149,3 +148,4 @@ class PSQLInput(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
+        connection.close()
