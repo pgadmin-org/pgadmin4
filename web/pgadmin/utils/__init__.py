@@ -492,7 +492,8 @@ def dump_database_servers(output_file, selected_servers,
                       server.connection_params)
 
             # if desktop mode
-            if not current_app.config['SERVER_MODE']:
+            if not current_app.config['SERVER_MODE'] or \
+                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
                 add_value(attr_dict, "PasswordExecCommand",
                           server.passexec_cmd)
                 add_value(attr_dict, "PasswordExecExpiration",
