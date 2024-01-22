@@ -77,7 +77,7 @@ export default class ColumnSchema extends BaseUISchema {
 
   inSchemaWithColumnCheck(state) {
     // disable all fields if column is listed under view or mview
-    if (this.nodeInfo && ('view' in this.nodeInfo || 'mview' in this.nodeInfo)) {
+    if (this.nodeInfo && (('view' in this.nodeInfo && this.nodeInfo?.server?.version < 130000) || 'mview' in this.nodeInfo)) {
       return true;
     }
 
