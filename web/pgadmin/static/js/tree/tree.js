@@ -563,10 +563,14 @@ export class Tree {
       /* setDragImage is not supported in IE. We leave it to
       * its default look and feel
       */
+      const dropText = _.escape(dropDetails.text);
+      if(!dropText) {
+        e.preventDefault();
+      }
       if (e.dataTransfer.setDragImage) {
         const dragItem = document.createElement('div');
         dragItem.classList.add('drag-tree-node');
-        dragItem.innerHTML = `<span>${_.escape(dropDetails.text)}</span>`;
+        dragItem.innerHTML = `<span>${dropText}</span>`;
 
         document.querySelector('body .drag-tree-node')?.remove();
         document.body.appendChild(dragItem);
