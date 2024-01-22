@@ -22,6 +22,7 @@ New features
 
   | `Issue #6380 <https://github.com/pgadmin-org/pgadmin4/issues/6380>`_ -  Added support to rename columns in Views.
   | `Issue #6392 <https://github.com/pgadmin-org/pgadmin4/issues/6392>`_ -  Added BYPASSRLS|NOBYPASSRLS option while creating a Role.
+  | `Issue #6557 <https://github.com/pgadmin-org/pgadmin4/issues/6557>`_ -  Use COOKIE_DEFAULT_PATH or SCRIPT_NAME in session cookie path.
   | `Issue #6792 <https://github.com/pgadmin-org/pgadmin4/issues/6792>`_ -  Added configurable parameter to enable support for PasswordExecCommand in server mode.
 
 Housekeeping
