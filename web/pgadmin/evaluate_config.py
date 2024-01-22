@@ -127,4 +127,13 @@ def evaluate_and_patch_config(config: dict) -> dict:
             config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', False)
             config.setdefault('KEYRING_NAME', k_name)
 
+    config.setdefault('SESSION_COOKIE_PATH', config.get('COOKIE_DEFAULT_PATH'))
+
+    # if a script name is preset, session cookies should go to sub path
+    if 'SCRIPT_NAME' in os.environ and os.environ["SCRIPT_NAME"]:
+        config.update(dict({
+            'APPLICATION_ROOT': os.environ["SCRIPT_NAME"],
+            'SESSION_COOKIE_PATH': os.environ["SCRIPT_NAME"],
+        }))
+
     return config

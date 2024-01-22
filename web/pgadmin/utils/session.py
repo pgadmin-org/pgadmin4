@@ -314,6 +314,7 @@ class ManagedSessionInterface(SessionInterface):
             app.config['SESSION_COOKIE_NAME'],
             '%s!%s' % (session.sid, session.hmac_digest),
             expires=cookie_exp,
+            path=config.SESSION_COOKIE_PATH,
             secure=config.SESSION_COOKIE_SECURE,
             httponly=config.SESSION_COOKIE_HTTPONLY,
             samesite=config.SESSION_COOKIE_SAMESITE,
