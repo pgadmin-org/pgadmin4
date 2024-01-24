@@ -93,7 +93,7 @@
     "ajv": "^8.8.2",
     "anti-trojan-source": "^1.4.0",
     "aspen-decorations": "^1.0.2",
-    "axios": "^1.4.0",
+    "axios": "^1.6.5",
     "babelify": "~10.0.0",
     "bignumber.js": "^9.0.1",
     "brace": "^0.11.1",
