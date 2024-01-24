@@ -341,9 +341,9 @@ def get_reverse_engineered_sql(conn, **kwargs):
     if conn.manager.version >= 110000:
         data = get_include_details(conn, idx, data)
 
-    SQL, name = get_sql(conn, data=data, did=did, tid=tid, idx=None,
-                        datlastsysoid=datlastsysoid,
-                        if_exists_flag=if_exists_flag)
+    SQL, _ = get_sql(conn, data=data, did=did, tid=tid, idx=None,
+                     datlastsysoid=datlastsysoid,
+                     if_exists_flag=if_exists_flag)
 
     if with_header:
         sql_header = ''

@@ -860,11 +860,8 @@ class SQLAutoComplete():
             "signature": self.signature_arg_style,
         }[usage]
         args = func.args()
-        if not template:
-            return "()"
-        elif usage == "call" and len(args) < 2:
-            return "()"
-        elif usage == "call" and func.has_variadic():
+        if (not template or (usage == "call" and len(args) < 2) or
+                (usage == "call" and func.has_variadic())):
             return "()"
         multiline = usage == "call" and len(args) > self.call_arg_oneliner_max
         max_arg_len = max(len(a.name) for a in args) if multiline else 0
@@ -1248,7 +1245,7 @@ class SQLAutoComplete():
         :return:
         """
         data = []
-        query, in_clause = self._get_function_sql(schema)
+        query, _ = self._get_function_sql(schema)
 
         if self.conn.connected():
             status, res = self.conn.execute_dict(query)

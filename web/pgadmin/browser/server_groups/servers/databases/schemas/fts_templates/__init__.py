@@ -426,7 +426,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
         # Fetch sql query to update fts template
-        sql, name = self.get_sql(gid, sid, did, scid, data, tid)
+        sql, _ = self.get_sql(gid, sid, did, scid, data, tid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -540,7 +540,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         # Fetch sql query for modified data
-        SQL, name = self.get_sql(gid, sid, did, scid, data, tid)
+        SQL, _ = self.get_sql(gid, sid, did, scid, data, tid)
         # Most probably this is due to error
         if not isinstance(SQL, str):
             return SQL
@@ -867,8 +867,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=data, tid=oid)
+            sql, _ = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                  data=data, tid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

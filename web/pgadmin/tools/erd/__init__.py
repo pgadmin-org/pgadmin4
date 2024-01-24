@@ -640,7 +640,7 @@ def sql(trans_id, sgid, sid, did):
 
     sql += table_sql
     for tab_fk in tab_foreign_keys:
-        fk_sql, name = fkey_utils.get_sql(conn, tab_fk, None)
+        fk_sql, _ = fkey_utils.get_sql(conn, tab_fk, None)
         sql += '\n\n' + fk_sql
 
     return make_json_response(

@@ -179,7 +179,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     data = trigger_definition(data)
 
-    SQL, name = get_sql(conn, data, tid, None, datlastsysoid)
+    SQL, _ = get_sql(conn, data, tid, None, datlastsysoid)
 
     sql_header = "-- Compound Trigger: {0}\n\n-- ".format(data['name'])
 

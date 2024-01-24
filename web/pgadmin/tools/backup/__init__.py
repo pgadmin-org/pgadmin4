@@ -580,9 +580,9 @@ def objects(sid, did, scid=None):
         server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
             server_info['version'])
 
-    res, msg, empty_schema_list = get_data(sid, did, scid,
-                                           'schema' if scid else 'database',
-                                           server_info, True)
+    res, _, empty_schema_list = get_data(sid, did, scid,
+                                         'schema' if scid else 'database',
+                                         server_info, True)
 
     tree_data = {
         'table': [],

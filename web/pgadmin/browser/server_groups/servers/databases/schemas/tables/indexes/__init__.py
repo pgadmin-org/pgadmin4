@@ -843,7 +843,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                     data["storage_parameters"].update({param: data[param]})
 
         try:
-            sql, name = index_utils.get_sql(
+            sql, _ = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
                 datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create',
                 show_sys_objects=self.blueprint.show_system_objects)
@@ -905,7 +905,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             data['nspname'] = self.schema
             data['table'] = self.table
 
-            sql, name = index_utils.get_sql(
+            sql, _ = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
                 datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create',
                 show_sys_objects=self.blueprint.show_system_objects)

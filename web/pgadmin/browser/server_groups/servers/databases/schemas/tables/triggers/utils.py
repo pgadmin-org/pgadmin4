@@ -292,9 +292,9 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     data = trigger_definition(data)
 
-    SQL, name = get_sql(conn, data=data, tid=tid, trid=None,
-                        datlastsysoid=datlastsysoid,
-                        show_system_objects=show_system_objects)
+    SQL, _ = get_sql(conn, data=data, tid=tid, trid=None,
+                     datlastsysoid=datlastsysoid,
+                     show_system_objects=show_system_objects)
 
     if with_header:
         sql_header = "-- Trigger: {0}\n\n-- ".format(data['name'])

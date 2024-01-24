@@ -99,7 +99,7 @@ class SearchObjectsHelper:
         """
 
         if obj_type == 'all':
-            status, result = conn.execute_dict(
+            _, result = conn.execute_dict(
                 "SELECT COUNT(1) FROM information_schema.table_privileges  "
                 "WHERE table_name = 'pg_subscription' "
                 "AND privilege_type = 'SELECT'")

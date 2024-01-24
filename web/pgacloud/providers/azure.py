@@ -197,7 +197,7 @@ class AzureProvider(AbsProvider):
         """ Create/cache/return an Azure client object """
         # Acquire a credential object using CLI-based authentication.
         if self._credentials is None:
-            status, self._credentials = \
+            _, self._credentials = \
                 self._get_azure_credentials()
 
         if type in self._clients:

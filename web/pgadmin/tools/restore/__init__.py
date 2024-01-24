@@ -365,8 +365,7 @@ def create_restore_job(sid):
     if is_error:
         return errmsg
 
-    is_error, errmsg, driver, manager, conn, \
-        connected, server = _connect_server(sid)
+    is_error, errmsg, driver, manager, conn, _, server = _connect_server(sid)
     if is_error:
         return errmsg
 

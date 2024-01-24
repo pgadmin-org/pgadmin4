@@ -433,7 +433,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         data = self.request
         try:
-            status, SQL, name = self.get_sql(gid, sid, data, scid, doid)
+            status, SQL, _ = self.get_sql(gid, sid, data, scid, doid)
             if not status:
                 return SQL
 
@@ -652,7 +652,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         data = self.request
 
-        status, SQL, name = self.get_sql(gid, sid, data, scid, doid, coid)
+        status, SQL, _ = self.get_sql(gid, sid, data, scid, doid, coid)
         if status and SQL:
             return make_json_response(
                 data=SQL,

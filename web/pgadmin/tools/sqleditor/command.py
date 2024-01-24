@@ -482,7 +482,7 @@ class TableCommand(GridCommand):
         """
 
         # Fetch the primary keys for the table
-        pk_names, primary_keys = self.get_primary_keys(default_conn)
+        _, primary_keys = self.get_primary_keys(default_conn)
 
         # Fetch OIDs status
         has_oids = self.has_oids(default_conn)

@@ -415,7 +415,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         try:
-            SQL, name = self.getSQL(gid, sid, data, did, eid)
+            SQL, _ = self.getSQL(gid, sid, data, did, eid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -601,8 +601,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            sql, name = self.getSQL(gid=gid, sid=sid, did=did, data=data,
-                                    eid=oid)
+            sql, _ = self.getSQL(gid=gid, sid=sid, did=did, data=data,
+                                 eid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

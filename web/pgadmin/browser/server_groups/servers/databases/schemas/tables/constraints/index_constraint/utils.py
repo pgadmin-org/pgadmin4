@@ -156,8 +156,7 @@ def _get_sql_to_change_constraints(did, tid, ctype, data, constraint,
             c['schema'] = data['schema']
             c['table'] = data['name']
 
-            modified_sql, name = get_sql(conn, c, did, tid, ctype,
-                                         c['oid'])
+            modified_sql, _ = get_sql(conn, c, did, tid, ctype, c['oid'])
             if modified_sql:
                 sql.append(modified_sql.strip('\n'))
 
@@ -180,7 +179,7 @@ def _get_sql_to_add_constraints(did, tid, ctype, data, constraint,
             c['schema'] = data['schema']
             c['table'] = data['name']
 
-            add_sql, name = get_sql(conn, c, did, tid, ctype)
+            add_sql, _ = get_sql(conn, c, did, tid, ctype)
             sql.append(add_sql.strip("\n"))
 
 

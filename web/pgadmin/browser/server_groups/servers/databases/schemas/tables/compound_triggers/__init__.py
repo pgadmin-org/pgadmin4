@@ -714,7 +714,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         data['table'] = self.table
 
         try:
-            sql, name = compound_trigger_utils.get_sql(
+            sql, _ = compound_trigger_utils.get_sql(
                 self.conn, data, tid, trid, self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(sql, str):
                 return sql
@@ -884,7 +884,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            sql, name = compound_trigger_utils.get_sql(
+            sql, _ = compound_trigger_utils.get_sql(
                 self.conn, data, tid, oid, self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(sql, str):
                 return sql
@@ -932,7 +932,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         if target_schema:
             data['schema'] = target_schema
 
-        sql, name = compound_trigger_utils.get_sql(
+        sql, _ = compound_trigger_utils.get_sql(
             self.conn, data, tid, None, self._DATABASE_LAST_SYSTEM_OID)
 
         # If compound trigger is disbaled then add sql

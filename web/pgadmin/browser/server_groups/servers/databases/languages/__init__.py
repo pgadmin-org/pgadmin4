@@ -595,7 +595,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
         try:
-            sql, name = self.get_sql(data, lid)
+            sql, _ = self.get_sql(data, lid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -868,7 +868,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            sql, name = self.get_sql(data=data, lid=oid)
+            sql, _ = self.get_sql(data=data, lid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

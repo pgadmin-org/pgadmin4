@@ -405,7 +405,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
         data['schema'] = self.schema
 
-        sql, name = self.getSQL(data=data, scid=scid, pkgid=None)
+        sql, _ = self.getSQL(data=data, scid=scid, pkgid=None)
 
         status, msg = self.conn.execute_scalar(sql)
         if not status:
@@ -582,7 +582,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                         ).format(arg)
                     )
 
-        sql, name = self.getSQL(data=data, scid=scid, pkgid=pkgid)
+        sql, _ = self.getSQL(data=data, scid=scid, pkgid=pkgid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -752,10 +752,9 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             if target_schema:
                 result['schema'] = target_schema
 
-            sql, name = self.getSQL(data=result, scid=scid, pkgid=pkgid,
-                                    sqltab=True,
-                                    is_schema_diff=is_schema_diff,
-                                    target_schema=target_schema)
+            sql, _ = self.getSQL(data=result, scid=scid, pkgid=pkgid,
+                                 sqltab=True, is_schema_diff=is_schema_diff,
+                                 target_schema=target_schema)
 
             # Most probably this is due to error
             if not isinstance(sql, str):
@@ -886,7 +885,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name = self.getSQL(data=data, scid=scid, pkgid=oid)
+            sql, _ = self.getSQL(data=data, scid=scid, pkgid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

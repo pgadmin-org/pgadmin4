@@ -128,7 +128,7 @@ def get_check_constraint_sql(conn, tid, data, template_path=None):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
 
-                modified_sql, name = get_sql(conn, c, tid, c['oid'])
+                modified_sql, _ = get_sql(conn, c, tid, c['oid'])
                 sql.append(modified_sql.strip('\n'))
 
         if 'added' in constraint:
@@ -136,7 +136,7 @@ def get_check_constraint_sql(conn, tid, data, template_path=None):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
 
-                add_sql, name = get_sql(conn, c, tid)
+                add_sql, _ = get_sql(conn, c, tid)
                 sql.append(add_sql.strip("\n"))
 
     if len(sql) > 0:

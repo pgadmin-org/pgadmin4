@@ -65,7 +65,7 @@ def get_version_mapping(template):
     template_path_parts = template.split("#", 3)
 
     if len(template_path_parts) == 4:
-        _, server_type, _, _ = template_path_parts
+        _, _, _, _ = template_path_parts
 
     return get_version_mapping_directories()
 

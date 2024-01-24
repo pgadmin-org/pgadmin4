@@ -133,10 +133,9 @@ def get_reverse_engineered_sql(conn, **kwargs):
     data['schema'] = schema
     data['table'] = table
 
-    SQL, name = get_sql(conn, data=data, scid=scid, plid=None,
-                        policy_table_id=policy_table_id,
-                        datlastsysoid=datlastsysoid, schema=schema,
-                        table=table)
+    SQL, _ = get_sql(conn, data=data, scid=scid, plid=None,
+                     policy_table_id=policy_table_id,
+                     datlastsysoid=datlastsysoid, schema=schema, table=table)
     if with_header:
         sql_header = "-- POLICY: {0}\n\n-- ".format(data['name'])
 

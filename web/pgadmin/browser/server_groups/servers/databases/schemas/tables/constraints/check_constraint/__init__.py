@@ -279,7 +279,7 @@ class CheckConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]), tid=tid)
-        status, res = self.conn.execute_dict(SQL)
+        _, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
             row['_type'] = self.node_type
@@ -303,7 +303,7 @@ class CheckConstraintView(PGChildNodeView):
                                         self._NODES_SQL]),
                               tid=tid,
                               cid=cid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
             return gone(_("""Could not find the check constraint."""))
@@ -344,7 +344,7 @@ class CheckConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:
@@ -399,7 +399,7 @@ class CheckConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:

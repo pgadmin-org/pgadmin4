@@ -282,7 +282,7 @@ def save_pref(data):
             and data['value'].isspace():
         data['value'] = ''
 
-    res, msg = Preferences.save_cli(
+    res, _ = Preferences.save_cli(
         data['mid'], data['category_id'], data['id'], data['user_id'],
         data['value'])
 

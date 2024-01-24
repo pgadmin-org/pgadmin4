@@ -15,7 +15,7 @@ import config
 def validate_email(email):
     try:
         # Validate.
-        valid = email_validate(
+        _ = email_validate(
             email, check_deliverability=config.CHECK_EMAIL_DELIVERABILITY)
 
         # Update with the normalized form.

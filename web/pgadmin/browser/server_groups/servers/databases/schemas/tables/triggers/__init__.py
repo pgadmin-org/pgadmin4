@@ -805,7 +805,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         data['table'] = self.table
 
         try:
-            sql, name = trigger_utils.get_sql(
+            sql, _ = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=trid,
                 datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects)
@@ -861,7 +861,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            SQL, name = trigger_utils.get_sql(
+            SQL, _ = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=oid,
                 datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects,

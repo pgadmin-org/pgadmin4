@@ -435,7 +435,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             typelist += collate
             properties_list.append(typelist)
 
-            is_tlength, is_precision, typeval = \
+            is_tlength, is_precision, _ = \
                 self.get_length_precision(row.get('elemoid', None))
 
             # Split length, precision from type name for grid
@@ -468,7 +468,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :param rows: list of data
         :return: formatted response
         """
-        is_tlength, is_precision, typeval = \
+        is_tlength, is_precision, _ = \
             self.get_length_precision(data.get('elemoid', None))
 
         # Split length, precision from type name for grid
@@ -1227,7 +1227,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data[key] = val
 
         try:
-            sql, name = self.get_sql(gid, sid, data, scid, tid)
+            sql, _ = self.get_sql(gid, sid, data, scid, tid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -1475,7 +1475,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if data[k] == '-':
                 data[k] = None
 
-        SQL, name = self.get_sql(gid, sid, data, scid, tid=None, is_sql=True)
+        SQL, _ = self.get_sql(gid, sid, data, scid, tid=None, is_sql=True)
         # Most probably this is due to error
         if not isinstance(SQL, str):
             return SQL
@@ -1582,8 +1582,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name = self.get_sql(gid=gid, sid=sid, scid=scid,
-                                     data=data, tid=oid)
+            sql, _ = self.get_sql(gid=gid, sid=sid, scid=scid, data=data,
+                                  tid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

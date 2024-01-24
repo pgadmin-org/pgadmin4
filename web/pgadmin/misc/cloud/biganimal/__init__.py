@@ -103,7 +103,7 @@ def biganimal_providers(project_id):
 def biganimal_regions():
     """Get Regions."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
-    status, regions = biganimal_obj.get_regions()
+    _, regions = biganimal_obj.get_regions()
     session['biganimal']['provider_obj'] = pickle.dumps(biganimal_obj, -1)
     return make_json_response(data=regions)
 

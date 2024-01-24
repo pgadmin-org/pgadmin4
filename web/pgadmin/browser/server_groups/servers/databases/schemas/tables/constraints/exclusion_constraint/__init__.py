@@ -345,7 +345,7 @@ class ExclusionConstraintView(PGChildNodeView):
                                         self._PROPERTIES_SQL]),
                               did=did,
                               tid=tid)
-        status, res = self.conn.execute_dict(SQL)
+        _, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
             row['_type'] = self.node_type
@@ -374,7 +374,7 @@ class ExclusionConstraintView(PGChildNodeView):
                                         self._NODES_SQL]),
                               tid=tid,
                               exid=exid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
             return gone(_("""Could not find the exclusion constraint."""))
@@ -411,7 +411,7 @@ class ExclusionConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             res.append(
@@ -457,7 +457,7 @@ class ExclusionConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             res.append(
@@ -756,7 +756,7 @@ class ExclusionConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = \
+            sql, _ = \
                 exclusion_utils.get_sql(self.conn, data, did, tid, exid)
             if not isinstance(sql, str):
                 return sql

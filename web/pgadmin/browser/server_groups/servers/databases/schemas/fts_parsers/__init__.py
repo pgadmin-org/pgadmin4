@@ -588,7 +588,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         # Fetch sql query for modified data
-        SQL, name = self.get_sql(gid, sid, did, scid, data, pid)
+        SQL, _ = self.get_sql(gid, sid, did, scid, data, pid)
         # Most probably this is due to error
         if not isinstance(SQL, str):
             return SQL
@@ -1001,8 +1001,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            sql, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=data, pid=oid)
+            sql, _ = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                  data=data, pid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

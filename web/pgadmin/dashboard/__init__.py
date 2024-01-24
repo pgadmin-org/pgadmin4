@@ -459,7 +459,7 @@ def dashboard_stats(sid=None, did=None):
             "/".join([g.template_path, 'dashboard_stats.sql']), did=did,
             chart_names=chart_names,
         )
-        status, res = g.conn.execute_dict(sql)
+        _, res = g.conn.execute_dict(sql)
 
         for chart_row in res['rows']:
             resp_data[chart_row['chart_name']] = json.loads(

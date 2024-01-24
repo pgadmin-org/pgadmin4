@@ -2033,8 +2033,7 @@ def check_result(result, conn, statusmsg):
         )
     else:
         status = 'Success'
-        additional_msgs, statusmsg = get_additional_msgs(conn,
-                                                         statusmsg)
+        _, statusmsg = get_additional_msgs(conn, statusmsg)
 
         columns, result = convert_data_to_dict(conn, result)
 
@@ -2097,7 +2096,7 @@ def poll_end_execution_result(trans_id):
             (de_inst.function_data['language'] == 'edbspl' or
                 de_inst.function_data['language'] == 'plpgsql'):
             status = 'Success'
-            additional_msgs, statusmsg = get_additional_msgs(conn, statusmsg)
+            _, statusmsg = get_additional_msgs(conn, statusmsg)
 
             return make_json_response(
                 success=1,
@@ -2111,8 +2110,7 @@ def poll_end_execution_result(trans_id):
             return check_result(result, conn, statusmsg)
         else:
             status = 'Busy'
-            additional_msgs, statusmsg = get_additional_msgs(conn,
-                                                             statusmsg)
+            _, statusmsg = get_additional_msgs(conn, statusmsg)
             return make_json_response(
                 data={
                     'status': status,
@@ -2164,7 +2162,7 @@ def poll_result(trans_id):
             status = 'ERROR'
         elif status == ASYNC_OK and result is not None:
             status = 'Success'
-            columns, result = convert_data_to_dict(conn, result)
+            _, result = convert_data_to_dict(conn, result)
         else:
             status = 'Busy'
     else:

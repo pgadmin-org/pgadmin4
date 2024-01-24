@@ -106,7 +106,7 @@ class ERDHelper:
             conn_id=self.conn_id, did=self.did, sid=self.sid)
 
     def get_table_sql(self, data, with_drop=False):
-        SQL, name = self.table_view.sql(
+        SQL, _ = self.table_view.sql(
             conn_id=self.conn_id, did=self.did, sid=self.sid,
             data=data, with_drop=with_drop)
         return SQL

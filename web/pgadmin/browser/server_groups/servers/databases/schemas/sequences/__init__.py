@@ -543,7 +543,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         data = request.form if request.form else json.loads(
             request.data
         )
-        sql, name = self.get_SQL(gid, sid, did, data, scid, seid)
+        sql, _ = self.get_SQL(gid, sid, did, data, scid, seid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -614,7 +614,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                             "Could not find the required parameter ({})."
                         ).format(arg)
                     )
-        sql, name = self.get_SQL(gid, sid, did, data, scid, seid)
+        sql, _ = self.get_SQL(gid, sid, did, data, scid, seid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -753,8 +753,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             result['schema'] = target_schema
 
         result = self._formatter(result, scid, seid)
-        sql, name = self.get_SQL(gid, sid, did, result, scid,
-                                 add_not_exists_clause=True)
+        sql, _ = self.get_SQL(gid, sid, did, result, scid,
+                              add_not_exists_clause=True)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql
@@ -977,7 +977,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name = self.get_SQL(gid, sid, did, data, scid, oid)
+            sql, _ = self.get_SQL(gid, sid, did, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,
