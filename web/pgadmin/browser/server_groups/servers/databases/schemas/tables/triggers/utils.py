@@ -10,7 +10,7 @@
 """ Implements Utility class for Triggers. """
 
 from flask import render_template
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -165,7 +165,7 @@ def get_sql(conn, **kwargs):
         if not status:
             raise ExecuteError(res)
         elif len(res['rows']) == 0:
-            raise ObjectGone(_('Could not find the trigger in the table.'))
+            raise ObjectGone(gettext('Could not find the trigger in the table.'))
 
         old_data = dict(res['rows'][0])
         # If name is not present in data then
@@ -202,7 +202,7 @@ def get_sql(conn, **kwargs):
 
         for arg in required_args:
             if arg not in data:
-                return _('-- definition incomplete')
+                return gettext('-- definition incomplete')
 
         # If the request for new object which do not have did
         sql = render_template("/".join([template_path, 'create.sql']),
@@ -279,7 +279,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
         raise ExecuteError(res)
 
     if len(res['rows']) == 0:
-        raise ObjectGone(_('Could not find the trigger in the table.'))
+        raise ObjectGone(gettext('Could not find the trigger in the table.'))
 
     data = dict(res['rows'][0])
 
