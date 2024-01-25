@@ -82,7 +82,8 @@ def get_sql(conn, **kwargs):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            raise ObjectGone(gettext('Could not find the policy in the table.'))
+            raise ObjectGone(
+                gettext('Could not find the policy in the table.'))
 
         old_data = dict(res['rows'][0])
         old_data['schema'] = schema

@@ -144,7 +144,7 @@ class BackupMessage(IProcessDesc):
             ).format(server_name, self.database)
         if self.backup_type == BACKUP.GLOBALS:
             return gettext("Backing up the global objects on "
-                     "the server '{0}'").format(
+                           "the server '{0}'").format(
                 server_name
             )
         elif self.backup_type == BACKUP.SERVER:

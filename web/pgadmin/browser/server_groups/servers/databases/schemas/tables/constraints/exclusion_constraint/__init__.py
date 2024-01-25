@@ -377,7 +377,8 @@ class ExclusionConstraintView(PGChildNodeView):
         _, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
-            return gone(gettext("""Could not find the exclusion constraint."""))
+            return gone(
+                gettext("""Could not find the exclusion constraint."""))
 
         res = self.blueprint.generate_browser_node(
             rset['rows'][0]['oid'],
@@ -795,7 +796,8 @@ class ExclusionConstraintView(PGChildNodeView):
             if not status:
                 return rows
             if len(rows) == 0:
-                return gone(gettext("Could not find the exclusion constraint."))
+                return gone(
+                    gettext("Could not find the exclusion constraint."))
 
             data = rows[0]
             data['schema'] = self.schema
@@ -854,7 +856,8 @@ class ExclusionConstraintView(PGChildNodeView):
             if not status:
                 return internal_server_error(errormsg=result)
             if len(result['rows']) == 0:
-                return gone(gettext("Could not find the exclusion constraint."))
+                return gone(
+                    gettext("Could not find the exclusion constraint."))
 
             data = result['rows'][0]
             name = data['name']

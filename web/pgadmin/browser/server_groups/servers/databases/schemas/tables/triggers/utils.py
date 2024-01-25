@@ -165,7 +165,8 @@ def get_sql(conn, **kwargs):
         if not status:
             raise ExecuteError(res)
         elif len(res['rows']) == 0:
-            raise ObjectGone(gettext('Could not find the trigger in the table.'))
+            raise ObjectGone(
+                gettext('Could not find the trigger in the table.'))
 
         old_data = dict(res['rows'][0])
         # If name is not present in data then
