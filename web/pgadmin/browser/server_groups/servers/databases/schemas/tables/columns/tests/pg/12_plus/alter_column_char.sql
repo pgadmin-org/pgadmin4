@@ -3,7 +3,7 @@
 -- ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "new_col_2_$%{}[]()&*^!@""'`\/#";
 
 ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
-    ADD COLUMN "new_col_2_$%{}[]()&*^!@""'`\/#" character(1) COLLATE pg_catalog."C";
+    ADD COLUMN "new_col_2_$%{}[]()&*^!@""'`\/#" character(1) COLLATE pg_catalog."default";
 
 COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."new_col_2_$%{}[]()&*^!@""'`\/#"
     IS 'Comment for alter';
