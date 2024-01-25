@@ -24,6 +24,9 @@ from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
+# This unused import is required as API test cases will fail if we remove it,
+# Have to identify the cause and then remove it.
+from pgadmin.model import Server, SharedServer
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.tools.grant_wizard import _get_rows_for_type, \
