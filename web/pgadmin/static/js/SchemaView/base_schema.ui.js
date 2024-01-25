@@ -158,7 +158,7 @@ export default class BaseUISchema {
     let res = [];
     if (state && this.isNew(state)) {
       options.forEach((option) => {
-        if(option && option.label == '') {
+        if(option?.label == '') {
           return;
         }
         res.push({ label: option.label, value: option.value });

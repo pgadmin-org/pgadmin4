@@ -201,7 +201,7 @@ define('pgadmin.node.mview', [
 
             api.put(obj.generate_url(i, 'refresh_data' , d, true), {'concurrent': args.concurrent, 'with_data': args.with_data})
               .then(({data: refreshed_res})=>{
-                if (refreshed_res.data && refreshed_res.data.status) {
+                if (refreshed_res.data?.status) {
                   //Do nothing as we are creating the job and exiting from the main dialog
                   pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
                 } else {
@@ -228,7 +228,7 @@ define('pgadmin.node.mview', [
       is_version_supported: function(data, item) {
         let t = pgAdmin.Browser.tree,
           i = item || t.selected(),
-          info = t && t.getTreeNodeHierarchy(i),
+          info = t?.getTreeNodeHierarchy(i),
           version = _.isUndefined(info) ? 0 : info.server.version;
 
         // disable refresh concurrently if server version is 9.3

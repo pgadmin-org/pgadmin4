@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 function AddNewServer(pgBrowser) {
-  if (pgBrowser && pgBrowser.tree) {
+  if (pgBrowser?.tree) {
     let i = _.isUndefined(pgBrowser.tree.selected()) ?
         pgBrowser.tree.first(null, false) :
         pgBrowser.tree.selected(),

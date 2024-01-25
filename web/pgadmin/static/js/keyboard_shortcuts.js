@@ -45,7 +45,7 @@ function isCtrlAltBoth(event) {
 /* Returns the key of shortcut */
 function shortcut_key(shortcut) {
   let key = '';
-  if(shortcut && shortcut['key'] && shortcut['key']['char']) {
+  if(shortcut?.['key'] && shortcut?.['key']['char']) {
     key = shortcut['key']['char'].toUpperCase();
   }
   return key;

@@ -149,7 +149,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         +`&server_type=${pData.server.server_type}`
         + `&theme=${theme}`;
 
-      if(pData.database && pData.database._id) {
+      if(pData.database?._id) {
         openUrl += `&db=${encodeURIComponent(pData.database._label)}`;
       } else {
         openUrl += `&db=${''}`;

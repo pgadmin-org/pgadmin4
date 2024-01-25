@@ -12,9 +12,9 @@ import {generateTitle} from '../../../sqleditor/static/js/sqleditor_title';
 function getFunctionId(treeInfoObject) {
   let objectId;
   if(treeInfoObject) {
-    if (treeInfoObject.function && treeInfoObject.function._id) {
+    if (treeInfoObject.function?._id) {
       objectId = treeInfoObject.function._id;
-    } else if (treeInfoObject.edbfunc && treeInfoObject.edbfunc._id) {
+    } else if (treeInfoObject.edbfunc?._id) {
       objectId = treeInfoObject.edbfunc._id;
     }
   }
@@ -24,9 +24,9 @@ function getFunctionId(treeInfoObject) {
 function getProcedureId(treeInfoObject) {
   let objectId;
   if(treeInfoObject) {
-    if (treeInfoObject.procedure && treeInfoObject.procedure._id) {
+    if (treeInfoObject.procedure?._id) {
       objectId = treeInfoObject.procedure._id;
-    } else if (treeInfoObject.edbproc && treeInfoObject.edbproc._id) {
+    } else if (treeInfoObject.edbproc?._id) {
       objectId = treeInfoObject.edbproc._id;
     }
   }

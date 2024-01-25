@@ -169,7 +169,7 @@ export function FindDialog({editor, show, replace, onClose, selFindVal}) {
       if(selText.length != 0) {
         setFindVal(selText);
       }
-      findInputRef.current && findInputRef.current.select();
+      findInputRef.current?.select();
       search();
     }
   }, [show]);
@@ -217,7 +217,7 @@ export function FindDialog({editor, show, replace, onClose, selFindVal}) {
   };
 
   const onFindNext = ()=>{
-    if(searchCursor.current && searchCursor.current.find()) {
+    if(searchCursor.current?.find()) {
       editor.setSelection(searchCursor.current.from(), searchCursor.current.to());
       editor.scrollIntoView({
         from: searchCursor.current.from(),
@@ -227,7 +227,7 @@ export function FindDialog({editor, show, replace, onClose, selFindVal}) {
   };
 
   const onFindPrev = ()=>{
-    if(searchCursor.current && searchCursor.current.find(true)) {
+    if(searchCursor.current?.find(true)) {
       editor.setSelection(searchCursor.current.from(), searchCursor.current.to());
       editor.scrollIntoView({
         from: searchCursor.current.from(),
@@ -441,7 +441,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     } else {
       editor.current.setValue('');
     }
-    currEditor && currEditor(editor.current);
+    currEditor?.(editor.current);
     if(editor.current) {
       try {
         cmWrapper.current = editor.current.getWrapperElement();

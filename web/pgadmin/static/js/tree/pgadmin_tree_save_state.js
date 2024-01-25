@@ -97,7 +97,7 @@ _.extend(pgBrowser.browserTreeState, {
       offRemoveFromTreeState?.();
       offUpdateTreeState?.();
     };
-    
+
   },
   save_state: function() {
 
@@ -198,8 +198,8 @@ _.extend(pgBrowser.browserTreeState, {
     if (treeHierarchy === null || !pgBrowser.tree.hasParent(item) || !(treeHierarchy.hasOwnProperty(self.parent)))
       return;
 
-    let topParent = treeHierarchy && treeHierarchy[self.parent]['_id'],
-      origParent = treeHierarchy && treeHierarchy[self.orig_parent]['id'];
+    let topParent = treeHierarchy?.[self.parent]['_id'],
+      origParent = treeHierarchy?.[self.orig_parent]['id'];
 
     this.update_database_status(item);
 
@@ -308,7 +308,7 @@ _.extend(pgBrowser.browserTreeState, {
 
     if (treeHierarchy.hasOwnProperty('database')) {
       let databaseItem = treeHierarchy['database']['id'],
-        topParent = treeHierarchy && treeHierarchy[this.parent]['_id'];
+        topParent = treeHierarchy?.[this.parent]['_id'];
 
       if (topParent in this.current_state && 'selected' in this.current_state[topParent]) {
         if (treeHierarchy['database'].connected) {
@@ -333,7 +333,7 @@ _.extend(pgBrowser.browserTreeState, {
     if (!(this.parent in treeHierarchy))
       return;
 
-    let topParent = treeHierarchy && treeHierarchy[this.parent]['_id'],
+    let topParent = treeHierarchy?.[this.parent]['_id'],
       selectedItem = pgBrowser.tree.itemData(pgBrowser.tree.selected()),
       databaseItem = undefined;
 

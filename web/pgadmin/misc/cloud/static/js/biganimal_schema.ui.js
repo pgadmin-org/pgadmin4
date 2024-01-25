@@ -319,14 +319,14 @@ class BigAnimalVolumeSchema extends BaseUISchema {
           }
         },
         visible: (state) => {
-          return state.provider && state.provider.includes(CLOUD_PROVIDERS.AWS);
+          return state.provider?.includes(CLOUD_PROVIDERS.AWS);
         },
         helpMessage: obj.volumeType == 'io2' ? gettext('Size (4-16,384 GiB)') : gettext('Size (1-16,384 GiB)')
       }, {
         id: 'volume_IOPS', label: gettext('IOPS'), type: 'text',
         mode: ['create'],
         visible: (state) => {
-          return state.provider && state.provider.includes(CLOUD_PROVIDERS.AWS);
+          return state.provider?.includes(CLOUD_PROVIDERS.AWS);
         }, deps: ['volume_type'],
         depChange: (state, source) => {
           obj.volumeType = state.volume_type;
@@ -347,7 +347,7 @@ class BigAnimalVolumeSchema extends BaseUISchema {
         mode: ['create'],
         deps : ['volume_type'],
         visible: (state) => {
-          return state.provider && state.provider.includes(CLOUD_PROVIDERS.AWS) && state.volume_type === 'gp3';
+          return state.provider?.includes(CLOUD_PROVIDERS.AWS) && state.volume_type === 'gp3';
         }
       }
     ];

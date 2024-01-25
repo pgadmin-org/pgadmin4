@@ -74,7 +74,7 @@ export default class PackageSchema extends BaseUISchema {
                 if (state && packageSchemaObj.isNew(state)) {
                   options.forEach((option) => {
                     // If schema name start with pg_* then we need to exclude them
-                    if(option && option.label.match(/^pg_/)) {
+                    if(option?.label.match(/^pg_/)) {
                       return;
                     }
                     res.push({ label: option.label, value: option.value, image: 'icon-schema' });

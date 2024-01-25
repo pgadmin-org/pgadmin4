@@ -127,7 +127,7 @@ define([
       if (!d)
         return;
 
-      let treeInfo = t && t.getTreeNodeHierarchy(i);
+      let treeInfo = t?.getTreeNodeHierarchy(i);
 
       const baseUrlUtilitCheck = url_for('import_export.utility_exists', {
         'sid': server_data._id,

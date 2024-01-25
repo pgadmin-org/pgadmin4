@@ -61,7 +61,7 @@ export default class CollationSchema extends BaseUISchema {
               filter: (options) => {
                 let res = [];
                 options.forEach((d) => {
-                  if (!(d && d.label.match(/^pg_/)))
+                  if (!(d?.label.match(/^pg_/)))
                     res.push(d);
                 });
                 return res;

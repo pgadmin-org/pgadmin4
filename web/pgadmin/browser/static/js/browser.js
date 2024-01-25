@@ -557,7 +557,7 @@ define('pgadmin.browser', [
               n = _o.b.Nodes[d._type];
               // Are we looking at the collection node for the given node?
               if (
-                n && n.collection_node && d.nodes &&
+                n?.collection_node && d.nodes &&
                   _.indexOf(d.nodes, _d._type) != -1
               ) {
                 _o.i = i;
@@ -583,7 +583,7 @@ define('pgadmin.browser', [
             onLoad();
           },
           () => {
-            let fail = _o && _o.o && _o.o.fail;
+            let fail = _o?.o?.fail;
             if (fail && typeof(fail) == 'function') {
               fail.apply(_o.t, []);
             }
@@ -654,9 +654,7 @@ define('pgadmin.browser', [
             selectNode = function() {
               this.t.openPath(this.i);
               this.t.select(this.i);
-              if (
-                _ctx.o && _ctx.o.success && typeof(_ctx.o.success) == 'function'
-              ) {
+              if (typeof(_ctx?.o?.success) == 'function') {
                 _ctx.o.success.apply(_ctx.t, [_ctx.i, _data]);
               }
             }.bind(_ctx),
@@ -744,18 +742,14 @@ define('pgadmin.browser', [
 
               if (binarySearch()) {
                 __ctx.t.before(i, _data).then((_item) => {
-                  if (
-                    __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
-                  ) {
+                  if (typeof(__ctx?.o?.success) == 'function') {
                     __ctx.o.success.apply(__ctx.t, [i, _data]);
                   } else {
                     __ctx.t.select(_item);
                   }
                 }, () => {
                   console.warn('Failed to add before...', arguments);
-                  if (
-                    __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
-                  ) {
+                  if (typeof(__ctx.o?.fail) == 'function') {
                     __ctx.o.fail.apply(__ctx.t, [i, _data]);
                   }
                 });
@@ -787,19 +781,13 @@ define('pgadmin.browser', [
                           );
                         }
                       }
-                      if (
-                        ___ctx.o && ___ctx.o.success &&
-                          typeof(___ctx.o.success) == 'function'
-                      ) {
+                      if (typeof(___ctx?.o?.success) == 'function') {
                         ___ctx.o.success.apply(___ctx.t, [_i, _data]);
                       }
                     },
                     () => {
                       console.warn('Failed to append...', arguments);
-                      if (
-                        ___ctx.o && ___ctx.o.fail &&
-                          typeof(___ctx.o.fail) == 'function'
-                      ) {
+                      if (typeof(___ctx?.o?.fail) == 'function') {
                         ___ctx.o.fail.apply(___ctx.t, [___ctx.i, _data]);
                       }
                     }
@@ -827,9 +815,7 @@ define('pgadmin.browser', [
                 selectNode,
                 function() {
                   let o = this && this.o;
-                  if (
-                    o && o.fail && typeof(o.fail) == 'function'
-                  ) {
+                  if (typeof(o?.fail) == 'function') {
                     o.fail.apply(this.t, [this.i, _data]);
                   }
                 }.bind(this)
@@ -837,9 +823,7 @@ define('pgadmin.browser', [
             },
             () => {
               let o = this && this.o;
-              if (
-                o && o.fail && typeof(o.fail) == 'function'
-              ) {
+              if (typeof(o?.fail) == 'function') {
                 o.fail.apply(this.t, [this.i, _data]);
               }
             });
@@ -881,7 +865,7 @@ define('pgadmin.browser', [
           op: null,
         },
         errorOut = function() {
-          let fail = this.o && this.o.fail;
+          let fail = this.o?.fail;
           if (fail && typeof(fail) == 'function') {
             fail.apply(this.t, [this.i, _new, _old]);
           }
@@ -981,7 +965,7 @@ define('pgadmin.browser', [
                           onLoad();
                         },
                         () => {
-                          let fail = self && self.o && self.o.fail;
+                          let fail = self?.o?.fail;
                           if (
                             fail && typeof(fail) == 'function'
                           ) {
@@ -1110,7 +1094,7 @@ define('pgadmin.browser', [
               self.t.select(self.i);
             }
           }
-          let success = this.o && this.o.success;
+          let success = this.o?.success;
           if (success && typeof(success) == 'function') {
             success.apply(this.t, [this.i, _old, _new]);
           }
@@ -1241,16 +1225,12 @@ define('pgadmin.browser', [
                 __ctx.t.before(i, _new).then((new_item) => {
                   __ctx.t.openPath(new_item);
                   __ctx.t.select(new_item);
-                  if (
-                    __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
-                  ) {
+                  if (typeof(__ctx?.o?.success) == 'function') {
                     __ctx.o.success.apply(__ctx.t, [i, _old, _new]);
                   }
                 }, () => {
                   console.warn('Failed to add before..', arguments);
-                  if (
-                    __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
-                  ) {
+                  if (typeof(__ctx?.o?.fail) == 'function') {
                     __ctx.o.fail.apply(__ctx.t, [i, _old, _new]);
                   }
                 });
@@ -1260,17 +1240,13 @@ define('pgadmin.browser', [
                     (new_item) => {
                       __ctx.t.openPath(new_item);
                       __ctx.t.select(new_item);
-                      if (
-                        __ctx.o && __ctx.o.success && typeof(__ctx.o.success) == 'function'
-                      ) {
+                      if (typeof(__ctx?.o?.success) == 'function') {
                         __ctx.o.success.apply(__ctx.t, [__ctx.i, _old, _new]);
                       }
                     },
                     () => {
                       console.warn('Failed to append...', arguments);
-                      if (
-                        __ctx.o && __ctx.o.fail && typeof(__ctx.o.fail) == 'function'
-                      ) {
+                      if (typeof(__ctx?.o?.fail) == 'function') {
                         __ctx.o.fail.apply(__ctx.t, [__ctx.i, _old, _new]);
                       }
                     },
@@ -1298,9 +1274,7 @@ define('pgadmin.browser', [
                 selectNode,
                 function() {
                   let o = this && this.o;
-                  if (
-                    o && o.fail && typeof(o.fail) == 'function'
-                  ) {
+                  if (typeof(o?.fail) == 'function') {
                     o.fail.apply(this.t, [this.i, _old, _new]);
                   }
                 }
@@ -1308,9 +1282,7 @@ define('pgadmin.browser', [
             },
             () => {
               let o = this && this.o;
-              if (
-                o && o.fail && typeof(o.fail) == 'function'
-              ) {
+              if (typeof(o?.fail) == 'function') {
                 o.fail.apply(this.t, [this.i, _old, _new]);
               }
             }
@@ -1355,13 +1327,13 @@ define('pgadmin.browser', [
 
     onRefreshTreeNodeReact: function(_i, _opts) {
       this.tree.refresh(_i).then(() =>{
-        if (_opts && _opts.success) _opts.success();
+        if (_opts?.success) _opts.success();
       });
     },
 
     onRefreshTreeNode: function(_i, _opts) {
       let _d = _i && this.tree.itemData(_i),
-        n = _d && _d._type && this.Nodes[_d._type],
+        n = this.Nodes[_d?._type],
         ctx = {
           b: this, // Browser
           d: _d, // current parent
@@ -1445,7 +1417,7 @@ define('pgadmin.browser', [
             }
           }
           ctx.b._refreshNode(ctx, ctx.branch);
-          let success = (ctx.o && ctx.o.success) || ctx.success;
+          let success = (ctx?.o?.success) || ctx.success;
           if (success && typeof(success) == 'function') {
             success();
           }
@@ -1484,7 +1456,7 @@ define('pgadmin.browser', [
         });
       }.bind(this);
 
-      if (n && n.collection_node) {
+      if (n?.collection_node) {
         let p = ctx.i = this.tree.parent(_i),
           unloadNode = function() {
             this.tree.unload(_i, {
@@ -1638,7 +1610,7 @@ define('pgadmin.browser', [
         node,
         children = _node && tree_local.children(_node);
 
-      if (!children || !children.length)
+      if (!children?.length)
         return null;
 
       for(; idx < children.length; idx++) {

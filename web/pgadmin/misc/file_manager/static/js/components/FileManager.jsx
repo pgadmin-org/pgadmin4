@@ -674,9 +674,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
       (params?.dialog_type != 'storage_dialog' && params?.path) && fmUtilsObj.setLastVisitedDir(params?.path, selectedSS);
     };
     init();
-    setTimeout(()=>{
-      saveAsRef.current && saveAsRef.current.focus();
-    }, 300);
+    setTimeout(()=>{ saveAsRef.current?.focus(); }, 300);
     return ()=>{
       fmUtilsObj.destroy();
     };

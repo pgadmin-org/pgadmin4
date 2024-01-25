@@ -1237,7 +1237,7 @@ var requirejs, require, define;
 
             return {
                 node: node,
-                id: node && node.getAttribute('data-requiremodule')
+                id: node?.getAttribute('data-requiremodule')
             };
         }
 

@@ -505,7 +505,7 @@ export default function Explain({plans=[]}) {
           // indicatorColor="primary"
           variant="scrollable"
           scrollButtons="auto"
-          action={(ref)=>ref && ref.updateIndicator()}
+          action={(ref)=>ref?.updateIndicator()}
         >
           <Tab label="Graphical" />
           <Tab label="Analysis" />

@@ -86,7 +86,7 @@ export default class MainMenuFactory {
       // Some callbacks registered in 'callbacks' check and call specifiec callback function
       if (options.module && 'callbacks' in options.module && options.module.callbacks[options.callback]) {
         options.module.callbacks[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
-      } else if (options.module && options.module[options.callback]) {
+      } else if (options?.module[options.callback]) {
         options.module[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
       } else if (options?.callback) {
         options.callback(options);

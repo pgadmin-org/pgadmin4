@@ -20,7 +20,7 @@ define('app', [
     for (let key in obj) {
       let module = obj[key];
 
-      if (module && module.init && typeof module.init == 'function') {
+      if (typeof module?.init == 'function') {
         try {
           module.init();
         }
@@ -28,7 +28,7 @@ define('app', [
           console.warn(e.stack || e);
         }
       }
-      else if (module && module.Init && typeof module.Init == 'function') {
+      else if (typeof module?.Init == 'function') {
         try {
           module.Init();
         }

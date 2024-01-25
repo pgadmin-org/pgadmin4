@@ -54,7 +54,7 @@ export function onlineHelpSearch(param, props) {
       let pooling = window.pooling;
       if(resultEl) {
         let searchResultsH2Tags = resultEl.getElementsByTagName('h2');
-        let list = resultEl && resultEl.getElementsByTagName('LI');
+        let list = resultEl?.getElementsByTagName('LI');
         if ((list && list.length > 0 )) {
           let res = extractSearchResult(list);
           // After getting the data, we need to call the Parent component function

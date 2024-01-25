@@ -538,7 +538,7 @@ function SchemaDialogView({
       changedData = _.assign({}, schema.origData, changedData);
     }
 
-    props.onDataChange && props.onDataChange(isDataChanged, changedData);
+    props.onDataChange?.(isDataChanged, changedData);
   }, [sessData, formReady]);
 
   useEffect(()=>{
@@ -568,7 +568,7 @@ function SchemaDialogView({
     let unmounted = false;
     /* Docker on load focusses itself, so our focus should execute later */
     let focusTimeout = setTimeout(()=>{
-      firstEleRef.current && firstEleRef.current.focus();
+      firstEleRef.current?.focus();
     }, 250);
 
     setLoaderText('Loading...');
@@ -577,7 +577,7 @@ function SchemaDialogView({
     if(!getInitData && viewHelperProps.mode === 'edit') {
       throw new Error('getInitData must be passed for edit');
     }
-    let initDataPromise = (getInitData && getInitData()) || Promise.resolve({});
+    let initDataPromise = getInitData?.() || Promise.resolve({});
     initDataPromise.then((data)=>{
       if(unmounted) {
         return;
@@ -628,7 +628,7 @@ function SchemaDialogView({
 
   const onResetClick = ()=>{
     const resetIt = ()=>{
-      firstEleRef.current && firstEleRef.current.focus();
+      firstEleRef.current?.focus();
       setFormResetKey((prev)=>prev+1);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,

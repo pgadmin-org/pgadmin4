@@ -121,7 +121,7 @@ export default function CollectionNodeProperties({
       msg = undefined,
       title = undefined;
 
-    if (selNode && selNode.type && selNode.type == 'coll-constraints') {
+    if (selNode?.type == 'coll-constraints') {
       // In order to identify the constraint type, the type should be passed to the server
       selRows = selRowModels.map((row) => ({
         id: row.original.oid,

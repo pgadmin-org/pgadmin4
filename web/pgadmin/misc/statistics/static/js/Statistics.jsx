@@ -123,7 +123,7 @@ function createSingleLineStatistics(data, prettifyFields) {
 
   for (let idx in columns) {
     name = columns[idx]['name'];
-    if (row && row[name]) {
+    if (row?.[name]) {
       value =
         _.indexOf(prettifyFields, name) != -1
           ? toPrettySize(row[name])

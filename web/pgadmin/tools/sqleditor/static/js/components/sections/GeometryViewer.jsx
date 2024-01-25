@@ -293,7 +293,7 @@ function TheMap({data}) {
       infoControl.current.addTo(mapObj);
     }
     resetLayersKey.current++;
-    return ()=>{infoControl.current && infoControl.current.remove();};
+    return ()=>{infoControl.current?.remove();};
   }, [data]);
   return (
     <>

@@ -691,24 +691,15 @@ function Dashboard({
       current_user;
 
     let can_signal_backend =
-      treeNodeInfo.server && treeNodeInfo.server.user
-        ? treeNodeInfo.server.user.can_signal_backend
-        : false;
+      treeNodeInfo.server?.user ? treeNodeInfo.server?.user?.can_signal_backend : false;
 
     let maintenanceActiveSessions = dashData.filter((data) => data.state === 'active'&&
       maintenance_database === data.datname);
-    if (
-      treeNodeInfo.server &&
-      treeNodeInfo.server.user &&
-      treeNodeInfo.server.user.is_superuser
-    ) {
+    if (treeNodeInfo.server?.user?.is_superuser) {
       is_super_user = true;
     } else {
       is_super_user = false;
-      current_user =
-        treeNodeInfo.server && treeNodeInfo.server.user
-          ? treeNodeInfo.server.user.name
-          : null;
+      current_user = treeNodeInfo.server?.user ? treeNodeInfo.server?.user?.name : null;
     }
 
     // With PG10, We have background process showing on dashboard
