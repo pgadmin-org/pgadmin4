@@ -23,6 +23,7 @@ New features
   | `Issue #4419 <https://github.com/pgadmin-org/pgadmin4/issues/4419>`_ -  Allow drag-n-drop columns collection tree node as comma separated columns.
   | `Issue #6380 <https://github.com/pgadmin-org/pgadmin4/issues/6380>`_ -  Added support to rename columns in Views.
   | `Issue #6392 <https://github.com/pgadmin-org/pgadmin4/issues/6392>`_ -  Added BYPASSRLS|NOBYPASSRLS option while creating a Role.
+  | `Issue #6450 <https://github.com/pgadmin-org/pgadmin4/issues/6450>`_ -  Added support for column storage syntax while creating table.
   | `Issue #6557 <https://github.com/pgadmin-org/pgadmin4/issues/6557>`_ -  Use COOKIE_DEFAULT_PATH or SCRIPT_NAME in session cookie path.
   | `Issue #6792 <https://github.com/pgadmin-org/pgadmin4/issues/6792>`_ -  Added configurable parameter to enable support for PasswordExecCommand in server mode.
 
@@ -37,3 +38,4 @@ Bug fixes
   | `Issue #7055 <https://github.com/pgadmin-org/pgadmin4/issues/7055>`_ -  Fixed a UI border issue on the dependencies tab for columns with icon.
   | `Issue #7073 <https://github.com/pgadmin-org/pgadmin4/issues/7073>`_ -  Fixed an issue where multiple errors were showing if user does not have connect privileges.
   | `Issue #7085 <https://github.com/pgadmin-org/pgadmin4/issues/7085>`_ -  Fixed an issue where group membership information was displayed incorrectly.
+  | `Issue #7113 <https://github.com/pgadmin-org/pgadmin4/issues/7113>`_ -  Ensure that the correct SQL is generated when changing the column data type to "char".
