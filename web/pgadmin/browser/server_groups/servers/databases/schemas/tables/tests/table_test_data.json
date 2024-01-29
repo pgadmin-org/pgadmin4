@@ -733,6 +733,42 @@
         "error_msg": null,
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create: Add Table with column storage.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Creating table with column storage is not supported by PPAS/PG 16.0 and below."
+      },
+      "test_data": {
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "character varying",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "max_val_attlen": 2147483647,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 30,
+            "attprecision": null,
+            "attidentity": "a",
+            "attstorage": "e",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ],
   "table_delete": [

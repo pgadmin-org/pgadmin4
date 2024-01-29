@@ -43,6 +43,8 @@ are disabled if inapplicable.)
   for the column. Compression is supported only for variable-width data types,
   and is used only when the column's storage mode is main or extended. This
   option is available from v14 and above.
+* Use the drop-down listbox next to *Storage* to set the storage mode for the
+  column. This option is available from v16 and above.
 
 Click the *Constraints* tab to continue.
 

@@ -201,6 +201,35 @@
         "error_msg": "Mocked Internal Server Error",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create: Add column with storage",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Creating column with storage is supported by EPAS/PG 16.0 and above.",
+        "name": "test_column_add_",
+        "cltype": "character varying",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "attstorage": "e",
+        "description": {
+          "comment": "jsoncomment"
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ],
   "column_delete": [
