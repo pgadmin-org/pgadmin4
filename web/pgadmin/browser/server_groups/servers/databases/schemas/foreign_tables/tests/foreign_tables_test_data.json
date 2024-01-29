@@ -269,7 +269,7 @@
                 }
               ],
               "name": "emp",
-              "cltype": "text",
+              "cltype": "\"char\"",
               "attlen": null,
               "attnum": 1,
               "attnotnull": false,
