@@ -94,7 +94,7 @@ function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
         }
       </div>
       <SearchLoader loading={true} />
-    </div>) : '';
+    </div>) : <></>;
 }
 
 HelpArticleContents.propTypes = {
@@ -265,7 +265,7 @@ export default function QuickSearch({closeModal}) {
   useOutsideAlerter(wrapperRef);
 
   return (
-    <div id='quick-search-container' onClick={setSearchTerm}></div>,
+    <div id='quick-search-container' onClick={setSearchTerm} onKeyDown={()=>{/* no need */}}></div>,
     <div id='quick-search-container' ref={wrapperRef} className={clsx('test', modalClasses.setTop)} role="menu">
       <div>
         <div>

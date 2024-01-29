@@ -425,7 +425,7 @@ export class Tree {
   }
 
   findNode(path) {
-    if (path === null || path === undefined || path.length === 0) {
+    if (path === null || path === undefined || path.length === 0 || path == '/browser') {
       return this.rootNode;
     }
     return findInTree(this.rootNode, path);

@@ -27,7 +27,7 @@ interface IItemRendererXProps {
 // DO NOT EXTEND FROM PureComponent!!! You might miss critical changes made deep within `item` prop
 // as far as efficiency is concerned, `react-aspen` works hard to ensure unnecessary updates are ignored
 export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRendererProps> {
-  public static getBoundingClientRectForItem(item: FileEntry | Directory): ClientRect {
+  public static getBoundingClientRectForItem(item: FileEntry | Directory): DOMRect {
     const divRef = FileTreeItem.itemIdToRefMap.get(item.id);
     if (divRef) {
       return divRef.getBoundingClientRect();
@@ -86,6 +86,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
         onDragStart={this.handleDragStartItem}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
+        onKeyDown={()=>{/* taken care by parent */}}
         // required for rendering context menus when opened through context menu button on keyboard
         ref={this.handleDivRef}
         draggable={true}>
