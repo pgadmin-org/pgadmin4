@@ -73,12 +73,12 @@ function CustomRow(props) {
   const rowRef = useRef();
   const dataGridExtras = useContext(DataGridExtrasContext);
 
-  const rowInfoValue = useMemo({
+  const rowInfoValue = useMemo(()=>({
     rowIdx: props.rowIdx,
     getCellElement: (colIdx)=>{
       return rowRef.current?.querySelector(`.rdg-cell[aria-colindex="${colIdx+1}"]`);
     }
-  }, [props.rowIdx]);
+  }), [props.rowIdx]);
 
   if(!props.isRowSelected && props.selectedCellIdx > 0) {
     dataGridExtras.onSelectedCellChange?.([props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx)]);
