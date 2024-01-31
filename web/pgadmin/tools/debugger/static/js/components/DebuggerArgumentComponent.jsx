@@ -596,7 +596,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
   function checkTypeAndGetUrl(d, treeInfo) {
     let baseUrl;
-    if (d && d._type == 'function') {
+    if (d?._type == 'function') {
       baseUrl = url_for('debugger.initialize_target_for_function', {
         'debug_type': 'direct',
         'trans_id': transId,
@@ -605,7 +605,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'scid': treeInfo.schema._id,
         'func_id': treeInfo.function._id,
       });
-    } else if (d && d._type == 'procedure') {
+    } else if (d?._type == 'procedure') {
       baseUrl = url_for('debugger.initialize_target_for_function', {
         'debug_type': 'direct',
         'trans_id': transId,
@@ -614,7 +614,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'scid': treeInfo.schema._id,
         'func_id': treeInfo.procedure._id,
       });
-    } else if (d && d._type == 'edbfunc') {
+    } else if (d?._type == 'edbfunc') {
       baseUrl = url_for('debugger.initialize_target_for_function', {
         'debug_type': 'direct',
         'trans_id': transId,
@@ -623,7 +623,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'scid': treeInfo.schema._id,
         'func_id': treeInfo.edbfunc._id,
       });
-    } else if (d && d._type == 'edbproc') {
+    } else if (d?._type == 'edbproc') {
       baseUrl = url_for('debugger.initialize_target_for_function', {
         'debug_type': 'direct',
         'trans_id': transId,

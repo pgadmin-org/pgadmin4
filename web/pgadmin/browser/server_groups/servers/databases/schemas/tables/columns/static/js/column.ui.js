@@ -77,7 +77,7 @@ export default class ColumnSchema extends BaseUISchema {
 
   inSchemaWithColumnCheck(state) {
     // disable all fields if column is listed under view or mview
-    if (this.nodeInfo && ('view' in this.nodeInfo || 'mview' in this.nodeInfo)) {
+    if (this.nodeInfo && (('view' in this.nodeInfo && this.nodeInfo?.server?.version < 130000) || 'mview' in this.nodeInfo)) {
       return true;
     }
 
@@ -384,17 +384,38 @@ export default class ColumnSchema extends BaseUISchema {
       group: gettext('Definition'),
     },{
       id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
-      type: 'select', mode: ['properties', 'edit'],
+      type: 'select', mode: ['properties', 'edit', 'create'],
       cell: 'select', readonly: obj.inSchemaWithColumnCheck,
       controlProps: { placeholder: gettext('Select storage'),
         allowClear: false,
       },
-      options: [
-        {label: 'PLAIN', value: 'p'},
-        {label: 'MAIN', value: 'm'},
-        {label: 'EXTERNAL', value: 'e'},
-        {label: 'EXTENDED', value: 'x'},
-      ],
+      options: function() {
+        let options = [{
+          label: gettext('PLAIN'), value: 'p'
+        },{
+          label: gettext('MAIN'), value: 'm'
+        },{
+          label: gettext('EXTERNAL'), value: 'e'
+        },{
+          label: gettext('EXTENDED'), value: 'x'
+        }];
+
+        if (obj.getServerVersion() >= 160000) {
+          options.push({
+            label: gettext('DEFAULT'), value: 'd',
+          });
+        }
+        return options;
+      },
+      visible: (state) => {
+        if (obj.getServerVersion() >= 160000) {
+          return true;
+        } else if (obj.isNew(state)) {
+          return false;
+        } else {
+          return true;
+        }
+      },
     },{
       id: 'defval', label: gettext('Default'), cell: 'text',
       type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],

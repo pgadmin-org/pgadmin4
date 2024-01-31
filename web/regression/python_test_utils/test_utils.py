@@ -1103,7 +1103,7 @@ def get_scenario_name(cases):
     for class_name, test_case_list in cases.items():
         result = {class_name: []}
         for case_name_dict in test_case_list:
-            key, value = list(case_name_dict.items())[0]
+            key, _ = list(case_name_dict.items())[0]
             class_names_dict = dict(
                 (c_name, "") for scenario in result[class_name] for
                 c_name in scenario.keys())

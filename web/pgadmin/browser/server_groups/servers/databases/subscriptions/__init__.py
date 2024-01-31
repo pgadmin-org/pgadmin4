@@ -407,7 +407,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         'stats.sql']),
                               subid=subid, did=did, conn=self.conn)
-        status, res = self.conn.execute_dict(sql)
+        _, res = self.conn.execute_dict(sql)
         return make_json_response(
             data=res,
             status=200
@@ -585,7 +585,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             except ValueError:
                 data[k] = v
         try:
-            sql, name = self.get_sql(data, subid, 'msql')
+            sql, _ = self.get_sql(data, subid, 'msql')
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -946,7 +946,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             if 'pub' in data and isinstance(data['pub'], str):
                 # Convert publication details to list
                 data['pub'] = data['pub'].split(',,')
-            sql, name = self.get_sql(data=data, subid=oid)
+            sql, _ = self.get_sql(data=data, subid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

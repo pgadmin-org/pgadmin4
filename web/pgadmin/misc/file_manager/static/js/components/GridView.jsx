@@ -28,9 +28,6 @@ const useStyles = makeStyles((theme)=>({
     margin: '4px',
     textAlign: 'center',
     position: 'relative',
-  },
-  gridItemContent: {
-    padding: '4px',
     border: '1px solid transparent',
     cursor: 'pointer',
     '&[aria-selected=true]': {
@@ -38,6 +35,9 @@ const useStyles = makeStyles((theme)=>({
       color: theme.otherVars.qtDatagridSelectFg,
       borderColor: theme.palette.primary.main,
     },
+  },
+  gridItemContent: {
+    padding: '4px',
   },
   gridFilename: {
     overflowWrap: 'break-word',
@@ -67,11 +67,18 @@ export function ItemView({idx, row, selected, onItemSelect, onItemEnter, onEditC
     }
   }, [editMode]);
 
-  const handleKeyDown = (e)=>{
+  const handleItemKeyDown = (e)=>{
+    if(e.code == 'Enter') {
+      onItemEnter(row);
+    }
+  };
+
+  const handleEditKeyDown = (e)=>{
     if(e.code == 'Tab') {
       e.stopPropagation();
     }
     if(e.code == 'Enter') {
+      e.stopPropagation();
       onEditComplete({...row, Filename: fileNameRef.current.textContent?.trim()});
     }
     if(e.code == 'Escape') {
@@ -90,17 +97,17 @@ export function ItemView({idx, row, selected, onItemSelect, onItemEnter, onEditC
   }
 
   return (
-    <li className={classes.gridItem} aria-rowindex={idx} aria-selected={selected}>
-      <div className={classes.gridItemContent} aria-selected={selected} onClick={()=>onItemSelect(idx)} onDoubleClick={()=>onItemEnter(row)}>
+    <div tabIndex="-1" className={classes.gridItem} aria-selected={selected} onClick={()=>onItemSelect(idx)} onDoubleClick={()=>onItemEnter(row)} onKeyDown={handleItemKeyDown} role="gridcell">
+      <div className={classes.gridItemContent}>
         <div>
           {icon}
           {Boolean(row.Protected) && <LockRoundedIcon className={classes.protected}/>}
         </div>
-        <div ref={fileNameRef} onKeyDown={handleKeyDown} onBlur={()=>onEditComplete(row)}
+        <div tabIndex="-1" ref={fileNameRef} onKeyDown={handleEditKeyDown} onBlur={()=>onEditComplete?.(row)}
           className={editMode ? classes.gridItemEdit : classes.gridFilename} suppressContentEditableWarning={true}
-          contentEditable={editMode} data-test="filename-div">{row['Filename']}</div>
+          contentEditable={editMode} data-test="filename-div" role={editMode ? 'textbox' : 'none'}>{row['Filename']}</div>
       </div>
-    </li>
+    </div>
   );
 }
 ItemView.propTypes = {
@@ -131,12 +138,12 @@ export default function GridView({items, operation, onItemSelect, onItemEnter}) 
 
   return (
     <Box flexGrow={1} overflow="hidden auto" id="grid">
-      <ul ref={gridRef} className={classes.grid}>
+      <div ref={gridRef} className={classes.grid}>
         {items.map((item, i)=>(
           <ItemView key={item.Filename} idx={i} row={item} selected={selectedIdx==i} onItemSelect={setSelectedIdx}
             onItemEnter={onItemEnter} onEditComplete={operation.idx==i ? onEditComplete : null} />)
         )}
-      </ul>
+      </div>
       {items.length == 0 && <Box textAlign="center" p={1}>{gettext('No files/folders found')}</Box>}
     </Box>
   );

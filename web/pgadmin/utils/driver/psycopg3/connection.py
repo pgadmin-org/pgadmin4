@@ -1857,7 +1857,7 @@ Failed to reset the connection to the server due to following error:
         :param parameters: query parameters / variables
         :return:
         """
-        status, cursor = self.__cursor()
+        status, _ = self.__cursor()
         if not status:
             return None
         else:

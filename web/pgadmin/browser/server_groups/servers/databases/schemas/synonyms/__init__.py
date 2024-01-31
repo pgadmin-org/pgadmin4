@@ -609,7 +609,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         try:
-            SQL, name = self.get_sql(gid, sid, data, scid, syid)
+            SQL, _ = self.get_sql(gid, sid, data, scid, syid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -789,7 +789,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name = self.get_sql(gid, sid, data, scid, oid)
+            sql, _ = self.get_sql(gid, sid, data, scid, oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

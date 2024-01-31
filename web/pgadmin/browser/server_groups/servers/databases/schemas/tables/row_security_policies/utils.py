@@ -10,7 +10,7 @@
 """ Implements Utility class for row level security. """
 
 from flask import render_template
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -82,7 +82,8 @@ def get_sql(conn, **kwargs):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            raise ObjectGone(_('Could not find the policy in the table.'))
+            raise ObjectGone(
+                gettext('Could not find the policy in the table.'))
 
         old_data = dict(res['rows'][0])
         old_data['schema'] = schema
@@ -126,17 +127,16 @@ def get_reverse_engineered_sql(conn, **kwargs):
         raise ExecuteError(res)
 
     if len(res['rows']) == 0:
-        raise ObjectGone(_('Could not find the policy in the table.'))
+        raise ObjectGone(gettext('Could not find the policy in the table.'))
 
     data = dict(res['rows'][0])
     # Adding parent into data dict, will be using it while creating sql
     data['schema'] = schema
     data['table'] = table
 
-    SQL, name = get_sql(conn, data=data, scid=scid, plid=None,
-                        policy_table_id=policy_table_id,
-                        datlastsysoid=datlastsysoid, schema=schema,
-                        table=table)
+    SQL, _ = get_sql(conn, data=data, scid=scid, plid=None,
+                     policy_table_id=policy_table_id,
+                     datlastsysoid=datlastsysoid, schema=schema, table=table)
     if with_header:
         sql_header = "-- POLICY: {0}\n\n-- ".format(data['name'])
 

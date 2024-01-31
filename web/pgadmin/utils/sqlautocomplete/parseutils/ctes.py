@@ -19,7 +19,7 @@ def isolate_query_ctes(full_text, text_before_cursor):
     if not full_text or not full_text.strip():
         return full_text, text_before_cursor, tuple()
 
-    ctes, remainder = extract_ctes(full_text)
+    ctes, _ = extract_ctes(full_text)
     if not ctes:
         return full_text, text_before_cursor, ()
 

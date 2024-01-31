@@ -363,7 +363,7 @@ class IndexConstraintView(PGChildNodeView):
                                         self._PROPERTIES_SQL]), did=did,
                               tid=tid,
                               constraint_type=self.constraint_type)
-        status, res = self.conn.execute_dict(SQL)
+        _, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
             row['_type'] = self.node_type
@@ -480,7 +480,7 @@ class IndexConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path, self._NODES_SQL]),
                               tid=tid,
                               constraint_type=self.constraint_type)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             res.append(
@@ -815,8 +815,8 @@ class IndexConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = idxcons_utils.get_sql(self.conn, data, did, tid,
-                                              self.constraint_type, cid)
+            sql, _ = idxcons_utils.get_sql(self.conn, data, did, tid,
+                                           self.constraint_type, cid)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')

@@ -18,6 +18,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.functions \
     .tests import utils as funcs_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as db_utils
+from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import PSYCOPG3
 
 
 class DebuggerStartExecution(BaseTestGenerator):
@@ -28,6 +30,12 @@ class DebuggerStartExecution(BaseTestGenerator):
 
     def setUp(self):
         super().setUp()
+
+        # This is added because debugger_utils.start_listener() does not return
+        # any response, hence thread hangs.
+        if PG_DEFAULT_DRIVER == PSYCOPG3:
+            self.skipTest('Skip for psycopg3.')
+
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

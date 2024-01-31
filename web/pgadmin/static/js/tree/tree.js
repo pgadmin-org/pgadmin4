@@ -20,7 +20,7 @@ function manageTreeEvents(event, eventName, item) {
   let obj = pgAdmin.Browser;
 
   // Events for preferences tree.
-  if (node_metadata.parent && node_metadata.parent.includes('/preferences') && obj.ptree.tree.type == 'preferences') {
+  if (node_metadata.parent?.includes('/preferences') && obj.ptree.tree.type == 'preferences') {
     try {
       obj.Events.trigger(
         'preferences:tree:' + eventName, event, item, d
@@ -191,7 +191,7 @@ export class Tree {
   }
 
   async addIcon(item, icon) {
-    if (item !== undefined && item.getMetadata('data') !== undefined) {
+    if (item?.getMetadata('data') !== undefined) {
       item.getMetadata('data').icon = icon.icon;
     }
     await this.tree.addIcon(item, icon);
@@ -231,7 +231,7 @@ export class Tree {
   }
 
   wasLoad(item) {
-    if (item && item.type === FileType.Directory) {
+    if (item?.type === FileType.Directory) {
       return item.isExpanded && item.children != null && item.children.length > 0;
     }
     return true;
@@ -247,7 +247,7 @@ export class Tree {
       return model.root.children[0];
     }
 
-    if (item !== undefined && item !== null && item.branchSize > 0) {
+    if (item?.branchSize > 0) {
       return item.children[0];
     }
 
@@ -301,7 +301,7 @@ export class Tree {
   }
 
   hasParent(item) {
-    return item && item.parent ? true : false;
+    return item?.parent ? true : false;
   }
 
   isOpen(item) {
@@ -319,11 +319,11 @@ export class Tree {
   }
 
   itemData(item) {
-    return (item !== undefined && item !== null && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
+    return (item?.getMetadata('data') !== undefined) ? item?._metadata.data : [];
   }
 
   getData(item) {
-    return (item !== undefined && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
+    return (item?.getMetadata('data') !== undefined) ? item?._metadata.data : [];
   }
 
   isRootNode(item) {
@@ -411,7 +411,7 @@ export class Tree {
 
   findNodeByDomElement(domElement) {
     const path = domElement.path;
-    if (!path || !path[0]) {
+    if (!path?.[0]) {
       return undefined;
     }
 
@@ -425,7 +425,7 @@ export class Tree {
   }
 
   findNode(path) {
-    if (path === null || path === undefined || path.length === 0) {
+    if (path === null || path === undefined || path.length === 0 || path == '/browser') {
       return this.rootNode;
     }
     return findInTree(this.rootNode, path);
@@ -433,7 +433,7 @@ export class Tree {
 
   createOrUpdateNode(id, data, parent, domNode) {
     let oldNodePath = id;
-    if (parent !== null && parent !== undefined && parent.path !== undefined && parent.path != '/browser') {
+    if (parent?.path != '/browser') {
       oldNodePath = parent.path + '/' + id;
     }
     const oldNode = this.findNode(oldNodePath);
@@ -563,10 +563,14 @@ export class Tree {
       /* setDragImage is not supported in IE. We leave it to
       * its default look and feel
       */
+      const dropText = _.escape(dropDetails.text);
+      if(!dropText) {
+        e.preventDefault();
+      }
       if (e.dataTransfer.setDragImage) {
         const dragItem = document.createElement('div');
         dragItem.classList.add('drag-tree-node');
-        dragItem.innerHTML = `<span>${_.escape(dropDetails.text)}</span>`;
+        dragItem.innerHTML = `<span>${dropText}</span>`;
 
         document.querySelector('body .drag-tree-node')?.remove();
         document.body.appendChild(dragItem);

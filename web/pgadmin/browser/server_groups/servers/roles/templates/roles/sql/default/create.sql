@@ -24,7 +24,11 @@ CREATE ROLE {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data
 
 	REPLICATION{% else %}
 
-	NOREPLICATION{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
+	NOREPLICATION{% endif %}{% if data.rolbypassrls %}
+
+	BYPASSRLS{% else %}
+
+	NOBYPASSRLS{% endif %}{% if 'rolconnlimit' in data and data.rolconnlimit is number and data.rolconnlimit >= -1 %}
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}{% endif %}{% if data.rolvaliduntil and data.rolvaliduntil is not none %}
 

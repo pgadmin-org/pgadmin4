@@ -581,7 +581,7 @@ class BatchProcess:
         execution_time = None
 
         if j is not None:
-            status, updated = BatchProcess.update_process_info(j)
+            _, updated = BatchProcess.update_process_info(j)
             if updated:
                 db.session.commit()
             self.stime = j.start_time

@@ -39,7 +39,7 @@ define('pgadmin.node.server', [
       hasStatistics: true,
       hasCollectiveStatistics: true,
       can_expand: function(d) {
-        return d && d.connected;
+        return d?.connected;
       },
       title: function(d, action) {
         if(action == 'create') {
@@ -139,8 +139,8 @@ define('pgadmin.node.server', [
           label: gettext('Clear Saved Password'),
           priority: 11,
           enable: function(node) {
-            return (node && node._type === 'server' &&
-              node.is_password_saved);
+            return (node?._type === 'server' &&
+              node?.is_password_saved);
           },
         },{
           name: 'clear_sshtunnel_password', node: 'server', module: this,
@@ -148,8 +148,8 @@ define('pgadmin.node.server', [
           label: gettext('Clear SSH Tunnel Password'),
           priority: 12,
           enable: function(node) {
-            return (node && node._type === 'server' &&
-              node.is_tunnel_password_saved);
+            return (node?._type === 'server' &&
+              node?.is_tunnel_password_saved);
           },
           data: {
             data_disabled: gettext('SSH Tunnel password is not saved for selected server.'),
@@ -175,30 +175,30 @@ define('pgadmin.node.server', [
 
       },
       is_connected: function(node) {
-        return (node && node.connected);
+        return node?.connected;
       },
       enable_reload_config: function(node) {
         // Must be connected & is Super user
-        return (node && node._type == 'server' &&
-          node.connected && node.user.is_superuser);
+        return (node?._type == 'server' &&
+          node?.connected && node?.user?.is_superuser);
       },
       is_applicable: function(node) {
         // Must be connected & super user & not in recovery mode
-        return (node && node._type == 'server' &&
-          node.connected && node.user.is_superuser
+        return (node?._type == 'server' &&
+          node?.connected && node?.user?.is_superuser
             && !(node.in_recovery??true));
       },
       wal_pause_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode
-        return (node && node._type == 'server' &&
-          node.connected && node.user.is_superuser
-            && node.in_recovery && !(node.wal_pause??true));
+        return (node?._type == 'server' &&
+          node?.connected && node?.user?.is_superuser
+            && node?.in_recovery && !(node?.wal_pause??true));
       },
       wal_resume_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode
-        return (node && node._type == 'server' &&
-          node.connected && node.user.is_superuser
-            && node.in_recovery && node.wal_pause);
+        return (node?._type == 'server' &&
+          node?.connected && node?.user?.is_superuser
+            && node?.in_recovery && node?.wal_pause);
       },
       callbacks: {
         /* Connect the server */
@@ -540,12 +540,12 @@ define('pgadmin.node.server', [
             d = i && t.itemData(i),
             self = this;
 
-          while (d && d._type != 'server') {
+          while (d?._type != 'server') {
             i = t.parent(i);
             d = i && t.itemData(i);
           }
 
-          if (i && d && d._type == 'server') {
+          if (i && d?._type == 'server') {
             if (_.isUndefined(d.is_connecting) || !d.is_connecting) {
               d.is_connecting = true;
 
@@ -682,7 +682,7 @@ define('pgadmin.node.server', [
           }
         },
         onSuccess = function(res, node, _data, _tree, _item, _wasConnected) {
-          if (res && res.data) {
+          if (res?.data) {
             if (typeof res.data.icon == 'string') {
               _tree.removeIcon(_item);
               _data.icon = res.data.icon;
@@ -789,7 +789,7 @@ define('pgadmin.node.server', [
       getApiInstance().get(url)
         .then(({data: res})=>{
           tree.setInode(item);
-          if (res && res.data) {
+          if (res?.data) {
             if (typeof res.data.icon == 'string') {
               tree.removeIcon(item);
               data.icon = res.data.icon;

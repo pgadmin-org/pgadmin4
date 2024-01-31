@@ -88,7 +88,7 @@ export function GoogleCredentials(props) {
                   _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
                   clearInterval(interval);
                   resolve(false);
-                } else if (child && child.closed || countdown <= 0) {
+                } else if (child?.closed || countdown <= 0) {
                   _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, 'Authentication is aborted.']);
                   _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
                   clearInterval(interval);

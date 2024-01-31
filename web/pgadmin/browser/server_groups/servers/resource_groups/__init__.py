@@ -606,7 +606,7 @@ class ResourceGroupView(NodeView):
             except ValueError:
                 data[k] = v
 
-        sql, name = self.get_sql(data, rg_id)
+        sql, _ = self.get_sql(data, rg_id)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql

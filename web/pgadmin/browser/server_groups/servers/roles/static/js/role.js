@@ -25,7 +25,7 @@ define('pgadmin.node.role', [
         type: 'coll-role',
         columns: [
           'rolname', 'rolvaliduntil', 'rolconnlimit', 'rolcanlogin',
-          'rolsuper', 'rolcreaterole', 'rolcreatedb', 'rolcatupdate',
+          'rolsuper', 'rolcreaterole', 'rolcreatedb',
           'rolinherit', 'rolreplication',
         ],
         canDrop: true,

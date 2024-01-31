@@ -324,7 +324,11 @@ export default function FormView({
         let currentControl = <MappedFormControl
           inputRef={(ele)=>{
             if(firstEleRef && firstEleID.current === field.id) {
-              firstEleRef.current = ele;
+              if(typeof firstEleRef == 'function') {
+                firstEleRef(ele);
+              } else {
+                firstEleRef.current = ele;
+              }
             }
           }}
           state={value}
@@ -417,7 +421,7 @@ export default function FormView({
   }
 
   useEffect(()=>{
-    onTabChange && onTabChange(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);
+    onTabChange?.(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);
   }, [tabValue]);
 
   /* check whether form is kept hidden by visible prop */
@@ -437,7 +441,7 @@ export default function FormView({
               }}
               variant="scrollable"
               scrollButtons="auto"
-              action={(ref)=>ref && ref.updateIndicator()}
+              action={(ref)=>ref?.updateIndicator()}
             >
               {Object.keys(finalTabs).map((tabName)=>{
                 return <Tab key={tabName} label={tabName} data-test={tabName}/>;

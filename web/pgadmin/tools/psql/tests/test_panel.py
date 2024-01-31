@@ -37,3 +37,4 @@ class PSQLPanel(BaseTestGenerator):
                                              self.server['host'],
                                              self.server['port'])
         utils.drop_database(connection, self.db_name)
+        connection.close()

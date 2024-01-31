@@ -15,7 +15,8 @@ function postTreeReady(b) {
     'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar',
     'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule',
     'trigger trigger_function',
-    'edbfunc function edbproc procedure'
+    'edbfunc function edbproc procedure',
+    'coll-column'
   ];
   const getQualifiedName = (data, item)=>{
     if(draggableTypes[0].includes(data._type)) {
@@ -77,6 +78,11 @@ function postTreeReady(b) {
         cur: curPos,
       };
     },
+    [draggableTypes[4]] : (_data, item)=>{
+      return item?.children?.map((ci)=>{
+        return getQualifiedName(ci._metadata.data);
+      }).join(', ') ?? '';
+    }
   });
 
   b.tree.onNodeCopy((data, item)=>{

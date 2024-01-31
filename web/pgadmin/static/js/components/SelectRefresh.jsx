@@ -29,7 +29,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
   const {getOptionsOnRefresh, ...selectControlProps} = controlProps;
 
   const onRefreshClick = ()=>{
-    getOptionsOnRefresh && getOptionsOnRefresh()
+    getOptionsOnRefresh?.()
       .then((res)=>{
         setOptions(res);
         setOptionsReloadBasis((prevVal)=>!prevVal);

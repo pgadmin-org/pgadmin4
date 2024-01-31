@@ -7,6 +7,7 @@ CREATE ROLE "Role1_$%{}[]()&*^!@""'`\/#" WITH
   INHERIT
   NOCREATEDB
   NOCREATEROLE
-  NOREPLICATION;
+  NOREPLICATION
+  NOBYPASSRLS;
 
 COMMENT ON ROLE "Role1_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

@@ -149,7 +149,7 @@ const useStyles = makeStyles((theme) => ({
   cellIcon: {
     paddingLeft: '1.8em',
     paddingTop: '0.35em',
-    height: 35,
+    borderRadius: 0,
     backgroundPosition: '1%',
   },
   emptyPanel: {

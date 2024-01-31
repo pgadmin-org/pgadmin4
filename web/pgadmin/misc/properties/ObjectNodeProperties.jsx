@@ -216,13 +216,13 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
     schema.filterGroups = [gettext('Security')];
   }
   // Reset stale counter.
-  useEffect(()=> {
+  useMemo(()=> {
     staleCounter.current = 0;
   }, [nodeData?._id]);
 
   const key = useMemo(()=>{
     // If node data is updated increase the counter to show updated data.
-    if(isStale){
+    if(isStale) {
       staleCounter.current += 1;
     }
     if( actionType != 'properties' || isActive) {

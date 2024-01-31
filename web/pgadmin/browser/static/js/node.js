@@ -273,14 +273,8 @@ define('pgadmin.browser.node', [
           parentData.server.user.can_create_role) {
           return true;
         } else if (
-          (
-            parentData.server && (
-              parentData.server.user.is_superuser ||
-              parentData.server.user.can_create_db)
-          ) ||
-          (
-            parentData.schema && parentData.schema.can_create
-          )
+          ( parentData.server?.user.is_superuser || parentData.server?.user.can_create_db) ||
+          (parentData.schema?.can_create)
         ) {
           return true;
         } else {
@@ -347,7 +341,7 @@ define('pgadmin.browser.node', [
        **/
       show_obj_properties: function(args, item) {
         let t = pgBrowser.tree,
-          nodeItem = (args && args.item) || item || t.selected(),
+          nodeItem = args?.item || item || t.selected(),
           nodeData = nodeItem ? t.itemData(nodeItem) : undefined,
           panelTitle = this.title(nodeData, args.action),
           treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
@@ -770,7 +764,7 @@ define('pgadmin.browser.node', [
         let tree = pgBrowser.tree,
           auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
 
-        if (auto_expand && auto_expand.value && tree.children(item).length == 1) {
+        if (auto_expand?.value && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
           const first_child = tree.first(item);
 
@@ -808,7 +802,7 @@ define('pgadmin.browser.node', [
         id: panelId,
         title: panelTitle,
         manualClose: true,
-        icon: `dialog-node-icon ${evalFunc(this, this.node_image, dialogProps.itemNodeData) ?? ('icon-' + this.type)}`,
+        icon: `dialog-node-icon ${evalFunc(this, this.node_image, dialogProps.nodeData) ?? ('icon-' + this.type)}`,
         content: (
           <ErrorBoundary>
             <ObjectNodeProperties
@@ -946,7 +940,7 @@ define('pgadmin.browser.node', [
       let cached = this.cached = this.cached || {},
         hash = url,
         min_priority = (
-          node_info && node_info[level] && node_info[level].priority
+          node_info?.[level] && node_info?.[level].priority
         ) || 0;
 
       if (node_info) {

@@ -1295,7 +1295,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if target_schema:
                 data['schema'] = target_schema
 
-            sql, partition_sql = BaseTableView.get_reverse_engineered_sql(
+            sql, _ = BaseTableView.get_reverse_engineered_sql(
                 self, did=did, scid=scid, tid=tid, main_sql=main_sql,
                 data=data, json_resp=json_resp,
                 add_not_exists_clause=if_exists_flag)
@@ -1336,7 +1336,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return res
 
-        SQL, name = self.get_sql(did, scid, tid, data, res)
+        SQL, _ = self.get_sql(did, scid, tid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = SQL.strip('\n')
 

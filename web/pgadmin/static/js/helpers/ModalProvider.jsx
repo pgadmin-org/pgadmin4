@@ -68,7 +68,7 @@ function alert(title, text, onOkClick, okLabel = gettext('OK')) {
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
     const onOkClickClose = () => {
-      onOkClick && onOkClick();
+      onOkClick?.();
       closeModal();
     };
     return (
@@ -81,11 +81,11 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
     const onCancelClickClose = () => {
-      onCancelClick && onCancelClick();
+      onCancelClick?.();
       closeModal();
     };
     const onOkClickClose = () => {
-      onOkClick && onOkClick();
+      onOkClick?.();
       closeModal();
     };
     return (

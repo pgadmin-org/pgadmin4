@@ -188,7 +188,7 @@ def stop_heartbeat():
     if data != '':
         data = json.loads(data)
 
-    status, msg = stop_server_heartbeat(data)
+    _, msg = stop_server_heartbeat(data)
     return make_json_response(data=msg,
                               status=200)
 

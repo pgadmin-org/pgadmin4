@@ -93,7 +93,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
     }).then((res)=>{
       /* Don't warn the user before closing dialog */
       resolve(res.data);
-      onSave && onSave(res.data);
+      onSave?.(res.data);
       onClose();
     }).catch((err)=>{
       reject(err);

@@ -158,7 +158,7 @@ define([
       if (!d)
         return;
 
-      let treeInfo = t && t.getTreeNodeHierarchy(i);
+      let treeInfo = t?.getTreeNodeHierarchy(i);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
         pgAdmin.Browser.notifier.alert(

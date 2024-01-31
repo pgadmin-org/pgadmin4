@@ -255,7 +255,6 @@ class ManageUsers:
                           ):
         """Get user(s) details."""
         app = create_app(config.APP_NAME + '-cli')
-        usr = None
         with app.test_request_context():
             if username and auth_source:
                 users = User.query.filter_by(username=username,

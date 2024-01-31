@@ -262,7 +262,7 @@ class RangeSchema extends BaseUISchema {
                   state.subtypes = options;
                 }
                 options.forEach((option) => {
-                  if(option && option.label == '') {
+                  if(option?.label == '') {
                     return;
                   }
                   res.push({ label: option.label, value: option.value });
@@ -473,7 +473,7 @@ class ExternalSchema extends BaseUISchema {
     let result = [];
     _.each(control, function(item) {
 
-      if(item && item.label == '') {
+      if(item?.label == '') {
         return;
       }
       // if type from selected from combobox matches in options
@@ -608,7 +608,7 @@ class ExternalSchema extends BaseUISchema {
               let res = [];
               if (state && obj.isNew(state)) {
                 _.each(options, function(item) {
-                  if(item && item.label == '') {
+                  if(item?.label == '') {
                     return;
                   }
                   // if type from selected from combobox matches in options
@@ -646,7 +646,7 @@ class ExternalSchema extends BaseUISchema {
               let res = [];
               if (state && obj.isNew(state)) {
                 _.each(options, function(item) {
-                  if(item && item.label == '') {
+                  if(item?.label == '') {
                     return;
                   }
                   // if type from selected from combobox matches in options
@@ -750,7 +750,7 @@ class ExternalSchema extends BaseUISchema {
               let res = [];
               if (state && obj.isNew(state)) {
                 _.each(options, function(item) {
-                  if(item && item.label == '') {
+                  if(item?.label == '') {
                     return;
                   }
                   // if type from selected from combobox matches in options
@@ -972,7 +972,7 @@ class CompositeSchema extends BaseUISchema {
     let self = this,
       errmsg = null;
 
-    if(self.top && self.top.sessData && self.top.sessData.typtype === 'c') {
+    if(self.top?.sessData?.typtype === 'c') {
       if (isEmptyString(state.member_name)) {
         errmsg = gettext('Please specify the value for member name.');
         setError('member_name', errmsg);
@@ -1197,7 +1197,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   schemaCheck(state) {
-    if(this.fieldOptions.node_info && this.fieldOptions.node_info?.schema) {
+    if(this.fieldOptions?.node_info?.schema) {
       if(!state)
         return true;
       if (this.isNew(state)) {
@@ -1245,7 +1245,7 @@ export default class TypeSchema extends BaseUISchema {
               if (state && obj.isNew(state)) {
                 options.forEach((option) => {
                   // If schema name start with pg_* then we need to exclude them
-                  if(option && option.label.match(/^pg_/)) {
+                  if(option?.label.match(/^pg_/)) {
                     return;
                   }
                   res.push({ label: option.label, value: option.value, image: 'icon-schema' });

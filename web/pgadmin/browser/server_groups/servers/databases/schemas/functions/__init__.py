@@ -778,7 +778,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 status=200
             )
         except Exception:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
+            _, exc_value, _ = sys.exc_info()
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -1883,10 +1883,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                        data=data, fnid=oid, is_sql=False,
-                                        is_schema_diff=True,
-                                        allow_code_formatting=False)
+            _, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
+                                   data=data, fnid=oid, is_sql=False,
+                                   is_schema_diff=True,
+                                   allow_code_formatting=False)
             # Check if return type is changed then we need to drop the
             # function first and then recreate it.
             if 'prorettypename' in data:

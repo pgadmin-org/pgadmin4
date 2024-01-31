@@ -574,3 +574,23 @@ export function gettextForTranslation(translations, ...replaceArgs) {
     return rawTranslation;
   }
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
+const requestAnimationFrame =
+  window.requestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.msRequestAnimationFrame;
+
+const cancelAnimationFrame =
+  window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+
+/* Usefull in focussing an element after it appears on the screen */
+export function requestAnimationAndFocus(ele) {
+  if(!ele) return;
+
+  const animateId = requestAnimationFrame(()=>{
+    ele?.focus?.();
+    cancelAnimationFrame(animateId);
+  });
+}

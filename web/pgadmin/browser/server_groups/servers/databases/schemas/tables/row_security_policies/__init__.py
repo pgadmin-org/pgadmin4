@@ -525,7 +525,7 @@ class RowSecurityView(PGChildNodeView):
         """
         data = dict(request.args)
 
-        sql, name = row_security_policies_utils.get_sql(
+        sql, _ = row_security_policies_utils.get_sql(
             self.conn, data=data, scid=scid, plid=plid, policy_table_id=tid,
             schema=self.schema, table=self.table)
         if not isinstance(sql, str):
@@ -619,7 +619,7 @@ class RowSecurityView(PGChildNodeView):
         if data:
             data['schema'] = self.schema
             data['table'] = self.table
-            sql, name = row_security_policies_utils.get_sql(
+            sql, _ = row_security_policies_utils.get_sql(
                 self.conn, data=data, scid=scid, plid=oid, policy_table_id=tid,
                 schema=self.schema, table=self.table)
 

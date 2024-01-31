@@ -49,7 +49,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
 
   useEffect(() => {
     setTimeout(() => {
-      firstEleRef.current && firstEleRef.current.focus();
+      firstEleRef.current?.focus();
     }, 350);
   }, [firstEleRef.current]);
 

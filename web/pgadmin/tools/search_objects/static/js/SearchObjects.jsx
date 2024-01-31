@@ -89,9 +89,9 @@ function ObjectNameFormatter({row}) {
       <Box className={row.show_node ? '' : classes.cellMuted}>
         <span className={clsx(classes.gridCell, row.icon)}></span>
         {row.name}
-        {row.other_info != null && row.other_info != '' && <>
-          <span className={classes.funcArgs}onClick={()=>{row.showArgs = true;}}> {row?.showArgs ? `(${row.other_info})` : '(...)'}</span>
-        </>}
+        {row.other_info != null && row.other_info != '' && (
+          <span tabIndex="-1" className={classes.funcArgs} onClick={()=>{row.showArgs = true;}} onKeyDown={()=>{/* no need */}}> {row?.showArgs ? `(${row.other_info})` : '(...)'}</span>
+        )}
       </Box>
     </div>
   );
@@ -372,7 +372,7 @@ export default function SearchObjects({nodeData}) {
         }))
           .then(res=>{
             let typeOpt = [{label:gettext('All types'), value:'all'}];
-            let typesRes = Object.entries(res.data.data).sort();
+            let typesRes = Object.entries(res.data.data).sort((a,b)=>a?.localeCompare?.(b));
             typesRes.forEach((element) => {
               typeOpt.push({label:gettext(element[1]), value:element[0]});
             });
@@ -400,7 +400,7 @@ export default function SearchObjects({nodeData}) {
             <InputSelect value={type} controlProps={{allowClear: false}} options={typeOptions} onChange={(v)=>setType(v)}/>
           </Box>
           <PrimaryButton style={{width: '120px'}} data-test="search" className={modalClasses.margin} startIcon={<SearchRoundedIcon />}
-            onClick={onSearch} disabled={search.length >= 3 ? false : true}>{gettext('Search')}</PrimaryButton>
+            onClick={onSearch} disabled={search.length < 3}>{gettext('Search')}</PrimaryButton>
         </Box>
         <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
           <PgReactDataGrid
@@ -437,6 +437,5 @@ export default function SearchObjects({nodeData}) {
 }
 
 SearchObjects.propTypes = {
-  onClose: PropTypes.func,
   nodeData: PropTypes.object,
 };

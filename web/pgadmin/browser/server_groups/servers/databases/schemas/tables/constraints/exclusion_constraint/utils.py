@@ -181,7 +181,7 @@ def get_exclusion_constraint_sql(conn, did, tid, data, template_path=None):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
 
-                modified_sql, name = get_sql(conn, c, did, tid, c['oid'])
+                modified_sql, _ = get_sql(conn, c, did, tid, c['oid'])
                 sql.append(modified_sql.strip('\n'))
 
         if 'added' in constraint:
@@ -189,7 +189,7 @@ def get_exclusion_constraint_sql(conn, did, tid, data, template_path=None):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
 
-                add_sql, name = get_sql(conn, c, did, tid)
+                add_sql, _ = get_sql(conn, c, did, tid)
                 sql.append(add_sql.strip("\n"))
 
     if len(sql) > 0:

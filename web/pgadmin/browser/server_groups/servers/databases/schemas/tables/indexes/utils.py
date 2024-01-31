@@ -10,7 +10,7 @@
 """ Implements Utility class for Indexes. """
 
 from flask import render_template
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -204,7 +204,7 @@ def _get_create_sql(data, template_path, conn, mode, name,
             err = True
             # Check if we have at least one column
         if err:
-            return _('-- definition incomplete'), name
+            return gettext('-- definition incomplete'), name
 
     # If the request for new object which do not have did
     sql = render_template(
@@ -253,7 +253,7 @@ def get_sql(conn, **kwargs):
             return internal_server_error(errormsg=res)
 
         if len(res['rows']) == 0:
-            raise ObjectGone(_('Could not find the index in the table.'))
+            raise ObjectGone(gettext('Could not find the index in the table.'))
 
         old_data = dict(res['rows'][0])
 
@@ -320,7 +320,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
         raise ExecuteError(res)
 
     if len(res['rows']) == 0:
-        raise ObjectGone(_('Could not find the index in the table.'))
+        raise ObjectGone(gettext('Could not find the index in the table.'))
 
     data = dict(res['rows'][0])
     # Adding parent into data dict, will be using it while creating sql
@@ -341,9 +341,9 @@ def get_reverse_engineered_sql(conn, **kwargs):
     if conn.manager.version >= 110000:
         data = get_include_details(conn, idx, data)
 
-    SQL, name = get_sql(conn, data=data, did=did, tid=tid, idx=None,
-                        datlastsysoid=datlastsysoid,
-                        if_exists_flag=if_exists_flag)
+    SQL, _ = get_sql(conn, data=data, did=did, tid=tid, idx=None,
+                     datlastsysoid=datlastsysoid,
+                     if_exists_flag=if_exists_flag)
 
     if with_header:
         sql_header = ''

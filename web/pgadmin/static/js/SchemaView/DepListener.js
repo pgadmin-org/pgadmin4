@@ -39,7 +39,7 @@ export default class DepListener {
     if(dataPath.length > 0) {
       data = _.get(state, dataPath);
     }
-    _.assign(data, listener.callback && listener.callback(data, listener.source, state, actionObj) || {});
+    _.assign(data, listener.callback?.(data, listener.source, state, actionObj) || {});
     return state;
   }
 
@@ -50,7 +50,7 @@ export default class DepListener {
     if(dataPath.length > 0) {
       data = _.get(state, dataPath);
     }
-    return (listener.defCallback && listener.defCallback(data, listener.source, state, actionObj));
+    return (listener.defCallback?.(data, listener.source, state, actionObj));
   }
 
   /* Called when any field changed and trigger callbacks */

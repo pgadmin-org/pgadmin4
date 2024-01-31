@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 import uuid
 
 
@@ -80,6 +81,7 @@ def add_extension(self, utils, del_function=True, db_utils=None):
         )
 
         connection.commit()
+        connection.close()
     except Exception as e:
         print(
             "============================================================="
@@ -88,7 +90,7 @@ def add_extension(self, utils, del_function=True, db_utils=None):
         )
         if del_function:
             delete_function(self, utils)
-
+        connection.close()
         db_utils.disconnect_database(self, self.server_id, self.db_id)
         self.skipTest('The debugger plugin is not installed.')
 
@@ -126,7 +128,7 @@ def initialize_target(self, utils, close_debugger_instance=True):
 
 
 def start_listener(self, utils, db_utils):
-    response = self.tester.get(
+    response = self.tester.post(
         'debugger/start_listener/' + str(self.trans_id),
         content_type='application/json')
     if response.status_code != 200:

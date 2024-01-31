@@ -30,7 +30,11 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
 
     def setUp(self):
         super().setUp()
-
+        # This is added because debugger_utils.start_listener() does not return
+        # any response, hence thread hangs.
+        # Ref - https://github.com/pgadmin-org/pgadmin4/issues/7136
+        if PG_DEFAULT_DRIVER == PSYCOPG3:
+            self.skipTest('Skip for psycopg3.')
         if sys.platform == 'win32':
             self.skipTest('PSQL disabled for windows')
 
@@ -56,7 +60,6 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
 
         if self.init_target:
             debugger_utils.initialize_target(self, utils)
-
             debugger_utils.start_listener(self, utils, db_utils)
             self.port_no = debugger_utils.messages(self, utils, db_utils)
             debugger_utils.start_execution(self, utils, db_utils)

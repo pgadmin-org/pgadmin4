@@ -594,7 +594,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
         try:
 
-            sql, name = self.get_sql(data, pbid)
+            sql, _ = self.get_sql(data, pbid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -701,11 +701,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if 'pubschema' in data:
             for schema in data['pubschema']:
-                if 'pubschema' in old_data and \
-                   schema not in old_data['pubschema']:
-                    add_schema_data.append(schema)
-                    add_schema = True
-                elif 'pubschema' not in old_data:
+                if (('pubschema' in old_data and
+                     schema not in old_data['pubschema']) or
+                        ('pubschema' not in old_data)):
                     add_schema_data.append(schema)
                     add_schema = True
 
@@ -900,7 +898,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         )
 
         pub_table = []
-        status, table_res = self.conn.execute_dict(table_sql)
+        _, table_res = self.conn.execute_dict(table_sql)
 
         for table in table_res['rows']:
             if 'columns' in table and 'where' in table:
@@ -1111,7 +1109,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            sql, name = self.get_sql(data=data, pbid=oid)
+            sql, _ = self.get_sql(data=data, pbid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

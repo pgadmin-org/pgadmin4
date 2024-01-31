@@ -99,7 +99,7 @@ export class TreeFake extends Tree {
   findNodeByDomElement(domElement) {
     const path = this.translateTreeNodeIdFromReactTree(domElement);
 
-    if(!path || !path[0]) {
+    if(!path?.[0]) {
       return undefined;
     }
 

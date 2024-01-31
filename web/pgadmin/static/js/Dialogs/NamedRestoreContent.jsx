@@ -44,7 +44,7 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
 
   useEffect(()=>{
     setTimeout(()=>{
-      firstEleRef.current && firstEleRef.current.focus();
+      firstEleRef.current?.focus();
     }, 275);
   }, []);
 

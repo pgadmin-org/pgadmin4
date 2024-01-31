@@ -677,7 +677,7 @@ def ddl_compare(trans_id, source_sid, source_did, source_scid,
     DDL comparison.
     """
     # Check the transaction and connection status
-    status, error_msg, diff_model_obj, session_obj = \
+    _, error_msg, _, _ = \
         check_transaction_status(trans_id)
 
     if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:

@@ -422,7 +422,7 @@ def index():
         domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
 
     response.set_cookie("PGADMIN_LANGUAGE", value=language,
-                        path=config.COOKIE_DEFAULT_PATH,
+                        path=config.SESSION_COOKIE_PATH,
                         secure=config.SESSION_COOKIE_SECURE,
                         httponly=config.SESSION_COOKIE_HTTPONLY,
                         samesite=config.SESSION_COOKIE_SAMESITE,
@@ -568,6 +568,7 @@ def utils():
             shared_storage_list=shared_storage_list,
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
+            enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

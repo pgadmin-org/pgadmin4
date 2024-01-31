@@ -78,6 +78,7 @@ def get_role_data(lr_pwd):
         "rolconnlimit": -1,
         "rolcreaterole": "true",
         "rolinherit": "true",
+        "rolbypassrls": "true",
         "rolmembership": [],
         "rolname": "test_role_%s" % str(uuid.uuid4())[1:8],
         "rolpassword": lr_pwd,

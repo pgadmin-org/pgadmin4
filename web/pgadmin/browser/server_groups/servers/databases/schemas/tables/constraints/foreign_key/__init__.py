@@ -355,7 +355,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               tid=tid)
-        status, res = self.conn.execute_dict(SQL)
+        _, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
             row['_type'] = self.node_type
@@ -382,7 +382,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]), tid=tid
         )
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
             return gone(gettext(FOREIGN_KEY_NOT_FOUND))
@@ -427,7 +427,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
         res = []
         for row in rset['rows']:
             if row["convalidated"]:
@@ -467,7 +467,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             if row["convalidated"]:
@@ -822,7 +822,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['schema'] = self.schema
         data['table'] = self.table
         try:
-            sql, name = fkey_utils.get_sql(self.conn, data, tid, fkid)
+            sql, _ = fkey_utils.get_sql(self.conn, data, tid, fkid)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')

@@ -145,8 +145,7 @@ export default class ViewSchema extends BaseUISchema {
           return false;
         }
 
-        let old_def = obj.origData.definition &&
-          obj.origData.definition.replace(
+        let old_def = obj.origData.definition?.replace(
             /\s/gi, ''
           ).split('FROM'),
           new_def = [];

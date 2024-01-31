@@ -452,7 +452,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                                      else {"did": did}))
 
         if connect:
-            status, msg, is_ask_password, user, role, password = _connect(
+            status, msg, is_ask_password, user, _, _ = _connect(
                 conn, **kwargs)
             if not status:
                 current_app.logger.error(msg)
@@ -483,7 +483,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
                                              **({"database": dbname}
                                                 if dbname is not None
                                                 else {"did": did}))
-                status, msg, is_ask_password, user, role, password = _connect(
+                status, msg, is_ask_password, user, _, _ = _connect(
                     conn_ac, **kwargs)
 
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
@@ -564,7 +564,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
             return errmsg
         else:
             try:
-                _, _, _, new_trans_obj, new_session_obj = \
+                _, _, _, _, new_session_obj = \
                     check_transaction_status(new_trans_id)
 
                 new_session_obj['primary_keys'] = session_obj[
@@ -814,7 +814,7 @@ def start_view_data(trans_id):
 
         # Fetch the sql and primary_keys from the object
         sql = trans_obj.get_sql(default_conn)
-        pk_names, primary_keys = trans_obj.get_primary_keys(default_conn)
+        _, primary_keys = trans_obj.get_primary_keys(default_conn)
 
         session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
 
@@ -1016,7 +1016,7 @@ def poll(trans_id):
                 # resultsets and primary keys
                 if isinstance(trans_obj, QueryToolCommand) and \
                         trans_obj.check_updatable_results_pkeys_oids():
-                    pk_names, primary_keys = trans_obj.get_primary_keys()
+                    _, primary_keys = trans_obj.get_primary_keys()
                     session_obj['has_oids'] = trans_obj.has_oids()
                     # Update command_obj in session obj
                     session_obj['command_obj'] = pickle.dumps(
@@ -1744,7 +1744,7 @@ def check_and_upgrade_to_qt(trans_id, connect):
                 'password': default_conn.manager.password,
                 'conn_id': data.conn_id
             }
-            is_error, errmsg, conn_id, version = _init_sqleditor(
+            is_error, errmsg, _, _ = _init_sqleditor(
                 trans_id, connect, data.sgid, data.sid, data.did, **kwargs)
 
     return is_error, errmsg
@@ -2598,8 +2598,7 @@ def add_query_history(trans_id):
         did: database id
     """
 
-    status, error_msg, conn, trans_obj, session_ob = \
-        check_transaction_status(trans_id)
+    _, _, conn, trans_obj, _ = check_transaction_status(trans_id)
 
     if not trans_obj:
         return make_json_response(
@@ -2625,9 +2624,7 @@ def clear_query_history(trans_id):
         did: database id
     """
 
-    status, error_msg, conn, trans_obj, session_ob = \
-        check_transaction_status(trans_id)
-
+    _, _, conn, trans_obj, _ = check_transaction_status(trans_id)
     filter_json = request.get_json(silent=True)
     return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db,
                               filter_json)
@@ -2647,8 +2644,7 @@ def get_query_history(trans_id):
         did: database id
     """
 
-    status, error_msg, conn, trans_obj, session_ob = \
-        check_transaction_status(trans_id)
+    _, _, conn, trans_obj, _ = check_transaction_status(trans_id)
 
     return QueryHistory.get(current_user.id, trans_obj.sid, conn.db)
 
@@ -2671,8 +2667,7 @@ def macros(trans_id, macro_id=None, json_resp=True):
         macro_id: Macro id
     """
 
-    status, error_msg, conn, trans_obj, session_ob = \
-        check_transaction_status(trans_id)
+    _, _, _, _, _ = check_transaction_status(trans_id)
 
     return get_macros(macro_id, json_resp)
 
@@ -2690,7 +2685,6 @@ def update_macros(trans_id):
         trans_id: unique transaction id
     """
 
-    status, error_msg, conn, trans_obj, session_ob = \
-        check_transaction_status(trans_id)
+    _, _, _, _, _ = check_transaction_status(trans_id)
 
     return set_macros()

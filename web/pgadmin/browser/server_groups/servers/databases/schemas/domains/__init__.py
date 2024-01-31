@@ -585,7 +585,7 @@ AND relkind != 'c'))"""
         """
 
         data = self.request
-        SQL, name = self.get_sql(gid, sid, data, scid)
+        SQL, _ = self.get_sql(gid, sid, data, scid)
         # Most probably this is due to error
         if not isinstance(SQL, str):
             return SQL
@@ -814,7 +814,7 @@ AND relkind != 'c'))"""
         """
 
         try:
-            SQL, name = self.get_sql(gid, sid, self.request, scid, doid)
+            SQL, _ = self.get_sql(gid, sid, self.request, scid, doid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -980,9 +980,8 @@ AND relkind != 'c'))"""
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name = self.get_sql(gid=gid, sid=sid, scid=scid,
-                                     data=data, doid=oid,
-                                     is_schema_diff=True)
+            sql, _ = self.get_sql(gid=gid, sid=sid, scid=scid,
+                                  data=data, doid=oid, is_schema_diff=True)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

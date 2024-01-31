@@ -300,7 +300,7 @@ PlanContent.propTypes = {
 function PlanSVG({planData, zoomFactor, fitZoomFactor, ...props}) {
   const theme = useTheme();
   useEffect(()=>{
-    fitZoomFactor && fitZoomFactor(planData.width);
+    fitZoomFactor?.(planData.width);
   }, [planData.width]);
 
   return (

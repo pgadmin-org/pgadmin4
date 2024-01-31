@@ -33,7 +33,7 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
         cacheLevel: 'database'
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
-        return !(d && d.label.match(/^pg_/));
+        return !(d?.label.match(/^pg_/));
       }),
       spcname: spcname,
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', partNode, treeNodeInfo, itemNodeData),

@@ -8,7 +8,8 @@
 ##########################################################################
 
 import json
-
+from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import PSYCOPG3
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from . import utils as debugger_utils
@@ -28,6 +29,11 @@ class DebuggerExecuteQuery(BaseTestGenerator):
 
     def setUp(self):
         super().setUp()
+        # This is added because debugger_utils.start_listener() does not return
+        # any response, hence thread hangs.
+        # Ref - https://github.com/pgadmin-org/pgadmin4/issues/7136
+        if PG_DEFAULT_DRIVER == PSYCOPG3:
+            self.skipTest('Skip for psycopg3.')
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

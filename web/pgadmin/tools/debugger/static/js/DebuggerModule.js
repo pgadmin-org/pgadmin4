@@ -219,15 +219,12 @@ export default class DebuggerModule {
     let treeInfo = tree.getTreeNodeHierarchy(info);
 
     // For indirect debugging user must be super user
-    if (data && data.debug_type && data.debug_type == 'indirect' &&
-      !treeInfo.server.user.is_superuser)
+    if (data?.debug_type == 'indirect' && !treeInfo.server.user.is_superuser)
       return false;
 
     // Fetch object owner
-    let obj_owner = treeInfo.function && treeInfo.function.funcowner ||
-      treeInfo.procedure && treeInfo.procedure.funcowner ||
-      treeInfo.edbfunc && treeInfo.edbfunc.funcowner ||
-      treeInfo.edbproc && treeInfo.edbproc.funcowner;
+    let obj_owner = treeInfo.function?.funcowner || treeInfo.procedure?.funcowner ||
+      treeInfo.edbfunc?.funcowner || treeInfo.edbproc?.funcowner;
 
     // Must be a super user or object owner to create breakpoints of any kind
     if (!(treeInfo.server.user.is_superuser || obj_owner == treeInfo.server.user.name))
@@ -312,7 +309,7 @@ export default class DebuggerModule {
   }
 
   checkDbNameChange(data, dbNode, newTreeInfo, db_label) {
-    if (data && data.data_obj && data.data_obj.db_name != _.unescape(newTreeInfo.database.label)) {
+    if (data?.data_obj?.db_name != _.unescape(newTreeInfo.database.label)) {
       db_label = data.data_obj.db_name;
       let message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
       refresh_db_node(message, dbNode);

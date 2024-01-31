@@ -865,7 +865,7 @@ It may have been removed by another user.
                 data[k] = v
 
         try:
-            SQL, name = self.get_sql(gid, sid, data, scid)
+            SQL, _ = self.get_sql(gid, sid, data, scid)
             if SQL and SQL.strip('\n') and SQL.strip(' '):
                 return make_json_response(
                     data=SQL.strip('\n'),

@@ -296,7 +296,7 @@ def start_process(data):
 
             data['db'] = db
 
-            conn, manager = _get_connection(int(data['sid']), data)
+            _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
             connection_data = get_connection_str(psql_utility, db,
                                                  manager)

@@ -14,7 +14,7 @@ from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry
@@ -49,7 +49,7 @@ class CheckConstraintModule(CollectionNodeModule):
         Check node is initialized.
     """
     _NODE_TYPE = 'check_constraint'
-    _COLLECTION_LABEL = _("Check Constraints")
+    _COLLECTION_LABEL = gettext("Check Constraints")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -279,7 +279,7 @@ class CheckConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]), tid=tid)
-        status, res = self.conn.execute_dict(SQL)
+        _, res = self.conn.execute_dict(SQL)
 
         for row in res['rows']:
             row['_type'] = self.node_type
@@ -303,10 +303,10 @@ class CheckConstraintView(PGChildNodeView):
                                         self._NODES_SQL]),
                               tid=tid,
                               cid=cid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         if len(rset['rows']) == 0:
-            return gone(_("""Could not find the check constraint."""))
+            return gone(gettext("""Could not find the check constraint."""))
 
         if "convalidated" in rset['rows'][0] and \
                 rset['rows'][0]["convalidated"]:
@@ -344,7 +344,7 @@ class CheckConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:
@@ -399,7 +399,7 @@ class CheckConstraintView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
                               tid=tid)
-        status, rset = self.conn.execute_2darray(SQL)
+        _, rset = self.conn.execute_2darray(SQL)
 
         for row in rset['rows']:
             if "convalidated" in row and row["convalidated"]:
@@ -437,7 +437,7 @@ class CheckConstraintView(PGChildNodeView):
             return res
 
         if len(res) == 0:
-            return gone(_(
+            return gone(gettext(
                 """Could not find the check constraint in the table."""
             ))
 
@@ -481,7 +481,7 @@ class CheckConstraintView(PGChildNodeView):
                 return True, make_json_response(
                     status=400,
                     success=0,
-                    errormsg=_(
+                    errormsg=gettext(
                         "Could not find the required parameter ({})."
                     ).format(arg),
                 ), data
@@ -527,7 +527,7 @@ class CheckConstraintView(PGChildNodeView):
         data['table'] = self.table
         # Checking whether the table is deleted via query tool
         if len(data['table']) == 0:
-            return gone(_(self.not_found_error_msg('Table')))
+            return gone(gettext(self.not_found_error_msg('Table')))
 
         try:
             if 'name' not in data or data['name'] == "":
@@ -630,10 +630,10 @@ class CheckConstraintView(PGChildNodeView):
                 if not res['rows']:
                     return make_json_response(
                         success=0,
-                        errormsg=_(
+                        errormsg=gettext(
                             'Error: Object not found.'
                         ),
-                        info=_(
+                        info=gettext(
                             'The specified check constraint '
                             'could not be found.\n'
                         )
@@ -650,7 +650,7 @@ class CheckConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Check constraint dropped.")
+                info=gettext("Check constraint dropped.")
             )
 
         except Exception as e:
@@ -739,7 +739,7 @@ class CheckConstraintView(PGChildNodeView):
             return internal_server_error(errormsg=res)
         if len(res['rows']) == 0:
             return gone(
-                _("Could not find the object on the server.")
+                gettext("Could not find the object on the server.")
             )
 
         data = res['rows'][0]
@@ -880,7 +880,7 @@ class CheckConstraintView(PGChildNodeView):
 
             return make_json_response(
                 success=1,
-                info=_("Check constraint updated."),
+                info=gettext("Check constraint updated."),
                 data={
                     'id': cid,
                     'tid': tid,

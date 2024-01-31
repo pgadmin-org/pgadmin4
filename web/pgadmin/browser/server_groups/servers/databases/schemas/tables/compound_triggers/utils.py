@@ -10,7 +10,7 @@
 """ Implements Utility class for Compound Triggers. """
 
 from flask import render_template
-from flask_babel import gettext as _
+from flask_babel import gettext
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -108,7 +108,7 @@ def get_sql(conn, data, tid, trid, datlastsysoid, template_path=None):
             raise ExecuteError(res)
         elif len(res['rows']) == 0:
             raise ObjectGone(
-                _('Could not find the compound trigger in the table.'))
+                gettext('Could not find the compound trigger in the table.'))
 
         old_data = dict(res['rows'][0])
         # If name is not present in data then
@@ -133,7 +133,7 @@ def get_sql(conn, data, tid, trid, datlastsysoid, template_path=None):
 
         for arg in required_args:
             if arg not in data:
-                return _('-- definition incomplete')
+                return gettext('-- definition incomplete')
 
         # If the request for new object which do not have did
         SQL = render_template("/".join([template_path, 'create.sql']),
@@ -166,7 +166,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     if len(res['rows']) == 0:
         raise ObjectGone(
-            _('Could not find the compound trigger in the table.'))
+            gettext('Could not find the compound trigger in the table.'))
 
     data = dict(res['rows'][0])
     # Adding parent into data dict, will be using it while creating sql
@@ -179,7 +179,7 @@ def get_reverse_engineered_sql(conn, **kwargs):
 
     data = trigger_definition(data)
 
-    SQL, name = get_sql(conn, data, tid, None, datlastsysoid)
+    SQL, _ = get_sql(conn, data, tid, None, datlastsysoid)
 
     sql_header = "-- Compound Trigger: {0}\n\n-- ".format(data['name'])
 

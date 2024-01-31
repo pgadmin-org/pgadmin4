@@ -262,7 +262,7 @@ def save():
 
         setattr(session, 'PGADMIN_LANGUAGE', language)
         response.set_cookie("PGADMIN_LANGUAGE", value=language,
-                            path=config.COOKIE_DEFAULT_PATH,
+                            path=config.SESSION_COOKIE_PATH,
                             secure=config.SESSION_COOKIE_SECURE,
                             httponly=config.SESSION_COOKIE_HTTPONLY,
                             samesite=config.SESSION_COOKIE_SAMESITE,
@@ -282,7 +282,7 @@ def save_pref(data):
             and data['value'].isspace():
         data['value'] = ''
 
-    res, msg = Preferences.save_cli(
+    res, _ = Preferences.save_cli(
         data['mid'], data['category_id'], data['id'], data['user_id'],
         data['value'])
 

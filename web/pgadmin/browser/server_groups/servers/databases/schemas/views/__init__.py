@@ -1735,7 +1735,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, name_or_error = self.getSQL(gid, sid, did, data, oid)
+            sql, _ = self.getSQL(gid, sid, did, data, oid)
             if sql.find('DROP VIEW') != -1:
                 sql = gettext("""
 -- Changing the columns in a view requires dropping and re-creating the view.

@@ -17,8 +17,8 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER TABLE {{conn|qtIdent(data.schema, data.table)}}
-{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname %}
- COLLATE {{data.collspcname}}{% elif o_data.collspcname %} COLLATE {{o_data.collspcname}}{% endif %};
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname is not none %}{% if data.collspcname != o_data.collspcname %}
+ COLLATE {{data.collspcname}}{% elif data.collspcname is not none and o_data.collspcname %} COLLATE {{o_data.collspcname}}{% endif %}{% endif %};
 {% endif %}
 {###  Alter column default value ###}
 {% if is_view_only and data.defval is defined and data.defval is not none and data.defval != '' and data.defval != o_data.defval %}

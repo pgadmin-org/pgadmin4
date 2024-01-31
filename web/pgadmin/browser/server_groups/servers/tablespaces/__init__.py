@@ -485,7 +485,7 @@ class TablespaceView(PGChildNodeView):
                 current_app.logger.exception(ve)
                 data[k] = v
 
-        sql, name = self.get_sql(gid, sid, data, tsid)
+        sql, _ = self.get_sql(gid, sid, data, tsid)
         # Most probably this is due to error
         if not isinstance(sql, str):
             return sql

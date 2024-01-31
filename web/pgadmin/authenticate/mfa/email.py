@@ -227,7 +227,7 @@ class EmailAuthentication(BaseMFAuth):
     def _registration_view_after_code_sent(self, _form_data):
 
         session['mfa_email_id'] = _form_data.get('send_to', None)
-        success, http_code, message = _send_code_to_email(
+        success, _, message = _send_code_to_email(
             session['mfa_email_id']
         )
 

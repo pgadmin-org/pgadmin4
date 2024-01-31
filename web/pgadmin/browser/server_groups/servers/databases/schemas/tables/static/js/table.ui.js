@@ -38,7 +38,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
         cacheLevel: 'database'
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
-        return !(d && d.label.match(/^pg_/));
+        return !(d?.label.match(/^pg_/));
       }),
       spcname: spcname,
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
@@ -368,9 +368,9 @@ export default class TableSchema extends BaseUISchema {
     this.getColumns = getColumns;
 
     this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables, fieldOptions.table_amname_list);
-    this.constraintsObj = this.schemas.constraints && this.schemas.constraints() || {};
-    this.columnsSchema = this.schemas.columns && this.schemas.columns() || {};
-    this.vacuumSettingsSchema = this.schemas.vacuum_settings && this.schemas.vacuum_settings() || {};
+    this.constraintsObj = this.schemas.constraints?.() || {};
+    this.columnsSchema = this.schemas.columns?.() || {};
+    this.vacuumSettingsSchema = this.schemas.vacuum_settings?.() || {};
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.inErd = inErd;
   }

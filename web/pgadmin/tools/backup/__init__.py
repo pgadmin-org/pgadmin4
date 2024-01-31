@@ -9,14 +9,13 @@
 """Implements Backup Utility"""
 
 import json
-import os
 import copy
 import functools
 import operator
 
 from flask import render_template, request, current_app, \
     url_for, Response
-from flask_babel import gettext as _
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
@@ -25,6 +24,8 @@ from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
+# This unused import is required as API test cases will fail if we remove it,
+# Have to identify the cause and then remove it.
 from pgadmin.model import Server, SharedServer
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS
@@ -45,7 +46,7 @@ class BackupModule(PgAdminModule):
         javascript file.
     """
 
-    LABEL = _('Backup')
+    LABEL = gettext('Backup')
 
     def show_system_objects(self):
         """
@@ -111,7 +112,7 @@ class BackupMessage(IProcessDesc):
         s = get_server(self.sid)
 
         if s is None:
-            return _("Not available")
+            return gettext("Not available")
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -125,31 +126,31 @@ class BackupMessage(IProcessDesc):
     @property
     def type_desc(self):
         if self.backup_type == BACKUP.OBJECT:
-            return _("Backing up an object on the server")
+            return gettext("Backing up an object on the server")
         if self.backup_type == BACKUP.GLOBALS:
-            return _("Backing up the global objects")
+            return gettext("Backing up the global objects")
         elif self.backup_type == BACKUP.SERVER:
-            return _("Backing up the server")
+            return gettext("Backing up the server")
         else:
             # It should never reach here.
-            return _("Unknown Backup")
+            return gettext("Unknown Backup")
 
     @property
     def message(self):
         server_name = self.get_server_name()
 
         if self.backup_type == BACKUP.OBJECT:
-            return _(
+            return gettext(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'"
             ).format(server_name, self.database)
         if self.backup_type == BACKUP.GLOBALS:
-            return _("Backing up the global objects on "
-                     "the server '{0}'").format(
+            return gettext("Backing up the global objects on "
+                           "the server '{0}'").format(
                 server_name
             )
         elif self.backup_type == BACKUP.SERVER:
-            return _("Backing up the server '{0}'").format(
+            return gettext("Backing up the server '{0}'").format(
                 server_name
             )
         else:
@@ -158,13 +159,13 @@ class BackupMessage(IProcessDesc):
 
     def details(self, cmd, args):
         server_name = self.get_server_name()
-        backup_type = _("Backup")
+        backup_type = gettext("Backup")
         if self.backup_type == BACKUP.OBJECT:
-            backup_type = _("Backup Object")
+            backup_type = gettext("Backup Object")
         elif self.backup_type == BACKUP.GLOBALS:
-            backup_type = _("Backup Globals")
+            backup_type = gettext("Backup Globals")
         elif self.backup_type == BACKUP.SERVER:
-            backup_type = _("Backup Server")
+            backup_type = gettext("Backup Server")
 
         return {
             "message": self.message,
@@ -178,7 +179,7 @@ class BackupMessage(IProcessDesc):
 @blueprint.route("/")
 @login_required
 def index():
-    return bad_request(errormsg=_("This URL cannot be called directly."))
+    return bad_request(errormsg=gettext("This URL cannot be called directly."))
 
 
 @blueprint.route("/backup.js")
@@ -415,7 +416,7 @@ def create_backup_objects_job(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=gettext("Could not find the specified server.")
         )
 
     # To fetch MetaData for the server
@@ -428,7 +429,7 @@ def create_backup_objects_job(sid):
     if not connected:
         return make_json_response(
             success=0,
-            errormsg=_("Please connect to the server first.")
+            errormsg=gettext("Please connect to the server first.")
         )
 
     utility = manager.utility('backup') if backup_obj_type == 'objects' \
@@ -508,7 +509,7 @@ def check_utility_exists(sid, backup_obj_type):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=gettext("Could not find the specified server.")
         )
 
     from pgadmin.utils.driver import get_driver
@@ -546,17 +547,15 @@ def objects(sid, did, scid=None):
     Returns:
         list of objects
     """
-    from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
     server = get_server(sid)
 
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=gettext("Could not find the specified server.")
         )
 
     from pgadmin.utils.driver import get_driver
-    from flask_babel import gettext
     from pgadmin.utils.ajax import precondition_required
 
     server_info = {}
@@ -580,8 +579,9 @@ def objects(sid, did, scid=None):
         server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
             server_info['version'])
 
-    res, msg = get_data(sid, did, scid, 'schema' if scid else 'database',
-                        server_info)
+    res, _, empty_schema_list = get_data(sid, did, scid,
+                                         'schema' if scid else 'database',
+                                         server_info, True)
 
     tree_data = {
         'table': [],
@@ -643,6 +643,14 @@ def objects(sid, did, scid=None):
 
         ch['children'] = children
 
+    for empty_schema in empty_schema_list:
+        schema_group.append({
+            'id': empty_schema,
+            'name': empty_schema,
+            'icon': 'icon-schema',
+            'children': [],
+            'is_schema': True,
+        })
     return make_json_response(
         data=schema_group,
         success=200

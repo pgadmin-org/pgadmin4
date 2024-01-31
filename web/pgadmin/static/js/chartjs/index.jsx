@@ -113,12 +113,12 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
       plugins: [plugins],
       options: options,
     });
-    props.onInit && props.onInit(chartObj.current);
+    props.onInit?.(chartObj.current);
   };
 
   const destroyChart = function() {
     chartObj.current?.resetZoom?.();
-    chartObj.current && chartObj.current.destroy();
+    chartObj.current?.destroy();
   };
 
   useEffect(()=>{
@@ -137,7 +137,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
       }
       chartObj.current.options = options;
       chartObj.current.update(props.updateOptions || {});
-      props.onUpdate && props.onUpdate(chartObj.current);
+      props.onUpdate?.(chartObj.current);
     }
   }, [data, options]);
 

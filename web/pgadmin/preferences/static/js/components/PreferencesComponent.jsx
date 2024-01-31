@@ -455,7 +455,7 @@ export default function PreferencesComponent({ ...props }) {
     case 'threshold':
       return 'threshold';
     default:
-      if (console && console.warn) {
+      if (console?.warn) {
         // Warning for developer only.
         console.warn(
           'Hmm.. We don\'t know how to render this type - \'\'' + type + '\' of control.'

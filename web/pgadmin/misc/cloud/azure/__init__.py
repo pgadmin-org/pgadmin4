@@ -326,7 +326,7 @@ class Azure:
         if type in self._clients:
             return self._clients[type]
 
-        status, _credentials = self._get_azure_credentials()
+        _, _credentials = self._get_azure_credentials()
 
         if type == 'postgresql':
             client = PostgreSQLManagementClient(_credentials,

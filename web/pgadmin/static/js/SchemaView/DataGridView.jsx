@@ -34,6 +34,7 @@ import { DepListenerContext } from './DepListener';
 import { useIsMounted } from '../custom_hooks';
 import { InputText } from '../components/FormComponents';
 import { usePgAdmin } from '../BrowserComponent';
+import { requestAnimationAndFocus } from '../utils';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -221,6 +222,10 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
         }
       });
     });
+
+    // Try autofocus on newly added row.
+    requestAnimationAndFocus(rowRef.current?.querySelector('input'));
+
     return ()=>{
       /* Cleanup the listeners when unmounting */
       depListener?.removeDepListener(accessPath);
@@ -656,7 +661,9 @@ export default function DataGridView({
                   {props.canEdit && row.isExpanded &&
                     <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
                       schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
-                      isDataGridForm={true}/>
+                      isDataGridForm={true} firstEleRef={(ele)=>{
+                        requestAnimationAndFocus(ele);
+                      }}/>
                   }
                 </React.Fragment>;
               })}

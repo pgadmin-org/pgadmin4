@@ -153,7 +153,7 @@ class StartRunningQuery:
             # and formatted_error is True.
             with app.app_context():
                 try:
-                    status, result = conn.execute_async(sql)
+                    _, _ = conn.execute_async(sql)
                     # # If the transaction aborted for some reason and
                     # # Auto RollBack is True then issue a rollback to cleanup.
                     if is_rollback_req:

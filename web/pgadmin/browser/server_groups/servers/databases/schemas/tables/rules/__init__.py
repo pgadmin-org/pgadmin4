@@ -472,7 +472,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         This function returns modified SQL
         """
         data = request.args
-        sql, name = self.getSQL(gid, sid, data, tid, rid)
+        sql, _ = self.getSQL(gid, sid, data, tid, rid)
         if not isinstance(sql, str):
             return sql
         sql = sql.strip('\n').strip(' ')

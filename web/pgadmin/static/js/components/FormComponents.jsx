@@ -198,7 +198,7 @@ export function InputSQL({ value, options, onChange, className, controlProps, in
       className={clsx(classes.sql, className)}
       events={{
         change: (cm) => {
-          onChange && onChange(cm.getValue());
+          onChange?.(cm.getValue());
         },
       }}
       {...controlProps}
@@ -370,7 +370,7 @@ export const InputText = forwardRef(({
     if (controlProps?.formatter) {
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
-    onChange && onChange(changeVal);
+    onChange?.(changeVal);
   };
 
   let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
@@ -461,7 +461,7 @@ export function InputFileSelect({ controlProps, onChange, disabled, readonly, is
       btn_primary: controlProps.btnPrimary || '',
     };
     showFileManager(params, (fileName)=>{
-      onChange && onChange(decodeURI(fileName));
+      onChange?.(decodeURI(fileName));
       inpRef.current.focus();
     });
   };
@@ -909,7 +909,7 @@ export const InputSelect = forwardRef(({
       .then((res) => {
         /* If component unmounted, dont update state */
         if (!umounted) {
-          optionsLoaded && optionsLoaded(res, value);
+          optionsLoaded?.(res, value);
           /* Auto select if any option has key as selected */
           const flatRes = flattenSelectOptions(res || []);
           let selectedVal;
@@ -920,7 +920,7 @@ export const InputSelect = forwardRef(({
           }
 
           if ((!_.isUndefined(selectedVal) && !_.isArray(selectedVal)) || (_.isArray(selectedVal) && selectedVal.length != 0)) {
-            onChange && onChange(selectedVal);
+            onChange?.(selectedVal);
           }
           setFinalOptions([res || [], false]);
         }
@@ -930,7 +930,7 @@ export const InputSelect = forwardRef(({
 
 
   /* Apply filter if any */
-  const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
+  const filteredOptions = (controlProps.filter?.(finalOptions)) || finalOptions;
   const flatFiltered = flattenSelectOptions(filteredOptions);
   let realValue = getRealValue(flatFiltered, value, controlProps.creatable, controlProps.formatter);
   if (realValue && _.isPlainObject(realValue) && _.isUndefined(realValue.value)) {
@@ -956,9 +956,9 @@ export const InputSelect = forwardRef(({
       } else {
         selectVal = selectVal.map((option) => option.value);
       }
-      onChange && onChange(selectVal);
+      onChange?.(selectVal);
     } else {
-      onChange && onChange(selectVal ? selectVal.value : null);
+      onChange?.(selectVal ? selectVal.value : null);
     }
   }, [onChange, filteredOptions]);
 

@@ -655,7 +655,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             if not status:
                 return res
 
-        SQL, name = self.get_sql(did, scid, ptid, data, res)
+        SQL, _ = self.get_sql(did, scid, ptid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
         SQL = SQL.strip('\n')
         if SQL == '':

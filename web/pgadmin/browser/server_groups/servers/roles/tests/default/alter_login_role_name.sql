@@ -7,6 +7,7 @@ CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
   INHERIT
   CREATEDB
   CREATEROLE
-  REPLICATION;
+  REPLICATION
+  BYPASSRLS;
 
 COMMENT ON ROLE "Role2_$%{}[]()&*^!@""'`\/#" IS 'This is detailed description';

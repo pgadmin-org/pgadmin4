@@ -600,7 +600,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 column_utils.type_formatter(data['cltype'])
 
         try:
-            SQL, name = self.get_sql(scid, tid, clid, data)
+            SQL, _ = self.get_sql(scid, tid, clid, data)
             if not isinstance(SQL, str):
                 return SQL
 
@@ -688,7 +688,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                 column_utils.type_formatter(old_data['cltype'])
 
             if 'cltype' in data and data['cltype'] != old_data['cltype']:
-                length, precision, typeval = \
+                length, precision, _ = \
                     self.get_length_precision(data['cltype'])
 
                 # if new datatype does not have length or precision
@@ -793,7 +793,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             data = column_utils.column_formatter(self.conn, tid, clid,
                                                  data, [])
 
-            SQL, name = self.get_sql(scid, tid, None, data, is_sql=True)
+            SQL, _ = self.get_sql(scid, tid, None, data, is_sql=True)
             if not isinstance(SQL, str):
                 return SQL
 
