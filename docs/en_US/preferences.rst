@@ -486,26 +486,27 @@ Query Tool window navigation:
 Use the fields on the *SQL formatting* panel to specify your preferences for
 reformatting of SQL.
 
-* Use the *Comma-first notation* option to specify whether to place commas
-  before or after column names.
+* Use the *Data type case* option to specify whether to change data types
+  into upper, lower, or preserve case.
+* Use the *Expression width* option to specify maximum number of characters 
+  in parenthesized expressions to be kept on single line.
+* Use the *Function case* option to specify whether to change function
+  names into upper, lower, or preserve case.
 * Use the *Identifier case* option to specify whether to change identifiers
   (object names) into upper, lower, or capitalized case.
 * Use the *Keyword case* option to specify whether to change keywords into
-  upper, lower, or capitalized case.
-* Use the *Re-indent aligned?* option to specify that indentations of statements
-  should be changed, aligned by keywords.
-* Use the *Re-indent?* option to specify that indentations of statements should
-  be changed.
+  upper, lower, or preserve case.
+* Use *Lines between queries* to specify how many empty lines to leave 
+  between SQL statements. If set to zero it puts no new line.
+* Use *Logical operator new line* to specify newline placement before or
+  after logical operators (AND, OR, XOR).
+* Use *New line before semicolon?* to specify whether to place query
+  separator (;) on a separate line.
 * Use the *Spaces around operators?* option to specify whether or not to include
   spaces on either side of operators.
-* Use the *Strip comments?* option to specify whether or not comments should be
-  removed.
 * Use the *Tab size* option to specify the number of spaces per tab or indent.
 * Use the *Use spaces?* option to select whether to use spaces or tabs when
   indenting.
-* Use the *Wrap after N characters* option to specify the column limit for
-  wrapping column separated lists (e.g. of column names in a table). If set to
-  0 (zero), each item will be on it's own line.
 
 The Schema Diff Node
 ********************

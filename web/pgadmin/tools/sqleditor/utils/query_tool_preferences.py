@@ -735,10 +735,10 @@ def register_query_tool_preferences(self):
         gettext("Keyword case"), 'radioModern', 'upper',
         options=[{'label': gettext('Upper case'), 'value': 'upper'},
                  {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Capitalized'), 'value': 'capitalize'}],
+                 {'label': gettext('Preserve'), 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
-            'Convert keywords to upper, lower, or capitalized casing.'
+            'Convert keywords to upper, lower, or preserve casing.'
         )
     )
 
@@ -747,35 +747,35 @@ def register_query_tool_preferences(self):
         gettext("Identifier case"), 'radioModern', 'upper',
         options=[{'label': gettext('Upper case'), 'value': 'upper'},
                  {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Capitalized'), 'value': 'capitalize'}],
+                 {'label': gettext('Preserve'), 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
-            'Convert identifiers to upper, lower, or capitalized casing.'
+            'Convert identifiers to upper, lower, or preserve casing.'
         )
     )
 
-    self.strip_comments = self.preference.register(
-        'editor', 'strip_comments',
-        gettext("Strip comments?"), 'boolean', False,
+    self.function_case = self.preference.register(
+        'editor', 'function_case',
+        gettext("Function case"), 'radioModern', 'upper',
+        options=[{'label': gettext('Upper case'), 'value': 'upper'},
+                 {'label': gettext('Lower case'), 'value': 'lower'},
+                 {'label': gettext('Preserve'), 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
-        help_str=gettext('If set to True, comments will be removed.')
+        help_str=gettext(
+            'Convert function names to upper, lower, or preserve casing.'
+        )
     )
 
-    self.reindent = self.preference.register(
-        'editor', 'reindent',
-        gettext("Re-indent?"), 'boolean', True,
+    self.data_type_case = self.preference.register(
+        'editor', 'data_type_case',
+        gettext("Data type case"), 'radioModern', 'upper',
+        options=[{'label': gettext('Upper case'), 'value': 'upper'},
+                 {'label': gettext('Lower case'), 'value': 'lower'},
+                 {'label': gettext('Preserve'), 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
-        help_str=gettext('If set to True, the indentations of the '
-                         'statements are changed.')
-    )
-
-    self.reindent_aligned = self.preference.register(
-        'editor', 'reindent_aligned',
-        gettext("Re-indent aligned?"), 'boolean', False,
-        category_label=PREF_LABEL_SQL_FORMATTING,
-        help_str=gettext('If set to True, the indentations of the '
-                         'statements are changed, and statements are '
-                         'aligned by keywords.')
+        help_str=gettext(
+            'Convert data types to upper, lower, or preserve casing.'
+        )
     )
 
     self.spaces_around_operators = self.preference.register(
@@ -784,23 +784,6 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext('If set to True, spaces are used around all '
                          'operators.')
-    )
-
-    self.comma_first = self.preference.register(
-        'editor', 'comma_first',
-        gettext("Comma-first notation?"), 'boolean', False,
-        category_label=PREF_LABEL_SQL_FORMATTING,
-        help_str=gettext('If set to True, comma-first notation for column '
-                         'names is used.')
-    )
-
-    self.wrap_after = self.preference.register(
-        'editor', 'wrap_after',
-        gettext("Wrap after N characters"), 'integer', 4,
-        category_label=PREF_LABEL_SQL_FORMATTING,
-        help_str=gettext("The column limit (in characters) for wrapping "
-                         "comma-separated lists. If zero, it puts "
-                         "every item in the list on its own line.")
     )
 
     self.tab_size = self.preference.register(
@@ -821,6 +804,49 @@ def register_query_tool_preferences(self):
         help_str=gettext(
             'Specifies whether or not to insert spaces instead of tabs '
             'when the tab key or auto-indent are used.'
+        )
+    )
+
+    self.expression_width = self.preference.register(
+        'editor', 'expression_width',
+        gettext("Expression Width"), 'integer', 50,
+        category_label=PREF_LABEL_SQL_FORMATTING,
+        help_str=gettext(
+            'maximum number of characters in parenthesized expressions to be '
+            'kept on single line.'
+        )
+    )
+
+    self.logical_operator_new_line = self.preference.register(
+        'editor', 'logical_operator_new_line',
+        gettext("Logical operator new line"), 'radioModern', 'before',
+        options=[{'label': gettext('Before'), 'value': 'before'},
+                 {'label': gettext('After'), 'value': 'after'}],
+        category_label=PREF_LABEL_SQL_FORMATTING,
+        help_str=gettext(
+            'Decides newline placement before or after logical operators '
+            '(AND, OR, XOR).'
+        )
+    )
+
+    self.lines_between_queries = self.preference.register(
+        'editor', 'lines_between_queries',
+        gettext("Lines between queries"), 'integer', 1,
+        min_val=0,
+        max_val=5,
+        category_label=PREF_LABEL_SQL_FORMATTING,
+        help_str=gettext(
+            'Decides how many empty lines to leave between SQL statements. '
+            'If zero it puts no new line.'
+        )
+    )
+
+    self.new_line_before_semicolon = self.preference.register(
+        'editor', 'new_line_before_semicolon',
+        gettext("New line before semicolon?"), 'boolean', False,
+        category_label=PREF_LABEL_SQL_FORMATTING,
+        help_str=gettext(
+            'Whether to place query separator (;) on a separate line.'
         )
     )
 
