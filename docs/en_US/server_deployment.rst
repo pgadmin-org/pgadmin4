@@ -103,7 +103,7 @@ In order to configure the Python code, follow these steps:
 
    .. code-block:: bash
 
-       # python setup.py
+       # python setup.py setup-db
 
 5. Change the ownership of the configuration database to the user that the web server
    processes will run as, for example, assuming that the web server runs as user
