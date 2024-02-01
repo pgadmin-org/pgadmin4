@@ -1799,7 +1799,11 @@ class ServerNode(PGChildNodeView):
             None
         """
         try:
-            data = request.form
+            data = None
+            if request.form:
+                data = request.form
+            elif request.data:
+                data = json.loads(request.data)
             restore_point_name = data['value'] if data else None
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
@@ -1812,10 +1816,10 @@ class ServerNode(PGChildNodeView):
                             restore_point_name
                         )
                     )
-                if not status:
-                    return internal_server_error(
-                        errormsg=str(res)
-                    )
+                    if not status:
+                        return internal_server_error(
+                            errormsg=str(res)
+                        )
 
                 return make_json_response(
                     data={

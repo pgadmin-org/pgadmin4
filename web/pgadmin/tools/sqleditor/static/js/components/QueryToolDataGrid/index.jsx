@@ -376,7 +376,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
   const dataGridExtras = useMemo(()=>({
     onSelectedCellChange, handleCopy
-  }), []);
+  }), [onSelectedCellChange]);
 
   useEffect(()=>{
     let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
