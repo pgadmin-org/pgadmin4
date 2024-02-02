@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { makeStyles } from '@material-ui/styles';
 import React, {useContext, useCallback, useEffect } from 'react';
+import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/CodeMirror';
 import {PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
@@ -444,19 +445,35 @@ export default function Query() {
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
       let selection = true, sql = editor.current?.getSelection();
+      let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
+      /* New library does not support capitalize casing
+        so if a user has set capitalize casing we will 
+        use preserve casing which is default for the library.
+      */
+      let formatPrefs = {
+        language: 'postgresql',
+        keywordCase: sqlEditorPref.keyword_case === 'capitalize' ? 'preserve' : sqlEditorPref.keyword_case,
+        identifierCase: sqlEditorPref.identifier_case === 'capitalize' ? 'preserve' : sqlEditorPref.identifier_case,
+        dataTypeCase: sqlEditorPref.data_type_case,
+        functionCase: sqlEditorPref.function_case,
+        logicalOperatorNewline: sqlEditorPref.logical_operator_new_line,
+        expressionWidth: sqlEditorPref.expression_width,
+        linesBetweenQueries: sqlEditorPref.lines_between_queries,
+        tabWidth: sqlEditorPref.tab_size,
+        useTabs: !sqlEditorPref.use_spaces,
+        denseOperators: !sqlEditorPref.spaces_around_operators,
+        newlineBeforeSemicolon: sqlEditorPref.new_line_before_semicolon
+      };
       if(sql == '') {
         sql = editor.current.getValue();
         selection = false;
       }
-      queryToolCtx.api.post(url_for('sql.format'), {
-        'sql': sql,
-      }).then((res)=>{
-        if(selection) {
-          editor.current.replaceSelection(res.data.data.sql, 'around');
-        } else {
-          editor.current.setValue(res.data.data.sql);
-        }
-      }).catch(()=>{/* failure should be ignored */});
+      let formattedSql = format(sql,formatPrefs);
+      if(selection) {
+        editor.current.replaceSelection(formattedSql, 'around');
+      } else {
+        editor.current.setValue(formattedSql);
+      }
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
       let selectedText = editor.current?.getSelection();

@@ -120,9 +120,6 @@ class MiscModule(PgAdminModule):
         from .file_manager import blueprint as module
         self.submodules.append(module)
 
-        from .sql import blueprint as module
-        self.submodules.append(module)
-
         from .statistics import blueprint as module
         self.submodules.append(module)
 
