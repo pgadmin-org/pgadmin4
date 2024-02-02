@@ -374,6 +374,7 @@ def index():
             rating='g',
             default='retro',
             force_default=False,
+            force_lower=True,
             use_ssl=True,
             base_url=None
         )
