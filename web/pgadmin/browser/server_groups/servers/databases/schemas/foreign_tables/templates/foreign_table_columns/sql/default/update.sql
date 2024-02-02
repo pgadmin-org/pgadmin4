@@ -35,8 +35,8 @@ ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 -- the current datatype cannot be cast to the target cltype so this conversion cannot be made automatically.
 {% endif %}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
-{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname is not none %}{%if data.collspcname != o_data.collspcname %}
- COLLATE {{data.collspcname}}{% elif data.collspcname is not none and o_data.collspcname %} COLLATE {{o_data.collspcname}}{% endif %}{% endif %};
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname and data.cltype != '"char"' %}
+ COLLATE {{data.collspcname}}{% elif o_data.collspcname and data.cltype != '"char"' %} COLLATE {{o_data.collspcname}}{% endif %};
 
 {% endif %}
 {###  Alter column default value ###}
