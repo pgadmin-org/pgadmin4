@@ -116,6 +116,11 @@ export class LayoutDocker {
     this.layoutObj.updateTab(panelId, null, true);
   }
 
+  //it will navigate to nearest panel/tab
+  navigatePanel() {
+    this.layoutObj.navigateToPanel();
+  }
+
   find(...args) {
     return this.layoutObj?.find(...args);
   }

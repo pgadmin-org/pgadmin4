@@ -24,7 +24,6 @@ import usePreferences, { listenPreferenceBroadcast } from '../../../../preferenc
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
-
 export default class SchemaDiff {
   static instance;
 
@@ -101,6 +100,7 @@ export default class SchemaDiff {
   }
 
   async load(container, trans_id) {
+    pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
 
     ReactDOM.render(

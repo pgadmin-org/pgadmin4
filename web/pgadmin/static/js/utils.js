@@ -17,10 +17,13 @@ import pgAdmin from 'sources/pgadmin';
 
 export function parseShortcutValue(obj) {
   let shortcut = '';
+  if (!obj){
+    return null;
+  }
   if (obj.alt) { shortcut += 'alt+'; }
   if (obj.shift) { shortcut += 'shift+'; }
   if (obj.control) { shortcut += 'ctrl+'; }
-  shortcut += obj.key.char.toLowerCase();
+  shortcut += obj?.key.char?.toLowerCase();
   return shortcut;
 }
 
