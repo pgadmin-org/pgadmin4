@@ -35,6 +35,7 @@ Bug fixes
 *********
 
   | `Issue #5083 <https://github.com/pgadmin-org/pgadmin4/issues/5083>`_ -  Fixed an issue where format sql was messing up operator. Included many other feature changes, more details `here <https://github.com/pgadmin-org/pgadmin4/commit/f7045b58d4d1b98b6a2f035267d2dd01c7235aa6>`_
+  | `Issue #6785 <https://github.com/pgadmin-org/pgadmin4/issues/6785>`_ -  Fixed an issue where formatting inserts empty lines in specific case.
   | `Issue #7053 <https://github.com/pgadmin-org/pgadmin4/issues/7053>`_ -  Add support for selecting a schema in the backup database dialog with no tables, mviews, views or foreign tables.
   | `Issue #7055 <https://github.com/pgadmin-org/pgadmin4/issues/7055>`_ -  Fixed a UI border issue on the dependencies tab for columns with icon.
   | `Issue #7073 <https://github.com/pgadmin-org/pgadmin4/issues/7073>`_ -  Fixed an issue where multiple errors were showing if user does not have connect privileges.
