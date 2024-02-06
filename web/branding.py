@@ -18,7 +18,7 @@ APP_ICON = 'pg-icon'
 # To help define the configuration directory and data directory
 APP_SHORT_NAME = 'pgadmin4'
 APP_PATH = 'pgadmin'
-APP_WIN_PATH   = "pgAdmin"
+APP_WIN_PATH = "pgAdmin"
 
 # Copyright string for display in the app
 APP_COPYRIGHT = 'Copyright (C) 2013 - 2024, The pgAdmin Development Team'

@@ -214,8 +214,9 @@ APP_VERSION_EXTN = ('.css', '.js', '.html', '.svg', '.png', '.gif', '.ico')
 
 # Data directory for storage of config settings etc. This shouldn't normally
 # need to be changed - it's here as various other settings depend on it.
-# On Windows, we always store data in %APPDATA%\$(APP_WIN_PATH). On other platforms,
-# if we're in server mode we use /var/lib/$(APP_PATH), otherwise ~/.$(APP_PATH)
+# On Windows, we always store data in %APPDATA%\$(APP_WIN_PATH). On other
+# platforms, if we're in server mode we use /var/lib/$(APP_PATH),
+# otherwise ~/.$(APP_PATH)
 if IS_WIN:
     # Use the short path on windows
     DATA_DIR = os.path.realpath(
@@ -307,7 +308,8 @@ CONFIG_DATABASE_URI = ''
 # The default path to the SQLite database used to store user accounts and
 # settings. This default places the file in the same directory as this
 # config file, but generates an absolute path for use througout the app.
-SQLITE_PATH = env('SQLITE_PATH') or os.path.join(DATA_DIR, APP_SHORT_NAME + '.db')
+SQLITE_PATH = env('SQLITE_PATH') or \
+    os.path.join(DATA_DIR, APP_SHORT_NAME + '.db')
 
 # SQLITE_TIMEOUT will define how long to wait before throwing the error -
 # OperationError due to database lock. On slower system, you may need to change
