@@ -15,6 +15,7 @@ import builtins
 import logging
 import os
 import sys
+from collections import OrderedDict
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
@@ -285,11 +286,17 @@ DEBUG = False
 #   INFO     20
 #   DEBUG    10
 #   NOTSET    0
-CONSOLE_LOG_LEVEL = logging.WARNING
+CONSOLE_LOG_LEVEL = logging.CRITICAL
 FILE_LOG_LEVEL = logging.WARNING
 
 # Log format.
-CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
+# https://github.com/MyColorfulDays/jsonformatter?tab=readme-ov-file
+CONSOLE_LOG_FORMAT = OrderedDict([
+    ("Asctime", "asctime"),
+    ("Levelname", "levelname"),
+    ("Message", "message"),
+])
+
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name. This goes in the data directory, except on non-Windows
