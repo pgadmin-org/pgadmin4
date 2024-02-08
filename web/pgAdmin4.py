@@ -13,7 +13,7 @@ to start a web server."""
 
 import sys
 if sys.version_info <= (3, 9):
-    import select
+    pass
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
@@ -39,7 +39,6 @@ if (3, 10) > sys.version_info > (3, 8, 99) and os.name == 'posix':
     # Fix eventlet issue with Python 3.9.
     # Ref: https://github.com/eventlet/eventlet/issues/670
     # This was causing issue in psycopg3
-    import select
     from eventlet import hubs
     hubs.use_hub("poll")
 
