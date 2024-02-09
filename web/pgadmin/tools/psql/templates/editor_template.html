@@ -19,40 +19,16 @@
 require(
     ['sources/generated/psql_tool'],
     function(pgBrowser) {
-        const term = self.pgAdmin.Browser.psql.psql_terminal();
-        <!--Addon for fitAddon, webLinkAddon, SearchAddon  -->
-        const fitAddon = self.pgAdmin.Browser.psql.psql_Addon(term);
-        <!-- Update the theme for terminal as per pgAdmin 4 theme.-->
-        self.pgAdmin.Browser.psql.set_theme(term);
-        <!-- Open the terminal -->
-        term.open(document.getElementById('psql-terminal'));
-        <!-- Socket-->
-        const socket = self.pgAdmin.Browser.psql.psql_socket();
-        self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db|safe}}', '{{server_type}}', fitAddon, term, '{{role|safe}}');
-        self.pgAdmin.Browser.psql.psql_terminal_io(term, socket, '{{platform}}');
-        self.pgAdmin.Browser.psql.check_db_name_change('{{db|safe}}', '{{o_db_name|safe}}');
-        <!-- Set terminal size -->
-        setTimeout(function(){
-          socket.emit("resize", {"cols": term.cols, "rows": term.rows})
-        }, 1000);
-
-        <!-- Resize the terminal -->
-        function fitToscreen(){
-            fitAddon.fit()
-            socket.emit("resize", {"cols": term.cols, "rows": term.rows})
-        }
-
-        function debounce(func, wait_ms) {
-            let timeout
-            return function(...args) {
-              const context = this
-              clearTimeout(timeout)
-              timeout = setTimeout(() => func.apply(context, args), wait_ms)
-            }
-        }
-
-        const wait_ms = 25;
-        window.onresize = debounce(fitToscreen, wait_ms);
+        <!-- Call the PSQL mount-->
+        self.pgAdmin.Browser.psql.psql_mount({
+            "is_enable": '{{is_enable}}',
+            "sid": '{{sid}}',
+            "db":'{{db|safe}}',
+            "server_type": '{{server_type}}',
+            "role": '{{role|safe}}',
+            "platform": '{{platform}}',
+            "o_db_name": '{{o_db_name|safe}}'
+        })
 
     });
 {% endblock %}

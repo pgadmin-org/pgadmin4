@@ -354,36 +354,6 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
-        'dialog_tab_forward',
-        gettext('Dialog tab forward'),
-        'keyboardshortcut',
-        {
-            'alt': False,
-            'shift': True,
-            'control': True,
-            'key': {'key_code': 93, 'char': ']'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts',
-        'dialog_tab_backward',
-        gettext('Dialog tab backward'),
-        'keyboardshortcut',
-        {
-            'alt': False,
-            'shift': True,
-            'control': True,
-            'key': {'key_code': 91, 'char': '['}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts',
         'sub_menu_refresh',
         gettext('Refresh object explorer'),
         'keyboardshortcut',

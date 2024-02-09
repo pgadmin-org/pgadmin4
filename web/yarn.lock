@@ -9160,6 +9160,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hotkeys-js@npm:^3.13.3":
+  version: 3.13.3
+  resolution: "hotkeys-js@npm:3.13.3"
+  checksum: fdd2b088671dbf2b2434ba40a4d604bf3f5cbe2f121233f8474f493a557d8a1cced0f1cb0c812b62e34ee9c2ad4ec6c4fd25035aa836ebe12da5dfa11f5afc2d
+  languageName: node
+  linkType: hard
+
 "html-dom-parser@npm:5.0.4":
   version: 5.0.4
   resolution: "html-dom-parser@npm:5.0.4"
@@ -11895,13 +11902,6 @@ __metadata:
   version: 0.5.2
   resolution: "moo@npm:0.5.2"
   checksum: 5a41ddf1059fd0feb674d917c4774e41c877f1ca980253be4d3aae1a37f4bc513f88815041243f36f5cf67a62fb39324f3f997cf7fb17b6cb00767c165e7c499
-  languageName: node
-  linkType: hard
-
-"mousetrap@npm:^1.6.3":
-  version: 1.6.5
-  resolution: "mousetrap@npm:1.6.5"
-  checksum: 1ce36af5ac57e1fab687e3da004cc18914275f8ceef33f16d01110edc5126a5dbaace578b1e61179f93a506e71a88fe886f305db537a3673cf9f73affd1dffa6
   languageName: node
   linkType: hard
 
@@ -14867,6 +14867,7 @@ __metadata:
     eslint-plugin-react: ^7.33.2
     eslint-plugin-react-hooks: ^4.3.0
     exports-loader: ^4.0.0
+    hotkeys-js: ^3.13.3
     html-react-parser: ^5.0.6
     html-to-image: ^1.11.11
     image-minimizer-webpack-plugin: ^3.8.2
@@ -14889,7 +14890,6 @@ __metadata:
     ml-matrix: ^6.5.0
     moment: ^2.29.4
     moment-timezone: ^0.5.34
-    mousetrap: ^1.6.3
     notificar: ^1.0.1
     notistack: ^1.0.10
     path-fx: ^2.0.0

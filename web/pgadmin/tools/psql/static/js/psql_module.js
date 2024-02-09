@@ -17,9 +17,8 @@ import pgWindow from 'sources/window';
 import { copyToClipboard } from '../../../../static/js/clipboard';
 import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
-import usePreferences from '../../../../preferences/static/js/store';
-
-
+import usePreferences,{ listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
+import 'pgadmin.browser.keyboard';
 export function setPanelTitle(psqlToolPanel, panelTitle) {
   psqlToolPanel.title('<span title="'+_.escape(panelTitle)+'">'+_.escape(panelTitle)+'</span>');
 }
@@ -257,10 +256,12 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
           navigator.permissions.query({ name: 'clipboard-write' }).then(function(result) {
             if(result.state === 'granted' || result.state === 'prompt') {
               copyToClipboard(selected_text);
-            } else{
+            } else {
               pgAdmin.Browser.notifier.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
             }
           });
+        } else {
+          self.pgAdmin.Browser.keyboardNavigation.triggerIframeEventsBroadcast(e,true);
         }
 
         return !(e.ctrlKey && platform == 'win32');
@@ -297,6 +298,44 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         refresh_db_node(message, dbNode);
       }
     },
+    psql_mount: async function(params){
+      self.pgAdmin.Browser.keyboardNavigation.init();
+      await listenPreferenceBroadcast();
+      const term = self.pgAdmin.Browser.psql.psql_terminal();
+      /* Addon for fitAddon, webLinkAddon, SearchAddon */
+      const fitAddon = self.pgAdmin.Browser.psql.psql_Addon(term);
+      /*  Update the theme for terminal as per pgAdmin 4 theme. */
+      self.pgAdmin.Browser.psql.set_theme(term);
+      /*  Open the terminal */
+      term.open(document.getElementById('psql-terminal'));
+      /*  Socket */
+      const socket = self.pgAdmin.Browser.psql.psql_socket();
+      self.pgAdmin.Browser.psql.psql_socket_io(socket, params.is_enable, params.sid, params.db, params.server_type, fitAddon, term, params.role);
+
+      self.pgAdmin.Browser.psql.psql_terminal_io(term, socket, params.platform);
+      self.pgAdmin.Browser.psql.check_db_name_change(params.db, params.o_db_name);
+      /*  Set terminal size */
+      setTimeout(function(){
+        socket.emit('resize', {'cols': term.cols, 'rows': term.rows});
+      }, 1000);
+
+      /*  Resize the terminal */
+      function fitToscreen(){
+        fitAddon.fit();
+        socket.emit('resize', {'cols': term.cols, 'rows': term.rows});
+      }
+
+      function debounce(func, wait_ms) {
+        let timeout;
+        return function(...args) {
+          const context = this;
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(context, args), wait_ms);
+        };
+      }
+
+      window.onresize = debounce(fitToscreen, 25);
+    }
   };
 
   return pgBrowser.psql;
