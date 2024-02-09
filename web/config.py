@@ -253,15 +253,14 @@ DEBUG = False
 #   INFO     20
 #   DEBUG    10
 #   NOTSET    0
-CONSOLE_LOG_LEVEL = logging.CRITICAL
+CONSOLE_LOG_LEVEL = logging.WARNING
 FILE_LOG_LEVEL = logging.WARNING
 
 # Log format.
 # https://github.com/MyColorfulDays/jsonformatter?tab=readme-ov-file
 CONSOLE_LOG_FORMAT = OrderedDict([
-    ("Asctime", "asctime"),
-    ("Levelname", "levelname"),
-    ("Message", "message"),
+    ("time", "asctime"),
+    ("message", "message"),
 ])
 
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
