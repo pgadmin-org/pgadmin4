@@ -26,10 +26,6 @@ When using main browser window, the following keyboard shortcuts are available:
    +----------------------------+-------------------------------------------------------+
    | Shift+Alt+d                | Delete object                                         |
    +----------------------------+-------------------------------------------------------+
-   | Shift+Ctrl+[               | Dialog tab backward                                   |
-   +----------------------------+-------------------------------------------------------+
-   | Shift+Ctrl+]               | Dialog tab forward                                    |
-   +----------------------------+-------------------------------------------------------+
    | Shift+Alt+g                | Direct debugging                                      |
    +----------------------------+-------------------------------------------------------+
    | Shift+Alt+e                | Edit object properties                                |
@@ -57,23 +53,6 @@ When using main browser window, the following keyboard shortcuts are available:
    | Shift+Alt+l                | Tools main menu                                       |
    +----------------------------+-------------------------------------------------------+
    | Shift+Alt+v                | View data                                             |
-   +----------------------------+-------------------------------------------------------+
-
-Dialog Tabs
-***********
-
-Use the shortcuts below to navigate the tabsets on dialogs:
-
-.. table::
-   :class: longtable
-   :widths: 2 3
-
-   +----------------------------+-------------------------------------------------------+
-   | Shortcut for all platforms | Function                                              |
-   +============================+=======================================================+
-   | Control+Shift+[            | Dialog tab backward                                   |
-   +----------------------------+-------------------------------------------------------+
-   | Control+Shift+]            | Dialog tab forward                                    |
    +----------------------------+-------------------------------------------------------+
 
 Property Grid Controls

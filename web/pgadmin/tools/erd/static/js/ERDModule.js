@@ -142,6 +142,7 @@ export default class ERDModule {
   }
 
   async loadComponent(container, params) {
+    pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     ReactDOM.render(
       <Theme>
