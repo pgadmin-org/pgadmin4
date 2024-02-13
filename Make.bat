@@ -63,13 +63,13 @@ REM Main build sequence Ends
     set "VCREDIST_FILE=vcredist_x64.exe"
 
     REM Set additional variables we need
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\config.py')  DO SET APP_MAJOR=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\config.py') DO SET APP_MINOR=%%a
-    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\config.py')   DO SET APP_VERSION_SUFFIX=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\version.py')  DO SET APP_MAJOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_REVISION =" %WD%\web\version.py') DO SET APP_MINOR=%%a
+    FOR /F "tokens=3" %%a IN ('findstr /C:"APP_SUFFIX =" %WD%\web\version.py')   DO SET APP_VERSION_SUFFIX=%%a
     REM remove single quote from the string
     SET APP_VERSION_SUFFIX=%APP_VERSION_SUFFIX:'=%
     SET APP_NAME=""
-    FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\config.py') DO SET APP_NAME=%%a
+    FOR /F "tokens=2* DELims='" %%a IN ('findstr /C:"APP_NAME =" web\branding.py') DO SET APP_NAME=%%a
     FOR /f "tokens=1 DELims=." %%G IN ('%PGADMIN_PYTHON_DIR%/python.exe -c "print('%APP_NAME%'.lower().replace(' ', ''))"') DO SET APP_SHORTNAME=%%G
     SET APP_VERSION=%APP_MAJOR%.%APP_MINOR%
     SET INSTALLERNAME=%APP_SHORTNAME%-%APP_MAJOR%.%APP_MINOR%-%APP_VERSION_SUFFIX%-x64.exe

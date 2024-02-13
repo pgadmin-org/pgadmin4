@@ -226,6 +226,7 @@ export default class SQLEditor {
     let selectedNodeInfo = pgWindow.pgAdmin.Browser.tree.getTreeNodeHierarchy(
       pgWindow.pgAdmin.Browser.tree.selected()
     );
+    pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     ReactDOM.render(
       <Theme>

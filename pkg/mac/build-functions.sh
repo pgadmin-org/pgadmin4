@@ -2,11 +2,11 @@
 
 _setup_env() {
     FUNCS_DIR=$(cd "$(dirname "$0")" && pwd)/../..
-    APP_RELEASE=$(grep "^APP_RELEASE" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g')
-    APP_REVISION=$(grep "^APP_REVISION" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g')
-    APP_NAME=$(grep "^APP_NAME" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //')
+    APP_RELEASE=$(grep "^APP_RELEASE" "${FUNCS_DIR}/web/version.py" | cut -d"=" -f2 | sed 's/ //g')
+    APP_REVISION=$(grep "^APP_REVISION" "${FUNCS_DIR}/web/version.py" | cut -d"=" -f2 | sed 's/ //g')
+    APP_NAME=$(grep "^APP_NAME" "${FUNCS_DIR}/web/branding.py" | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //')
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-    APP_SUFFIX=$(grep "^APP_SUFFIX" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
+    APP_SUFFIX=$(grep "^APP_SUFFIX" "${FUNCS_DIR}/web/version.py" | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
     if [ -n "${APP_SUFFIX}" ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
