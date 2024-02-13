@@ -378,7 +378,7 @@ export default function PreferencesComponent({ ...props }) {
           if(field.visible && _.isNull(firstElement)) {
             firstElement = field;
           }
-          field.tooltip = item._parent._metadata.data.name + ':' + item._metadata.data.name + ':' + field.name;
+          field.tooltip = item._parent._metadata.data.name.toLowerCase() + ':' + item._metadata.data.name + ':' + field.name;
         });
         setLoadTree(crypto.getRandomValues(new Uint16Array(1)));
         initTreeTimeout = setTimeout(() => {

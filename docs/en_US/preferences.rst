@@ -590,3 +590,33 @@ If auth_source is not given, Internal authentication will be consider by default
 
     # to specify an auth_source
     /path/to/python /path/to/setup.py set-prefs user1@gmail.com sqleditor:editor:comma_first=true --auth-source=ldap
+
+Updating Preferences preferences.json
+*************************************
+To update preferences defined in json file, simply run ``setup.py `` with ``set-prefs`` command followed by username
+and JSON file containing the preferences.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py set-prefs user1@gmail.com --input-file /Users/yogeshmahajan/Desktop/pref.json
+
+JSON format
+***********
+
+The JSON file simply contains preference_key=value. Preference key value mapping can be obtained by hovering the
+individual preference in the Preference UI dialog.
+
+The following is an typical example for preferences.json :
+
+.. code-block:: python
+
+    {
+        "preferences":
+            {
+                "browser:display:show_system_objects":  true,
+                "browser:display:show_user_defined_templates": true,
+                "browser:display:confirm_on_refresh_close": false,
+                "misc:themes:theme": "dark",
+
+            }
+    }
