@@ -4,7 +4,7 @@ CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     MINVALUE 5
     MAXVALUE 999
     CACHE 1
-    OWNED BY tableforownedby.col1;
+    OWNED BY public.tableforownedby.col1;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     OWNER TO postgres;
