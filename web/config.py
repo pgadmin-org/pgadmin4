@@ -257,12 +257,15 @@ CONSOLE_LOG_LEVEL = logging.WARNING
 FILE_LOG_LEVEL = logging.WARNING
 
 # Log format.
-# https://github.com/MyColorfulDays/jsonformatter?tab=readme-ov-file
-CONSOLE_LOG_FORMAT = OrderedDict([
+JSON_LOGGER = False
+CONSOLE_LOG_FORMAT_JSON = OrderedDict([
     ("time", "asctime"),
     ("message", "message"),
-])
+    ("level", "levelname")
+ ])
 
+
+CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 
 # Log file name. This goes in the data directory, except on non-Windows

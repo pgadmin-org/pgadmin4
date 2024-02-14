@@ -265,14 +265,18 @@ def create_app(app_name=None):
         logger.addHandler(fh)
 
     # Console logging
+    ch = logging.StreamHandler()
 
-    formatter = JsonFormatter(config.CONSOLE_LOG_FORMAT)
-    json_handler = logging.StreamHandler()
-    json_handler.setFormatter(formatter)
+    ch.setLevel(config.CONSOLE_LOG_LEVEL)
 
-    json_handler.setLevel(config.CONSOLE_LOG_LEVEL)
-    app.logger.addHandler(json_handler)
-    logger.addHandler(json_handler)
+    if config.JSON_LOGGER:
+        json_formatter = JsonFormatter(config.CONSOLE_LOG_FORMAT_JSON)
+        ch.setFormatter(json_formatter)
+    else:
+        ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
+
+    app.logger.addHandler(ch)
+    logger.addHandler(ch)
 
     # Log the startup
     app.logger.info('########################################################')
