@@ -187,11 +187,12 @@ Delete User
 ***********
 
 To delete the user, invoke ``setup.py`` with ``delete-user`` command line option, followed by
-username and auth_source. For Internal users, email adress will be used instead of username.
+username and auth_source. For Internal users, email adress will be used instead of username. the option ``--yes`` is available to skip the confirmation prompt before deleting the user.
 
 .. code-block:: bash
 
     /path/to/python /path/to/setup.py delete-user user1@gmail.com --auth-source internal
+    /path/to/python /path/to/setup.py delete-user user2@gmail.com --auth-source internal --yes
     /path/to/python /path/to/setup.py delete-user ldapuser --auth-source ldap
 
 

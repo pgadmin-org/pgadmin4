@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #7204 <https://github.com/pgadmin-org/pgadmin4/issues/7204>`_ -  Add --yes option for skipping the confirmation prompt while deleting the user via CLI for scripting purpose.
 
 Housekeeping
 ************
