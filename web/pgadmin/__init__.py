@@ -266,7 +266,6 @@ def create_app(app_name=None):
 
     # Console logging
     ch = logging.StreamHandler()
-
     ch.setLevel(config.CONSOLE_LOG_LEVEL)
 
     if config.JSON_LOGGER:

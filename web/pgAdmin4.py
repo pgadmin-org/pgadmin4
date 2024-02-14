@@ -13,7 +13,7 @@ to start a web server."""
 
 import sys
 if sys.version_info <= (3, 9):
-    pass
+    import select
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
