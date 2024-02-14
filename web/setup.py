@@ -180,11 +180,15 @@ class ManageUsers:
         ManageUsers.create_user(data, console, json)
 
     @app.command()
-    def delete_user(username: str, auth_source: AuthType = AuthType.internal):
+    def delete_user(username: str,
+                    auth_source: AuthType = AuthType.internal,
+                    auto_confirm: Annotated[Optional[bool],
+                                            typer.Option(
+                                                "--yes")] = False
+                    ):
         """Delete the user. """
-        delete = typer.confirm("Are you sure you want to delete it?")
-
-        if delete:
+        confirm_msg = "Are you sure you want to delete it?"
+        if auto_confirm or typer.confirm(confirm_msg):
             app = create_app(config.APP_NAME + '-cli')
             with app.test_request_context():
                 uid = ManageUsers.get_user(username=username,
