@@ -852,7 +852,7 @@ class PgadminPage:
             backspaces = [Keys.BACKSPACE] * len(field.get_attribute('value'))
             field.send_keys(backspaces)
             field.send_keys(str(field_content))
-            self.wait_for_input_by_element(field, field_content)
+            # self.wait_for_input_by_element(field, field_content)
         else:
             self.driver.execute_script("arguments[0].value = arguments[1]",
                                        field, field_content)

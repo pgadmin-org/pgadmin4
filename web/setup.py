@@ -40,14 +40,16 @@ from pgadmin.model import db, Version, User, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
 from pgadmin.utils import clear_database_servers, dump_database_servers, \
-    load_database_servers
+    load_database_servers, _handle_error
 from pgadmin.setup import db_upgrade, create_app_data_directory
 from typing import Optional, List
 from typing_extensions import Annotated
-from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, LDAP, OAUTH2, \
+from pgadmin.utils.constants import INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
 from pgadmin.tools.user_management import create_user, delete_user, update_user
 from enum import Enum
+from flask_babel import gettext
+
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
@@ -406,11 +408,8 @@ class ManagePreferences:
         table = Table(title="Pref Details", box=box.ASCII)
         table.add_column("Preference", style="green")
         with app.app_context():
-            from pgadmin.preferences import save_pref
-            from pgadmin.utils.preferences import Preferences
-            from pgadmin.model import db, Preferences as PrefTable, \
+            from pgadmin.model import Preferences as PrefTable, \
                 ModulePreference as ModulePrefTable, \
-                UserPreference as UserPrefTable, \
                 PreferenceCategory as PrefCategoryTbl
 
             module_prefs = ModulePrefTable.query.all()
@@ -448,14 +447,42 @@ class ManagePreferences:
                     print(table)
 
     @app.command()
-    def set_prefs(username, pref_options: List[str],
+    def set_prefs(username,
+                  pref_options: Annotated[Optional[List[str]],
+                                          typer.Argument()] = None,
                   auth_source: AuthType = AuthType.internal,
                   console: Optional[bool] = True,
-                  json: Optional[bool] = False):
+                  json: Optional[bool] = False,
+                  input_file: Optional[str] = None):
         """Set User preferences."""
+
+        if input_file:
+            from urllib.parse import unquote
+            # generate full path of file
+            try:
+                file_path = unquote(input_file)
+            except Exception as e:
+                print(str(e))
+                return _handle_error(str(e), True)
+            import json as json_utility
+            try:
+                with open(file_path) as f:
+                    data = json_utility.load(f)
+            except json_utility.decoder.JSONDecodeError as e:
+                return _handle_error(gettext("Error parsing input file %s: %s"
+                                             % (file_path, e)), True)
+            except Exception as e:
+                return _handle_error(
+                    gettext("Error reading input file %s: [%d] %s" %
+                            (file_path, e.errno, e.strerror)), True)
+
+            pref_data = data['preferences']
+
+            for k, v in pref_data.items():
+                pref_options.append(k + "=" + str(v))
+
         user_id = ManagePreferences.get_user(username, auth_source)
-        app = create_app(config.APP_NAME + '-cli')
-        table = Table(title="Pref Details", box=box.ASCII)
+        table = Table(title="Updated Pref Details", box=box.ASCII)
         table.add_column("Preference", style="green")
         if not user_id:
             print("User not found.")

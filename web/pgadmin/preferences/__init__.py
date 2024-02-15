@@ -282,6 +282,9 @@ def save_pref(data):
             and data['value'].isspace():
         data['value'] = ''
 
+    if data['value'] in ['true','false']:
+        data['value'] = True if data['value'] == 'true' else False
+
     res, _ = Preferences.save_cli(
         data['mid'], data['category_id'], data['id'], data['user_id'],
         data['value'])

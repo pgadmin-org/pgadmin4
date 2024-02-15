@@ -14,5 +14,5 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}SEQUENCE{% if add_not_exi
 
     CACHE {{data.cache|int}}{% endif %}{% if data.owned_table is defined and data.owned_table != None and data.owned_column is defined and data.owned_column != None %}
 
-    OWNED BY {{ conn|qtIdent(data.owned_table) }}.{{ conn|qtIdent(data.owned_column) }}{% endif %};
+    OWNED BY {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.owned_table) }}.{{ conn|qtIdent(data.owned_column) }}{% endif %};
 

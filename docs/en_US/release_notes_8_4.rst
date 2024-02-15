@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #7204 <https://github.com/pgadmin-org/pgadmin4/issues/7204>`_ -  Add --yes option for skipping the confirmation prompt while deleting the user via CLI for scripting purpose.
+  | `Issue #6058 <https://github.com/pgadmin-org/pgadmin4/issues/6058>`_ -  Allow preferences customization using a configuration file.
 
 Housekeeping
 ************
@@ -32,3 +33,4 @@ Bug fixes
 
   | `Issue #6808 <https://github.com/pgadmin-org/pgadmin4/issues/6808>`_ -  Fix the tabbed panel backward/forward shortcut for tabs.
   | `Issue #7164 <https://github.com/pgadmin-org/pgadmin4/issues/7164>`_ -  Fix an issue where constraint check control is enabled in the edit table dialog.
+  | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fix an issue where the scripts created by generate script of Schema diff for Table with sequence was not working earlier.
