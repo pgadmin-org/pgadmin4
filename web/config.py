@@ -264,6 +264,12 @@ CONSOLE_LOG_FORMAT_JSON = OrderedDict([
     ("level", "levelname")
 ])
 
+FILE_LOG_FORMAT_JSON = OrderedDict([
+    ("time", "asctime"),
+    ("message", "message"),
+    ("level", "levelname")
+])
+
 
 CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'

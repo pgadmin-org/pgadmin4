@@ -260,7 +260,13 @@ def create_app(app_name=None):
                                          config.LOG_ROTATION_MAX_LOG_FILES)
 
         fh.setLevel(config.FILE_LOG_LEVEL)
-        fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+
+        if config.JSON_LOGGER:
+            json_formatter = JsonFormatter(config.CONSOLE_LOG_FORMAT_JSON)
+            fh.setFormatter(json_formatter)
+        else:
+            fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+
         app.logger.addHandler(fh)
         logger.addHandler(fh)
 
