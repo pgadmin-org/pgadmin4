@@ -75,6 +75,17 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
             /venv/bin/python3 /pgadmin4/setup.py load-servers "${PGADMIN_SERVER_JSON_FILE}" --user "${PGADMIN_DEFAULT_EMAIL}"
         fi
     fi
+    if [ -f "${PGADMIN_PREFERENCES_JSON_FILE}" ]; then
+        # When running in Desktop mode, no user is created
+        # so we have to import servers anonymously
+        if [ "${PGADMIN_CONFIG_SERVER_MODE}" = "False" ]; then
+            DESKTOP_USER=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.DESKTOP_USER)')
+            /venv/bin/python3 /pgadmin4/setup.py set-prefs "${DESKTOP_USER}" --input-file "${PGADMIN_PREFERENCES_JSON_FILE}"
+        else
+            /venv/bin/python3 /pgadmin4/setup.py set-prefs "${PGADMIN_DEFAULT_EMAIL}" --input-file "${PGADMIN_PREFERENCES_JSON_FILE}"
+        fi
+    fi
+
 fi
 
 # Start Postfix to handle password resets etc.
