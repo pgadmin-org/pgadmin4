@@ -200,8 +200,8 @@ RUN apk add \
     /venv/bin/python3 -m pip install --no-cache-dir gunicorn==20.1.0 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
-    mkdir -p /var/lib/pgadmin && \
-    chown pgadmin:root /var/lib/pgadmin && \
+    mkdir -p /run/pgadmin /var/lib/pgadmin && \
+    chown pgadmin:root /run/pgadmin /var/lib/pgadmin && \
     chmod g=u /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:root /pgadmin4/config_distro.py && \
