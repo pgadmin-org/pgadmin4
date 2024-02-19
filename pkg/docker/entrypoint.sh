@@ -100,7 +100,7 @@ TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESS
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
 # Using --threads to have multi-threaded single-process worker
 
-if [ -n "${PGADMIN_SOCK}" ]; then
+if [ -n "${PGADMIN_ENABLE_SOCK}" ]; then
     mkdir -p /run/pgadmin
     BIND_ADDRESS="/run/pgadmin/pgadmin.sock"
 else
