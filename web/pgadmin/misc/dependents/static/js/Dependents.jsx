@@ -88,6 +88,9 @@ function Dependents({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
       sortable: true,
       resizable: true,
       disableGlobalFilter: false,
+      Cell: ({row})=>{
+        return pgAdmin.Browser.Nodes?.[row.original.type]?.label??row.original.type;
+      }
     },
     {
       Header: 'Name',
