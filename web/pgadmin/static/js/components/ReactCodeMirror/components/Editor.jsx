@@ -12,11 +12,11 @@ import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { makeStyles } from '@material-ui/core';
-import { PgIconButton } from '../Buttons';
-import { checkTrojanSource } from '../../utils';
-import { copyToClipboard } from '../../clipboard';
-import { useDelayedCaller } from '../../custom_hooks';
-import usePreferences from '../../../../preferences/static/js/store';
+import { PgIconButton } from '../../Buttons';
+import { checkTrojanSource } from '../../../utils';
+import { copyToClipboard } from '../../../clipboard';
+import { useDelayedCaller } from '../../../custom_hooks';
+import usePreferences from '../../../../../preferences/static/js/store';
 import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import KeyboardArrowRightRoundedIcon from '@material-ui/icons/KeyboardArrowRightRounded';
@@ -35,7 +35,7 @@ import {
 import { EditorState, Compartment } from '@codemirror/state';
 import { history, defaultKeymap, historyKeymap, indentLess, insertTab } from '@codemirror/commands';
 import { highlightSelectionMatches } from '@codemirror/search';
-import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete';
+import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
   foldGutter,
   indentOnInput,
@@ -45,13 +45,14 @@ import {
 } from '@codemirror/language';
 
 import FindDialog from './FindDialog';
-import syntaxHighlighting from './extensions/highlighting';
-import PgSQL from './extensions/dialect';
+import syntaxHighlighting from '../extensions/highlighting';
+import PgSQL from '../extensions/dialect';
 import { sql } from '@codemirror/lang-sql';
-import errorMarkerExtn from './extensions/errorMarker';
-import CustomEditorView from './CustomEditorView';
-import breakpointGutter, { breakpointEffect } from './extensions/breakpointGutter';
-import activeLineExtn from './extensions/activeLineMarker';
+import errorMarkerExtn from '../extensions/errorMarker';
+import CustomEditorView from '../CustomEditorView';
+import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
+import activeLineExtn from '../extensions/activeLineMarker';
+import GotoDialog from './GotoDialog';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{fontSize: '1.2em'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{fontSize: '1.2em'}} />);
@@ -151,6 +152,9 @@ const defaultExtensions = [
     key: 'Shift-Tab',
     preventDefault: true,
     run: indentLess,
+  },{
+    key: 'Tab',
+    run: acceptCompletion,
   }]),
   sql({
     dialect: PgSQL,
@@ -170,6 +174,7 @@ export default function Editor({
   breakpoint = false, onBreakPointChange, showActiveLine=false, showCopyBtn = false,
   keepHistory = true, cid, helpid, labelledBy}) {
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
+  const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
 
   const editorContainerRef = useRef();
@@ -184,7 +189,7 @@ export default function Editor({
   const configurables = useRef(new Compartment());
   const editableConfig = useRef(new Compartment());
 
-  const findDialogKeyMap = [{
+  const editMenuKeyMap = [{
     key: 'Mod-f', run: (view, e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -197,6 +202,12 @@ export default function Editor({
       e.stopPropagation();
       setShowFind([false, false]);
       setShowFind([true, true]);
+    },
+  }, {
+    key: 'Mod-l', run: (view, e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowGoto(true);
     },
   }];
 
@@ -226,7 +237,7 @@ export default function Editor({
         extensions: [
           ...finalExtns,
           configurables.current.of([]),
-          keymap.of(findDialogKeyMap),
+          keymap.of(editMenuKeyMap),
           editableConfig.current.of([
             EditorView.editable.of(!disabled),
             EditorState.readOnly.of(readonly),
@@ -397,6 +408,11 @@ export default function Editor({
     editor.current?.focus();
   };
 
+  const closeGoto = () => {
+    setShowGoto(false);
+    editor.current?.focus();
+  };
+
   const onMouseEnter = useCallback(()=>{showCopyBtn && setShowCopy(true);});
   const onMouseLeave = useCallback(()=>{showCopyBtn && setShowCopy(false);});
 
@@ -404,9 +420,8 @@ export default function Editor({
     <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} style={{height: '100%'}}>
       <div style={{ height: '100%' }} ref={editorContainerRef} name={name}></div>
       {showCopy && <CopyButton editor={editor.current} />}
-      {showFind &&
-        <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
-      }
+      <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
+      <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
     </div>
   );
 }

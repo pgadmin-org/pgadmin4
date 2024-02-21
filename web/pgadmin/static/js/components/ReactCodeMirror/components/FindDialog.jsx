@@ -11,14 +11,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { Box, InputAdornment, makeStyles } from '@material-ui/core';
-import { InputText } from '../FormComponents';
-import { PgIconButton } from '../Buttons';
+import { InputText } from '../../FormComponents';
+import { PgIconButton } from '../../Buttons';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@material-ui/icons/ArrowUpwardRounded';
 import SwapHorizRoundedIcon from '@material-ui/icons/SwapHorizRounded';
 import SwapCallsRoundedIcon from '@material-ui/icons/SwapCallsRounded';
-import { RegexIcon, FormatCaseIcon } from '../ExternalIcon';
+import { RegexIcon, FormatCaseIcon } from '../../ExternalIcon';
 
 import {
   openSearchPanel,
@@ -89,8 +89,8 @@ export default function FindDialog({editor, show, replace, onClose}) {
   }, [findVal, replaceVal, useRegex, matchCase]);
 
   const clearAndClose = ()=>{
-    onClose();
     closeSearchPanel(editor);
+    onClose();
   };
 
   const toggle = (name)=>{
@@ -147,7 +147,7 @@ export default function FindDialog({editor, show, replace, onClose}) {
   }
 
   return (
-    <Box className={classes.root} visibility={show ? 'visible' : 'hidden'} tabIndex="0" onKeyDown={onEscape}>
+    <Box className={classes.root} style={{visibility: show ? 'visible' : 'hidden'}} tabIndex="0" onKeyDown={onEscape}>
       <InputText value={findVal}
         inputRef={(ele)=>{findInputRef.current = ele;}}
         onChange={(value)=>setFindVal(value)}

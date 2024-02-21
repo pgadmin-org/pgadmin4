@@ -3,7 +3,7 @@ import {
 } from '@codemirror/view';
 import { StateEffect, EditorState } from '@codemirror/state';
 import { autocompletion } from '@codemirror/autocomplete';
-import {undo} from '@codemirror/commands';
+import {undo, indentMore, indentLess, toggleComment} from '@codemirror/commands';
 import { errorMarkerEffect } from './extensions/errorMarker';
 import { activeLineEffect, activeLineField } from './extensions/activeLineMarker';
 import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/breakpointGutter';
@@ -59,8 +59,19 @@ export default class CustomEditorView extends EditorView {
   }
   
   setCursor(lineNo, ch) {
-    const n = this.state.doc.line(lineNo).from + ch;
-    this.dispatch({ selection: { anchor: n, head: n } });
+    // line is 1-based;
+    // ch is 0-based;
+    let pos = 0;
+    if(lineNo > this.state.doc.lines) {
+      pos = this.state.doc.length;
+    } else {
+      const line = this.state.doc.line(lineNo);
+      pos = line.from + ch;
+      if(pos > line.to) {
+        pos = line.to;
+      }
+    }
+    this.dispatch({ selection: { anchor: pos, head: pos } });
   }
   
   getCurrentLineNo() {
@@ -106,12 +117,23 @@ export default class CustomEditorView extends EditorView {
     return !this._cleanDoc.eq(this.state.doc);
   }
 
-  undo() {
-    return undo(this);
-  }
-
   fireDOMEvent(event) {
     this.contentDOM.dispatchEvent(event);
+  }
+
+  execCommand(cmd) {
+    switch (cmd) {
+    case 'undo': undo(this);
+      break;
+    case 'indentMore': indentMore(this);
+      break;
+    case 'indentLess': indentLess(this);
+      break;
+    case 'toggleComment': toggleComment(this);
+      break;
+    default:
+      break;
+    }
   }
   
   registerAutocomplete(completionFunc) {

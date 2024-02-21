@@ -70,13 +70,14 @@ const FIXED_PREF = {
       'char': 'F',
     },
   },
-  jump: {
-    'control': false,
+  gotolinecol: {
+    'control': true,
+    ctrl_is_meta: true,
     'shift': false,
-    'alt': true,
+    'alt': false,
     'key': {
-      'key_code': 71,
-      'char': 'G',
+      'key_code': 76,
+      'char': 'L',
     },
   },
   indent: {
@@ -599,8 +600,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
         <PgMenuItem shortcut={FIXED_PREF.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
-        <PgMenuItem shortcut={FIXED_PREF.jump}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'jumpToLine');}}>{gettext('Jump')}</PgMenuItem>
+        <PgMenuItem shortcut={FIXED_PREF.gotolinecol}
+          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={FIXED_PREF.indent}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>

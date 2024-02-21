@@ -211,7 +211,21 @@ export default function Query() {
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, (cmd='')=>{
-      editor.current?.execCommand(cmd);
+      if(cmd == 'gotoLineCol') {
+        editor.current?.focus();
+        let key = {
+          keyCode: 76, metaKey: false, ctrlKey: true, shiftKey: false, altKey: false,
+        };
+        if(isMac()) {
+          key.metaKey = true;
+          key.ctrlKey = false;
+          key.shiftKey = false;
+          key.altKey = false;
+        }
+        editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
+      } else {
+        editor.current?.execCommand(cmd);
+      }
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_TO_EDITOR, (text)=>{
       editor.current?.setValue(text);
@@ -327,9 +341,7 @@ export default function Query() {
   }, [queryToolCtx.preferences]);
 
   useEffect(()=>{
-    registerAutocomplete(editor.current, queryToolCtx.api, queryToolCtx.params.trans_id, queryToolCtx.preferences.sqleditor,
-      (err)=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);}
-    );
+    registerAutocomplete(editor.current, queryToolCtx.api, queryToolCtx.params.trans_id);
   }, [queryToolCtx.params.trans_id]);
 
   const cursorActivity = useCallback(_.debounce((cursor)=>{
@@ -351,7 +363,7 @@ export default function Query() {
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {
-      editor.current.undo();
+      editor.current.execCommand('undo');
       closeModal?.();
     }
   };
@@ -400,6 +412,5 @@ export default function Query() {
     onCursorActivity={cursorActivity}
     onChange={change}
     autocomplete={true}
-    keepHistory={queryToolCtx.params.is_query_tool}
   />;
 }

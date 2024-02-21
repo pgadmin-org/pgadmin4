@@ -10,7 +10,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import Editor from './Editor';
+import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
 
 const useStyles = makeStyles(() => ({

@@ -13,7 +13,7 @@ import { withTheme } from '../fake_theme';
 
 import pgWindow from 'sources/window';
 import CodeMirror from 'sources/components/ReactCodeMirror';
-import FindDialog from 'sources/components/ReactCodeMirror/FindDialog';
+import FindDialog from 'sources/components/ReactCodeMirror/components/FindDialog';
 import CustomEditorView from 'sources/components/ReactCodeMirror/CustomEditorView';
 import fakePgAdmin from '../fake_pgadmin';
 import { render, screen, fireEvent } from '@testing-library/react';
