@@ -1527,8 +1527,11 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             scid: Schema ID
             tid: Type ID
         """
+        # For composite type typrelid is required to fetch dependencies.
+        type_where = "WHERE (dep.objid={0}::oid OR dep.objid=(select typrelid \
+            from pg_type where oid = {0}::oid))".format(tid)
         dependencies_result = self.get_dependencies(
-            self.conn, tid
+            self.conn, tid, where=type_where
         )
 
         return ajax_response(
