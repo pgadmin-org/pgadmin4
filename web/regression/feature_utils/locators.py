@@ -235,12 +235,13 @@ class QueryToolLocators:
 
     sql_editor_message = "//div[@id='id-messages'][contains(string(), '{}')]"
 
-    code_mirror_hint_box_xpath = "//ul[@class='CodeMirror-hints default']"
+    code_mirror_hint_box = ".cm-editor .cm-tooltip-autocomplete"
 
     code_mirror_hint_item_xpath = \
-        "//ul[contains(@class, 'CodeMirror-hints') and contains(., '{}')]"
+        ("//div[contains(@class, 'cm-tooltip-autocomplete') "
+         "and contains(., '{}')]")
 
-    code_mirror_data_xpath = "//pre[@class=' CodeMirror-line ']/span"
+    code_mirror_content = "{0} .cm-content"
 
     btn_commit = "button[data-label='Commit']"
 

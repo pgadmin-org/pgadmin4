@@ -46,7 +46,7 @@ class TableDdlFeatureTest(BaseFeatureTest):
 
         # Wait till data is displayed in SQL Tab
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            "//*[contains(@class,'CodeMirror-lines') and "
+            "//*[contains(@class,'cm-line') and "
             "contains(.,'CREATE TABLE IF NOT EXISTS public.%s')]"
             % self.test_table_name, 10), "No data displayed in SQL tab")
 

@@ -114,13 +114,13 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         url: baseUrl,
         method: 'POST',
         data: {
-          'breakpoint_list': breakpoint_list.lenght > 0 ? breakpoint_list.join() : null,
+          'breakpoint_list': breakpoint_list.length > 0 ? breakpoint_list.join() : null,
         },
       })
         .then(function (res) {
           if (res.data.data.status) {
             executeQuery(transId);
-            setUnsetBreakpoint(res, breakpoint_list);
+            editor.current.clearBreakpoints();
           }
           enableToolbarButtons();
         })
@@ -158,7 +158,8 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     }
   };
 
-  const raisePollingError = () => {
+  const raisePollingError = (error) => {
+    console.error(error);
     pgAdmin.Browser.notifier.alert(
       gettext('Debugger Error'),
       gettext('Error while polling result.')
@@ -263,7 +264,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           ) {
             editor.current.setValue(res.data.data.result[0].src);
 
-            setActiveLine(res.data.data.result[0].linenumber - 2);
+            editor.current.setActiveLine(res.data.data.result[0].linenumber - 1);
           }
           // Call function to create and update Stack information ....
           getStackInformation(transId);
@@ -277,37 +278,13 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           );
         }
       })
-      .catch(function () {
+      .catch(function (error) {
+        console.error(error);
         pgAdmin.Browser.notifier.alert(
           gettext('Debugger Error'),
           gettext('Error while executing requested debugging information.')
         );
       });
-  };
-
-  const setActiveLine = (lineNo) => {
-    /* If lineNo sent, remove active line */
-    if (lineNo && editor.current.activeLineNo) {
-      editor.current.removeLineClass(
-        editor.current.activeLineNo, 'wrap', 'CodeMirror-activeline-background'
-      );
-    }
-
-    /* If lineNo not sent, set it to active line */
-    if (!lineNo && editor.current.activeLineNo) {
-      lineNo = editor.current.activeLineNo;
-    }
-
-    /* Set new active line only if positive */
-    if (lineNo > 0) {
-      editor.current.activeLineNo = lineNo;
-      editor.current.addLineClass(
-        editor.current.activeLineNo, 'wrap', 'CodeMirror-activeline-background'
-      );
-
-      /* centerOnLine is codemirror extension in bundle/codemirror.js */
-      editor.current.centerOnLine(editor.current.activeLineNo);
-    }
   };
 
   const selectFrame = (frameId) => {
@@ -324,7 +301,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         if (res.data.data.status) {
           editor.current.setValue(res.data.data.result[0].src);
           updateBreakpoint(params.transId, true);
-          setActiveLine(res.data.data.result[0].linenumber - 2);
+          editor.current.setActiveLine(res.data.data.result[0].linenumber - 1);
         }
       })
       .catch(function () {
@@ -386,20 +363,6 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     };
   }, []);
 
-  const setUnsetBreakpoint = (res, breakpoint_list) => {
-    if (res.data.data.status) {
-      for (let brk_val of breakpoint_list) {
-        let info = editor.current.lineInfo((brk_val - 1));
-
-        if (info) {
-          if (info.gutterMarkers != undefined) {
-            editor.current.setGutterMarker((brk_val - 1), 'breakpoints', null);
-          }
-        }
-      }
-    }
-  };
-
   const triggerClearBreakpoint = () => {
     let clearBreakpoint = (br_list) => {
       // If there is no break point to clear then we should return from here.
@@ -421,8 +384,8 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           'breakpoint_list': breakpoint_list.join(),
         },
       })
-        .then(function (res) {
-          setUnsetBreakpoint(res, breakpoint_list);
+        .then(function () {
+          editor.current.clearBreakpoints();
           enableToolbarButtons();
         })
         .catch(raiseClearBrekpointError);
@@ -448,63 +411,11 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
 
   };
 
-  const debuggerMark = () => {
-    let marker = document.createElement('div');
-    marker.style.color = '#822';
-    marker.innerHTML = '●';
-    return marker;
-  };
-
   const triggerToggleBreakpoint = () => {
     disableToolbarButtons();
-    let info = editor.current.lineInfo(editor.current.activeLineNo);
-    let baseUrl = '';
-
-    // If gutterMarker is undefined that means there is no marker defined previously
-    // So we need to set the breakpoint command here...
-    if (info.gutterMarkers == undefined) {
-      baseUrl = url_for('debugger.set_breakpoint', {
-        'trans_id': params.transId,
-        'line_no': editor.current.activeLineNo + 1,
-        'set_type': '1',
-      });
-    } else {
-      baseUrl = url_for('debugger.set_breakpoint', {
-        'trans_id': params.transId,
-        'line_no': editor.current.activeLineNo + 1,
-        'set_type': '0',
-      });
-    }
-
-    api({
-      url: baseUrl,
-      method: 'GET',
-    })
-      .then(function (res) {
-        if (res.data.data.status) {
-          // Call function to create and update local variables ....
-          let info_local = editor.current.lineInfo(editor.current.activeLineNo);
-
-          if (info_local.gutterMarkers != undefined) {
-            editor.current.setGutterMarker(editor.current.activeLineNo, 'breakpoints', null);
-          } else {
-            editor.current.setGutterMarker(editor.current.activeLineNo, 'breakpoints', debuggerMark());
-          }
-
-          enableToolbarButtons();
-        } else if (res.data.status === 'NotConnected') {
-          pgAdmin.Browser.notifier.alert(
-            gettext('Debugger Error'),
-            gettext('Error while toggling breakpoint.')
-          );
-        }
-      })
-      .catch(function () {
-        pgAdmin.Browser.notifier.alert(
-          gettext('Debugger Error'),
-          gettext('Error while toggling breakpoint.')
-        );
-      });
+    const lineNo = editor.current.getActiveLine();
+    editor.current.toggleBreakpoint(lineNo);
+    enableToolbarButtons();
   };
 
   const stopDebugging = () => {
@@ -522,7 +433,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       .then(function (res) {
         if (res.data.data.status) {
           // Remove active time in the editor
-          setActiveLine(-1);
+          editor.current.setActiveLine(-1);
           // Clear timeout on stop debugger.
           clearTimeout(timeOut);
 
@@ -628,7 +539,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
 
   const pollEndExecuteError = (res) => {
     params.directDebugger.direct_execution_completed = true;
-    setActiveLine(-1);
+    editor.current.setActiveLine(-1);
 
     //Set the notification message to inform the user that execution is
     // completed with error.
@@ -654,7 +565,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
 
   const updateResultAndMessages = (res) => {
     if (res.data.data.result != null) {
-      setActiveLine(-1);
+      editor.current.setActiveLine(-1);
       // Call function to update results information and set result panel focus
       eventBus.current.fireEvent(DEBUGGER_EVENTS.SET_RESULTS, res.data.data.col_info, res.data.data.result);
       eventBus.current.fireEvent(DEBUGGER_EVENTS.FOCUS_PANEL, PANELS.RESULTS);
@@ -725,7 +636,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
                 As Once the EDB procedure execution is completed then we are
                 not getting any result so we need to ignore the result.
                 */
-                setActiveLine(-1);
+                editor.current.setActiveLine(-1);
                 params.directDebugger.direct_execution_completed = true;
                 params.directDebugger.polling_timeout_idle = true;
 
@@ -852,26 +763,9 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     return breakpoint_list;
   };
 
-  // Function to get the latest breakpoint information and update the
-  // gutters of codemirror
+  // Function to get the latest breakpoint information
   const updateBreakpoint = (transId, updateLocalVar = false) => {
-    let callBackFunc = (br_list) => {
-      // If there is no break point to clear then we should return from here.
-      if ((br_list.length == 1) && (br_list[0].linenumber == -1))
-        return;
-
-      let breakpoint_list = getBreakpointList(br_list);
-
-
-      for (let brk_val of breakpoint_list) {
-        let info = editor.current.lineInfo((brk_val - 1));
-
-        if (info.gutterMarkers != undefined) {
-          editor.current.setGutterMarker((brk_val - 1), 'breakpoints', null);
-        } else {
-          editor.current.setGutterMarker((brk_val - 1), 'breakpoints', debuggerMark());
-        }
-      }
+    let callBackFunc = () => {
       if (updateLocalVar) {
         // Call function to create and update local variables ....
         getLocalVariables(params.transId);
@@ -976,7 +870,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
   const updateInfo = (res, transId) => {
     if (!params.directDebugger.debug_type && !params.directDebugger.first_time_indirect_debug) {
       setLoaderText('');
-      setActiveLine(-1);
+      editor.current.setActiveLine(-1);
       clearAllBreakpoint(transId);
 
       params.directDebugger.first_time_indirect_debug = true;
@@ -987,7 +881,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       // If the source is really changed then only update the breakpoint information
       updateBreakpointInfo(res, transId);
 
-      setActiveLine(res.data.data.result[0].linenumber - 2);
+      editor.current.setActiveLine(res.data.data.result[0].linenumber - 1);
       // Update the stack, local variables and parameters information
       setTimeout(function () {
         getStackInformation(transId);

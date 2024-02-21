@@ -168,20 +168,20 @@ describe('SchemaView', ()=>{
 
       it('no changes', async ()=>{
         await user.click(ctrl.container.querySelector('button[data-test="SQL"]'));
-        expect(ctrl.container.querySelector('[data-testid="SQL"] textarea')).toHaveValue('-- No updates.');
+        expect(ctrl.container.querySelector('[data-testid="SQL"] .cm-content')).toHaveTextContent('-- No updates.');
       });
 
       it('data invalid', async ()=>{
         await user.clear(ctrl.container.querySelector('[name="field2"]'));
         await user.type(ctrl.container.querySelector('[name="field2"]'), '2');
         await user.click(ctrl.container.querySelector('button[data-test="SQL"]'));
-        expect(ctrl.container.querySelector('[data-testid="SQL"] textarea')).toHaveValue('-- Definition incomplete.');
+        expect(ctrl.container.querySelector('[data-testid="SQL"] .cm-content')).toHaveTextContent('-- Definition incomplete.');
       });
 
       it('valid data', async ()=>{
         await simulateValidData();
         await user.click(ctrl.container.querySelector('button[data-test="SQL"]'));
-        expect(ctrl.container.querySelector('[data-testid="SQL"] textarea')).toHaveValue('select 1;');
+        expect(ctrl.container.querySelector('[data-testid="SQL"] .cm-content')).toHaveTextContent('select 1;');
       });
     });
 
