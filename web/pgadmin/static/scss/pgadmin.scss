@@ -17,7 +17,6 @@ $theme-colors: (
   --psql-selection: #{$psql-selection};
 }
 
-@import 'codemirror.overrides';
 @import 'pgadmin.style';
 @import 'jsoneditor.overrides';
 @import 'rc-dock/dist/rc-dock.css';

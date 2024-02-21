@@ -29,7 +29,7 @@
 {% block init_script %}
     try {
         require(
-            ['sources/generated/browser_nodes', 'sources/generated/codemirror'],
+            ['sources/generated/browser_nodes'],
             function() {
                 require(['sources/generated/sqleditor'], function(module) {
                 window.pgAdmin.Tools.SQLEditor.loadComponent(

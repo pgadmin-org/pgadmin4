@@ -50,6 +50,20 @@ global.afterEach(() => {
 
 window.HTMLElement.prototype.scrollIntoView = function() {};
 
+// required for Codemirror 6 to run in jsdom
+document.createRange = () => {
+  const range = new Range();
+
+  range.getBoundingClientRect = jest.fn();
+
+  range.getClientRects = jest.fn(() => ({
+    item: () => null,
+    length: 0,
+  }));
+
+  return range;
+};
+
 
 jest.setTimeout(15000); // 1 second
 

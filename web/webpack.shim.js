@@ -22,7 +22,6 @@ let webpackShimConfig = {
   // used by webpack while creating bundle
   resolveAlias: {
     'top': path.join(__dirname, './pgadmin/'),
-    'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
     'bundled_browser': path.join(__dirname, './pgadmin/static/bundle/browser'),
     'sources': path.join(__dirname, './pgadmin/static/js/'),
     'translations': path.join(__dirname, './pgadmin/tools/templates/js/translations'),

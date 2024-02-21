@@ -4,7 +4,7 @@
 
 try {
   require(
-    ['sources/generated/debugger', 'sources/pgadmin', 'sources/generated/codemirror'],
+    ['sources/generated/debugger', 'sources/pgadmin'],
     function(pgDirectDebug, pgAdmin) {
       var pgDebug = window.pgAdmin.Tools.Debugger;
       pgDebug.load(document.getElementById('debugger-main-container'), {{ uniqueId }}, {{ debug_type }}, '{{ function_name_with_arguments }}', '{{layout|safe}}');

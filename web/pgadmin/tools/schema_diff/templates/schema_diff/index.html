@@ -2,7 +2,7 @@
 {% block init_script %}
 try {
   require(
-    ['sources/generated/codemirror', 'sources/generated/browser_nodes', 'sources/generated/schema_diff'],
+    ['sources/generated/browser_nodes', 'sources/generated/schema_diff'],
     function() {
         var pgSchemaDiff = window.pgAdmin.Tools.SchemaDiff;
         pgSchemaDiff.load(document.getElementById('schema-diff-main-container'),{{trans_id}});

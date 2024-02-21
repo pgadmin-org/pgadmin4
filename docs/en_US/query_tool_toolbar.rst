@@ -87,7 +87,7 @@ Query Editing Options
    |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Option+Cmd+F (MAC)    |
    |                      |                                                                                                   | Ctrl+Shift+F (Others) |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G                 |
+   |                      | Select *Go to Line/Column* to go to specified line number and column position                     | Cmd+L or Ctrl+L       |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
    |                      | Select *Indent Selection* to indent the currently selected text.                                  | Tab                   |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
