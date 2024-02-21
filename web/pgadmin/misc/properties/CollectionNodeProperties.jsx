@@ -193,7 +193,7 @@ export default function CollectionNodeProperties({
   };
 
   React.useEffect(() => {
-    if (node){
+    if (node) {
 
       let nodeObj =
       pgAdmin.Browser.Nodes[nodeData?._type.replace('coll-', '')];
@@ -204,6 +204,10 @@ export default function CollectionNodeProperties({
 
       let tableColumns = [];
       let column = {};
+      if(!isStale || !isActive) {
+        return;
+      }
+
       setLoaderText(gettext('Loading...'));
 
       if (nodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
@@ -250,9 +254,6 @@ export default function CollectionNodeProperties({
         });
       }
 
-      if(!isStale || !isActive) {
-        return;
-      }
 
       api({
         url: url,
@@ -275,7 +276,7 @@ export default function CollectionNodeProperties({
         });
       setIsStale(false);
     }
-  }, [nodeData, node, nodeItem, isStale]);
+  }, [nodeData, node, nodeItem, isStale, isActive]);
 
   const CustomHeader = () => {
     const canDrop = evalFunc(node, node.canDrop, nodeData, nodeItem, treeNodeInfo);

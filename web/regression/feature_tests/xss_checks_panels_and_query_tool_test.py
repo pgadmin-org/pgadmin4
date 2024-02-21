@@ -128,12 +128,12 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         # Wait till data is displayed in SQL Tab
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            "//*[contains(@class,'CodeMirror-lines') and "
+            "//*[contains(@class,'cm-line') and "
             "contains(.,'CREATE TABLE')]", 10), "No data displayed in SQL tab")
 
         # Fetch the inner html & check for escaped characters
         source_code = self.page.find_by_xpath(
-            "//*[contains(@class,'CodeMirror-lines') and "
+            "//*[contains(@class,'cm-line') and "
             "contains(.,'CREATE TABLE')]"
         ).get_attribute('innerHTML')
 

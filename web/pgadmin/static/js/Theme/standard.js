@@ -130,7 +130,29 @@ export default function(basicSettings) {
         diffColorFg: '#222',
         diffSelectFG: '#222',
         diffSelCheckbox: '#d6effc'
-      }
+      },
+      editor: {
+        fg: '#222',
+        bg: '#fff',
+        selectionBg: '#d6effc',
+        keyword: '#908',
+        number: '#964',
+        string: '#a11',
+        variable: '#222',
+        type: '#05a',
+        comment: '#a50',
+        punctuation: '#737373',
+        operator: '#222',
+        ////
+        foldmarker: '#0000FF',
+        activeline: '#EDF9FF',
+        activelineLight: '#EDF9FF',
+        activelineBorderColor: '#BCDEF3',
+        guttersBg: '#f3f5f9',
+        guttersFg: '#848ea0',
+      },
+      treeBgSelected: '#d6effc',
+      treeFgSelected: '#222',
     }
   });
 }

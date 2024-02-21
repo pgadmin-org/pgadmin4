@@ -580,6 +580,7 @@ class PGChildNodeView(NodeView):
             'Pf': 'function', 'Pt': 'trigger_function', 'Pp': 'procedure',
             'Rl': 'rule', 'Rs': 'row_security_policy', 'Sy': 'synonym',
             'Ty': 'type', 'Tr': 'trigger', 'Tc': 'compound_trigger',
+            'c': 'type',
             # None specified special handling for this type
             'A': None
         }

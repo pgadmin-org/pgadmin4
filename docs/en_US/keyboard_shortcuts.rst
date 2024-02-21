@@ -118,7 +118,7 @@ When using the syntax-highlighting SQL editors, the following shortcuts are avai
    +--------------------------+----------------------+-------------------------------------+
    | Shift + Tab              | Shift + Tab          | Un-indent selected text             |
    +--------------------------+----------------------+-------------------------------------+
-   | Alt + g                  | Option + g           | Jump (to line:column)               |
+   | Ctrl + l                 | Cmd + l              | Go to line, column                  |
    +--------------------------+----------------------+-------------------------------------+
    | Ctrl + Space             | Ctrl + Space         | Auto-complete                       |
    +--------------------------+----------------------+-------------------------------------+

@@ -357,7 +357,6 @@ module.exports = [{
   // Specify entry points of application
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
-    codemirror: sourceDir + '/bundle/codemirror.js',
     'security.pages': 'security.pages',
     sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/index.js',

@@ -23,6 +23,7 @@ import { CssBaseline } from '@material-ui/core';
 import pickrOverride from './overrides/pickr.override';
 import uplotOverride from './overrides/uplot.override';
 import rcdockOverride from './overrides/rcdock.override';
+import cmOverride from './overrides/codemirror.override';
 
 /* Common settings across all themes */
 let basicSettings = createTheme();
@@ -333,6 +334,7 @@ function getFinalTheme(baseTheme) {
           ...pickrOverride(baseTheme),
           ...uplotOverride(baseTheme),
           ...rcdockOverride(baseTheme),
+          ...cmOverride(baseTheme)
         },
       },
       MuiOutlinedInput:  {

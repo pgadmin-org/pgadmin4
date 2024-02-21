@@ -892,7 +892,8 @@ class PgadminPage:
                 driver.switch_to.frame(
                     driver.find_element(By.TAG_NAME, "iframe"))
                 element = driver.find_element(
-                    By.CSS_SELECTOR, "#sqleditor-container .CodeMirror")
+                    By.CSS_SELECTOR,
+                    "#sqleditor-container #id-query .cm-content")
                 if element.is_displayed() and element.is_enabled():
                     return element
             except (NoSuchElementException, WebDriverException):
@@ -933,9 +934,9 @@ class PgadminPage:
             action.perform()
         else:
             self.driver.execute_script(
-                "arguments[0].CodeMirror.setValue(arguments[1]);"
-                "arguments[0].CodeMirror.setCursor("
-                "arguments[0].CodeMirror.lineCount(),0);",
+                "arguments[0].cmView.view.setValue(arguments[1]);"
+                "arguments[0].cmView.view.setCursor("
+                "arguments[0].cmView.view.lineCount(),0);",
                 codemirror_ele, field_content)
 
     def click_tab(self, tab_name):

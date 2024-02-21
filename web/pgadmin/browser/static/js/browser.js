@@ -17,17 +17,14 @@ import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/s
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
 
 define('pgadmin.browser', [
-  'sources/gettext', 'sources/url_for', 'sources/pgadmin', 'bundled_codemirror',
+  'sources/gettext', 'sources/url_for', 'sources/pgadmin',
   'sources/csrf', 'pgadmin.authenticate.kerberos',
   'pgadmin.browser.utils', 'pgadmin.browser.messages',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
-  'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
 ], function(
-  gettext, url_for, pgAdmin, codemirror, csrfToken, Kerberos,
+  gettext, url_for, pgAdmin, csrfToken, Kerberos,
 ) {
-  let CodeMirror = codemirror.default;
-
   let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
   let select_object_msg = gettext('Please select an object in the tree view.');
 
@@ -1765,13 +1762,6 @@ define('pgadmin.browser', [
       indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
     },
   });
-
-  /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding
-     * specific to Mac LineNumber:5797 - lib/Codemirror.js
-     * It is preventing default paste event(Cmd-V) from triggering
-     * in runtime.
-     */
-  delete CodeMirror.keyMap.emacsy['Ctrl-V'];
 
   // Use spaces instead of tab
   if (pgBrowser.utils.useSpaces == 'True') {

@@ -1,10 +1,6 @@
 @import 'node_modules/@fortawesome/fontawesome-free/css/all.css';
 @import 'node_modules/leaflet/dist/leaflet.css';
 
-@import 'node_modules/codemirror/lib/codemirror.css';
-@import 'node_modules/codemirror/addon/dialog/dialog.css';
-@import 'node_modules/codemirror/addon/scroll/simplescrollbars.css';
-
 @import 'node_modules/xterm/css/xterm.css';
 
 @import 'node_modules/jsoneditor/dist/jsoneditor.min.css';

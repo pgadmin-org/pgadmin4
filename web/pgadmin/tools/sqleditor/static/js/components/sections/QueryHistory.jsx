@@ -22,7 +22,7 @@ import AssessmentRoundedIcon from '@material-ui/icons/AssessmentRounded';
 import ExplicitRoundedIcon from '@material-ui/icons/ExplicitRounded';
 import { SaveDataIcon, CommitIcon, RollbackIcon, ViewDataIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { InputSwitch } from '../../../../../../static/js/components/FormComponents';
-import CodeMirror from '../../../../../../static/js/components/CodeMirror';
+import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
 import { DefaultButton } from '../../../../../../static/js/components/Buttons';
 import { useDelayedCaller } from '../../../../../../static/js/custom_hooks';
 import Loader from 'sources/components/Loader';

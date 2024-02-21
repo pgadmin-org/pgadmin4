@@ -9,41 +9,54 @@
 
 import React from 'react';
 
-import {default as OrigCodeMirror} from 'bundled_codemirror';
 import { withTheme } from '../fake_theme';
 
 import pgWindow from 'sources/window';
-import CodeMirror from 'sources/components/CodeMirror';
-import { FindDialog } from '../../../pgadmin/static/js/components/CodeMirror';
+import CodeMirror from 'sources/components/ReactCodeMirror';
+import FindDialog from 'sources/components/ReactCodeMirror/components/FindDialog';
+import CustomEditorView from 'sources/components/ReactCodeMirror/CustomEditorView';
 import fakePgAdmin from '../fake_pgadmin';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import * as CMSearch from '@codemirror/search';
+
+jest.mock('sources/components/ReactCodeMirror/CustomEditorView');
+jest.mock('@codemirror/search', () => ({
+  ...(jest.requireActual('@codemirror/search')),
+  SearchQuery: jest.fn().mockImplementation(() => {
+    return {
+      eq: jest.fn(),
+    };
+  }),
+  openSearchPanel: jest.fn(),
+  closeSearchPanel: jest.fn(),
+  replaceNext: jest.fn(),
+}));
 
 describe('CodeMirror', ()=>{
   const ThemedCM = withTheme(CodeMirror);
-  let cmInstance, options={
-      lineNumbers: true,
-      mode: 'text/x-pgsql',
-    },
-    cmObj = OrigCodeMirror.fromTextArea();
+  let cmInstance, editor;
 
   const cmRerender = (props)=>{
     cmInstance.rerender(
       <ThemedCM
         value={'Init text'}
-        options={options}
         className="testClass"
+        currEditor={(obj) => {
+          editor = obj;
+        }}
         {...props}
       />
     );
   };
   beforeEach(()=>{
     pgWindow.pgAdmin = fakePgAdmin;
-    // jest.spyOn(OrigCodeMirror, 'fromTextArea').mockReturnValue(cmObj);
     cmInstance = render(
       <ThemedCM
         value={'Init text'}
-        options={options}
         className="testClass"
+        currEditor={(obj) => {
+          editor = obj;
+        }}
       />);
   });
 
@@ -52,17 +65,23 @@ describe('CodeMirror', ()=>{
   });
 
   it('init', async ()=>{
-    /* textarea ref passed to fromTextArea */
-    expect(OrigCodeMirror.fromTextArea).toHaveBeenCalledWith(cmInstance.container.querySelector('textarea'), expect.objectContaining(options));
-    await waitFor(() => expect(cmObj.setValue).toHaveBeenCalledWith('Init text'));
+    expect(CustomEditorView).toHaveBeenCalledTimes(1);
+    expect(editor.setValue).toHaveBeenCalledWith('Init text');
   });
 
   it('change value', ()=>{
+    editor.state = {
+      doc: [],
+    };
+    editor.setValue.mockClear();
+    jest.spyOn(editor, 'getValue').mockReturnValue('Init text');
     cmRerender({value: 'the new text'});
-    expect(cmObj.setValue).toHaveBeenCalledWith('the new text');
+    expect(editor.setValue).toHaveBeenCalledWith('the new text');
 
+    editor.setValue.mockClear();
+    jest.spyOn(editor, 'getValue').mockReturnValue('the new text');
     cmRerender({value: null});
-    expect(cmObj.setValue).toHaveBeenCalledWith('');
+    expect(editor.setValue).toHaveBeenCalledWith('');
   });
 
 
@@ -73,7 +92,7 @@ describe('CodeMirror', ()=>{
     const ctrlMount = (props)=>{
       ctrl = render(
         <ThemedFindDialog
-          editor={cmObj}
+          editor={editor}
           show={true}
           onClose={onClose}
           {...props}
@@ -84,29 +103,27 @@ describe('CodeMirror', ()=>{
     it('init', ()=>{
       ctrlMount({});
 
-      cmObj.removeOverlay.mockClear();
-      cmObj.addOverlay.mockClear();
+      CMSearch.SearchQuery.mockClear();
       const input = ctrl.container.querySelector('input');
 
       fireEvent.change(input, {
         target: {value: '\n\r\tA'},
       });
 
-      expect(cmObj.removeOverlay).toHaveBeenCalled();
-      expect(cmObj.addOverlay).toHaveBeenCalled();
-      expect(cmObj.setSelection).toHaveBeenCalledWith(3, 14);
-      expect(cmObj.scrollIntoView).toHaveBeenCalled();
+      expect(CMSearch.SearchQuery).toHaveBeenCalledWith(expect.objectContaining({
+        search: expect.stringContaining('A')
+      }));
     });
 
     it('escape', ()=>{
       ctrlMount({});
-      cmObj.removeOverlay.mockClear();
+      CMSearch.closeSearchPanel.mockClear();
 
       fireEvent.keyDown(ctrl.container.querySelector('input'), {
         key: 'Escape',
       });
 
-      expect(cmObj.removeOverlay).toHaveBeenCalled();
+      expect(CMSearch.closeSearchPanel).toHaveBeenCalled();
     });
 
     it('toggle match case', ()=>{
@@ -132,7 +149,8 @@ describe('CodeMirror', ()=>{
 
     it('replace', async ()=>{
       ctrlMount({replace: true});
-      cmObj.getSearchCursor().replace.mockClear();
+      CMSearch.SearchQuery.mockClear();
+
       fireEvent.change(ctrl.container.querySelectorAll('input')[0], {
         target: {value: 'A'},
       });
@@ -142,9 +160,13 @@ describe('CodeMirror', ()=>{
       fireEvent.keyPress(ctrl.container.querySelectorAll('input')[1], {
         key: 'Enter', shiftKey: true, code: 13, charCode: 13
       });
-      await waitFor(()=>{
-        expect(cmObj.getSearchCursor().replace).toHaveBeenCalled();
-      });
+
+      expect(CMSearch.SearchQuery).toHaveBeenCalledWith(expect.objectContaining({
+        search: 'A',
+        replace: 'B'
+      }));
+
+      expect(CMSearch.replaceNext).toHaveBeenCalled();
     });
   });
 });
