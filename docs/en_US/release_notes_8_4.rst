@@ -20,18 +20,20 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
-  | `Issue #7204 <https://github.com/pgadmin-org/pgadmin4/issues/7204>`_ -  Add --yes option for skipping the confirmation prompt while deleting the user via CLI for scripting purpose.
   | `Issue #6058 <https://github.com/pgadmin-org/pgadmin4/issues/6058>`_ -  Allow preferences customization using a configuration file.
+  | `Issue #7204 <https://github.com/pgadmin-org/pgadmin4/issues/7204>`_ -  Add --yes option for skipping the confirmation prompt while deleting the user via CLI for scripting purpose.
 
 Housekeeping
 ************
 
+  | `Issue #7097 <https://github.com/pgadmin-org/pgadmin4/issues/7097>`_ -  Upgrade CodeMirror from version 5 to 6.
   | `Issue #7187 <https://github.com/pgadmin-org/pgadmin4/issues/7187>`_ -  Separate the application name, branding & version information from the configuration file.
 
 Bug fixes
 *********
 
   | `Issue #6808 <https://github.com/pgadmin-org/pgadmin4/issues/6808>`_ -  Fix the tabbed panel backward/forward shortcut for tabs.
+  | `Issue #7027 <https://github.com/pgadmin-org/pgadmin4/issues/7027>`_ -  Fixed an issue where dependencies and dependents were not showing if a composite type is used as an attribute in another composite type.
   | `Issue #7164 <https://github.com/pgadmin-org/pgadmin4/issues/7164>`_ -  Fix an issue where constraint check control is enabled in the edit table dialog.
   | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fix an issue where the scripts created by generate script of Schema diff for Table with sequence was not working earlier.
   | `Issue #7225 <https://github.com/pgadmin-org/pgadmin4/issues/7225>`_ -  Fix an issue where type column in dependents/dependencies tab is not showing correct label.
