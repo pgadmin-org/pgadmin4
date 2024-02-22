@@ -316,7 +316,6 @@ ModalContainer.propTypes = {
   title: CustomPropTypes.children,
   content: PropTypes.func,
   fullScreen: PropTypes.bool,
-  maxWidth: PropTypes.string,
   isFullWidth: PropTypes.bool,
   showFullScreen: PropTypes.bool,
   isResizeable: PropTypes.bool,

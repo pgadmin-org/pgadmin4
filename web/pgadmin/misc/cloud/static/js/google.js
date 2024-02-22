@@ -119,8 +119,6 @@ export function GoogleCredentials(props) {
   />;
 }
 GoogleCredentials.propTypes = {
-  nodeInfo: PropTypes.object,
-  nodeData: PropTypes.object,
   cloudProvider: PropTypes.string,
   setGoogleCredData: PropTypes.func
 };
@@ -197,7 +195,6 @@ GoogleInstanceDetails.propTypes = {
   cloudProvider: PropTypes.string,
   setGoogleInstanceData: PropTypes.func,
   hostIP: PropTypes.string,
-  subscriptions: PropTypes.array,
   googleInstanceData: PropTypes.object
 };
 

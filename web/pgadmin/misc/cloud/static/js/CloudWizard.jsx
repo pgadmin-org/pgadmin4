@@ -461,10 +461,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
             { cloudProvider == CLOUD_PROVIDERS.AZURE &&
             <Box flexGrow={1}>
-              <AzureCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setAzureCredData={setAzureCredData}/>
+              <AzureCredentials cloudProvider={cloudProvider} setAzureCredData={setAzureCredData}/>
             </Box>}
             <Box flexGrow={1}>
-              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setGoogleCredData={setGoogleCredData}/>}
+              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
             </Box>
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
@@ -582,6 +582,5 @@ CloudWizard.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
   onClose: PropTypes.func,
-  cloudPanel: PropTypes.object,
   cloudPanelId: PropTypes.string,
 };

@@ -771,8 +771,4 @@ ResultGridComponent.propTypes = {
   transId: PropTypes.number,
   sourceData: PropTypes.object,
   targetData: PropTypes.object,
-  'sourceData.sid': PropTypes.number,
-  'sourceData.did': PropTypes.number,
-  'targetData.sid': PropTypes.number,
-  'targetData.did': PropTypes.number,
 };

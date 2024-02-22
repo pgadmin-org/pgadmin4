@@ -89,8 +89,11 @@ function getColumn(data, singleLineStatistics, prettifyFields=[]) {
   columns.forEach((c)=>{
     // Prettify the cell view
     if(prettifyFields.includes(c.Header)) {
-      // eslint-disable-next-line react/display-name,react/prop-types
       c.Cell = ({value})=><>{toPrettySize(value)}</>;
+      c.Cell.displayName = 'Cell';
+      c.Cell.propTypes = {
+        value: PropTypes.any,
+      };
     }
   });
   return columns;
@@ -249,7 +252,6 @@ function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
 }
 
 Statistics.propTypes = {
-  res: PropTypes.array,
   nodeData: PropTypes.object,
   nodeItem: PropTypes.object,
   treeNodeInfo: PropTypes.object,

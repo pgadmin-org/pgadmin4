@@ -15,6 +15,7 @@ import builtins
 import logging
 import os
 import sys
+from collections import OrderedDict
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
@@ -256,6 +257,20 @@ CONSOLE_LOG_LEVEL = logging.WARNING
 FILE_LOG_LEVEL = logging.WARNING
 
 # Log format.
+JSON_LOGGER = False
+CONSOLE_LOG_FORMAT_JSON = OrderedDict([
+    ("time", "asctime"),
+    ("message", "message"),
+    ("level", "levelname")
+])
+
+FILE_LOG_FORMAT_JSON = OrderedDict([
+    ("time", "asctime"),
+    ("message", "message"),
+    ("level", "levelname")
+])
+
+
 CONSOLE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 FILE_LOG_FORMAT = '%(asctime)s: %(levelname)s\t%(name)s:\t%(message)s'
 

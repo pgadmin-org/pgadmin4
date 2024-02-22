@@ -105,12 +105,9 @@ function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
 }
 
 SQL.propTypes = {
-  res: PropTypes.array,
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
-  dbConnected: PropTypes.bool,
-  did: PropTypes.number,
   isActive: PropTypes.bool,
   isStale: PropTypes.bool,
   setIsStale: PropTypes.func,

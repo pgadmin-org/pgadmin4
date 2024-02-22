@@ -103,8 +103,6 @@ export function AzureCredentials(props) {
   />;
 }
 AzureCredentials.propTypes = {
-  nodeInfo: PropTypes.object,
-  nodeData: PropTypes.object,
   cloudProvider: PropTypes.string,
   setAzureCredData: PropTypes.func
 };
@@ -206,7 +204,6 @@ AzureInstanceDetails.propTypes = {
   cloudProvider: PropTypes.string,
   setAzureInstanceData: PropTypes.func,
   hostIP: PropTypes.string,
-  subscriptions: PropTypes.array,
   azureInstanceData: PropTypes.object
 };
 

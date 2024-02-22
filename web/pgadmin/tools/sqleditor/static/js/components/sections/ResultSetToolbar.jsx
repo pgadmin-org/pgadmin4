@@ -25,7 +25,6 @@ import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
 import {shortcut_key} from 'sources/keyboard_shortcuts';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import PropTypes from 'prop-types';
-import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -204,7 +203,6 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
 }
 
 ResultSetToolbar.propTypes = {
-  containerRef: CustomPropTypes.ref,
   canEdit: PropTypes.bool,
   totalRowCount: PropTypes.number,
 };

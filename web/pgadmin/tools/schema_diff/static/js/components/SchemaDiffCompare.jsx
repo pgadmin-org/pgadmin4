@@ -810,6 +810,4 @@ export function SchemaDiffCompare({ params }) {
 
 SchemaDiffCompare.propTypes = {
   params: PropTypes.object,
-  'params.transId': PropTypes.number,
-
 };

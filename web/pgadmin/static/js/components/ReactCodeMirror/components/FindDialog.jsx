@@ -199,5 +199,4 @@ FindDialog.propTypes = {
   show: PropTypes.bool,
   replace: PropTypes.bool,
   onClose: PropTypes.func,
-  selFindVal: PropTypes.string,
 };

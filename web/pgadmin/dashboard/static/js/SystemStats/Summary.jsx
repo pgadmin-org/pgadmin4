@@ -92,23 +92,6 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
   const [errorMsg, setErrorMsg] = useState(null);
   const [chartDrawnOnce, setChartDrawnOnce] = useState(false);
 
-  const tableHeader = [
-    {
-      Header: gettext('Property'),
-      accessor: 'name',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-    },
-    {
-      Header: gettext('Value'),
-      accessor: 'value',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-    },
-  ];
-
   useEffect(()=>{
     let calcPollDelay = false;
     if(prevPrefernces) {
@@ -256,12 +239,10 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
           processHandleCount={transformData(processHandleCount, preferences['hpc_stats_refresh'])}
           osStats={osStats}
           cpuStats={cpuStats}
-          tableHeader={tableHeader}
           errorMsg={errorMsg}
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}
           lineBorderWidth={preferences['graph_line_border_width']}
-          isDatabase={did > 0}
           isTest={false}
         />
       }
@@ -317,11 +298,9 @@ SummaryWrapper.propTypes = {
   processHandleCount: PropTypes.any.isRequired,
   osStats: PropTypes.any.isRequired,
   cpuStats: PropTypes.any.isRequired,
-  tableHeader: PropTypes.any.isRequired,
   errorMsg: PropTypes.any,
   showTooltip: PropTypes.bool,
   showDataPoints: PropTypes.bool,
   lineBorderWidth: PropTypes.number,
-  isDatabase: PropTypes.bool,
   isTest: PropTypes.bool,
 };

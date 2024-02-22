@@ -128,7 +128,6 @@ export default function KeyboardShortcuts({ value, onChange, fields, title }) {
 KeyboardShortcuts.propTypes = {
   value: PropTypes.object,
   onChange: PropTypes.func,
-  controlProps: PropTypes.object,
   fields: PropTypes.array,
   title: PropTypes.string
 };

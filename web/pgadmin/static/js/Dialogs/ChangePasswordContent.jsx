@@ -102,8 +102,6 @@ export default function ChangePasswordContent({getInitData=() => { /*This is int
 ChangePasswordContent.propTypes = {
   onSave: PropTypes.func,
   onClose: PropTypes.func,
-  userName: PropTypes.string,
-  isPgpassFileUsed: PropTypes.bool,
   getInitData: PropTypes.func,
   hasCsrfToken: PropTypes.bool,
   showUser: PropTypes.bool

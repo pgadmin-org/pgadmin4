@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #6058 <https://github.com/pgadmin-org/pgadmin4/issues/6058>`_ -  Allow preferences customization using a configuration file.
+  | `Issue #7138 <https://github.com/pgadmin-org/pgadmin4/issues/7138>`_ -  Add support for JSON log format.
   | `Issue #7204 <https://github.com/pgadmin-org/pgadmin4/issues/7204>`_ -  Add --yes option for skipping the confirmation prompt while deleting the user via CLI for scripting purpose.
 
 Housekeeping

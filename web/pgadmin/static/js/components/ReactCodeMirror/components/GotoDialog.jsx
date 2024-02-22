@@ -89,7 +89,5 @@ export default function GotoDialog({editor, show, onClose}) {
 GotoDialog.propTypes = {
   editor: PropTypes.object,
   show: PropTypes.bool,
-  replace: PropTypes.bool,
   onClose: PropTypes.func,
-  selFindVal: PropTypes.string,
 };
