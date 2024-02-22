@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 import _ from 'lodash';
 import React from 'react';
 import { InputCheckbox, InputText } from './FormComponents';

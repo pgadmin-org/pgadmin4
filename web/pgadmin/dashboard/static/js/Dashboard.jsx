@@ -12,19 +12,19 @@ import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
 import PgTable from 'sources/components/PgTable';
 import { InputCheckbox } from '../../../static/js/components/FormComponents';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Tab, Tabs } from '@mui/material';
 import { PgIconButton } from '../../../static/js/components/Buttons';
-import CancelIcon from '@material-ui/icons/Cancel';
-import StopSharpIcon from '@material-ui/icons/StopSharp';
-import ArrowRightOutlinedIcon from '@material-ui/icons/ArrowRightOutlined';
-import ArrowDropDownOutlinedIcon from '@material-ui/icons/ArrowDropDownOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
+import StopSharpIcon from '@mui/icons-material/StopSharp';
+import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
+import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
-import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
+import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
 import Summary from './SystemStats/Summary';
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardHeader: {
     padding: '0.25rem 0.5rem',
-    fontWeight: 'bold',
+    fontWeight: 'bold !important',
     backgroundColor: theme.otherVars.tableBg,
     borderBottom: '1px solid',
     borderBottomColor: theme.otherVars.borderColor,
@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     minHeight: '400px',
-    padding: '8px'
+    padding: '4px'
   },
   mainTabs: {
     ...theme.mixins.panelBorder.all,
@@ -306,7 +306,6 @@ function Dashboard({
                 }
               );
             }}
-            color="default"
             aria-label="Terminate Session?"
             title={gettext('Terminate Session?')}
           ></PgIconButton>
@@ -375,7 +374,6 @@ function Dashboard({
                 }
               );
             }}
-            color="default"
             aria-label="Cancel the query"
             title={gettext('Cancel the active query')}
           ></PgIconButton>

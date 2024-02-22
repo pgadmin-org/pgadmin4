@@ -15,8 +15,8 @@
             position: absolute;
             min-width: 100%;
             min-height: 100%;
-            background: rgba(#000,0.6);
-            z-index: 9999;
+            background: #090d1199;
+            z-index: 1056;
             top: 0;
         }
         .pg-sp-container .pg-sp-content {
@@ -40,8 +40,6 @@
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.style.css')}}"/>
-    {% set theme = get_theme_css() %}
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename=('js/generated/'+theme[0])) }}" data-theme="{{theme[1]}}"/>
 
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
@@ -84,6 +82,60 @@
 
 </head>
 <body>
+<style>
+    :root {
+        --color-fg: #222;
+        --color-bg: #fff;
+        --border-color:  #dde0e6;
+        --psql-background: #fff;
+        --psql-foreground: #222;
+        --psql-cursor:  #222;
+        --psql-cursorAccent:  #222;
+        --psql-selection: #326690;
+    }
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 0.875rem;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  font-family: "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+::-webkit-scrollbar, ::-webkit-scrollbar-corner {
+    width: 1rem !important;
+    height: 1rem !important;
+    background: #bac1cd33;
+}
+::-webkit-scrollbar-thumb {
+    border: 0.25rem solid transparent;
+    border-radius: 0.5rem;
+    background: #bac1cdb3 !important;
+    background-clip: content-box !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    border: 0.25rem solid transparent;
+    background: #bac1cdb3 !important;
+    background-clip: content-box !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #326690;
+  -webkit-box-shadow: 0 0 0px 1000px #d6effc inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+</style>
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>

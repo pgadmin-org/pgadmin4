@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { LAYOUT_EVENTS, LayoutDockerContext } from './Layout';
 import { PgIconButton } from '../components/Buttons';
 import gettext from 'sources/gettext';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { BROWSER_PANELS } from '../../../browser/static/js/constants';
 import { defaultTabsData } from '../BrowserComponent';
 

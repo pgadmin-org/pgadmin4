@@ -219,8 +219,6 @@ let webpackShimConfig = {
 
   /* These will be included in array formed by recursive traversing for css/scss files */
   css_bundle_include: [
-    './pgadmin/static/js/components/PgTree/scss/styles.scss',
-    './pgadmin/static/scss/pgadmin.scss',
     './pgadmin/static/css/pgadmin.css',
   ],
 };

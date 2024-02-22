@@ -8,8 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 /* The dark theme */
-import { createTheme } from '@material-ui/core/styles';
-import { darken } from '@material-ui/core/styles/colorManipulator';
+import {  darken, createTheme} from '@mui/material/styles';
 
 export default function(basicSettings) {
   return createTheme(basicSettings, {
@@ -82,6 +81,7 @@ export default function(basicSettings) {
       }
     },
     otherVars: {
+      colorBrand: '#1b71b5',
       borderColor: '#4a4a4a',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: 'inherit',
@@ -132,6 +132,14 @@ export default function(basicSettings) {
         guttersBg: '#303030',
         guttersFg: '#8A8A8A',
       },
+      tree: {
+        treeTextFg: '#d4d4d4',
+        treeInputBg: '#212121',
+        treeFgHover: '#d4d4d4',
+        treeBgHover: '#303030',
+        treeTextHoverFg: '#d4d4d4',
+        treeBgSelected: '#323E43',
+      }
     }
   });
 }

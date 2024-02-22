@@ -20,12 +20,12 @@ import UniqueKeyIcon from 'top/browser/server_groups/servers/databases/schemas/t
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
-import NoteRoundedIcon from '@material-ui/icons/NoteRounded';
-import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
-import VisibilityOffRoundedIcon from '@material-ui/icons/VisibilityOffRounded';
-import { withStyles } from '@material-ui/styles';
+import NoteRoundedIcon from '@mui/icons-material/NoteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 
 const TYPE = 'table';

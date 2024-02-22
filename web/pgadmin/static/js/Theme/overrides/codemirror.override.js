@@ -109,8 +109,8 @@ export default function cmOverride(theme) {
       fontSize: '0.9em',
 
       '& li[aria-selected="true"]': {
-        backgroundColor: theme.otherVars.treeBgSelected + '!important',
-        color: theme.otherVars.treeFgSelected + '!important',
+        backgroundColor: theme.otherVars.tree.treeBgSelected + '!important',
+        color: theme.otherVars.tree.treeFgSelected + '!important',
       },
 
       '& .pg-cm-autocomplete-icon': {

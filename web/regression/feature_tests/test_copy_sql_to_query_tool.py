@@ -115,7 +115,7 @@ class CopySQLFeatureTest(BaseFeatureTest):
         wait.until(EC.presence_of_element_located(
             (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
         )
-        maximize_button = self.page.find_by_xpath(
+        maximize_button = self.page.find_by_css_selector(
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
@@ -143,10 +143,6 @@ class CopySQLFeatureTest(BaseFeatureTest):
                                     copy_sql_to_query_tool_switch_btn)
 
         switch_box_element.click()
-
-        maximize_button = self.page.find_by_xpath(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
 
         # save and close the preference dialog.
         self.page.click_modal('Save')

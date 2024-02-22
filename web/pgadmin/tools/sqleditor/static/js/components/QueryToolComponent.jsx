@@ -20,7 +20,7 @@ import getApiInstance, {callFetch, parseApiError} from '../../../../../static/js
 import url_for from 'sources/url_for';
 import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS, MAX_QUERY_LENGTH } from './QueryToolConstants';
 import { useInterval } from '../../../../../static/js/custom_hooks';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
 import gettext from 'sources/gettext';
 import NewConnectionDialog from './dialogs/NewConnectionDialog';

@@ -1,8 +1,9 @@
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useState, useEffect } from 'react';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import CommentIcon from '@material-ui/icons/Comment';
-import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import CommentIcon from '@mui/icons-material/Comment';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import { usePgAdmin } from '../../../static/js/BrowserComponent';
 import usePreferences from '../../../preferences/static/js/store';
 

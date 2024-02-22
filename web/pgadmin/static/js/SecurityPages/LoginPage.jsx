@@ -1,4 +1,4 @@
-import { Box, Icon } from '@material-ui/core';
+import { Box, Icon } from '@mui/material';
 import React, { useState } from 'react';
 import LoginImage from '../../img/login.svg?svgr';
 import { InputSelectNonSearch, InputText, MESSAGE_TYPE, NotifierMessage } from '../components/FormComponents';

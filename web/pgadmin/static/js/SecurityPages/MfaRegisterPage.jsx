@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { useState } from 'react';
 import LoginImage from '../../img/login.svg?svgr';
 import { FormNote, InputText } from '../components/FormComponents';
@@ -74,7 +74,7 @@ export default function MfaRegisterPage({actionUrl, mfaList, nextUrl, mfaView, .
           {mfaView ? <>
             {mfaView.auth_method == 'email' && <EmailRegisterView mfaView={mfaView} />}
             {mfaView.auth_method == 'authenticator' && <AuthenticatorRegisterView mfaView={mfaView} />}
-            <Box display="flex" gridGap="15px">
+            <Box display="flex" gap="15px">
               <SecurityButton name="continue" value="Continue">{gettext('Continue')}</SecurityButton>
               <DefaultButton type="submit" name="cancel" value="Cancel" style={{width: '100%'}}>{gettext('Cancel')}</DefaultButton>
             </Box>

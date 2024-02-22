@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';

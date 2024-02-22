@@ -14,7 +14,8 @@ import {DividerBox} from 'rc-dock';
 
 import url_for from 'sources/url_for';
 
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 import { Results } from './Results';
 import { SchemaDiffCompare } from './SchemaDiffCompare';

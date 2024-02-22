@@ -176,7 +176,7 @@ export default function rcdockOverride(theme) {
         zIndex: 1080,
       },
       '& .drag-accept-reject::after': {
-        content: '',
+        content: '""',
       },
       '& .dock-nav-more': {
         color: theme.custom.icon.contrastText

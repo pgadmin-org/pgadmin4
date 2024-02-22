@@ -7,16 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Box } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import PlaylistAddRoundedIcon from '@material-ui/icons/PlaylistAddRounded';
-import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import TimelineRoundedIcon from '@material-ui/icons/TimelineRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import PlaylistAddRoundedIcon from '@mui/icons-material/PlaylistAddRounded';
+import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
 import { PasteIcon, SaveDataIcon } from '../../../../../../static/js/components/ExternalIcon';
-import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
+import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
 import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';

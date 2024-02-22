@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////
 import React, { useContext, useEffect } from 'react';
 import ReactDataGrid, { Row } from 'react-data-grid';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import gettext from 'sources/gettext';
 
 const useStyles = makeStyles((theme)=>({

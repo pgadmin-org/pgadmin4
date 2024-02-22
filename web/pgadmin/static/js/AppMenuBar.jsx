@@ -1,9 +1,10 @@
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useState, useEffect } from 'react';
 import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme)=>({

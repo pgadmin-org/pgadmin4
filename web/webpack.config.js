@@ -17,7 +17,6 @@ const sourceDir = __dirname + '/pgadmin/static';
 // and other util function used in CommonsChunksPlugin.
 const webpackShimConfig = require('./webpack.shim');
 const PRODUCTION = process.env.NODE_ENV === 'production';
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const extractStyle = new MiniCssExtractPlugin({
@@ -33,7 +32,6 @@ const devToolVal = PRODUCTION ? false : 'eval';
 const analyzerMode = process.env.ANALYZE=='true' ? 'static' : 'disabled';
 
 const outputPath = __dirname + '/pgadmin/static/js/generated';
-const pgadminThemesJson = __dirname + '/pgadmin/misc/themes/pgadmin.themes.json';
 
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
@@ -63,9 +61,8 @@ const bundleAnalyzer = new BundleAnalyzerPlugin({
 
 const copyFiles = new CopyPlugin({
   patterns: [
-    pgadminThemesJson,
     {
-      from: './pgadmin/static/scss/resources/**/*.png',
+      from: './pgadmin/static/img/*.png',
       to: 'img/[name][ext]',
     },
   ],
@@ -111,241 +108,17 @@ function pushModulesStyles(curr_path, pgadminStyles, extn) {
   });
 }
 
-let pgadminScssStyles = [];
 let pgadminCssStyles = [];
 
 /* Include what is given in shim config */
 for(let value of webpackShimConfig.css_bundle_include) {
-  if(value.endsWith('.scss')) {
-    pgadminScssStyles.push(path.join(__dirname, value));
-  } else if(value.endsWith('.css')){
+  if(value.endsWith('.css')){
     pgadminCssStyles.push(path.join(__dirname, value));
   }
 }
 
-pushModulesStyles(path.join(__dirname,'./pgadmin'), pgadminScssStyles, '.scss');
 pushModulesStyles(path.join(__dirname,'./pgadmin'), pgadminCssStyles, '.css');
 pgadminCssStyles.push(path.join(__dirname,'./pgadmin/static/js/pgadmin.fonticon.js'));
-
-/* Get all the themes */
-
-let all_themes_dir = path.join(__dirname,'./pgadmin/static/scss/resources');
-let pgadminThemes = {};
-/* Read all the theme dirs */
-/* Theme format
-    "theme_name": {
-        "disp_name": "theme_name",
-        "cssfile": "pgadmin.theme.theme_name",
-        "preview_img": "theme_name_preview.png"
-    }
-*/
-fs.readdirSync(all_themes_dir).map(function(curr_dir) {
-  let stats = fs.statSync(path.join(all_themes_dir, curr_dir));
-
-  if(stats.isDirectory()) {
-    /* Theme directory found */
-    let cssfile = 'pgadmin.theme.'+curr_dir;
-
-    let disp_name = curr_dir;
-
-    pgadminThemes[curr_dir] = {
-      /* For now lets keep it as beta release */
-      disp_name: disp_name,
-      cssfile: cssfile,
-      preview_img: curr_dir + '_preview.png',
-    };
-  }
-});
-
-fs.writeFileSync(pgadminThemesJson, JSON.stringify(pgadminThemes, null, 4));
-
-let themeCssRules = function(theme_name) {
-  return [{
-    test: /\.svg$/,
-    oneOf: [
-      {
-        issuer: /\.[jt]sx?$/,
-        resourceQuery: /svgr/,
-        use: ['@svgr/webpack'],
-      },
-      {
-        type: 'asset',
-        parser: {
-          dataUrlCondition: {
-            maxSize: 4 * 1024, // 4kb
-          }
-        }
-      },
-    ],
-  },{
-    test: /\.(jpe?g|png|gif)$/i,
-    type: 'asset',
-    parser: {
-      dataUrlCondition: {
-        maxSize: 4 * 1024, // 4kb
-      },
-    },
-    generator: {
-      filename: 'img/[name].[ext]',
-    },
-    exclude: /vendor/,
-  },{
-    test: /\.(eot|ttf|woff|woff2)$/,
-    type: 'asset/resource',
-    generator: {
-      filename: 'fonts/[name].[ext]',
-    },
-    include: [
-      /node_modules/,
-      path.join(sourceDir, '/css/'),
-      path.join(sourceDir, '/scss/'),
-      path.join(sourceDir, '/fonts/'),
-    ],
-    exclude: /vendor/,
-  },{
-    test: /\.scss$/,
-    use: [
-      {
-        loader: MiniCssExtractPlugin.loader,
-        options: {
-          publicPath: '',
-        },
-      },
-      {
-        loader: 'css-loader',
-        options: {
-          url: false,
-          sourceMap: true,
-        },
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          postcssOptions: () =>({
-            plugins: [
-              require('autoprefixer')(),
-            ],
-          }),
-        },
-      },
-      {loader: 'sass-loader'},
-      {
-        loader: 'sass-resources-loader',
-        options: {
-          resources: function(_theme_name){
-            let ret_res = [
-              './pgadmin/static/scss/resources/pgadmin.resources.scss',
-            ];
-            if(_theme_name!='standard') {
-              ret_res.unshift('./pgadmin/static/scss/resources/' + _theme_name + '/_theme.variables.scss');
-            }
-            return ret_res;
-          }(theme_name),
-        },
-      },
-    ],
-  }, {
-    test: /\.css$/,
-    use: [
-      {
-        loader: MiniCssExtractPlugin.loader,
-        options: {
-          publicPath: '',
-        },
-      },
-      'css-loader',
-      {
-        loader: 'postcss-loader',
-        options: {
-          postcssOptions: () =>({
-            plugins: [
-              require('autoprefixer')(),
-            ],
-          }),
-        },
-      },
-    ],
-  }];
-};
-
-let getThemeWebpackConfig = function(theme_name) {
-  return {
-    mode: envType,
-    devtool: devToolVal,
-    stats: { children: false },
-    // The base directory, an absolute path, for resolving entry points and loaders
-    // from configuration.
-    context: __dirname,
-    // Specify entry points of application
-    entry: {
-      [pgadminThemes[theme_name].cssfile]: pgadminScssStyles,
-    },
-    // path: The output directory for generated bundles(defined in entry)
-    // Ref: https://webpack.js.org/configuration/output/#output-library
-    output: {
-      libraryTarget: 'amd',
-      path: outputPath,
-      filename: '[name].js',
-      libraryExport: 'default',
-      publicPath: '',
-    },
-    // Templates files which contains python code needs to load dynamically
-    // Such files specified in externals are loaded at first and defined in
-    // the start of generated bundle within define(['libname'],fn) etc.
-    externals: webpackShimConfig.externals,
-    module: {
-      // References:
-      // Module and Rules: https://webpack.js.org/configuration/module/
-      // Loaders: https://webpack.js.org/loaders/
-      //
-      rules: themeCssRules(theme_name),
-    },
-    optimization: {
-      minimize: true,
-      minimizer: [
-        new CssMinimizerPlugin({
-          minimizerOptions: {
-            preset: [
-              'default',
-              {
-                discardComments: { removeAll: true },
-              },
-            ],
-          }
-        }),
-      ],
-    },
-    resolve: {
-      alias: webpackShimConfig.resolveAlias,
-      modules: ['node_modules', '.'],
-      extensions: ['.js'],
-      unsafeCache: true,
-      fallback: {
-        'fs': false
-      },
-    },
-    // Watch mode Configuration: After initial build, webpack will watch for
-    // changes in files and compiles only files which are changed,
-    // if watch is set to True
-    // Reference: https://webpack.js.org/configuration/watch/#components/sidebar/sidebar.jsx
-    watchOptions: {
-      aggregateTimeout: 300,
-      poll: 1000,
-      ignored: /node_modules/,
-    },
-    // Define list of Plugins used in Production or development mode
-    // Ref:https://webpack.js.org/concepts/plugins/#components/sidebar/sidebar.jsx
-    plugins: [
-      extractStyle,
-      sourceMapDevToolPlugin,
-    ]
-  };
-};
-
-let pgadminThemesWebpack = [];
-Object.keys(pgadminThemes).forEach((theme_name)=>{
-  pgadminThemesWebpack.push(getThemeWebpackConfig(theme_name));
-});
 
 module.exports = [{
   mode: envType,
@@ -364,7 +137,7 @@ module.exports = [{
     psql_tool: './pgadmin/tools/psql/static/js/index.js',
     debugger: './pgadmin/tools/debugger/static/js/index.js',
     'pgadmin.style': pgadminCssStyles,
-    pgadmin: pgadminScssStyles,
+    //pgadmin: pgadminScssStyles,
     style: './pgadmin/static/css/style.css',
   },
   // path: The output directory for generated bundles(defined in entry)
@@ -534,7 +307,71 @@ module.exports = [{
           ],
         },
       },
-    }].concat(themeCssRules('standard')),
+    },
+    {
+      test: /\.svg$/,
+      oneOf: [
+        {
+          issuer: /\.[jt]sx?$/,
+          resourceQuery: /svgr/,
+          use: ['@svgr/webpack'],
+        },
+        {
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 4 * 1024, // 4kb
+            }
+          }
+        },
+      ],
+    },{
+      test: /\.(jpe?g|png|gif)$/i,
+      type: 'asset',
+      parser: {
+        dataUrlCondition: {
+          maxSize: 4 * 1024, // 4kb
+        },
+      },
+      generator: {
+        filename: 'img/[name].[ext]',
+      },
+      exclude: /vendor/,
+    },{
+      test: /\.(eot|ttf|woff|woff2)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'fonts/[name].[ext]',
+      },
+      include: [
+        /node_modules/,
+        path.join(sourceDir, '/css/'),
+        path.join(sourceDir, '/fonts/'),
+      ],
+      exclude: /vendor/,
+    },
+    {
+      test: /\.css$/,
+      use: [
+        {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            publicPath: '',
+          },
+        },
+        'css-loader',
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: () =>({
+              plugins: [
+                require('autoprefixer')(),
+              ],
+            }),
+          },
+        },
+      ],
+    }],
     // Prevent module from parsing through webpack, helps in reducing build time
     noParse: [/moment.js/],
   },
@@ -667,4 +504,4 @@ module.exports = [{
     sourceMapDevToolPlugin,
     copyFiles,
   ],
-}].concat(pgadminThemesWebpack);
+}];

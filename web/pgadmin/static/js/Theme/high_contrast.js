@@ -8,18 +8,18 @@
 //////////////////////////////////////////////////////////////
 
 /* The dark theme */
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 export default function(basicSettings) {
   return createTheme(basicSettings, {
     palette: {
       default: {
-        main: 'transparent',
+        main: '#00000000',
         contrastText: '#84d6ff',
         borderColor: '#84d6ff',
         disabledBorderColor: '#8B9CAD',
         disabledContrastText: '#8B9CAD',
-        hoverMain: 'transparent',
+        hoverMain: '#00000000',
         hoverContrastText: '#fff',
         hoverBorderColor: '#fff',
       },
@@ -80,6 +80,7 @@ export default function(basicSettings) {
       }
     },
     otherVars: {
+      colorBrand: '#84D6FF',
       borderColor: '#A6B7C8',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: '#1F2932',
@@ -130,6 +131,14 @@ export default function(basicSettings) {
         guttersBg: '#2d3a48',
         guttersFg: '#8b9cac',
       },
+      tree: {
+        treeTextFg: '#ffffff',
+        treeInputBg: '#010B15',
+        treeFgHover: '#ffffff',
+        treeBgHover: '#ffffff',
+        treeTextHoverFg: '#010B15',
+        treeBgSelected: '#84D6FF',
+      }
     }
   });
 }

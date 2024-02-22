@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import { Box, Grid, makeStyles } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import gettext from 'sources/gettext';
 import { commonTableStyles } from '../Theme';
 import clsx from 'clsx';

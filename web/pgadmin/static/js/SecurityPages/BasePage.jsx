@@ -1,4 +1,5 @@
-import { Box, Button, darken, makeStyles } from '@material-ui/core';
+import { Box, Button, darken } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { MESSAGE_TYPE, NotifierMessage } from '../components/FormComponents';
@@ -79,7 +80,7 @@ export default function BasePage({pageImage, title,  children, messages}) {
   }, [messages]);
   return (
     <Box className={classes.root}>
-      <Box display="flex" minWidth="80%" gridGap='40px' alignItems="center" padding="20px 80px">
+      <Box display="flex" minWidth="80%" gap="40px" alignItems="center" padding="20px 80px">
         <Box flexGrow={1} height="80%" textAlign="center">
           {pageImage}
         </Box>

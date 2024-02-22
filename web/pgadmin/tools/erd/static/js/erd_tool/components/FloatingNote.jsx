@@ -11,9 +11,10 @@ import React, { useEffect, useState, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import CustomPropTypes from 'sources/custom_prop_types';
-import { Box, makeStyles, Popper } from '@material-ui/core';
+import { Box, Popper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { DefaultButton } from '../../../../../../static/js/components/Buttons';
-import CheckIcon from '@material-ui/icons/Check';
+import CheckIcon from '@mui/icons-material/Check';
 
 
 const useStyles = makeStyles((theme)=>({

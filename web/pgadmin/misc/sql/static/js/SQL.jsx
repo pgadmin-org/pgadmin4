@@ -12,7 +12,7 @@ import { generateNodeUrl } from '../../../../browser/static/js/node_ajax';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import CodeMirror from '../../../../static/js/components/ReactCodeMirror';
 import Loader from 'sources/components/Loader';
 import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';

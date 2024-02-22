@@ -53,7 +53,6 @@ def init_dummy_auth_class():
 def test_create_dummy_app(name=__name__):
     import os
     import pgadmin
-    from pgadmin.misc.themes import themes
 
     def index():
         return Response("<html><body>logged in</body></html>")
@@ -87,8 +86,6 @@ def test_create_dummy_app(name=__name__):
         pass  # We don't need the logout url when dummy auth is enabled.
 
     app.register_logout_hook = types.MethodType(__dummy_logout_hook, app)
-
-    themes(app)
 
     return app
 

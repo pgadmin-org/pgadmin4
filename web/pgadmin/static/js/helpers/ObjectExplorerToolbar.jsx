@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { usePgAdmin } from '../BrowserComponent';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { QueryToolIcon, RowFilterIcon, TerminalIcon, ViewDataIcon } from '../components/ExternalIcon';
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { PgButtonGroup, PgIconButton } from '../components/Buttons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -58,7 +58,7 @@ export default function ObjectExplorerToolbar() {
   }, []);
 
   return (
-    <Box display="flex" alignItems="center" gridGap={'2px'}>
+    <Box display="flex" alignItems="center" gap="2px">
       <PgButtonGroup size="small">
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} />
         <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context']} />
