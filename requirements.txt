@@ -23,7 +23,7 @@ Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==4.0.*; python_version > '3.7'
 Flask-Babel==3.1.*; python_version <= '3.7'
-Flask-Security-Too==5.2.*; python_version > '3.7'
+Flask-Security-Too==5.3.*; python_version > '3.7'
 Flask-Security-Too==5.1.*; python_version <= '3.7'
 Flask-SocketIO==5.3.*
 WTForms==3.1.*; python_version > '3.7'
