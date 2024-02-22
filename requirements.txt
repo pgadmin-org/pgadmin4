@@ -37,7 +37,7 @@ psycopg[c]==3.1.12
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
-cryptography==41.0.*
+cryptography==42.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
