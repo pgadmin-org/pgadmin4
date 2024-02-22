@@ -23,7 +23,7 @@ Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==4.0.*; python_version > '3.7'
 Flask-Babel==3.1.*; python_version <= '3.7'
-Flask-Security-Too==5.2.*; python_version > '3.7'
+Flask-Security-Too==5.3.*; python_version > '3.7'
 Flask-Security-Too==5.1.*; python_version <= '3.7'
 Flask-SocketIO==5.3.*
 WTForms==3.1.*; python_version > '3.7'
@@ -37,7 +37,7 @@ psycopg[c]==3.1.12
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
-cryptography==41.0.*
+cryptography==42.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
