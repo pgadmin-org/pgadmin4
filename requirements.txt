@@ -62,3 +62,4 @@ Werkzeug==2.3.*; python_version > '3.7'
 Werkzeug==2.2.3; python_version <= '3.7'
 typer[all]==0.9.*
 setuptools==69.*; python_version >= '3.12'
+jsonformatter~=0.3.2

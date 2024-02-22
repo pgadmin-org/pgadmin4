@@ -50,7 +50,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
 from pgadmin.utils.constants import KERBEROS, OAUTH2, INTERNAL, LDAP, WEBSERVER
-
+from jsonformatter import JsonFormatter
 
 # Explicitly set the mime-types so that a corrupted windows registry will not
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
@@ -260,14 +260,26 @@ def create_app(app_name=None):
                                          config.LOG_ROTATION_MAX_LOG_FILES)
 
         fh.setLevel(config.FILE_LOG_LEVEL)
-        fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+
+        if config.JSON_LOGGER:
+            json_formatter = JsonFormatter(config.FILE_LOG_FORMAT_JSON)
+            fh.setFormatter(json_formatter)
+        else:
+            fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
+
         app.logger.addHandler(fh)
         logger.addHandler(fh)
 
     # Console logging
     ch = logging.StreamHandler()
     ch.setLevel(config.CONSOLE_LOG_LEVEL)
-    ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
+
+    if config.JSON_LOGGER:
+        json_formatter = JsonFormatter(config.CONSOLE_LOG_FORMAT_JSON)
+        ch.setFormatter(json_formatter)
+    else:
+        ch.setFormatter(logging.Formatter(config.CONSOLE_LOG_FORMAT))
+
     app.logger.addHandler(ch)
     logger.addHandler(ch)
 
