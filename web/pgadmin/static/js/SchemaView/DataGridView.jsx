@@ -10,14 +10,14 @@
 /* The DataGridView component is based on react-table component */
 
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { PgIconButton } from '../components/Buttons';
-import AddIcon from '@material-ui/icons/AddOutlined';
+import AddIcon from '@mui/icons-material/AddOutlined';
 import { MappedCellControl } from './MappedControl';
-import DragIndicatorRoundedIcon from '@material-ui/icons/DragIndicatorRounded';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded, useGlobalFilter } from 'react-table';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';

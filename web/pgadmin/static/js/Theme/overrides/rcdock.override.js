@@ -112,7 +112,7 @@ export default function rcdockOverride(theme) {
           color: 'unset',
         },
         '& > div': {
-          padding: '4px 10px',
+          padding: '4px 8px',
           '&:focus': {
             outline: '1px solid '+theme.otherVars.activeBorder,
             outlineOffset: '-1px',
@@ -176,7 +176,7 @@ export default function rcdockOverride(theme) {
         zIndex: 1080,
       },
       '& .drag-accept-reject::after': {
-        content: '',
+        content: '""',
       },
       '& .dock-nav-more': {
         color: theme.custom.icon.contrastText

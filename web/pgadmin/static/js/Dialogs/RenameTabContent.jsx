@@ -11,9 +11,9 @@ import _ from 'lodash';
 import React, { useState, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { Box } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import { Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 import gettext from 'sources/gettext';
 

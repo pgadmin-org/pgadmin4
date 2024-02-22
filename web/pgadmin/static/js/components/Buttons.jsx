@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Button, ButtonGroup, makeStyles, Tooltip } from '@material-ui/core';
+import { Button, ButtonGroup, Tooltip } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -44,14 +45,18 @@ const useStyles = makeStyles((theme)=>({
   iconButton: {
     minWidth: 0,
     padding: '2px 4px',
-    '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
-      padding: '1px 4px',
+    '&.MuiButton-sizeSmall, &.MuiButton-outlined.MuiButton-sizeSmall, &.MuiButton-contained.MuiButton-sizeSmall': {
     },
   },
   iconButtonDefault: {
     borderColor: theme.custom.icon.borderColor,
     color: theme.custom.icon.contrastText,
     backgroundColor: theme.custom.icon.main,
+    height: '28px',
+    padding: '1px 4px',
+    '.MuiButtonGroup-root &': {
+      minWidth: '34px',
+    },
     '&.Mui-disabled': {
       borderColor: theme.custom.icon.disabledBorderColor,
       backgroundColor: theme.custom.icon.disabledMain,
@@ -61,19 +66,20 @@ const useStyles = makeStyles((theme)=>({
       backgroundColor: theme.custom.icon.hoverMain,
       color: theme.custom.icon.hoverContrastText,
       borderColor: theme.custom.icon.borderColor,
-    },
+    }
   },
   splitButton: {
-    '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
+    '&.MuiButton-sizeSmall, &.MuiButton-outlined.MuiButton-sizeSmall, &.MuiButton-contained.MuiButton-sizeSmall': {
       width: '20px',
+      minWidth: 0,
       '& svg': {
         height: '0.8em',
       }
-    },
+    }
   },
   xsButton: {
     padding: '2px 1px',
-    height: '24px',
+    height: '24px !important',
     minWidth: '24px',
     '& .MuiSvgIcon-root': {
       height: '0.8em',
@@ -119,7 +125,7 @@ export const PrimaryButton = forwardRef((props, ref)=>{
   noBorder && allClassName.push(...[classes.noBorder, classes.noBorderPrimary]);
   const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
-    <Button ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps} variant="contained" color="primary">{children}</Button>
+    <Button ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps} color="primary" variant="contained">{children}</Button>
   );
 });
 PrimaryButton.displayName = 'PrimaryButton';
@@ -142,7 +148,7 @@ export const DefaultButton = forwardRef((props, ref)=>{
   noBorder && allClassName.push(classes.noBorder);
   const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
-    <Button variant="outlined" color="default" ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps}>{children}</Button>
+    <Button variant="outlined" ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} color="default" {...otherProps}>{children}</Button>
   );
 });
 DefaultButton.displayName = 'DefaultButton';
@@ -220,7 +226,7 @@ PgIconButton.propTypes = {
 export const PgButtonGroup = forwardRef(({children, ...props}, ref)=>{
   /* Tooltip does not work for disabled items */
   return (
-    <ButtonGroup innerRef={ref} {...props}>
+    <ButtonGroup ref={ref} {...props}>
       {children}
     </ButtonGroup>
   );

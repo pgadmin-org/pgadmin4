@@ -10,7 +10,8 @@
 import React from 'react';
 
 import { withTheme } from '../fake_theme';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import InfoIcon from '@mui/icons-material/InfoRounded';
+
 
 import {PrimaryButton, DefaultButton, PgIconButton} from 'sources/components/Buttons';
 import { render, screen } from '@testing-library/react';

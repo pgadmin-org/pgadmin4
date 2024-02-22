@@ -6,20 +6,20 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React, { useContext } from 'react';
 import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstants';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
 import clsx from 'clsx';
-import { Box, Grid, List, ListItem, ListSubheader } from '@material-ui/core';
+import { Box, Grid, List, ListItem, ListSubheader } from '@mui/material';
 import url_for from 'sources/url_for';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import moment from 'moment';
-import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
-import AssessmentRoundedIcon from '@material-ui/icons/AssessmentRounded';
-import ExplicitRoundedIcon from '@material-ui/icons/ExplicitRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
+import ExplicitRoundedIcon from '@mui/icons-material/ExplicitRounded';
 import { SaveDataIcon, CommitIcon, RollbackIcon, ViewDataIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { InputSwitch } from '../../../../../../static/js/components/FormComponents';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -512,7 +512,7 @@ export function QueryHistory() {
                   </Box>
                 </Box>
                 <Box flexGrow="1" overflow="auto" className={classes.listRoot}>
-                  <List innerRef={listRef} className={classes.root} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
+                  <List ref={listRef} className={classes.root} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
                     {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
                       <ListItem key={`section-${groupKey}`} className={classes.removePadding}>
                         <List className={classes.removePadding}>

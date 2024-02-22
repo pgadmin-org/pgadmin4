@@ -10,14 +10,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-import { Box, InputAdornment, makeStyles } from '@material-ui/core';
+import { Box, InputAdornment } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { InputText } from '../../FormComponents';
 import { PgIconButton } from '../../Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
-import ArrowUpwardRoundedIcon from '@material-ui/icons/ArrowUpwardRounded';
-import SwapHorizRoundedIcon from '@material-ui/icons/SwapHorizRounded';
-import SwapCallsRoundedIcon from '@material-ui/icons/SwapCallsRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
+import SwapCallsRoundedIcon from '@mui/icons-material/SwapCallsRounded';
 import { RegexIcon, FormatCaseIcon } from '../../ExternalIcon';
 
 import {

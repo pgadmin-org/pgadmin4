@@ -13,9 +13,9 @@ import PropTypes from 'prop-types';
 
 import React, { useCallback, useState } from 'react';
 
-import { makeStyles } from '@material-ui/styles';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
+import { makeStyles } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import TableContainer from '@mui/material/TableContainer';
 
 import gettext from 'sources/gettext';
 

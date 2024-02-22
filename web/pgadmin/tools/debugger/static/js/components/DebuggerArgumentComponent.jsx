@@ -11,11 +11,11 @@ import PropTypes from 'prop-types';
 
 import React, { useEffect, useRef } from 'react';
 
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import BugReportRoundedIcon from '@material-ui/icons/BugReportRounded';
-import CloseSharpIcon from '@material-ui/icons/CloseSharp';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded';
+import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
@@ -883,4 +883,3 @@ DebuggerArgumentComponent.propTypes = {
   pgTreeInfo: PropTypes.object,
   pgData: PropTypes.object,
 };
-

@@ -262,7 +262,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
         )
 
-        maximize_button = self.page.find_by_xpath(
+        maximize_button = self.page.find_by_css_selector(
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
@@ -324,10 +324,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 else:
                     print('Binary path Key is Incorrect or '
                           'server version is None.')
-
-        maximize_button = self.page.find_by_xpath(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
 
         # save and close the preference dialog.
         if path_already_set:

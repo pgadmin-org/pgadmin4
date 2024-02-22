@@ -8,17 +8,17 @@
 //////////////////////////////////////////////////////////////
 import React from 'react';
 import getApiInstance from 'sources/api_instance';
-import { makeStyles } from '@material-ui/core/styles';
-import { Box } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box } from '@mui/material';
 import { generateCollectionURL } from '../../browser/static/js/node_ajax';
 import gettext from 'sources/gettext';
 import PgTable from 'sources/components/PgTable';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { PgButtonGroup, PgIconButton } from '../../static/js/components/Buttons';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';

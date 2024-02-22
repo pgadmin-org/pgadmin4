@@ -11,7 +11,8 @@ import React, { useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
-import { Box, makeStyles, Tooltip, CircularProgress } from '@material-ui/core';
+import { Box, Tooltip, CircularProgress } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { ConnectedIcon, DisonnectedIcon } from '../../../../../../static/js/components/ExternalIcon';
 
 export const STATUS = {

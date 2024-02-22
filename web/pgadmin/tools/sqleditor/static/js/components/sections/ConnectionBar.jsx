@@ -7,20 +7,20 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Box, CircularProgress, Tooltip } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { ConnectedIcon, DisonnectedIcon, QueryToolIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { QueryToolContext } from '../QueryToolComponent';
 import { CONNECTION_STATUS, CONNECTION_STATUS_MESSAGE } from '../QueryToolConstants';
-import HourglassEmptyRoundedIcon from '@material-ui/icons/HourglassEmptyRounded';
-import QueryBuilderRoundedIcon from '@material-ui/icons/QueryBuilderRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import ReportProblemRoundedIcon from '@material-ui/icons/ReportProblemRounded';
+import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
+import QueryBuilderRoundedIcon from '@mui/icons-material/QueryBuilderRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
-import RotateLeftRoundedIcon from '@material-ui/icons/RotateLeftRounded';
+import RotateLeftRoundedIcon from '@mui/icons-material/RotateLeftRounded';
 import PropTypes from 'prop-types';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';

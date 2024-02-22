@@ -9,7 +9,8 @@
 
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import { FormGroup, makeStyles, Grid, Typography } from '@material-ui/core';
+import { FormGroup, Grid, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { InputText } from './FormComponents';
 import PropTypes from 'prop-types';

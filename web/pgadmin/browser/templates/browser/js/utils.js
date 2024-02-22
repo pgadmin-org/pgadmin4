@@ -87,6 +87,7 @@ define('pgadmin.browser.utils',
 
   pgBrowser.utils = {
     layout: '{{ layout }}',
+    theme: '{{ theme }}',
     pg_help_path: '{{ pg_help_path }}',
     tabSize: '{{ editor_tab_size }}',
     wrapCode: '{{ editor_wrap_code }}' == 'True',

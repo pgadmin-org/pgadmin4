@@ -23,9 +23,10 @@ import MsAzure from '../../img/ms_azure.svg?svgr';
 import GoogleCloud from '../../img/google-cloud-1.svg?svgr';
 import TerminalSvg from '../../img/terminal.svg?svgr';
 import RowFilterSvg from '../../img/fonticon/row_filter.svg?svgr';
+import SvgIcon from '@mui/material/SvgIcon';
 
 export default function ExternalIcon({Icon, ...props}) {
-  return <Icon className={'MuiSvgIcon-root'} {...props} />;
+  return <SvgIcon component={Icon} inheritViewBox {...props}/>;
 }
 
 ExternalIcon.propTypes = {

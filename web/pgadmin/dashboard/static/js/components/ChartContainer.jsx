@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Box, Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Box} from '@material-ui/core';
+import { Box} from '@mui/material';
 import {InputSelect, FormInput} from './FormComponents';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { PgIconButton } from './Buttons';
 
 function ChildContent({cid, helpid, onRefreshClick, label, ...props}) {

@@ -10,8 +10,8 @@ import gettext from 'sources/gettext';
 
 import React, { useContext, useState, useEffect } from 'react';
 
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { InputSQL } from '../../../../../static/js/components/FormComponents';
 import { SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
@@ -84,7 +84,7 @@ export function Results() {
         <Box className={classes.label}>{gettext('Difference')}</Box>
       </Box>
       <Box className={classes.sqlContainer}>
-        <Box className={classes.sqldata}> 
+        <Box className={classes.sqldata}>
           <Box className={classes.sqlInput}>
             <InputSQL
               onLable={true}

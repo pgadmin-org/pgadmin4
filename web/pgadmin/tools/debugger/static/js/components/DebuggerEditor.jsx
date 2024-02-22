@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 import React, { useContext, useEffect } from 'react';
@@ -69,7 +69,7 @@ export default function DebuggerEditor({ getEditor, params }) {
     self = this;
     getEditor(editor.current);
   }, [editor.current]);
-  
+
   return (
     <CodeMirror
       currEditor={(obj) => {

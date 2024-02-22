@@ -18,19 +18,19 @@ import {
   useExpanded,
 } from 'react-table';
 import { VariableSizeList } from 'react-window';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Checkbox, Box, Switch } from '@material-ui/core';
+import { Checkbox, Box, Switch } from '@mui/material';
 import { InputText } from './FormComponents';
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import SchemaView from '../SchemaView';
 import EmptyPanelMessage from './EmptyPanelMessage';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PgIconButton } from './Buttons';
 
 /* eslint-disable react/display-name */

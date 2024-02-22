@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { CircularProgress, Box, Typography, makeStyles } from '@material-ui/core';
+import { CircularProgress, Box, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import PropTypes from 'prop-types';
 

@@ -16,6 +16,7 @@ import {
 import OneToManyPortModel from 'pgadmin.tools.erd/erd_tool/ports/OneToManyPort';
 import {OneToManyLinkModel, OneToManyLinkWidget, OneToManyLinkFactory} from 'pgadmin.tools.erd/erd_tool/links/OneToManyLink';
 import { render } from '@testing-library/react';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 
 describe('ERD OneToManyLinkModel', ()=>{
@@ -130,7 +131,9 @@ describe('ERD OneToManyLinkWidget', ()=>{
 
   it('render', ()=>{
     let linkWidget = render(
-      <svg><OneToManyLinkWidget link={link} diagramEngine={engine} factory={linkFactory} /></svg>
+      <Theme>
+        <svg><OneToManyLinkWidget link={link} diagramEngine={engine} factory={linkFactory} /></svg>
+      </Theme>
     );
 
     let paths = linkWidget.container.querySelectorAll('g g');

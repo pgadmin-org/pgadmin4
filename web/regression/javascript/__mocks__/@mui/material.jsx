@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import CustomPropTypes from '../../../../pgadmin/static/js/custom_prop_types';
-export * from '@material-ui/core';
+export * from '@mui/material';
 
 // mock popper
 // eslint-disable-next-line no-unused-vars

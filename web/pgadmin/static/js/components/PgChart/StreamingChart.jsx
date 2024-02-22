@@ -3,7 +3,7 @@ import UplotReact from 'uplot-react';
 import { useResizeDetector } from 'react-resize-detector';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { useTheme } from '@material-ui/styles';
+import { useTheme } from '@mui/styles';
 
 function tooltipPlugin(refreshRate) {
   let tooltipTopOffset = -20;

@@ -13,11 +13,11 @@ import React, { useState, useRef, useContext, useEffect } from 'react';
 
 import gettext from 'sources/gettext';
 
-import { Box } from '@material-ui/core';
-import CompareArrowsRoundedIcon from '@material-ui/icons/CompareArrowsRounded';
-import FeaturedPlayListRoundedIcon from '@material-ui/icons/FeaturedPlayListRounded';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import { makeStyles } from '@material-ui/styles';
+import { Box } from '@mui/material';
+import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
+import FeaturedPlayListRoundedIcon from '@mui/icons-material/FeaturedPlayListRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { makeStyles } from '@mui/styles';
 
 import { DefaultButton, PgButtonGroup, PgIconButton, PrimaryButton } from '../../../../../static/js/components/Buttons';
 import { FilterIcon } from '../../../../../static/js/components/ExternalIcon';
@@ -169,7 +169,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
         <PgButtonGroup size="small" disabled={isDisableCompare}>
           <PrimaryButton startIcon={<CompareArrowsRoundedIcon />}
             onClick={compareDiff}>{gettext('Compare')}</PrimaryButton>
-          <PgIconButton title={gettext('Compare')} icon={<KeyboardArrowDownIcon />} color={'primary'} splitButton
+          <PgIconButton title={gettext('Compare')} disabled={isDisableCompare} icon={<KeyboardArrowDownIcon />} color={'primary'} splitButton
             name={MENUS.COMPARE} ref={compareRef} onClick={toggleMenu} ></PgIconButton>
         </PgButtonGroup>
       </Box>
@@ -182,7 +182,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
         <PgButtonGroup size="small" disabled={isDisableCompare} style={{ paddingRight: '0.3rem' }}>
           <DefaultButton startIcon={<FilterIcon />} className={classes.noactionBtn}
           >{gettext('Filter')}</DefaultButton>
-          <PgIconButton title={gettext('File')} icon={<KeyboardArrowDownIcon />} splitButton
+          <PgIconButton title={gettext('Filter')} disabled={isDisableCompare} icon={<KeyboardArrowDownIcon />} splitButton
             name={MENUS.FILTER} ref={filterRef} onClick={toggleMenu} ></PgIconButton>
         </PgButtonGroup>
       </Box>

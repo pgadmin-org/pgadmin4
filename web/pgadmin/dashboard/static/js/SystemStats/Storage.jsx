@@ -9,11 +9,11 @@
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -521,14 +521,14 @@ export function StorageWrapper(props) {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={1} className={classes.container}>
+      <Grid container spacing={0.5} className={classes.container}>
         {Object.keys(props.ioInfo).map((drive, index) => (
           <Grid key={`disk-${index}`} container spacing={1} className={classes.container}>
             <div className={classes.driveContainer}>
               <Grid container spacing={1} className={classes.driveContainerHeader}>
                 <div className={classes.containerHeaderText}>{gettext(drive)}</div>
               </Grid>
-              <Grid container spacing={1} className={classes.driveContainerBody}>
+              <Grid container spacing={0.5} className={classes.driveContainerBody}>
                 {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
                   <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
                     <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>

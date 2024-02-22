@@ -8,8 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 /* The dark theme */
-import { createTheme } from '@material-ui/core/styles';
-import { darken } from '@material-ui/core/styles/colorManipulator';
+import {  darken, createTheme} from '@mui/material/styles';
 
 export default function(basicSettings) {
   return createTheme(basicSettings, {
@@ -45,7 +44,7 @@ export default function(basicSettings) {
       },
       warning: {
         main: '#eea236',
-        light: '#b18d5a',
+        light: '#74572e',
         contrastText: '#fff',
       },
       info: {
@@ -82,6 +81,7 @@ export default function(basicSettings) {
       }
     },
     otherVars: {
+      colorBrand: '#1b71b5',
       borderColor: '#4a4a4a',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: 'inherit',
@@ -104,6 +104,11 @@ export default function(basicSettings) {
       textMuted: '#8A8A8A',
       erdCanvasBg: '#303030',
       erdGridColor: '#444952',
+      scroll: {
+        baseColor: '#616161',
+        barBackgroundColor: '#61616133',
+        thumbBackground:'#616161b3'
+      },
       schemaDiff: {
         diffRowColor: '#807a48',
         sourceRowColor: '#402025',
@@ -132,6 +137,14 @@ export default function(basicSettings) {
         guttersBg: '#303030',
         guttersFg: '#8A8A8A',
       },
+      tree: {
+        textFg: '#d4d4d4',
+        inputBg: '#212121',
+        fgHover: '#d4d4d4',
+        bgHover: '#303030',
+        textHoverFg: '#d4d4d4',
+        bgSelected: '#323E43',
+      }
     }
   });
 }

@@ -10,10 +10,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-import { Box, FormControl, makeStyles } from '@material-ui/core';
+import { Box, FormControl } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { InputText } from '../../FormComponents';
 import { PgIconButton } from '../../Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 
 const useStyles = makeStyles((theme)=>({
   root: {

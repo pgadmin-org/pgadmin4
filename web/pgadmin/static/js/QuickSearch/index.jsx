@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useRef,useState, useEffect} from 'react';
-import { CircularProgress, Typography, makeStyles } from '@material-ui/core';
+import { CircularProgress, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import {useDelayDebounce} from 'sources/custom_hooks';
 import {onlineHelpSearch} from './online_help';
@@ -102,12 +103,6 @@ HelpArticleContents.propTypes = {
   isHelpLoading: PropTypes.bool,
   isMenuLoading: PropTypes.bool
 };
-
-const useModalStyles = makeStyles(() => ({
-  setTop: {
-    marginTop: '-20px',
-  }
-}));
 
 export default function QuickSearch({closeModal}) {
   const modalClasses = useModalStyles();

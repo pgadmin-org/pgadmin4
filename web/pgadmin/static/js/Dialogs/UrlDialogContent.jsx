@@ -12,9 +12,9 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 
-import { Box } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import HelpIcon from '@material-ui/icons/Help';
+import { Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import HelpIcon from '@mui/icons-material/Help';
 
 import { DefaultButton, PgIconButton } from '../components/Buttons';
 import { useModalStyles } from '../helpers/ModalProvider';

@@ -12,14 +12,14 @@ import _ from 'lodash';
 import url_for from 'sources/url_for';
 import React, { useEffect, useMemo } from 'react';
 import { FileType } from 'react-aspen';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
-import CloseSharpIcon from '@material-ui/icons/CloseSharp';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import SaveSharpIcon from '@material-ui/icons/SaveSharp';
+import CloseSharpIcon from '@mui/icons-material/CloseSharp';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import clsx from 'clsx';
 import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
@@ -528,10 +528,6 @@ export default function PreferencesComponent({ ...props }) {
   }
 
   function checkRefreshRequired(pref, requires_refresh) {
-    if (pref.name == 'theme') {
-      requires_refresh = true;
-    }
-
     if (pref.name == 'user_language') {
       requires_refresh = true;
     }

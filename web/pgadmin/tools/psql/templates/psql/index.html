@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block css_link %}
+<style>
+    #psql-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #psql-container:not(:empty) + .pg-sp-container {
+        display: none;
+    }
+    {% if is_desktop_mode and is_linux %}
+    .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
+    {% endif %}
+</style>
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+
+
+{% block body %}
+
+<div id="psql-container" tabindex="0">
+    <div class="pg-sp-container">
+      <div class="pg-sp-content">
+          <div class="row">
+              <div class="col-12 pg-sp-icon"></div>
+          </div>
+      </div>
+  </div>
+  </div>
+
+{% endblock %}
+
+
+{% block init_script %}
+try {
+    require(
+        ['sources/generated/browser_nodes'],
+        function() {
+            require(['sources/generated/psql_tool'], function(module) {
+            window.pgAdmin.Tools.Psql.loadComponent(
+                document.getElementById('psql-container'),{{ params|safe }});
+        }, function() {
+            console.log(arguments);
+        });
+    },
+    function() {
+        console.log(arguments);
+    });
+} catch (err) {
+    console.log(err);
+}
+{% endblock %}

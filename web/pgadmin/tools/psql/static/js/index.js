@@ -7,16 +7,17 @@
 //
 //////////////////////////////////////////////////////////////
 
-import gettext from 'sources/gettext';
-import url_for from 'sources/url_for';
-import _ from 'lodash';
+
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'top/browser/static/js/browser';
-import * as csrfToken from 'sources/csrf';
-import {initialize} from './psql_module';
+import Psql from './PsqlModule';
 
-let pgBrowserOut = initialize(gettext, url_for, _, pgAdmin, csrfToken, pgBrowser);
+
+if(!pgAdmin.Tools) {
+  pgAdmin.Tools = {};
+}
+pgAdmin.Tools.Psql = Psql.getInstance(pgAdmin, pgBrowser);
 
 module.exports = {
-  pgBrowser: pgBrowserOut,
+  Psql: Psql
 };

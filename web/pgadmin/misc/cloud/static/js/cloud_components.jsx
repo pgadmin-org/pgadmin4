@@ -8,16 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { DefaultButton, PrimaryButton } from '../../../../static/js/components/Buttons';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { getAWSSummary } from './aws';
 import  {getAzureSummary} from './azure';
 import { getBigAnimalSummary } from './biganimal';
 import { commonTableStyles } from '../../../../static/js/Theme';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
 import gettext from 'sources/gettext';
 import { getGoogleSummary } from './google';

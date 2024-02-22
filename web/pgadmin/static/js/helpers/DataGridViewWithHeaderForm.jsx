@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import DataGridView, { DataGridHeader } from '../SchemaView/DataGridView';
 import SchemaView, { SCHEMA_STATE_ACTIONS } from '../SchemaView';
 import { DefaultButton } from '../components/Buttons';
