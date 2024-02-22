@@ -181,7 +181,6 @@ function Dependencies({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStal
 }
 
 Dependencies.propTypes = {
-  res: PropTypes.array,
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,

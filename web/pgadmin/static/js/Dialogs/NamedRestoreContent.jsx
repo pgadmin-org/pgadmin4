@@ -84,7 +84,6 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
 
 NamedRestoreContent.propTypes = {
   closeModal: PropTypes.func,
-  data: PropTypes.object,
   onOK: PropTypes.func,
   setHeight: PropTypes.func
 };

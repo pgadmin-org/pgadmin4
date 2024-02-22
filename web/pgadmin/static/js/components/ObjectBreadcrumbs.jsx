@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import CommentIcon from '@material-ui/icons/Comment';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
-import PropTypes from 'prop-types';
 import { usePgAdmin } from '../../../static/js/BrowserComponent';
 import usePreferences from '../../../preferences/static/js/store';
 
@@ -89,7 +88,3 @@ export default function ObjectBreadcrumbs() {
     </>
   );
 }
-
-ObjectBreadcrumbs.propTypes = {
-  pgAdmin: PropTypes.object,
-};

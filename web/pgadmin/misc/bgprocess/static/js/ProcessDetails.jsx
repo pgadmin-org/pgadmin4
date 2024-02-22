@@ -192,8 +192,5 @@ export default function ProcessDetails({data}) {
 }
 
 ProcessDetails.propTypes = {
-  closeModal: PropTypes.func,
   data: PropTypes.object,
-  onOK: PropTypes.func,
-  setHeight: PropTypes.func
 };

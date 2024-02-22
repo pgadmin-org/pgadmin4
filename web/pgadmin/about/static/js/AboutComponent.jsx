@@ -11,7 +11,6 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Grid, InputLabel } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import { DefaultButton } from '../../../static/js/components/Buttons';
 import { makeStyles } from '@material-ui/styles';
 import { InputText } from '../../../static/js/components/FormComponents';
@@ -150,7 +149,3 @@ export default function AboutComponent() {
     </Box>
   );
 }
-
-AboutComponent.propTypes = {
-  closeModal: PropTypes.func
-};

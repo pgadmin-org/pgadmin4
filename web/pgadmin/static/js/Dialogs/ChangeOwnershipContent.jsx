@@ -80,7 +80,6 @@ export default function ChangeOwnershipContent({onSave, onClose, deletedUser, us
 ChangeOwnershipContent.propTypes = {
   onSave: PropTypes.func,
   onClose: PropTypes.func,
-  currentUser: PropTypes.string,
   userList: PropTypes.array,
   noOfSharedServers: PropTypes.number,
   deletedUser: PropTypes.string

@@ -215,6 +215,14 @@ export default function CollectionNodeProperties({
         schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
+              const Cell = ({value})=>{
+                return <Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />;
+              };
+              Cell.displayName = 'StatusCell';
+              Cell.propTypes = {
+                value: PropTypes.any,
+              };
+
               column = {
                 Header: field.label,
                 accessor: field.id,
@@ -222,10 +230,7 @@ export default function CollectionNodeProperties({
                 resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
-                // eslint-disable-next-line react/display-name
-                Cell: ({ value }) => {
-                  return (<Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />);
-                }
+                Cell: Cell
               };
             } else {
               column = {
@@ -359,16 +364,9 @@ export default function CollectionNodeProperties({
 
 CollectionNodeProperties.propTypes = {
   node: PropTypes.func,
-  itemData: PropTypes.object,
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   nodeItem: PropTypes.object,
-  preferences: PropTypes.object,
-  sid: PropTypes.number,
-  did: PropTypes.number,
-  row: PropTypes.object,
-  serverConnected: PropTypes.bool,
-  value: PropTypes.bool,
   isActive: PropTypes.bool,
   isStale: PropTypes.bool,
   setIsStale: PropTypes.func,

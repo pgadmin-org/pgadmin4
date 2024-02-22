@@ -111,9 +111,6 @@ export default function Processes() {
         <ErrorBoundary>
           <ProcessDetails
             data={p}
-            closeModal={()=>{
-              pgAdmin.Browser.docker.close(panelId);
-            }}
           />
         </ErrorBoundary>
       )
@@ -121,8 +118,58 @@ export default function Processes() {
   }, []);
 
 
-  const columns = useMemo(()=>[
-    {
+  const columns = useMemo(()=>{
+    const cellPropTypes = {
+      row: PropTypes.any,
+    };
+
+    const CancelCell = ({ row }) => {
+      return (
+        <PgIconButton
+          size="xs"
+          noBorder
+          icon={<CancelIcon />}
+          className={classes.stopButton}
+          disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
+            || row.original.server_id != null}
+          onClick={(e) => {
+            e.preventDefault();
+            pgAdmin.Browser.BgProcessManager.stopProcess(row.original.id);
+          }}
+          aria-label="Stop Process"
+          title={gettext('Stop Process')}
+        ></PgIconButton>
+      );
+    };
+    CancelCell.displayName = 'CancelCell';
+    CancelCell.propTypes = cellPropTypes;
+
+    const LogsCell = ({ row }) => {
+      return (
+        <PgIconButton
+          size="xs"
+          icon={<DescriptionOutlinedIcon />}
+          noBorder
+          onClick={(e) => {
+            e.preventDefault();
+            onViewDetailsClick(row.original);
+          }}
+          aria-label="View details"
+          title={gettext('View details')}
+        />
+      );
+    };
+    LogsCell.displayName = 'LogsCell';
+    LogsCell.propTypes = cellPropTypes;
+
+    const StatusCell = ({row})=>{
+      const [text, bgcolor] = ProcessStateTextAndColor[row.original.process_state];
+      return <Box className={classes[bgcolor]}>{text}</Box>;
+    };
+    StatusCell.displayName = 'StatusCell';
+    StatusCell.propTypes = cellPropTypes;
+
+    return [{
       accessor: 'stop_process',
       Header: () => null,
       sortable: false,
@@ -132,25 +179,7 @@ export default function Processes() {
       maxWidth: 35,
       minWidth: 35,
       id: 'btn-stop',
-      // eslint-disable-next-line react/display-name
-      Cell: ({ row }) => {
-        return (
-          <PgIconButton
-            size="xs"
-            noBorder
-            icon={<CancelIcon />}
-            className={classes.stopButton}
-            disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
-              || row.original.server_id != null}
-            onClick={(e) => {
-              e.preventDefault();
-              pgAdmin.Browser.BgProcessManager.stopProcess(row.original.id);
-            }}
-            aria-label="Stop Process"
-            title={gettext('Stop Process')}
-          ></PgIconButton>
-        );
-      },
+      Cell: CancelCell,
     },
     {
       accessor: 'view_details',
@@ -162,22 +191,7 @@ export default function Processes() {
       maxWidth: 35,
       minWidth: 35,
       id: 'btn-logs',
-      // eslint-disable-next-line react/display-name
-      Cell: ({ row }) => {
-        return (
-          <PgIconButton
-            size="xs"
-            icon={<DescriptionOutlinedIcon />}
-            noBorder
-            onClick={(e) => {
-              e.preventDefault();
-              onViewDetailsClick(row.original);
-            }}
-            aria-label="View details"
-            title={gettext('View details')}
-          />
-        );
-      },
+      Cell: LogsCell,
     },
     {
       Header: gettext('PID'),
@@ -235,10 +249,7 @@ export default function Processes() {
       minWidth: 120,
       accessor: (row)=>ProcessStateTextAndColor[row.process_state][0],
       dataClassName: classes.noPadding,
-      Cell: ({row})=>{
-        const [text, bgcolor] = ProcessStateTextAndColor[row.original.process_state];
-        return <Box className={classes[bgcolor]}>{text}</Box>;
-      },
+      Cell: StatusCell,
     },
     {
       Header: gettext('Time Taken (sec)'),
@@ -246,8 +257,8 @@ export default function Processes() {
       sortable: true,
       resizable: true,
       disableGlobalFilter: true,
-    },
-  ], []);
+    }];
+  }, []);
 
   const updateList = ()=>{
     if(pgAdmin.Browser.BgProcessManager.procList) {
@@ -310,12 +321,3 @@ export default function Processes() {
     </>
   );
 }
-
-Processes.propTypes = {
-  res: PropTypes.array,
-  nodeData: PropTypes.object,
-  treeNodeInfo: PropTypes.object,
-  node: PropTypes.func,
-  item: PropTypes.object,
-  row: PropTypes.object,
-};

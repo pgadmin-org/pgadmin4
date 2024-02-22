@@ -392,7 +392,6 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}
           lineBorderWidth={preferences['graph_line_border_width']}
-          isDatabase={did > 0}
           isTest={false}
         />
       }
@@ -565,6 +564,5 @@ StorageWrapper.propTypes = {
   showTooltip: PropTypes.bool.isRequired,
   showDataPoints: PropTypes.bool.isRequired,
   lineBorderWidth: PropTypes.number.isRequired,
-  isDatabase: PropTypes.bool.isRequired,
   isTest: PropTypes.bool,
 };
