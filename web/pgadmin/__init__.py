@@ -262,7 +262,7 @@ def create_app(app_name=None):
         fh.setLevel(config.FILE_LOG_LEVEL)
 
         if config.JSON_LOGGER:
-            json_formatter = JsonFormatter(config.CONSOLE_LOG_FORMAT_JSON)
+            json_formatter = JsonFormatter(config.FILE_LOG_FORMAT_JSON)
             fh.setFormatter(json_formatter)
         else:
             fh.setFormatter(logging.Formatter(config.FILE_LOG_FORMAT))
