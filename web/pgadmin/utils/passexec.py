@@ -29,7 +29,7 @@ class PasswordExec:
         self.last_result = None
 
     def get(self):
-        if config.SERVER_MODE:
+        if config.SERVER_MODE and not config.ENABLE_SERVER_PASS_EXEC_CMD:
             # Arbitrary shell execution on server is a security risk
             raise NotImplementedError('Passexec not available in server mode')
         with self.lock:

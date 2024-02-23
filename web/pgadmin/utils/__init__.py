@@ -491,7 +491,8 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
 
-            # if desktop mode
+            # if desktop mode or server mode with
+            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
             if not current_app.config['SERVER_MODE'] or \
                     current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
                 add_value(attr_dict, "PasswordExecCommand",
@@ -727,8 +728,10 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
-            # if desktop mode
-            if not current_app.config['SERVER_MODE']:
+            # if desktop mode or server mode with
+            # ENABLE_SERVER_PASS_EXEC_CMD flag is True
+            if not current_app.config['SERVER_MODE'] or \
+                    current_app.config['ENABLE_SERVER_PASS_EXEC_CMD']:
                 new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
                 new_server.passexec_expiration = obj.get(
                     "PasswordExecExpiration", None)
