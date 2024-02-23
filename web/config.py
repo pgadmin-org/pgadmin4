@@ -804,6 +804,9 @@ OAUTH2_CONFIG = [
         # Ref: https://github.com/psf/requests/issues/6071
         'OAUTH2_SSL_CERT_VERIFICATION': True,
         # set this variable to invalidate the session of the oauth2 provider
+        # Example for keycloak:
+        # 'OAUTH2_LOGOUT_URL':
+        # 'https://example.com/realms/master/protocol/openid-connect/logout?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}'
         'OAUTH2_LOGOUT_URL': None
     }
 ]
