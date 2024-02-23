@@ -34,7 +34,7 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #6808 <https://github.com/pgadmin-org/pgadmin4/issues/6792>`_ -  Fix multiple issues where PasswordExecCommand was not working in server mode and PasswordExecCommand was not loaded when importing servers.
+  | `Issue #6792 <https://github.com/pgadmin-org/pgadmin4/issues/6792>`_ -  Fix multiple issues where PasswordExecCommand was not working in server mode and PasswordExecCommand was not loaded when importing servers.
   | `Issue #6808 <https://github.com/pgadmin-org/pgadmin4/issues/6808>`_ -  Fix the tabbed panel backward/forward shortcut for tabs.
   | `Issue #7027 <https://github.com/pgadmin-org/pgadmin4/issues/7027>`_ -  Fixed an issue where dependencies and dependents were not showing if a composite type is used as an attribute in another composite type.
   | `Issue #7164 <https://github.com/pgadmin-org/pgadmin4/issues/7164>`_ -  Fix an issue where constraint check control is enabled in the edit table dialog.
