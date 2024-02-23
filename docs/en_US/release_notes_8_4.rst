@@ -29,10 +29,12 @@ Housekeeping
 
   | `Issue #7097 <https://github.com/pgadmin-org/pgadmin4/issues/7097>`_ -  Upgrade CodeMirror from version 5 to 6.
   | `Issue #7187 <https://github.com/pgadmin-org/pgadmin4/issues/7187>`_ -  Separate the application name, branding & version information from the configuration file.
+  | `Issue #7234 <https://github.com/pgadmin-org/pgadmin4/issues/7234>`_ -  Upgrade python packages cryptography to 42.0.x and Flask-Security-Too to 5.3.x.
 
 Bug fixes
 *********
 
+  | `Issue #6792 <https://github.com/pgadmin-org/pgadmin4/issues/6792>`_ -  Fix multiple issues where PasswordExecCommand was not working in server mode and PasswordExecCommand was not loaded when importing servers.
   | `Issue #6808 <https://github.com/pgadmin-org/pgadmin4/issues/6808>`_ -  Fix the tabbed panel backward/forward shortcut for tabs.
   | `Issue #7027 <https://github.com/pgadmin-org/pgadmin4/issues/7027>`_ -  Fixed an issue where dependencies and dependents were not showing if a composite type is used as an attribute in another composite type.
   | `Issue #7164 <https://github.com/pgadmin-org/pgadmin4/issues/7164>`_ -  Fix an issue where constraint check control is enabled in the edit table dialog.
