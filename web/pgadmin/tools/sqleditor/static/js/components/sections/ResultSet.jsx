@@ -1187,17 +1187,15 @@ export function ResultSet() {
       let clientPK = row[rsu.current.clientPK];
       if(clientPK in dataChangeStore.deleted) {
         remove.push(clientPK);
-      } else {
+      } else if(clientPK in dataChangeStore.added) {
         /* If deleted from newly added */
-        if(clientPK in dataChangeStore.added) {
-          removeNewlyAdded.push(clientPK);
-        } else {
-          let primaryKeys = {};
-          Object.keys(queryData.primary_keys).forEach((k)=>{
-            primaryKeys[k] = row[k];
-          });
-          add[clientPK] = primaryKeys;
-        }
+        removeNewlyAdded.push(clientPK);
+      } else {
+        let primaryKeys = {};
+        Object.keys(queryData.primary_keys).forEach((k)=>{
+          primaryKeys[k] = row[k];
+        });
+        add[clientPK] = primaryKeys;
       }
     }
     if(removeNewlyAdded.length > 0) {

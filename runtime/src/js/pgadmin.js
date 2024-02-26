@@ -633,10 +633,8 @@ function updateCheckedMenuItem(menuItem) {
             sm.checked = menuItem.checked
           }
         })
-      } else {
-        if (sub.label == menuItem.label && type == 'checkbox') {
-          sub.checked = menuItem.checked
-        }
+      } else if (sub.label == menuItem.label && type == 'checkbox') {
+        sub.checked = menuItem.checked
       }
     });
   });

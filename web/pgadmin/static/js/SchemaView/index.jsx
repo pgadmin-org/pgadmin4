@@ -157,99 +157,97 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
           ...levelChanges,
           ...parseChanges(field.schema, origVal, sessVal),
         };
-      } else {
+      } else if(isEdit && !_.isEqual(_.get(origVal, field.id), _.get(sessVal, field.id))) {
         /* Check for changes only if its in edit mode, otherwise everything can go through comparator */
-        if(isEdit && !_.isEqual(_.get(origVal, field.id), _.get(sessVal, field.id))) {
-          let change = null;
-          if(field.type === 'collection') {
-            /* Use diffArray package to get the array diff and extract the info.
-            cid is used to identify the rows uniquely */
-            const changeDiff = diffArray(
-              _.get(origVal, field.id) || [],
-              _.get(sessVal, field.id) || [],
-              'cid',
-              {
-                compareFunction: isObjectEqual,
-              }
-            );
-            change = {};
-            if(changeDiff.added.length > 0) {
-              change['added'] = cleanCid(changeDiff.added, viewHelperProps.keepCid);
-            }
-            if(changeDiff.removed.length > 0) {
-              change['deleted'] = cleanCid(changeDiff.removed.map((row)=>{
-                /* Deleted records should be original, not the changed */
-                return _.find(_.get(origVal, field.id), ['cid', row.cid]);
-              }), viewHelperProps.keepCid);
-            }
-            if(changeDiff.updated.length > 0) {
-              /* There is change in collection. Parse further to go deep */
-              let changed = [];
-              for(const changedRow of changeDiff.updated) {
-                let finalChangedRow = {};
-                let rowIndxSess = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
-                let rowIndxOrig = _.findIndex(_.get(origVal, field.id), (r)=>r.cid==changedRow.cid);
-                finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndxOrig]), _.get(sessVal, [field.id, rowIndxSess]));
-
-                if(_.isEmpty(finalChangedRow)) {
-                  continue;
-                }
-                /* If the id attr value is present, then only changed keys can be passed.
-                Otherwise, passing all the keys is useful */
-                let idAttrValue = _.get(sessVal, [field.id, rowIndxSess, field.schema.idAttribute]);
-                if(_.isUndefined(idAttrValue)) {
-                  changed.push({
-                    ...changedRow,
-                    ...finalChangedRow,
-                  });
-                } else {
-                  changed.push({
-                    [field.schema.idAttribute]: idAttrValue,
-                    ...finalChangedRow,
-                  });
-                }
-              }
-              if(changed.length > 0) {
-                change['changed'] = cleanCid(changed, viewHelperProps.keepCid);
-              }
-            }
-            if(Object.keys(change).length > 0) {
-              attrChanged(field.id, change, true);
-            }
-          } else {
-            attrChanged(field.id);
-          }
-        } else if(!isEdit) {
-          if(field.type === 'collection') {
-            const origColl = _.get(origVal, field.id) || [];
-            const sessColl = _.get(sessVal, field.id) || [];
-            let changeDiff = diffArray(origColl,sessColl,'cid',{
+        let change = null;
+        if(field.type === 'collection') {
+          /* Use diffArray package to get the array diff and extract the info.
+          cid is used to identify the rows uniquely */
+          const changeDiff = diffArray(
+            _.get(origVal, field.id) || [],
+            _.get(sessVal, field.id) || [],
+            'cid',
+            {
               compareFunction: isObjectEqual,
-            });
+            }
+          );
+          change = {};
+          if(changeDiff.added.length > 0) {
+            change['added'] = cleanCid(changeDiff.added, viewHelperProps.keepCid);
+          }
+          if(changeDiff.removed.length > 0) {
+            change['deleted'] = cleanCid(changeDiff.removed.map((row)=>{
+              /* Deleted records should be original, not the changed */
+              return _.find(_.get(origVal, field.id), ['cid', row.cid]);
+            }), viewHelperProps.keepCid);
+          }
+          if(changeDiff.updated.length > 0) {
+            /* There is change in collection. Parse further to go deep */
+            let changed = [];
+            for(const changedRow of changeDiff.updated) {
+              let finalChangedRow = {};
+              let rowIndxSess = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
+              let rowIndxOrig = _.findIndex(_.get(origVal, field.id), (r)=>r.cid==changedRow.cid);
+              finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndxOrig]), _.get(sessVal, [field.id, rowIndxSess]));
 
-            /* For fixed rows, check only the updated changes */
-            /* If canReorder, check the updated changes */
-            if((!_.isUndefined(field.fixedRows) && changeDiff.updated.length > 0)
-              || (_.isUndefined(field.fixedRows) && (
-                changeDiff.added.length > 0 || changeDiff.removed.length > 0 || changeDiff.updated.length > 0
-              ))
-              || (field.canReorder && _.differenceBy(origColl, sessColl, 'cid'))
-            ) {
+              if(_.isEmpty(finalChangedRow)) {
+                continue;
+              }
+              /* If the id attr value is present, then only changed keys can be passed.
+              Otherwise, passing all the keys is useful */
+              let idAttrValue = _.get(sessVal, [field.id, rowIndxSess, field.schema.idAttribute]);
+              if(_.isUndefined(idAttrValue)) {
+                changed.push({
+                  ...changedRow,
+                  ...finalChangedRow,
+                });
+              } else {
+                changed.push({
+                  [field.schema.idAttribute]: idAttrValue,
+                  ...finalChangedRow,
+                });
+              }
+            }
+            if(changed.length > 0) {
+              change['changed'] = cleanCid(changed, viewHelperProps.keepCid);
+            }
+          }
+          if(Object.keys(change).length > 0) {
+            attrChanged(field.id, change, true);
+          }
+        } else {
+          attrChanged(field.id);
+        }
+      } else if(!isEdit) {
+        if(field.type === 'collection') {
+          const origColl = _.get(origVal, field.id) || [];
+          const sessColl = _.get(sessVal, field.id) || [];
+          let changeDiff = diffArray(origColl,sessColl,'cid',{
+            compareFunction: isObjectEqual,
+          });
+
+          /* For fixed rows, check only the updated changes */
+          /* If canReorder, check the updated changes */
+          if((!_.isUndefined(field.fixedRows) && changeDiff.updated.length > 0)
+            || (_.isUndefined(field.fixedRows) && (
+              changeDiff.added.length > 0 || changeDiff.removed.length > 0 || changeDiff.updated.length > 0
+            ))
+            || (field.canReorder && _.differenceBy(origColl, sessColl, 'cid'))
+          ) {
+            let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
+            attrChanged(field.id, change, true);
+            return;
+          }
+
+          if(field.canReorder) {
+            changeDiff = diffArray(origColl,sessColl);
+            if(changeDiff.updated.length > 0) {
               let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
               attrChanged(field.id, change, true);
-              return;
             }
-
-            if(field.canReorder) {
-              changeDiff = diffArray(origColl,sessColl);
-              if(changeDiff.updated.length > 0) {
-                let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
-                attrChanged(field.id, change, true);
-              }
-            }
-          } else {
-            attrChanged(field.id);
           }
+        } else {
+          attrChanged(field.id);
         }
       }
     });
@@ -294,11 +292,9 @@ function validateSchema(schema, sessData, setError, accessPath=[], collLabel=nul
             return true;
           }
         }
-      } else {
+      } else if(validateSchema(field.schema, sessData, setError, accessPath)) {
         /* A nested schema ? Recurse */
-        if(validateSchema(field.schema, sessData, setError, accessPath)) {
-          return true;
-        }
+        return true;
       }
     } else {
       /* Normal field, default validations */

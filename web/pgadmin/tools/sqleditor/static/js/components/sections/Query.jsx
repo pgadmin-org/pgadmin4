@@ -251,9 +251,6 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
-      if (value == '' && editor.current) {
-        editor.current.state.autoCompleteList = [];
-      }
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();

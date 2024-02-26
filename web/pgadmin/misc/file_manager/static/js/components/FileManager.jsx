@@ -616,10 +616,8 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
   const onItemEnter = useCallback(async (row)=>{
     if(row.file_type == 'dir' || row.file_type == 'drive') {
       await openDir(row.Path, selectedSS);
-    } else {
-      if(params.dialog_type == 'select_file') {
-        onOkClick();
-      }
+    } else if(params.dialog_type == 'select_file') {
+      onOkClick();
     }
   }, [filteredItems]);
   const onItemSelect = useCallback((idx)=>{

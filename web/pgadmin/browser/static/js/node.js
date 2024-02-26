@@ -821,22 +821,18 @@ define('pgadmin.browser.node', [
       /* Fit to standard sizes */
       if(w <= pgBrowser.stdW.sm) {
         w = pgBrowser.stdW.sm;
+      } else if(w <= pgBrowser.stdW.md) {
+        w = pgBrowser.stdW.md;
       } else {
-        if(w <= pgBrowser.stdW.md) {
-          w = pgBrowser.stdW.md;
-        } else {
-          w = pgBrowser.stdW.lg;
-        }
+        w = pgBrowser.stdW.lg;
       }
 
       if(h <= pgBrowser.stdH.sm) {
         h = pgBrowser.stdH.sm;
+      } else if(h <= pgBrowser.stdH.md) {
+        h = pgBrowser.stdH.md;
       } else {
-        if(h <= pgBrowser.stdH.md) {
-          h = pgBrowser.stdH.md;
-        } else {
-          h = pgBrowser.stdH.lg;
-        }
+        h = pgBrowser.stdH.lg;
       }
 
       if(update) {

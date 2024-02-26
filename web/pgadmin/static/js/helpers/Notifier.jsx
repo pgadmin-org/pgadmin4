@@ -133,32 +133,30 @@ class Notifier {
     if(!error.response) {
       msg = parseApiError(error);
       promptmsg = gettext('Connection Lost');
-    } else {
-      if(error.response.headers['content-type'] == 'application/json') {
-        let resp = error.response.data;
-        if(resp.info == 'CRYPTKEY_MISSING') {
-          let pgBrowser = window.pgAdmin.Browser;
-          pgBrowser.set_master_password('', ()=> {
-            if(onJSONResult && typeof(onJSONResult) == 'function') {
-              onJSONResult('CRYPTKEY_SET');
-            }
-          }, ()=> {
-            if(onJSONResult && typeof(onJSONResult) == 'function') {
-              onJSONResult('CRYPTKEY_NOT_SET');
-            }
-          });
-          return;
-        } else if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
-          onJSONResult && typeof(onJSONResult) == 'function') {
-          return onJSONResult(resp.result);
-        }
-        msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
-      } else {
-        if (type === 'error') {
-          this.alert('Error', promptmsg);
-        }
+    } else if(error.response.headers['content-type'] == 'application/json') {
+      let resp = error.response.data;
+      if(resp.info == 'CRYPTKEY_MISSING') {
+        let pgBrowser = window.pgAdmin.Browser;
+        pgBrowser.set_master_password('', ()=> {
+          if(onJSONResult && typeof(onJSONResult) == 'function') {
+            onJSONResult('CRYPTKEY_SET');
+          }
+        }, ()=> {
+          if(onJSONResult && typeof(onJSONResult) == 'function') {
+            onJSONResult('CRYPTKEY_NOT_SET');
+          }
+        });
         return;
+      } else if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+        onJSONResult && typeof(onJSONResult) == 'function') {
+        return onJSONResult(resp.result);
       }
+      msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
+    } else {
+      if (type === 'error') {
+        this.alert('Error', promptmsg);
+      }
+      return;
     }
     if(type == 'error-noalert' && onJSONResult && typeof(onJSONResult) == 'function') {
       return onJSONResult();

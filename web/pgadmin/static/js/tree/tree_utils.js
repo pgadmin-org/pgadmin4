@@ -37,14 +37,10 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle) {
             'Databases with = symbols in the name cannot be backed up or restored using this utility.'
           )
         );
-      } else {
-        if (databaseNode.anyParent(isServerNode))
-          serverInformation = nodeData;
-      }
-    } else {
-      if (treeNode.anyFamilyMember(isServerNode))
+      } else if (databaseNode.anyParent(isServerNode))
         serverInformation = nodeData;
-    }
+    } else  if (treeNode.anyFamilyMember(isServerNode))
+      serverInformation = nodeData;
   }
 
   if (serverInformation === null) {

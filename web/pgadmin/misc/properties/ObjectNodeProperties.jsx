@@ -147,18 +147,14 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
 
       if (server.server_type == 'ppas' && node.epasHelp) {
         fullUrl = getEPASHelpUrl(server.version);
+      } else if (node.sqlCreateHelp == '' && node.sqlAlterHelp != '') {
+        fullUrl = getHelpUrl(helpUrl, node.sqlAlterHelp, server.version);
+      } else if (node.sqlCreateHelp != '' && node.sqlAlterHelp == '') {
+        fullUrl = getHelpUrl(helpUrl, node.sqlCreateHelp, server.version);
+      } else if (isNew) {
+        fullUrl = getHelpUrl(helpUrl, node.sqlCreateHelp, server.version);
       } else {
-        if (node.sqlCreateHelp == '' && node.sqlAlterHelp != '') {
-          fullUrl = getHelpUrl(helpUrl, node.sqlAlterHelp, server.version);
-        } else if (node.sqlCreateHelp != '' && node.sqlAlterHelp == '') {
-          fullUrl = getHelpUrl(helpUrl, node.sqlCreateHelp, server.version);
-        } else {
-          if (isNew) {
-            fullUrl = getHelpUrl(helpUrl, node.sqlCreateHelp, server.version);
-          } else {
-            fullUrl = getHelpUrl(helpUrl, node.sqlAlterHelp, server.version);
-          }
-        }
+        fullUrl = getHelpUrl(helpUrl, node.sqlAlterHelp, server.version);
       }
 
       window.open(fullUrl, 'postgres_help');

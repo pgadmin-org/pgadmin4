@@ -326,17 +326,15 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           'default_value': defValList[i],
           'disable_use_default': defValList[i] == DEBUGGER_ARGS.NO_DEFAULT_VALUE,
         });
-      } else {
-        if (argMode && (argMode[i] == 'i' || argMode[i] == 'b' ||
+      } else if (argMode && (argMode[i] == 'i' || argMode[i] == 'b' ||
           (isEdbProc && argMode[i] == 'o'))) {
-          myObj.push({
-            'name': myargname[i],
-            'type': argType[i],
-            'use_default': useDefValue,
-            'default_value': defValList[i],
-            'disable_use_default': defValList[i] == DEBUGGER_ARGS.NO_DEFAULT_VALUE,
-          });
-        }
+        myObj.push({
+          'name': myargname[i],
+          'type': argType[i],
+          'use_default': useDefValue,
+          'default_value': defValList[i],
+          'disable_use_default': defValList[i] == DEBUGGER_ARGS.NO_DEFAULT_VALUE,
+        });
       }
     }
     return myObj;
@@ -528,21 +526,19 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'type': arg.type,
         'value': 'NULL',
       });
-    } else {
+    } else if (arg.use_default) {
       // Check if default value to be used or not
-      if (arg.use_default) {
-        argsValueList.push({
-          'name': arg.name,
-          'type': arg.type,
-          'value': arg.default_value,
-        });
-      } else {
-        argsValueList.push({
-          'name': arg.name,
-          'type': arg.type,
-          'value': arg.value,
-        });
-      }
+      argsValueList.push({
+        'name': arg.name,
+        'type': arg.type,
+        'value': arg.default_value,
+      });
+    } else {
+      argsValueList.push({
+        'name': arg.name,
+        'type': arg.type,
+        'value': arg.value,
+      });
     }
   }
   function getFunctionID(d, treeInfo) {

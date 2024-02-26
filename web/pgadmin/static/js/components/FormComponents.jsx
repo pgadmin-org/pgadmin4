@@ -857,12 +857,10 @@ function getRealValue(options, value, creatable, formatter) {
     /* If multi select options need to be in some format by UI, use formatter */
     if (formatter) {
       realValue = formatter.fromRaw(realValue, options);
+    } else if (creatable) {
+      realValue = realValue.map((val) => ({ label: val, value: val }));
     } else {
-      if (creatable) {
-        realValue = realValue.map((val) => ({ label: val, value: val }));
-      } else {
-        realValue = realValue.map((val) => (_.find(options, (option) => _.isEqual(option.value, val))));
-      }
+      realValue = realValue.map((val) => (_.find(options, (option) => _.isEqual(option.value, val))));
     }
   } else {
     let flatOptions = flattenSelectOptions(options);
