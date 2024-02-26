@@ -7,18 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
-import gettext from 'sources/gettext';
-import { makeStyles } from '@material-ui/core';
-import { PgIconButton } from '../../Buttons';
 import { checkTrojanSource } from '../../../utils';
-import { copyToClipboard } from '../../../clipboard';
-import { useDelayedCaller } from '../../../custom_hooks';
 import usePreferences from '../../../../../preferences/static/js/store';
-import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import KeyboardArrowRightRoundedIcon from '@material-ui/icons/KeyboardArrowRightRounded';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 
@@ -44,7 +37,6 @@ import {
   foldKeymap,
 } from '@codemirror/language';
 
-import FindDialog from './FindDialog';
 import syntaxHighlighting from '../extensions/highlighting';
 import PgSQL from '../extensions/dialect';
 import { sql } from '@codemirror/lang-sql';
@@ -52,42 +44,9 @@ import errorMarkerExtn from '../extensions/errorMarker';
 import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
 import activeLineExtn from '../extensions/activeLineMarker';
-import GotoDialog from './GotoDialog';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{fontSize: '1.2em'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{fontSize: '1.2em'}} />);
-
-const useStyles = makeStyles(() => ({
-  copyButton: {
-    position: 'absolute',
-    zIndex: 99,
-    right: '4px',
-    top: '4px',
-  }
-}));
-
-export function CopyButton({ editor }) {
-  const classes = useStyles();
-  const [isCopied, setIsCopied] = useState(false);
-  const revertCopiedText = useDelayedCaller(() => {
-    setIsCopied(false);
-  });
-
-  return (
-    <PgIconButton size="small" className={classes.copyButton} icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
-      title={isCopied ? gettext('Copied!') : gettext('Copy')}
-      onClick={() => {
-        copyToClipboard(editor?.getValue());
-        setIsCopied(true);
-        revertCopiedText(1500);
-      }}
-    />
-  );
-}
-
-CopyButton.propTypes = {
-  editor: PropTypes.object,
-};
 
 function handleDrop(e, editor) {
   let dropDetails = null;
@@ -104,7 +63,6 @@ function handleDrop(e, editor) {
     }
   } catch (error) {
     /* if parsing fails, it must be the drag internal of codemirror text */
-    // editor.inputState.handlers.drop(e, editor);
     return false;
   }
 
@@ -171,11 +129,8 @@ const defaultExtensions = [
 
 export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly, disabled, autocomplete = false,
-  breakpoint = false, onBreakPointChange, showActiveLine=false, showCopyBtn = false,
-  keepHistory = true, cid, helpid, labelledBy}) {
-  const [[showFind, isReplace], setShowFind] = useState([false, false]);
-  const [showGoto, setShowGoto] = useState(false);
-  const [showCopy, setShowCopy] = useState(false);
+  breakpoint = false, onBreakPointChange, showActiveLine=false, 
+  keepHistory = true, cid, helpid, labelledBy, customKeyMap}) {
 
   const editorContainerRef = useRef();
   const editor = useRef();
@@ -188,28 +143,6 @@ export default function Editor({
   const editable = !disabled;
   const configurables = useRef(new Compartment());
   const editableConfig = useRef(new Compartment());
-
-  const editMenuKeyMap = [{
-    key: 'Mod-f', run: (view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setShowFind([false, false]);
-      setShowFind([true, false]);
-    }
-  }, {
-    key: 'Mod-Alt-f', run: (view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setShowFind([false, false]);
-      setShowFind([true, true]);
-    },
-  }, {
-    key: 'Mod-l', run: (view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setShowGoto(true);
-    },
-  }];
 
   useEffect(() => {
     const finalOptions = { ...defaultOptions, ...options };
@@ -237,7 +170,7 @@ export default function Editor({
         extensions: [
           ...finalExtns,
           configurables.current.of([]),
-          keymap.of(editMenuKeyMap),
+          keymap.of(customKeyMap??[]),
           editableConfig.current.of([
             EditorView.editable.of(!disabled),
             EditorState.readOnly.of(readonly),
@@ -403,27 +336,9 @@ export default function Editor({
     });
   }, [readonly, disabled, keepHistory]);
 
-  const closeFind = () => {
-    setShowFind([false, false]);
-    editor.current?.focus();
-  };
-
-  const closeGoto = () => {
-    setShowGoto(false);
-    editor.current?.focus();
-  };
-
-  const onMouseEnter = useCallback(()=>{showCopyBtn && setShowCopy(true);});
-  const onMouseLeave = useCallback(()=>{showCopyBtn && setShowCopy(false);});
-
-  return (
-    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} style={{height: '100%'}}>
-      <div style={{ height: '100%' }} ref={editorContainerRef} name={name}></div>
-      {showCopy && <CopyButton editor={editor.current} />}
-      <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
-      <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
-    </div>
-  );
+  return useMemo(()=>(
+    <div style={{ height: '100%' }} ref={editorContainerRef} name={name}></div>
+  ), []);
 }
 
 Editor.propTypes = {
@@ -444,4 +359,5 @@ Editor.propTypes = {
   cid: PropTypes.string,
   helpid: PropTypes.string,
   labelledBy: PropTypes.string,
+  customKeyMap: PropTypes.array,
 };

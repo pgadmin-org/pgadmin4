@@ -90,17 +90,15 @@ export default class MainMenuFactory {
         options.module[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
       } else if (options?.callback) {
         options.callback(options);
-      } else {
-        if (options.url != '#') {
-          let api = getApiInstance();
-          api(
-            url_for('tools.initialize')
-          ).then(()=>{
-            window.open(options.url);
-          }).catch(()=>{
-            pgAdmin.Browser.notifier.error(gettext('Error in opening window'));
-          });
-        }
+      } else if (options.url != '#') {
+        let api = getApiInstance();
+        api(
+          url_for('tools.initialize')
+        ).then(()=>{
+          window.open(options.url);
+        }).catch(()=>{
+          pgAdmin.Browser.notifier.error(gettext('Error in opening window'));
+        });
       }
     }}, (menu, item)=> {
       pgAdmin.Browser.Events.trigger('pgadmin:nw-enable-disable-menu-items', menu, item);

@@ -1079,6 +1079,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             return super().update(
                 gid, sid, did, scid, tid, data=data, res=res)
         except Exception as e:
+            current_app.logger.exception(e)
             return internal_server_error(errormsg=str(e))
 
     @BaseTableView.check_precondition

@@ -556,10 +556,8 @@ export default class DebuggerModule {
             pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), error);
           }
         );
-      } else {
-        if (err.success == 0) {
-          pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
-        }
+      } else if (err.success == 0) {
+        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
       }
     } catch (e) {
       console.warn(e.stack || e);

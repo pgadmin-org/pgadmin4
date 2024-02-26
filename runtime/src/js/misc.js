@@ -72,12 +72,10 @@ const getAppDataPath = () => {
   default:
     if (platform().startsWith('win')) {
       appDataPath = path.join(process.env.APPDATA, 'pgadmin');
+    } else if ('XDG_CONFIG_HOME' in process.env) {
+      appDataPath = path.join(process.env.XDG_CONFIG_HOME, 'pgadmin');
     } else {
-      if ('XDG_CONFIG_HOME' in process.env) {
-        appDataPath = path.join(process.env.XDG_CONFIG_HOME, 'pgadmin');
-      } else {
-        appDataPath = path.join(homedir(), '.config', 'pgadmin');
-      }
+      appDataPath = path.join(homedir(), '.config', 'pgadmin');
     }
   }
 
@@ -108,12 +106,10 @@ const getLocalAppDataPath = () => {
   default:
     if (platform().startsWith('win')) {
       localAppDataPath = path.join(process.env.LOCALAPPDATA, 'pgadmin');
+    } else if ('XDG_DATA_HOME' in process.env) {
+      localAppDataPath = path.join(process.env.XDG_DATA_HOME, 'pgadmin');
     } else {
-      if ('XDG_DATA_HOME' in process.env) {
-        localAppDataPath = path.join(process.env.XDG_DATA_HOME, 'pgadmin');
-      } else {
-        localAppDataPath = path.join(homedir(), '.local', 'share', 'pgadmin');
-      }
+      localAppDataPath = path.join(homedir(), '.local', 'share', 'pgadmin');
     }
   }
 
@@ -412,14 +408,12 @@ let ConfigureStore = {
         ...this.jsonData,
         ...key,
       };
-    } else {
-      if(value === '' || value == null || typeof(value) == 'undefined') {
-        if(this.jsonData[key] !== undefined) {
-          delete this.jsonData[key];
-        }
-      } else {
-        this.jsonData[key] = value;
+    } else if(value === '' || value == null || typeof(value) == 'undefined') {
+      if(this.jsonData[key] !== undefined) {
+        delete this.jsonData[key];
       }
+    } else {
+      this.jsonData[key] = value;
     }
   },
 };

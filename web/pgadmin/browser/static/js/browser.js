@@ -56,21 +56,18 @@ define('pgadmin.browser', [
       // calc method logic
       calc: (passed_width) => {
         let iw = window.innerWidth;
-        if(iw > passed_width){
+        if(iw > passed_width)
           return passed_width;
-        }else{
-          if (iw > pgAdmin.Browser.stdW.lg)
-            return pgAdmin.Browser.stdW.lg;
-          else if (iw > pgAdmin.Browser.stdW.md)
-            return pgAdmin.Browser.stdW.md;
-          else if (iw > pgAdmin.Browser.stdW.sm)
-            return pgAdmin.Browser.stdW.sm;
-          else
-            // if avilable screen resolution is still
-            // less then return the width value as it
-            return iw;
-        }
-
+        else if (iw > pgAdmin.Browser.stdW.lg)
+          return pgAdmin.Browser.stdW.lg;
+        else if (iw > pgAdmin.Browser.stdW.md)
+          return pgAdmin.Browser.stdW.md;
+        else if (iw > pgAdmin.Browser.stdW.sm)
+          return pgAdmin.Browser.stdW.sm;
+        else
+          // if avilable screen resolution is still
+          // less then return the width value as it
+          return iw;
       },
     },
     stdH: {
@@ -83,18 +80,16 @@ define('pgadmin.browser', [
       calc: (passed_height) => {
         // We are excluding sm as it is too small for dialog
         let ih = window.innerHeight;
-        if (ih > passed_height){
+        if (ih > passed_height)
           return passed_height;
-        } else {
-          if (ih > pgAdmin.Browser.stdH.lg)
-            return pgAdmin.Browser.stdH.lg;
-          else if (ih > pgAdmin.Browser.stdH.md)
-            return pgAdmin.Browser.stdH.md;
-          else
-            // if avilable screen resolution is still
-            // less then return the height value as it
-            return ih;
-        }
+        else if (ih > pgAdmin.Browser.stdH.lg)
+          return pgAdmin.Browser.stdH.lg;
+        else if (ih > pgAdmin.Browser.stdH.md)
+          return pgAdmin.Browser.stdH.md;
+        else
+          // if avilable screen resolution is still
+          // less then return the height value as it
+          return ih;
       },
     },
     // Default panels
@@ -666,10 +661,8 @@ define('pgadmin.browser', [
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _data._id) == 1)
                         return true;
-                    } else {
-                      if (pgAdmin.natural_sort(d._label, _data._label) == 1)
-                        return true;
-                    }
+                    } else if (pgAdmin.natural_sort(d._label, _data._label) == 1)
+                      return true;
                     s++;
                   }
                   //when the current element is greater than the end element
@@ -693,10 +686,8 @@ define('pgadmin.browser', [
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _data._id) != -1)
                         return true;
-                    } else {
-                      if (pgAdmin.natural_sort(d._label, _data._label) != -1)
-                        return true;
-                    }
+                    } else if (pgAdmin.natural_sort(d._label, _data._label) != -1)
+                      return true;
                     i = items[e];
                     d = __ctx.t.itemData(i);
                     let result;
@@ -767,16 +758,14 @@ define('pgadmin.browser', [
                       ) {
                         ___ctx.t.open(___ctx.i);
                         ___ctx.t.select(_i);
-                      } else {
-                        if (_parent_data) {
-                          // Unload the parent node so that we'll get
-                          // latest data when we try to expand it
-                          ___ctx.t.unload(___ctx.i).then(
-                            () => {
-                              ___ctx.t.open(___ctx.i);
-                            }
-                          );
-                        }
+                      } else if (_parent_data) {
+                        // Unload the parent node so that we'll get
+                        // latest data when we try to expand it
+                        ___ctx.t.unload(___ctx.i).then(
+                          () => {
+                            ___ctx.t.open(___ctx.i);
+                          }
+                        );
                       }
                       if (typeof(___ctx?.o?.success) == 'function') {
                         ___ctx.o.success.apply(___ctx.t, [_i, _data]);
@@ -1154,10 +1143,8 @@ define('pgadmin.browser', [
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _new._id) == 1)
                         return true;
-                    } else {
-                      if (pgAdmin.natural_sort(d._label, _new._label) == 1)
-                        return true;
-                    }
+                    } else if (pgAdmin.natural_sort(d._label, _new._label) == 1)
+                      return true;
                     s++;
                   }
                   if (e != items.length - 1) {
@@ -1174,10 +1161,8 @@ define('pgadmin.browser', [
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _new._id) != -1)
                         return true;
-                    } else {
-                      if (pgAdmin.natural_sort(d._label, _new._label) != -1)
-                        return true;
-                    }
+                    } else if (pgAdmin.natural_sort(d._label, _new._label) != -1)
+                      return true;
                     i = items[e];
                     d = __ctx.t.itemData(i);
                     let result;
@@ -1678,14 +1663,10 @@ define('pgadmin.browser', [
             );
           });
 
-          if (_callback) {
-            _callback();
-          }
+          _callback?.();
         });
       } else {
-        if (_callback) {
-          _callback();
-        }
+        _callback?.();
       }
     },
 

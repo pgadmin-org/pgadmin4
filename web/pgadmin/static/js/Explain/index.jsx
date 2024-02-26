@@ -390,11 +390,9 @@ function parsePlan(data, ctx) {
       plans.push(plan);
       idx++;
     });
-  } else{
-    if('loops' in data && 'exclusive' in data) {
-      data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'] || 1, -3);
-      data['exclusive'] = data['inclusive'];
-    }
+  } else if('loops' in data && 'exclusive' in data) {
+    data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'] || 1, -3);
+    data['exclusive'] = data['inclusive'];
   }
 
   if ('exclusive' in data) {
