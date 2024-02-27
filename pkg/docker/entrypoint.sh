@@ -64,6 +64,7 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     /venv/bin/python3 run_pgadmin.py
 
     export PGADMIN_SERVER_JSON_FILE="${PGADMIN_SERVER_JSON_FILE:-/pgadmin4/servers.json}"
+    export PGADMIN_PREFERENCES_JSON_FILE="${PGADMIN_PREFERENCES_JSON_FILE:-/pgadmin4/preferences.json}"
 
     # Pre-load any required servers
     if [ -f "${PGADMIN_SERVER_JSON_FILE}" ]; then
