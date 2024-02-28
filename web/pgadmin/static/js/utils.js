@@ -388,6 +388,10 @@ export function downloadBlob(blob, fileName) {
 
 export function toPrettySize(rawSize, from='B') {
   try {
+    //if the integer need to be converted to K for thousands, M for millions , B for billions only
+    if (from == '') {
+      return Intl.NumberFormat('en', {notation: 'compact'}).format(rawSize);
+    }
     let conVal = convert(rawSize).from(from).toBest();
     conVal.val = Math.round(conVal.val * 100) / 100;
     return `${conVal.val} ${conVal.unit}`;
