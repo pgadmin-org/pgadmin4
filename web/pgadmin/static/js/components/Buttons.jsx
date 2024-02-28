@@ -182,28 +182,26 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
         </DefaultButton>
       );
     }
+  } else if(color == 'primary') {
+    return (
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
+        <PrimaryButton ref={ref} style={style}
+          className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
+          accessKey={accesskey} data-label={title || ''} {...props}>
+          {icon}
+        </PrimaryButton>
+      </Tooltip>
+    );
   } else {
-    if(color == 'primary') {
-      return (
-        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
-          <PrimaryButton ref={ref} style={style}
-            className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
-            accessKey={accesskey} data-label={title || ''} {...props}>
-            {icon}
-          </PrimaryButton>
-        </Tooltip>
-      );
-    } else {
-      return (
-        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
-          <DefaultButton ref={ref} style={style}
-            className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
-            accessKey={accesskey} data-label={title || ''} {...props}>
-            {icon}
-          </DefaultButton>
-        </Tooltip>
-      );
-    }
+    return (
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
+        <DefaultButton ref={ref} style={style}
+          className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
+          accessKey={accesskey} data-label={title || ''} {...props}>
+          {icon}
+        </DefaultButton>
+      </Tooltip>
+    );
   }
 });
 PgIconButton.displayName = 'PgIconButton';

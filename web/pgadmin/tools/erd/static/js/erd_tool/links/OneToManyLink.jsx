@@ -264,12 +264,10 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
           } else {
             points[i].setPosition(points[i - 1].getX(), points[i].getY());
           }
+        } else if (this.props.link.getLastPathXdirection()) {
+          points[i - 1].setPosition(points[i - 1].getX(), points[i].getY());
         } else {
-          if (this.props.link.getLastPathXdirection()) {
-            points[i - 1].setPosition(points[i - 1].getX(), points[i].getY());
-          } else {
-            points[i - 1].setPosition(points[i].getX(), points[i - 1].getY());
-          }
+          points[i - 1].setPosition(points[i].getX(), points[i - 1].getY());
         }
       }
     }

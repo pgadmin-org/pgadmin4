@@ -449,15 +449,13 @@ export default class FunctionSchema extends BaseUISchema {
         setError('prosrc_c', null);
       }
 
-    }else {
+    }else if (isEmptyString(state.prosrc)) {
       /* code validation*/
-      if (isEmptyString(state.prosrc)) {
-        errmsg = gettext('Code cannot be empty.');
-        setError('prosrc', errmsg);
-        return true;
-      } else {
-        setError('prosrc', null);
-      }
+      errmsg = gettext('Code cannot be empty.');
+      setError('prosrc', errmsg);
+      return true;
+    } else {
+      setError('prosrc', null);
     }
   }
 }

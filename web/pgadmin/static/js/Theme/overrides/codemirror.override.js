@@ -122,7 +122,7 @@ export default function cmOverride(theme) {
 
       '&.pg-autocomp-loader': {
         position: 'absolute',
-        paddingRight: '8px',
+        paddingRight: '1px 12px 1px 2px',
       }
     }
   };

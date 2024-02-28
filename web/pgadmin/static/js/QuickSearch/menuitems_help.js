@@ -41,12 +41,10 @@ export function menuSearch(param, props) {
         if(subMenu.getMenuItems()) {
           iterItem(subMenu.getMenuItems(), getMenuName(subMenu), path);
         }
+      } else if(typeof(subMenu) == 'object' && !(subMenu instanceof NewMenuItem)) {
+        iterItem(Object.values(subMenu), path, parentPath);
       } else {
-        if(typeof(subMenu) == 'object' && !(subMenu instanceof NewMenuItem)) {
-          iterItem(Object.values(subMenu), path, parentPath);
-        } else {
-          iterItem(subMenu, path, parentPath);
-        }
+        iterItem(subMenu, path, parentPath);
       }
     });
   };

@@ -39,38 +39,36 @@ function manageTreeEvents(event, eventName, item) {
       console.warn(e.stack || e);
       return false;
     }
-  } else {
+  } else if (d && obj.Nodes[d._type]) {
     // Events for browser tree.
-    if (d && obj.Nodes[d._type]) {
-      node = obj.Nodes[d._type];
+    node = obj.Nodes[d._type];
 
-      // If the Browser tree is not initialised yet
-      if (obj.tree === null) return;
+    // If the Browser tree is not initialised yet
+    if (obj.tree === null) return;
 
-      if (eventName == 'dragstart') {
-        obj.tree.handleDraggable(event, item);
-      }
-      if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
-        obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data'), item, item.parent.path);
-      }
-      if(eventName == 'copied') {
-        obj.tree.copyHandler?.(item.getMetadata('data'), item);
-      }
-      if (_.isObject(node.callbacks) &&
-        eventName in node.callbacks &&
-        typeof node.callbacks[eventName] == 'function') {
-        node.callbacks[eventName].apply(node, [item, d, obj, [], eventName]);
-      }
+    if (eventName == 'dragstart') {
+      obj.tree.handleDraggable(event, item);
+    }
+    if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
+      obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data'), item, item.parent.path);
+    }
+    if(eventName == 'copied') {
+      obj.tree.copyHandler?.(item.getMetadata('data'), item);
+    }
+    if (_.isObject(node.callbacks) &&
+      eventName in node.callbacks &&
+      typeof node.callbacks[eventName] == 'function') {
+      node.callbacks[eventName].apply(node, [item, d, obj, [], eventName]);
+    }
 
-      /* Raise tree events for the nodes */
-      try {
-        obj.Events.trigger(
-          'pgadmin-browser:tree:' + eventName, item, d, node
-        );
-      } catch (e) {
-        console.warn(e.stack || e);
-        return false;
-      }
+    /* Raise tree events for the nodes */
+    try {
+      obj.Events.trigger(
+        'pgadmin-browser:tree:' + eventName, item, d, node
+      );
+    } catch (e) {
+      console.warn(e.stack || e);
+      return false;
     }
   }
   return true;
@@ -510,12 +508,10 @@ export class Tree {
       Object.keys(typeOrTypeDict).forEach((type) => {
         this.registerDraggableType(type, typeOrTypeDict[type]);
       });
-    } else {
-      if (dropDetailsFunc != null) {
-        typeOrTypeDict.replace(/ +/, ' ').split(' ').forEach((type) => {
-          this.draggableTypes[type] = dropDetailsFunc;
-        });
-      }
+    } else if (dropDetailsFunc != null) {
+      typeOrTypeDict.replace(/ +/, ' ').split(' ').forEach((type) => {
+        this.draggableTypes[type] = dropDetailsFunc;
+      });
     }
   }
 
@@ -542,16 +538,14 @@ export class Tree {
             to: dropDetails.length,
           },
         };
-      } else {
-        if (!dropDetails.cur) {
-          dropDetails = {
-            ...dropDetails,
-            cur: {
-              from: dropDetails.text.length,
-              to: dropDetails.text.length,
-            },
-          };
-        }
+      } else if (!dropDetails.cur) {
+        dropDetails = {
+          ...dropDetails,
+          cur: {
+            from: dropDetails.text.length,
+            to: dropDetails.text.length,
+          },
+        };
       }
 
       e.dataTransfer.setData('text', JSON.stringify(dropDetails));
