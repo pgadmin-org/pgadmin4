@@ -534,7 +534,7 @@ export function StorageWrapper(props) {
                     <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
                       <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
                         valueFormatter={(v)=>{
-                          return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : toPrettySize(v);
+                          return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : type.endsWith('_total_rw') ? toPrettySize(v, ''): toPrettySize(v);
                         }} />
                     </ChartContainer>
                   </Grid>

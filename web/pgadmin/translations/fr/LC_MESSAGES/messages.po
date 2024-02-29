@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-01 21:25+0530\n"
+"POT-Creation-Date: 2024-02-29 18:39+0530\n"
 "PO-Revision-Date: 2022-08-25 11:22+0200\n"
 "Last-Translator: Fred Escallier <fred.escallier@free.fr>\n"
 "Language: fr\n"
@@ -19,15 +19,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: pgadmin/__init__.py:336 pgadmin/authenticate/internal.py:26
+#: pgadmin/__init__.py:348 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
 msgstr "Mot de passe ou identifiant incorrect."
 
-#: pgadmin/__init__.py:641 pgadmin/__init__.py:691
+#: pgadmin/__init__.py:653 pgadmin/__init__.py:703
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr "Installation {0} auto-détectée avec le répertoire de données à {1}"
 
-#: pgadmin/__init__.py:774
+#: pgadmin/__init__.py:786
 msgid "403 FORBIDDEN"
 msgstr "403 FORBIDDEN"
 
@@ -38,7 +38,7 @@ msgstr "A propos de %(appname)s"
 
 #: pgadmin/about/__init__.py:68
 #: pgadmin/browser/server_groups/servers/static/js/server.js:31
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:201
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:215
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:118
 msgid "Server"
 msgstr "Serveur"
@@ -47,62 +47,61 @@ msgstr "Serveur"
 msgid "Desktop"
 msgstr "Ordinateur de bureau"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:43
-#: pgadmin/about/static/js/AboutComponent.jsx:45
-#: pgadmin/static/js/components/CodeMirror.jsx:314
-#: pgadmin/static/js/components/CodeMirror.jsx:316
+#: pgadmin/about/static/js/AboutComponent.jsx:42
+#: pgadmin/about/static/js/AboutComponent.jsx:44
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:50
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:309
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:312
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:161
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:160
 msgid "Copy"
 msgstr "Copier"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:64
+#: pgadmin/about/static/js/AboutComponent.jsx:63
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.ui.js:121
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.ui.js:63
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/default/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/index_constraint/sql/default/stats.sql:10
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/indexes/sql/default/stats.sql:10
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:106
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:146
 msgid "Version"
 msgstr "Version"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:72
+#: pgadmin/about/static/js/AboutComponent.jsx:71
 msgid "Application Mode"
 msgstr "Mode applicatif"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:80
+#: pgadmin/about/static/js/AboutComponent.jsx:79
 msgid "Current User"
 msgstr "Utilisateur Connecté"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:89
+#: pgadmin/about/static/js/AboutComponent.jsx:88
 msgid "NW.js Version"
 msgstr "Version NW.js"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:98 pgadmin/browser/__init__.py:89
+#: pgadmin/about/static/js/AboutComponent.jsx:97 pgadmin/browser/__init__.py:89
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:341
 msgid "Browser"
 msgstr "Navigateur"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:107
+#: pgadmin/about/static/js/AboutComponent.jsx:106
 msgid "Operating System"
 msgstr "Système d'Exploitation"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:117
+#: pgadmin/about/static/js/AboutComponent.jsx:116
 msgid "pgAdmin Database File"
 msgstr "Fichier de base de données pgAdmin"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:127
+#: pgadmin/about/static/js/AboutComponent.jsx:126
 msgid "Log File"
 msgstr "Fichier de log"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:137
+#: pgadmin/about/static/js/AboutComponent.jsx:136
 msgid "Server Configuration"
 msgstr "Configuration du serveur"
 
-#: pgadmin/about/static/js/AboutComponent.jsx:140
-#: pgadmin/static/js/components/CodeMirror.jsx:323
+#: pgadmin/about/static/js/AboutComponent.jsx:139
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:50
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:317
 msgid "Copied!"
 msgstr "Copié !"
@@ -422,26 +421,26 @@ msgstr ""
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: pgadmin/browser/__init__.py:714 pgadmin/browser/__init__.py:843
+#: pgadmin/browser/__init__.py:715 pgadmin/browser/__init__.py:844
 msgid "Incorrect master password"
 msgstr "Mot de passe maître incorrect"
 
-#: pgadmin/browser/__init__.py:824
+#: pgadmin/browser/__init__.py:825
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
 "utility specified {0}.Please check that the hook utility is configured "
 "correctly."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:891
+#: pgadmin/browser/__init__.py:892
 msgid "Master password cannot be empty"
 msgstr "Le mot de passe maître ne peut pas être vide"
 
-#: pgadmin/browser/__init__.py:977
+#: pgadmin/browser/__init__.py:978
 msgid "pgAdmin user password changed successfully"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1024
+#: pgadmin/browser/__init__.py:1025
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
@@ -450,7 +449,7 @@ msgstr ""
 "contacter les administrateurs de ce service si vous avez besoin de "
 "réinitialiser votre mot de passe."
 
-#: pgadmin/browser/__init__.py:1134
+#: pgadmin/browser/__init__.py:1135
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -582,22 +581,22 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:123
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:33
-#: pgadmin/utils/__init__.py:828 pgadmin/utils/__init__.py:837
+#: pgadmin/utils/__init__.py:831 pgadmin/utils/__init__.py:840
 msgid "Key"
 msgstr "Touche"
 
 #: pgadmin/browser/register_browser_preferences.py:124
-#: pgadmin/static/js/keyboard_shortcuts.js:66 pgadmin/utils/__init__.py:842
+#: pgadmin/static/js/keyboard_shortcuts.js:66 pgadmin/utils/__init__.py:845
 msgid "Shift"
 msgstr "Shift"
 
 #: pgadmin/browser/register_browser_preferences.py:125
-#: pgadmin/static/js/keyboard_shortcuts.js:69 pgadmin/utils/__init__.py:848
+#: pgadmin/static/js/keyboard_shortcuts.js:69 pgadmin/utils/__init__.py:851
 msgid "Ctrl"
 msgstr "Ctrl"
 
 #: pgadmin/browser/register_browser_preferences.py:126
-#: pgadmin/utils/__init__.py:853
+#: pgadmin/utils/__init__.py:856
 msgid "Alt/Option"
 msgstr "Alt/Option"
 
@@ -664,32 +663,24 @@ msgid "Direct debugging"
 msgstr "Débogage direct"
 
 #: pgadmin/browser/register_browser_preferences.py:358
-msgid "Dialog tab forward"
-msgstr "Onglet suivant"
-
-#: pgadmin/browser/register_browser_preferences.py:373
-msgid "Dialog tab backward"
-msgstr "Onglet précédent"
-
-#: pgadmin/browser/register_browser_preferences.py:388
 msgid "Refresh object explorer"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:403
+#: pgadmin/browser/register_browser_preferences.py:373
 msgid "Add grid row"
 msgstr "Ajouter une ligne"
 
-#: pgadmin/browser/register_browser_preferences.py:417
+#: pgadmin/browser/register_browser_preferences.py:387
 #: pgadmin/help/__init__.py:27 pgadmin/static/js/Dialogs/index.jsx:380
 #: pgadmin/static/js/QuickSearch/index.jsx:274
 msgid "Quick Search"
 msgstr "Recherche rapide"
 
-#: pgadmin/browser/register_browser_preferences.py:430
+#: pgadmin/browser/register_browser_preferences.py:400
 msgid "Dynamic tab size"
 msgstr "Taille adaptée des onglets"
 
-#: pgadmin/browser/register_browser_preferences.py:432
+#: pgadmin/browser/register_browser_preferences.py:402
 msgid ""
 "If set to True, the tabs will take full size as per the title, it will "
 "also applicable for already opened tabs"
@@ -697,12 +688,12 @@ msgstr ""
 "Si Vrai, les onglets seront dimensionnés selon la longueur de leur "
 "intitulé. Ceci s'applique aussi aux onglets déjà ouverts"
 
-#: pgadmin/browser/register_browser_preferences.py:439
+#: pgadmin/browser/register_browser_preferences.py:409
 msgid "Query tool tab title"
 msgstr "Titre de l'onglet éditeur de requête"
 
-#: pgadmin/browser/register_browser_preferences.py:442
-#: pgadmin/browser/register_browser_preferences.py:513
+#: pgadmin/browser/register_browser_preferences.py:412
+#: pgadmin/browser/register_browser_preferences.py:483
 msgid ""
 "Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
 "can provide any string with or without placeholders of their choice. The "
@@ -713,11 +704,11 @@ msgstr ""
 "Les titres vides seront remplacés par les titres par défaut avec les mots"
 " clés."
 
-#: pgadmin/browser/register_browser_preferences.py:452
+#: pgadmin/browser/register_browser_preferences.py:422
 msgid "View/Edit data tab title"
 msgstr "Titre de l'onglet Afficher/Éditer les données"
 
-#: pgadmin/browser/register_browser_preferences.py:455
+#: pgadmin/browser/register_browser_preferences.py:425
 msgid ""
 "Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
 " %SERVER%. Users can provide any string with or without placeholders of "
@@ -729,11 +720,11 @@ msgstr ""
 "sans ces mots clés. Les titres vides seront remplacés par les titres par "
 "défaut avec les mots clés."
 
-#: pgadmin/browser/register_browser_preferences.py:465
+#: pgadmin/browser/register_browser_preferences.py:435
 msgid "Debugger tab title"
 msgstr "Titre de l'onglet Debugger"
 
-#: pgadmin/browser/register_browser_preferences.py:468
+#: pgadmin/browser/register_browser_preferences.py:438
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
@@ -746,7 +737,7 @@ msgstr ""
 "clés. Les titres vides seront remplacés par les titres par défaut avec "
 "les mots clés."
 
-#: pgadmin/browser/register_browser_preferences.py:477
+#: pgadmin/browser/register_browser_preferences.py:447
 #: pgadmin/browser/static/js/collection.js:55
 #: pgadmin/browser/static/js/node.js:203
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:272
@@ -756,38 +747,38 @@ msgstr ""
 msgid "Query Tool"
 msgstr "Éditeur de requêtes"
 
-#: pgadmin/browser/register_browser_preferences.py:478
+#: pgadmin/browser/register_browser_preferences.py:448
 #: pgadmin/tools/debugger/__init__.py:56
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:592
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1197
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:503
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1091
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:29
 msgid "Debugger"
 msgstr "Debugger"
 
-#: pgadmin/browser/register_browser_preferences.py:479
+#: pgadmin/browser/register_browser_preferences.py:449
 #: pgadmin/tools/schema_diff/__init__.py:46
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:56
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:71
+#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:55
+#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:70
 msgid "Schema Diff"
 msgstr "Schéma Diff"
 
-#: pgadmin/browser/register_browser_preferences.py:480
+#: pgadmin/browser/register_browser_preferences.py:450
 #: pgadmin/tools/erd/static/js/ERDModule.js:57
 msgid "ERD Tool"
 msgstr "Éditeur de diagramme entité-association"
 
-#: pgadmin/browser/register_browser_preferences.py:485
+#: pgadmin/browser/register_browser_preferences.py:455
 #: pgadmin/browser/static/js/collection.js:70
 #: pgadmin/browser/static/js/node.js:220
-#: pgadmin/tools/psql/static/js/psql_module.js:48
+#: pgadmin/tools/psql/static/js/psql_module.js:47
 msgid "PSQL Tool"
 msgstr "Outil PSQL"
 
-#: pgadmin/browser/register_browser_preferences.py:489
+#: pgadmin/browser/register_browser_preferences.py:459
 msgid "Open in new browser tab"
 msgstr "Ouvrir dans un nouvel onglet du navigateur"
 
-#: pgadmin/browser/register_browser_preferences.py:492
+#: pgadmin/browser/register_browser_preferences.py:462
 msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
@@ -797,29 +788,29 @@ msgstr ""
 "l'ouverture dans un nouvel onglet du navigateur pour ce module "
 "particulier."
 
-#: pgadmin/browser/register_browser_preferences.py:502
+#: pgadmin/browser/register_browser_preferences.py:472
 msgid "Select open new tab..."
 msgstr "Choisir le module à ouvrir dans un nouvel onglet..."
 
-#: pgadmin/browser/register_browser_preferences.py:510
+#: pgadmin/browser/register_browser_preferences.py:480
 msgid "PSQL tool tab title"
 msgstr "Nom de l'onglet de l'outil PSQL"
 
-#: pgadmin/browser/register_browser_preferences.py:523
+#: pgadmin/browser/register_browser_preferences.py:493
 msgid "Enable object breadcrumbs?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:526
+#: pgadmin/browser/register_browser_preferences.py:496
 msgid ""
 "Enable breadcrumbs to show the complete path of an object in the object "
 "explorer. The breadcrumbs are displayed on object mouse hover."
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:535
+#: pgadmin/browser/register_browser_preferences.py:505
 msgid "Show comment with object breadcrumbs?"
 msgstr ""
 
-#: pgadmin/browser/register_browser_preferences.py:538
+#: pgadmin/browser/register_browser_preferences.py:508
 msgid "Show object comment along with breadcrumbs."
 msgstr ""
 
@@ -840,14 +831,14 @@ msgstr "Les caractériqtiques requises sont manquantes."
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:124
 #: pgadmin/browser/templates/browser/js/messages.js:21
 #: pgadmin/browser/templates/browser/js/messages.js:40
-#: pgadmin/browser/utils.py:444 pgadmin/static/js/utils.js:441
+#: pgadmin/browser/utils.py:444 pgadmin/static/js/utils.js:448
 #: pgadmin/tools/backup/__init__.py:569
 #: pgadmin/tools/grant_wizard/__init__.py:99
 #: pgadmin/tools/sqleditor/__init__.py:964 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "La connexion au serveur a été perdue."
 
-#: pgadmin/browser/utils.py:733
+#: pgadmin/browser/utils.py:734
 msgid "Could not find the specified {}."
 msgstr "Impossible de trouver {}."
 
@@ -903,7 +894,7 @@ msgstr "Impossible de trouver le serveur."
 #: pgadmin/browser/server_groups/servers/__init__.py:829
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:194
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:197
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:145
 msgid "name"
 msgstr "nom"
 
@@ -926,8 +917,8 @@ msgstr "Base de données de maintenance"
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:275
 #: pgadmin/misc/cloud/static/js/aws.js:239
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:164
-#: pgadmin/misc/cloud/static/js/azure.js:325
-#: pgadmin/misc/cloud/static/js/google.js:314
+#: pgadmin/misc/cloud/static/js/azure.js:322
+#: pgadmin/misc/cloud/static/js/google.js:311
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:87
 msgid "Username"
 msgstr "Nom utilisateur"
@@ -1202,7 +1193,7 @@ msgstr "La base de données ne peut pas être supprimée."
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:898
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:478
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:502
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1118
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:493
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:587
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:633
@@ -1356,11 +1347,11 @@ msgstr "Conversion..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:44
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.ui.js:28
-#: pgadmin/dashboard/static/js/Dashboard.jsx:199
-#: pgadmin/dashboard/static/js/Dashboard.jsx:643
+#: pgadmin/dashboard/static/js/Dashboard.jsx:200
+#: pgadmin/dashboard/static/js/Dashboard.jsx:644
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:89
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:87
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:145
 #: pgadmin/misc/file_manager/static/js/components/ListView.jsx:125
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:32
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:112
@@ -1806,7 +1797,7 @@ msgstr "Trigger sur évènement..."
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:108
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:120
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:51
-#: pgadmin/dashboard/static/js/Dashboard.jsx:660
+#: pgadmin/dashboard/static/js/Dashboard.jsx:661
 #: pgadmin/tools/backup/static/js/backup.ui.js:199
 #: pgadmin/tools/restore/static/js/restore.ui.js:159
 msgid "Owner"
@@ -2118,7 +2109,7 @@ msgstr "Serveur distant système ?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:40
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:898
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1263
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:192
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:206
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:39
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:113
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:131
@@ -2167,8 +2158,8 @@ msgstr "Type"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:211
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:223
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:483
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:737
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:744
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:735
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:742
 #: pgadmin/tools/backup/static/js/backup.ui.js:695
 #: pgadmin/tools/backup/static/js/backup.ui.js:700
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:114
@@ -2269,7 +2260,7 @@ msgstr "Correspondance d'utilisateurs..."
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.ui.js:36
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
-#: pgadmin/dashboard/static/js/Dashboard.jsx:449
+#: pgadmin/dashboard/static/js/Dashboard.jsx:450
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:35
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:34
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:167
@@ -2580,7 +2571,7 @@ msgid "Schema dropped"
 msgstr "Schéma supprimé"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:914
-#: pgadmin/static/js/SchemaView/index.jsx:732
+#: pgadmin/static/js/SchemaView/index.jsx:728
 msgid "Definition incomplete."
 msgstr "Définition incomplète."
 
@@ -2959,20 +2950,20 @@ msgstr "Table distante supprimée"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1624
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1669
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1507
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1561
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1508
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1562
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1679
 msgid "-- Please create column(s) first..."
 msgstr "-- Merci de créer d'abord la/les colonne/s..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1901
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1229
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1230
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:836
 msgid "Trigger(s) have been disabled"
 msgstr "Déclencheurs(s) désactivé(s)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1903
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1231
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1232
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:838
 msgid "Trigger(s) have been enabled"
 msgstr "Déclencheur(s) activé(s)"
@@ -3069,7 +3060,7 @@ msgstr "Statistiques"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:498
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:386
-#: pgadmin/dashboard/static/js/Dashboard.jsx:158
+#: pgadmin/dashboard/static/js/Dashboard.jsx:159
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:51
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:491
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:491
@@ -3436,7 +3427,7 @@ msgid "Function..."
 msgstr "Fonction..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:48
-#: pgadmin/dashboard/static/js/Dashboard.jsx:622
+#: pgadmin/dashboard/static/js/Dashboard.jsx:623
 msgid "Mode"
 msgstr "Mode"
 
@@ -3565,7 +3556,7 @@ msgstr "Fonction support"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:202
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:249
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:72
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1211
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1105
 msgid "Parameters"
 msgstr "Paramètres"
 
@@ -3581,7 +3572,7 @@ msgstr "Fichier objet ne peut pas être vide."
 msgid "Link Symbol cannot be empty."
 msgstr "Le symbole de lien ne peut pas être vide."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:455
+#: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:454
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:265
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:167
 msgid "Code cannot be empty."
@@ -4061,15 +4052,15 @@ msgstr "Synonyme système ?"
 msgid "Could not find the table."
 msgstr "Impossible de trouver la table."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1121
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1122
 msgid "\n"
 msgstr "\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1137
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1138
 msgid "Table dropped"
 msgstr "Table supprimée"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1654
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1655
 msgid "Table rows counted: {}"
 msgstr "Lignes comptées : {}"
 
@@ -4878,9 +4869,9 @@ msgid "Access Method"
 msgstr "Méthode d'accès"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:480
-#: pgadmin/static/js/SchemaView/index.jsx:642
-#: pgadmin/static/js/SchemaView/index.jsx:669
-#: pgadmin/static/js/SchemaView/index.jsx:690
+#: pgadmin/static/js/SchemaView/index.jsx:638
+#: pgadmin/static/js/SchemaView/index.jsx:665
+#: pgadmin/static/js/SchemaView/index.jsx:686
 #: pgadmin/static/js/components/QueryThresholds.jsx:67
 msgid "Warning"
 msgstr "Avertissement"
@@ -5489,8 +5480,8 @@ msgid "Attach"
 msgstr "Attacher"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:161
-#: pgadmin/browser/static/js/browser.js:142
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:692
+#: pgadmin/browser/static/js/browser.js:134
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:690
 msgid "Create"
 msgstr "Créer"
 
@@ -6237,7 +6228,7 @@ msgstr "Alignement de stockage"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:794
 #: pgadmin/misc/cloud/static/js/aws.js:230
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:270
-#: pgadmin/misc/cloud/static/js/google.js:309
+#: pgadmin/misc/cloud/static/js/google.js:306
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:239
 msgid "Storage type"
 msgstr "Stratégie de stockage"
@@ -6539,7 +6530,7 @@ msgstr "Option de vérification"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:128
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:392
 #: pgadmin/static/js/helpers/ModalProvider.jsx:80
-#: pgadmin/static/js/helpers/Notifier.jsx:176
+#: pgadmin/static/js/helpers/Notifier.jsx:174
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/CloseRunningDialog.jsx:19
 msgid "No"
 msgstr "No"
@@ -6583,9 +6574,9 @@ msgstr "Taille des fichiers temporaires"
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:186
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
-#: pgadmin/dashboard/static/js/Dashboard.jsx:439
-#: pgadmin/dashboard/static/js/Dashboard.jsx:534
-#: pgadmin/dashboard/static/js/Dashboard.jsx:650
+#: pgadmin/dashboard/static/js/Dashboard.jsx:440
+#: pgadmin/dashboard/static/js/Dashboard.jsx:535
+#: pgadmin/dashboard/static/js/Dashboard.jsx:651
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:152
 msgid "Database"
 msgstr "Base de données"
@@ -6764,7 +6755,7 @@ msgid "Subscription dropped"
 msgstr "Souscription supprimée"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:40
-#: pgadmin/misc/cloud/static/js/azure.js:309
+#: pgadmin/misc/cloud/static/js/azure.js:306
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:210
 msgid "Subscription"
 msgstr "Souscription"
@@ -6833,10 +6824,10 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:12
 #: pgadmin/misc/cloud/static/js/aws.js:240
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:167
-#: pgadmin/misc/cloud/static/js/azure.js:326
+#: pgadmin/misc/cloud/static/js/azure.js:323
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:490
 #: pgadmin/misc/cloud/static/js/biganimal.js:253
-#: pgadmin/misc/cloud/static/js/google.js:315
+#: pgadmin/misc/cloud/static/js/google.js:312
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:388
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:38
 #: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:19
@@ -8021,8 +8012,8 @@ msgstr "Échec"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:143
 #: pgadmin/dashboard/__init__.py:557 pgadmin/dashboard/__init__.py:584
-#: pgadmin/dashboard/static/js/Dashboard.jsx:289
-#: pgadmin/dashboard/static/js/Dashboard.jsx:356
+#: pgadmin/dashboard/static/js/Dashboard.jsx:290
+#: pgadmin/dashboard/static/js/Dashboard.jsx:357
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:37
 msgid "Success"
 msgstr "Succès"
@@ -8064,7 +8055,7 @@ msgstr "Exécuter"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:3
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:3
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:230
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:244
 msgid "Status"
 msgstr "Status"
 
@@ -8086,7 +8077,7 @@ msgid "End time"
 msgstr "Heure de fin"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:4
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1220
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1114
 msgid "Result"
 msgstr "Résultat"
 
@@ -8649,7 +8640,7 @@ msgstr "Les rôles cochés sont définis WITH ADMIN OPTION."
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:128
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:136
 #: pgadmin/browser/templates/browser/js/messages.js:23
-#: pgadmin/dashboard/static/js/Dashboard.jsx:157
+#: pgadmin/dashboard/static/js/Dashboard.jsx:158
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:52
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:62
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:85
@@ -8774,8 +8765,7 @@ msgstr "Option"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:24
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:166
 #: pgadmin/browser/templates/browser/js/messages.js:33
-#: pgadmin/dashboard/static/js/Dashboard.jsx:217
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:104
+#: pgadmin/dashboard/static/js/Dashboard.jsx:218
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:63
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:114
 #: pgadmin/tools/debugger/static/js/components/Stack.jsx:63
@@ -9346,7 +9336,7 @@ msgstr "Non défini"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:127
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:394
 #: pgadmin/static/js/helpers/ModalProvider.jsx:80
-#: pgadmin/static/js/helpers/Notifier.jsx:176
+#: pgadmin/static/js/helpers/Notifier.jsx:174
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/CloseRunningDialog.jsx:23
 msgid "Yes"
 msgstr "Oui"
@@ -9471,19 +9461,19 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:31
-#: pgadmin/dashboard/static/js/Dashboard.jsx:474
+#: pgadmin/dashboard/static/js/Dashboard.jsx:475
 msgid "Backend start"
 msgstr "Démarrage du processus"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
-#: pgadmin/dashboard/static/js/Dashboard.jsx:466
+#: pgadmin/dashboard/static/js/Dashboard.jsx:467
 msgid "Client"
 msgstr "Client"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
-#: pgadmin/dashboard/static/js/Dashboard.jsx:458
+#: pgadmin/dashboard/static/js/Dashboard.jsx:459
 msgid "Application"
 msgstr "Application"
 
@@ -9526,33 +9516,33 @@ msgid "Server Group..."
 msgstr "Groupe de serveurs..."
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:18
-#: pgadmin/browser/static/js/keyboard.js:106
+#: pgadmin/browser/static/js/keyboard.js:130
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:194
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:185
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:528
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:529
 msgid "File"
 msgstr "Fichier"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:19
-#: pgadmin/browser/static/js/keyboard.js:109
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:210
+#: pgadmin/browser/static/js/keyboard.js:133
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:224
 msgid "Object"
 msgstr "Objet"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:20
-#: pgadmin/browser/static/js/keyboard.js:112
+#: pgadmin/browser/static/js/keyboard.js:136
 msgid "Tools"
 msgstr "Outils"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:21
-#: pgadmin/browser/static/js/keyboard.js:115 pgadmin/help/__init__.py:65
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:300
+#: pgadmin/browser/static/js/keyboard.js:139 pgadmin/help/__init__.py:65
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:311
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:103
 #: pgadmin/static/js/Dialogs/UrlDialogContent.jsx:34
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:145
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:310
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:733
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:581
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:582
 msgid "Help"
 msgstr "Aide"
 
@@ -9591,42 +9581,42 @@ msgstr ""
 msgid "Zoom Out"
 msgstr ""
 
-#: pgadmin/browser/static/js/MainMenuFactory.js:101
+#: pgadmin/browser/static/js/MainMenuFactory.js:100
 msgid "Error in opening window"
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:32
-#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:114
-#: pgadmin/misc/dependents/static/js/Dependents.jsx:114
-#: pgadmin/misc/sql/static/js/SQL.jsx:45
-#: pgadmin/misc/statistics/static/js/Statistics.jsx:175
+#: pgadmin/browser/static/js/browser.js:29
+#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:117
+#: pgadmin/misc/dependents/static/js/Dependents.jsx:117
+#: pgadmin/misc/sql/static/js/SQL.jsx:44
+#: pgadmin/misc/statistics/static/js/Statistics.jsx:178
 msgid "Please select an object in the tree view."
 msgstr "Sélectionner un objet dans l'arborescence."
 
-#: pgadmin/browser/static/js/browser.js:133
+#: pgadmin/browser/static/js/browser.js:125
 msgid "Register"
 msgstr "Nouveau"
 
-#: pgadmin/browser/static/js/browser.js:166
+#: pgadmin/browser/static/js/browser.js:158
 msgid "No menu available for this object."
 msgstr ""
 
-#: pgadmin/browser/static/js/browser.js:271
+#: pgadmin/browser/static/js/browser.js:263
 msgid "No object selected"
 msgstr "Aucun objet sélectionné"
 
-#: pgadmin/browser/static/js/browser.js:429
+#: pgadmin/browser/static/js/browser.js:421
 #, python-format
 msgid "Are you sure you want to close the %s browser?"
 msgstr "Êtes vous sûr de vouloir fermer le %s navigateur ?"
 
-#: pgadmin/browser/static/js/browser.js:1448
+#: pgadmin/browser/static/js/browser.js:1430
 msgid "Error retrieving details for the node."
 msgstr "Erreur lors de la récupération des détails pour le noeud."
 
 #: pgadmin/browser/static/js/collection.js:46
-#: pgadmin/dashboard/static/js/Dashboard.jsx:873
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:724
+#: pgadmin/dashboard/static/js/Dashboard.jsx:845
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:722
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:571
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:586
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:355
@@ -9670,9 +9660,9 @@ msgid "Remove %s"
 msgstr "Supprimer %s"
 
 #: pgadmin/browser/static/js/node.js:155
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:750
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:748
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:93
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:169
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:168
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -9829,11 +9819,12 @@ msgstr "Déconnexion réussie."
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:177
 #: pgadmin/static/js/Dialogs/UrlDialogContent.jsx:44
 #: pgadmin/static/js/Explain/Graphical.jsx:427
-#: pgadmin/static/js/SchemaView/index.jsx:807
-#: pgadmin/static/js/components/CodeMirror.jsx:297
+#: pgadmin/static/js/SchemaView/index.jsx:803
+#: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:182
+#: pgadmin/static/js/components/ReactCodeMirror/components/GotoDialog.jsx:84
 #: pgadmin/static/js/helpers/Layout/index.jsx:54
-#: pgadmin/static/js/helpers/Layout/index.jsx:326
-#: pgadmin/static/js/helpers/Layout/index.jsx:414
+#: pgadmin/static/js/helpers/Layout/index.jsx:331
+#: pgadmin/static/js/helpers/Layout/index.jsx:419
 #: pgadmin/static/js/helpers/ModalProvider.jsx:303
 msgid "Close"
 msgstr "Fermer"
@@ -9892,12 +9883,12 @@ msgid "'%s' cannot be empty."
 msgstr "'%s' doit être renseigné."
 
 #: pgadmin/browser/templates/browser/js/messages.js:34
-#: pgadmin/misc/sql/static/js/SQL.jsx:59
+#: pgadmin/misc/sql/static/js/SQL.jsx:58
 msgid "No SQL could be generated for the selected object."
 msgstr "Aucun code SQL ne peut être généré pour l'objet sélectionné."
 
 #: pgadmin/browser/templates/browser/js/messages.js:35
-#: pgadmin/misc/statistics/static/js/Statistics.jsx:180
+#: pgadmin/misc/statistics/static/js/Statistics.jsx:183
 msgid "No statistics are available for the selected object."
 msgstr "Aucune statistique n'est disponible pour l'objet sélectionné."
 
@@ -9927,17 +9918,15 @@ msgid "Retrieving data from the server..."
 msgstr "Récupération des données sur le serveur..."
 
 #: pgadmin/browser/templates/browser/js/messages.js:44
-#: pgadmin/dashboard/static/js/Dashboard.jsx:298
-#: pgadmin/dashboard/static/js/Dashboard.jsx:367
-#: pgadmin/dashboard/static/js/Dashboard.jsx:813
-#: pgadmin/dashboard/static/js/Dashboard.jsx:817
-#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:146
-#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:150
-#: pgadmin/misc/dependents/static/js/Dependents.jsx:145
-#: pgadmin/misc/dependents/static/js/Dependents.jsx:149
-#: pgadmin/misc/sql/static/js/SQL.jsx:82
-#: pgadmin/misc/statistics/static/js/Statistics.jsx:213
+#: pgadmin/dashboard/static/js/Dashboard.jsx:785
+#: pgadmin/dashboard/static/js/Dashboard.jsx:789
+#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:149
+#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:153
+#: pgadmin/misc/dependents/static/js/Dependents.jsx:148
+#: pgadmin/misc/dependents/static/js/Dependents.jsx:152
+#: pgadmin/misc/sql/static/js/SQL.jsx:81
 #: pgadmin/misc/statistics/static/js/Statistics.jsx:216
+#: pgadmin/misc/statistics/static/js/Statistics.jsx:219
 msgid "Failed to retrieve data from the server."
 msgstr "Échec de récupération des données sur le serveur..."
 
@@ -10110,234 +10099,227 @@ msgstr "Requête démarrée à"
 msgid "Last state changed at"
 msgstr "Dernier état modifié à"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:156
+#: pgadmin/dashboard/static/js/Dashboard.jsx:157
 msgid "Sessions"
 msgstr "Sessions"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:156
+#: pgadmin/dashboard/static/js/Dashboard.jsx:157
 msgid "Locks"
 msgstr "Verrous"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:156
+#: pgadmin/dashboard/static/js/Dashboard.jsx:157
 msgid "Prepared Transactions"
 msgstr "Transactions préparées"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:157
+#: pgadmin/dashboard/static/js/Dashboard.jsx:158
 msgid "System Statistics"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:158
+#: pgadmin/dashboard/static/js/Dashboard.jsx:159
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:59
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:654
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:655
 msgid "Summary"
 msgstr "Synthèse"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:158
+#: pgadmin/dashboard/static/js/Dashboard.jsx:159
 msgid "CPU"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:158
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:272
+#: pgadmin/dashboard/static/js/Dashboard.jsx:159
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:271
 msgid "Memory"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:185
+#: pgadmin/dashboard/static/js/Dashboard.jsx:186
 msgid "Configuration"
 msgstr "Configuration"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:209
+#: pgadmin/dashboard/static/js/Dashboard.jsx:210
 msgid "Category"
 msgstr "Catégorie"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:226
+#: pgadmin/dashboard/static/js/Dashboard.jsx:227
 msgid "Unit"
 msgstr "Unité"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:235
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:174
+#: pgadmin/dashboard/static/js/Dashboard.jsx:236
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:157
 msgid "Description"
 msgstr "Déscription"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:256
-#: pgadmin/dashboard/static/js/Dashboard.jsx:310
+#: pgadmin/dashboard/static/js/Dashboard.jsx:257
+#: pgadmin/dashboard/static/js/Dashboard.jsx:311
 msgid "Terminate Session?"
 msgstr "Terminer la session ?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:257
+#: pgadmin/dashboard/static/js/Dashboard.jsx:258
 msgid "Are you sure you wish to terminate the session?"
 msgstr "Êtes vous sûr de vouloir terminer la session ?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:260
+#: pgadmin/dashboard/static/js/Dashboard.jsx:261
 msgid "Session terminated successfully."
 msgstr "Session terminée avec succès."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:261
+#: pgadmin/dashboard/static/js/Dashboard.jsx:262
 msgid "An error occurred whilst terminating the active query."
 msgstr "Une erreur es survenue lors de l'achèvement de la requête en cours."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:327
+#: pgadmin/dashboard/static/js/Dashboard.jsx:299
+#: pgadmin/dashboard/static/js/Dashboard.jsx:368
+msgid "Failed to perform the operation."
+msgstr ""
+
+#: pgadmin/dashboard/static/js/Dashboard.jsx:328
 msgid "Cancel Active Query?"
 msgstr "Annuler la requête en cours ?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:328
+#: pgadmin/dashboard/static/js/Dashboard.jsx:329
 msgid "Are you sure you wish to cancel the active query?"
 msgstr "Êtes vous sûr de vouloir annuler la requête en cours ?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:331
+#: pgadmin/dashboard/static/js/Dashboard.jsx:332
 msgid "Active query cancelled successfully."
 msgstr "Requête annulée avec succès."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:332
+#: pgadmin/dashboard/static/js/Dashboard.jsx:333
 msgid "An error occurred whilst cancelling the active query."
 msgstr "Une erreur es survenue lors de l'annulation de la requête en cours."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:379
+#: pgadmin/dashboard/static/js/Dashboard.jsx:380
 msgid "Cancel the active query"
 msgstr "Annuler la requête en cours"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:423
+#: pgadmin/dashboard/static/js/Dashboard.jsx:424
 msgid "View the active session details"
 msgstr "Voir les détails de la session active"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:430
-#: pgadmin/dashboard/static/js/Dashboard.jsx:525
+#: pgadmin/dashboard/static/js/Dashboard.jsx:431
+#: pgadmin/dashboard/static/js/Dashboard.jsx:526
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:82
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:80
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:183
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:197
 msgid "PID"
 msgstr "PID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:482
+#: pgadmin/dashboard/static/js/Dashboard.jsx:483
 msgid "Transaction start"
 msgstr "Début de transaction"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:490
+#: pgadmin/dashboard/static/js/Dashboard.jsx:491
 msgid "State"
 msgstr "État"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:500
+#: pgadmin/dashboard/static/js/Dashboard.jsx:501
 msgid "Waiting"
 msgstr "Attente"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:508
+#: pgadmin/dashboard/static/js/Dashboard.jsx:509
 msgid "Wait event"
 msgstr "Attente d'événement"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:515
+#: pgadmin/dashboard/static/js/Dashboard.jsx:516
 msgid "Blocking PIDs"
 msgstr "PID bloquants"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:544
+#: pgadmin/dashboard/static/js/Dashboard.jsx:545
 msgid "Lock type"
 msgstr "Type de verrou"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:553
+#: pgadmin/dashboard/static/js/Dashboard.jsx:554
 msgid "Target relation"
 msgstr "Relation cible"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:560
+#: pgadmin/dashboard/static/js/Dashboard.jsx:561
 msgid "Page"
 msgstr "Page"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:569
+#: pgadmin/dashboard/static/js/Dashboard.jsx:570
 msgid "Tuple"
 msgstr "Ligne"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:577
+#: pgadmin/dashboard/static/js/Dashboard.jsx:578
 msgid "vXID (target)"
 msgstr "vXID (cible)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:586
+#: pgadmin/dashboard/static/js/Dashboard.jsx:587
 msgid "XID (target)"
 msgstr "XID (cible)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:595
+#: pgadmin/dashboard/static/js/Dashboard.jsx:596
 msgid "Class"
 msgstr "Classe"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:604
+#: pgadmin/dashboard/static/js/Dashboard.jsx:605
 msgid "Object ID"
 msgstr "ID de l'objet"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:614
+#: pgadmin/dashboard/static/js/Dashboard.jsx:615
 msgid "vXID (owner)"
 msgstr "vXID (propriétaire)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:630
+#: pgadmin/dashboard/static/js/Dashboard.jsx:631
 msgid "Granted?"
 msgstr "Accordé ?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:667
+#: pgadmin/dashboard/static/js/Dashboard.jsx:668
 msgid "XID"
 msgstr "XID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:674
+#: pgadmin/dashboard/static/js/Dashboard.jsx:675
 msgid "Prepared at"
 msgstr "Préparé à"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:712
+#: pgadmin/dashboard/static/js/Dashboard.jsx:702
 msgid "You cannot cancel background worker processes."
 msgstr "Vous ne pouvez pas annuler les processus d'arrière-plan."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:714
+#: pgadmin/dashboard/static/js/Dashboard.jsx:704
 msgid "You cannot terminate background worker processes."
 msgstr "Vous ne pouvez pas mettre fin aux processus d'arrière-plan."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:727
+#: pgadmin/dashboard/static/js/Dashboard.jsx:717
 msgid "You are not allowed to cancel the main active session."
 msgstr "Vous n'êtes pas autorisé à annuler la session principale active."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:731
+#: pgadmin/dashboard/static/js/Dashboard.jsx:721
 msgid "You are not allowed to terminate the main active session."
 msgstr "Vous n'êtes pas autorisé à mettre fin à la session principale active."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:739
+#: pgadmin/dashboard/static/js/Dashboard.jsx:729
 msgid "The session is already in idle state."
 msgstr "La session est déjà au repos."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:753
-msgid "Superuser privileges are required to cancel another users query."
-msgstr ""
-"Les privilèges de super-utilisateur sont nécessaires pour annuler la "
-"requête d'un autre utilisateur."
-
-#: pgadmin/dashboard/static/js/Dashboard.jsx:757
-msgid "Superuser privileges are required to terminate another users query."
-msgstr ""
-"Les privilèges de super-utilisateur sont nécessaires pour mettre fin à la"
-" requête d'un autre utilisateur."
-
-#: pgadmin/dashboard/static/js/Dashboard.jsx:773
+#: pgadmin/dashboard/static/js/Dashboard.jsx:745
 msgid "Please connect to the selected server to view the dashboard."
 msgstr "Connecter le serveur sélectionné pour visualiser le tableau de bord."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:792
+#: pgadmin/dashboard/static/js/Dashboard.jsx:764
 msgid "Loading dashboard..."
 msgstr "Chargement du tableau de bord..."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:828
+#: pgadmin/dashboard/static/js/Dashboard.jsx:800
 msgid ""
 "System stats extension is not installed. You can install the extension in"
 " a database using the \"CREATE EXTENSION system_stats;\" SQL command. "
 "Reload the pgAdmin once you installed."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:836
+#: pgadmin/dashboard/static/js/Dashboard.jsx:808
 msgid "Failed to verify the presence of system stats extension."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:901
-#: pgadmin/dashboard/static/js/Dashboard.jsx:906
+#: pgadmin/dashboard/static/js/Dashboard.jsx:873
+#: pgadmin/dashboard/static/js/Dashboard.jsx:878
 msgid "Active sessions only"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:949
-#: pgadmin/dashboard/static/js/Dashboard.jsx:951
+#: pgadmin/dashboard/static/js/Dashboard.jsx:921
+#: pgadmin/dashboard/static/js/Dashboard.jsx:923
 msgid "Database activity"
 msgstr "Activité de la base de données"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:949
-#: pgadmin/dashboard/static/js/Dashboard.jsx:951
+#: pgadmin/dashboard/static/js/Dashboard.jsx:921
+#: pgadmin/dashboard/static/js/Dashboard.jsx:923
 msgid "Server activity"
 msgstr "Activité du serveur"
 
@@ -10345,7 +10327,7 @@ msgstr "Activité du serveur"
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:215
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:218
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:368
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:237
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:220
 msgid "Please connect to the selected server to view the graph."
 msgstr "Connecter le serveur sélectionné pour visualiser le graphique."
 
@@ -10353,7 +10335,7 @@ msgstr "Connecter le serveur sélectionné pour visualiser le graphique."
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:217
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:220
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:370
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:239
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:222
 msgid "An error occurred whilst rendering the graph."
 msgstr "Une erreur est survenue lors de l'élaboration du graphique."
 
@@ -10361,7 +10343,7 @@ msgstr "Une erreur est survenue lors de l'élaboration du graphique."
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:220
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:223
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:373
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:242
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:225
 msgid ""
 "Not connected to the server or the connection to the server has been "
 "closed."
@@ -10455,15 +10437,15 @@ msgid "Community Support"
 msgstr "Entraide communautaire"
 
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:96
-#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:269
+#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:268
 msgid "CPU usage"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:274
+#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:273
 msgid "Load average"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:284
+#: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:283
 msgid "Process CPU usage"
 msgstr ""
 
@@ -10475,11 +10457,11 @@ msgstr ""
 msgid "Memory bytes"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:278
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:277
 msgid "Swap memory"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:289
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:288
 msgid "Process memory usage"
 msgstr ""
 
@@ -10535,141 +10517,137 @@ msgstr ""
 msgid "drive_letter"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:445
+#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:444
 msgid "Disk information"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:535
+#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:534
 msgid "Data transfer"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:535
+#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:534
 msgid "I/O operations count"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:535
+#: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:534
 msgid "Time spent in I/O operations"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:97
-msgid "Property"
-msgstr ""
-
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:146
 msgid "version"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:147
 msgid "Host name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:147
 msgid "host_name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:165
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:148
 msgid "Domain name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:165
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:148
 msgid "domain_name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:166
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:177
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:149
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:160
 msgid "Architecture"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:166
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:177
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:149
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:160
 msgid "architecture"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:167
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:150
 msgid "Os up since seconds"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:167
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:150
 msgid "os_up_since_seconds"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:173
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:156
 msgid "Vendor"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:173
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:156
 msgid "vendor"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:174
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:157
 msgid "description"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:175
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:158
 msgid "Model name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:175
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:158
 msgid "model_name"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:176
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:159
 msgid "No of cores"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:176
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:159
 msgid "no_of_cores"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:178
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:161
 msgid "Clock speed Hz"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:178
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:161
 msgid "clock_speed_hz"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:179
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
 msgid "L1 dcache size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:179
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
 msgid "l1dcache_size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:180
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
 msgid "L1 icache size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:180
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
 msgid "l1icache_size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:181
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
 msgid "L2 cache size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:181
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
 msgid "l2cache_size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:182
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:165
 msgid "L3 cache size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:182
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:165
 msgid "l3cache_size"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:292
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:273
 msgid "OS information"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:297
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:278
 msgid "Process & handle count"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:305
+#: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:286
 msgid "CPU information"
 msgstr ""
 
@@ -10788,7 +10766,7 @@ msgstr ""
 "Un actualisation est nécessaire pour appliquer le thème. Ci-dessus, "
 "l'aperçu du thème"
 
-#: pgadmin/misc/__init__.py:249
+#: pgadmin/misc/__init__.py:246
 msgid "Invalid binary path."
 msgstr "Chemin des binaires invalide."
 
@@ -10922,31 +10900,31 @@ msgstr "Arrêt..."
 msgid "Process Watcher - %s"
 msgstr "Superviseur de processus - %s"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:150
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:140
 msgid "Stop Process"
 msgstr "Arrêter le processus"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:177
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:158
 msgid "View details"
 msgstr "Afficher les détails"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:220
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:234
 msgid "Start Time"
 msgstr "Heure de démarrage"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:244
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:255
 msgid "Time Taken (sec)"
 msgstr "Durée de l'opération (sec)"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:289
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:300
 msgid "Acknowledge and Remove"
 msgstr "Reconnaître et supprimer"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:291
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:302
 msgid "Remove Processes"
 msgstr "Supprimer les processus"
 
-#: pgadmin/misc/bgprocess/static/js/Processes.jsx:291
+#: pgadmin/misc/bgprocess/static/js/Processes.jsx:302
 msgid "Are you sure you want to remove the selected processes?"
 msgstr "Êtes-vous sûr de vouloir supprimer les processus sélectionnés ?"
 
@@ -11057,7 +11035,6 @@ msgstr "Le processus d'authentification d'EDB BigAnimal est en cours..."
 #: pgadmin/misc/cloud/static/js/azure.js:43
 #: pgadmin/misc/cloud/static/js/google.js:44
 #: pgadmin/preferences/static/js/components/PreferencesTree.jsx:76
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:106
 msgid "Loading..."
 msgstr "Chargement..."
 
@@ -11121,46 +11098,46 @@ msgid "Please review the details before creating the cloud instance."
 msgstr "Examiner les détails avant de créer l'instance de nuage."
 
 #: pgadmin/misc/cloud/static/js/aws.js:217
-#: pgadmin/misc/cloud/static/js/azure.js:308
+#: pgadmin/misc/cloud/static/js/azure.js:305
 #: pgadmin/misc/cloud/static/js/biganimal.js:222
-#: pgadmin/misc/cloud/static/js/google.js:295
+#: pgadmin/misc/cloud/static/js/google.js:292
 msgid "Cloud"
 msgstr "Cloud"
 
 #: pgadmin/misc/cloud/static/js/aws.js:218
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:38
 #: pgadmin/misc/cloud/static/js/biganimal.js:223
-#: pgadmin/misc/cloud/static/js/google.js:296
+#: pgadmin/misc/cloud/static/js/google.js:293
 msgid "Instance name"
 msgstr "Nom d'instance"
 
 #: pgadmin/misc/cloud/static/js/aws.js:219
-#: pgadmin/misc/cloud/static/js/azure.js:330
-#: pgadmin/misc/cloud/static/js/google.js:319
+#: pgadmin/misc/cloud/static/js/azure.js:327
+#: pgadmin/misc/cloud/static/js/google.js:316
 msgid "Public IP"
 msgstr "IP publique"
 
 #: pgadmin/misc/cloud/static/js/aws.js:223
-#: pgadmin/misc/cloud/static/js/azure.js:316
-#: pgadmin/misc/cloud/static/js/google.js:303
+#: pgadmin/misc/cloud/static/js/azure.js:313
+#: pgadmin/misc/cloud/static/js/google.js:300
 msgid "PostgreSQL version"
 msgstr "Version de PostgreSQL"
 
 #: pgadmin/misc/cloud/static/js/aws.js:224
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:213
-#: pgadmin/misc/cloud/static/js/azure.js:317
+#: pgadmin/misc/cloud/static/js/azure.js:314
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:343
 #: pgadmin/misc/cloud/static/js/biganimal.js:238
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:124
-#: pgadmin/misc/cloud/static/js/google.js:305
+#: pgadmin/misc/cloud/static/js/google.js:302
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:210
 msgid "Instance type"
 msgstr "Type d'instance"
 
 #: pgadmin/misc/cloud/static/js/aws.js:231
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:279
-#: pgadmin/misc/cloud/static/js/azure.js:321
-#: pgadmin/misc/cloud/static/js/google.js:310
+#: pgadmin/misc/cloud/static/js/azure.js:318
+#: pgadmin/misc/cloud/static/js/google.js:307
 msgid "Allocated storage"
 msgstr "Stockage alloué"
 
@@ -11176,8 +11153,8 @@ msgstr "Nom de la base de données"
 
 #: pgadmin/misc/cloud/static/js/aws.js:245
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:336
-#: pgadmin/misc/cloud/static/js/azure.js:334
-#: pgadmin/misc/cloud/static/js/google.js:323
+#: pgadmin/misc/cloud/static/js/azure.js:331
+#: pgadmin/misc/cloud/static/js/google.js:320
 msgid "High availability"
 msgstr "Haute disponibilité"
 
@@ -11211,10 +11188,10 @@ msgid "Availability"
 msgstr "Disponibilité"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:89
-#: pgadmin/misc/cloud/static/js/azure.js:311
+#: pgadmin/misc/cloud/static/js/azure.js:308
 #: pgadmin/misc/cloud/static/js/biganimal.js:224
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:471
-#: pgadmin/misc/cloud/static/js/google.js:298
+#: pgadmin/misc/cloud/static/js/google.js:295
 msgid "Region"
 msgstr "Région"
 
@@ -11279,7 +11256,7 @@ msgstr "Version de bases de données"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:205
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:325
-#: pgadmin/misc/cloud/static/js/google.js:304
+#: pgadmin/misc/cloud/static/js/google.js:301
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:191
 msgid "Instance class"
 msgstr "Classe d'instance"
@@ -11339,7 +11316,7 @@ msgstr ""
 msgid "Error while verifying Microsoft Azure: ${error}"
 msgstr "Erreur lors de la vérification de Microsoft Azure : ${error}"
 
-#: pgadmin/misc/cloud/static/js/azure.js:292
+#: pgadmin/misc/cloud/static/js/azure.js:289
 msgid ""
 "Error while checking server name availability with Microsoft Azure: "
 "${error.response.data.errormsg}"
@@ -11347,14 +11324,14 @@ msgstr ""
 "Erreur lors de la vérification de la disponibilité du nom du serveur avec"
 " Microsoft Azure : ${error.response.data.errormsg}"
 
-#: pgadmin/misc/cloud/static/js/azure.js:310
+#: pgadmin/misc/cloud/static/js/azure.js:307
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:236
 msgid "Resource group"
 msgstr "Groupe de ressources"
 
-#: pgadmin/misc/cloud/static/js/azure.js:312
+#: pgadmin/misc/cloud/static/js/azure.js:309
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:271
-#: pgadmin/misc/cloud/static/js/google.js:299
+#: pgadmin/misc/cloud/static/js/google.js:296
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:142
 msgid "Availability zone"
 msgstr "Zone de disponibilté"
@@ -11619,7 +11596,7 @@ msgid "Please select number of stand by replicas."
 msgstr "Veuillez sélectionner le nombre de répliques"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:48
-#: pgadmin/misc/cloud/static/js/google.js:297
+#: pgadmin/misc/cloud/static/js/google.js:294
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:112
 msgid "Project"
 msgstr ""
@@ -11737,7 +11714,7 @@ msgstr ""
 msgid "Error while authentication: ${error}"
 msgstr ""
 
-#: pgadmin/misc/cloud/static/js/google.js:324
+#: pgadmin/misc/cloud/static/js/google.js:321
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:317
 msgid "Secondary availability zone"
 msgstr ""
@@ -11827,18 +11804,18 @@ msgstr "Le déploiement sur {0} est démarré pour l'instance {1}."
 msgid "Cloud Deployment"
 msgstr "Déploiement dans le nuage"
 
-#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:124
+#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:127
 msgid "No dependency information is available for the selected object."
 msgstr ""
 "Aucune information relative à des objets rattachés n'est disponible pour "
 "l'objet sélectionné."
 
-#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:170
-#: pgadmin/misc/dependents/static/js/Dependents.jsx:170
+#: pgadmin/misc/dependencies/static/js/Dependencies.jsx:173
+#: pgadmin/misc/dependents/static/js/Dependents.jsx:173
 msgid "panel"
 msgstr "panneau"
 
-#: pgadmin/misc/dependents/static/js/Dependents.jsx:124
+#: pgadmin/misc/dependents/static/js/Dependents.jsx:127
 msgid "No dependent information is available for the selected object."
 msgstr ""
 
@@ -11912,7 +11889,7 @@ msgid "Storage Manager..."
 msgstr "Gestionnaire de stockage..."
 
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:63
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:525
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:526
 msgid "Save File"
 msgstr "Enregistrer le fichier"
 
@@ -11924,24 +11901,24 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce fichier/dossier ?"
 msgid "Are you sure you want to replace this file?"
 msgstr "Êtes vous sûr de vouloir remplacer ce fichier ?"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:690
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:688
 msgid "Select"
 msgstr "Sélectionner"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:705
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:781
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:703
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:779
 msgid "My Storage"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:708
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:706
 msgid "Home"
 msgstr "Dossier personnel"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:711
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:709
 msgid "Go Back"
 msgstr "Retour"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:728
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:726
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:338
 #: pgadmin/static/js/components/PgTable.jsx:472
 #: pgadmin/static/js/components/PgTable.jsx:473
@@ -11949,46 +11926,46 @@ msgstr "Retour"
 msgid "Search"
 msgstr "Recherche"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:731
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:729
 #: pgadmin/static/js/Explain/Graphical.jsx:416
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:439
 msgid "Download"
 msgstr "Télécharger"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:733
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:731
 msgid "New Folder"
 msgstr "Nouveau dossier"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:747
-#: pgadmin/static/js/helpers/Layout/index.jsx:439
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:745
+#: pgadmin/static/js/helpers/Layout/index.jsx:444
 msgid "Rename"
 msgstr "Renommer"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:757
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:755
 msgid "Upload"
 msgstr "Téléverser"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:760
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:758
 msgid "List View"
 msgstr "Vue en liste"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:761
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:759
 msgid "Grid View"
 msgstr "Vue en grille"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:767
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:765
 msgid "Show Hidden Files"
 msgstr "Afficher les fichiers cachés"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:775
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:773
 msgid "${selectedSS}"
 msgstr ""
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:831
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:829
 msgid "All Files"
 msgstr "Tous les fichiers"
 
-#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:843
+#: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:841
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:630
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:20
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:111
@@ -11998,7 +11975,7 @@ msgstr "Tous les fichiers"
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:79
 #: pgadmin/static/js/helpers/ModalProvider.jsx:44
 #: pgadmin/static/js/helpers/Notifier.jsx:47
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:867
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:863
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:430
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:211
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:389
@@ -12029,7 +12006,7 @@ msgstr "Déposer les fichiers ici, ou cliquer pour sélectionner les fichiers."
 msgid "The file size limit (per file) is %s MB."
 msgstr "La taille limite du fichier (par fichier) est de %s MB."
 
-#: pgadmin/misc/sql/static/js/SQL.jsx:78 pgadmin/static/js/UtilityView.jsx:43
+#: pgadmin/misc/sql/static/js/SQL.jsx:77 pgadmin/static/js/UtilityView.jsx:43
 #: pgadmin/tools/backup/static/js/backup.js:156
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:291
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:787
@@ -12040,7 +12017,7 @@ msgstr "La taille limite du fichier (par fichier) est de %s MB."
 msgid "Error"
 msgstr "Erreur"
 
-#: pgadmin/misc/statistics/static/js/Statistics.jsx:207
+#: pgadmin/misc/statistics/static/js/Statistics.jsx:210
 msgid "The master password is not set."
 msgstr "Le mot de passe principal n'est pas défini."
 
@@ -12118,7 +12095,7 @@ msgstr "Aide pour cette fenêtre de dialogue."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:633
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:28
-#: pgadmin/static/js/SchemaView/index.jsx:813
+#: pgadmin/static/js/SchemaView/index.jsx:809
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -12150,11 +12127,11 @@ msgstr "Alt"
 msgid "accesskey"
 msgstr "clé d'accés"
 
-#: pgadmin/static/js/utils.js:280
+#: pgadmin/static/js/utils.js:283
 msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
 msgstr "Configurer le chemin des binaires PostgreSQL dans les préférences."
 
-#: pgadmin/static/js/utils.js:285
+#: pgadmin/static/js/utils.js:288
 msgid ""
 "Please configure the EDB Advanced Server Binary Path in the Preferences "
 "dialog."
@@ -12162,20 +12139,20 @@ msgstr ""
 "Configurer le chemin des binaires EDB Advanced Server dans les "
 "préférences."
 
-#: pgadmin/static/js/utils.js:292
+#: pgadmin/static/js/utils.js:295
 msgid "Configuration required"
 msgstr "Configuration requise"
 
-#: pgadmin/static/js/utils.js:297
+#: pgadmin/static/js/utils.js:300
 msgid "Preferences Error"
 msgstr "Erreur dans les préférences"
 
-#: pgadmin/static/js/utils.js:298
+#: pgadmin/static/js/utils.js:301
 #, python-format
 msgid "Failed to load preference %s of module %s"
 msgstr "Échec de récupération des préférence %s du module %s"
 
-#: pgadmin/static/js/utils.js:360
+#: pgadmin/static/js/utils.js:363
 msgid ""
 "The file opened contains bidirectional Unicode characters which could be "
 "interpreted differently than what is displayed. If this is unexpected it "
@@ -12187,7 +12164,7 @@ msgstr ""
 "se présente, il est recommandé de revoir le texte dans une application "
 "qui peut afficher les caractères Unicode cachés avant de poursuivre."
 
-#: pgadmin/static/js/utils.js:362
+#: pgadmin/static/js/utils.js:365
 msgid ""
 "The pasted text contains bidirectional Unicode characters which could be "
 "interpreted differently than what is displayed. If this is unexpected it "
@@ -12199,7 +12176,7 @@ msgstr ""
 "se présente, il est recommandé de revoir le texte dans une application "
 "qui peut afficher les caractères Unicode cachés avant de poursuivre."
 
-#: pgadmin/static/js/utils.js:364
+#: pgadmin/static/js/utils.js:367
 msgid "Trojan Source Warning"
 msgstr "Avertissement sur la source du cheval de Troie"
 
@@ -12275,7 +12252,7 @@ msgstr ""
 #: pgadmin/static/js/helpers/ModalProvider.jsx:44
 #: pgadmin/static/js/helpers/ModalProvider.jsx:67
 #: pgadmin/static/js/helpers/Notifier.jsx:47
-#: pgadmin/static/js/helpers/Notifier.jsx:170
+#: pgadmin/static/js/helpers/Notifier.jsx:168
 #: pgadmin/tools/erd/static/js/erd_tool/components/FloatingNote.jsx:86
 #: pgadmin/tools/import_export/static/js/import_export.js:163
 #: pgadmin/tools/maintenance/static/js/maintenance.js:204
@@ -12529,7 +12506,7 @@ msgstr "Condition d'index (Recheck Cond)"
 msgid "Heap Blocks"
 msgstr "Blocs d'en-tête (Heap Blocks)"
 
-#: pgadmin/static/js/Explain/index.jsx:494
+#: pgadmin/static/js/Explain/index.jsx:492
 msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
@@ -12568,7 +12545,7 @@ msgid "Show all"
 msgstr "Afficher tout"
 
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:343
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:159
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:158
 msgid "Add row"
 msgstr "Ajouter une ligne"
 
@@ -12588,34 +12565,34 @@ msgstr "Lige supprimée"
 msgid "Are you sure you wish to delete this row?"
 msgstr "Êtes vous sûr de vouloir supprimer cette ligne ?"
 
-#: pgadmin/static/js/SchemaView/index.jsx:285
+#: pgadmin/static/js/SchemaView/index.jsx:283
 #, python-format
 msgid "%s must be unique."
 msgstr "%s doit être unique."
 
-#: pgadmin/static/js/SchemaView/index.jsx:287
+#: pgadmin/static/js/SchemaView/index.jsx:285
 #, python-format
 msgid "%s in %s must be unique."
 msgstr "%s dans %s doit être unique."
 
-#: pgadmin/static/js/SchemaView/index.jsx:310
+#: pgadmin/static/js/SchemaView/index.jsx:306
 #, python-format
 msgid "%s in %s"
 msgstr "%s dans %s"
 
-#: pgadmin/static/js/SchemaView/index.jsx:643
+#: pgadmin/static/js/SchemaView/index.jsx:639
 msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr "Les changements seront perdus. Êtes-vous sûr de vouloir réinitialiser ?"
 
-#: pgadmin/static/js/SchemaView/index.jsx:735
+#: pgadmin/static/js/SchemaView/index.jsx:731
 msgid "No updates."
 msgstr "Pas de mise à jour."
 
-#: pgadmin/static/js/SchemaView/index.jsx:810
+#: pgadmin/static/js/SchemaView/index.jsx:806
 msgid "Reset"
 msgstr "Réinitialiser"
 
-#: pgadmin/static/js/SchemaView/index.jsx:1009
+#: pgadmin/static/js/SchemaView/index.jsx:1005
 msgid "Edit object..."
 msgstr ""
 
@@ -12680,7 +12657,7 @@ msgstr "Envoyer de nouveau"
 
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:60
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:85
-#: pgadmin/static/js/components/FormComponents.jsx:477
+#: pgadmin/static/js/components/FormComponents.jsx:473
 msgid "Validate"
 msgstr "Valider"
 
@@ -12697,64 +12674,31 @@ msgstr "Réinitialisation du mot de passe"
 msgid "Retype Password"
 msgstr ""
 
-#: pgadmin/static/js/components/CodeMirror.jsx:262
-#: pgadmin/static/js/components/CodeMirror.jsx:264
-msgid "Find text"
-msgstr ""
-
-#: pgadmin/static/js/components/CodeMirror.jsx:280
-#: pgadmin/static/js/components/CodeMirror.jsx:282
-msgid "Replace value"
-msgstr ""
-
-#: pgadmin/static/js/components/CodeMirror.jsx:287
-msgid "Previous"
-msgstr "Précédent"
-
-#: pgadmin/static/js/components/CodeMirror.jsx:289
-#: pgadmin/static/js/helpers/wizard/Wizard.jsx:223
-msgid "Next"
-msgstr "Suivant"
-
-#: pgadmin/static/js/components/CodeMirror.jsx:292
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:601
-msgid "Replace"
-msgstr "Remplacer"
-
-#: pgadmin/static/js/components/CodeMirror.jsx:294
-msgid "Replace All"
-msgstr "Remplacer tout"
-
-#: pgadmin/static/js/components/CodeMirror.jsx:429
-#: pgadmin/static/js/components/CodeMirror.jsx:565
-msgid "SQL editor"
-msgstr "Éditeur SQL"
-
 #: pgadmin/static/js/components/ContextMenu.jsx:47
 msgid "No options"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:474
+#: pgadmin/static/js/components/FormComponents.jsx:470
 msgid "Select a file"
 msgstr "Choisir un fichier"
 
-#: pgadmin/static/js/components/FormComponents.jsx:977
+#: pgadmin/static/js/components/FormComponents.jsx:971
 msgid "<Select All>"
 msgstr "<Sélectionner tout>"
 
-#: pgadmin/static/js/components/FormComponents.jsx:982
+#: pgadmin/static/js/components/FormComponents.jsx:976
 msgid "Select an item..."
 msgstr "Sélectionner un objet..."
 
-#: pgadmin/static/js/components/FormComponents.jsx:1054
+#: pgadmin/static/js/components/FormComponents.jsx:1048
 msgid "Select the color"
 msgstr "Choisir la couleur"
 
-#: pgadmin/static/js/components/FormComponents.jsx:1269
+#: pgadmin/static/js/components/FormComponents.jsx:1263
 msgid "Close Message"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1322
+#: pgadmin/static/js/components/FormComponents.jsx:1316
 msgid "Loading"
 msgstr ""
 
@@ -12790,6 +12734,24 @@ msgstr "Aperçu non disponible..."
 msgid "Accesskey"
 msgstr "Clé d'accés"
 
+#: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:172
+msgid "Previous"
+msgstr "Précédent"
+
+#: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:174
+#: pgadmin/static/js/helpers/wizard/Wizard.jsx:223
+msgid "Next"
+msgstr "Suivant"
+
+#: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:177
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:602
+msgid "Replace"
+msgstr "Remplacer"
+
+#: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:179
+msgid "Replace All"
+msgstr "Remplacer tout"
+
 #: pgadmin/static/js/helpers/MainMoreToolbar.jsx:14
 msgid "More"
 msgstr ""
@@ -12818,21 +12780,21 @@ msgstr "Connexion perdue"
 msgid "Clear"
 msgstr ""
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:356
+#: pgadmin/static/js/helpers/Layout/index.jsx:361
 msgid "Maximise"
 msgstr "Maximiser"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:359
+#: pgadmin/static/js/helpers/Layout/index.jsx:364
 #: pgadmin/tools/restore/__init__.py:40 pgadmin/tools/restore/__init__.py:107
 #: pgadmin/tools/restore/static/js/restore.js:161
 msgid "Restore"
 msgstr "Restaurer"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:422
+#: pgadmin/static/js/helpers/Layout/index.jsx:427
 msgid "Close Others"
 msgstr ""
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:430
+#: pgadmin/static/js/helpers/Layout/index.jsx:435
 msgid "Close All"
 msgstr ""
 
@@ -12860,11 +12822,11 @@ msgstr ""
 "Les bases de données avec un symbole = dans leur nom ne peuvent pas être "
 "sauvegardée ou restaurée avec cet utilitaire."
 
-#: pgadmin/static/js/tree/tree_utils.js:53
+#: pgadmin/static/js/tree/tree_utils.js:49
 msgid "Please select server or child node from the object explorer."
 msgstr ""
 
-#: pgadmin/static/js/tree/tree_utils.js:85
+#: pgadmin/static/js/tree/tree_utils.js:81
 msgid "Please select a database or its child node from the browser."
 msgstr ""
 "Sélectionner une base de données ou un de ses nœuds enfants dans "
@@ -13440,7 +13402,7 @@ msgstr "Débogage"
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:91
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:146
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:173
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:872
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:868
 msgid "Debug"
 msgstr "Debug"
 
@@ -13454,43 +13416,41 @@ msgid "Set Breakpoint"
 msgstr "Définir le point d'arrêt"
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:396
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:754
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:750
 msgid "Debugger Target Initialization Error"
 msgstr "Erreur d'initialisation de la cible de débogage"
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:403
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:556
-#: pgadmin/tools/debugger/static/js/DebuggerModule.js:561
-#: pgadmin/tools/debugger/static/js/DebuggerModule.js:612
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:432
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:807
+#: pgadmin/tools/debugger/static/js/DebuggerModule.js:560
+#: pgadmin/tools/debugger/static/js/DebuggerModule.js:610
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:430
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:803
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:136
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:155
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:163
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:170
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:177
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:209
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:233
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:240
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:275
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:282
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:332
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:497
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:504
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:544
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:551
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:799
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:806
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:830
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:837
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:918
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:925
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:950
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:957
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1091
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1098
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1129
-#: pgadmin/tools/debugger/static/js/components/DebuggerEditor.jsx:64
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:164
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:171
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:178
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:210
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:234
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:241
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:276
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:284
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:309
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:455
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:462
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:710
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:717
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:741
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:748
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:812
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:819
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:844
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:851
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:985
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:992
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1023
+#: pgadmin/tools/debugger/static/js/components/DebuggerEditor.jsx:57
 msgid "Debugger Error"
 msgstr "Erreur de débogage"
 
@@ -13519,27 +13479,27 @@ msgstr "YYYY-MM-DD"
 msgid "Use Default?"
 msgstr "Par défaut ?"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:433
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:431
 msgid "Unable to fetch the arguments from server"
 msgstr "Impossible de parcourir les arguments sur le serveur"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:493
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:491
 msgid "Clear failed"
 msgstr "Échec de l'effacement"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:743
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:739
 msgid "Error occured: "
 msgstr "Une erreur s'est produite :"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:775
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:771
 msgid "Debugger Listener Startup Error"
 msgstr "Erreur de démarrage du processus d'écoute de débogage"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:799
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:795
 msgid "Debugger Listener Startup Set Arguments Error"
 msgstr "Erreur de démarrage du processus d'écoute de débogage"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:862
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:858
 msgid "Clear All"
 msgstr "Effacer tout"
 
@@ -13557,112 +13517,107 @@ msgstr ""
 msgid "Error while starting debugging listener."
 msgstr "Erreur de démarrage du processus d'écoute de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:164
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1066
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:165
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:960
 msgid "Error while polling result."
 msgstr "Erreur lors de l'extraction des résultats."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:171
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:172
 msgid "Error while clearing all breakpoint."
 msgstr "Erreur de suppression de tous les points d'arrêts."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:178
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:179
 msgid "Error while fetching breakpoint information."
 msgstr "Erreur lors de la récupération des informations du point d'arrêt."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:202
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:203
 #: pgadmin/utils/constants.py:35
 msgid "Not connected to server or connection with the server has been closed."
 msgstr "Aucune connexion au serveur, ou bien celle-ci a été perdue."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:210
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:211
 msgid "Error while fetching messages information."
 msgstr "Erreur lors de l'affectation des messages d'information."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:234
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:241
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:235
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:242
 msgid "Error while starting debugging session."
 msgstr "Erreur de démarrage de la session de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:276
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:283
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:277
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:285
 msgid "Error while executing requested debugging information."
 msgstr "Erreur lors de l'exécution des informations de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:333
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:310
 msgid "Error while selecting frame."
 msgstr "Erreur de sélection du bloc."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:498
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:505
-msgid "Error while toggling breakpoint."
-msgstr "Erreur lors de la bascule du point d'arrêt."
-
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:545
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:552
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:456
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:463
 msgid "Error while executing stop in debugging session."
 msgstr "Erreur lors de l'exécution d'un arrêt dans la session de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:757
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:668
 msgid "Debugger poll end execution error"
 msgstr "L'opération de débogage présente un erreur d'exécution"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:800
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:807
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:711
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:718
 msgid "Error while executing continue in debugging session."
 msgstr "Erreur d'exécution dans la session de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:831
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:838
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:742
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:749
 msgid "Error while executing step over in debugging session."
 msgstr "Erreur d'exécution step over dans la session de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:919
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:926
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:813
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:820
 msgid "Error while fetching variable information."
 msgstr "Erreur lors de la récupération des informations de la variable."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:951
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:958
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:845
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:852
 msgid "Error while fetching stack information."
 msgstr "Erreur lors de la récupération des informations de la pile."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:970
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:864
 msgid "Error in update"
 msgstr "Erreur dans la mise à jour"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1001
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:895
 msgid "Waiting for another session to invoke the target..."
 msgstr "Attente d'une nouvelle session pour appeler la cible..."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1065
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:959
 msgid "Debugger Error: poll_result"
 msgstr "Erreur de débogage : poll_result"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1092
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1099
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:986
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:993
 msgid "Error while executing step into in debugging session."
 msgstr "Erreur lors de l'exécution d'une étape dans la session de débogage."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1130
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1024
 msgid "Error while depositing variable value."
 msgstr "Erreur lors de l’affectation de la valeur de la variable."
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1214
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1108
 msgid "Local Variables"
 msgstr "Variables locales"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1217
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1111
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:211
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:360
 msgid "Messages"
 msgstr "Messages"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1223
+#: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1117
 msgid "Stack"
 msgstr "Pile"
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerEditor.jsx:65
+#: pgadmin/tools/debugger/static/js/components/DebuggerEditor.jsx:58
 msgid "Error while setting debugging breakpoint."
 msgstr "Erreur lors de la définition du point d'arrêt de débogage."
 
@@ -13817,7 +13772,7 @@ msgid "ERD Error"
 msgstr "Erreur du diagramme entité-association"
 
 #: pgadmin/tools/erd/static/js/ERDModule.js:92
-#: pgadmin/tools/psql/static/js/psql_module.js:95
+#: pgadmin/tools/psql/static/js/psql_module.js:94
 #: pgadmin/tools/sqleditor/static/js/show_query_tool.js:61
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:62
 msgid "No object selected."
@@ -13956,13 +13911,13 @@ msgid "Fetching schema data..."
 msgstr "Récupération des données du schéma..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:120
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:390
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:391
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:850
 msgid "Unsaved changes"
 msgstr "Modifications non enregistrées"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:121
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:391
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:392
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "Êtes vous sûr de vouloir ignorer les modifications en cours ?"
 
@@ -14029,13 +13984,13 @@ msgid "Zoom to Fit"
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:317
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:588
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:589
 #, fuzzy
 msgid "File Menu"
 msgstr "Fichier"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:321
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:590
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:591
 msgid "Save as"
 msgstr "Enregistrer sous"
 
@@ -14610,29 +14565,29 @@ msgstr ""
 msgid "Invalid session.\r\n"
 msgstr "Session invalide.\r\n"
 
-#: pgadmin/tools/psql/static/js/psql_module.js:86
-#: pgadmin/tools/psql/static/js/psql_module.js:94
-#: pgadmin/tools/psql/static/js/psql_module.js:104
+#: pgadmin/tools/psql/static/js/psql_module.js:85
+#: pgadmin/tools/psql/static/js/psql_module.js:93
+#: pgadmin/tools/psql/static/js/psql_module.js:103
 msgid "PSQL Error"
 msgstr "Erreur PSQL"
 
-#: pgadmin/tools/psql/static/js/psql_module.js:105
+#: pgadmin/tools/psql/static/js/psql_module.js:104
 msgid "Please select a server/database object."
 msgstr "Un objet serveur/base de données."
 
-#: pgadmin/tools/psql/static/js/psql_module.js:261
+#: pgadmin/tools/psql/static/js/psql_module.js:260
 msgid "Clipboard write permission required"
 msgstr ""
 
-#: pgadmin/tools/psql/static/js/psql_module.js:261
+#: pgadmin/tools/psql/static/js/psql_module.js:260
 msgid "To copy data from PSQL terminal, Clipboard write permission required."
 msgstr ""
 
-#: pgadmin/tools/psql/static/js/psql_module.js:279
+#: pgadmin/tools/psql/static/js/psql_module.js:280
 msgid "Clipboard read permission required"
 msgstr "Autorisation de lecture du presse-papiers requise"
 
-#: pgadmin/tools/psql/static/js/psql_module.js:279
+#: pgadmin/tools/psql/static/js/psql_module.js:280
 msgid "To paste data on the PSQL terminal, Clipboard read permission required."
 msgstr ""
 "Pour coller des données dans le terminal psql, l'autorisation de lecture "
@@ -14785,8 +14740,8 @@ msgid "Comparing {0}"
 msgstr "Comparaison entre {0}"
 
 #: pgadmin/tools/schema_diff/__init__.py:804
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:380
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:384
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:377
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:381
 msgid "Database Objects"
 msgstr "Objets de la base de données"
 
@@ -14822,15 +14777,15 @@ msgstr "Différents"
 msgid "Ignore Grant/Revoke"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:75
+#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:74
 msgid "Error in schema diff initialize ${error.response.data}"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:754
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:749
 msgid "No difference found"
 msgstr "Aucune différence n'a été trouvée"
 
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:759
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:754
 msgid "Loading result grid..."
 msgstr ""
 
@@ -15263,13 +15218,13 @@ msgid "Don't ask again"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:23
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:572
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:573
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:718
 msgid "Rollback"
 msgstr "Rollback"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:27
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:570
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:571
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:700
 msgid "Commit"
 msgstr "COMMIT"
@@ -15416,21 +15371,21 @@ msgstr "Axe X"
 msgid "Y Axis"
 msgstr "Axe Y"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:308
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:309
 msgid "Close query tool?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:311
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:312
 msgid ""
 "There is an active query running currently. Are you sure you want to "
 "close?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:323
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:324
 msgid "Commit transaction?"
 msgstr "Confirmer la transaction ?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:326
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:327
 msgid ""
 "The current transaction is not commited to the database. Do you want to "
 "commit or rollback the transaction?"
@@ -15438,174 +15393,174 @@ msgstr ""
 "La transaction en cours n'est pas engagée dans la base de données. "
 "Voulez-vous engager ou annuler la transaction ?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:523
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:524
 msgid "Open File"
 msgstr "Ouvrir fichier"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:533
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:534
 msgid "Edit"
 msgstr "Éditer"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:539
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:540
 msgid "Sort/Filter"
 msgstr "Filtre/Tri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:541
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
 msgid "Filter options"
 msgstr "Options de filtre"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:546
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:547
 msgid "No limit"
 msgstr "Aucune limite"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:547
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:548
 msgid "1000 rows"
 msgstr "1000 lignes"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:548
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:549
 msgid "500 rows"
 msgstr "500 lignes"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:549
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:550
 msgid "100 rows"
 msgstr "100 lignes"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:552
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:553
 msgid "Cancel query"
 msgstr "Annuler la requête"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:554
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:555
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:371
 msgid "Execute script"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:556
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:557
 msgid "Execute options"
 msgstr "Options d'exécution"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:561
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:562
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:829
 #: pgadmin/utils/constants.py:23
 msgid "Explain"
 msgstr "EXPLAIN"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:563
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:564
 msgid "Explain Analyze"
 msgstr "EXPLAIN ANALYSE"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:565
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:566
 msgid "Explain Settings"
 msgstr "Paramètres EXPLAIN"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:576
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:577
 msgid "Macros"
 msgstr "Macros"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:596
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:597
 #, fuzzy
 msgid "Edit Menu"
 msgstr "Édition"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:599
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:600
 msgid "Find"
 msgstr "Recherche unitaire"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:603
-msgid "Jump"
-msgstr "Sauter"
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:604
+msgid "Go to Line/Column"
+msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:606
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:607
 msgid "Indent Selection"
 msgstr "Sélection d'indentation"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:608
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:609
 #, fuzzy
 msgid "Unindent Selection"
 msgstr "Sélection pour supprimer l'Indentation"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:610
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:611
 #, fuzzy
 msgid "Toggle Comment"
 msgstr "Basculer commentaire"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:612
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:613
 msgid "Toggle Case Of Selected Text"
 msgstr "Changer la casse du texte sélectionné"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:614
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:615
 msgid "Clear Query"
 msgstr "Effacer la requête"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:616
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:617
 msgid "Format SQL"
 msgstr "Format SQL"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:622
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:623
 #, fuzzy
 msgid "Filter Options Menu"
 msgstr "Options de Filtre"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:624
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:625
 msgid "Filter by Selection"
 msgstr "Filtrer par sélection"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:625
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:626
 msgid "Exclude by Selection"
 msgstr "Exclure par sélection"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:626
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:627
 msgid "Remove Sort/Filter"
 msgstr "Supprimer le filtre/tri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:632
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:633
 #, fuzzy
 msgid "Execute Options Menu"
 msgstr "Options d'exécution"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:635
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:636
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:66
 msgid "Auto commit?"
 msgstr "Auto commit?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:637
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:638
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:74
 msgid "Auto rollback on error?"
 msgstr "Auto rollback en erreur ?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:643
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:644
 #, fuzzy
 msgid "Explain Options Menu"
 msgstr "Options Explain"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:646
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:647
 msgid "Verbose"
 msgstr "Verbeux"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:648
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:649
 msgid "Costs"
 msgstr "Coût"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:650
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:651
 msgid "Buffers"
 msgstr "Tampon"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:652
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:653
 msgid "Timing"
 msgstr "Chronométrage"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:656
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:657
 msgid "Settings"
 msgstr "Paramètres"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:658
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:659
 msgid "Wal"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:664
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:665
 msgid "Macros Menu"
 msgstr "Macros"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:666
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:667
 msgid "Manage macros"
 msgstr "Gérer les Macros"
 
@@ -15621,21 +15576,21 @@ msgstr "ID du processus"
 msgid "Payload"
 msgstr "Coût"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:399
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:206
 msgid "File saved successfully."
 msgstr "Fichier enregistré avec succès."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:490
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:319
 msgid "Save query changes?"
 msgstr "Enregistrer les modifications de la requête ?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:493
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:322
 msgid "The query text has changed. Do you want to save changes?"
 msgstr ""
 "Le texte de la requête a été modifié. Voulez-vous enregistrer les "
 "modifications ?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:545
+#: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:369
 msgid "Promote to Query Tool"
 msgstr ""
 
@@ -15826,59 +15781,59 @@ msgstr ""
 "Auto-commit est désactivé. Vous devez encore engager les modifications "
 "dans la base de données."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1288
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1286
 msgid "Geometry Viewer"
 msgstr "Visualisation cartographique"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1371
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:182
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1369
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:181
 #: pgadmin/utils/constants.py:30
 msgid "Graph Visualiser"
 msgstr "Aperçu de graphiques"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1387
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1385
 msgid "Loading more rows..."
 msgstr "Charger plus de lignes..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1389
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1387
 msgid "No data output. Execute a query to get output."
 msgstr "Aucune donnée. Exécuter une requête pour afficher un résultat."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:163
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:162
 #, fuzzy
 msgid "Copy options"
 msgstr "Copier les options"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:165
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:164
 msgid "Paste"
 msgstr "Coller"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:167
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:166
 msgid "Paste options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:173
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:172
 msgid "Save Data Changes"
 msgstr "Enregistrer les modifications de données"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:177
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:176
 msgid "Save results to file"
 msgstr "Enregistrer les résultats dans un fichier"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:190
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:189
 #, fuzzy
 msgid "Copy Options Menu"
 msgstr "Options de copie"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:192
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:191
 msgid "Copy with headers"
 msgstr "Copier avec en-têtes"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:198
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:197
 msgid "Paste Options Menu"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:200
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:199
 msgid "Paste with SERIAL/IDENTITY values?"
 msgstr ""
 
@@ -16370,59 +16325,52 @@ msgstr "Casse des mots-clés"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:736
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:760
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:772
 msgid "Upper case"
 msgstr "Majuscule"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:737
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:749
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:761
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:773
 msgid "Lower case"
 msgstr "Minuscule"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:738
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:750
-msgid "Capitalized"
-msgstr "En majuscule"
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:762
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:774
+msgid "Preserve"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:740
-msgid "Convert keywords to upper, lower, or capitalized casing."
-msgstr "Convertir les mots-clés en majuscules ou minuscules."
+msgid "Convert keywords to upper, lower, or preserve casing."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:747
 msgid "Identifier case"
 msgstr "Casse des identifiants"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:752
-msgid "Convert identifiers to upper, lower, or capitalized casing."
-msgstr "Convertir les identifiants en majuscules ou minuscules."
+msgid "Convert identifiers to upper, lower, or preserve casing."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:759
-#, fuzzy
-msgid "Strip comments?"
-msgstr "Commentaire de la ligne ?"
+msgid "Function case"
+msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:761
-msgid "If set to True, comments will be removed."
-msgstr "Si Vrai, les commentaires seront supprimés."
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:764
+msgid "Convert function names to upper, lower, or preserve casing."
+msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:766
-msgid "Re-indent?"
-msgstr "Indentation ?"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:768
-msgid "If set to True, the indentations of the statements are changed."
-msgstr "Si Vrai, les indentations dans les scripts sont modifiées."
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:774
-msgid "Re-indent aligned?"
-msgstr "Indentation alignée ?"
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:771
+msgid "Data type case"
+msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:776
-msgid ""
-"If set to True, the indentations of the statements are changed, and "
-"statements are aligned by keywords."
+msgid "Convert data types to upper, lower, or preserve casing."
 msgstr ""
-"Si Vrai, les indentations sont modifiées et les scripts sont alignées sur"
-" la base des mots-clés."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:783
 msgid "Spaces around operators?"
@@ -16433,41 +16381,18 @@ msgid "If set to True, spaces are used around all operators."
 msgstr "Si Vrai, des espaces sont utilisées de part et d'autre des opérateurs."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:791
-msgid "Comma-first notation?"
-msgstr "Notation avec virgule en premier ?"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:793
-msgid "If set to True, comma-first notation for column names is used."
-msgstr ""
-"Si Vrai, la notation avec virgule en premier est utilisée pour le nom des"
-" colonnes."
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:799
-msgid "Wrap after N characters"
-msgstr "Pliage après N caractères"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:801
-msgid ""
-"The column limit (in characters) for wrapping comma-separated lists. If "
-"zero, it puts every item in the list on its own line."
-msgstr ""
-"La limite de colonne (en caractères) pour le conditionnement des listes "
-"séparées par des virgules. Si elle est nulle, chaque élément de la liste "
-"est positionné sur une même ligne ligne."
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:808
 msgid "Tab size"
 msgstr "Taille de tabulation"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:812
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:795
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "Nombre d’espaces par tabulation. Le minimum est 2, le maximum est 8."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:819
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:802
 msgid "Use spaces?"
 msgstr "Utiliser des espaces ?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:821
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:804
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
@@ -16475,12 +16400,58 @@ msgstr ""
 "Indique si il faut utiliser des espaces à la place de tabulation lorsque "
 "la touche Tab est utilisée ou dans le cas d'auto indentation."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:829
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:812
+msgid "Expression Width"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:814
+msgid ""
+"maximum number of characters in parenthesized expressions to be kept on "
+"single line."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:822
+msgid "Logical operator new line"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:823
+msgid "Before"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:824
+msgid "After"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:826
+msgid ""
+"Decides newline placement before or after logical operators (AND, OR, "
+"XOR)."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:834
+msgid "Lines between queries"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:838
+msgid ""
+"Decides how many empty lines to leave between SQL statements. If zero it "
+"puts no new line."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:846
+msgid "New line before semicolon?"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:848
+msgid "Whether to place query separator (;) on a separate line."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:855
 #, fuzzy
 msgid "Row Limit"
 msgstr "Nombre de lignes max"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:831
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:857
 msgid ""
 "This setting specifies the maximum number of rows that will be plotted on"
 " a chart. Increasing this limit may impact performance if charts are "
@@ -16628,51 +16599,51 @@ msgstr ""
 "fichier '%s' non trouvé. Merci de corriger le chemin des binaires dans "
 "les préférences"
 
-#: pgadmin/utils/__init__.py:530
+#: pgadmin/utils/__init__.py:531
 #, python-format
 msgid "Configuration for %s servers dumped to %s"
 msgstr "La configuration des serveurs %s a été transférée vers %s"
 
-#: pgadmin/utils/__init__.py:546
+#: pgadmin/utils/__init__.py:547
 msgid "'Servers' attribute not found in the specified file."
 msgstr "L'attribut 'Servers' n'a pas été trouvé dans le fichier."
 
-#: pgadmin/utils/__init__.py:561
+#: pgadmin/utils/__init__.py:562
 #, python-format
 msgid "'%s' attribute not found for server '%s'"
 msgstr "Attribut '%s' non trouvé pour le serveur '%s'."
 
-#: pgadmin/utils/__init__.py:566
+#: pgadmin/utils/__init__.py:567
 #, python-format
 msgid "Port must be integer for server '%s'"
 msgstr "Le port doit être un entier pour le serveur '%s'."
 
-#: pgadmin/utils/__init__.py:591
+#: pgadmin/utils/__init__.py:592
 #, python-format
 msgid "'Host' or 'Service' attribute not found for server '%s'"
 msgstr ""
 
-#: pgadmin/utils/__init__.py:622
+#: pgadmin/utils/__init__.py:623
 #, python-format
 msgid "Error parsing input file %s: %s"
 msgstr "Erreur d'analyse du fichier %s : %s"
 
-#: pgadmin/utils/__init__.py:625
+#: pgadmin/utils/__init__.py:626
 #, python-format
 msgid "Error reading input file %s: [%d] %s"
 msgstr "Erreur de lecture du fichier %s : [%d] %s"
 
-#: pgadmin/utils/__init__.py:664
+#: pgadmin/utils/__init__.py:665
 #, python-format
 msgid "Error creating server group '%s': %s"
 msgstr "Erreur lors de la création du groupe de serveurs '%s' : %s"
 
-#: pgadmin/utils/__init__.py:744
+#: pgadmin/utils/__init__.py:747
 #, python-format
 msgid "Error creating server '%s': %s"
 msgstr "Erreur lors de la création du serveur '%s' : %s"
 
-#: pgadmin/utils/__init__.py:784
+#: pgadmin/utils/__init__.py:787
 #, python-format
 msgid "Error clearing server configuration with error (%s)"
 msgstr "Erreur d'effacement de la configuration du serveur avec l'erreur (%s)"
@@ -21165,4 +21136,98 @@ msgstr ""
 
 #~ msgid "Update catalog?"
 #~ msgstr "Mise  à jour du catalogue ?"
+
+#~ msgid "Dialog tab forward"
+#~ msgstr "Onglet suivant"
+
+#~ msgid "Dialog tab backward"
+#~ msgstr "Onglet précédent"
+
+#~ msgid "Superuser privileges are required to cancel another users query."
+#~ msgstr ""
+#~ "Les privilèges de super-utilisateur sont"
+#~ " nécessaires pour annuler la requête "
+#~ "d'un autre utilisateur."
+
+#~ msgid "Superuser privileges are required to terminate another users query."
+#~ msgstr ""
+#~ "Les privilèges de super-utilisateur sont"
+#~ " nécessaires pour mettre fin à la "
+#~ "requête d'un autre utilisateur."
+
+#~ msgid "Property"
+#~ msgstr ""
+
+#~ msgid "Find text"
+#~ msgstr ""
+
+#~ msgid "Replace value"
+#~ msgstr ""
+
+#~ msgid "SQL editor"
+#~ msgstr "Éditeur SQL"
+
+#~ msgid "Error while toggling breakpoint."
+#~ msgstr "Erreur lors de la bascule du point d'arrêt."
+
+#~ msgid "Jump"
+#~ msgstr "Sauter"
+
+#~ msgid "Capitalized"
+#~ msgstr "En majuscule"
+
+#~ msgid "Convert keywords to upper, lower, or capitalized casing."
+#~ msgstr "Convertir les mots-clés en majuscules ou minuscules."
+
+#~ msgid "Convert identifiers to upper, lower, or capitalized casing."
+#~ msgstr "Convertir les identifiants en majuscules ou minuscules."
+
+#~ msgid "Strip comments?"
+#~ msgstr "Commentaire de la ligne ?"
+
+#~ msgid "If set to True, comments will be removed."
+#~ msgstr "Si Vrai, les commentaires seront supprimés."
+
+#~ msgid "Re-indent?"
+#~ msgstr "Indentation ?"
+
+#~ msgid "If set to True, the indentations of the statements are changed."
+#~ msgstr "Si Vrai, les indentations dans les scripts sont modifiées."
+
+#~ msgid "Re-indent aligned?"
+#~ msgstr "Indentation alignée ?"
+
+#~ msgid ""
+#~ "If set to True, the indentations "
+#~ "of the statements are changed, and "
+#~ "statements are aligned by keywords."
+#~ msgstr ""
+#~ "Si Vrai, les indentations sont modifiées"
+#~ " et les scripts sont alignées sur "
+#~ "la base des mots-clés."
+
+#~ msgid "Comma-first notation?"
+#~ msgstr "Notation avec virgule en premier ?"
+
+#~ msgid "If set to True, comma-first notation for column names is used."
+#~ msgstr ""
+#~ "Si Vrai, la notation avec virgule "
+#~ "en premier est utilisée pour le "
+#~ "nom des colonnes."
+
+#~ msgid "Wrap after N characters"
+#~ msgstr "Pliage après N caractères"
+
+#~ msgid ""
+#~ "The column limit (in characters) for "
+#~ "wrapping comma-separated lists. If zero,"
+#~ " it puts every item in the list"
+#~ " on its own line."
+#~ msgstr ""
+#~ "La limite de colonne (en caractères) "
+#~ "pour le conditionnement des listes "
+#~ "séparées par des virgules. Si elle "
+#~ "est nulle, chaque élément de la "
+#~ "liste est positionné sur une même "
+#~ "ligne ligne."
 

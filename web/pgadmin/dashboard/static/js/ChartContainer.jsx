@@ -16,6 +16,7 @@ import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 const useStyles = makeStyles((theme) => ({
   chartCard: {
     border: '1px solid '+theme.otherVars.borderColor,
+    height: '100%',
   },
   chartCardContent: {
     padding: '0.25rem 0.5rem',
@@ -46,7 +47,7 @@ export default function ChartContainer(props) {
       <CardHeader title={<Box display="flex" justifyContent="space-between">
         <div id={props.id}>{props.title}</div>
         <div className={classes.chartLegend}>
-          <div className="d-flex">
+          <div style={{display: 'flex', flexWrap: 'wrap'}}>
             {props.datasets?.map((datum)=>(
               <div className="legend-value" key={datum.label}>
                 <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
