@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 16.0
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 16.1
 
 
 New features
@@ -28,6 +28,7 @@ Housekeeping
 ************
 
   | `Issue #7097 <https://github.com/pgadmin-org/pgadmin4/issues/7097>`_ -  Upgrade CodeMirror from version 5 to 6.
+  | `Issue #7148 <https://github.com/pgadmin-org/pgadmin4/issues/7148>`_ -  Added documentation for Dashboard's System Statistics tab.
   | `Issue #7187 <https://github.com/pgadmin-org/pgadmin4/issues/7187>`_ -  Separate the application name, branding & version information from the configuration file.
   | `Issue #7234 <https://github.com/pgadmin-org/pgadmin4/issues/7234>`_ -  Upgrade python packages cryptography to 42.0.x and Flask-Security-Too to 5.3.x.
 
