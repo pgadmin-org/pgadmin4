@@ -36,6 +36,7 @@ import { BROWSER_PANELS } from '../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../static/js/BrowserComponent';
 import usePreferences from '../../../preferences/static/js/store';
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
+import { parseApiError } from '../../../static/js/api_instance';
 
 function parseData(data) {
   let res = [];
@@ -295,8 +296,8 @@ function Dashboard({
                     })
                     .catch(function (error) {
                       pgAdmin.Browser.notifier.alert(
-                        gettext('Failed to retrieve data from the server.'),
-                        error.message
+                        gettext('Failed to perform the operation.'),
+                        parseApiError(error)
                       );
                     });
                 },
@@ -364,8 +365,8 @@ function Dashboard({
                     })
                     .catch(function (error) {
                       pgAdmin.Browser.notifier.alert(
-                        gettext('Failed to retrieve data from the server.'),
-                        error.message
+                        gettext('Failed to perform the operation.'),
+                        parseApiError(error)
                       );
                     });
                 },
@@ -686,21 +687,10 @@ function Dashboard({
     let pg_version = treeNodeInfo.server.version || null,
       is_cancel_session = cellAction === 'cancel',
       txtMessage,
-      maintenance_database = treeNodeInfo.server.db,
-      is_super_user,
-      current_user;
-
-    let can_signal_backend =
-      treeNodeInfo.server?.user ? treeNodeInfo.server?.user?.can_signal_backend : false;
+      maintenance_database = treeNodeInfo.server.db;
 
     let maintenanceActiveSessions = dashData.filter((data) => data.state === 'active'&&
       maintenance_database === data.datname);
-    if (treeNodeInfo.server?.user?.is_superuser) {
-      is_super_user = true;
-    } else {
-      is_super_user = false;
-      current_user = treeNodeInfo.server?.user ? treeNodeInfo.server?.user?.name : null;
-    }
 
     // With PG10, We have background process showing on dashboard
     // We will not allow user to cancel them as they will fail with error
@@ -738,28 +728,10 @@ function Dashboard({
       // If this session is already idle then do nothing
       pgAdmin.Browser.notifier.info(gettext('The session is already in idle state.'));
       return false;
-    } else if (can_signal_backend) {
-      // user with membership of 'pg_signal_backend' can terminate the session of non admin user.
-      return true;
-    } else if (is_super_user) {
-      // Super user can do anything
-      return true;
-    } else if (current_user && current_user == row.original.usename) {
-      // Non-super user can cancel only their active queries
-      return true;
     } else {
-      // Do not allow to cancel someone else session to non-super user
-      if (is_cancel_session) {
-        txtMessage = gettext(
-          'Superuser privileges are required to cancel another users query.'
-        );
-      } else {
-        txtMessage = gettext(
-          'Superuser privileges are required to terminate another users query.'
-        );
-      }
-      pgAdmin.Browser.notifier.error(txtMessage);
-      return false;
+      // Will return true and let the backend handle all the cases.
+      // Added as fix of #7217
+      return true;
     }
   };
   useEffect(() => {
