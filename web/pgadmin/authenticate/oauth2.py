@@ -69,11 +69,21 @@ def init_app(app):
                      methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     def oauth_logout():
+        id_token = session['oauth2_token']['id_token']
+        logout_url = None
+        if 'oauth2_logout_url' in session:
+            logout_url = session['oauth2_logout_url']
+
         if not current_user.is_authenticated:
             return redirect(get_safe_post_logout_redirect())
         for key in list(session.keys()):
             session.pop(key)
+
         logout_user()
+        if logout_url:
+            return redirect(logout_url.format(
+                redirect_uri=request.url_root,
+                id_token=id_token))
         return redirect(get_safe_post_logout_redirect())
 
     app.register_blueprint(blueprint)
@@ -201,6 +211,11 @@ class OAuth2Authentication(BaseAuthentication):
             self.oauth2_current_client].authorize_access_token()
 
         session['pass_enc_key'] = session['oauth2_token']['access_token']
+
+        if 'OAUTH2_LOGOUT_URL' in self.oauth2_config[
+                self.oauth2_current_client]:
+            session['oauth2_logout_url'] = self.oauth2_config[
+                self.oauth2_current_client]['OAUTH2_LOGOUT_URL']
 
         resp = self.oauth2_clients[self.oauth2_current_client].get(
             self.oauth2_config[
