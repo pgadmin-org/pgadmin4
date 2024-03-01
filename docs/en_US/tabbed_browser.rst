@@ -9,12 +9,14 @@ display information about the object currently selected in the *pgAdmin* tree
 control in the left window.  Select a tab to access information about the
 highlighted object in the tree control.
 
-.. image:: images/main_dashboard.png
+.. image:: images/main_dashboard_general.png
     :alt: Dashboard panel
     :align: center
 
-The graphs on the *Dashboard* tab provides an active analysis of the usage
-statistics for the selected server or database:
+The graphs and tables on the *Dashboard* tab provides an active analysis of system statistics and the usage
+statistics for the selected server or database.
+
+Click the *General* tab to get the usage statistics for the selected server or database:
 
 * The *Server sessions* or *Database sessions* graph displays the interactions
   with the server or database.
@@ -33,6 +35,7 @@ transactions, and server configuration (if applicable). The information is
 presented in context-sensitive tables.  Use controls located above the table to:
 
 * Click the *Refresh* button to update the information displayed in each table.
+* Select *Active sessions only* checkbox to get the information about active sessions only from the list of all the sessions.
 * Enter a value in the *Search* box to restrict the table content to one or more
   sessions that satisfy the search criteria.  For example, you can enter a
   process ID to locate a specific session, or a session state (such as *idle*)
@@ -52,6 +55,54 @@ session:
   terminated.
 * Use the *Details* icon (located in the third column) to open the *Details*
   tab; the tab displays information about the selected session.
+
+Click the *System Statistics* tab to get the statistics for the system:
+
+.. image:: images/main_dashboard_sys_statistics_summary.png
+    :alt: Summary panel
+    :align: center
+
+Click the *Summary* tab to get the summary of the system:
+
+* The *OS Information* table displays the basic information about the operating system.
+* The *CPU Information* table displays the information about system CPU.
+* The *Process & Handle Count* graph displays the total count of processes running and handles opened for the system.
+
+.. image:: images/main_dashboard_sys_statistics_cpu.png
+    :alt: CPU panel
+    :align: center
+
+Click the *CPU* tab to get the detailed usage statistics of the system CPU:
+
+* The *CPU Usage* graph displays the percentage of time spent by CPU for user normal process, user niced process, kernel mode process, idle mode.
+* The *Load average* graph displays the average load of the system over 1, 5, 10, and 15 minute intervals.
+* The *Process CPU Usage* table displays information about CPU for each process ID. Enter a value like process ID or name in the Search box to restrict the table content to one or more processes that satisfy the search criteria.
+
+.. image:: images/main_dashboard_sys_statistics_memory.png
+    :alt: Memory panel
+    :align: center
+
+Click the *Memory* tab to get the detailed usage statistics of the system memory:
+
+* The *Memory Usage* graph displays the size of total, free and used memory per seconds in Gigabytes.
+* The *Swap Memory* graph displays the size of total, free and used swap memory per seconds in Gigabytes.
+* The *Process Memory Usage* table displays information about memory for each process ID. Enter a value like process ID or name in the Search box to restrict the table content to one or more processes that satisfy the search criteria.
+
+.. image:: images/main_dashboard_sys_statistics_storage.png
+    :alt: Storage panel
+    :align: center
+
+Click the *Storage* tab to get the detailed information of the system storage:
+
+* The *Disk Information* table displays the information about the disk, such as file system type, mount point, total space, used space and free space and count of total, free, used inodes. The pie graph shows the total spaces in Gigabytes and stacked bar graph shows the used and available space in Gigabytes, for different mount points for file system.
+* The *Swap Memory* graph displays the size of total, free and used swap memory per seconds in Gigabytes.
+
+The *disk0* panel displays statistics about the only I/O block device of system:
+
+* The *I/O Operations Count* graph displays the count of read and write operations per second.
+* The *Data Transfer* graph displays the size of read and writes happened in Gigabytes per second.
+* The *Time spent in I/O operations* graph displays the time spent by the device for reading and writing in minutes per second.
+
 
 .. image:: images/main_properties_table.png
     :alt: Properties panel

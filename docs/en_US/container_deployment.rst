@@ -132,7 +132,7 @@ than using the default.
 
 Override the default file path for the server definition list. See the
 /pgadmin4/servers.json mapped file below for more information. See the format
-of the `JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
+of the `Servers JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
 
 **PGADMIN_PREFERENCES_JSON_FILE**
 
@@ -140,7 +140,7 @@ of the `JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_se
 
 Override the default file path for the preferences customization at the container creation. See the
 /pgadmin4/preferences.json mapped file below for more information. See the format
-of the `JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
+of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/preferences.html#json-format>`_.
 
 **GUNICORN_ACCESS_LOGFILE**
 
