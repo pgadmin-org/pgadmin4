@@ -40,5 +40,6 @@ Bug fixes
   | `Issue #7027 <https://github.com/pgadmin-org/pgadmin4/issues/7027>`_ -  Fixed an issue where dependencies and dependents were not showing if a composite type is used as an attribute in another composite type.
   | `Issue #7164 <https://github.com/pgadmin-org/pgadmin4/issues/7164>`_ -  Fix an issue where constraint check control is enabled in the edit table dialog.
   | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fix an issue where the scripts created by generate script of Schema diff for Table with sequence was not working earlier.
+  | `Issue #7193 <https://github.com/pgadmin-org/pgadmin4/issues/7193>`_ -  Ensure that the OAuth2 session is logged out when users log out from pgAdmin.
   | `Issue #7217 <https://github.com/pgadmin-org/pgadmin4/issues/7217>`_ -  Remove role related checks on the UI dashboard when terminating session/query and let PostgreSQL take care of it.
   | `Issue #7225 <https://github.com/pgadmin-org/pgadmin4/issues/7225>`_ -  Fix an issue where type column in dependents/dependencies tab is not showing correct label.
