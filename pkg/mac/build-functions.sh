@@ -288,6 +288,8 @@ _complete_bundle() {
 
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
+        yarn set version berry
+        yarn set version 3
         yarn install
         yarn run bundle
 
