@@ -288,6 +288,7 @@ _complete_bundle() {
 
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
+        corepack enable
         yarn set version berry
         yarn set version 3
         yarn install
