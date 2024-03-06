@@ -88,11 +88,11 @@ export default class UniqueConstraintSchema extends BaseUISchema {
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
             let oldColumn = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
-            currColumns = _.filter(currColumns, (cc)=>cc.column != oldColumn.name);
+            currColumns = _.filter(currColumns, (cc)=>cc.cid != oldColumn.cid);
           } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
             let tabColPath = _.slice(actionObj.path, 0, -1);
-            let oldColName = _.get(actionObj.oldState, tabColPath).name;
-            let idx = _.findIndex(currColumns, (cc)=>cc.column == oldColName);
+            let oldCol = _.get(actionObj.oldState, tabColPath);
+            let idx = _.findIndex(currColumns, (cc)=>cc.cid == oldCol.cid);
             if(idx > -1) {
               currColumns[idx].column = _.get(topState, tabColPath).name;
             }
