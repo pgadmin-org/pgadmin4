@@ -43,3 +43,4 @@ Bug fixes
   | `Issue #7193 <https://github.com/pgadmin-org/pgadmin4/issues/7193>`_ -  Ensure that the OAuth2 session is logged out when users log out from pgAdmin.
   | `Issue #7217 <https://github.com/pgadmin-org/pgadmin4/issues/7217>`_ -  Remove role related checks on the UI dashboard when terminating session/query and let PostgreSQL take care of it.
   | `Issue #7225 <https://github.com/pgadmin-org/pgadmin4/issues/7225>`_ -  Fix an issue where type column in dependents/dependencies tab is not showing correct label.
+  | `Issue #7258 <https://github.com/pgadmin-org/pgadmin4/issues/7258>`_ -  Unsafe Deserialization and Remote Code Execution by an Authenticated user in pgAdmin 4 (CVE-2024-2044).

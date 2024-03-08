@@ -34,6 +34,8 @@ from collections import OrderedDict
 
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
+from werkzeug.security import safe_join
+from werkzeug.exceptions import InternalServerError
 
 from pgadmin.utils.ajax import make_json_response
 
@@ -192,26 +194,29 @@ class FileBackedSessionManager(SessionManager):
         self.skip_paths = [] if skip_paths is None else skip_paths
 
     def exists(self, sid):
-        fname = os.path.join(self.path, sid)
-        return os.path.exists(fname)
+        fname = safe_join(self.path, sid)
+        return fname is not None and os.path.exists(fname)
 
     def remove(self, sid):
-        fname = os.path.join(self.path, sid)
-        if os.path.exists(fname):
+        fname = safe_join(self.path, sid)
+        if fname is not None and os.path.exists(fname):
             os.unlink(fname)
 
     def new_session(self):
         sid = str(uuid4())
-        fname = os.path.join(self.path, sid)
+        fname = safe_join(self.path, sid)
 
-        while os.path.exists(fname):
+        while fname is not None and os.path.exists(fname):
             sid = str(uuid4())
-            fname = os.path.join(self.path, sid)
+            fname = safe_join(self.path, sid)
 
         # Do not store the session if skip paths
         for sp in self.skip_paths:
             if request.path.startswith(sp):
                 return ManagedSession(sid=sid)
+
+        if fname is None:
+            raise InternalServerError('Failed to create new session')
 
         # touch the file
         with open(fname, 'wb'):
@@ -222,12 +227,12 @@ class FileBackedSessionManager(SessionManager):
     def get(self, sid, digest):
         'Retrieve a managed session by session-id, checking the HMAC digest'
 
-        fname = os.path.join(self.path, sid)
+        fname = safe_join(self.path, sid)
         data = None
         hmac_digest = None
         randval = None
 
-        if os.path.exists(fname):
+        if fname is not None and os.path.exists(fname):
             try:
                 with open(fname, 'rb') as f:
                     randval, hmac_digest, data = load(f)
@@ -266,7 +271,11 @@ class FileBackedSessionManager(SessionManager):
             if request.path.startswith(sp):
                 return
 
-        fname = os.path.join(self.path, session.sid)
+        fname = safe_join(self.path, session.sid)
+
+        if fname is None:
+            raise InternalServerError('Failed to update the session')
+
         with open(fname, 'wb') as f:
             dump(
                 (session.randval, session.hmac_digest, dict(session)),

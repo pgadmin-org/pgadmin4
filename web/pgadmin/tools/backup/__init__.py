@@ -236,8 +236,10 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             return
         val = data.get(key, default_value)
         if val:
-            args.append(param)
-            args.append(val)
+            val = val.split()
+            for c_val in val:
+                args.append(param)
+                args.append(c_val)
 
     if backup_obj_type != 'objects':
         args.append('--database')
