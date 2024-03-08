@@ -106,6 +106,7 @@ describe('ExclusionConstraintSchema', ()=>{
         is_exp: true,
         column: 'abc',
         col_type: null,
+        column_cid: null,
       });
     });
   });
@@ -125,14 +126,14 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('depChange', ()=>{
-    let state = {columns: [{local_column: 'id'}]};
+    let state = {columns: [{column: 'id', column_cid: 'c123'}]};
 
     schemaObj.top = new TableSchema({}, null);
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], null, {
       type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
       oldState: {
         columns: [
-          {name: 'id'}
+          {name: 'id', cid: 'c123'}
         ],
       },
       path: ['columns'],
@@ -143,19 +144,19 @@ describe('ExclusionConstraintSchema', ()=>{
 
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], {
       columns: [
-        {name: 'id123'}
+        {name: 'id123', cid: 'c123'}
       ],
     }, {
       type: SCHEMA_STATE_ACTIONS.SET_VALUE,
       oldState: {
         columns: [
-          {name: 'id'}
+          {name: 'id', cid: 'c123'}
         ],
       },
       path: ['columns', 0, 'name'],
       value: 'id123',
     })).toEqual({
-      columns: [{local_column: 'id123'}],
+      columns: [{column: 'id123', column_cid: 'c123'}],
     });
 
     state = {};

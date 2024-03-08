@@ -615,6 +615,7 @@ function SchemaDialogView({
 
   useEffect(()=>{
     /* If reset key changes, reset the form */
+    schema.initialise(schema.origData);
     sessDispatch({
       type: SCHEMA_STATE_ACTIONS.INIT,
       payload: schema.origData,
@@ -626,6 +627,7 @@ function SchemaDialogView({
     const resetIt = ()=>{
       firstEleRef.current?.focus();
       setFormResetKey((prev)=>prev+1);
+      schema.initialise(schema.origData);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
         payload: schema.origData,

@@ -448,7 +448,7 @@ export default class TableSchema extends BaseUISchema {
   }
 
   changeColumnOptions(columns) {
-    let colOptions = (columns||[]).map((c)=>({label: c.name, value: c.name, image:'icon-column'}));
+    let colOptions = (columns||[]).map((c)=>({label: c.name, value: c.name, image:'icon-column', cid:c.cid}));
     this.constraintsObj.changeColumnOptions(colOptions);
     this.partitionKeysObj.changeColumnOptions(colOptions);
     this.partitionsObj.changeColumnOptions(colOptions);
@@ -682,11 +682,12 @@ export default class TableSchema extends BaseUISchema {
               let currPk = state.primary_key[0];
               /* If col is not PK, remove it */
               if(!columnData.is_primary_key) {
-                currPk.columns = _.filter(currPk.columns, (c)=>c.column !== columnData.name);
+                currPk.columns = _.filter(currPk.columns, (c)=>c.cid !== columnData.cid);
               } else {
-                currPk.columns = _.filter(currPk.columns, (c)=>c.column !== columnData.name);
+                currPk.columns = _.filter(currPk.columns, (c)=>c.cid !== columnData.cid);
                 currPk.columns.push({
                   column: columnData.name,
+                  cid: columnData.cid,
                 });
               }
               /* Remove the PK if all columns not PK */
@@ -699,7 +700,7 @@ export default class TableSchema extends BaseUISchema {
               /* Create PK if none */
               return {primary_key: [
                 obj.constraintsObj.primaryKeyObj.getNewData({
-                  columns: [{column: columnData.name}],
+                  columns: [{column: columnData.name, cid: columnData.cid}],
                 })
               ]};
             }

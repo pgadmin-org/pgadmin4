@@ -64,11 +64,12 @@ class ExclusionColHeaderSchema extends BaseUISchema {
 
   /* Data to ExclusionColumnSchema will added using the header form */
   getNewData(data) {
-    let colType = data.is_exp ? null : _.find(this.columnOptions, (col)=>col.value==data.column)?.datatype;
+    const column =  _.find(this.columnOptions, (col)=>col.value==data.column);
     return this.exColumnSchema.getNewData({
       is_exp: data.is_exp,
       column: data.is_exp ? data.expression : data.column,
-      col_type: colType,
+      column_cid: data.is_exp ? null : column?.cid,
+      col_type: data.is_exp ? null : column?.datatype,
     });
   }
 
@@ -370,20 +371,21 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       depChange: (state, source, topState, actionObj)=>{
         /* If in table, sync up value with columns in table */
         if(obj.inTable && !state) {
-          /* the FK is removed by some other dep, this can be a no-op */
+          /* the constraint is removed by some other dep, this can be a no-op */
           return;
         }
+
         let currColumns = state.columns || [];
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
-            let oldColumn = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
-            currColumns = _.filter(currColumns, (cc)=>cc.local_column != oldColumn.name);
+            let column = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
+            currColumns = _.filter(currColumns, (cc)=>cc.column_cid != column.cid);
           } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
             let tabColPath = _.slice(actionObj.path, 0, -1);
-            let oldColName = _.get(actionObj.oldState, tabColPath).name;
-            let idx = _.findIndex(currColumns, (cc)=>cc.local_column == oldColName);
+            let column = _.get(topState, tabColPath);
+            let idx = _.findIndex(currColumns, (cc)=>cc.column_cid == column.cid);
             if(idx > -1) {
-              currColumns[idx].local_column = _.get(topState, tabColPath).name;
+              currColumns[idx].column = column.name;
             }
           }
         }
