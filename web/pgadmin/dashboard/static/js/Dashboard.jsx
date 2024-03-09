@@ -797,7 +797,7 @@ function Dashboard({
             .then((res) => {
               const data = res.data;
               if(data['ss_present'] == false){
-                setSsMsg(gettext('System stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload the pgAdmin once you installed.'));
+                setSsMsg(gettext('The system_stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload pgAdmin once it is installed.'));
                 setLdid(0);
               } else {
                 setSsMsg('installed');
