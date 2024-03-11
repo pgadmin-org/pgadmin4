@@ -9791,9 +9791,9 @@ msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:800
 msgid ""
-"The system_stats extension is not installed. You can install the "
-"extension in a database using the \"CREATE EXTENSION system_stats;\" SQL "
-"command. Reload pgAdmin once it is installed."
+"System stats extension is not installed. You can install the extension in"
+" a database using the \"CREATE EXTENSION system_stats;\" SQL command. "
+"Reload the pgAdmin once you installed."
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:808
