@@ -3,7 +3,9 @@ CREATE SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     START 5
     MINVALUE 5
     MAXVALUE 999
-    CACHE 1
+    CACHE 1;
+
+ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     OWNED BY public.tableforownedby.col1;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
