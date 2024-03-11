@@ -33,7 +33,6 @@ import { InputSelectNonSearch } from '../../../../../../static/js/components/For
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
-import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
 
@@ -63,8 +62,8 @@ const FIXED_PREF = {
   replace: {
     'control': true,
     ctrl_is_meta: true,
-    'shift': isMac() ? false : true,
-    'alt': isMac() ? true : false,
+    'shift': false,
+    'alt': true,
     'key': {
       'key_code': 70,
       'char': 'F',
@@ -120,7 +119,8 @@ const FIXED_PREF = {
   },
   format_sql: {
     'control': true,
-    'shift': true,
+    ctrl_is_meta: true,
+    'shift': false,
     'alt': false,
     'key': {
       'key_code': 75,

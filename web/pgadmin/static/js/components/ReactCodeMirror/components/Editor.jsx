@@ -21,13 +21,14 @@ import {
   highlightSpecialChars,
   drawSelection,
   dropCursor,
+  rectangularSelection,
+  crosshairCursor,
   highlightActiveLine,
   EditorView,
   keymap,
 } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
-import { history, defaultKeymap, historyKeymap, indentLess, insertTab } from '@codemirror/commands';
-import { highlightSelectionMatches } from '@codemirror/search';
+import { history, defaultKeymap, historyKeymap, indentLess, indentMore } from '@codemirror/commands';
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
   foldGutter,
@@ -91,25 +92,30 @@ function handlePaste(e) {
   checkTrojanSource(copiedText, true);
 }
 
+
+function insertTabWithUnit({ state, dispatch }) {
+  if (state.selection.ranges.some(r => !r.empty))
+    return indentMore({ state, dispatch });
+  dispatch(state.update(state.replaceSelection(state.facet(indentUnit)), { scrollIntoView: true, userEvent: 'input' }));
+  return true;
+}
+
 /* React wrapper for CodeMirror */
 const defaultExtensions = [
   highlightSpecialChars(),
   drawSelection(),
+  rectangularSelection(),
   dropCursor(),
+  crosshairCursor(),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
   syntaxHighlighting,
-  highlightSelectionMatches(),
   keymap.of([defaultKeymap, closeBracketsKeymap, historyKeymap, foldKeymap, completionKeymap].flat()),
   keymap.of([{
     key: 'Tab',
     preventDefault: true,
-    run: insertTab,
-  },
-  {
-    key: 'Shift-Tab',
-    preventDefault: true,
-    run: indentLess,
+    run: insertTabWithUnit,
+    shift: indentLess,
   },{
     key: 'Tab',
     run: acceptCompletion,
@@ -170,7 +176,6 @@ export default function Editor({
         extensions: [
           ...finalExtns,
           configurables.current.of([]),
-          keymap.of(customKeyMap??[]),
           editableConfig.current.of([
             EditorView.editable.of(!disabled),
             EditorState.readOnly.of(readonly),
@@ -204,6 +209,7 @@ export default function Editor({
           }),
           breakpoint ? breakpointGutter : [],
           showActiveLine ? highlightActiveLine() : activeLineExtn(),
+          keymap.of(customKeyMap??[]),
         ],
       });
 

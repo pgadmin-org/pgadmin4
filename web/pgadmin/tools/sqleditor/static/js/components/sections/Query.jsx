@@ -238,7 +238,7 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
       editor.current?.focus();
       let key = {
-        keyCode: 70, metaKey: false, ctrlKey: true, shiftKey: replace, altKey: false,
+        keyCode: 70, metaKey: false, ctrlKey: true, shiftKey: false, altKey: replace,
       };
       if(isMac()) {
         key.metaKey = true;
@@ -409,5 +409,14 @@ export default function Query() {
     onCursorActivity={cursorActivity}
     onChange={change}
     autocomplete={true}
+    customKeyMap={[
+      {
+        key: 'Mod-k', run: (_view, e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
+        },
+      }
+    ]}
   />;
 }
