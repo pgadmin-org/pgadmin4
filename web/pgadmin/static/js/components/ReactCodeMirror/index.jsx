@@ -62,14 +62,14 @@ CopyButton.propTypes = {
 };
 
 
-export default function CodeMirror({className, currEditor, showCopyBtn=false, ...props}) {
+export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], ...props}) {
   const classes = useStyles();
   const editor = useRef();
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
 
-  const editMenuKeyMap = useMemo(()=>[{
+  const finalCustomKeyMap = useMemo(()=>[{
     key: 'Mod-f', run: (_view, e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -89,7 +89,8 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, ..
       e.stopPropagation();
       setShowGoto(true);
     },
-  }], []);
+  },
+  ...customKeyMap], []);
 
   const closeFind = () => {
     setShowFind([false, false]);
@@ -112,7 +113,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, ..
 
   return (
     <div className={clsx(className, classes.root)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
-      <Editor currEditor={currEditorWrap} customKeyMap={editMenuKeyMap} {...props} />
+      <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
       <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
       <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
@@ -124,4 +125,5 @@ CodeMirror.propTypes = {
   currEditor: PropTypes.func,
   className: CustomPropTypes.className,
   showCopyBtn: PropTypes.bool,
+  customKeyMap: PropTypes.array,
 };

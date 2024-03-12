@@ -9,6 +9,7 @@
 
 import os
 import flask_migrate
+from flask import g
 
 
 def db_upgrade(app):
@@ -19,4 +20,6 @@ def db_upgrade(app):
             os.pardir, os.pardir,
             'migrations'
         )
+        # Below line is a workaround to make Flask-Migrate>=4.0.6 work.
+        g.x_arg = []
         flask_migrate.upgrade(migration_folder)
