@@ -33,7 +33,7 @@ jobs:
           make pip
 
       - name: Archive Python wheel
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pgadmin4-python-build-output
           path: dist/*
