@@ -502,6 +502,7 @@ module.exports = [{
             'pure|pgadmin.node.compound_trigger',
             'pure|pgadmin.node.aggregate',
             'pure|pgadmin.node.operator',
+            'pure|pgadmin.node.dbms_job_scheduler',
           ],
         },
       },

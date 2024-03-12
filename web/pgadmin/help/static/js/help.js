@@ -27,10 +27,10 @@ export function getHelpUrl(base_path, file, version) {
   return url + file;
 }
 
-export function getEPASHelpUrl(version) {
+export function getEPASHelpUrl(version, epasURL=null) {
   let major = Math.floor(version / 10000),
     minor = Math.floor(version / 100) - (major * 100),
-    epasHelp11Plus = 'https://www.enterprisedb.com/docs/epas/$VERSION$/epas_compat_sql/',
+    epasHelp11Plus = epasURL??'https://www.enterprisedb.com/docs/epas/$VERSION$/epas_compat_sql/',
     epasHelp = 'https://www.enterprisedb.com/docs/epas/$VERSION$/',
     url = '';
 

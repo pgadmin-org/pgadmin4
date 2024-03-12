@@ -146,7 +146,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
       let fullUrl = '';
 
       if (server.server_type == 'ppas' && node.epasHelp) {
-        fullUrl = getEPASHelpUrl(server.version);
+        fullUrl = getEPASHelpUrl(server.version, node.epasURL);
       } else if (node.sqlCreateHelp == '' && node.sqlAlterHelp != '') {
         fullUrl = getHelpUrl(helpUrl, node.sqlAlterHelp, server.version);
       } else if (node.sqlCreateHelp != '' && node.sqlAlterHelp == '') {

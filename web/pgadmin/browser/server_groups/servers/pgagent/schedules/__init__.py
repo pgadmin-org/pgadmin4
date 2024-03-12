@@ -113,7 +113,7 @@ class JobScheduleView(PGChildNodeView):
     Methods:
     -------
     * __init__(**kwargs)
-      - Method is used to initialize the JobScheduleView and it's base view.
+      - Method is used to initialize the JobScheduleView, and it's base view.
 
     * check_precondition()
       - This function will behave as a decorator which will checks
@@ -125,7 +125,7 @@ class JobScheduleView(PGChildNodeView):
       collection.
 
     * nodes()
-      - This function will used to create all the child node within that
+      - This function will use to create all the child node within that
       collection. Here it will create all the schedule node.
 
     * properties(gid, sid, jid, jscid)
