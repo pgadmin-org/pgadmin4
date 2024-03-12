@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup the PGDG APT repo on Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}

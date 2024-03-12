@@ -82,7 +82,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver == 16 }}
         run: |
           sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/edb_job_scheduler,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
-          sudo echo "edb_job_scheduler.database_list = 'test_dbms_job_scheduler'" >> /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su -c "echo \"edb_job_scheduler.database_list = 'test_dbms_job_scheduler'\" >> /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf"
 
       - name: Start PostgreSQL on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
