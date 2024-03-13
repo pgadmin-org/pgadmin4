@@ -134,6 +134,7 @@ def _iterate_categories(pref_d, label, res):
         "open": True,
         "children": [],
         "value": gettext(pref_d['label']),
+        "name": pref_d['name']
     }
 
     for c in pref_d['categories']:
