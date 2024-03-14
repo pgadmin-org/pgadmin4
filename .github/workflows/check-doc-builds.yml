@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install platform dependencies
         run: |
@@ -33,7 +33,7 @@ jobs:
           make docs
 
       - name: Archive HTML
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pgadmin4-html-build-output
           path: docs/en_US/_build/html/*
@@ -44,7 +44,7 @@ jobs:
           make docs-epub
 
       - name: Archive ePub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pgadmin4-epub-build-output
           path: docs/en_US/_build/epub/pgAdmin4.epub
@@ -55,7 +55,7 @@ jobs:
           make docs-pdf
 
       - name: Archive PDF
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pgadmin4-pdf-build-output
           path: docs/en_US/_build/latex/pgadmin4.pdf

@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install platform dependencies
         run: |
@@ -33,7 +33,7 @@ jobs:
           make src
 
       - name: Archive source tarball
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pgadmin4-tarball-build-output
           path: dist/*

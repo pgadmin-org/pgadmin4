@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup the PGDG APT repo
         run: |
@@ -160,21 +160,21 @@ jobs:
 
       - name: Archive server log
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: server-log-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: regression-log-pg${{ matrix.pgver }}
           path: web/regression/regression.log
 
       - name: Archive screenshots
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: screenshots-pg${{ matrix.pgver }}
           path: web/regression/screenshots

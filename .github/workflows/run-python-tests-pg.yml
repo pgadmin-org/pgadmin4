@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup the PGDG APT repo on Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -291,14 +291,14 @@ jobs:
 
       - name: Archive server log
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: server-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: regression-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: web/regression/regression.log

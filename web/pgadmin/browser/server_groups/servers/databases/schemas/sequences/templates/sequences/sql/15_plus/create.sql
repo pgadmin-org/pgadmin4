@@ -12,7 +12,10 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}SEQUENCE{% if add_not_exi
 
     MAXVALUE {{data.maximum|int}}{% endif %}{% if data.cache is defined and data.cache|int(-1) > -1%}
 
-    CACHE {{data.cache|int}}{% endif %}{% if data.owned_table is defined and data.owned_table != None and data.owned_column is defined and data.owned_column != None %}
+    CACHE {{data.cache|int}}{% endif %};
+{### Alter SQL for adding OWNED BY to sequence ###}
+{% if data.owned_table is defined and data.owned_table != None and data.owned_column is defined and data.owned_column != None %}
 
-    OWNED BY {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.owned_table) }}.{{ conn|qtIdent(data.owned_column) }}{% endif %};
-
+ALTER SEQUENCE {{ conn|qtIdent(data.schema, data.name) }}
+    OWNED BY {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.owned_table) }}.{{ conn|qtIdent(data.owned_column) }};
+{% endif %}
