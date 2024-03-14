@@ -14,6 +14,7 @@ import convert from 'convert-units';
 import getApiInstance from './api_instance';
 import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { isMac } from './keyboard_shortcuts';
 
 export function parseShortcutValue(obj) {
   let shortcut = '';
@@ -24,6 +25,37 @@ export function parseShortcutValue(obj) {
   if (obj.shift) { shortcut += 'shift+'; }
   if (obj.control) { shortcut += 'ctrl+'; }
   shortcut += obj?.key.char?.toLowerCase();
+  return shortcut;
+}
+
+export function isShortcutValue(obj) {
+  if(!obj) return false;
+  if([obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k))){
+    return true;
+  }
+  return false;
+}
+
+// Convert shortcut obj to codemirror key format
+export function toCodeMirrorKey(obj) {
+  let shortcut = '';
+  if (!obj){
+    return shortcut;
+  }
+  if (obj.alt) { shortcut += 'Alt-'; }
+  if (obj.shift) { shortcut += 'Shift-'; }
+  if (obj.control) {
+    if(isMac() && obj.ctrl_is_meta) {
+      shortcut += 'Mod-';
+    } else {
+      shortcut += 'Ctrl-';
+    }
+  }
+  if(obj?.key.char?.length == 1) {
+    shortcut += obj?.key.char?.toLowerCase();
+  } else {
+    shortcut += obj?.key.char;
+  }
   return shortcut;
 }
 

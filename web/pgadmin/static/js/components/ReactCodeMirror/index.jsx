@@ -90,7 +90,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
       setShowGoto(true);
     },
   },
-  ...customKeyMap], []);
+  ...customKeyMap], [customKeyMap]);
 
   const closeFind = () => {
     setShowFind([false, false]);
