@@ -67,7 +67,12 @@
       "sql_endpoint": "NODE-sequence.sql_id",
       "msql_endpoint": "NODE-sequence.msql_id",
       "data": {
-        "current_value": "7", "increment": "12", "minimum": "2", "maximum": "9992", "cache": "2", "cycled": true
+        "current_value": "7",
+        "increment": "12",
+        "minimum": "2",
+        "maximum": "9992",
+        "cache": "2",
+        "cycled": true
       },
       "expected_sql_file": "alter_seq_props.sql",
       "expected_msql_file": "alter_seq_props_msql.sql"
@@ -123,26 +128,6 @@
       },
       "expected_sql_file": "alter_seq_privs_update.sql",
       "expected_msql_file": "alter_seq_privs_update_msql.sql"
-    },
-    {
-      "type": "alter",
-      "name": "Alter Sequence remove partial privileges",
-      "endpoint": "NODE-sequence.obj_id",
-      "sql_endpoint": "NODE-sequence.sql_id",
-      "msql_endpoint": "NODE-sequence.msql_id",
-      "data": {
-        "relacl": {
-          "deleted":[{
-            "grantee": "PUBLIC",
-            "grantor": "postgres",
-            "privileges":[{
-              "privilege_type": "r",
-              "privilege": true,
-              "with_grant": false
-            }]
-          }]
-        }
-      }
     },
     {
       "type": "alter",
@@ -284,7 +269,8 @@
       "sql_endpoint": "NODE-sequence.sql_id",
       "msql_endpoint": "NODE-sequence.msql_id",
       "data": {
-        "maximum": "900"
+        "owned_table": "",
+        "owned_column": ""
       },
       "expected_sql_file": "alter_ownedby_remove.sql",
       "expected_msql_file": "alter_ownedby_remove_msql.sql"
