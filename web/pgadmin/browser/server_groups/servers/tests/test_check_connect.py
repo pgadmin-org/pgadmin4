@@ -158,7 +158,9 @@ class ServersConnectTestCase(BaseTestGenerator):
                     self.manager.connection.connected.side_effect = True
 
                     connection_mock_result.execute_dict.side_effect = \
-                        [eval(self.mock_data["return_value"])]
+                        [eval(self.mock_data["return_value"]),
+                         # replication type mock
+                         (True, {'rows': [{'type': None}]})]
 
                     response = self.get_server_connection(server_id)
                     self.assertEqual(response.status_code,

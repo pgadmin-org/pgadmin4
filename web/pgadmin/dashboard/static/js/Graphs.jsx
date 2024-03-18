@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useRef, useState, useReducer, useMemo } from 'react';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
-import ChartContainer from './ChartContainer';
+import ChartContainer from './components/ChartContainer';
 import url_for from 'sources/url_for';
 import axios from 'axios';
 import gettext from 'sources/gettext';

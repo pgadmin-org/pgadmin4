@@ -503,6 +503,7 @@ module.exports = [{
             'pure|pgadmin.node.aggregate',
             'pure|pgadmin.node.operator',
             'pure|pgadmin.node.dbms_job_scheduler',
+            'pure|pgadmin.node.replica_node'
           ],
         },
       },

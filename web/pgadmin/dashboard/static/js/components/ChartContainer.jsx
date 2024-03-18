@@ -10,7 +10,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Card, CardContent, CardHeader, makeStyles } from '@material-ui/core';
 
-import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
+import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 
 
 const useStyles = makeStyles((theme) => ({

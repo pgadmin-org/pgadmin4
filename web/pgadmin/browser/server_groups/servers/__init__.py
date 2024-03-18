@@ -15,6 +15,7 @@ from flask import render_template, request, make_response, jsonify, \
 from flask_babel import gettext
 from flask_security import current_user, login_required
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
+
 from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
@@ -30,7 +31,8 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.browser.server_groups.servers.utils import is_valid_ipaddress
+from pgadmin.browser.server_groups.servers.utils import \
+    is_valid_ipaddress, get_replication_type
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED
 from sqlalchemy import or_
@@ -343,6 +345,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .tablespaces import blueprint as module
         self.submodules.append(module)
 
+        from .replica_nodes import blueprint as module
+        self.submodules.append(module)
+
         super().register(app, options)
 
     # We do not have any preferences for server node.
@@ -469,7 +474,7 @@ class ServerNode(PGChildNodeView):
         }],
         'check_pgpass': [{'get': 'check_pgpass'}],
         'clear_saved_password': [{'put': 'clear_saved_password'}],
-        'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}]
+        'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}],
     })
     SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
 
@@ -1247,6 +1252,7 @@ class ServerNode(PGChildNodeView):
             connected = False
             user = None
             manager = None
+            replication_type = None
 
             if 'connect_now' in data and data['connect_now']:
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1324,6 +1330,8 @@ class ServerNode(PGChildNodeView):
                                                               server.id),
                                 tunnel_password)
 
+                    replication_type = get_replication_type(conn,
+                                                            manager.version)
                     user = manager.user_info
                     connected = True
 
@@ -1337,6 +1345,7 @@ class ServerNode(PGChildNodeView):
                     username=server.username,
                     user=user,
                     connected=connected,
+                    replication_type=replication_type,
                     shared=server.shared,
                     server_type=manager.server_type
                     if manager and manager.server_type
@@ -1427,6 +1436,7 @@ class ServerNode(PGChildNodeView):
         in_recovery = None
         wal_paused = None
         errmsg = None
+        replication_type = None
         if connected:
             status, result, in_recovery, wal_paused =\
                 recovery_state(conn, manager.version)
@@ -1436,10 +1446,13 @@ class ServerNode(PGChildNodeView):
                 manager.release()
                 errmsg = "{0} : {1}".format(server.name, result)
 
+            replication_type = get_replication_type(conn, manager.version)
+
         return make_json_response(
             data={
                 'icon': server_icon_and_background(connected, manager, server),
                 'connected': connected,
+                'replication_type': replication_type,
                 'in_recovery': in_recovery,
                 'wal_pause': wal_paused,
                 'server_type': manager.server_type if connected else "pg",
@@ -1709,6 +1722,8 @@ class ServerNode(PGChildNodeView):
             _, _, in_recovery, wal_paused =\
                 recovery_state(conn, manager.version)
 
+            replication_type = get_replication_type(conn, manager.version)
+
             return make_json_response(
                 success=1,
                 info=gettext("Server connected."),
@@ -1716,6 +1731,7 @@ class ServerNode(PGChildNodeView):
                     'icon': server_icon_and_background(True, manager, server),
                     'connected': True,
                     'server_type': manager.server_type,
+                    'replication_type': replication_type,
                     'type': manager.server_type,
                     'version': manager.version,
                     'db': manager.db,
