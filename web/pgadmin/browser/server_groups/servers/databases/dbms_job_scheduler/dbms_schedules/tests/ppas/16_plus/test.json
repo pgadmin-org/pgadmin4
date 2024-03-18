@@ -40,6 +40,7 @@
         "jsschours": ["05", "18", "22"],
         "jsscminutes": ["45", "37", "58"]
       },
+      "convert_timestamp_columns": ["jsscstart","jsscend"],
       "expected_sql_file": "create_schedule_all.sql",
       "expected_msql_file": "create_schedule_all_msql.sql"
     },
@@ -71,6 +72,7 @@
         "jsschours": [],
         "jsscminutes": []
       },
+      "convert_timestamp_columns": ["jsscstart","jsscend"],
       "expected_sql_file": "create_schedule_bydate.sql",
       "expected_msql_file": "create_schedule_bydate_msql.sql"
     },
@@ -102,6 +104,7 @@
         "jsschours": [],
         "jsscminutes": []
       },
+      "convert_timestamp_columns": ["jsscstart"],
       "expected_sql_file": "create_schedule_start_date.sql",
       "expected_msql_file": "create_schedule_start_date_msql.sql"
     },
