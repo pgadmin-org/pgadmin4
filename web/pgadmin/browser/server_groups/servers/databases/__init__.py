@@ -128,6 +128,9 @@ class DatabaseModule(CollectionNodeModule):
         from .subscriptions import blueprint as module
         self.submodules.append(module)
 
+        from .dbms_job_scheduler import blueprint as module
+        self.submodules.append(module)
+
         super().register(app, options)
 
 

@@ -11,67 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 import moment from 'moment';
-
-const weekdays = [
-    {label: gettext('Sunday'), value: 'Sunday'},
-    {label: gettext('Monday'), value: 'Monday'},
-    {label: gettext('Tuesday'), value: 'Tuesday'},
-    {label: gettext('Wednesday'), value: 'Wednesday'},
-    {label: gettext('Thursday'), value: 'Thursday'},
-    {label: gettext('Friday'), value: 'Friday'},
-    {label: gettext('Saturday'), value: 'Saturday'},
-  ],
-  monthdays = [
-    {label: gettext('1st'), value: '1st'}, {label: gettext('2nd'), value: '2nd'},
-    {label: gettext('3rd'), value: '3rd'}, {label: gettext('4th'), value: '4th'},
-    {label: gettext('5th'), value: '5th'}, {label: gettext('6th'), value: '6th'},
-    {label: gettext('7th'), value: '7th'}, {label: gettext('8th'), value: '8th'},
-    {label: gettext('9th'), value: '9th'}, {label: gettext('10th'), value: '10th'},
-    {label: gettext('11th'), value: '11th'}, {label: gettext('12th'), value: '12th'},
-    {label: gettext('13th'), value: '13th'}, {label: gettext('14th'), value: '14th'},
-    {label: gettext('15th'), value: '15th'}, {label: gettext('16th'), value: '16th'},
-    {label: gettext('17th'), value: '17th'}, {label: gettext('18th'), value: '18th'},
-    {label: gettext('19th'), value: '19th'}, {label: gettext('20th'), value: '20th'},
-    {label: gettext('21st'), value: '21st'}, {label: gettext('22nd'), value: '22nd'},
-    {label: gettext('23rd'), value: '23rd'}, {label: gettext('24th'), value: '24th'},
-    {label: gettext('25th'), value: '25th'}, {label: gettext('26th'), value: '26th'},
-    {label: gettext('27th'), value: '27th'}, {label: gettext('28th'), value: '28th'},
-    {label: gettext('29th'), value: '29th'}, {label: gettext('30th'), value: '30th'},
-    {label: gettext('31st'), value: '31st'}, {label: gettext('Last day'), value: 'Last Day'},
-  ],
-  months = [
-    {label: gettext('January'),value: 'January'}, {label: gettext('February'),value: 'February'},
-    {label: gettext('March'), value: 'March'}, {label: gettext('April'), value: 'April'},
-    {label: gettext('May'), value: 'May'}, {label: gettext('June'), value: 'June'},
-    {label: gettext('July'), value: 'July'}, {label: gettext('August'), value: 'August'},
-    {label: gettext('September'), value: 'September'}, {label: gettext('October'), value: 'October'},
-    {label: gettext('November'), value: 'November'}, {label: gettext('December'), value: 'December'},
-  ],
-  hours = [
-    {label: gettext('00'), value: '00'}, {label: gettext('01'), value: '01'}, {label: gettext('02'), value: '02'}, {label: gettext('03'), value: '03'},
-    {label: gettext('04'), value: '04'}, {label: gettext('05'), value: '05'}, {label: gettext('06'), value: '06'}, {label: gettext('07'), value: '07'},
-    {label: gettext('08'), value: '08'}, {label: gettext('09'), value: '09'}, {label: gettext('10'), value: '10'}, {label: gettext('11'), value: '11'},
-    {label: gettext('12'), value: '12'}, {label: gettext('13'), value: '13'}, {label: gettext('14'), value: '14'}, {label: gettext('15'), value: '15'},
-    {label: gettext('16'), value: '16'}, {label: gettext('17'), value: '17'}, {label: gettext('18'), value: '18'}, {label: gettext('19'), value: '19'},
-    {label: gettext('20'), value: '20'}, {label: gettext('21'), value: '21'}, {label: gettext('22'), value: '22'}, {label: gettext('23'), value: '23'},
-  ],
-  minutes = [
-    {label: gettext('00'), value: '00'}, {label: gettext('01'), value: '01'}, {label: gettext('02'), value: '02'}, {label: gettext('03'), value: '03'},
-    {label: gettext('04'), value: '04'}, {label: gettext('05'), value: '05'}, {label: gettext('06'), value: '06'}, {label: gettext('07'), value: '07'},
-    {label: gettext('08'), value: '08'}, {label: gettext('09'), value: '09'}, {label: gettext('10'), value: '10'}, {label: gettext('11'), value: '11'},
-    {label: gettext('12'), value: '12'}, {label: gettext('13'), value: '13'}, {label: gettext('14'), value: '14'}, {label: gettext('15'), value: '15'},
-    {label: gettext('16'), value: '16'}, {label: gettext('17'), value: '17'}, {label: gettext('18'), value: '18'}, {label: gettext('19'), value: '19'},
-    {label: gettext('20'), value: '20'}, {label: gettext('21'), value: '21'}, {label: gettext('22'), value: '22'}, {label: gettext('23'), value: '23'},
-    {label: gettext('24'), value: '24'}, {label: gettext('25'), value: '25'}, {label: gettext('26'), value: '26'}, {label: gettext('27'), value: '27'},
-    {label: gettext('28'), value: '28'}, {label: gettext('29'), value: '29'}, {label: gettext('30'), value: '30'}, {label: gettext('31'), value: '31'},
-    {label: gettext('32'), value: '32'}, {label: gettext('33'), value: '33'}, {label: gettext('34'), value: '34'}, {label: gettext('35'), value: '35'},
-    {label: gettext('36'), value: '36'}, {label: gettext('37'), value: '37'}, {label: gettext('38'), value: '38'}, {label: gettext('39'), value: '39'},
-    {label: gettext('40'), value: '40'}, {label: gettext('41'), value: '41'}, {label: gettext('42'), value: '42'}, {label: gettext('43'), value: '43'},
-    {label: gettext('44'), value: '44'}, {label: gettext('45'), value: '45'}, {label: gettext('46'), value: '46'}, {label: gettext('47'), value: '47'},
-    {label: gettext('48'), value: '48'}, {label: gettext('49'), value: '49'}, {label: gettext('50'), value: '50'}, {label: gettext('51'), value: '51'},
-    {label: gettext('52'), value: '52'}, {label: gettext('53'), value: '53'}, {label: gettext('54'), value: '54'}, {label: gettext('55'), value: '55'},
-    {label: gettext('56'), value: '56'}, {label: gettext('57'), value: '57'}, {label: gettext('58'), value: '58'}, {label: gettext('59'), value: '59'},
-  ];
+import { WEEKDAYS, MONTHDAYS, MONTHS, HOURS, MINUTES } from '../../../../../../static/js/constants';
 
 export class ExceptionsSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
@@ -178,7 +118,7 @@ export class DaysSchema extends BaseUISchema {
           placeholder: gettext('Select the weekdays...'),
           formatter: BooleanArrayFormatter,
         },
-        options: weekdays,
+        options: WEEKDAYS,
       }, {
         id: 'jscmonthdays', label: gettext('Month Days'), type: 'select',
         group: gettext('Days'),
@@ -186,7 +126,7 @@ export class DaysSchema extends BaseUISchema {
           placeholder: gettext('Select the month days...'),
           formatter: BooleanArrayFormatter,
         },
-        options: monthdays,
+        options: MONTHDAYS,
       }, {
         id: 'jscmonths', label: gettext('Months'), type: 'select',
         group: gettext('Days'),
@@ -194,7 +134,7 @@ export class DaysSchema extends BaseUISchema {
           placeholder: gettext('Select the months...'),
           formatter: BooleanArrayFormatter,
         },
-        options: months,
+        options: MONTHS,
       }
     ];
   }
@@ -220,7 +160,7 @@ export class TimesSchema extends BaseUISchema {
           placeholder: gettext('Select the hours...'),
           formatter: BooleanArrayFormatter,
         },
-        options: hours,
+        options: HOURS,
       }, {
         id: 'jscminutes', label: gettext('Minutes'), type: 'select',
         group: gettext('Times'),
@@ -228,7 +168,7 @@ export class TimesSchema extends BaseUISchema {
           placeholder: gettext('Select the minutes...'),
           formatter: BooleanArrayFormatter,
         },
-        options: minutes,
+        options: MINUTES,
       }
     ];
   }
@@ -244,11 +184,11 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
       jscenabled: true,
       jscstart: null,
       jscend: null,
-      jscweekdays: _.map(weekdays, function() { return false; }),
-      jscmonthdays: _.map(monthdays, function() { return false; }),
-      jscmonths: _.map(months, function() { return false; }),
-      jschours: _.map(hours, function() { return false; }),
-      jscminutes: _.map(minutes, function() { return false; }),
+      jscweekdays: _.map(WEEKDAYS, function() { return false; }),
+      jscmonthdays: _.map(MONTHDAYS, function() { return false; }),
+      jscmonths: _.map(MONTHS, function() { return false; }),
+      jschours: _.map(HOURS, function() { return false; }),
+      jscminutes: _.map(MINUTES, function() { return false; }),
       jscexceptions: [],
       ...initValues,
     });
@@ -324,7 +264,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, weekdays);
+              return obj.customFromRaw(backendVal, WEEKDAYS);
             }
           },
         }
@@ -334,7 +274,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, monthdays);
+              return obj.customFromRaw(backendVal, MONTHDAYS);
             }
           },
         }
@@ -344,7 +284,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, months);
+              return obj.customFromRaw(backendVal, MONTHS);
             }
           },
         }
@@ -354,7 +294,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, hours);
+              return obj.customFromRaw(backendVal, HOURS);
             }
           },
         }
@@ -364,7 +304,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, minutes);
+              return obj.customFromRaw(backendVal, MINUTES);
             }
           },
         }
