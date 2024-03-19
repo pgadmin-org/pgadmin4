@@ -28,6 +28,10 @@ class CollationPutTestCase(BaseTestGenerator):
 
     def setUp(self):
         super().setUp()
+        if hasattr(self, 'inventory_data') and \
+                self.server_information['server_version'] \
+                < self.inventory_data['server_min_version']:
+            self.skipTest(self.inventory_data['skip_msg'])
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]

@@ -14,6 +14,10 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 200
+      },
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Create collation: With valid data are not supported by PG 16.0 and below."
       }
     },
     {
@@ -98,6 +102,10 @@
       "name": "Get Collation",
       "url": "/browser/collation/obj/",
       "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Get Collation are not supported by PG 16.0 and below."
+      },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -109,6 +117,10 @@
       "url": "/browser/collation/obj/",
       "error_fetching_collation": true,
       "is_positive_test": false,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Error while fetching a Collation are not supported by PG 16.0 and below."
+      },
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
@@ -123,6 +135,10 @@
       "url": "/browser/collation/obj/",
       "wrong_collation_id": true,
       "is_positive_test": false,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Fetch collation using wrong collation id are not supported by PG 16.0 and below."
+      },
       "mocking_required": false,
       "mock_data": {
       },
@@ -134,6 +150,10 @@
       "name": "Get Collation list",
       "url": "/browser/collation/obj/",
       "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Get Collation list are not supported by PG 16.0 and below."
+      },
       "collation_list": true,
       "mocking_required": false,
       "mock_data": {},
@@ -214,6 +234,10 @@
       "name": "Update Collation",
       "url": "/browser/collation/obj/",
       "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Update Collation are not supported by PG 16.0 and below."
+      },
       "mocking_required": false,
       "test_data": {
         "description": "This is collation update comment",
@@ -377,6 +401,10 @@
       "name": "Get Collation SQL",
       "url": "/browser/collation/sql/",
       "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Get Collation SQL are not supported by PG 16.0 and below."
+      },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -401,6 +429,10 @@
       "name": "Get collation msql: With existing collation id.",
       "url": "/browser/collation/msql/",
       "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Get collation msql are not supported by PG 16.0 and below."
+      },
       "msql": true,
       "mocking_required": false,
       "mock_data": {},
