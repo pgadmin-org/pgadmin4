@@ -27,7 +27,10 @@ export default class CustomEditorView extends EditorView {
     this._cleanDoc = this.state.doc;
   }
 
-  getValue() {
+  getValue(tillCursor=false) {
+    if(tillCursor) {
+      return this.state.sliceDoc(0, this.state.selection.main.head);
+    }
     return this.state.doc.toString();
   }
   

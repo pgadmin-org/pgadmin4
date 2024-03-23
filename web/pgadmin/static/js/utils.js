@@ -46,7 +46,7 @@ export function toCodeMirrorKey(obj) {
   if (obj.shift) { shortcut += 'Shift-'; }
   if (obj.control) {
     if(isMac() && obj.ctrl_is_meta) {
-      shortcut += 'Mod-';
+      shortcut += 'Meta-';
     } else {
       shortcut += 'Ctrl-';
     }

@@ -26,7 +26,7 @@ import DebuggerComponent from './components/DebuggerComponent';
 import Theme from '../../../../static/js/Theme';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
-import usePreferences from '../../../../preferences/static/js/store';
+import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminContext } from '../../../../static/js/BrowserComponent';
 
@@ -565,7 +565,7 @@ export default class DebuggerModule {
   }
 
   /* We should get the transaction id from the server during initialization here */
-  load(container, trans_id, debug_type, function_name_with_arguments, layout) {
+  async load(container, trans_id, debug_type, function_name_with_arguments, layout) {
     this.trans_id = trans_id;
     this.debug_type = debug_type;
     this.first_time_indirect_debug = false;
@@ -576,11 +576,11 @@ export default class DebuggerModule {
     this.is_polling_required = true; // Flag to stop unwanted ajax calls
     this.function_name_with_arguments = function_name_with_arguments;
     this.layout = layout;
-    this.preferences = usePreferences.getState().getPreferencesForModule('debugger');
 
     let selectedNodeInfo = pgWindow.pgAdmin.Browser.tree.getTreeNodeHierarchy(
       pgWindow.pgAdmin.Browser.tree.selected()
     );
+    await listenPreferenceBroadcast();
 
     ReactDOM.render(
       <Theme>

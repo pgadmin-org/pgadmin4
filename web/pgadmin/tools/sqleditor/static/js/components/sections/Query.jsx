@@ -39,7 +39,8 @@ async function registerAutocomplete(editor, api, transId) {
       });
       const word = context.matchBefore(/\w*/);
       const fullSql = context.state.doc.toString();
-      api.post(url, JSON.stringify([fullSql, fullSql]))
+      const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
+      api.post(url, JSON.stringify([fullSql, sqlTillCur]))
         .then((res) => {
           onAvailable();
           resolve({

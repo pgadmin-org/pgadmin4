@@ -37,3 +37,5 @@ Bug fixes
   | `Issue #7268 <https://github.com/pgadmin-org/pgadmin4/issues/7268>`_ -  Fix an issue in editor where Format SQL shortcut and multiline selection are not working.
   | `Issue #7269 <https://github.com/pgadmin-org/pgadmin4/issues/7269>`_ -  Fix an issue in editor where "Use Spaces?" Preference of Editor is not working.
   | `Issue #7277 <https://github.com/pgadmin-org/pgadmin4/issues/7277>`_ -  Fix an issue in query tool where toggle case of selected text loses selection.
+  | `Issue #7299 <https://github.com/pgadmin-org/pgadmin4/issues/7299>`_ -  Fix query tool autocomplete results when cursor is in between the SQL query.
+  | `Issue #7305 <https://github.com/pgadmin-org/pgadmin4/issues/7305>`_ -  Fix an issue in query tool where custom keyboard shortcuts are not working for some.

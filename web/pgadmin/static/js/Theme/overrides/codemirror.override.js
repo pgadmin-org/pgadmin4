@@ -102,9 +102,11 @@ export default function cmOverride(theme) {
       }
     },
     '.cm-tooltip': {
+      ...theme.mixins.fontSourceCode,
       backgroundColor: theme.palette.background.default + '!important',
       color: theme.palette.text.primary + '!important',
       border: `1px solid ${theme.otherVars.borderColor} !important`,
+      fontSize: '0.9em',
 
       '& li[aria-selected="true"]': {
         backgroundColor: theme.otherVars.treeBgSelected + '!important',

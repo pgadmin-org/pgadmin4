@@ -318,6 +318,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     );
   };
 
+  const executeCmd = (cmd)=>eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, cmd);
+
   useEffect(()=>{
     if(queryToolPref) {
       /* Get the prefs first time */
@@ -370,9 +372,21 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       }
     },
     {
-      shortcut: queryToolPref.format_sql,
+      shortcut: queryToolPref.indent,
       options: {
-        callback: ()=>{formatSQL();}
+        callback: ()=>{executeCmd('indentMore');}
+      }
+    },
+    {
+      shortcut: queryToolPref.unindent,
+      options: {
+        callback: ()=>{executeCmd('indentLess');}
+      }
+    },
+    {
+      shortcut: queryToolPref.comment,
+      options: {
+        callback: ()=>{executeCmd('toggleComment');}
       }
     },
     {
@@ -385,6 +399,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: queryToolPref.clear_query,
       options: {
         callback: ()=>{clearQuery();}
+      }
+    },
+    {
+      shortcut: queryToolPref.format_sql,
+      options: {
+        callback: ()=>{formatSQL();}
       }
     },
   ], containerRef);
@@ -520,14 +540,14 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         <PgMenuItem shortcut={queryToolPref.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.gotolinecol}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
+          onClick={()=>{executeCmd('gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={queryToolPref.indent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
+          onClick={()=>{executeCmd('indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.unindent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
+          onClick={()=>{executeCmd('indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.comment}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
+          onClick={()=>{executeCmd('toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.toggle_case}
           onClick={toggleCase}>{gettext('Toggle Case Of Selected Text')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.clear_query}
