@@ -47,7 +47,8 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from pgadmin.utils.constants import INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
-from pgadmin.tools.user_management import create_user, delete_user, update_user as update_user_internal
+from pgadmin.tools.user_management import create_user, delete_user, \
+    update_user as update_user_internal
 from enum import Enum
 from flask_babel import gettext
 
