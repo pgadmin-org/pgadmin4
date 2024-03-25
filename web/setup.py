@@ -47,7 +47,7 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from pgadmin.utils.constants import INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
-from pgadmin.tools.user_management import create_user, delete_user, update_user
+from pgadmin.tools.user_management import create_user, delete_user, update_user as update_user_internal
 from enum import Enum
 from flask_babel import gettext
 
@@ -244,7 +244,10 @@ class ManageUsers:
             if len(password) < 6:
                 print("Password must be at least 6 characters long.")
                 exit()
-            data['password'] = password
+            # validate_password relies on the new password being present as
+            # `newPassword` and `confirmPassword` in the data
+            data['newPassword'] = password
+            data['confirmPassword'] = password
 
         if role is not None:
             data['role'] = 1 if role else 2
@@ -258,7 +261,7 @@ class ManageUsers:
             if not uid:
                 print("User not found")
             else:
-                status, msg = update_user(uid, data)
+                status, msg = update_user_internal(uid, data)
                 if status:
                     _user = ManageUsers.get_users_from_db(username=email,
                                                           auth_source=INTERNAL,
@@ -344,7 +347,7 @@ class ManageUsers:
             if not uid:
                 print("User not found")
             else:
-                status, msg = update_user(uid, data)
+                status, msg = update_user_internal(uid, data)
                 if status:
                     _user = ManageUsers.get_users_from_db(
                         username=username,
