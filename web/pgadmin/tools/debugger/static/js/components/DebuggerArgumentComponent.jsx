@@ -23,7 +23,7 @@ import pgAdmin from 'sources/pgadmin';
 import Loader from 'sources/components/Loader';
 
 import SchemaView from '../../../../../static/js/SchemaView';
-import getApiInstance from '../../../../../static/js/api_instance';
+import getApiInstance, { parseApiError } from '../../../../../static/js/api_instance';
 import { DefaultButton, PrimaryButton } from '../../../../../static/js/components/Buttons';
 import { getAppropriateLabel, getDebuggerTitle } from '../debugger_utils';
 import { DebuggerArgumentSchema } from './DebuggerArgs.ui';
@@ -737,7 +737,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
                 setLoaderText('');
                 pgAdmin.Browser.notifier.alert(
                   gettext('Error occured: '),
-                  gettext(error.response.data)
+                  parseApiError(error)
                 );
               });
             /* Close the debugger modal dialog */
@@ -748,7 +748,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             setLoaderText('');
             pgAdmin.Browser.notifier.alert(
               gettext('Debugger Target Initialization Error'),
-              gettext(error.response.data)
+              parseApiError(error)
             );
           });
 
@@ -769,7 +769,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             props.closeModal();
             pgAdmin.Browser.notifier.alert(
               gettext('Debugger Listener Startup Error'),
-              gettext(error.response.data)
+              parseApiError(error)
             );
           });
         setLoaderText('');
@@ -793,7 +793,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             setLoaderText('');
             pgAdmin.Browser.notifier.alert(
               gettext('Debugger Listener Startup Set Arguments Error'),
-              gettext(error.response.data)
+              parseApiError(error)
             );
           });
       }

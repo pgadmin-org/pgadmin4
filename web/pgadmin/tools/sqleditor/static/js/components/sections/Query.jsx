@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { makeStyles } from '@material-ui/styles';
-import React, {useContext, useCallback, useEffect } from 'react';
+import React, {useContext, useCallback, useEffect, useMemo } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -17,7 +17,7 @@ import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import gettext from 'sources/gettext';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
-import { checkTrojanSource } from '../../../../../../static/js/utils';
+import { checkTrojanSource, isShortcutValue, toCodeMirrorKey } from '../../../../../../static/js/utils';
 import { parseApiError } from '../../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 import ConfirmPromotionContent from '../dialogs/ConfirmPromotionContent';
@@ -39,7 +39,8 @@ async function registerAutocomplete(editor, api, transId) {
       });
       const word = context.matchBefore(/\w*/);
       const fullSql = context.state.doc.toString();
-      api.post(url, JSON.stringify([fullSql, fullSql]))
+      const sqlTillCur = context.state.sliceDoc(0, context.state.selection.main.head);
+      api.post(url, JSON.stringify([fullSql, sqlTillCur]))
         .then((res) => {
           onAvailable();
           resolve({
@@ -69,6 +70,8 @@ export default function Query() {
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
   const preferencesStore = usePreferences();
+
+  const queryToolPref = queryToolCtx.preferences.sqleditor;
 
   const highlightError = (cmObj, {errormsg: result, data})=>{
     let errorLineNo = 0,
@@ -255,38 +258,6 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
-      let selection = true, sql = editor.current?.getSelection();
-      let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
-      /* New library does not support capitalize casing
-        so if a user has set capitalize casing we will 
-        use preserve casing which is default for the library.
-      */
-      let formatPrefs = {
-        language: 'postgresql',
-        keywordCase: sqlEditorPref.keyword_case === 'capitalize' ? 'preserve' : sqlEditorPref.keyword_case,
-        identifierCase: sqlEditorPref.identifier_case === 'capitalize' ? 'preserve' : sqlEditorPref.identifier_case,
-        dataTypeCase: sqlEditorPref.data_type_case,
-        functionCase: sqlEditorPref.function_case,
-        logicalOperatorNewline: sqlEditorPref.logical_operator_new_line,
-        expressionWidth: sqlEditorPref.expression_width,
-        linesBetweenQueries: sqlEditorPref.lines_between_queries,
-        tabWidth: sqlEditorPref.tab_size,
-        useTabs: !sqlEditorPref.use_spaces,
-        denseOperators: !sqlEditorPref.spaces_around_operators,
-        newlineBeforeSemicolon: sqlEditorPref.new_line_before_semicolon
-      };
-      if(sql == '') {
-        sql = editor.current.getValue();
-        selection = false;
-      }
-      let formattedSql = format(sql,formatPrefs);
-      if(selection) {
-        editor.current.replaceSelection(formattedSql, 'around');
-      } else {
-        editor.current.setValue(formattedSql);
-      }
-    });
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
       let selectedText = editor.current?.getSelection();
       if (!selectedText) return;
@@ -334,7 +305,46 @@ export default function Query() {
         />
       ));
     };
-    return eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE, warnSaveTextClose);
+
+    const formatSQL = ()=>{
+      let selection = true, sql = editor.current?.getSelection();
+      /* New library does not support capitalize casing
+        so if a user has set capitalize casing we will 
+        use preserve casing which is default for the library.
+      */
+      let formatPrefs = {
+        language: 'postgresql',
+        keywordCase: queryToolPref.keyword_case === 'capitalize' ? 'preserve' : queryToolPref.keyword_case,
+        identifierCase: queryToolPref.identifier_case === 'capitalize' ? 'preserve' : queryToolPref.identifier_case,
+        dataTypeCase: queryToolPref.data_type_case,
+        functionCase: queryToolPref.function_case,
+        logicalOperatorNewline: queryToolPref.logical_operator_new_line,
+        expressionWidth: queryToolPref.expression_width,
+        linesBetweenQueries: queryToolPref.lines_between_queries,
+        tabWidth: queryToolPref.tab_size,
+        useTabs: !queryToolPref.use_spaces,
+        denseOperators: !queryToolPref.spaces_around_operators,
+        newlineBeforeSemicolon: queryToolPref.new_line_before_semicolon
+      };
+      if(sql == '') {
+        sql = editor.current.getValue();
+        selection = false;
+      }
+      let formattedSql = format(sql,formatPrefs);
+      if(selection) {
+        editor.current.replaceSelection(formattedSql, 'around');
+      } else {
+        editor.current.setValue(formattedSql);
+      }
+    };
+
+    const unregisterFormatSQL = eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, formatSQL);
+    const unregisterWarn = eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE, warnSaveTextClose);
+
+    return ()=>{
+      unregisterFormatSQL();
+      unregisterWarn();
+    };
   }, [queryToolCtx.preferences]);
 
   useEffect(()=>{
@@ -400,6 +410,33 @@ export default function Query() {
     }
   };
 
+  const shortcutOverrideKeys = useMemo(
+    ()=>{
+      const queryToolPref = queryToolCtx.preferences.sqleditor;
+      return Object.values(queryToolPref)
+        .filter((p)=>isShortcutValue(p))
+        .map((p)=>({
+          key: toCodeMirrorKey(p), run: (_v, e)=>{
+            queryToolCtx.mainContainerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
+              which: e.which,
+              keyCode: e.keyCode,
+              altKey: e.altKey,
+              shiftKey: e.shiftKey,
+              ctrlKey: e.ctrlKey,
+              metaKey: e.metaKey,
+            }));
+            if(toCodeMirrorKey(p) == 'Mod-k') {
+              eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
+            }
+            return true;
+          },
+          preventDefault: true,
+          stopPropagation: true,
+        }));
+    },
+    [queryToolCtx.preferences]
+  );
+
   return <CodeMirror
     currEditor={(obj)=>{
       editor.current=obj;
@@ -409,14 +446,6 @@ export default function Query() {
     onCursorActivity={cursorActivity}
     onChange={change}
     autocomplete={true}
-    customKeyMap={[
-      {
-        key: 'Mod-k', run: (_view, e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
-        },
-      }
-    ]}
+    customKeyMap={shortcutOverrideKeys}
   />;
 }

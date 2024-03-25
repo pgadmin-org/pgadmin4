@@ -210,7 +210,7 @@ export default function CollectionNodeProperties({
 
       setLoaderText(gettext('Loading...'));
 
-      if (nodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
+      if (!_.isUndefined(nodeObj.getSchema)) {
         schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, nodeData);
         schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {

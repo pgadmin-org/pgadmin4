@@ -110,7 +110,6 @@ const defaultExtensions = [
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
   syntaxHighlighting,
-  keymap.of([defaultKeymap, closeBracketsKeymap, historyKeymap, foldKeymap, completionKeymap].flat()),
   keymap.of([{
     key: 'Tab',
     preventDefault: true,
@@ -147,6 +146,8 @@ export default function Editor({
 
   const preferencesStore = usePreferences();
   const editable = !disabled;
+
+  const shortcuts = useRef(new Compartment());
   const configurables = useRef(new Compartment());
   const editableConfig = useRef(new Compartment());
 
@@ -168,13 +169,14 @@ export default function Editor({
             icon.innerHTML = arrowRightHtml;
           }
           return icon;
-        }
+        },
       }));
     }
     if (editorContainerRef.current) {
       const state = EditorState.create({
         extensions: [
           ...finalExtns,
+          shortcuts.current.of([]),
           configurables.current.of([]),
           editableConfig.current.of([
             EditorView.editable.of(!disabled),
@@ -209,7 +211,6 @@ export default function Editor({
           }),
           breakpoint ? breakpointGutter : [],
           showActiveLine ? highlightActiveLine() : activeLineExtn(),
-          keymap.of(customKeyMap??[]),
         ],
       });
 
@@ -242,6 +243,13 @@ export default function Editor({
       }
     }
   }, [value]);
+
+  useEffect(()=>{
+    const keys = keymap.of([customKeyMap??[], defaultKeymap, closeBracketsKeymap, historyKeymap, foldKeymap, completionKeymap].flat());
+    editor.current?.dispatch({
+      effects: shortcuts.current.reconfigure(keys)
+    });
+  }, [customKeyMap]);
 
   useEffect(() => {
     let pref = preferencesStore.getPreferencesForModule('sqleditor');

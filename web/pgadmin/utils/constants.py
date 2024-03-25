@@ -137,3 +137,6 @@ class MessageType:
     INFO = 'Info',
     CLOSE = 'Close',
     WARNING = 'Warning'
+
+
+DBMS_JOB_SCHEDULER_ID = 999999

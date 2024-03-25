@@ -79,13 +79,85 @@ function onBeforeUnload(e) {
   e.preventDefault();
   e.returnValue = 'prevent';
 }
+
+const FIXED_PREF = {
+  find: {
+    'control': true,
+    ctrl_is_meta: true,
+    'shift': false,
+    'alt': false,
+    'key': {
+      'key_code': 70,
+      'char': 'F',
+    },
+  },
+  replace: {
+    'control': true,
+    ctrl_is_meta: true,
+    'shift': false,
+    'alt': true,
+    'key': {
+      'key_code': 70,
+      'char': 'F',
+    },
+  },
+  gotolinecol: {
+    'control': true,
+    ctrl_is_meta: true,
+    'shift': false,
+    'alt': false,
+    'key': {
+      'key_code': 76,
+      'char': 'L',
+    },
+  },
+  indent: {
+    'control': false,
+    'shift': false,
+    'alt': false,
+    'key': {
+      'key_code': 9,
+      'char': 'Tab',
+    },
+  },
+  unindent: {
+    'control': false,
+    'shift': true,
+    'alt': false,
+    'key': {
+      'key_code': 9,
+      'char': 'Tab',
+    },
+  },
+  comment: {
+    'control': true,
+    ctrl_is_meta: true,
+    'shift': false,
+    'alt': false,
+    'key': {
+      'key_code': 191,
+      'char': '/',
+    },
+  },
+  format_sql: {
+    'control': true,
+    ctrl_is_meta: true,
+    'shift': false,
+    'alt': false,
+    'key': {
+      'key_code': 75,
+      'char': 'k',
+    },
+  },
+};
+
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
   const preferencesStore = usePreferences();
   const [qtState, _setQtState] = useState({
     preferences: {
       browser: preferencesStore.getPreferencesForModule('browser'),
-      sqleditor: preferencesStore.getPreferencesForModule('sqleditor'),
+      sqleditor: {...preferencesStore.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
       graphs: preferencesStore.getPreferencesForModule('graphs'),
       misc: preferencesStore.getPreferencesForModule('misc'),
     },
@@ -362,7 +434,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     state => {
       setQtState({preferences: {
         browser: state.getPreferencesForModule('browser'),
-        sqleditor: state.getPreferencesForModule('sqleditor'),
+        sqleditor: {...state.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
         graphs: state.getPreferencesForModule('graphs'),
         misc: state.getPreferencesForModule('misc'),
       }});

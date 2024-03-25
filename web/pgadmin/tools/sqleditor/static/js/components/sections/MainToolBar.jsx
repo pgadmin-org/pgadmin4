@@ -48,87 +48,6 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
-const FIXED_PREF = {
-  find: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 70,
-      'char': 'F',
-    },
-  },
-  replace: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': true,
-    'key': {
-      'key_code': 70,
-      'char': 'F',
-    },
-  },
-  gotolinecol: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 76,
-      'char': 'L',
-    },
-  },
-  indent: {
-    'control': false,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 9,
-      'char': 'Tab',
-    },
-  },
-  unindent: {
-    'control': false,
-    'shift': true,
-    'alt': false,
-    'key': {
-      'key_code': 9,
-      'char': 'Tab',
-    },
-  },
-  comment: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 191,
-      'char': '/',
-    },
-  },
-  uncomment: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 190,
-      'char': '.',
-    },
-  },
-  format_sql: {
-    'control': true,
-    ctrl_is_meta: true,
-    'shift': false,
-    'alt': false,
-    'key': {
-      'key_code': 75,
-      'char': 'k',
-    },
-  },
-};
-
 function autoCommitRollback(type, api, transId, value) {
   let url = url_for(`sqleditor.${type}`, {
     'trans_id': transId,
@@ -399,6 +318,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     );
   };
 
+  const executeCmd = (cmd)=>eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, cmd);
+
   useEffect(()=>{
     if(queryToolPref) {
       /* Get the prefs first time */
@@ -451,9 +372,21 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       }
     },
     {
-      shortcut: FIXED_PREF.format_sql,
+      shortcut: queryToolPref.indent,
       options: {
-        callback: ()=>{formatSQL();}
+        callback: ()=>{executeCmd('indentMore');}
+      }
+    },
+    {
+      shortcut: queryToolPref.unindent,
+      options: {
+        callback: ()=>{executeCmd('indentLess');}
+      }
+    },
+    {
+      shortcut: queryToolPref.comment,
+      options: {
+        callback: ()=>{executeCmd('toggleComment');}
       }
     },
     {
@@ -466,6 +399,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: queryToolPref.clear_query,
       options: {
         callback: ()=>{clearQuery();}
+      }
+    },
+    {
+      shortcut: queryToolPref.format_sql,
+      options: {
+        callback: ()=>{formatSQL();}
       }
     },
   ], containerRef);
@@ -596,25 +535,25 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         onClose={onMenuClose}
         label={gettext('Edit Menu')}
       >
-        <PgMenuItem shortcut={FIXED_PREF.find}
+        <PgMenuItem shortcut={queryToolPref.find}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
-        <PgMenuItem shortcut={FIXED_PREF.replace}
+        <PgMenuItem shortcut={queryToolPref.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
-        <PgMenuItem shortcut={FIXED_PREF.gotolinecol}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.gotolinecol}
+          onClick={()=>{executeCmd('gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={FIXED_PREF.indent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
-        <PgMenuItem shortcut={FIXED_PREF.unindent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
-        <PgMenuItem shortcut={FIXED_PREF.comment}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.indent}
+          onClick={()=>{executeCmd('indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.unindent}
+          onClick={()=>{executeCmd('indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.comment}
+          onClick={()=>{executeCmd('toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.toggle_case}
           onClick={toggleCase}>{gettext('Toggle Case Of Selected Text')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={FIXED_PREF.format_sql}onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.format_sql}onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}

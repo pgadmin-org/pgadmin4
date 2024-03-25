@@ -13,6 +13,7 @@ CREATE FOREIGN TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ c
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}
 {% if c.attnotnull %} NOT NULL{% endif %}
+{% if c.defval is defined and c.defval is not none and c.defval != '' and c.colconstype != 'g' %} DEFAULT {{c.defval}}{% endif %}
 {% if c.colconstype == 'g' and c.genexpr and c.genexpr != '' %}
  GENERATED ALWAYS AS {{c.genexpr}} STORED{% endif %}
 {% if c.collname %} COLLATE {{c.collname}}{% endif %}
@@ -79,11 +80,6 @@ COMMENT ON COLUMN {{conn|qtIdent(data.basensp, data.name, c.name)}}
 {#===========================================#}
 {% if data.columns and data.columns|length > 0 %}
 {% for c in data.columns %}
-{### Alter SQL for adding sequence to column ###}
-{% if c.defval is defined and c.defval is not none and c.defval != '' and c.colconstype != 'g' %}
-ALTER FOREIGN TABLE IF EXISTS ONLY {{conn|qtIdent(data.basensp, data.name)}}
-	ALTER COLUMN {{conn|qtIdent(c.name)}} SET DEFAULT {{c.defval}};
-{% endif %}
 {% if c.description %}
 
 COMMENT ON COLUMN {{conn|qtIdent(data.basensp, data.name, c.name)}}

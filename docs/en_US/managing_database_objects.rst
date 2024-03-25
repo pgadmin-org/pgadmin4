@@ -18,6 +18,7 @@ node, and select *Create Cast...*
    :maxdepth: 1
 
    cast_dialog
+   dbms_job_scheduler
    collation_dialog
    domain_dialog
    domain_constraint_dialog

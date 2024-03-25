@@ -89,7 +89,7 @@ export default class CollationSchema extends BaseUISchema {
         readonly: function (state) { return !obj.isNew(state); },
         deps: ['lc_collate', 'lc_type', 'copy_collation'],
         disabled: function (state) {
-          // Enable localy only if lc_* & copy_collation is not provided
+          // Enable locale only if lc_* & copy_collation is not provided
           if (state.lc_collate || state.lc_type)
             return true;
           return state.copy_collation;
@@ -108,6 +108,68 @@ export default class CollationSchema extends BaseUISchema {
         readonly: function (state) { return !obj.isNew(state); },
         disabled: obj.disableFields,
         deps: ['locale', 'copy_collation'],
+      },
+      {
+        id: 'provider', label: gettext('Locale Provider'),
+        editable: false, type: 'select',mode: ['create', 'edit'], group: gettext('Definition'),
+        readonly: function (state) { return !obj.isNew(state); },
+        options: [{
+          label: gettext('icu'),
+          value: 'icu',
+        }, {
+          label: gettext('libc'),
+          value: 'libc',
+        }],
+        min_version: 120000,
+        deps: ['copy_collation'],
+        disabled: function (state) {
+          return state.copy_collation;
+        }
+      },
+      {
+        id: 'provider', label: gettext('Locale Provider'),
+        type: 'text',mode: ['properties'], group: gettext('Definition'),
+        readonly: true,
+        min_version: 120000,
+      },
+      {
+        id: 'is_deterministic', label: gettext('Deterministic'),
+        type: 'switch', group: gettext('Definition'),
+        default: false,
+        readonly: function (state) { return !obj.isNew(state); },
+        mode: ['properties', 'edit', 'create'],
+        min_version: 120000,
+        helpMessageMode: ['edit', 'create'],
+        deps: ['copy_collation'],
+        disabled: function (state) {
+          return state.copy_collation;
+        }
+      },
+      {
+        id: 'rules', label: gettext('Rules'),
+        editable: true, type: 'text', group: gettext('Definition'),
+        readonly: function (state) { return !obj.isNew(state); },
+        mode: ['properties', 'edit', 'create'],
+        deps: ['provider','is_deterministic','copy_collation'],
+        depChange: (state)=>{
+          if (state.provider !== 'icu')
+            return { rules: '' };
+        },
+        disabled: function(state) {
+          if (state.copy_collation)
+            return true;
+          return state.provider !== 'icu' || (state.provider == 'icu' && state.is_deterministic);
+        },
+        min_version: 160000,
+      },
+      {
+        id: 'version', label: gettext('Version'), type: 'text', group: gettext('Definition'),
+        readonly: function (state) { return !obj.isNew(state); },
+        mode: ['properties','create', 'edit'], min_version: 120000,
+        deps: ['copy_collation'],
+        disabled: function (state) {
+          return state.copy_collation;
+        }
       },
       {
         id: 'is_sys_obj', label: gettext('System collation?'),
@@ -164,4 +226,3 @@ export default class CollationSchema extends BaseUISchema {
   }
 
 }
-

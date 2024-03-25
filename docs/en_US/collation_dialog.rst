@@ -50,6 +50,16 @@ settings:
 * Use the *LC_CTYPE* field to specify a locale with specified character
   classification. The locale must be applicable to the current database encoding.
   (See CREATE DATABASE for details.)
+* Use the drop-down listbox next to *Locale Provider* to select a locale services associated
+  with the collation. Possible values are: icu, libc. libc is the default.
+* Move the switch next to *Deterministic* to *YES* to specify whether the collation should use
+  deterministic comparisons. By default, this option is set to true. In a
+  deterministic comparison, strings that are not byte-wise equal are considered
+  unequal, even if they are considered logically equal in the comparison.
+* Use the *Rules* field to specify a rules for customizing the behavior of the collation.
+  It includes considerations such as character ordering, case sensitivity, and accent
+  sensitivity.
+* Use the *Version* field to specify version string to store with the collation object.
 
 
 Click the *SQL* tab to continue.

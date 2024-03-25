@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box } from '@material-ui/core';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import gettext from 'sources/gettext';
@@ -45,13 +45,11 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
   const editor = useRef(null);
   const preferencesStore = usePreferences();
   let timeOut = null;
-  const qtState = {
-    is_new_tab: window.location == window.parent?.location,
-    params: {
-      ...params,
-      node_name: retrieveNodeName(selectedNodeInfo),
-    }
-  };
+
+  const [preferences, setPreferences] = useState({
+    browser: preferencesStore.getPreferencesForModule('browser'),
+    debugger: preferencesStore.getPreferencesForModule('debugger'),
+  });
 
   const disableToolbarButtons = () => {
     eventBus.current.fireEvent(DEBUGGER_EVENTS.DISABLE_MENU);
@@ -1066,16 +1064,26 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       });
   }, []);
 
+
+  useEffect(() => usePreferences.subscribe(
+    state => {
+      setPreferences({
+        browser: state.getPreferencesForModule('browser'),
+        debugger: state.getPreferencesForModule('debugger'),
+      });
+    }
+  ), []);
+
   const DebuggerContextValue = React.useMemo(() => ({
     docker: docker.current,
     api: api,
     modal: modal,
-    params: qtState.params,
-    preferences: {
-      browser: preferencesStore.getPreferencesForModule('browser'),
-      debugger: preferencesStore.getPreferencesForModule('debugger'),
+    params: {
+      ...params,
+      node_name: retrieveNodeName(selectedNodeInfo),
     },
-  }), [qtState.params, preferencesStore]);
+    preferences: preferences,
+  }), [preferences]);
 
   // Define the debugger layout components such as DebuggerEditor to show queries and
   let defaultLayout = {

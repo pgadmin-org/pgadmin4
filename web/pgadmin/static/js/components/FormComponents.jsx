@@ -12,7 +12,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } 
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, FormControl, OutlinedInput, FormHelperText,
-  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio,
+  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
 } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
@@ -127,7 +127,7 @@ FormIcon.propTypes = {
 };
 
 /* Wrapper on any form component to add label, error indicator and help message */
-export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9 }) {
+export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='' }) {
   const classes = useStyles();
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
@@ -149,13 +149,20 @@ export function FormInput({ children, error, className, label, helpMessage, requ
       </>
     );
   }
+
+  let labelComponent = <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+    {label}
+    <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
+  </InputLabel>;
   return (
     <Grid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
-        <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
-          {label}
-          <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
-        </InputLabel>
+        {
+          labelTooltip ? 
+            <Tooltip title={labelTooltip}>
+              {labelComponent}
+            </Tooltip> : labelComponent
+        }
       </Grid>
       <Grid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
         <FormControl error={Boolean(error)} fullWidth>
@@ -178,6 +185,7 @@ FormInput.propTypes = {
   withContainer: PropTypes.bool,
   labelGridBasis: PropTypes.number,
   controlGridBasis: PropTypes.number,
+  labelTooltip: PropTypes.string
 };
 
 export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
@@ -325,9 +333,9 @@ InputDateTimePicker.propTypes = {
   controlProps: PropTypes.object,
 };
 
-export function FormInputDateTimePicker({ hasError, required, label, className, helpMessage, testcid, ...props }) {
+export function FormInputDateTimePicker({ hasError, required, label, className, helpMessage, testcid, labelTooltip, ...props }) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputDateTimePicker {...props} />
     </FormInput>
   );
@@ -342,6 +350,7 @@ FormInputDateTimePicker.propTypes = {
   value: PropTypes.string,
   controlProps: PropTypes.object,
   change: PropTypes.func,
+  labelTooltip: PropTypes.string
 };
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
@@ -426,9 +435,9 @@ InputText.propTypes = {
   inputStyle: PropTypes.object
 };
 
-export function FormInputText({ hasError, required, label, className, helpMessage, testcid, ...props }) {
+export function FormInputText({ hasError, required, label, className, helpMessage, testcid, labelTooltip, ...props }) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip} >
       <InputText label={label} {...props} />
     </FormInput>
   );
@@ -440,6 +449,7 @@ FormInputText.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  labelTooltip: PropTypes.string
 };
 
 export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, hideBrowseButton=false,validate, ...props }) {
@@ -488,10 +498,10 @@ InputFileSelect.propTypes = {
 };
 
 export function FormInputFileSelect({
-  hasError, required, label, className, helpMessage, testcid, ...props }) {
+  hasError, required, label, className, helpMessage, testcid, labelTooltip, ...props }) {
 
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputFileSelect required={required} label={label} {...props} />
     </FormInput>
   );
@@ -503,6 +513,7 @@ FormInputFileSelect.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  labelTooltip: PropTypes.string
 };
 
 export function InputSwitch({ cid, helpid, value, onChange, readonly, controlProps, ...props }) {
@@ -533,10 +544,10 @@ InputSwitch.propTypes = {
   controlProps: PropTypes.object,
 };
 
-export function FormInputSwitch({ hasError, required, label, className, helpMessage, testcid, withContainer, controlGridBasis, ...props }) {
+export function FormInputSwitch({ hasError, required, label, className, helpMessage, testcid, withContainer, controlGridBasis, labelTooltip, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className}
-      helpMessage={helpMessage} testcid={testcid} withContainer={withContainer} controlGridBasis={controlGridBasis}>
+      helpMessage={helpMessage} testcid={testcid} withContainer={withContainer} controlGridBasis={controlGridBasis} labelTooltip={labelTooltip}>
       <InputSwitch {...props} />
     </FormInput>
   );
@@ -550,6 +561,7 @@ FormInputSwitch.propTypes = {
   testcid: PropTypes.string,
   withContainer: PropTypes.bool,
   controlGridBasis: PropTypes.number,
+  labelTooltip: PropTypes.string
 };
 
 export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
@@ -581,10 +593,10 @@ InputCheckbox.propTypes = {
 };
 
 export function FormInputCheckbox({ hasError, required, label,
-  className, helpMessage, testcid, ...props }) {
+  className, helpMessage, testcid, labelTooltip, ...props }) {
 
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputCheckbox {...props} />
     </FormInput>
   );
@@ -596,6 +608,7 @@ FormInputCheckbox.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  labelTooltip: PropTypes.string
 };
 
 export function InputRadio({ helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
@@ -675,9 +688,9 @@ InputToggle.propTypes = {
 };
 
 export function FormInputToggle({ hasError, required, label,
-  className, helpMessage, testcid, inputRef, ...props }) {
+  className, helpMessage, testcid, inputRef, labelTooltip, ...props }) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputToggle ref={inputRef} {...props} />
     </FormInput>
   );
@@ -689,7 +702,8 @@ FormInputToggle.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  inputRef: CustomPropTypes.ref
+  inputRef: CustomPropTypes.ref,
+  labelTooltip: PropTypes.string
 };
 
 /* react-select package is used for select input
@@ -1022,9 +1036,9 @@ InputSelect.propTypes = {
 
 
 export function FormInputSelect({
-  hasError, required, className, label, helpMessage, testcid, ...props }) {
+  hasError, required, className, label, helpMessage, testcid, labelTooltip, ...props }) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputSelect ref={props.inputRef} {...props} />
     </FormInput>
   );
@@ -1036,7 +1050,8 @@ FormInputSelect.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  inputRef: CustomPropTypes.ref
+  inputRef: CustomPropTypes.ref,
+  labelTooltip: PropTypes.string
 };
 
 const ColorButton = withColorPicker(PgIconButton);
@@ -1062,10 +1077,10 @@ InputColor.propTypes = {
 };
 
 export function FormInputColor({
-  hasError, required, className, label, helpMessage, testcid, ...props }) {
+  hasError, required, className, label, helpMessage, testcid, labelTooltip, ...props }) {
 
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <InputColor {...props} />
     </FormInput>
   );
@@ -1076,7 +1091,8 @@ FormInputColor.propTypes = {
   className: CustomPropTypes.className,
   label: PropTypes.string,
   helpMessage: PropTypes.string,
-  testcid: PropTypes.string
+  testcid: PropTypes.string,
+  labelTooltip: PropTypes.string
 };
 
 export function PlainString({ controlProps, value }) {
@@ -1193,10 +1209,10 @@ const useStylesKeyboardShortcut = makeStyles(() => ({
   }
 }));
 
-export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, onChange, ...props }) {
+export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, onChange, labelTooltip, ...props }) {
   const classes = useStylesKeyboardShortcut();
   return (
-    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage}>
+    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage} labelTooltip={labelTooltip}>
       <KeyboardShortcuts onChange={onChange} {...props} />
     </FormInput>
 
@@ -1208,14 +1224,15 @@ FormInputKeyboardShortcut.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  labelTooltip: PropTypes.string
 };
 
-export function FormInputQueryThreshold({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
+export function FormInputQueryThreshold({ hasError, label, className, helpMessage, testcid, onChange, labelTooltip, ...props }) {
   const cid = _.uniqueId('c');
   const helpid = `h${cid}`;
   return (
-    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <QueryThresholds cid={cid} helpid={helpid} onChange={onChange} {...props} />
     </FormInput>
 
@@ -1227,15 +1244,16 @@ FormInputQueryThreshold.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  labelTooltip: PropTypes.string
 };
 
 
-export function FormInputSelectThemes({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
+export function FormInputSelectThemes({ hasError, label, className, helpMessage, testcid, onChange, labelTooltip, ...props }) {
   const cid = _.uniqueId('c');
   const helpid = `h${cid}`;
   return (
-    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
       <SelectThemes cid={cid} helpid={helpid} onChange={onChange} {...props} />
     </FormInput>
   );
@@ -1247,7 +1265,8 @@ FormInputSelectThemes.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  labelTooltip: PropTypes.string
 };
 
 

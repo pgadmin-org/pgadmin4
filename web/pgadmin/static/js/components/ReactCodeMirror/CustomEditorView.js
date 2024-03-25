@@ -1,7 +1,7 @@
 import {
   EditorView
 } from '@codemirror/view';
-import { StateEffect, EditorState } from '@codemirror/state';
+import { StateEffect, EditorState, EditorSelection } from '@codemirror/state';
 import { autocompletion } from '@codemirror/autocomplete';
 import {undo, indentMore, indentLess, toggleComment} from '@codemirror/commands';
 import { errorMarkerEffect } from './extensions/errorMarker';
@@ -27,7 +27,10 @@ export default class CustomEditorView extends EditorView {
     this._cleanDoc = this.state.doc;
   }
 
-  getValue() {
+  getValue(tillCursor=false) {
+    if(tillCursor) {
+      return this.state.sliceDoc(0, this.state.selection.main.head);
+    }
     return this.state.doc.toString();
   }
   
@@ -49,7 +52,10 @@ export default class CustomEditorView extends EditorView {
   }
 
   replaceSelection(newValue) {
-    this.dispatch(this.state.replaceSelection(newValue));
+    this.dispatch(this.state.changeByRange(range => ({
+      changes: { from: range.from, to: range.to, insert: newValue },
+      range: EditorSelection.range(range.from, range.to)
+    })));
   }
 
   getCursor() {

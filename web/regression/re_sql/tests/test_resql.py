@@ -13,7 +13,6 @@ import traceback
 from urllib.parse import urlencode
 from flask import url_for
 import regression
-import config
 from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -21,7 +20,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
-from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import DBMS_JOB_SCHEDULER_ID
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -213,6 +212,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 # fsid represents Foreign Server oid
                 elif arg == 'fsid' and 'fsid' in self.parent_ids:
                     options['fsid'] = int(self.parent_ids['fsid'])
+                elif arg == 'jsid':
+                    options['jsid'] = DBMS_JOB_SCHEDULER_ID
                 else:
                     if object_id is not None:
                         try:
@@ -447,7 +448,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # urlencode
         msql_data = {
             key: json.dumps(val)
-            if isinstance(val, dict) or isinstance(val, list) else val
+            if isinstance(val, dict) or isinstance(val, list) else
+            (val if val is not None else 'null')
             for key, val in scenario['data'].items()}
 
         params = urlencode(msql_data)
