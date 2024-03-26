@@ -412,7 +412,8 @@ export default function Query() {
 
   const shortcutOverrideKeys = useMemo(
     ()=>{
-      const queryToolPref = queryToolCtx.preferences.sqleditor;
+      // omit CM internal shortcuts
+      const queryToolPref = _.omit(queryToolCtx.preferences.sqleditor, ['indent', 'unindent', 'comment']);
       return Object.values(queryToolPref)
         .filter((p)=>isShortcutValue(p))
         .map((p)=>({

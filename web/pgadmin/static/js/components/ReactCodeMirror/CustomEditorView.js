@@ -73,7 +73,7 @@ export default class CustomEditorView extends EditorView {
     } else {
       const line = this.state.doc.line(lineNo);
       pos = line.from + ch;
-      if(pos > line.to) {
+      if(ch == -1 || pos > line.to) {
         pos = line.to;
       }
     }
