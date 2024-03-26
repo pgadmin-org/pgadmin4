@@ -47,8 +47,7 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from pgadmin.utils.constants import INTERNAL, LDAP, OAUTH2, \
     KERBEROS, WEBSERVER
-from pgadmin.tools.user_management import create_user, delete_user, \
-    update_user as update_user_internal
+from pgadmin.tools.user_management import create_user, delete_user, update_user
 from enum import Enum
 from flask_babel import gettext
 
@@ -262,7 +261,7 @@ class ManageUsers:
             if not uid:
                 print("User not found")
             else:
-                status, msg = update_user_internal(uid, data)
+                status, msg = update_user(uid, data)
                 if status:
                     _user = ManageUsers.get_users_from_db(username=email,
                                                           auth_source=INTERNAL,
@@ -348,7 +347,7 @@ class ManageUsers:
             if not uid:
                 print("User not found")
             else:
-                status, msg = update_user_internal(uid, data)
+                status, msg = update_user(uid, data)
                 if status:
                     _user = ManageUsers.get_users_from_db(
                         username=username,
