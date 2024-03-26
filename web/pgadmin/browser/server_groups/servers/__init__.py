@@ -1144,7 +1144,7 @@ class ServerNode(PGChildNodeView):
         con_info_ord = OrderedDict([('host', server.host),
                                     ('port', server.port),
                                     ('dbname', db_name),
-                                    ('user', server.username)])
+                                    ('user', manager.user)])
         con_info_ord.update(con_info)
         display_conn_string = make_conninfo(**con_info_ord)
         return display_conn_string
