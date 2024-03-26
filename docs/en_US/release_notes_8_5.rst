@@ -22,6 +22,7 @@ New features
 
   | `Issue #7098 <https://github.com/pgadmin-org/pgadmin4/issues/7098>`_ -  Added support for EDB Job Scheduler.
   | `Issue #7163 <https://github.com/pgadmin-org/pgadmin4/issues/7163>`_ -  Added support to exclude multiple tables while taking backup.
+  | `Issue #7221 <https://github.com/pgadmin-org/pgadmin4/issues/7221>`_ -  Added support for UNIX socket in entrypoint.sh for Docker implementation.
 
 Housekeeping
 ************
