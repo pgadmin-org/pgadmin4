@@ -221,7 +221,7 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
         '--port',
         port,
         '--username',
-        server.username,
+        manager.user,
         '--no-password'
     ]
 

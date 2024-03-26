@@ -372,24 +372,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       }
     },
     {
-      shortcut: queryToolPref.indent,
-      options: {
-        callback: ()=>{executeCmd('indentMore');}
-      }
-    },
-    {
-      shortcut: queryToolPref.unindent,
-      options: {
-        callback: ()=>{executeCmd('indentLess');}
-      }
-    },
-    {
-      shortcut: queryToolPref.comment,
-      options: {
-        callback: ()=>{executeCmd('toggleComment');}
-      }
-    },
-    {
       shortcut: queryToolPref.toggle_case,
       options: {
         callback: ()=>{toggleCase();}
@@ -494,7 +476,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
             onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
-            name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_delete_row)}
+            name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_execute_options)}
             onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
