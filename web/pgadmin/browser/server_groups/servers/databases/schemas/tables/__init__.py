@@ -24,7 +24,7 @@ from .utils import BaseTableView
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.foreign_key import utils as fkey_utils
-from .schema_diff_utils import SchemaDiffTableCompare
+from .schema_diff_table_utils import SchemaDiffTableCompare
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     columns import utils as column_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\

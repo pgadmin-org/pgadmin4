@@ -14,6 +14,7 @@ WHERE
     rw.oid = {{ rid }}
 {% endif %}
 {% if schema_diff %}
+    AND rw.rulename != '_RETURN'
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
         WHERE objid = rw.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
