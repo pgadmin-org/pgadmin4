@@ -1674,7 +1674,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         return sql
 
     @BaseTableView.check_precondition
-    def fetch_tables(self, sid, did, scid, tid=None):
+    def fetch_tables(self, sid, did, scid, tid=None, with_serial_cols=False):
         """
         This function will fetch the list of all the tables
         and will be used by schema diff.
@@ -1683,10 +1683,12 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         :param did: Database Id
         :param scid: Schema Id
         :param tid: Table Id
+        :param with_serial_cols:
         :return: Table dataset
         """
 
-        status, res = BaseTableView.fetch_tables(self, sid, did, scid, tid)
+        status, res = BaseTableView.fetch_tables(self, sid, did, scid, tid,
+                                                 with_serial_cols)
         if not status:
             current_app.logger.error(res)
             return False

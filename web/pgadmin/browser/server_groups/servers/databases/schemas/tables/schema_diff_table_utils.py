@@ -25,7 +25,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             'relacl_str', 'setting']
 
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
-                             'indkey', 'seqtypid', 'defval']
+                             'indkey', 'seqtypid']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
@@ -70,10 +70,12 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
             return internal_server_error(errormsg=target_schema)
 
         if 'scid' in source_params and source_params['scid'] is not None:
-            source_tables = self.fetch_tables(**source_params)
+            source_tables = self.fetch_tables(**source_params,
+                                              with_serial_cols=True)
 
         if 'scid' in target_params and target_params['scid'] is not None:
-            target_tables = self.fetch_tables(**target_params)
+            target_tables = self.fetch_tables(**target_params,
+                                              with_serial_cols=True)
 
         # If both the dict have no items then return None.
         if not (source_tables or target_tables) or (

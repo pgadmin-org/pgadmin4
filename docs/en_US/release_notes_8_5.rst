@@ -34,6 +34,7 @@ Bug fixes
   | `Issue #4413 <https://github.com/pgadmin-org/pgadmin4/issues/4413>`_ -  Fixed an issue in Schema Diff where Columns with sequences get altered unnecessarily.
   | `Issue #7116 <https://github.com/pgadmin-org/pgadmin4/issues/7116>`_ -  Bug fixes and improvements in pgAdmin CLI.
   | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fixed schema diff wrong query generation for table, foreign table and sequence.
+  | `Issue #7210 <https://github.com/pgadmin-org/pgadmin4/issues/7210>`_ -  Fixed an issue where table properties were not updating from properties dialog.
   | `Issue #7229 <https://github.com/pgadmin-org/pgadmin4/issues/7229>`_ -  Fix an issue in table dialog where changing column name was not syncing table constraints appropriately.
   | `Issue #7255 <https://github.com/pgadmin-org/pgadmin4/issues/7255>`_ -  Fixed an issue where taking backup of a shared server was using server owner's user name.
   | `Issue #7262 <https://github.com/pgadmin-org/pgadmin4/issues/7262>`_ -  Fix an issue in editor where replace option in query tool edit menu is not working on non-Mac OS.
