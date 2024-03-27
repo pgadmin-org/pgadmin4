@@ -454,8 +454,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Edit')} icon={
             <><EditRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
-          disabled={!queryToolCtx.params.is_query_tool}
-          name="menu-edit" ref={editMenuRef} onClick={toggleMenu} />
+          disabled={!queryToolCtx.params.is_query_tool} accesskey={shortcut_key(queryToolPref.btn_edit_options)}
+          name="menu-edit" ref={editMenuRef} onClick={toggleMenu}  />
         </PgButtonGroup>
         <PgButtonGroup size="small" color={highlightFilter ? 'primary' : 'default'}>
           <PgIconButton title={gettext('Sort/Filter')} icon={<FilterIcon />}
