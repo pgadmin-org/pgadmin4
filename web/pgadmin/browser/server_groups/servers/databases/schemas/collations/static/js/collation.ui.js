@@ -22,6 +22,8 @@ export default class CollationSchema extends BaseUISchema {
       lc_type: undefined,
       lc_collate: undefined,
       description: undefined,
+      provider: 'libc',
+      is_deterministic: true,
       schema: null,
       ...initValues
     });
@@ -84,10 +86,44 @@ export default class CollationSchema extends BaseUISchema {
         deps: ['locale', 'lc_collate', 'lc_type'],
       },
       {
+        id: 'provider', label: gettext('Locale Provider'),
+        editable: false, type: 'select',mode: ['create', 'edit'], group: gettext('Definition'),
+        readonly: function (state) { return !obj.isNew(state); },
+        options: [{
+          label: gettext('icu'),
+          value: 'icu',
+        }, {
+          label: gettext('libc'),
+          value: 'libc',
+        }],
+        min_version: 110000,
+        deps: ['copy_collation'],
+        depChange: (state)=>{
+          if (state.copy_collation)
+            return { provider: '' };
+          if (state.provider)
+            return { provider: state.provider };
+          return { provider: 'libc' };
+        },
+        disabled: function (state) {
+          return state.copy_collation;
+        }
+      },
+      {
+        id: 'provider', label: gettext('Locale Provider'),
+        type: 'text',mode: ['properties'], group: gettext('Definition'),
+        readonly: true,
+        min_version: 110000,
+      },
+      {
         id: 'locale', label: gettext('Locale'),
         type: 'text', mode: ['create', 'edit'], group: gettext('Definition'),
         readonly: function (state) { return !obj.isNew(state); },
-        deps: ['lc_collate', 'lc_type', 'copy_collation'],
+        deps: ['lc_collate', 'lc_type', 'copy_collation','provider'],
+        depChange: (state)=>{
+          if (state.lc_collate || state.lc_type)
+            return { locale: '' };
+        },
         disabled: function (state) {
           // Enable locale only if lc_* & copy_collation is not provided
           if (state.lc_collate || state.lc_type)
@@ -99,43 +135,21 @@ export default class CollationSchema extends BaseUISchema {
         id: 'lc_collate', label: gettext('LC_COLLATE'),
         type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         readonly: function (state) { return !obj.isNew(state); },
+        depChange: obj.depChangeFields,
         disabled: obj.disableFields,
-        deps: ['locale', 'copy_collation'],
+        deps: ['locale', 'copy_collation','provider'],
       },
       {
         id: 'lc_type', label: gettext('LC_TYPE'),
         type: 'text', mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         readonly: function (state) { return !obj.isNew(state); },
+        depChange: obj.depChangeFields,
         disabled: obj.disableFields,
-        deps: ['locale', 'copy_collation'],
-      },
-      {
-        id: 'provider', label: gettext('Locale Provider'),
-        editable: false, type: 'select',mode: ['create', 'edit'], group: gettext('Definition'),
-        readonly: function (state) { return !obj.isNew(state); },
-        options: [{
-          label: gettext('icu'),
-          value: 'icu',
-        }, {
-          label: gettext('libc'),
-          value: 'libc',
-        }],
-        min_version: 120000,
-        deps: ['copy_collation'],
-        disabled: function (state) {
-          return state.copy_collation;
-        }
-      },
-      {
-        id: 'provider', label: gettext('Locale Provider'),
-        type: 'text',mode: ['properties'], group: gettext('Definition'),
-        readonly: true,
-        min_version: 120000,
+        deps: ['locale', 'copy_collation', 'provider'],
       },
       {
         id: 'is_deterministic', label: gettext('Deterministic'),
         type: 'switch', group: gettext('Definition'),
-        default: false,
         readonly: function (state) { return !obj.isNew(state); },
         mode: ['properties', 'edit', 'create'],
         min_version: 120000,
@@ -143,33 +157,51 @@ export default class CollationSchema extends BaseUISchema {
         deps: ['copy_collation'],
         disabled: function (state) {
           return state.copy_collation;
-        }
+        },
+        depChange: (state, source, topState, actionObj)=>{
+          if (state.copy_collation) {
+            return { is_deterministic: false };
+          }
+          else {
+            if (actionObj.oldState.is_deterministic) {
+              return { is_deterministic: false };
+            } else {
+              return { is_deterministic: true };
+            }
+          }
+        },
+      },
+      {
+        id: 'version', label: gettext('Version'), type: 'text', group: gettext('Definition'),
+        readonly: function (state) { return !obj.isNew(state); },
+        mode: ['properties','create', 'edit'], min_version: 110000,
+        deps: ['copy_collation'],
+        disabled: function (state) {
+          return state.copy_collation;
+        },
+        depChange: (state)=>{
+          if (state.copy_collation)
+            return { version: '' };
+        },
       },
       {
         id: 'rules', label: gettext('Rules'),
-        editable: true, type: 'text', group: gettext('Definition'),
+        editable: false, type: 'text', group: gettext('Definition'),
         readonly: function (state) { return !obj.isNew(state); },
         mode: ['properties', 'edit', 'create'],
-        deps: ['provider','is_deterministic','copy_collation'],
+        deps: ['provider', 'copy_collation'],
         depChange: (state)=>{
+          if (state.copy_collation)
+            return { rules: '' };
           if (state.provider !== 'icu')
             return { rules: '' };
         },
         disabled: function(state) {
           if (state.copy_collation)
             return true;
-          return state.provider !== 'icu' || (state.provider == 'icu' && state.is_deterministic);
+          return state.provider !== 'icu';
         },
         min_version: 160000,
-      },
-      {
-        id: 'version', label: gettext('Version'), type: 'text', group: gettext('Definition'),
-        readonly: function (state) { return !obj.isNew(state); },
-        mode: ['properties','create', 'edit'], min_version: 120000,
-        deps: ['copy_collation'],
-        disabled: function (state) {
-          return state.copy_collation;
-        }
       },
       {
         id: 'is_sys_obj', label: gettext('System collation?'),
@@ -181,9 +213,14 @@ export default class CollationSchema extends BaseUISchema {
       }
     ];
   }
-
+  depChangeFields(state){
+    if (state.provider === 'icu')
+      return { lc_type: '' , lc_collate: '' };
+  }
   disableFields(state) {
     // Enable lc_* only if copy_collation & locale is not provided
+    if (state.provider === 'icu')
+      return true;
     if (state.locale || state.copy_collation) {
       if (state.locale)
         return true;
@@ -216,6 +253,16 @@ export default class CollationSchema extends BaseUISchema {
     }
     if (isEmptyString(state.lc_type)) {
       lc_type_flag = true;
+    }
+    if (!lc_coll_flag && lc_type_flag){
+      errmsg = gettext('Definition incomplete. Please provide LC_TYPE.');
+      setError('lc_type', errmsg);
+      return true;
+    }
+    if (!lc_type_flag && lc_coll_flag){
+      errmsg = gettext('Definition incomplete. Please provide LC_COLLATE.');
+      setError('lc_collate', errmsg);
+      return true;
     }
     if (locale_flag && (lc_coll_flag || lc_type_flag) && copy_coll_flag) {
       errmsg = gettext('Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/LC_COLLATE.');

@@ -1,5 +1,5 @@
 SELECT c.oid, c.collname AS name, c.collcollate AS lc_collate, c.collctype AS lc_type,
-    pg_catalog.pg_get_userbyid(c.collowner) AS owner, c.collversion AS version,
+    pg_catalog.pg_get_userbyid(c.collowner) AS owner, c.collisdeterministic AS is_deterministic, c.collversion AS version,
     c.collprovider AS provider, des.description, n.nspname AS schema
 
 FROM pg_catalog.pg_collation c
