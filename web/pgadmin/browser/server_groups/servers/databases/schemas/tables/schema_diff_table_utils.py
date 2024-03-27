@@ -25,7 +25,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             'relacl_str', 'setting']
 
     column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
-                             'indkey']
+                             'indkey', 'seqtypid', 'defval']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',

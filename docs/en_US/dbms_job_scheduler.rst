@@ -15,9 +15,9 @@ as a background process for the DBMS_SCHEDULER and DBMS_JOB packages.
 
 The EDB Job Scheduler has a scheduler process that starts when the database cluster starts.
 To start the scheduler process, load the EDB Job Scheduler extension using the **shared_preload_libraries**
-parameter. After you load the extension, create the extension using the CREATE EXTENSION command.
-The database in which you're creating the extension must be listed in the **edb_job_scheduler.database_list**
-parameter.
+parameter. After you load the extension, create the extension **'edb_job_scheduler'** and **'dbms_scheduler'** using
+the CREATE EXTENSION command. The database in which you're creating the extension must be listed in the
+**edb_job_scheduler.database_list** parameter.
 
 Instructions for configuring the EDB Job Scheduler can be found in the
 `Configuring EDB Job Scheduler <https://www.enterprisedb.com/docs/pg_extensions/edb_job_scheduler/configuring/>`_.

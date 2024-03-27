@@ -546,7 +546,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     BaseTableView._get_sub_module_data_for_compare(
                         self, sid, did, scid, data, row)
                     res[row['name']] = data
-                    res[row['name']] = data
 
             return True, res
 
