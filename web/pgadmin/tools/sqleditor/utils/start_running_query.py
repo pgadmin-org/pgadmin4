@@ -115,7 +115,6 @@ class StartRunningQuery:
                 'status': status, 'result': result,
                 'can_edit': can_edit, 'can_filter': can_filter,
                 'notifies': notifies,
-                'transaction_status': trans_status,
             }
         )
 
