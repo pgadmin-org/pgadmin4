@@ -112,8 +112,7 @@ class StartRunningQueryTest(BaseTestGenerator):
                             'not found.',
                      can_edit=False,
                      can_filter=False,
-                     notifies=None,
-                     transaction_status=None
+                     notifies=None
                  )
              ),
              expect_internal_server_error_called_with=None,

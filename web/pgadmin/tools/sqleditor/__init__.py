@@ -950,6 +950,14 @@ def poll(trans_id):
                 is_thread_alive = True
                 break
 
+    # if transaction object is instance of QueryToolCommand
+    # and transaction aborted for some reason then issue a
+    # rollback to cleanup
+    if isinstance(trans_obj, QueryToolCommand):
+        trans_status = conn.transaction_status()
+        if trans_status == TX_STATUS_INERROR and trans_obj.auto_rollback:
+            conn.execute_void("ROLLBACK;")
+
     if is_thread_alive:
         status = 'Busy'
         messages = conn.messages()
@@ -973,24 +981,18 @@ def poll(trans_id):
                     gettext('******* Error *******'),
                     result
                 )
+
+            transaction_status = conn.transaction_status() if conn else 0
             query_len_data = {
+                'transaction_status': transaction_status,
                 'explain_query_length':
-                get_explain_query_length(
-                    conn._Connection__async_cursor._query)
+                    get_explain_query_length(
+                        conn._Connection__async_cursor._query)
             }
             return internal_server_error(result, query_len_data)
         elif status == ASYNC_OK:
             status = 'Success'
             rows_affected = conn.rows_affected()
-
-            # if transaction object is instance of QueryToolCommand
-            # and transaction aborted for some reason then issue a
-            # rollback to cleanup
-            if isinstance(trans_obj, QueryToolCommand):
-                trans_status = conn.transaction_status()
-                if trans_status == TX_STATUS_INERROR and \
-                        trans_obj.auto_rollback:
-                    conn.execute_void("ROLLBACK;")
 
             st, result = conn.async_fetchmany_2darray(on_demand_record_count)
 
