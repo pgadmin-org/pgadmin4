@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 import React, { useState } from 'react';
 import SchemaView from '../../../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../../../static/js/SchemaView/base_schema.ui';

@@ -6,12 +6,13 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
-import FolderIcon from '@material-ui/icons/Folder';
-import DescriptionIcon from '@material-ui/icons/Description';
-import LockRoundedIcon from '@material-ui/icons/LockRounded';
-import StorageRoundedIcon from '@material-ui/icons/StorageRounded';
+import FolderIcon from '@mui/icons-material/Folder';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 

@@ -16,7 +16,7 @@ import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 export const X_AXIS_LENGTH = 75;
 
@@ -253,7 +253,7 @@ export function GraphsWrapper(props) {
 
   return (
     <>
-      <Grid container spacing={1}>
+      <Grid container spacing={0.5}>
         <Grid item md={6}>
           <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')}
             datasets={props.sessionStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
@@ -266,7 +266,7 @@ export function GraphsWrapper(props) {
           </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={1} style={{marginTop: '4px', marginBottom: '4px'}}>
+      <Grid container spacing={0.5} style={{marginTop: '4px', marginBottom: '4px'}}>
         <Grid item md={4}>
           <ChartContainer id='ti-graph' title={gettext('Tuples in')} datasets={props.tiStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.tiStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />

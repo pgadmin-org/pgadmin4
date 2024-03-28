@@ -8,16 +8,17 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Box, makeStyles, Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SaveIcon from '@material-ui/icons/Save';
-import PublishIcon from '@material-ui/icons/Publish';
-import DoneIcon from '@material-ui/icons/Done';
-import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
-import CloseIcon from '@material-ui/icons/Close';
-import InfoIcon from '@material-ui/icons/InfoRounded';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import EditIcon from '@material-ui/icons/Edit';
+import { Box, Accordion, AccordionSummary, AccordionDetails} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SaveIcon from '@mui/icons-material/Save';
+import PublishIcon from '@mui/icons-material/Publish';
+import DoneIcon from '@mui/icons-material/Done';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/InfoRounded';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import EditIcon from '@mui/icons-material/Edit';
 import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
 import clsx from 'clsx';

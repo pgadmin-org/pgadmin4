@@ -10,8 +10,8 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import React from 'react';
-import { Box, Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import {FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';

@@ -7,8 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useCallback, useReducer, useEffect, useMemo } from 'react';
-import { Box, List, ListItem, makeStyles } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import { Box, List, ListItem } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import { PgIconButton } from '../../../../../static/js/components/Buttons';
 import gettext from 'sources/gettext';
 import {useDropzone} from 'react-dropzone';

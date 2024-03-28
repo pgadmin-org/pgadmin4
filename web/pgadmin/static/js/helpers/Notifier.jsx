@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////
 
 import { SnackbarProvider, SnackbarContent } from 'notistack';
-import { makeStyles } from '@material-ui/core/styles';
-import {Box} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import { makeStyles } from '@mui/styles';
+import {Box} from '@mui/material';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import HTMLReactParser from 'html-react-parser';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { NotifierMessage, MESSAGE_TYPE } from '../components/FormComponents';
@@ -26,7 +26,7 @@ import { parseApiError } from '../api_instance';
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
 export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
-  return <SnackbarContent style= {{justifyContent:'end', maxWidth: '700px'}} ref={ref}>{children}</SnackbarContent>;
+  return <SnackbarContent style= {{ justifyContent: 'end', maxWidth: '700px' }} ref={ref}>{children}</SnackbarContent>;
 });
 FinalNotifyContent.displayName = 'FinalNotifyContent';
 FinalNotifyContent.propTypes = {

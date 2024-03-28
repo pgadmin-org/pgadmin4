@@ -6,14 +6,14 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Tab, Tabs } from '@mui/material';
 import React from 'react';
 import _ from 'lodash';
 import Graphical from './Graphical';
 import TabPanel from '../components/TabPanel';
 import gettext  from 'sources/gettext';
 import ImageMapper from './ImageMapper';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import Analysis from './Analysis';
 import ExplainStatistics from './ExplainStatistics';
 import PropTypes from 'prop-types';

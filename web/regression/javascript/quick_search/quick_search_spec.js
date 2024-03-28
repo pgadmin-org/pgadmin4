@@ -10,13 +10,16 @@
 import React from 'react';
 import QuickSearch from '../../../pgadmin/static/js/QuickSearch';
 import { render } from '@testing-library/react';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 let ctrl;
 
 describe('quick search test cases', function () {
   beforeEach(() => {
     ctrl = render(
-      <QuickSearch />
+      <Theme>
+        <QuickSearch />
+      </Theme>
     );
   });
 

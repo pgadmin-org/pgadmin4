@@ -13,11 +13,11 @@ import clsx from 'clsx';
 import { SelectColumn } from 'react-data-grid';
 import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import KeyboardArrowRightRoundedIcon from '@material-ui/icons/KeyboardArrowRightRounded';
-import KeyboardArrowDownRoundedIcon from '@material-ui/icons/KeyboardArrowDownRounded';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import InfoIcon from '@mui/icons-material/InfoRounded';
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';

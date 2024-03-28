@@ -7,18 +7,19 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Box, Dialog, DialogContent, DialogTitle, makeStyles, Paper } from '@material-ui/core';
+import { Box, Dialog, DialogContent, DialogTitle, Paper } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { getEpoch } from 'sources/utils';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../components/Buttons';
 import Draggable from 'react-draggable';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import CustomPropTypes from '../custom_prop_types';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import HTMLReactParser from 'html-react-parser';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 

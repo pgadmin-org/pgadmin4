@@ -1,4 +1,4 @@
-import { Portal } from '@material-ui/core';
+import { Portal } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import Frame from 'react-frame-component';
 import PropTypes from 'prop-types';

@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useState, useContext }  from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Box } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box } from '@mui/material';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';

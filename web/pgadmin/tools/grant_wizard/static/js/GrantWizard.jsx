@@ -11,8 +11,8 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import url_for from 'sources/url_for';
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import PgTable from 'sources/components/PgTable';
@@ -363,5 +363,3 @@ GrantWizard.propTypes = {
   nodeData: PropTypes.object,
   onClose: PropTypes.func
 };
-
-

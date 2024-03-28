@@ -7,20 +7,20 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Box } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
-import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
-import StopRoundedIcon from '@material-ui/icons/StopRounded';
-import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
+import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import StopRoundedIcon from '@mui/icons-material/StopRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import { FilterIcon, CommitIcon, RollbackIcon } from '../../../../../../static/js/components/ExternalIcon';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import AssessmentRoundedIcon from '@material-ui/icons/AssessmentRounded';
-import ExplicitRoundedIcon from '@material-ui/icons/ExplicitRounded';
-import FormatListNumberedRoundedIcon from '@material-ui/icons/FormatListNumberedRounded';
-import HelpIcon from '@material-ui/icons/HelpRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
+import ExplicitRoundedIcon from '@mui/icons-material/ExplicitRounded';
+import FormatListNumberedRoundedIcon from '@mui/icons-material/FormatListNumberedRounded';
+import HelpIcon from '@mui/icons-material/HelpRounded';
 import {QUERY_TOOL_EVENTS, CONNECTION_STATUS} from '../QueryToolConstants';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import { PgMenu, PgMenuDivider, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
@@ -457,10 +457,10 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           disabled={!queryToolCtx.params.is_query_tool} accesskey={shortcut_key(queryToolPref.btn_edit_options)}
           name="menu-edit" ref={editMenuRef} onClick={toggleMenu}  />
         </PgButtonGroup>
-        <PgButtonGroup size="small" color={highlightFilter ? 'primary' : 'default'}>
-          <PgIconButton title={gettext('Sort/Filter')} icon={<FilterIcon />}
+        <PgButtonGroup size="small" >
+          <PgIconButton title={gettext('Sort/Filter')} color={highlightFilter ? 'primary' : 'default'} icon={<FilterIcon />}
             onClick={onFilterClick} disabled={buttonsDisabled['filter']} accesskey={shortcut_key(queryToolPref.btn_filter_dialog)}/>
-          <PgIconButton title={gettext('Filter options')} icon={<KeyboardArrowDownIcon />} splitButton
+          <PgIconButton title={gettext('Filter options')} color={highlightFilter ? 'primary' : 'default'} icon={<KeyboardArrowDownIcon />} splitButton
             disabled={buttonsDisabled['filter']} name="menu-filter" ref={filterMenuRef} accesskey={shortcut_key(queryToolPref.btn_filter_options)}
             onClick={toggleMenu} />
         </PgButtonGroup>

@@ -6,18 +6,19 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import _ from 'lodash';
 import React, {useState, useEffect, useContext, useRef, useLayoutEffect, useMemo} from 'react';
 import {Row, useRowSelection} from 'react-data-grid';
-import LockIcon from '@material-ui/icons/Lock';
-import EditIcon from '@material-ui/icons/Edit';
+import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import * as Editors from './Editors';
 import * as Formatters from './Formatters';
 import clsx from 'clsx';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
-import MapIcon from '@material-ui/icons/Map';
+import MapIcon from '@mui/icons-material/Map';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';

@@ -1,9 +1,10 @@
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import clsx from 'clsx';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { BgProcessManagerProcessState } from './BgProcessConstants';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
@@ -99,4 +100,3 @@ export function processCompleted(desc, process_state, onViewProcess) {
     null
   );
 }
-

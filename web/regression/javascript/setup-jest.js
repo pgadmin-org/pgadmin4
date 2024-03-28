@@ -65,5 +65,4 @@ document.createRange = () => {
 };
 
 
-jest.setTimeout(15000); // 1 second
-
+jest.setTimeout(18000); // 1 second

@@ -10,9 +10,9 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Grid, InputLabel } from '@material-ui/core';
+import { Box, Grid, InputLabel } from '@mui/material';
 import { DefaultButton } from '../../../static/js/components/Buttons';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import { InputText } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';
 import { copyToClipboard } from '../../../static/js/clipboard';

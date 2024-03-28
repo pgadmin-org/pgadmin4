@@ -9,10 +9,10 @@
 
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import gettext from 'sources/gettext';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import { useModalStyles } from '../helpers/ModalProvider';
 import { FormFooterMessage, InputCheckbox, InputText, MESSAGE_TYPE } from '../components/FormComponents';

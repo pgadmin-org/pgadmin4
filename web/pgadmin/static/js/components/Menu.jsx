@@ -1,6 +1,6 @@
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React, { useRef } from 'react';
-import CheckIcon from '@material-ui/icons/Check';
+import CheckIcon from '@mui/icons-material/Check';
 import PropTypes from 'prop-types';
 
 import {

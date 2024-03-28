@@ -43,15 +43,17 @@ define('app', [
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
+  initializeModules(pgAdmin.Preferences);
 
   // Add menus from back end.
   pgAdmin.Browser.utils.addBackendMenus(pgAdmin.Browser);
 
   // Create menus after all modules are initialized.
   MainMenuFactory.createMainMenus();
+  let theme = pgAdmin.Browser.utils.theme;
 
   ReactDOM.render(
-    <Theme>
+    <Theme theme={theme}>
       <BrowserComponent pgAdmin={pgAdmin} />
     </Theme>,
     document.querySelector('#root')

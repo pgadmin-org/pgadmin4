@@ -10,17 +10,18 @@
 import React, { useState, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { MESSAGE_TYPE, NotifierMessage } from '../../../../static/js/components/FormComponents';
 import { BgProcessManagerProcessState } from './BgProcessConstants';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
-import AccessTimeRoundedIcon from '@material-ui/icons/AccessTimeRounded';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import { useInterval } from '../../../../static/js/custom_hooks';
 import getApiInstance from '../../../../static/js/api_instance';
 import pgAdmin from 'sources/pgadmin';
-import FolderSharedRoundedIcon from '@material-ui/icons/FolderSharedRounded';
+import FolderSharedRoundedIcon from '@mui/icons-material/FolderSharedRounded';
 
 
 const useStyles = makeStyles((theme)=>({

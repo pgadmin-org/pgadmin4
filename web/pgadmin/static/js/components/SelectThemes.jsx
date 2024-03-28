@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import { makeStyles, Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useMemo } from 'react';
 import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';

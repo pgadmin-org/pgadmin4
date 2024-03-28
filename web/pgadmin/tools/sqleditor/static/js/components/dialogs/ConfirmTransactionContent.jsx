@@ -1,9 +1,9 @@
 import React from 'react';
 import { useModalStyles } from '../../../../../../static/js/helpers/ModalProvider';
 import gettext from 'sources/gettext';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import HTMLReactParser from 'html-react-parser';
 import { CommitIcon, RollbackIcon } from '../../../../../../static/js/components/ExternalIcon';
 import PropTypes from 'prop-types';

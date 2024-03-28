@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';

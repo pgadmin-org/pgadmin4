@@ -16,7 +16,7 @@ import url_for from 'sources/url_for';
 import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import gettext from 'sources/gettext';
 
 const useStyles = makeStyles(() =>
