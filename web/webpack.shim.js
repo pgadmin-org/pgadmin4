@@ -211,15 +211,5 @@ let webpackShimConfig = {
     }
     return false;
   },
-
-  /* These will be skipped when webpack picks css/scss files recursively to bundle */
-  css_bundle_skip: [
-    './pgadmin/static',
-  ],
-
-  /* These will be included in array formed by recursive traversing for css/scss files */
-  css_bundle_include: [
-    './pgadmin/static/css/pgadmin.css',
-  ],
 };
 module.exports = webpackShimConfig;

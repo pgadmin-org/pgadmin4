@@ -68,58 +68,6 @@ const copyFiles = new CopyPlugin({
   ],
 });
 
-function cssToBeSkiped(curr_path) {
-  /** Skip all templates **/
-  if(curr_path.indexOf('template') > -1) {
-    return true;
-  }
-
-  for(let value of webpackShimConfig.css_bundle_skip) {
-    if(path.join(__dirname, value) === curr_path){
-      return true;
-    }
-  }
-  return false;
-}
-
-/* Get all the style files recursively and store in array to
- * give input to webpack.
- */
-function pushModulesStyles(curr_path, pgadminStyles, extn) {
-  /** Skip Directories */
-  if(cssToBeSkiped(curr_path)) {
-    return;
-  }
-
-  fs.readdirSync(curr_path).map(function(curr_file) {
-    /** Skip Files */
-    if(cssToBeSkiped(path.join(curr_path, curr_file))) {
-      return;
-    }
-
-    let stats = fs.statSync(path.join(curr_path, curr_file));
-    /* if directory, dig further */
-    if(stats.isDirectory()) {
-      pushModulesStyles(path.join(curr_path, curr_file), pgadminStyles, extn);
-    }
-    else if(stats.isFile() && (curr_file.endsWith(extn))) {
-      pgadminStyles.push(path.join(curr_path, curr_file));
-    }
-  });
-}
-
-let pgadminCssStyles = [];
-
-/* Include what is given in shim config */
-for(let value of webpackShimConfig.css_bundle_include) {
-  if(value.endsWith('.css')){
-    pgadminCssStyles.push(path.join(__dirname, value));
-  }
-}
-
-pushModulesStyles(path.join(__dirname,'./pgadmin'), pgadminCssStyles, '.css');
-pgadminCssStyles.push(path.join(__dirname,'./pgadmin/static/js/pgadmin.fonticon.js'));
-
 module.exports = [{
   mode: envType,
   devtool: devToolVal,
@@ -136,9 +84,7 @@ module.exports = [{
     erd_tool: './pgadmin/tools/erd/static/js/index.js',
     psql_tool: './pgadmin/tools/psql/static/js/index.js',
     debugger: './pgadmin/tools/debugger/static/js/index.js',
-    'pgadmin.style': pgadminCssStyles,
-    //pgadmin: pgadminScssStyles,
-    style: './pgadmin/static/css/style.css',
+    style: ['./pgadmin/static/css/style.css', './pgadmin/static/js/pgadmin.fonticon.js']
   },
   // path: The output directory for generated bundles(defined in entry)
   // Ref: https://webpack.js.org/configuration/output/#output-library

@@ -9,3 +9,8 @@
 @import 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css';
 
 @import 'node_modules/uplot/dist/uPlot.min.css';
+
+@import 'node_modules/rc-dock/dist/rc-dock.css';
+@import 'node_modules/@szhsin/react-menu/dist/index.css';
+
+@import './pgadmin.css';
