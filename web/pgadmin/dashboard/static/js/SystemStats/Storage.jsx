@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import url_for from 'sources/url_for';
 import {getGCD, getEpoch} from 'sources/utils';
-import ChartContainer from '../ChartContainer';
+import ChartContainer from '../components/ChartContainer';
 import { Grid } from '@material-ui/core';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';

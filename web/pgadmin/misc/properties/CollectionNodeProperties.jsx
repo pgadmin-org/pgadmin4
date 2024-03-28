@@ -9,7 +9,7 @@
 import React from 'react';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Switch } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { generateCollectionURL } from '../../browser/static/js/node_ajax';
 import gettext from 'sources/gettext';
 import PgTable from 'sources/components/PgTable';
@@ -23,6 +23,7 @@ import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { getSwitchCell } from '../../static/js/components/PgTable';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -64,12 +65,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden !important',
     overflowX: 'auto !important'
   },
-  readOnlySwitch: {
-    opacity: 0.75,
-    '& .MuiSwitch-track': {
-      opacity: theme.palette.action.disabledOpacity,
-    }
-  }
 }));
 
 export default function CollectionNodeProperties({
@@ -215,14 +210,6 @@ export default function CollectionNodeProperties({
         schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
-              const Cell = ({value})=>{
-                return <Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />;
-              };
-              Cell.displayName = 'StatusCell';
-              Cell.propTypes = {
-                value: PropTypes.any,
-              };
-
               column = {
                 Header: field.label,
                 accessor: field.id,
@@ -230,7 +217,7 @@ export default function CollectionNodeProperties({
                 resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
-                Cell: Cell
+                Cell: getSwitchCell()
               };
             } else {
               column = {

@@ -245,6 +245,8 @@ class DashboardModule(PgAdminModule):
             'dashboard.system_statistics',
             'dashboard.system_statistics_sid',
             'dashboard.system_statistics_did',
+            'dashboard.replication_slots',
+            'dashboard.replication_stats',
         ]
 
 
@@ -644,5 +646,53 @@ def system_statistics(sid=None, did=None):
 
     return ajax_response(
         response=resp_data,
+        status=200
+    )
+
+
+@blueprint.route('/replication_stats/<int:sid>',
+                 endpoint='replication_stats', methods=['GET'])
+@login_required
+@check_precondition
+def replication_stats(sid=None):
+    """
+    This function is used to list all the Replication slots of the cluster
+    """
+
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    sql = render_template("/".join([g.template_path, 'replication_stats.sql']))
+    status, res = g.conn.execute_dict(sql)
+
+    if not status:
+        return internal_server_error(errormsg=str(res))
+
+    return ajax_response(
+        response=res['rows'],
+        status=200
+    )
+
+
+@blueprint.route('/replication_slots/<int:sid>',
+                 endpoint='replication_slots', methods=['GET'])
+@login_required
+@check_precondition
+def replication_slots(sid=None):
+    """
+    This function is used to list all the Replication slots of the cluster
+    """
+
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    sql = render_template("/".join([g.template_path, 'replication_slots.sql']))
+    status, res = g.conn.execute_dict(sql)
+
+    if not status:
+        return internal_server_error(errormsg=str(res))
+
+    return ajax_response(
+        response=res['rows'],
         status=200
     )

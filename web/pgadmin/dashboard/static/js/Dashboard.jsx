@@ -19,12 +19,9 @@ import { Box, Tab, Tabs } from '@material-ui/core';
 import { PgIconButton } from '../../../static/js/components/Buttons';
 import CancelIcon from '@material-ui/icons/Cancel';
 import StopSharpIcon from '@material-ui/icons/StopSharp';
-import ArrowRightOutlinedIcon from '@material-ui/icons/ArrowRightOutlined';
-import ArrowDropDownOutlinedIcon from '@material-ui/icons/ArrowDropDownOutlined';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
-import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
 import Summary from './SystemStats/Summary';
@@ -37,6 +34,10 @@ import { usePgAdmin } from '../../../static/js/BrowserComponent';
 import usePreferences from '../../../preferences/static/js/store';
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 import { parseApiError } from '../../../static/js/api_instance';
+import SectionContainer from './components/SectionContainer';
+import Replication from './Replication';
+import RefreshButton from './components/RefreshButtons';
+import {getExpandCell } from '../../../static/js/components/PgTable';
 
 function parseData(data) {
   let res = [];
@@ -54,11 +55,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     padding: '8px',
     display: 'flex',
-  },
-  fixedSizeList: {
-    overflowX: 'hidden !important',
-    overflow: 'overlay !important',
-    height: 'auto !important',
   },
   dashboardPanel: {
     height: '100%',
@@ -108,21 +104,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column'
   },
-  arrowButton: {
-    fontSize: '2rem !important',
-    margin: '-7px'
-  },
   terminateButton: {
     color: theme.palette.error.main
-  },
-  buttonClick: {
-    backgroundColor: theme.palette.grey[400]
-  },
-  refreshButton: {
-    marginLeft: 'auto',
-    height:  '1.9rem',
-    width:  '2.2rem',
-    ...theme.mixins.panelBorder,
   },
   chartCard: {
     border: '1px solid '+theme.otherVars.borderColor,
@@ -156,6 +139,9 @@ function Dashboard({
   const classes = useStyles();
   let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
   let mainTabs = [gettext('General'), gettext('System Statistics')];
+  if(treeNodeInfo?.server?.replication_type) {
+    mainTabs.push(gettext('Replication'));
+  }
   let systemStatsTabs = [gettext('Summary'), gettext('CPU'), gettext('Memory'), gettext('Storage')];
   const [dashData, setdashData] = useState([]);
   const [msg, setMsg] = useState('');
@@ -247,8 +233,10 @@ function Dashboard({
       sortable: true,
       resizable: false,
       disableGlobalFilter: false,
+      disableResizing: true,
       width: 35,
-      minWidth: 0,
+      maxWidth: 35,
+      minWidth: 35,
       id: 'btn-terminate',
       // eslint-disable-next-line react/display-name
       Cell: ({ row }) => {
@@ -391,40 +379,21 @@ function Dashboard({
       width: 35,
       minWidth: 0,
       id: 'btn-edit',
-      Cell: ({ row }) => {
-        let canEditRow = true;
-        return (
-          <PgIconButton
-            size="xs"
-            className={row.isExpanded ?classes.buttonClick : ''}
-            icon={
-              row.isExpanded ? (
-                <ArrowDropDownOutlinedIcon  className={classes.arrowButton}/>
-              ) : (
-                <ArrowRightOutlinedIcon className={classes.arrowButton}/>
-              )
-            }
-            noBorder
-            onClick={(e) => {
-              e.preventDefault();
-              row.toggleRowExpanded(!row.isExpanded);
-              let schema = new ActiveQuery({
-                query: row.original.query,
-                backend_type: row.original.backend_type,
-                state_change: row.original.state_change,
-                query_start: row.original.query_start,
-              });
-              setSchemaDict(prevState => ({
-                ...prevState,
-                [row.id]: schema
-              }));
-            }}
-            disabled={!canEditRow}
-            aria-label="View the active session details"
-            title={gettext('View the active session details')}
-          />
-        );
-      },
+      Cell: getExpandCell({
+        onClick: (row) => {
+          let schema = new ActiveQuery({
+            query: row.original.query,
+            backend_type: row.original.backend_type,
+            state_change: row.original.state_change,
+            query_start: row.original.query_start,
+          });
+          setSchemaDict(prevState => ({
+            ...prevState,
+            [row.id]: schema
+          }));
+        },
+        title: gettext('View the active session details')
+      }),
     },
     {
       accessor: 'pid',
@@ -740,6 +709,11 @@ function Dashboard({
   },[nodeData]);
 
   useEffect(() => {
+    // disable replication tab
+    if(!treeNodeInfo?.server?.replication_type && mainTabVal == 2) {
+      setMainTabVal(0);
+    }
+
     let url,
       ssExtensionCheckUrl = url_for('dashboard.check_system_statistics'),
       message = gettext(
@@ -829,24 +803,6 @@ function Dashboard({
     return dashData;
   }, [dashData, activeOnly, tabVal]);
 
-  const RefreshButton = () =>{
-    return(
-      <PgIconButton
-        size="xs"
-        noBorder
-        className={classes.refreshButton}
-        icon={<CachedOutlinedIcon />}
-        onClick={(e) => {
-          e.preventDefault();
-          setRefresh(!refresh);
-        }}
-        color="default"
-        aria-label="Refresh"
-        title={gettext('Refresh')}
-      ></PgIconButton>
-    );
-  };
-
   const showDefaultContents = () => {
     return (
       sid && !serverConnected ? (
@@ -915,57 +871,52 @@ function Dashboard({
                   ></Graphs>
                 )}
                 {!_.isUndefined(preferences) && preferences.show_activity && (
-                  <Box className={classes.panelContent}>
-                    <Box
-                      className={classes.cardHeader}
-                      title={dbConnected ?  gettext('Database activity') : gettext('Server activity')}
-                    >
-                      {dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
+                  <SectionContainer title={dbConnected ?  gettext('Database activity') : gettext('Server activity')}>
+                    <Box>
+                      <Tabs
+                        value={tabVal}
+                        onChange={tabChanged}
+                      >
+                        {tabs.map((tabValue) => {
+                          return <Tab key={tabValue} label={tabValue} />;
+                        })}
+                        <RefreshButton onClick={(e) => {
+                          e.preventDefault();
+                          setRefresh(!refresh);
+                        }}/>
+                      </Tabs>
                     </Box>
-                    <Box height="100%" display="flex" flexDirection="column">
-                      <Box>
-                        <Tabs
-                          value={tabVal}
-                          onChange={tabChanged}
-                        >
-                          {tabs.map((tabValue) => {
-                            return <Tab key={tabValue} label={tabValue} />;
-                          })}
-                          <RefreshButton/>
-                        </Tabs>
-                      </Box>
-                      <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
-                        <PgTable
-                          caveTable={false}
-                          CustomHeader={CustomActiveOnlyHeader}
-                          columns={activityColumns}
-                          data={filteredDashData}
-                          schema={schemaDict}
-                        ></PgTable>
-                      </TabPanel>
-                      <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
-                        <PgTable
-                          caveTable={false}
-                          columns={databaseLocksColumns}
-                          data={dashData}
-                        ></PgTable>
-                      </TabPanel>
-                      <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
-                        <PgTable
-                          caveTable={false}
-                          columns={databasePreparedColumns}
-                          data={dashData}
-                        ></PgTable>
-                      </TabPanel>
-                      <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
-                        <PgTable
-                          caveTable={false}
-                          columns={serverConfigColumns}
-                          data={dashData}
-                        ></PgTable>
-                      </TabPanel>
-                    </Box>
-                  </Box>
+                    <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
+                      <PgTable
+                        caveTable={false}
+                        CustomHeader={CustomActiveOnlyHeader}
+                        columns={activityColumns}
+                        data={filteredDashData}
+                        schema={schemaDict}
+                      ></PgTable>
+                    </TabPanel>
+                    <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
+                      <PgTable
+                        caveTable={false}
+                        columns={databaseLocksColumns}
+                        data={dashData}
+                      ></PgTable>
+                    </TabPanel>
+                    <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                      <PgTable
+                        caveTable={false}
+                        columns={databasePreparedColumns}
+                        data={dashData}
+                      ></PgTable>
+                    </TabPanel>
+                    <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                      <PgTable
+                        caveTable={false}
+                        columns={serverConfigColumns}
+                        data={dashData}
+                      ></PgTable>
+                    </TabPanel>
+                  </SectionContainer>
                 )}
               </TabPanel>
               {/* System Statistics */}
@@ -1030,6 +981,10 @@ function Dashboard({
                     </div>
                   }
                 </Box>
+              </TabPanel>
+              {/* Replication */}
+              <TabPanel value={mainTabVal} index={2} classNameRoot={classes.tabPanel}>
+                <Replication key={mainTabVal} sid={sid} node={node} treeNodeInfo={treeNodeInfo} nodeData={nodeData} pageVisible={props.isActive} />
               </TabPanel>
             </Box>
           </Box>

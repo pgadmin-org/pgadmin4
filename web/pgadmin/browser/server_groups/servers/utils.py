@@ -9,6 +9,8 @@
 
 """Server helper utilities"""
 from ipaddress import ip_address
+from werkzeug.exceptions import InternalServerError
+from flask import render_template
 
 from pgadmin.utils.crypto import encrypt, decrypt
 import config
@@ -277,3 +279,14 @@ def remove_saved_passwords(user_id):
     except Exception:
         db.session.rollback()
         raise
+
+
+def get_replication_type(conn, sversion):
+    status, res = conn.execute_dict(render_template(
+        "/servers/sql/#{0}#/replication_type.sql".format(sversion)
+    ))
+
+    if not status:
+        raise InternalServerError(res)
+
+    return res['rows'][0]['type']

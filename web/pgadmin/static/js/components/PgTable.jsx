@@ -22,7 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { Checkbox, Box } from '@material-ui/core';
+import { Checkbox, Box, Switch } from '@material-ui/core';
 import { InputText } from './FormComponents';
 import _ from 'lodash';
 import gettext from 'sources/gettext';
@@ -30,6 +30,8 @@ import SchemaView from '../SchemaView';
 import EmptyPanelMessage from './EmptyPanelMessage';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { PgIconButton } from './Buttons';
 
 /* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
@@ -123,6 +125,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     minWidth: 20
   },
+  tableHeader: {
+    backgroundColor: theme.otherVars.tableBg,
+  },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
     padding: theme.spacing(1, 0.5),
@@ -182,6 +187,15 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.5, 0),
     textAlign: 'center',
   },
+  btnExpanded: {
+    backgroundColor: theme.palette.grey[400]
+  },
+  readOnlySwitch: {
+    opacity: 0.75,
+    '& .MuiSwitch-track': {
+      opacity: theme.palette.action.disabledOpacity,
+    }
+  }
 }));
 
 const IndeterminateCheckbox = React.forwardRef(
@@ -280,9 +294,9 @@ function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, Expand
         {!_.isUndefined(row) && row.isExpanded && (
           <Box key={row.id} className={classes.expandedForm}>
             {schema && <SchemaView
-              getInitData={()=>Promise.resolve({})}
+              getInitData={()=>Promise.resolve(row.original)}
               viewHelperProps={{ mode: 'properties' }}
-              schema={schema[row.id]}
+              schema={schema[row.id]??schema}
               showFooter={false}
               onDataChange={()=>{setExpandComplete(true);}}
             />}
@@ -307,7 +321,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const [searchVal, setSearchVal] = React.useState('');
-  const tableRef = React.useRef();
+  const windowTableRef = React.useRef();
   const rowHeights = React.useRef({});
 
   // Reset Search value on tab changes.
@@ -316,7 +330,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
     setSearchVal(prevState => (prevState));
     setGlobalFilter(searchVal || undefined);
     rowHeights.current = {};
-    tableRef.current?.resetAfterIndex(0);
+    windowTableRef.current?.resetAfterIndex(0);
   }, [data]);
 
   function getRowHeight(index) {
@@ -324,13 +338,13 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
   }
 
   const setRowHeight = (index, size) => {
-    if(tableRef.current) {
+    if(windowTableRef.current) {
       if(size == ROW_HEIGHT) {
         delete rowHeights.current[index];
       } else {
         rowHeights.current[index] = size;
       }
-      tableRef.current.resetAfterIndex(index);
+      windowTableRef.current.resetAfterIndex(index);
     }
   };
 
@@ -422,9 +436,10 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                 </div>
               ),
               sortable: false,
+              disableResizing: true,
               width: 35,
               maxWidth: 35,
-              minWidth: 0
+              minWidth: 35
             },
             ...CLOUMNS,
           ];
@@ -522,7 +537,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                 >
                   {({ height }) => (
                     <VariableSizeList
-                      ref={tableRef}
+                      ref={windowTableRef}
                       className={classes.fixedSizeList}
                       height={isNaN(height) ? 100 : height}
                       itemCount={rows.length}
@@ -574,3 +589,54 @@ PgTable.propTypes = {
   tableProps: PropTypes.object,
   'data-test': PropTypes.string
 };
+
+
+export function getExpandCell({onClick, ...props}) {
+  const Cell = ({ row }) => {
+    const classes = useStyles();
+    const onClickFinal = (e)=>{
+      e.preventDefault();
+      row.toggleRowExpanded(!row.isExpanded);
+      onClick?.(row, e);
+    };
+    return (
+      <PgIconButton
+        size="xs"
+        className={row.isExpanded ? classes.btnExpanded : ''}
+        icon={
+          row.isExpanded ? (
+            <KeyboardArrowDownIcon />
+          ) : (
+            <ChevronRightIcon />
+          )
+        }
+        noBorder
+        {...props}
+        onClick={onClickFinal}
+        aria-label={props.title}
+      />
+    );
+  };
+
+  Cell.displayName = 'ExpandCell';
+  Cell.propTypes = {
+    title: PropTypes.string,
+    row: PropTypes.any,
+  };
+
+  return Cell;
+}
+
+export function getSwitchCell() {
+  const Cell = ({value})=>{
+    const classes = useStyles();
+    return <Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />;
+  };
+
+  Cell.displayName = 'SwitchCell';
+  Cell.propTypes = {
+    value: PropTypes.any,
+  };
+
+  return Cell;
+}
