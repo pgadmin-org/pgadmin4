@@ -2162,8 +2162,8 @@ class ServerNode(PGChildNodeView):
                     session['allow_save_password'] else False,
                 "allow_save_tunnel_password":
                     True if config.ALLOW_SAVE_TUNNEL_PASSWORD and
-                    'allow_save_tunnel_password' in session and
-                    session['allow_save_tunnel_password'] else False
+                    'allow_save_password' in session and
+                    session['allow_save_password'] else False
             }
             return make_json_response(
                 success=0,

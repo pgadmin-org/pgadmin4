@@ -22,6 +22,7 @@ New features
 
   | `Issue #5611 <https://github.com/pgadmin-org/pgadmin4/issues/5611>`_ -  Added support for provider, deterministic, version and RULES parameter while creating collation.
   | `Issue #7098 <https://github.com/pgadmin-org/pgadmin4/issues/7098>`_ -  Added support for EDB Job Scheduler.
+  | `Issue #7216 <https://github.com/pgadmin-org/pgadmin4/issues/7216>`_ -  Added support for viewing Log Based Clusters.
   | `Issue #7221 <https://github.com/pgadmin-org/pgadmin4/issues/7221>`_ -  Added support for UNIX socket in entrypoint.sh for Docker implementation.
 
 Housekeeping
@@ -33,8 +34,10 @@ Bug fixes
 
   | `Issue #4413 <https://github.com/pgadmin-org/pgadmin4/issues/4413>`_ -  Fixed an issue in Schema Diff where Columns with sequences get altered unnecessarily.
   | `Issue #7116 <https://github.com/pgadmin-org/pgadmin4/issues/7116>`_ -  Bug fixes and improvements in pgAdmin CLI.
+  | `Issue #7139 <https://github.com/pgadmin-org/pgadmin4/issues/7139>`_ -  Fixed an issue where the 'Save Password' option for SSH tunneling password was consistently disabled.
   | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fixed schema diff wrong query generation for table, foreign table and sequence.
   | `Issue #7210 <https://github.com/pgadmin-org/pgadmin4/issues/7210>`_ -  Fixed an issue where table properties were not updating from properties dialog.
+  | `Issue #7218 <https://github.com/pgadmin-org/pgadmin4/issues/7218>`_ -  Fixed an issue where maximize icon is missing from query tool panel.
   | `Issue #7229 <https://github.com/pgadmin-org/pgadmin4/issues/7229>`_ -  Fix an issue in table dialog where changing column name was not syncing table constraints appropriately.
   | `Issue #7248 <https://github.com/pgadmin-org/pgadmin4/issues/7248>`_ -  Fixed rollback and commit button activation on execute button click.
   | `Issue #7255 <https://github.com/pgadmin-org/pgadmin4/issues/7255>`_ -  Fixed an issue where taking backup of a shared server was using server owner's user name.
