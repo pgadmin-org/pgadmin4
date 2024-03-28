@@ -87,7 +87,7 @@ export default class CollationSchema extends BaseUISchema {
       },
       {
         id: 'provider', label: gettext('Locale Provider'),
-        editable: false, type: 'select',mode: ['create', 'edit'], group: gettext('Definition'),
+        editable: false, type: 'select',mode: ['create'],
         readonly: function (state) { return !obj.isNew(state); },
         options: [{
           label: gettext('icu'),
@@ -111,7 +111,7 @@ export default class CollationSchema extends BaseUISchema {
       },
       {
         id: 'provider', label: gettext('Locale Provider'),
-        type: 'text',mode: ['properties'], group: gettext('Definition'),
+        type: 'text',mode: ['properties', 'edit'], group: gettext('Definition'),
         readonly: true,
         min_version: 110000,
       },
