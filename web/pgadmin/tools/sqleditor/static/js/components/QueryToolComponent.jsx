@@ -248,6 +248,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           mode: 'horizontal',
           children: [
             {
+              maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
                 LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
@@ -256,6 +257,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             },
             {
               size: 75,
+              maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({
                   id: PANELS.SCRATCH, title: gettext('Scratch Pad'),
@@ -275,6 +277,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           mode: 'horizontal',
           children: [
             {
+              maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({
                   id: PANELS.DATA_OUTPUT, title: gettext('Data Output'), content: <ResultSet />,
