@@ -349,6 +349,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .replica_nodes import blueprint as module
         self.submodules.append(module)
 
+        from .pgd_replication_groups import blueprint as module
+        self.submodules.append(module)
+
         super().register(app, options)
 
     # We do not have any preferences for server node.

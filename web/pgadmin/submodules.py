@@ -16,7 +16,6 @@ def get_submodules():
         AuthenticateModule,
         BrowserModule,
         DashboardModule,
-        DashboardModule,
         HelpModule,
         MiscModule,
         PreferencesModule,

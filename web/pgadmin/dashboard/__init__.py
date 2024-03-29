@@ -9,21 +9,22 @@
 
 """A blueprint module implementing the dashboard frame."""
 import math
-from functools import wraps
-from flask import render_template, url_for, Response, g, request
+
+from flask import render_template, Response, g, request
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 import json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     internal_server_error
-from pgadmin.utils.ajax import precondition_required
+
 from pgadmin.utils.driver import get_driver
-from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
-    PREF_LABEL_REFRESH_RATES
+    PREF_LABEL_REFRESH_RATES, ERROR_SERVER_ID_NOT_SPECIFIED
 
+from .precondition import check_precondition
+from .pgd_replication import blueprint as pgd_replication
 from config import PG_DEFAULT_DRIVER
 
 MODULE_NAME = 'dashboard'
@@ -217,6 +218,8 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('Set the width of the lines on the line chart.')
         )
 
+        pgd_replication.register_preferences(self)
+
     def get_exposed_url_endpoints(self):
         """
         Returns:
@@ -247,70 +250,11 @@ class DashboardModule(PgAdminModule):
             'dashboard.system_statistics_did',
             'dashboard.replication_slots',
             'dashboard.replication_stats',
-        ]
+        ] + pgd_replication.get_exposed_url_endpoints()
 
 
 blueprint = DashboardModule(MODULE_NAME, __name__)
-
-
-def check_precondition(f):
-    """
-    This function will behave as a decorator which will check
-    database connection before running view, it also adds
-    manager, conn & template_path properties to self
-    """
-
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        # Here args[0] will hold self & kwargs will hold gid,sid,did
-
-        g.manager = get_driver(
-            PG_DEFAULT_DRIVER).connection_manager(
-            kwargs['sid']
-        )
-
-        def get_error(i_node_type):
-            stats_type = ('activity', 'prepared', 'locks', 'config')
-            if f.__name__ in stats_type:
-                return precondition_required(
-                    gettext("Please connect to the selected {0}"
-                            " to view the table.".format(i_node_type))
-                )
-            else:
-                return precondition_required(
-                    gettext("Please connect to the selected {0}"
-                            " to view the graph.".format(i_node_type))
-                )
-
-        # Below check handle the case where existing server is deleted
-        # by user and python server will raise exception if this check
-        # is not introduce.
-        if g.manager is None:
-            return get_error('server')
-
-        if 'did' in kwargs:
-            g.conn = g.manager.connection(did=kwargs['did'])
-            node_type = 'database'
-        else:
-            g.conn = g.manager.connection()
-            node_type = 'server'
-
-        # If not connected then return error to browser
-        if not g.conn.connected():
-            return get_error(node_type)
-
-        # Set template path for sql scripts
-        g.server_type = g.manager.server_type
-        g.version = g.manager.version
-
-        # Include server_type in template_path
-        g.template_path = 'dashboard/sql/' + (
-            '#{0}#'.format(g.version)
-        )
-
-        return f(*args, **kwargs)
-
-    return wrap
+blueprint.register_blueprint(pgd_replication)
 
 
 @blueprint.route("/dashboard.js")
@@ -389,7 +333,7 @@ def get_data(sid, did, template, check_long_running_query=False):
     # Allow no server ID to be specified (so we can generate a route in JS)
     # but throw an error if it's actually called.
     if not sid:
-        return internal_server_error(errormsg='Server ID not specified.')
+        return internal_server_error(errormsg=ERROR_SERVER_ID_NOT_SPECIFIED)
 
     sql = render_template(
         "/".join([g.template_path, template]), did=did
@@ -455,7 +399,8 @@ def dashboard_stats(sid=None, did=None):
         chart_names = request.args['chart_names'].split(',')
 
         if not sid:
-            return internal_server_error(errormsg='Server ID not specified.')
+            return internal_server_error(
+                errormsg=ERROR_SERVER_ID_NOT_SPECIFIED)
 
         sql = render_template(
             "/".join([g.template_path, 'dashboard_stats.sql']), did=did,
@@ -629,7 +574,8 @@ def system_statistics(sid=None, did=None):
         chart_names = request.args['chart_names'].split(',')
 
         if not sid:
-            return internal_server_error(errormsg='Server ID not specified.')
+            return internal_server_error(
+                errormsg=ERROR_SERVER_ID_NOT_SPECIFIED)
 
         sql = render_template(
             "/".join([g.template_path, 'system_statistics.sql']), did=did,
@@ -660,7 +606,7 @@ def replication_stats(sid=None):
     """
 
     if not sid:
-        return internal_server_error(errormsg='Server ID not specified.')
+        return internal_server_error(errormsg=ERROR_SERVER_ID_NOT_SPECIFIED)
 
     sql = render_template("/".join([g.template_path, 'replication_stats.sql']))
     status, res = g.conn.execute_dict(sql)
@@ -684,7 +630,7 @@ def replication_slots(sid=None):
     """
 
     if not sid:
-        return internal_server_error(errormsg='Server ID not specified.')
+        return internal_server_error(errormsg=ERROR_SERVER_ID_NOT_SPECIFIED)
 
     sql = render_template("/".join([g.template_path, 'replication_slots.sql']))
     status, res = g.conn.execute_dict(sql)

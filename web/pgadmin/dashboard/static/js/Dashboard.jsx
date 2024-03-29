@@ -978,7 +978,8 @@ function Dashboard({
               </TabPanel>
               {/* Replication */}
               <TabPanel value={mainTabVal} index={2} classNameRoot={classes.tabPanel}>
-                <Replication key={mainTabVal} sid={sid} node={node} treeNodeInfo={treeNodeInfo} nodeData={nodeData} pageVisible={props.isActive} />
+                <Replication key={sid} sid={sid} node={node}
+                  preferences={preferences} treeNodeInfo={treeNodeInfo} nodeData={nodeData} pageVisible={props.isActive} />
               </TabPanel>
             </Box>
           </Box>

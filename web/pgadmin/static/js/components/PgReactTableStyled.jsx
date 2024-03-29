@@ -11,13 +11,13 @@ import React, { forwardRef, useEffect } from 'react';
 import { flexRender } from '@tanstack/react-table';
 import { styled } from '@mui/styles';
 import PropTypes from 'prop-types';
-import { Switch } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PgIconButton } from './Buttons';
 import clsx from 'clsx';
 import CustomPropTypes from '../custom_prop_types';
+import { InputSwitch } from './FormComponents';
 
 
 const StyledDiv = styled('div')(({theme})=>({
@@ -360,20 +360,14 @@ export function getExpandCell({ onClick, ...props }) {
   return Cell;
 }
 
-const ReadOnlySwitch = styled(Switch)(({theme})=>({
-  opacity: 0.75,
-  '& .MuiSwitch-track': {
-    opacity: theme.palette.action.disabledOpacity,
-  }
-}));
 export function getSwitchCell() {
-  const Cell = ({ value }) => {
-    return <ReadOnlySwitch color="primary" checked={value} value={value} readOnly title={String(value)} />;
+  const Cell = ({ getValue }) => {
+    return <InputSwitch value={getValue()} readonly />;
   };
 
   Cell.displayName = 'SwitchCell';
   Cell.propTypes = {
-    value: PropTypes.any,
+    getValue: PropTypes.func,
   };
 
   return Cell;

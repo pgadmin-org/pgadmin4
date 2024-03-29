@@ -221,7 +221,9 @@ module.exports = [{
             'pure|pgadmin.node.aggregate',
             'pure|pgadmin.node.operator',
             'pure|pgadmin.node.dbms_job_scheduler',
-            'pure|pgadmin.node.replica_node'
+            'pure|pgadmin.node.replica_node',
+            'pure|pgadmin.node.pgd_replication_groups',
+            'pure|pgadmin.node.pgd_replication_servers',
           ],
         },
       },
@@ -396,7 +398,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['codemirror', 'rc-', '@material-ui']);
+            return webpackShimConfig.matchModules(module, ['codemirror', 'rc-', '@mui']);
           },
         },
         vendor_others: {
