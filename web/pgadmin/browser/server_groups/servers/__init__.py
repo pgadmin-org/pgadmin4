@@ -1357,7 +1357,8 @@ class ServerNode(PGChildNodeView):
                     gss_authenticated=manager.gss_authenticated if
                     manager and manager.gss_authenticated else False,
                     is_password_saved=bool(server.save_password),
-                    is_tunnel_password_saved=bool(server.tunnel_password)
+                    is_tunnel_password_saved=bool(server.tunnel_password),
+                    user_id=server.user_id
                 )
             )
 
