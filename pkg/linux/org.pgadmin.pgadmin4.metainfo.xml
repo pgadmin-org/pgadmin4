@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>org.pgadmin.pgadmin4</id>
+  <name>pgAdmin 4</name>
+  <project_license>PostgreSQL</project_license>
+  <developer_name>The pgAdmin Development Team</developer_name>
+  <summary>Administration and development platform for PostgreSQL</summary>
+   <description>
+    <p>pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.</p>
+  </description>
+  <launchable type="desktop-id">org.pgadmin.pgadmin4.desktop</launchable>
+  <content_rating type="oars-1.1"/>
+  <metadata_license>CC0-1.0</metadata_license>
+  <url type="homepage">https://pgAdmin.org/</url>
+  <screenshots>
+    <screenshot>
+      <caption>Welcome screen, standard theme</caption>
+      <image type="source">https://www.pgadmin.org/static/COMPILED/assets/img/screenshots/pgadmin4-welcome-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Server dashboard</caption>
+      <image type="source">https://www.pgadmin.org/static/COMPILED/assets/img/screenshots/pgadmin4-dashboard.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="8.4.0" date="2024-03-07"><url>https://www.pgadmin.org/docs/pgadmin4/8.4/release_notes_8_4.html</url></release>
+    <release version="8.2.0" date="2024-01-11"><url>https://www.pgadmin.org/docs/pgadmin4/8.4/release_notes_8_2.html</url></release>
+  </releases>
+</component>
