@@ -11,7 +11,6 @@ import os
 import json
 import config
 import copy
-
 from flask import render_template
 from flask_babel import gettext as _
 from pgadmin.utils.preferences import Preferences
@@ -240,15 +239,22 @@ class ServerType():
         """
         is_default_path_set = ServerType.is_default_binary_path_set(bin_paths)
         for path in config.DEFAULT_BINARY_PATHS:
-            path_value = config.DEFAULT_BINARY_PATHS[path]
+            is_fixed_path = (path in config.FIXED_BINARY_PATHS and
+                             config.FIXED_BINARY_PATHS[path] != '' and
+                             config.FIXED_BINARY_PATHS[path] is not None)
+            path_value = (is_fixed_path and config.FIXED_BINARY_PATHS[path]
+                          ) or config.DEFAULT_BINARY_PATHS[path]
+
             if path_value is not None and path_value != "" and \
                     path.find(server_type) == 0 and len(path.split('-')) > 1:
-                set_binary_path(path_value, bin_paths, server_type,
-                                path.split('-')[1])
+                set_binary_path(
+                    path_value, bin_paths, server_type, path.split('-')[1],
+                    is_fixed_path=is_fixed_path)
             elif path_value is not None and path_value != "" and \
                     path.find(server_type) == 0:
                 set_binary_path(path_value, bin_paths, server_type,
-                                set_as_default=not is_default_path_set)
+                                set_as_default=not is_default_path_set,
+                                is_fixed_path=is_fixed_path)
 
 
 # Default Server Type

@@ -49,6 +49,10 @@ export default class BinaryPathSchema extends BaseUISchema {
       {
         id: 'binaryPath', label: gettext('Binary Path'), cell: 'file', type: 'file',
         isvalidate: true,
+        disabled: function (state) {
+          // If Fixed path is assigned, user will not able to edit it.
+          return state?.isFixed ? state.isFixed : false;
+        },
         controlProps: {
           dialogType: 'select_folder',
           supportedTypes: ['*', 'sql', 'backup'],

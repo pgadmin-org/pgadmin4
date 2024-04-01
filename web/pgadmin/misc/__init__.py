@@ -14,6 +14,7 @@ from flask import render_template, Response, request, current_app
 from flask.helpers import url_for
 from flask_babel import gettext
 from flask_security import login_required
+from pathlib import Path
 from pgadmin.utils import PgAdminModule, replace_binary_path, \
     get_binary_path_versions
 from pgadmin.utils.csrf import pgCSRFProtect
@@ -234,7 +235,11 @@ def validate_binary_path():
         data = json.loads(data)
 
     version_str = ''
-    if 'utility_path' in data and data['utility_path'] is not None:
+
+    # Do not allow storage dir as utility path
+    if 'utility_path' in data and data['utility_path'] is not None and \
+        Path(config.STORAGE_DIR) != Path(data['utility_path']) and \
+            Path(config.STORAGE_DIR) not in Path(data['utility_path']).parents:
         binary_versions = get_binary_path_versions(data['utility_path'])
         for utility, version in binary_versions.items():
             if version is None:
@@ -248,7 +253,8 @@ def validate_binary_path():
     return make_json_response(data=gettext(version_str), status=200)
 
 
-@blueprint.route("/upgrade_check", endpoint="upgrade_check", methods=['GET'])
+@blueprint.route("/upgrade_check", endpoint="upgrade_check",
+                 methods=['GET'])
 @login_required
 def upgrade_check():
     # Get the current version info from the website, and flash a message if

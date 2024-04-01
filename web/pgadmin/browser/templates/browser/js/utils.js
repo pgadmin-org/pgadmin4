@@ -62,6 +62,8 @@ define('pgadmin.browser.utils',
   /* GET Binary Path Browse config */
   pgAdmin['enable_binary_path_browsing'] = '{{ current_app.config.get('ENABLE_BINARY_PATH_BROWSING') }}' == 'True';
 
+  pgAdmin['fixed_binary_paths'] = {{ current_app.config.get('FIXED_BINARY_PATHS') }};
+
   /* GET the pgadmin server's locale */
   pgAdmin['pgadmin_server_locale'] =  '{{pgadmin_server_locale}}';
 

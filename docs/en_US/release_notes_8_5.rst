@@ -50,4 +50,4 @@ Bug fixes
   | `Issue #7305 <https://github.com/pgadmin-org/pgadmin4/issues/7305>`_ -  Fix an issue in query tool where custom keyboard shortcuts are not working for some.
   | `Issue #7304 <https://github.com/pgadmin-org/pgadmin4/issues/7304>`_ -  Fixed the issue where the update-user CLI command doesn't change the password.
   | `Issue #7308 <https://github.com/pgadmin-org/pgadmin4/issues/7308>`_ -  Fixed issue related to email authentication of Two-factor authentication.
-
+  | `Issue #7326 <https://github.com/pgadmin-org/pgadmin4/issues/7326>`_ -  Fixed a remote code execution issue in the validate binary path (CVE-2024-3116).

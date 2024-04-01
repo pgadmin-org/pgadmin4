@@ -470,6 +470,26 @@ DEFAULT_BINARY_PATHS = {
 }
 
 ##########################################################################
+
+# Admin can specify fixed binary paths to prevent users from changing.
+# It will take precedence over DEFAULT_BINARY_PATHS.
+
+FIXED_BINARY_PATHS = {
+    "pg": "",
+    "pg-12": "",
+    "pg-13": "",
+    "pg-14": "",
+    "pg-15": "",
+    "pg-16": "",
+    "ppas": "",
+    "ppas-12": "",
+    "ppas-13": "",
+    "ppas-14": "",
+    "ppas-15": "",
+    "ppas-16": ""
+}
+
+##########################################################################
 # Test settings - used primarily by the regression suite, not for users
 ##########################################################################
 
