@@ -272,8 +272,12 @@ def check_precondition(f):
         # Template for rules node
         self.rules_template_path = 'rules/sql'
 
+        # Template for index node
+        self.index_template_path = 'indexes/sql/#{0}#'.format(
+            self.manager.version)
+
         # Submodule list for schema diff
-        self.view_sub_modules = ['rule', 'trigger']
+        self.view_sub_modules = ['rule', 'trigger', 'index']
         if (self.manager.server_type == 'ppas' and
                 self.manager.version >= 120000):
             self.view_sub_modules.append('compound_trigger')
@@ -1799,6 +1803,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffViewCompare):
         template_path = None
         if module_name == 'trigger':
             template_path = self.trigger_template_path
+        elif module_name == 'index':
+            template_path = self.index_template_path
         elif module_name == 'rule':
             template_path = self.rules_template_path
         elif module_name == 'compound_trigger':
@@ -2395,6 +2401,9 @@ class MViewNode(ViewNode, VacuumSettings):
         for row in rset['rows']:
             status, data = self._fetch_mview_properties(did, scid, row['oid'])
             if status:
+                # Fetch the data of sub module
+                self._get_sub_module_data_for_compare(
+                    sid, did, scid, data, row['oid'])
                 res[row['name']] = data
 
         return res

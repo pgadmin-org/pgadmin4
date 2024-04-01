@@ -131,7 +131,7 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
             target_params['diff_data'] = diff_dict
             diff = self.get_sql_from_view_diff(**target_params)
 
-        ignore_sub_modules = ['column', 'index']
+        ignore_sub_modules = ['column']
         if self.manager.server_type == 'pg' or self.manager.version < 120000:
             ignore_sub_modules.append('compound_trigger')
 
