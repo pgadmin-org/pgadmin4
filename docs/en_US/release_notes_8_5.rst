@@ -33,6 +33,7 @@ Bug fixes
 *********
 
   | `Issue #4413 <https://github.com/pgadmin-org/pgadmin4/issues/4413>`_ -  Fixed an issue in Schema Diff where Columns with sequences get altered unnecessarily.
+  | `Issue #7111 <https://github.com/pgadmin-org/pgadmin4/issues/7111>`_ -  Fixed an issue where user was unable to share a newly registered server.
   | `Issue #7116 <https://github.com/pgadmin-org/pgadmin4/issues/7116>`_ -  Bug fixes and improvements in pgAdmin CLI.
   | `Issue #7139 <https://github.com/pgadmin-org/pgadmin4/issues/7139>`_ -  Fixed an issue where the 'Save Password' option for SSH tunneling password was consistently disabled.
   | `Issue #7165 <https://github.com/pgadmin-org/pgadmin4/issues/7165>`_ -  Fixed schema diff wrong query generation for table, foreign table and sequence.
