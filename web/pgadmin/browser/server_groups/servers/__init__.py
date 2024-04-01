@@ -1253,6 +1253,7 @@ class ServerNode(PGChildNodeView):
             user = None
             manager = None
             replication_type = None
+            tunnel_password_saved = False
 
             if 'connect_now' in data and data['connect_now']:
                 manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
@@ -1329,6 +1330,7 @@ class ServerNode(PGChildNodeView):
                                 KEY_RING_TUNNEL_FORMAT.format(server.name,
                                                               server.id),
                                 tunnel_password)
+                            tunnel_password_saved = True
 
                     replication_type = get_replication_type(conn,
                                                             manager.version)
@@ -1357,7 +1359,8 @@ class ServerNode(PGChildNodeView):
                     gss_authenticated=manager.gss_authenticated if
                     manager and manager.gss_authenticated else False,
                     is_password_saved=bool(server.save_password),
-                    is_tunnel_password_saved=bool(server.tunnel_password)
+                    is_tunnel_password_saved=tunnel_password_saved,
+                    user_id=server.user_id
                 )
             )
 
