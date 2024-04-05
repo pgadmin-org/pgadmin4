@@ -327,6 +327,7 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_value('exclude_table_data_and_children',
               '--exclude-table-data-and-children', None,
               manager.version >= 160000)
+    set_value('exclude_table', '--exclude-table')
 
     # Disable options
     set_param('disable_trigger', '--disable-triggers',
