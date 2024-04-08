@@ -380,7 +380,7 @@ define('pgadmin.node.database', [
           // If node_info is not present in current object then it might in its
           // parent in case if we used sub node control
           let node_info = args.node_info || args.handler.node_info;
-          return 'catalog' in node_info ? false : true;
+          return !('catalog' in node_info);
         }
         return true;
       },

@@ -132,7 +132,7 @@ export default class ForeignTableSchema extends BaseUISchema {
             let newColInherits = state.inherits || [];
             let oldColInherits = actionObj.oldState.inherits || [];
 
-            let tabName = undefined;
+            let tabName;
             let tabColsResponse;
 
             // Add columns logic
@@ -199,7 +199,7 @@ export default class ForeignTableSchema extends BaseUISchema {
         canAdd: true, canDelete: true, columns: ['conname','consrc', 'connoinherit', 'convalidated'],
         canEdit: true,
         canDeleteRow: function(state) {
-          return (state.conislocal || _.isUndefined(state.conislocal)) ? true : false;
+          return (state.conislocal || _.isUndefined(state.conislocal));
         },
         canEditRow: function(state) {
           return obj.isNew(state);
@@ -307,7 +307,7 @@ export class ColumnSchema extends BaseUISchema {
   }
 
   editable_check_for_column(state) {
-    return (_.isUndefined(state.inheritedid) || _.isNull(state.inheritedid) || _.isUndefined(state.inheritedfrom) || _.isNull(state.inheritedfrom)) ? true : false;
+    return (_.isUndefined(state.inheritedid) || _.isNull(state.inheritedid) || _.isUndefined(state.inheritedfrom) || _.isNull(state.inheritedfrom));
   }
 
   // Check whether the column is a generated column
@@ -355,10 +355,10 @@ export class ColumnSchema extends BaseUISchema {
         type: 'multiline', mode: ['properties', 'create', 'edit'],
       },
       {
-        id: 'cltype', 
-        label: gettext('Data type'), 
+        id: 'cltype',
+        label: gettext('Data type'),
         minWidth: 150,
-        group: gettext('Definition'), 
+        group: gettext('Definition'),
         noEmpty: true,
         editable: obj.editable_check_for_column,
         disabled: (state)=>{
@@ -416,7 +416,7 @@ export class ColumnSchema extends BaseUISchema {
       },
       {
         id: 'attlen',
-        label: gettext('Length'), 
+        label: gettext('Length'),
         group: gettext('Definition'),
         deps: ['cltype'],
         type: 'int',
@@ -486,10 +486,10 @@ export class ColumnSchema extends BaseUISchema {
         id: 'max_val_attprecision', skipChange: true, visible: false, type: '',
       },
       {
-        id: 'attstattarget', 
-        label: gettext('Statistics'), 
+        id: 'attstattarget',
+        label: gettext('Statistics'),
         cell: 'text',
-        type: 'text', 
+        type: 'text',
         readonly: obj.inSchemaWithColumnCheck,
         mode: ['properties', 'edit'],
         group: gettext('Definition'),
@@ -524,12 +524,12 @@ export class ColumnSchema extends BaseUISchema {
         },
       },
       {
-        id: 'attnotnull', 
-        label: gettext('Not NULL?'), 
+        id: 'attnotnull',
+        label: gettext('Not NULL?'),
         cell: 'switch',
-        type: 'switch', 
+        type: 'switch',
         minWidth: 80,
-        group: gettext('Constraints'), 
+        group: gettext('Constraints'),
         editable: obj.editable_check_for_column,
       },
       {
@@ -540,7 +540,7 @@ export class ColumnSchema extends BaseUISchema {
         type: (state)=>{
           let options = [
             { 'label': gettext('NONE'), 'value': 'n'},
-          ];           
+          ];
           // You can't change the existing column to Generated column.
           if (this.isNew(state)) {
             options.push({
@@ -553,7 +553,7 @@ export class ColumnSchema extends BaseUISchema {
               'value': 'g',
               'disabled': true,
             });
-          }  
+          }
           return {
             type: 'toggle',
             options: options,
@@ -561,17 +561,17 @@ export class ColumnSchema extends BaseUISchema {
         },
         disabled: function(state) {
           return (!this.isNew(state) && state.colconstype == 'g');
-        }, 
+        },
         min_version: 120000,
       },
       {
-        id: 'genexpr', 
-        label: gettext('Expression'), 
+        id: 'genexpr',
+        label: gettext('Expression'),
         type: 'text',
-        mode: ['properties', 'create', 'edit'], 
+        mode: ['properties', 'create', 'edit'],
         group: gettext('Constraints'),
-        min_version: 120000, 
-        deps: ['colconstype'], 
+        min_version: 120000,
+        deps: ['colconstype'],
         visible: this.isTypeGenerated,
         readonly: function(state) {
           return !this.isNew(state);
@@ -596,7 +596,7 @@ export class ColumnSchema extends BaseUISchema {
 
           return (_.isUndefined(state.inheritedid)
                 || _.isNull(state.inheritedid) ||
-                  _.isUndefined(state.inheritedfrom) || 
+                  _.isUndefined(state.inheritedfrom) ||
                   _.isNull(state.inheritedfrom));
         }
       },

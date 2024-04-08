@@ -498,7 +498,7 @@ define('pgadmin.browser', [
                 url: _m.url || '#',
                 target: _m.target,
                 icon: _m.icon,
-                enable: enable ? enable : true,
+                enable: enable || true,
                 node: _m.node,
                 checked: _m.checked,
                 below: _m.below,

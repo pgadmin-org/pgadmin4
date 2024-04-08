@@ -71,7 +71,7 @@ function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
     docker.setInternalAttrs(panelId, {
       isDirty: dirty,
     });
-    setQueryToolDockerTitle(docker, panelId, true, title, qtState.current_file ? true : false);
+    setQueryToolDockerTitle(docker, panelId, true, title, qtState.current_file);
   }
 }
 
@@ -172,7 +172,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     params: {
       ...params,
       title: _.unescape(params.title),
-      is_query_tool: params.is_query_tool == 'true' ? true : false,
+      is_query_tool: params.is_query_tool == 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
       dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo)
     },
@@ -187,7 +187,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
-        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true' ? true : false),
+        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true'),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
@@ -676,7 +676,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 fgcolor: connectionData.fgcolor,
                 bgcolor: connectionData.bgcolor,
               },
-              connected: respData.data.trans_id ? true : false,
+              connected: respData.data.trans_id,
               obtaining_conn: false,
             };
           });

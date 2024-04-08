@@ -67,7 +67,7 @@ class AzureCredSchema extends BaseUISchema {
             value: 'azure_cli_credential',
           },
         ],
-        disabled: pgAdmin.server_mode == 'True' ? true : false,
+        disabled: pgAdmin.server_mode == 'True',
         helpMessage: gettext(
           'Azure CLI will use the currently logged in identity through the Azure CLI on the local machine. Interactive Browser will open a browser window to authenticate a user interactively.'
         ),
@@ -82,9 +82,7 @@ class AzureCredSchema extends BaseUISchema {
           'Enter the Azure tenant ID against which the user is authenticated.'
         ),
         disabled: (state) => {
-          return state.auth_type == 'interactive_browser_credential'
-            ? false
-            : true;
+          return state.auth_type !== 'interactive_browser_credential';
         },
         depChange: (state) => {
           if (state.auth_type == 'azure_cli_credential') {

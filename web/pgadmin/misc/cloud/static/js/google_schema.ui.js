@@ -53,7 +53,7 @@ class GoogleCredSchema extends BaseUISchema{
         btnName: gettext('Click here to authenticate yourself to Google'),
         helpMessage: gettext('After clicking the button above you will be redirected to the Google authentication page in a new browser tab.'),
         disabled: (state)=>{
-          return state.client_secret_file ? false : true;
+          return !state.client_secret_file;
         },
         deferredDepChange: (state, source)=>{
           return new Promise((resolve, reject)=>{
@@ -223,7 +223,7 @@ class GoogleInstanceSchema extends BaseUISchema {
       }
     ];
   }
-}  
+}
 
 class GoogleStorageSchema extends BaseUISchema {
   constructor() {
@@ -235,22 +235,22 @@ class GoogleStorageSchema extends BaseUISchema {
   get baseFields() {
     return [
       {
-        id: 'storage_type', 
-        label: gettext('Storage type'), 
+        id: 'storage_type',
+        label: gettext('Storage type'),
         type: 'select',
         mode: ['create'],
         noEmpty: true,
         options: [
           {'label': gettext('SSD'), 'value': 'PD_SSD'},
           {'label': gettext('HDD'), 'value': 'PD_HDD'},
-        ], 
+        ],
       },
       {
-        id: 'storage_size', 
-        label: gettext('Storage capacity'), 
+        id: 'storage_size',
+        label: gettext('Storage capacity'),
         type: 'int',
-        mode: ['create'], 
-        noEmpty: true, 
+        mode: ['create'],
+        noEmpty: true,
         deps: ['storage_type'],
         helpMessage: gettext('Size in GB.'),
       }
@@ -445,11 +445,11 @@ class GoogleClusterSchema extends BaseUISchema {
       },
       {}
     );
-    
+
     this.googleStorageDetails = new GoogleStorageSchema(
       {},
       {}
-    );  
+    );
 
     this.googleNetworkDetails = new GoogleNetworkSchema({}, {});
 

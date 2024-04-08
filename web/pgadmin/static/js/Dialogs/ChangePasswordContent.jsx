@@ -34,7 +34,7 @@ class ChangePasswordSchema extends BaseUISchema {
         id: 'user', label: gettext('User'), type: 'text', disabled: true, visible: this.showUser
       }, {
         id: 'password', label: gettext('Current Password'), type: 'password',
-        disabled: self.isPgpassFileUsed, noEmpty: self.isPgpassFileUsed ? false : true,
+        disabled: self.isPgpassFileUsed, noEmpty: !self.isPgpassFileUsed,
         controlProps: {
           maxLength: null
         }

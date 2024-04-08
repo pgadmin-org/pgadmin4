@@ -25,7 +25,7 @@ export function enabled(tree, supportedNodes, treeNodeData, domTreeNode) {
   if (!isValidTreeNodeData(treeNodeData))
     return false;
 
-  let _tree = tree ? tree : pgAdmin.Browser.tree;
+  let _tree = tree || pgAdmin.Browser.tree;
   let treeNode = _tree.findNodeByDomElement(domTreeNode);
   if (!treeNode) {
     return false;

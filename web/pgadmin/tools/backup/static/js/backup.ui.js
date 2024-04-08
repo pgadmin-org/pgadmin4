@@ -576,7 +576,7 @@ export default class BackupSchema extends BaseUISchema {
         state.on_conflict_do_nothing = false;
         return true;
       },
-      inlineNext: obj.backupType == 'server'? false : true,
+      inlineNext: obj.backupType !== 'server',
     }, {
       id: 'include_create_database',
       label: gettext('Include CREATE DATABASE statement'),

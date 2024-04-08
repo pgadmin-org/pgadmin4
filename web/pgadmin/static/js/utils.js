@@ -30,10 +30,7 @@ export function parseShortcutValue(obj) {
 
 export function isShortcutValue(obj) {
   if(!obj) return false;
-  if([obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k))){
-    return true;
-  }
-  return false;
+  return [obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k));
 }
 
 // Convert shortcut obj to codemirror key format
@@ -60,7 +57,7 @@ export function toCodeMirrorKey(obj) {
 }
 
 export function getEpoch(inp_date) {
-  let date_obj = inp_date ? inp_date : new Date();
+  let date_obj = inp_date || new Date();
   return parseInt(date_obj.getTime()/1000);
 }
 

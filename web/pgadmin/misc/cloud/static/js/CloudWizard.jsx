@@ -451,7 +451,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
                   <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
                 </Box>
               </Box>}
-              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated ? true: false}>
+              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>
                 {gettext('Click here to authenticate yourself to EDB BigAnimal')}
               </PrimaryButton>}
               {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>

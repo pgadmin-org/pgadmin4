@@ -99,7 +99,7 @@ export default class RoleReassign extends BaseUISchema{
         helpMessage: gettext('New owner of the affected objects'),
         deps: ['role_op'],
         disabled: (state)=>{
-          return state.role_op == 'drop'? true: false;
+          return state.role_op == 'drop';
         },
         depChange: (state) =>{
           if (state.role_op == 'drop'){

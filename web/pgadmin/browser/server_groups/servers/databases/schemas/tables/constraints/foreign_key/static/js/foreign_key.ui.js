@@ -85,7 +85,7 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
       optionsReloadBasis: this.fieldOptions.references?.map ? _.join(this.fieldOptions.references.map((c)=>c.label), ',') : null,
       optionsLoaded: (rows)=>obj.refTables=rows,
       disabled: (state) => {
-        return state._disable_references ? true : false;
+        return state._disable_references;
       }
     },{
       id: 'referenced', label: gettext('Referencing'), editable: false, deps: ['references'],

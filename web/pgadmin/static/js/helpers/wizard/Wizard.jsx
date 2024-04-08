@@ -222,7 +222,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
           <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
             {gettext('Next')}
           </DefaultButton>
-          <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep == steps.length - 1 ? false : true} onClick={onSave}>
+          <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep !== (steps.length - 1) } onClick={onSave}>
             {gettext('Finish')}
           </PrimaryButton>
         </Box>

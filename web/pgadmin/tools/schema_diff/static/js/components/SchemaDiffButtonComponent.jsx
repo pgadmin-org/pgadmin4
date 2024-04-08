@@ -174,7 +174,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
         </PgButtonGroup>
       </Box>
       <Box className={classes.scriptBtn}>
-        <PgButtonGroup size="small" disabled={selectedRowIds?.length > 0 ? false : true}>
+        <PgButtonGroup size="small" disabled={selectedRowIds?.length <= 0}>
           <DefaultButton startIcon={<FeaturedPlayListRoundedIcon />} onClick={generateScript}>{gettext('Generate Script')}</DefaultButton>
         </PgButtonGroup>
       </Box>

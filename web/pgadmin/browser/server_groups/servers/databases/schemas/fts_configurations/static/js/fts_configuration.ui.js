@@ -132,9 +132,9 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         //disable parser when user select copy_config manually and vica-versa
         disabled: function(state) {
           let copy_config = state.copy_config;
-          return (_.isNull(copy_config) ||
+          return !(_.isNull(copy_config) ||
                   _.isUndefined(copy_config) ||
-                  copy_config === '') ? false : true;
+                  copy_config === '');
         },
         readonly: function(state) { return !obj.isNew(state); },
       }, {
@@ -145,9 +145,9 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         //disable copy_config when user select parser manually and vica-versa
         disabled: function(state) {
           let parser = state.prsname;
-          return (_.isNull(parser) ||
+          return !(_.isNull(parser) ||
                   _.isUndefined(parser) ||
-                  parser === '') ? false : true;
+                  parser === '');
         },
         readonly: function(state) { return !obj.isNew(state); },
       }, {
