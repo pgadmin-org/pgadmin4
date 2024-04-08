@@ -5,7 +5,7 @@ const keywords = PostgreSQL.spec.keywords.replace(/\b\w\b/, '') + ' ' + extraKey
 
 const PgSQL = SQLDialect.define({
   charSetCasts: true,
-  doubleDollarQuotedStrings: true,
+  doubleDollarQuotedStrings: false,
   operatorChars: '+-*/<>=~!@#%^&|`?',
   specialVar: '',
   keywords: keywords,

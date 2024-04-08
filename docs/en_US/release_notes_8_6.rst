@@ -28,4 +28,5 @@ Housekeeping
 
 Bug fixes
 *********
+  | `Issue #7294 <https://github.com/pgadmin-org/pgadmin4/issues/7294>`_ -  Fixed an issue where double dollar quoted code is treated as string in syntax highlighter.
 
