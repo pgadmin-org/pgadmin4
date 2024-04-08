@@ -97,7 +97,7 @@ export default class ViewSchema extends BaseUISchema {
       id: 'definition', label: gettext('Code'), cell: 'text',
       type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
       isFullTab: true,
-      controlProps: { readOnly: obj.nodeInfo && 'catalog' in obj.nodeInfo ? true: false },
+      controlProps: { readOnly: obj.nodeInfo && 'catalog' in obj.nodeInfo },
     },
 
     {

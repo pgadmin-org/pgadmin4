@@ -91,7 +91,7 @@ export default class MViewSchema extends BaseUISchema {
           return {
             type: 'select', options: obj.fieldOptions.table_amname_list,
             controlProps: {
-              allowClear: obj.isNew(state) ? true : false,
+              allowClear: obj.isNew(state),
             }
           };
         }, mode: ['create', 'properties', 'edit'], min_version: 120000,
@@ -110,7 +110,7 @@ export default class MViewSchema extends BaseUISchema {
       },{
         id: 'definition', label: gettext('Definition'), cell: 'text',
         type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
-        isFullTab: true, controlProps: { readOnly: this.nodeInfo && 'catalog' in this.nodeInfo ? true: false },
+        isFullTab: true, controlProps: { readOnly: this.nodeInfo && 'catalog' in this.nodeInfo },
       },
       {
         type: 'nested-tab', group: gettext('Parameter'), mode: ['create', 'edit'],

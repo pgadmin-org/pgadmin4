@@ -310,7 +310,7 @@ export default class TriggerSchema extends BaseUISchema {
               state.tginitdeferred = false;
             }
             // If constraint trigger is set then do not disable
-            return state.is_constraint_trigger ? false : true;
+            return !state.is_constraint_trigger;
           }
         } else {
           // readonly it

@@ -113,7 +113,7 @@ export class PartitionKeysSchema extends BaseUISchema {
   }
 }
 export class PartitionsSchema extends BaseUISchema {
-  constructor(nodeInfo, getCollations, getOperatorClass, getAttachTables=()=>[], table_amname_list) {
+  constructor(nodeInfo, getCollations, getOperatorClass, table_amname_list, getAttachTables=()=>[]) {
     super({
       oid: undefined,
       is_attach: false,
@@ -206,7 +206,7 @@ export class PartitionsSchema extends BaseUISchema {
         return {
           type: 'select', options: this.table_amname_list,
           controlProps: {
-            allowClear: obj.isNew(state) ? true : false,
+            allowClear: obj.isNew(state),
           }
         };
       }, min_version: 120000, disabled: state => {

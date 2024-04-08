@@ -370,22 +370,22 @@ export default class MaintenanceSchema extends BaseUISchema {
           {
             'label': gettext('VACUUM'),
             value: 'VACUUM',
-            disabled: (obj.isSchemaNode() && !obj.nodeInfo?.mview) ? true : false
+            disabled: (obj.isSchemaNode() && !obj.nodeInfo?.mview)
           },
           {
             'label': gettext('ANALYZE'),
             value: 'ANALYZE',
-            disabled: (obj.isSchemaNode() && !obj.nodeInfo?.mview) ? true : false
+            disabled: (obj.isSchemaNode() && !obj.nodeInfo?.mview)
           },
           {
             'label': gettext('REINDEX'),
             value: 'REINDEX',
-            disabled: obj.nodeInfo?.mview ? true : false
+            disabled: obj.nodeInfo?.mview
           },
           {
             'label': gettext('CLUSTER'),
             value: 'CLUSTER',
-            disabled: obj.nodeInfo?.mview ? true : obj.isSchemaNode() ? true : false
+            disabled: obj.nodeInfo?.mview || obj.isSchemaNode()
           },
         ],
       },

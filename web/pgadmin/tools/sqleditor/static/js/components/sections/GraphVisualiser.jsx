@@ -128,7 +128,7 @@ function GenerateGraph({graphType, graphData, ...props}) {
     plugins: {
       legend: {
         labels: {
-          usePointStyle: (showDataPoints && useDiffPointStyle) ? true : false
+          usePointStyle: (showDataPoints && useDiffPointStyle)
         },
       },
     },

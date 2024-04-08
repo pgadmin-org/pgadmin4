@@ -254,7 +254,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
   };
   const onBlur = ()=>{
     if(isValidData()) {
-      onClose(column.can_edit ? true : false);
+      onClose(column.can_edit);
       return true;
     }
     return false;

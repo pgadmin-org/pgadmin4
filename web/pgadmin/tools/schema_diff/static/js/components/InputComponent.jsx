@@ -38,8 +38,8 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
   const [selectedDatabase, setSelectedDatabase] = useState(selectedDid);
   const [selectedSchema, setSelectedSchema] = useState(selectedScid);
   const eventBus = useContext(SchemaDiffEventsContext);
-  const [disableDBSelection, setDisableDBSelection] = useState(selectedSid == null ? true : false);
-  const [disableSchemaSelection, setDisableSchemaSelection] = useState(selectedDid == null ? true : false);
+  const [disableDBSelection, setDisableDBSelection] = useState(selectedSid == null);
+  const [disableSchemaSelection, setDisableSchemaSelection] = useState(selectedDid == null);
   const changeServer = (selectedOption) => {
     setDisableDBSelection(false);
     setSelectedServer(selectedOption);

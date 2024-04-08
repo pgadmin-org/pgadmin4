@@ -97,7 +97,7 @@ export default class SynonymSchema extends BaseUISchema {
           };
         },
         readonly: function() {
-          return !obj.inCatalog() ? false : true;
+          return obj.inCatalog();
         }
       }, {
         id: 'is_sys_obj', label: gettext('System synonym?'),

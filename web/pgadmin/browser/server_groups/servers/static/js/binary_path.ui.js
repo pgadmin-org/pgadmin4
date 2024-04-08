@@ -35,7 +35,7 @@ export default class BinaryPathSchema extends BaseUISchema {
         width: 32,
         radioType: true,
         disabled: function (state) {
-          return state?.binaryPath && state?.binaryPath.length > 0 ? false : true;
+          return !(state?.binaryPath && state?.binaryPath.length > 0);
         },
         cell: 'radio',
         deps: ['binaryPath'],

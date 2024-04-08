@@ -78,7 +78,7 @@ function manageTreeEvents(event, eventName, item) {
 export class Tree {
   constructor(tree, manageTree, pgBrowser, type) {
     this.tree = tree;
-    this.tree.type = type ? type : 'browser';
+    this.tree.type = type || 'browser';
     this.tree.onTreeEvents(manageTreeEvents);
 
     this.rootNode = manageTree.tempTree;
@@ -299,7 +299,7 @@ export class Tree {
   }
 
   hasParent(item) {
-    return item?.parent ? true : false;
+    return item?.parent;
   }
 
   isOpen(item) {
@@ -332,7 +332,7 @@ export class Tree {
   isInode(item) {
     const children = this.children(item);
     if (children === null || children === undefined) return false;
-    return children.length > 0 ? true : false;
+    return children.length > 0;
   }
 
   selected() {

@@ -348,7 +348,7 @@ class RangeSchema extends BaseUISchema {
           this.options = [];
         }
 
-        return disableCollNameControl ? false : true;
+        return !disableCollNameControl;
       },
       readonly: function(state) {
         return !obj.isNew(state);

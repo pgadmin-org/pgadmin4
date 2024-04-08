@@ -267,10 +267,10 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       funcObj.push({
         'name': argName[index],
         'type': argType[index],
-        'is_null': argData['is_null'] ? true : false,
-        'expr': argData['is_expression'] ? true : false,
+        'is_null': argData['is_null'],
+        'expr': argData['is_expression'],
         'value': values,
-        'use_default': argData['use_default'] ? true : false,
+        'use_default': argData['use_default'],
         'default_value': defValList[index],
         'disable_use_default': isUnnamedParam ? defValList[index] == DEBUGGER_ARGS.NO_DEFAULT_VALUE : defValList[index] == DEBUGGER_ARGS.NO_DEFAULT,
       });

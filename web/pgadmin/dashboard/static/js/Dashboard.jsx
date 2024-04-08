@@ -412,7 +412,7 @@ function Dashboard({
       disableGlobalFilter: false,
       minWidth: 26,
       width: 80,
-      isVisible: !did ? true: false
+      isVisible: !did
     },
     {
       accessor: 'usename',
@@ -506,7 +506,7 @@ function Dashboard({
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
-      isVisible: !did ? true: false,
+      isVisible: !did,
       width: 80
     },
     {
@@ -623,7 +623,7 @@ function Dashboard({
       disableGlobalFilter: false,
       minWidth: 26,
       width: 80,
-      isVisible: !did ? true: false
+      isVisible: !did
     },
     {
       accessor: 'Owner',

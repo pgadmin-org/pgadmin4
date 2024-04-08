@@ -157,7 +157,7 @@ const dialogStyle = makeStyles((theme) => ({
 
 
 function checkIsResizable(props) {
-  return props.isresizeable == 'true' ? true : false;
+  return props.isresizeable == 'true';
 }
 
 function setEnableResizing(props, resizeable) {
