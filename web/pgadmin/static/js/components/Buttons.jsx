@@ -56,6 +56,10 @@ const useStyles = makeStyles((theme)=>({
     padding: '1px 4px',
     '.MuiButtonGroup-root &': {
       minWidth: '34px',
+
+      '&.MuiButtonGroup-firstButton:hover, &.MuiButtonGroup-middleButton:hover': {
+        borderRightColor: theme.custom.icon.borderColor,
+      },
     },
     '&.Mui-disabled': {
       borderColor: theme.custom.icon.disabledBorderColor,

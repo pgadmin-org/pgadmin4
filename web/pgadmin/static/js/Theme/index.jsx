@@ -429,6 +429,13 @@ function getFinalTheme(baseTheme) {
             '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
               borderColor: baseTheme.otherVars.inputBorderColor,
             },
+            '.MuiButtonGroup-root &': {
+              borderRadius: 0,
+
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderRadius: 0,
+              }
+            },
           },
           notchedOutline: {
             borderColor: baseTheme.otherVars.inputBorderColor,
@@ -497,6 +504,12 @@ function getFinalTheme(baseTheme) {
               outline: '0 !important',
             }
           },
+          sizeSmall: {
+            height: '28px',
+          },
+          inputSizeSmall: {
+            height: '16px', // + 12px of padding = 28px;
+          }
         }
       },
       MuiSelect: {

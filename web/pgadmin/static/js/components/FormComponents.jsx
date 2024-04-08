@@ -382,6 +382,7 @@ export const InputText = forwardRef(({
       ref={ref}
       color="primary"
       fullWidth
+      size={size}
       margin={size == 'small' ? 'dense' : 'none'}
       inputProps={{
         id: cid,

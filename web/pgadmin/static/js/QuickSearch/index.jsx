@@ -105,7 +105,6 @@ HelpArticleContents.propTypes = {
 };
 
 export default function QuickSearch({closeModal}) {
-  const modalClasses = useModalStyles();
   const classes = useStyles();
   const wrapperRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -261,7 +260,7 @@ export default function QuickSearch({closeModal}) {
 
   return (
     <div id='quick-search-container' onClick={setSearchTerm} onKeyDown={()=>{/* no need */}}></div>,
-    <div id='quick-search-container' ref={wrapperRef} className={clsx('test', modalClasses.setTop)} role="menu">
+    <div id='quick-search-container' ref={wrapperRef} role="menu">
       <div>
         <div>
           <div style={{padding: '2px 2px 2px 2px'}}>

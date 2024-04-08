@@ -710,7 +710,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
               <PgIconButton title={gettext('Go Back')} onClick={async ()=>{
                 await openDir(fmUtilsObj.dirname(fmUtilsObj.currPath), selectedSS);
               }} icon={<ArrowUpwardRoundedIcon />} disabled={!fmUtilsObj.dirname(fmUtilsObj.currPath) || showUploader} />
-              <InputText className={classes.inputFilename}
+              <InputText size="small" className={classes.inputFilename}
                 data-label="file-path"
                 controlProps={{maxLength: null}}
                 onKeyDown={async (e)=>{

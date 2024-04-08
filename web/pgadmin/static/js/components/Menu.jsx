@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme)=>({
         color: theme.palette.primary.contrastText,
       },
       '&.szh-menu__item--disabled':{
-         color: theme.palette.text.muted,
+        color: theme.palette.text.muted,
       }
     }
   },
