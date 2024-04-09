@@ -207,13 +207,11 @@ const IndeterminateCheckbox = React.forwardRef(
       resolvedRef.current.indeterminate = indeterminate;
     }, [resolvedRef, indeterminate]);
     return (
-      <>
-        <Checkbox
-          color="primary"
-          ref={resolvedRef} {...rest}
-          inputProps={{'aria-label': label}}
-        />
-      </>
+      <Checkbox
+        color="primary"
+        ref={resolvedRef} {...rest}
+        inputProps={{'aria-label': label}}
+      />
     );
   },
 );

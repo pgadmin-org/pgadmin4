@@ -76,11 +76,10 @@ define('pgadmin.node.cast', [
             return new Promise((resolve, reject)=>{
               const api = getApiInstance();
 
-              let _url = pgBrowser.Nodes['cast'].generate_url.apply(
-                pgBrowser.Nodes['cast'], [
-                  null, 'get_functions', itemNodeData, false,
-                  treeNodeInfo,
-                ]);
+              let _url = pgBrowser.Nodes['cast'].generate_url(
+                null, 'get_functions', itemNodeData, false,
+                treeNodeInfo,
+              );
               let data = {'srctyp' : srcTyp, 'trgtyp' : trgtyp};
 
               if(srcTyp != undefined && srcTyp != '' &&

@@ -343,12 +343,11 @@ class TableNodeWidgetRaw extends React.Component {
               }}
             />}
         </div>
-        {tableMetaData.is_promise && <>
+        {tableMetaData.is_promise &&
           <div className={classes.tableSection}>
             {!tableMetaData.data_failed && <div className={classes.tableNameText}>{gettext('Fetching...')}</div>}
             {tableMetaData.data_failed && <div className={clsx(classes.tableNameText, classes.error)}>{gettext('Failed to get data. Please delete this table.')}</div>}
-          </div>
-        </>}
+          </div>}
         {!tableMetaData.is_promise && <>
           <div className={classes.tableSection}>
             <RowIcon icon={SchemaIcon}/>

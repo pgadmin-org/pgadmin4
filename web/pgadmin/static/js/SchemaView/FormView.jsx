@@ -428,54 +428,50 @@ export default function FormView({
 
   if(isTabView) {
     return (
-      <>
-        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
-          <Box>
-            <Tabs
-              value={tabValue}
-              onChange={(event, selTabValue) => {
-                setTabValue(selTabValue);
-              }}
-              variant="scrollable"
-              scrollButtons="auto"
-              action={(ref)=>ref?.updateIndicator()}
-            >
-              {Object.keys(finalTabs).map((tabName)=>{
-                return <Tab key={tabName} label={tabName} data-test={tabName}/>;
-              })}
-            </Tabs>
-          </Box>
-          {Object.keys(finalTabs).map((tabName, i)=>{
-            let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
-            if(fullTabs.indexOf(tabName) == -1) {
-              contentClassName.push(classes.nestedControl);
-            } else {
-              contentClassName.push(classes.fullControl);
-            }
-            return (
-              <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={clsx(contentClassName)} data-testid={tabName}>
-                {finalTabs[tabName]}
-              </TabPanel>
-            );
-          })}
+      <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
+        <Box>
+          <Tabs
+            value={tabValue}
+            onChange={(event, selTabValue) => {
+              setTabValue(selTabValue);
+            }}
+            variant="scrollable"
+            scrollButtons="auto"
+            action={(ref)=>ref?.updateIndicator()}
+          >
+            {Object.keys(finalTabs).map((tabName)=>{
+              return <Tab key={tabName} label={tabName} data-test={tabName}/>;
+            })}
+          </Tabs>
         </Box>
-      </>);
+        {Object.keys(finalTabs).map((tabName, i)=>{
+          let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
+          if(fullTabs.indexOf(tabName) == -1) {
+            contentClassName.push(classes.nestedControl);
+          } else {
+            contentClassName.push(classes.fullControl);
+          }
+          return (
+            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
+              className={clsx(contentClassName)} data-testid={tabName}>
+              {finalTabs[tabName]}
+            </TabPanel>
+          );
+        })}
+      </Box>);
   } else {
     let contentClassName = [classes.nonTabPanelContent, stateUtils.formErr.message ? classes.errorMargin : null];
     return (
-      <>
-        <Box height="100%" display="flex" flexDirection="column" className={clsx(className)} ref={formRef} data-test="form-view">
-          <TabPanel value={tabValue} index={0} classNameRoot={classes.nonTabPanel}
-            className={clsx(contentClassName)}>
-            {Object.keys(finalTabs).map((tabName)=>{
-              return (
-                <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
-              );
-            })}
-          </TabPanel>
-        </Box>
-      </>);
+      <Box height="100%" display="flex" flexDirection="column" className={clsx(className)} ref={formRef} data-test="form-view">
+        <TabPanel value={tabValue} index={0} classNameRoot={classes.nonTabPanel}
+          className={clsx(contentClassName)}>
+          {Object.keys(finalTabs).map((tabName)=>{
+            return (
+              <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
+            );
+          })}
+        </TabPanel>
+      </Box>);
   }
 }
 

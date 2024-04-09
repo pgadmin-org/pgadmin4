@@ -347,7 +347,7 @@ export class Tree {
     let tree = this;
 
     if (path == null || !Array.isArray(path)) {
-      return Promise.reject();
+      return Promise.reject(new Error(null));
     }
     const basepath = '/browser/' + path.slice(0, path.length-1).join('/') + '/';
     path = '/browser/' + path.join('/');
@@ -366,7 +366,7 @@ export class Tree {
          * the path for currentNode itself is not matching
          */
         if (currentNode.path !== undefined && !onCorrectPath(currentNode.path)) {
-          reject(null);
+          reject(new Error(null));
         } else if (currentNode.path === path) {
           resolve(currentNode);
         } else {
@@ -380,10 +380,10 @@ export class Tree {
                   return;
                 }
               }
-              reject(null);
+              reject(new Error(null));
             })
             .catch(() => {
-              reject(null);
+              reject(new Error(null));
             });
         }
       });
@@ -403,7 +403,7 @@ export class Tree {
       currItem = currItem.parent;
     }
     retStack = retStack.reverse();
-    if(separator == false) return retStack;
+    if(!separator) return retStack;
     return retStack.join(separator);
   }
 
@@ -621,6 +621,6 @@ export function findInTree(rootNode, path) {
   })(rootNode);
 }
 
-let isValidTreeNodeData = (data) => (!_.isEmpty(data));
+const isValidTreeNodeData = (data) => (!_.isEmpty(data));
 
 export { isValidTreeNodeData };

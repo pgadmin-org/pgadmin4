@@ -175,7 +175,7 @@ export default function ImportExportServers({onClose}) {
             .catch(() => {
               setLoaderText('');
               setErrMsg(gettext('Error while fetching Server Groups and Servers.'));
-              reject();
+              reject(new Error(gettext('Error while fetching Server Groups and Servers.')));
             });
         } else if (selectionFormData.imp_exp == 'i') {
           let load_servers_url = url_for('import_export_servers.load_servers');
@@ -192,7 +192,7 @@ export default function ImportExportServers({onClose}) {
             .catch((err) => {
               setLoaderText('');
               setErrMsg(err.response.data.errormsg);
-              reject();
+              reject(new Error(err.response.data.errormsg));
             });
         }
       } else {

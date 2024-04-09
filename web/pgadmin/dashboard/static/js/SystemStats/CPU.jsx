@@ -70,8 +70,6 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
   const [loadAvgInfo, loadAvgInfoReduce] = useReducer(statsReducer, chartsDefault['la_stats']);
   const [processCpuUsageStats, setProcessCpuUsageStats] = useState([]);
 
-  const [, setCounterData] = useState({});
-
   const [pollDelay, setPollDelay] = useState(5000);
 
   const [errorMsg, setErrorMsg] = useState(null);
@@ -196,20 +194,12 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
 
           setProcessCpuUsageStats(pcu_info_list);
         }
-
-        setCounterData((prevCounterData)=>{
-          return {
-            ...prevCounterData,
-            ...data,
-          };
-        });
       })
       .catch((error)=>{
         if(!errorMsg) {
           cpuUsageInfoReduce({reset:chartsDefault['cpu_stats']});
           loadAvgInfoReduce({reset:chartsDefault['la_stats']});
           setProcessCpuUsageStats([]);
-          setCounterData({});
           if(error.response) {
             if (error.response.status === 428) {
               setErrorMsg(gettext('Please connect to the selected server to view the graph.'));

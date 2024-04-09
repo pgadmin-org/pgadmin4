@@ -290,33 +290,31 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
   drop(rowRef);
 
   return useMemo(()=>
-    <>
-      <div {...row.getRowProps()} ref={rowRef} data-handler-id={handlerId}
-        className={isHovered ? classes.tableRowHovered : null}
-        data-test='data-table-row'
-      >
-        {row.cells.map((cell, ci) => {
-          let classNames = [classes.tableCell];
+    <div {...row.getRowProps()} ref={rowRef} data-handler-id={handlerId}
+      className={isHovered ? classes.tableRowHovered : null}
+      data-test='data-table-row'
+    >
+      {row.cells.map((cell, ci) => {
+        let classNames = [classes.tableCell];
 
-          let {modeSupported} = cell.column.field? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+        let {modeSupported} = cell.column.field? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
 
-          if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
-            classNames.push(classes.btnCell);
-          }
-          if(cell.column.id == 'btn-edit' && row.isExpanded) {
-            classNames.push(classes.expandedIconCell);
-          }
-          return (modeSupported &&
+        if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
+          classNames.push(classes.btnCell);
+        }
+        if(cell.column.id == 'btn-edit' && row.isExpanded) {
+          classNames.push(classes.expandedIconCell);
+        }
+        return (modeSupported &&
             <div ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null} key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
               {cell.render('Cell', {
                 reRenderRow: ()=>{setKey((currKey)=>!currKey);}
               })}
             </div>
-          );
-        })}
-        <div className='hover-overlay'></div>
-      </div>
-    </>, depsMap);
+        );
+      })}
+      <div className='hover-overlay'></div>
+    </div>, depsMap);
 }
 
 export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTextChange}) {

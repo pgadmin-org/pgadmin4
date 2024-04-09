@@ -87,7 +87,7 @@ export default class MainMenuFactory {
       if (options.module && 'callbacks' in options.module && options.module.callbacks[options.callback]) {
         options.module.callbacks[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
       } else if (options?.module?.[options.callback]) {
-        options.module[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
+        options.module[options.callback](options.data, pgAdmin.Browser.tree?.selected());
       } else if (options?.callback) {
         options.callback(options);
       } else if (options.url != '#') {
@@ -117,7 +117,7 @@ export default class MainMenuFactory {
     let selectedNode=pgAdmin.Browser.tree.selected();
     let flag=!_.isUndefined(selectedNodeFromNodes.showMenu);
     if(flag){
-      var showMenu = selectedNodeFromNodes.showMenu(d, selectedNode);
+      let showMenu = selectedNodeFromNodes.showMenu(d, selectedNode);
       return {flag:showMenu?false:flag,showMenu};
     } else{
       return {flag,showMenu:undefined};

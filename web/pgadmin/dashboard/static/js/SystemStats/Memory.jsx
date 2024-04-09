@@ -69,8 +69,6 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
   const [swapMemoryUsageInfo, swapMemoryUsageInfoReduce] = useReducer(statsReducer, chartsDefault['sm_stats']);
   const [processMemoryUsageStats, setProcessMemoryUsageStats] = useState([]);
 
-  const [, setCounterData] = useState({});
-
   const [pollDelay, setPollDelay] = useState(5000);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chartDrawnOnce, setChartDrawnOnce] = useState(false);
@@ -199,20 +197,12 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
 
           setProcessMemoryUsageStats(pmu_info_list);
         }
-
-        setCounterData((prevCounterData)=>{
-          return {
-            ...prevCounterData,
-            ...data,
-          };
-        });
       })
       .catch((error)=>{
         if(!errorMsg) {
           memoryUsageInfoReduce({reset:chartsDefault['m_stats']});
           swapMemoryUsageInfoReduce({reset:chartsDefault['sm_stats']});
           setProcessMemoryUsageStats([]);
-          setCounterData({});
           if(error.response) {
             if (error.response.status === 428) {
               setErrorMsg(gettext('Please connect to the selected server to view the graph.'));

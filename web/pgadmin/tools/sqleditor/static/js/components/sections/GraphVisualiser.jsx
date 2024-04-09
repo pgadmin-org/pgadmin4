@@ -255,8 +255,8 @@ export function GraphVisualiser({initColumns}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const [graphType, setGraphType] = useState('L');
-  const [xaxis, setXAxis] = useState(null);
-  const [yaxis, setYAxis] = useState([]);
+  const [xAxis, setXAxis] = useState(null);
+  const [yAxis, setYAxis] = useState([]);
   const [[graphData, graphDataKey], setGraphData] = useState([{'datasets': []}, 0]);
   const [loaderText, setLoaderText] = useState('');
   const [columns, setColumns] = useState(initColumns);
@@ -359,7 +359,7 @@ export function GraphVisualiser({initColumns}) {
     setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
-      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xaxis, _.isArray(yaxis) ? yaxis : [yaxis] , queryToolCtx), prev[1] + 1]
+      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx), prev[1] + 1]
     );
 
     setLoaderText('');
@@ -411,7 +411,7 @@ export function GraphVisualiser({initColumns}) {
               }
             }} value={graphType} />
           <DefaultButton style={{marginLeft: 'auto'}} onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
-            disabled={ _.isEmpty(xaxis) || yaxis.length <= 0 }>
+            disabled={ _.isEmpty(xAxis) || yAxis.length <= 0 }>
             {gettext('Generate')}
           </DefaultButton>
           <PgIconButton title={expandedState ? gettext('Collapse') : gettext('Expand')}
@@ -422,12 +422,12 @@ export function GraphVisualiser({initColumns}) {
           <Box className={classes.displayFlex}>
             <span className={classes.spanLabel}>{graphType != 'P' ? gettext('X Axis') : gettext('Label')}</span>
             <InputSelect className={classes.axisSelectCtrl} options={xAxisOptions}
-              onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
+              onChange={(v)=>setXAxis(v)} value={xAxis} optionsReloadBasis={optionsReload}/>
           </Box>
           <Box className={classes.displayFlex}>
             <span className={classes.spanLabel}>{graphType != 'P' ? gettext('Y Axis') : gettext('Value')}</span>
             <InputSelect className={classes.axisSelectCtrl} controlProps={{'multiple': graphType != 'P', allowSelectAll: graphType != 'P'}}
-              options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
+              options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yAxis} optionsReloadBasis={optionsReload}/>
           </Box>
         </>
         }

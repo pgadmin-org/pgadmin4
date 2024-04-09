@@ -15,7 +15,7 @@ export default class Menu {
     this.name = name;
     this.id = id;
     this.index = index || 1;
-    this.menuItems = [],
+    this.menuItems = [];
     this.addSepratior = addSepratior || false;
   }
 
@@ -202,7 +202,7 @@ export class MenuItem {
       return true;
     }
     if (this.module && _.isFunction(this.module[this.enable])) {
-      return !(this.module[this.enable]).apply(this.module, [node, item, this.data]);
+      return !(this.module[this.enable])(node, item, this.data);
     }
 
     return false;

@@ -42,7 +42,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   let warnOnCloseFlag = true;
   const confirmOnCloseReset = usePreferences().getPreferencesForModule('browser').confirm_on_properties_close;
   let updatedData =  ['table', 'partition'].includes(nodeType) && !_.isEmpty(nodeData.rows_cnt) ? {rows_cnt: nodeData.rows_cnt} : undefined;
-  let schema = node.getSchema.call(node, treeNodeInfo, nodeData);
+  let schema = node.getSchema(treeNodeInfo, nodeData);
 
   // We only have two actionTypes, 'create' and 'edit' to initiate the dialog,
   // so if isActionTypeCopy is true, we should revert back to "create" since

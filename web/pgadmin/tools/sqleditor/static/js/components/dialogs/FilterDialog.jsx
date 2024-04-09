@@ -130,7 +130,7 @@ export default function FilterDialog({onClose, onSave}) {
     });
   };
 
-  return (<>
+  return (
     <SchemaView
       formType={'dialog'}
       getInitData={getInitData}
@@ -147,7 +147,7 @@ export default function FilterDialog({onClose, onSave}) {
       formClassName={classes.root}
       checkDirtyOnEnableSave={true}
     />
-  </>);
+  );
 }
 
 FilterDialog.propTypes = {

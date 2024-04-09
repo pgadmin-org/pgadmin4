@@ -159,7 +159,7 @@ export default function MacrosDialog({onClose, onSave}) {
   if(keyOptions.length <= 0) {
     return <></>;
   }
-  return (<>
+  return (
     <SchemaView
       formType={'dialog'}
       getInitData={()=>{
@@ -180,7 +180,7 @@ export default function MacrosDialog({onClose, onSave}) {
       isTabView={false}
       formClassName={classes.root}
     />
-  </>);
+  );
 }
 
 MacrosDialog.propTypes = {

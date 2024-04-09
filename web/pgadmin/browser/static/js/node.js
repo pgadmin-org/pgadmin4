@@ -139,7 +139,7 @@ define('pgadmin.browser.node', [
           },
           enable: _.isFunction(self.canEdit) ?
             function() {
-              return !!(self.canEdit.apply(self, arguments));
+              return !!(self.canEdit(arguments));
             } : (!!self.canEdit),
         }]);
       }
@@ -159,7 +159,7 @@ define('pgadmin.browser.node', [
           },
           enable: _.isFunction(self.canDrop) ?
             function() {
-              return !!(self.canDrop.apply(self, arguments));
+              return !!(self.canDrop(arguments));
             } : (!!self.canDrop),
         }]);
 
@@ -177,7 +177,7 @@ define('pgadmin.browser.node', [
             },
             enable: _.isFunction(self.canDropCascade) ?
               function() {
-                return self.canDropCascade.apply(self, arguments);
+                return self.canDropCascade(arguments);
               } : (!!self.canDropCascade),
           }]);
         }
@@ -386,7 +386,7 @@ define('pgadmin.browser.node', [
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
-              this.clear_cache.apply(this, item);
+              this.clear_cache(item);
             }, 0);
             try {
               pgBrowser.Events.trigger(
@@ -416,7 +416,7 @@ define('pgadmin.browser.node', [
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
-              this.clear_cache.apply(this, item);
+              this.clear_cache(item);
             }, 0);
             try {
               pgBrowser.Events.trigger(
@@ -446,7 +446,7 @@ define('pgadmin.browser.node', [
 
             // Clear the cache for this node now.
             setTimeout(()=>{
-              this.clear_cache.apply(this, item);
+              this.clear_cache(item);
             }, 0);
 
             pgBrowser.Events.trigger(
@@ -530,7 +530,7 @@ define('pgadmin.browser.node', [
           title = gettext('Delete CASCADE %s?', obj.label);
 
           if (!(_.isFunction(obj.canDropCascade) ?
-            obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
+            obj.canDropCascade(d, i) : obj.canDropCascade)) {
             pgAdmin.Browser.notifier.error(
               gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
               10000
@@ -547,7 +547,7 @@ define('pgadmin.browser.node', [
           }
 
           if (!(_.isFunction(obj.canDrop) ?
-            obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
+            obj.canDrop(d, i) : obj.canDrop)) {
             pgAdmin.Browser.notifier.error(
               gettext('The %s "%s" cannot be dropped/removed.', obj.label, d.label),
               10000
@@ -745,7 +745,7 @@ define('pgadmin.browser.node', [
       removed: function(item) {
         let self = this;
         setTimeout(function() {
-          self.clear_cache.apply(self, item);
+          self.clear_cache(item);
         }, 0);
       },
       refresh: function(cmd, _item) {

@@ -15,7 +15,7 @@ function convertImageURLtoDataURI(api, image) {
       image.setAttribute('href', 'data:image/svg+xml;base64,'+window.btoa(data));
       resolve();
     }).catch(()=>{
-      reject();
+      reject(new Error(null));
     });
   });
 }

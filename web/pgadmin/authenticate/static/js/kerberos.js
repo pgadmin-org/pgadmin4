@@ -43,7 +43,7 @@ function fetch_ticket_lifetime () {
       if (ticket_lifetime > 0) {
         return Promise.resolve(ticket_lifetime);
       } else {
-        return Promise.reject();
+        return Promise.reject(new Error(null));
       }
     });
 

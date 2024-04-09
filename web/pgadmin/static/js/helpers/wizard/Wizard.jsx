@@ -136,7 +136,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = stepList && stepList.length > 0 ? stepList : [];
-  const [disableNext, setdisableNext] = React.useState(false);
+  const [disableNext, setDisableNext] = React.useState(false);
 
 
   const handleNext = () => {
@@ -177,7 +177,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
   React.useEffect(() => {
     if (props.disableNextStep) {
-      setdisableNext(props.disableNextStep(activeStep));
+      setDisableNext(props.disableNextStep(activeStep));
     }
   });
 

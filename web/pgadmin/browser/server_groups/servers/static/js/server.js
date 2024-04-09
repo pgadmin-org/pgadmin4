@@ -713,7 +713,7 @@ define('pgadmin.node.server', [
 
             /* Call enable/disable menu function after database is connected.
              To make sure all the menus for database is in the right state */
-            pgBrowser.enable_disable_menus.apply(pgBrowser, [_item]);
+            pgBrowser.enable_disable_menus(_item);
 
             // We're not reconnecting
             if (!_wasConnected) {

@@ -234,7 +234,7 @@ define('pgadmin.node.rule', [
         }
 
         return itemData.icon === 'icon-rule-bad' &&
-          this.canCreate.apply(this,[itemData, item, data]);
+          this.canCreate(itemData, item, data);
       },
       // Check to whether rule is enable ?
       canCreate_with_rule_disable: function(itemData, item, data) {

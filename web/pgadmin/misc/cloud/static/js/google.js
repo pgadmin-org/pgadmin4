@@ -62,7 +62,7 @@ export function GoogleCredentials(props) {
           })
           .catch((error) => {
             _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while authentication: ${error}`)]);
-            reject(false);
+            reject(new Error(gettext(`Error while authentication: ${error}`)));
           });
         });
       },
@@ -201,7 +201,7 @@ GoogleInstanceDetails.propTypes = {
 
 // Google Database Details
 export function GoogleDatabaseDetails(props) {
-  const [gooeleDBInstance, setGoogleDBInstance] = React.useState();
+  const [googleDBInstance, setGoogleDBInstance] = React.useState();
   const classes = useStyles();
 
   React.useMemo(() => {
@@ -220,7 +220,7 @@ export function GoogleDatabaseDetails(props) {
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
     viewHelperProps={{ mode: 'create' }}
-    schema={gooeleDBInstance}
+    schema={googleDBInstance}
     showFooter={false}
     isTabView={false}
     onDataChange={(isChanged, changedData) => {

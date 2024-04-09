@@ -275,49 +275,47 @@ export default function Processes() {
   }, []);
 
   return (
-    <>
-      <PgTable
-        data-test="processes"
-        className={classes.autoResizer}
-        columns={columns}
-        data={tableData}
-        sortOptions={[{id: 'stime', desc: true}]}
-        getSelectedRows={(rows)=>{setSelectedRows(rows);}}
-        isSelectRow={true}
-        tableProps={{
-          autoResetSelectedRows: false,
-          getRowId: (row)=>{
-            return row.id;
-          }
-        }}
-        CustomHeader={()=>{
-          return (
-            <Box>
-              <PgButtonGroup>
-                <PgIconButton
-                  icon={<DeleteIcon style={{height: '1.4rem'}}/>}
-                  aria-label="Acknowledge and Remove"
-                  title={gettext('Acknowledge and Remove')}
-                  onClick={() => {
-                    pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                      pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
-                    });
-                  }}
-                  disabled={selectedRows.length <= 0}
-                ></PgIconButton>
-                <PgIconButton
-                  icon={<HelpIcon style={{height: '1.4rem'}}/>}
-                  aria-label="Help"
-                  title={gettext('Help')}
-                  onClick={() => {
-                    window.open(url_for('help.static', {'filename': 'processes.html'}));
-                  }}
-                ></PgIconButton>
-              </PgButtonGroup>
-            </Box>
-          );
-        }}
-      ></PgTable>
-    </>
+    <PgTable
+      data-test="processes"
+      className={classes.autoResizer}
+      columns={columns}
+      data={tableData}
+      sortOptions={[{id: 'stime', desc: true}]}
+      getSelectedRows={(rows)=>{setSelectedRows(rows);}}
+      isSelectRow={true}
+      tableProps={{
+        autoResetSelectedRows: false,
+        getRowId: (row)=>{
+          return row.id;
+        }
+      }}
+      CustomHeader={()=>{
+        return (
+          <Box>
+            <PgButtonGroup>
+              <PgIconButton
+                icon={<DeleteIcon style={{height: '1.4rem'}}/>}
+                aria-label="Acknowledge and Remove"
+                title={gettext('Acknowledge and Remove')}
+                onClick={() => {
+                  pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                  });
+                }}
+                disabled={selectedRows.length <= 0}
+              ></PgIconButton>
+              <PgIconButton
+                icon={<HelpIcon style={{height: '1.4rem'}}/>}
+                aria-label="Help"
+                title={gettext('Help')}
+                onClick={() => {
+                  window.open(url_for('help.static', {'filename': 'processes.html'}));
+                }}
+              ></PgIconButton>
+            </PgButtonGroup>
+          </Box>
+        );
+      }}
+    ></PgTable>
   );
 }

@@ -112,9 +112,7 @@ export default function CollectionNodeProperties({
       selItem = pgAdmin.Browser.tree.selected(),
       selectedItemData = selItem ? pgAdmin.Browser.tree.itemData(selItem) : null,
       selNode = selectedItemData && pgAdmin.Browser.Nodes[selectedItemData._type],
-      url = undefined,
-      msg = undefined,
-      title = undefined;
+      url, msg, title;
 
     if (selNode?.type == 'coll-constraints') {
       // In order to identify the constraint type, the type should be passed to the server
@@ -206,7 +204,7 @@ export default function CollectionNodeProperties({
       setLoaderText(gettext('Loading...'));
 
       if (!_.isUndefined(nodeObj.getSchema)) {
-        schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, nodeData);
+        schemaRef.current = nodeObj.getSchema?.(treeNodeInfo, nodeData);
         schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {

@@ -61,7 +61,7 @@ export function AzureCredentials(props) {
           })
           .catch((error) => {
             _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verifying Microsoft Azure: ${error}`)]);
-            reject(false);
+            reject(new Error(gettext(error)));
           });
         });
       },

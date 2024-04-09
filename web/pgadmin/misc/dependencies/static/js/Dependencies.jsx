@@ -59,7 +59,7 @@ function parseData(data, node) {
     if (element.icon == null || element.icon == '') {
       if (node) {
         element.icon = _.isFunction(node['node_image'])
-          ? node['node_image'].apply(node, [null, null])
+          ? node['node_image'](null, null)
           : node['node_image'] || 'icon-' + element.type;
       } else {
         element.icon = 'icon-' + element.type;

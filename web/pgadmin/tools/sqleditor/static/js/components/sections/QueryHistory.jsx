@@ -378,7 +378,6 @@ export function QueryHistory() {
   const [selectedItemKey, setSelectedItemKey] = React.useState(1);
   const [showInternal, setShowInternal] = React.useState(true);
   const [loaderText, setLoaderText] = React.useState('');
-  const [,refresh] = React.useState({});
   const selectedEntry = qhu.current.getEntry(selectedItemKey);
   const layoutDocker = useContext(LayoutDockerContext);
   const listRef = React.useRef();
@@ -425,7 +424,6 @@ export function QueryHistory() {
         };
       }
       qhu.current.addEntry(h);
-      refresh({});
     };
 
     listRef.current?.focus();

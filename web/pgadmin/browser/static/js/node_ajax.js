@@ -144,10 +144,10 @@ export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, 
     _.each(rows, function(r) {
       if (filter(r)) {
         let l = (_.isFunction(nodeObj['node_label']) ?
-            (nodeObj['node_label']).apply(nodeObj, [r]) :
+            nodeObj['node_label'](r) :
             r.label),
           image = (_.isFunction(nodeObj['node_image']) ?
-            (nodeObj['node_image']).apply(nodeObj, [r]) :
+            nodeObj['node_image'](r) :
             (nodeObj['node_image'] || ('icon-' + nodeObj.type)));
 
         res.push({
@@ -175,10 +175,10 @@ export function getNodeListByName(node, treeNodeInfo, itemNodeData, params={}, f
     _.each(rows, function(r) {
       if (filter(r)) {
         let l = (_.isFunction(nodeObj['node_label']) ?
-            (nodeObj['node_label']).apply(nodeObj, [r]) :
+            nodeObj['node_label'](r) :
             r.label),
           image = (_.isFunction(nodeObj['node_image']) ?
-            (nodeObj['node_image']).apply(nodeObj, [r]) :
+            nodeObj['node_image'](r) :
             (nodeObj['node_image'] || ('icon-' + nodeObj.type)));
 
         res.push({

@@ -87,7 +87,6 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
   const [osStats, setOsStats] = useState([]);
   const [cpuStats, setCpuStats] = useState([]);
 
-  const [, setCounterData] = useState({});
   const [pollDelay, setPollDelay] = useState(5000);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chartDrawnOnce, setChartDrawnOnce] = useState(false);
@@ -204,17 +203,10 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
         setErrorMsg(null);
         processHandleCountReduce({incoming: data['hpc_stats']});
 
-        setCounterData((prevCounterData)=>{
-          return {
-            ...prevCounterData,
-            ...data,
-          };
-        });
       })
       .catch((error)=>{
         if(!errorMsg) {
           processHandleCountReduce({reset:chartsDefault['hpc_stats']});
-          setCounterData({});
           if(error.response) {
             if (error.response.status === 428) {
               setErrorMsg(gettext('Please connect to the selected server to view the graph.'));

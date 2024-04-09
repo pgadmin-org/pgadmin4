@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import {useRef, useEffect, useState, useCallback, useLayoutEffect} from 'react';
 import moment from 'moment';
 import { isMac } from './keyboard_shortcuts';
@@ -53,10 +61,10 @@ export function useDelayDebounce(callback, args, delay) {
 }
 
 export function useOnScreen(ref) {
-  const [isIntersecting, setIntersecting] = useState(false);
+  const [intersecting, setIntersecting] = useState(false);
   const observer = new IntersectionObserver(
     ([entry]) => {
-      setIntersecting(entry.isIntersecting);
+      setIntersecting(entry.intersecting);
     }
   );
   useEffect(() => {
@@ -67,7 +75,7 @@ export function useOnScreen(ref) {
     return () => { observer.disconnect(); };
   }, []);
 
-  return isIntersecting;
+  return intersecting;
 }
 
 export function useIsMounted() {

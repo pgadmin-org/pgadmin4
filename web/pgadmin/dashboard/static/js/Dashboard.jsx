@@ -143,7 +143,7 @@ function Dashboard({
     mainTabs.push(gettext('Replication'));
   }
   let systemStatsTabs = [gettext('Summary'), gettext('CPU'), gettext('Memory'), gettext('Storage')];
-  const [dashData, setdashData] = useState([]);
+  const [dashData, setDashData] = useState([]);
   const [msg, setMsg] = useState('');
   const [ssMsg, setSsMsg] = useState('');
   const [tabVal, setTabVal] = useState(0);
@@ -751,7 +751,7 @@ function Dashboard({
             type: 'GET',
           })
             .then((res) => {
-              setdashData(parseData(res.data));
+              setDashData(parseData(res.data));
             })
             .catch((error) => {
               pgAdmin.Browser.notifier.alert(
@@ -769,7 +769,7 @@ function Dashboard({
           })
             .then((res) => {
               const data = res.data;
-              if(data['ss_present'] == false){
+              if(!data['ss_present']){
                 setSsMsg(gettext('The system_stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload pgAdmin once it is installed.'));
                 setLdid(0);
               } else {

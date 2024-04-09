@@ -172,8 +172,6 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
   const [diskStats, setDiskStats] = useState([]);
   const [ioInfo, ioInfoReduce] = useReducer(ioStatsReducer, chartsDefault['io_stats']);
 
-  const [, setCounterData] = useState({});
-
   const [pollDelay, setPollDelay] = useState(5000);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chartDrawnOnce, setChartDrawnOnce] = useState(false);
@@ -351,18 +349,10 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
           }
           ioInfoReduce({incoming: new_io_stats});
         }
-
-        setCounterData((prevCounterData)=>{
-          return {
-            ...prevCounterData,
-            ...data,
-          };
-        });
       })
       .catch((error)=>{
         if(!errorMsg) {
           ioInfoReduce({reset:chartsDefault['io_stats']});
-          setCounterData({});
           if(error.response) {
             if (error.response.status === 428) {
               setErrorMsg(gettext('Please connect to the selected server to view the graph.'));

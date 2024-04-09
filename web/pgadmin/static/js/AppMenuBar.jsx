@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import React, { useState, useEffect } from 'react';
@@ -90,33 +98,32 @@ export default function AppMenuBar() {
   const userMenuInfo = pgAdmin.Browser.utils.userMenuInfo;
 
   return(
-    <>
-      <Box className={classes.root} data-test="app-menu-bar">
-        <div className={classes.logo} />
-        <div className={classes.menus}>
-          {pgAdmin.Browser.MainMenus?.map((menu)=>{
-            return (
-              <PgMenu
-                menuButton={<PrimaryButton key={menu.label} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
-                label={menu.label}
-                key={menu.name}
-              >
-                {menu.getMenuItems().map((menuItem, i)=>{
-                  const submenus = menuItem.getMenuItems();
-                  if(submenus) {
-                    return <PgSubMenu key={menuItem.label} label={menuItem.label}>
-                      {submenus.map((submenuItem, si)=>{
-                        return getPgMenuItem(submenuItem, si);
-                      })}
-                    </PgSubMenu>;
-                  }
-                  return getPgMenuItem(menuItem, i);
-                })}
-              </PgMenu>
-            );
-          })}
-        </div>
-        {userMenuInfo &&
+    <Box className={classes.root} data-test="app-menu-bar">
+      <div className={classes.logo} />
+      <div className={classes.menus}>
+        {pgAdmin.Browser.MainMenus?.map((menu)=>{
+          return (
+            <PgMenu
+              menuButton={<PrimaryButton key={menu.label} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
+              label={menu.label}
+              key={menu.name}
+            >
+              {menu.getMenuItems().map((menuItem, i)=>{
+                const submenus = menuItem.getMenuItems();
+                if(submenus) {
+                  return <PgSubMenu key={menuItem.label} label={menuItem.label}>
+                    {submenus.map((submenuItem, si)=>{
+                      return getPgMenuItem(submenuItem, si);
+                    })}
+                  </PgSubMenu>;
+                }
+                return getPgMenuItem(menuItem, i);
+              })}
+            </PgMenu>
+          );
+        })}
+      </div>
+      {userMenuInfo &&
         <div className={classes.userMenu}>
           <PgMenu
             menuButton={
@@ -124,7 +131,7 @@ export default function AppMenuBar() {
                 <div className={classes.gravatar}>
                   {userMenuInfo.gravatar &&
                   <img src={userMenuInfo.gravatar} width = "18" height = "18"
-                    alt ={`Gravatar image for ${ userMenuInfo.username }`} />}
+                    alt ={`Gravatar for ${ userMenuInfo.username }`} />}
                   {!userMenuInfo.gravatar && <AccountCircleRoundedIcon />}
                 </div>
                 { userMenuInfo.username } ({userMenuInfo.auth_source})
@@ -139,7 +146,6 @@ export default function AppMenuBar() {
             })}
           </PgMenu>
         </div>}
-      </Box>
-    </>
+    </Box>
   );
 }

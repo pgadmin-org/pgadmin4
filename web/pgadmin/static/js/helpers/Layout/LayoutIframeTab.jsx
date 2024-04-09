@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import { Portal } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import Frame from 'react-frame-component';
@@ -47,7 +55,7 @@ export default function LayoutIframeTab({target, src, children}) {
     };
   }, [iframeTarget]);
 
-  return <>
+  return (
     <div ref={selfRef} data-target={target} style={{width: '100%', height: '100%'}}>
       <Portal ref={(r)=>{
         if(r) setIframeTarget(r.querySelector('#'+target));
@@ -59,8 +67,7 @@ export default function LayoutIframeTab({target, src, children}) {
           </Frame>
         }
       </Portal>
-    </div>
-  </>;
+    </div>);
 }
 
 LayoutIframeTab.propTypes = {

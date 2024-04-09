@@ -276,35 +276,34 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       onClose?.();
     }
   };
-  const [isfullScreen, setIsFullScreen] = useState(fullScreen);
+  const [isFullScreen, setIsFullScreen] = useState(fullScreen);
 
   return (
     <Dialog
       open={true}
       onClose={closeModal}
       PaperComponent={PaperComponent}
-      PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
-      fullScreen={isfullScreen}
+      PaperProps={{ 'isfullscreen': isFullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
+      fullScreen={isFullScreen}
       fullWidth={isFullWidth}
       disablePortal
     >
-      { showTitle && <>
+      { showTitle &&
         <DialogTitle className='modal-drag-area'>
           <Box className={classes.titleBar}>
             <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
             {
-              showFullScreen && !isfullScreen &&
-                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              showFullScreen && !isFullScreen &&
+                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
             }
             {
-              showFullScreen && isfullScreen &&
-                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              showFullScreen && isFullScreen &&
+                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
             }
 
             <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
           </Box>
         </DialogTitle>
-      </>
       }
       <DialogContent height="100%">
         {useMemo(()=>{ return content(closeModal); }, [])}

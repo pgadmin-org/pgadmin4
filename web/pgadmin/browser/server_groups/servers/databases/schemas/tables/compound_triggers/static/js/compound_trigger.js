@@ -191,7 +191,7 @@ define('pgadmin.node.compound_trigger', [
         }
 
         return itemData.icon === 'icon-compound_trigger-bad' &&
-          this.canCreate.apply(this, [itemData, item, data]);
+          this.canCreate(itemData, item, data);
       },
       // Check to whether trigger is enable ?
       canCreate_with_compound_trigger_disable: function(itemData, item, data) {
@@ -201,7 +201,7 @@ define('pgadmin.node.compound_trigger', [
         }
 
         return itemData.icon === 'icon-compound_trigger' &&
-          this.canCreate.apply(this, [itemData, item, data]);
+          this.canCreate(itemData, item, data);
       },
     });
   }

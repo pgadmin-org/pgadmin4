@@ -1697,7 +1697,7 @@ define('pgadmin.browser', [
             load: true,
           };
           ctx.success = function() {
-            this.b._refreshNode.call(this.b, this, this.d);
+            this.b._refreshNode(this, this.d);
           }.bind(ctx);
           findNode(__ctx.i, d, ctx);
         }

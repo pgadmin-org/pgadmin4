@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import React, { useState } from 'react';
 import LoginImage from '../../img/login.svg?svgr';
 import { InputSelect, InputText, MESSAGE_TYPE, NotifierMessage } from '../components/FormComponents';
@@ -93,25 +101,23 @@ AuthenticatorValidateView.propTypes = {
 export default function MfaValidatePage({actionUrl, views, logoutUrl, sendEmailUrl, csrfHeader, csrfToken, ...props}) {
   const [method, setMethod] = useState(Object.values(views).find((v)=>v.selected)?.id);
   return (
-    <>
-      <BasePage title={gettext('Authentication')} pageImage={<LoginImage style={{height: '100%', width: '100%'}} />} {...props}>
-        <form style={{display:'flex', gap:'15px', flexDirection:'column', minHeight: 0}} action={actionUrl} method="POST">
-          <InputSelect value={method} options={Object.keys(views).map((k)=>({
-            label: views[k].label,
-            value: views[k].id,
-            imageUrl: views[k].icon
-          }))} onChange={setMethod} controlProps={{
-            allowClear: false,
-          }} />
-          <div><input type='hidden' name='mfa_method' defaultValue={method} /></div>
-          {method == 'email' && <EmailValidateView mfaView={views[method].view} sendEmailUrl={sendEmailUrl} csrfHeader={csrfHeader} csrfToken={csrfToken} />}
-          {method == 'authenticator' && <AuthenticatorValidateView mfaView={views[method].view} />}
-          <div style={{textAlign: 'right'}}>
-            <a style={{color:'inherit'}} href={logoutUrl}>{gettext('Logout')}</a>
-          </div>
-        </form>
-      </BasePage>
-    </>
+    <BasePage title={gettext('Authentication')} pageImage={<LoginImage style={{height: '100%', width: '100%'}} />} {...props}>
+      <form style={{display:'flex', gap:'15px', flexDirection:'column', minHeight: 0}} action={actionUrl} method="POST">
+        <InputSelect value={method} options={Object.keys(views).map((k)=>({
+          label: views[k].label,
+          value: views[k].id,
+          imageUrl: views[k].icon
+        }))} onChange={setMethod} controlProps={{
+          allowClear: false,
+        }} />
+        <div><input type='hidden' name='mfa_method' defaultValue={method} /></div>
+        {method == 'email' && <EmailValidateView mfaView={views[method].view} sendEmailUrl={sendEmailUrl} csrfHeader={csrfHeader} csrfToken={csrfToken} />}
+        {method == 'authenticator' && <AuthenticatorValidateView mfaView={views[method].view} />}
+        <div style={{textAlign: 'right'}}>
+          <a style={{color:'inherit'}} href={logoutUrl}>{gettext('Logout')}</a>
+        </div>
+      </form>
+    </BasePage>
   );
 }
 

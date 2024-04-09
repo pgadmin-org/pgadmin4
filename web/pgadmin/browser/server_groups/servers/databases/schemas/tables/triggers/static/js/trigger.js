@@ -183,7 +183,7 @@ define('pgadmin.node.trigger', [
         }
 
         return itemData.icon === 'icon-trigger-bad' &&
-          this.canCreate.apply(this, [itemData, item, data]);
+          this.canCreate(itemData, item, data);
       },
       // Check to whether trigger is enable ?
       canCreate_with_trigger_disable: function(itemData, item, data) {
@@ -193,7 +193,7 @@ define('pgadmin.node.trigger', [
         }
 
         return itemData.icon === 'icon-trigger' &&
-          this.canCreate.apply(this, [itemData, item, data]);
+          this.canCreate(itemData, item, data);
       },
     });
   }

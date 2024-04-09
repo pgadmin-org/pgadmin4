@@ -212,11 +212,10 @@ export function TextEditor({row, column, onRowChange, onClose}) {
             {gettext('Cancel')}
           </DefaultButton>
           {column.can_edit &&
-          <>
             <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className={classes.buttonMargin}>
               {gettext('OK')}
             </PrimaryButton>
-          </>}
+          }
         </Box>
       </Box>
     </Portal>
@@ -390,11 +389,10 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
             {gettext('Cancel')}
           </DefaultButton>
           {column.can_edit &&
-          <>
             <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className={classes.buttonMargin}>
               {gettext('OK')}
             </PrimaryButton>
-          </>}
+          }
         </Box>
       </Box>
     </Portal>

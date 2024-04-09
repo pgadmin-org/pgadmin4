@@ -205,7 +205,7 @@ export function validateBigAnimal() {
         }
       })
       .catch((error) => {
-        reject(`Error while fetching EDB BigAnimal verification URI: ${error.response.data.errormsg}`);
+        reject(new Error(`Error while fetching EDB BigAnimal verification URI: ${error.response.data.errormsg}`));
       });
   });
 }

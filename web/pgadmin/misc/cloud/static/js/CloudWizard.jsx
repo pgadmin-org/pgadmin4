@@ -71,7 +71,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   let steps = [gettext('Cloud Provider'), gettext('Credentials'), gettext('Cluster Type'),
     gettext('Instance Specification'), gettext('Database Details'), gettext('Review')];
   const [currentStep, setCurrentStep] = React.useState('');
-  const [selectionVal, setCloudSelection] = React.useState('');
+  const [cloudSelection, setCloudSelection] = React.useState('');
   const [errMsg, setErrMsg] = React.useState('');
   const [cloudInstanceDetails, setCloudInstanceDetails] = React.useState({});
   const [cloudDBCred, setCloudDBCred] = React.useState({});
@@ -295,14 +295,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
         let _url = url_for('rds.verify_credentials');
         const post_data = {
-          cloud: selectionVal,
+          cloud: cloudSelection,
           secret: cloudDBCred,
         };
         axiosApi.post(_url, post_data)
           .then((res) => {
             if(!res.data.success) {
               setErrMsg([MESSAGE_TYPE.ERROR, res.data.info]);
-              reject();
+              reject(new Error(res.data.info));
             } else {
               setErrMsg(['', '']);
               if (activeStep == 1) {
@@ -314,7 +314,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           })
           .catch(() => {
             setErrMsg([MESSAGE_TYPE.ERROR, gettext('Error while checking cloud credentials')]);
-            reject();
+            reject(new Error(gettext('Error while checking cloud credentials')));
           });
       } else if(activeStep == 0 && cloudProvider == CLOUD_PROVIDERS.BIGANIMAL) {
         if (!isEmptyString(verificationURI)) { resolve(); return; }
@@ -328,7 +328,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           })
           .catch((error) => {
             setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-            reject();
+            reject(new Error(gettext(error)));
           });
       } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
         if (activeStep == 1) {
@@ -347,7 +347,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
               resolve();
             }).catch((error)=>{
               setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-              reject();
+              reject(new Error(gettext(error)));
             });
         } else {
           resolve();
@@ -423,157 +423,155 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
-      <>
-        <Wizard
-          title={gettext('Deploy Cloud Instance')}
-          stepList={steps}
-          disableNextStep={disableNextCheck}
-          onStepChange={wizardStepChange}
-          onSave={onSave}
-          onHelp={onDialogHelp}
-          beforeNext={onBeforeNext}
-          beforeBack={onBeforeBack}>
-          <WizardStep stepId={0}>
-            <Box className={classes.messageBox}>
-              <Box className={classes.messagePadding}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
-            </Box>
-            <Box className={classes.messageBox}>
-              <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}
-                options={cloud_providers}
-              ></ToggleButtons>
-            </Box>
-            <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
-          </WizardStep>
-          <WizardStep stepId={1} >
-            <Box className={classes.buttonMarginEDB}>
-              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
-                <Box>{gettext('The verification code to authenticate the pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
-                  <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
-                </Box>
-              </Box>}
-              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>
-                {gettext('Click here to authenticate yourself to EDB BigAnimal')}
-              </PrimaryButton>}
-              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
-                <Box ></Box>
-              </Box>}
-            </Box>
-            {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
-            { cloudProvider == CLOUD_PROVIDERS.AZURE &&
+      <Wizard
+        title={gettext('Deploy Cloud Instance')}
+        stepList={steps}
+        disableNextStep={disableNextCheck}
+        onStepChange={wizardStepChange}
+        onSave={onSave}
+        onHelp={onDialogHelp}
+        beforeNext={onBeforeNext}
+        beforeBack={onBeforeBack}>
+        <WizardStep stepId={0}>
+          <Box className={classes.messageBox}>
+            <Box className={classes.messagePadding}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
+          </Box>
+          <Box className={classes.messageBox}>
+            <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}
+              options={cloud_providers}
+            ></ToggleButtons>
+          </Box>
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+        </WizardStep>
+        <WizardStep stepId={1} >
+          <Box className={classes.buttonMarginEDB}>
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
+              <Box>{gettext('The verification code to authenticate the pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
+                <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
+              </Box>
+            </Box>}
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>
+              {gettext('Click here to authenticate yourself to EDB BigAnimal')}
+            </PrimaryButton>}
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
+              <Box ></Box>
+            </Box>}
+          </Box>
+          {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
+          { cloudProvider == CLOUD_PROVIDERS.AZURE &&
             <Box flexGrow={1}>
               <AzureCredentials cloudProvider={cloudProvider} setAzureCredData={setAzureCredData}/>
             </Box>}
-            <Box flexGrow={1}>
-              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
-            </Box>
-            <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
-          </WizardStep>
-          <WizardStep stepId={2} >
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 2 && <BigAnimalClusterType
+          <Box flexGrow={1}>
+            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} setGoogleCredData={setGoogleCredData}/>}
+          </Box>
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+        </WizardStep>
+        <WizardStep stepId={2} >
+          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 2 && <BigAnimalClusterType
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setBigAnimalClusterTypeData={setBigAnimalClusterTypeData}
+            hostIP={hostIP}
+          /> }
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+        </WizardStep>
+        <WizardStep stepId={3} >
+          {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 3 && <AwsInstanceDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setCloudInstanceDetails={setCloudInstanceDetails}
+            hostIP={hostIP} /> }
+          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 3 && <BigAnimalInstance
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setBigAnimalInstanceData={setBigAnimalInstanceData}
+            hostIP={hostIP}
+            bigAnimalClusterTypeData={bigAnimalClusterTypeData}
+          /> }
+          {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 3 && <AzureInstanceDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setAzureInstanceData={setAzureInstanceData}
+            hostIP={hostIP}
+            azureInstanceData = {azureInstanceData}
+          /> }
+          {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 3 && <GoogleInstanceDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setGoogleInstanceData={setGoogleInstanceData}
+            hostIP={hostIP}
+            googleInstanceData = {googleInstanceData}
+          /> }
+          <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+        </WizardStep>
+        <WizardStep stepId={4} >
+          {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setCloudDBDetails={setCloudDBDetails}
+          />
+          }
+          {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 4 && <BigAnimalDatabase
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setBigAnimalDatabaseData={setBigAnimalDatabaseData}
+            bigAnimalClusterTypeData={bigAnimalClusterTypeData}
+          />
+          }
+          {cloudProvider == CLOUD_PROVIDERS.AZURE && <AzureDatabaseDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setAzureDatabaseData={setAzureDatabaseData}
+          />
+          }
+          {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleDatabaseDetails
+            cloudProvider={cloudProvider}
+            nodeInfo={nodeInfo}
+            nodeData={nodeData}
+            setGoogleDatabaseData={setGoogleDatabaseData}
+          />
+          }
+        </WizardStep>
+        <WizardStep stepId={5} >
+          <Box className={classes.boxText}>{gettext('Please review the details before creating the cloud instance.')}</Box>
+          <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
+            {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 5 && <FinalSummary
               cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setBigAnimalClusterTypeData={setBigAnimalClusterTypeData}
-              hostIP={hostIP}
-            /> }
-            <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
-          </WizardStep>
-          <WizardStep stepId={3} >
-            {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 3 && <AwsInstanceDetails
-              cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setCloudInstanceDetails={setCloudInstanceDetails}
-              hostIP={hostIP} /> }
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 3 && <BigAnimalInstance
-              cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setBigAnimalInstanceData={setBigAnimalInstanceData}
-              hostIP={hostIP}
-              bigAnimalClusterTypeData={bigAnimalClusterTypeData}
-            /> }
-            {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 3 && <AzureInstanceDetails
-              cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setAzureInstanceData={setAzureInstanceData}
-              hostIP={hostIP}
-              azureInstanceData = {azureInstanceData}
-            /> }
-            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 3 && <GoogleInstanceDetails
-              cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setGoogleInstanceData={setGoogleInstanceData}
-              hostIP={hostIP}
-              googleInstanceData = {googleInstanceData}
-            /> }
-            <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
-          </WizardStep>
-          <WizardStep stepId={4} >
-            {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails
-              cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setCloudDBDetails={setCloudDBDetails}
+              instanceData={cloudInstanceDetails}
+              databaseData={cloudDBDetails}
             />
             }
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 4 && <BigAnimalDatabase
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 5 && <FinalSummary
               cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setBigAnimalDatabaseData={setBigAnimalDatabaseData}
-              bigAnimalClusterTypeData={bigAnimalClusterTypeData}
+              instanceData={bigAnimalInstanceData}
+              databaseData={bigAnimalDatabaseData}
+              clusterTypeData={bigAnimalClusterTypeData}
             />
             }
-            {cloudProvider == CLOUD_PROVIDERS.AZURE && <AzureDatabaseDetails
+            {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 5 && <FinalSummary
               cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setAzureDatabaseData={setAzureDatabaseData}
+              instanceData={azureInstanceData}
+              databaseData={azureDatabaseData}
             />
             }
-            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleDatabaseDetails
+            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 5 && <FinalSummary
               cloudProvider={cloudProvider}
-              nodeInfo={nodeInfo}
-              nodeData={nodeData}
-              setGoogleDatabaseData={setGoogleDatabaseData}
+              instanceData={googleInstanceData}
+              databaseData={googleDatabaseData}
             />
             }
-          </WizardStep>
-          <WizardStep stepId={5} >
-            <Box className={classes.boxText}>{gettext('Please review the details before creating the cloud instance.')}</Box>
-            <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
-              {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 5 && <FinalSummary
-                cloudProvider={cloudProvider}
-                instanceData={cloudInstanceDetails}
-                databaseData={cloudDBDetails}
-              />
-              }
-              {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && callRDSAPI == 5 && <FinalSummary
-                cloudProvider={cloudProvider}
-                instanceData={bigAnimalInstanceData}
-                databaseData={bigAnimalDatabaseData}
-                clusterTypeData={bigAnimalClusterTypeData}
-              />
-              }
-              {cloudProvider == CLOUD_PROVIDERS.AZURE && callRDSAPI == 5 && <FinalSummary
-                cloudProvider={cloudProvider}
-                instanceData={azureInstanceData}
-                databaseData={azureDatabaseData}
-              />
-              }
-              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 5 && <FinalSummary
-                cloudProvider={cloudProvider}
-                instanceData={googleInstanceData}
-                databaseData={googleDatabaseData}
-              />
-              }
-            </Paper>
-          </WizardStep>
-        </Wizard>
-      </>
+          </Paper>
+        </WizardStep>
+      </Wizard>
     </CloudWizardEventsContext.Provider>
   );
 }
