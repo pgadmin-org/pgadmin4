@@ -22,7 +22,7 @@ New features
 
   | `Issue #5611 <https://github.com/pgadmin-org/pgadmin4/issues/5611>`_ -  Added support for provider, deterministic, version and RULES parameter while creating collation.
   | `Issue #7098 <https://github.com/pgadmin-org/pgadmin4/issues/7098>`_ -  Added support for EDB Job Scheduler.
-  | `Issue #7216 <https://github.com/pgadmin-org/pgadmin4/issues/7216>`_ -  Added support for viewing Log Based Clusters.
+  | `Issue #7216 <https://github.com/pgadmin-org/pgadmin4/issues/7216>`_ -  Added support for viewing Log Streaming replication Based Clusters.
   | `Issue #7221 <https://github.com/pgadmin-org/pgadmin4/issues/7221>`_ -  Added support for UNIX socket in entrypoint.sh for Docker implementation.
 
 Housekeeping
