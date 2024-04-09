@@ -280,7 +280,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: server-log-epas${{ matrix.pgver }}
+          name: server-log-epas-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
