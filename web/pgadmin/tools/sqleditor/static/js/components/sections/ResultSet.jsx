@@ -15,7 +15,7 @@ import getApiInstance, { parseApiError } from '../../../../../../static/js/api_i
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import gettext from 'sources/gettext';
 import Loader from 'sources/components/Loader';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { ResultSetToolbar } from './ResultSetToolbar';
 import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout';
 import { GeometryViewer } from './GeometryViewer';
@@ -25,7 +25,7 @@ import { getBrowser } from '../../../../../../static/js/utils';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';

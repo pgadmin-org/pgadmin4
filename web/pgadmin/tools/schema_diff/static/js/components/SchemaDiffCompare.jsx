@@ -11,10 +11,10 @@ import PropTypes from 'prop-types';
 
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, Grid } from '@material-ui/core';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import { makeStyles } from '@material-ui/styles';
+import { Box, Grid } from '@mui/material';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import { makeStyles } from '@mui/styles';
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';

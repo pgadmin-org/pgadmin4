@@ -11,10 +11,10 @@ import React from 'react';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import pgAdmin from 'sources/pgadmin';
 import PgAdminLogo from './PgAdminLogo';
-import { Link } from '@material-ui/core';
+import { Link } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -83,7 +83,22 @@ const useStyles = makeStyles((theme) => ({
     flex: '1 1 auto',
     minHeight: '1px',
     padding: '0.5rem !important',
-  }
+  },
+  welcomeLogo: {
+    width: '400px',
+    '& .app-name': {
+      fill: theme.otherVars.colorBrand
+    },
+    '& .app-name-underline': {
+      stroke: theme.palette.text.primary
+    },
+    '& .app-tagline': {
+      fill: theme.palette.text.primary
+    }
+  },
+  dashboardIcon: {
+    color: theme.otherVars.colorBrand
+  },
 }));
 
 
@@ -126,7 +141,9 @@ export default function WelcomeDashboard({ pgBrowser }) {
             <div className={classes.card}>
               <div className={classes.cardHeader}>{gettext('Welcome')}</div>
               <div className={classes.cardBody}>
-                <PgAdminLogo />
+                <div className={classes.welcomeLogo}>
+                  <PgAdminLogo />
+                </div>
                 <h4>
                   {gettext('Feature rich')} | {gettext('Maximises PostgreSQL')}{' '}
                   | {gettext('Open Source')}{' '}
@@ -148,22 +165,24 @@ export default function WelcomeDashboard({ pgBrowser }) {
                 <div className={classes.rowContent}>
                   <div className={classes.dashboardLink}>
                     <Link onClick={() => { AddNewServer(pgBrowser); }} className={classes.link}>
-                      <span
-                        className="fa fa-4x dashboard-icon fa-server"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          className="fa fa-4x fa-server"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('Add New Server')}
                     </Link>
                   </div>
                   <div className={classes.dashboardLink}>
                     <Link onClick={() => pgAdmin.Preferences.show()} className={classes.link}>
-                      <span
-                        id="mnu_preferences"
-                        className="fa fa-4x dashboard-icon fa-cogs"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          id="mnu_preferences"
+                          className="fa fa-4x fa-cogs"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('Configure pgAdmin')}
                     </Link>
                   </div>
@@ -184,21 +203,23 @@ export default function WelcomeDashboard({ pgBrowser }) {
                       target="postgres_help"
                       className={classes.link}
                     >
-                      <span
-                        className="fa fa-4x dashboard-icon dashboard-pg-doc"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          className="fa fa-4x dashboard-pg-doc"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('PostgreSQL Documentation')}
                     </a>
                   </div>
                   <div className={classes.gettingStartedLink}>
                     <a href="https://www.pgadmin.org" target="pgadmin_website" className={classes.link}>
-                      <span
-                        className="fa fa-4x dashboard-icon fa-globe"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          className="fa fa-4x fa-globe"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('pgAdmin Website')}
                     </a>
                   </div>
@@ -208,11 +229,12 @@ export default function WelcomeDashboard({ pgBrowser }) {
                       target="planet_website"
                       className={classes.link}
                     >
-                      <span
-                        className="fa fa-4x dashboard-icon fa-book"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          className="fa fa-4x fa-book"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('Planet PostgreSQL')}
                     </a>
                   </div>
@@ -222,11 +244,12 @@ export default function WelcomeDashboard({ pgBrowser }) {
                       target="postgres_website"
                       className={classes.link}
                     >
-                      <span
-                        className="fa fa-4x dashboard-icon fa-users"
-                        aria-hidden="true"
-                      ></span>
-                      <br />
+                      <div className={classes.dashboardIcon}>
+                        <span
+                          className="fa fa-4x fa-users"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
                       {gettext('Community Support')}
                     </a>
                   </div>
@@ -244,4 +267,3 @@ export default function WelcomeDashboard({ pgBrowser }) {
 WelcomeDashboard.propTypes = {
   pgBrowser: PropTypes.object.isRequired
 };
-

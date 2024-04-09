@@ -474,9 +474,12 @@ def utils():
     snippets = []
 
     prefs = Preferences.module('paths')
-
     pg_help_path_pref = prefs.preference('pg_help_path')
     pg_help_path = pg_help_path_pref.get()
+
+    # Added to have theme value available at app start page loading
+    prefs = Preferences.module('misc')
+    theme = prefs.preference('theme').get()
 
     # Get sqleditor options
     prefs = Preferences.module('sqleditor')
@@ -539,6 +542,7 @@ def utils():
         render_template(
             'browser/js/utils.js',
             layout=layout,
+            theme=theme,
             jssnippets=snippets,
             pg_help_path=pg_help_path,
             editor_tab_size=editor_tab_size,

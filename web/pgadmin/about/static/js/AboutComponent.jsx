@@ -10,9 +10,9 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Grid, InputLabel } from '@material-ui/core';
+import { Box, Grid, InputLabel } from '@mui/material';
 import { DefaultButton } from '../../../static/js/components/Buttons';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import { InputText } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';
 import { copyToClipboard } from '../../../static/js/clipboard';
@@ -141,7 +141,7 @@ export default function AboutComponent() {
             }}>{copyText}</DefaultButton>
           </Box>
           <Box flexGrow="1" paddingTop="1px">
-            <InputText style={{height: '100%'}} controlProps={{multiline: true}} inputStyle={{resize: 'none'}}
+            <InputText style={{height: '100%'}} controlProps={{multiline: true}} inputStyle={{resize: 'none', height: '100%'}}
               value={aboutData.settings}/>
           </Box>
         </Box>

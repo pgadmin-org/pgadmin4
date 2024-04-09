@@ -6,11 +6,12 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';

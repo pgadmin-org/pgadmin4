@@ -75,7 +75,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         edit_object.click()
         membership_tab = WebDriverWait(self.page.driver, 4).until(
             EC.presence_of_element_located((
-                By.XPATH, "//span[normalize-space(text())='Membership']")))
+                By.XPATH, "//button[normalize-space(text())='Membership']")))
         membership_tab.click()
 
         # Fetch the source code for our custom control
@@ -89,7 +89,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
             '&lt;h1&gt;test&lt;/h1&gt;',
             'Role Membership Control'
         )
-        self.page.find_by_xpath("//button/span[text()='Close']").click()
+        self.page.find_by_xpath("//button[text()='Close']").click()
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

@@ -664,7 +664,7 @@ define('pgadmin.browser.node', [
           t = pgBrowser.tree,
           i = input.item || t.selected(),
           d = i  ? t.itemData(i) : undefined;
-        pgBrowser.psql.psql_tool(d, i, true);
+        pgAdmin.Tools.Psql.openPsqlTool(d, i);
       },
 
       // Logic to change the server background colour

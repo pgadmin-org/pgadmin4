@@ -9,27 +9,26 @@
 /* Common form components used in pgAdmin */
 
 import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import {
-  Box, FormControl, OutlinedInput, FormHelperText,
+  Box, FormControl, OutlinedInput, FormHelperText, ToggleButton, ToggleButtonGroup,
   Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
-} from '@material-ui/core';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
-import DescriptionIcon from '@material-ui/icons/Description';
-import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
+} from '@mui/material';
+import ErrorRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
+import FolderOpenRoundedIcon from '@mui/icons-material/FolderOpenRounded';
+import DescriptionIcon from '@mui/icons-material/Description';
+import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
 import Select, { components as RSComponents } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
-import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+
+import { DateTimePicker, DatePicker, TimePicker} from '@mui/x-date-pickers';
 import * as DateFns from 'date-fns';
 
 import CodeMirror from './ReactCodeMirror';
@@ -158,7 +157,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
     <Grid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
         {
-          labelTooltip ? 
+          labelTooltip ?
             <Tooltip title={labelTooltip}>
               {labelComponent}
             </Tooltip> : labelComponent
@@ -257,6 +256,7 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
   let format = '';
   let placeholder = '';
   let regExp = /[a-zA-Z]/;
+  let timeZoneString = '';
   if (controlProps?.pickerType === 'Date') {
     format = controlProps.format || DATE_TIME_FORMAT.DATE;
     placeholder = controlProps.placeholder || 'YYYY-MM-DD';
@@ -275,6 +275,7 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
   /* Value should be a date object instead of string */
   value = _.isUndefined(value) || regExp.test(value) ? null : value;
   if (!_.isNull(value)) {
+    timeZoneString = value.slice(-6);
     let parseValue = DateFns.parse(value, format, new Date());
     if (!DateFns.isValid(parseValue)) {
       parseValue = DateFns.parseISO(value);
@@ -290,43 +291,30 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
   let commonProps = {
     ...props,
     value: value,
-    format: format,
-    placeholder: placeholder,
+    format: format.replace('xxx', timeZoneString),
     label: '',
     variant: 'inline',
-    readOnly: Boolean(readonly),
-    autoOk: controlProps.autoOk || false,
-    ampm: controlProps.ampm || false,
+    ampm: controlProps.ampm ? controlProps.ampm : undefined,
     disablePast: controlProps.disablePast || false,
-    invalidDateMessage: '',
-    maxDateMessage: '',
-    minDateMessage: '',
     onChange: handleChange,
-    fullWidth: true,
+    slotProps: {textField: {placeholder:placeholder}}
   };
 
   if (controlProps?.pickerType === 'Date') {
     return (
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker {...commonProps} />
-      </MuiPickersUtilsProvider>
+      <DatePicker {...commonProps} />
     );
   } else if (controlProps?.pickerType === 'Time') {
     return (
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardTimePicker {...commonProps} />
-      </MuiPickersUtilsProvider>
+      <TimePicker {...commonProps} />
     );
   }
-
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDateTimePicker {...commonProps} />
-    </MuiPickersUtilsProvider>
+    <DateTimePicker {...commonProps} />
   );
 }
 InputDateTimePicker.propTypes = {
-  value: PropTypes.string,
+  value: CustomPropTypes.className,
   options: PropTypes.object,
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
@@ -347,7 +335,7 @@ FormInputDateTimePicker.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
-  value: PropTypes.string,
+  value: CustomPropTypes.className,
   controlProps: PropTypes.object,
   change: PropTypes.func,
   labelTooltip: PropTypes.string
@@ -394,6 +382,7 @@ export const InputText = forwardRef(({
       ref={ref}
       color="primary"
       fullWidth
+      size={size}
       margin={size == 'small' ? 'dense' : 'none'}
       inputProps={{
         id: cid,

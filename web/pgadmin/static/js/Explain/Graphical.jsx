@@ -6,19 +6,20 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box, Card, CardContent, CardHeader, makeStyles, useTheme } from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader, useTheme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, {useEffect} from 'react';
 import _ from 'lodash';
 import { PgButtonGroup, PgIconButton } from '../components/Buttons';
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import ZoomOutIcon from '@material-ui/icons/ZoomOut';
-import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import gettext from 'sources/gettext';
 import ReactDOMServer from 'react-dom/server';
 import url_for from 'sources/url_for';
 import { downloadSvg } from './svg_download';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import { commonTableStyles } from '../Theme';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
@@ -406,7 +407,7 @@ export default function Graphical({planData, ctx}) {
 
   return (
     <Box ref={graphContainerRef} height="100%" width="100%" overflow="auto">
-      <Box position="absolute" top="4px" left="4px" gridGap="4px" display="flex">
+      <Box position="absolute" top="4px" left="4px" gap="4px" display="flex">
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Zoom in')} icon={<ZoomInIcon />} onClick={()=>onCmdClick('in')}/>
           <PgIconButton title={gettext('Zoom to original')} icon={<ZoomOutMapIcon />} onClick={()=>onCmdClick()}/>

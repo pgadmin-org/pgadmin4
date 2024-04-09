@@ -9,12 +9,12 @@
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import getApiInstance from 'sources/api_instance';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -267,21 +267,21 @@ function SummaryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   return (
     <>
-      <Grid container spacing={1} className={classes.container}>
-        <Grid item md={6} sm={12}>
+      <Grid container spacing={0.5} className={classes.container}>
+        <Grid item md={6}>
           <div className={classes.tableContainer}>
             <div className={classes.containerHeader}>{gettext('OS information')}</div>
             <SummaryTable data={props.osStats} />
           </div>
         </Grid>
-        <Grid item md={6} sm={12} className={classes.chartContainer}>
+        <Grid item md={6}className={classes.chartContainer}>
           <ChartContainer id='hpc-graph' title={gettext('Process & handle count')} datasets={props.processHandleCount.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.processHandleCount} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} showSecondAxis={true} />
           </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={1} className={classes.container}>
-        <Grid item md={6} sm={12}>
+      <Grid container spacing={0.5} className={classes.container}>
+        <Grid item md={6}>
           <div className={classes.tableContainer}>
             <div className={classes.containerHeader}>{gettext('CPU information')}</div>
             <SummaryTable data={props.cpuStats} />

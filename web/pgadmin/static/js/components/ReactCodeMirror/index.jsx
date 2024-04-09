@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import { makeStyles } from '@mui/styles';
+import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 

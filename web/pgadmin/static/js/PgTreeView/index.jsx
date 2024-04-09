@@ -1,15 +1,16 @@
-import { Checkbox, makeStyles } from '@material-ui/core';
+import { Checkbox } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import gettext from 'sources/gettext';
 import React, { useEffect, useRef } from 'react';
 import { Tree } from 'react-arborist';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PropTypes from 'prop-types';
-import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 
 const useStyles = makeStyles((theme) => ({

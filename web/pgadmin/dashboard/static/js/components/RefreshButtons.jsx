@@ -9,9 +9,9 @@
 
 import React from 'react';
 import gettext from 'sources/gettext';
-import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
+import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import { PgIconButton } from '../../../../static/js/components/Buttons';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({

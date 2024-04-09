@@ -9,15 +9,16 @@
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { Box, makeStyles } from '@material-ui/core';
-import FormatIndentIncreaseIcon from '@material-ui/icons/FormatIndentIncrease';
-import FormatIndentDecreaseIcon from '@material-ui/icons/FormatIndentDecrease';
-import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import NotInterestedIcon from '@material-ui/icons/NotInterested';
-import StopIcon from '@material-ui/icons/Stop';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import RotateLeftRoundedIcon from '@material-ui/icons/RotateLeftRounded';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
+import FormatIndentDecreaseIcon from '@mui/icons-material/FormatIndentDecrease';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import StopIcon from '@mui/icons-material/Stop';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import RotateLeftRoundedIcon from '@mui/icons-material/RotateLeftRounded';
 
 import gettext from 'sources/gettext';
 import { shortcut_key } from 'sources/keyboard_shortcuts';

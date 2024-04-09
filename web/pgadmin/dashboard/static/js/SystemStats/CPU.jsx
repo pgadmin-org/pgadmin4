@@ -11,10 +11,10 @@ import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Box, Grid } from '@material-ui/core';
+import { Box, Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -263,19 +263,19 @@ export function CPUWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   return (
     <>
-      <Grid container spacing={1} className={classes.container}>
-        <Grid item md={6} sm={12}>
+      <Grid container spacing={0.5} className={classes.container}>
+        <Grid item md={6}>
           <ChartContainer id='cu-graph' title={gettext('CPU usage')} datasets={props.cpuUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.cpuUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </Grid>
-        <Grid item md={6} sm={12}>
+        <Grid item md={6} >
           <ChartContainer id='la-graph' title={gettext('Load average')} datasets={props.loadAvgInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.loadAvgInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={1} className={classes.fixedContainer}>
+      <Grid container spacing={0.5} className={classes.fixedContainer}>
         <div className={classes.tableContainer}>
           <PgTable
             className={classes.autoResizer}

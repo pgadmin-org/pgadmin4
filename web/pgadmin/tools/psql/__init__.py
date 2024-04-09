@@ -101,18 +101,21 @@ def panel(trans_id):
 
     data = _get_database_role(params['sid'], params['did'])
 
+    params = {
+        'sid': params['sid'],
+        'db': underscore_escape(data['db_name']),
+        'server_type': params['server_type'],
+        'is_enable': config.ENABLE_PSQL,
+        'title': underscore_unescape(params['title']),
+        'theme': params['theme'],
+        'o_db_name': underscore_escape(data['db_name']),
+        'role': underscore_escape(data['role']),
+        'platform': _platform
+    }
+
     set_env_variables(is_win=_platform == 'win32')
-    return render_template('editor_template.html',
-                           sid=params['sid'],
-                           db=underscore_escape(data['db_name']),
-                           server_type=params['server_type'],
-                           is_enable=config.ENABLE_PSQL,
-                           title=underscore_unescape(params['title']),
-                           theme=params['theme'],
-                           o_db_name=underscore_escape(data['db_name']),
-                           role=underscore_escape(data['role']),
-                           platform=_platform
-                           )
+    return render_template("psql/index.html",
+                           params=json.dumps(params))
 
 
 def set_env_variables(is_win=False):

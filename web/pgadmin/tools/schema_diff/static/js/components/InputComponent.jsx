@@ -10,8 +10,8 @@ import PropTypes from 'prop-types';
 
 import React, { useContext, useState } from 'react';
 
-import { Box, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Box, Grid, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
 import { InputSelect } from '../../../../../static/js/components/FormComponents';
 import { SchemaDiffEventsContext } from './SchemaDiffComponent';

@@ -12,8 +12,8 @@ import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
 import { checkTrojanSource } from '../../../utils';
 import usePreferences from '../../../../../preferences/static/js/store';
-import KeyboardArrowRightRoundedIcon from '@material-ui/icons/KeyboardArrowRightRounded';
-import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
 // Codemirror packages
 import {
@@ -134,7 +134,7 @@ const defaultExtensions = [
 
 export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly, disabled, autocomplete = false,
-  breakpoint = false, onBreakPointChange, showActiveLine=false, 
+  breakpoint = false, onBreakPointChange, showActiveLine=false,
   keepHistory = true, cid, helpid, labelledBy, customKeyMap}) {
 
   const editorContainerRef = useRef();

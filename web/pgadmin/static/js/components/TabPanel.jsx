@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import {Box, makeStyles} from '@material-ui/core';
+import { Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';

@@ -1,11 +1,11 @@
 import React from 'react';
 import { useModalStyles } from '../helpers/ModalProvider';
 import gettext from 'sources/gettext';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import HTMLReactParser from 'html-react-parser';
 import PropTypes from 'prop-types';
 

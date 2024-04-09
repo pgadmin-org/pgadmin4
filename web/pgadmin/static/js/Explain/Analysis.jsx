@@ -6,12 +6,12 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import clsx from 'clsx';
 import _ from 'lodash';
-import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import HTMLReactParse from 'html-react-parser';
 import { commonTableStyles } from '../Theme';
 import PropTypes from 'prop-types';

@@ -13,9 +13,9 @@ import gettext from 'sources/gettext';
 
 import React, { useState } from 'react';
 
-import { makeStyles } from '@material-ui/styles';
-import TableContainer from '@material-ui/core/TableContainer';
-import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@mui/styles';
+import TableContainer from '@mui/material/TableContainer';
+import Paper from '@mui/material/Paper';
 
 import { DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
@@ -44,7 +44,7 @@ export function Stack() {
   const eventBus = React.useContext(DebuggerEventsContext);
   const [stackData, setStackData] = useState([]);
   const [disableFrameSelection, setDisableFrameSelection] = useState(false);
-  
+
   React.useEffect(() => {
     eventBus.registerListener(DEBUGGER_EVENTS.SET_STACK, (stackValues) => {
       setStackData(stackValues);

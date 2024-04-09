@@ -51,8 +51,9 @@ class NavMenuLocators:
     show_system_objects_pref_label_xpath = \
         "//label[contains(text(), 'Show system objects?')]"
 
-    maximize_pref_dialogue_css = "//div[text()='Preferences']" \
-                                 "//following::div//span[1]"
+    maximize_pref_dialogue_css = "button[data-label='Maximize']"
+
+    maximize_pref_dialogue_css = "button[data-label='Maximize']"
 
     specified_pref_node_exp_status = \
         "//*[@id='treeContainer']//div//span[text()='{0}']"
@@ -278,6 +279,6 @@ class PropertyDialogueLocators:
     # This will contain xpaths for elements in properties dialogue
     server_dialogue_title = "//span[text()='Register - Server']"
 
-    server_connection_tab = "//button/span[text()='Connection']"
+    server_connection_tab = "//button[text()='Connection']"
 
-    server_tab_save = "//button/span[text()='Save']"
+    server_tab_save = "//button[text()='Save']"

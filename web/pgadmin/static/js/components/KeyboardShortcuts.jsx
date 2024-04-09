@@ -8,7 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import { makeStyles, Grid, Typography, Box } from '@material-ui/core';
+import { Grid, Typography, Box } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { InputCheckbox, InputText } from './FormComponents';
 import PropTypes from 'prop-types';

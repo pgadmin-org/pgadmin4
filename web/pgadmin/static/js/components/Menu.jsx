@@ -1,6 +1,6 @@
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React, { useRef } from 'react';
-import CheckIcon from '@material-ui/icons/Check';
+import CheckIcon from '@mui/icons-material/Check';
 import PropTypes from 'prop-types';
 
 import {
@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme)=>({
       '&.szh-menu__item--active, &.szh-menu__item--hover': {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
+      },
+      '&.szh-menu__item--disabled':{
+        color: theme.palette.text.muted,
       }
     }
   },

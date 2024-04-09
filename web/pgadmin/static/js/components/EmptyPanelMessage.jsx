@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import { makeStyles } from '@material-ui/styles';
+import { Box } from '@mui/material';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme)=>({

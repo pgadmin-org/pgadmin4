@@ -7,27 +7,27 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useCallback, useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Box, useTheme } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Box, useTheme } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
-import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
-import HelpIcon from '@material-ui/icons/HelpRounded';
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import ZoomOutIcon from '@material-ui/icons/ZoomOut';
-import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import EditRoundedIcon from '@material-ui/icons/EditRounded';
-import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
-import DeleteIcon from '@material-ui/icons/Delete';
-import NoteRoundedIcon from '@material-ui/icons/NoteRounded';
-import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
-import VisibilityOffRoundedIcon from '@material-ui/icons/VisibilityOffRounded';
-import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
-import FormatColorFillRoundedIcon from '@material-ui/icons/FormatColorFillRounded';
-import FormatColorTextRoundedIcon from '@material-ui/icons/FormatColorTextRounded';
-import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
+import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import HelpIcon from '@mui/icons-material/HelpRounded';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
+import DeleteIcon from '@mui/icons-material/Delete';
+import NoteRoundedIcon from '@mui/icons-material/NoteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ImageRoundedIcon from '@mui/icons-material/ImageRounded';
+import FormatColorFillRoundedIcon from '@mui/icons-material/FormatColorFillRounded';
+import FormatColorTextRoundedIcon from '@mui/icons-material/FormatColorTextRounded';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';

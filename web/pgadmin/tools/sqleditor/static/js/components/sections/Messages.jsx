@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';

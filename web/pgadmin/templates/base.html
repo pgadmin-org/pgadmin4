@@ -15,8 +15,8 @@
             position: absolute;
             min-width: 100%;
             min-height: 100%;
-            background: rgba(#000,0.6);
-            z-index: 9999;
+            background: #090d1199;
+            z-index: 1056;
             top: 0;
         }
         .pg-sp-container .pg-sp-content {
@@ -39,9 +39,6 @@
 
     <!-- Base template stylesheets -->
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/pgadmin.style.css')}}"/>
-    {% set theme = get_theme_css() %}
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename=('js/generated/'+theme[0])) }}" data-theme="{{theme[1]}}"/>
 
      <!--View specified stylesheets-->
     {% block css_link %}{% endblock %}
@@ -84,6 +81,19 @@
 
 </head>
 <body>
+<style>
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 0.875rem;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  font-family: "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+</style>
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>

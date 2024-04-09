@@ -5,12 +5,12 @@ import EventBus from '../EventBus';
 import getApiInstance from '../../api_instance';
 import url_for from 'sources/url_for';
 import { PgIconButton } from '../../components/Buttons';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIcon from '@mui/icons-material/CloseRounded';
 import gettext from 'sources/gettext';
 import {ExpandDialogIcon, MinimizeDialogIcon } from '../../components/ExternalIcon';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import ErrorBoundary from '../ErrorBoundary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContextMenu from '../../components/ContextMenu';
 import { showRenameTab } from '../../Dialogs';
 import usePreferences from '../../../../preferences/static/js/store';
@@ -49,7 +49,7 @@ function TabTitle({id, closable, defaultInternal}) {
 
   return (
     <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
-      {attrs.icon && <span style={{fontSize: '1rem', marginRight: '4px'}} className={attrs.icon}></span>}
+      {attrs.icon && <span style={{fontSize: '1rem', marginRight: '4px', padding: '0px 2px', backgroundPosition: '50%'}} className={attrs.icon}></span>}
       <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);

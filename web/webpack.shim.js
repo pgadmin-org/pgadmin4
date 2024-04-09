@@ -156,7 +156,6 @@ let webpackShimConfig = {
     'pgadmin.tools.schema_diff': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/'),
     'pgadmin.tools.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js/'),
     'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js/'),
-    'pgadmin.tools.psql_module': path.join(__dirname, './pgadmin/tools/psql/static/js/psql_module'),
     'pgadmin.tools.psql': path.join(__dirname, './pgadmin/tools/psql/static/js/'),
     'pgadmin.tools.sqleditor': path.join(__dirname, './pgadmin/tools/sqleditor/static/js/'),
     'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/static/js/user_management'),
@@ -212,17 +211,5 @@ let webpackShimConfig = {
     }
     return false;
   },
-
-  /* These will be skipped when webpack picks css/scss files recursively to bundle */
-  css_bundle_skip: [
-    './pgadmin/static',
-  ],
-
-  /* These will be included in array formed by recursive traversing for css/scss files */
-  css_bundle_include: [
-    './pgadmin/static/js/components/PgTree/scss/styles.scss',
-    './pgadmin/static/scss/pgadmin.scss',
-    './pgadmin/static/css/pgadmin.css',
-  ],
 };
 module.exports = webpackShimConfig;
