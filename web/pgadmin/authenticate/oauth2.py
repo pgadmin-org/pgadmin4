@@ -80,7 +80,7 @@ def init_app(app):
 
         logout_user()
         if logout_url:
-            id_token = session['oauth2_token']['id_token']
+            id_token = session['oauth2_token'].get('id_token')
             return redirect(logout_url.format(
                 redirect_uri=request.url_root,
                 id_token=id_token))
