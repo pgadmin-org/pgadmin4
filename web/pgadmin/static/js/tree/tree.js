@@ -408,7 +408,7 @@ export class Tree {
   }
 
   findNodeByDomElement(domElement) {
-    const path = domElement.path;
+    const path = domElement?.path;
     if (!path?.[0]) {
       return undefined;
     }

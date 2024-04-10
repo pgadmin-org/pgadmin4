@@ -38,7 +38,6 @@
 
 define('pgadmin.browser.utils',
   ['sources/pgadmin'], function(pgAdmin) {
-
   let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   pgBrowser['MainMenus'] = [];
@@ -86,7 +85,7 @@ define('pgadmin.browser.utils',
   ];
 
   pgBrowser.utils = {
-    layout: '{{ layout }}',
+    layout: {{ layout|tojson }},
     theme: '{{ theme }}',
     pg_help_path: '{{ pg_help_path }}',
     tabSize: '{{ editor_tab_size }}',
