@@ -287,5 +287,5 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-log-epas${{ matrix.pgver }}
+          name: regression-log-epas-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: web/regression/regression.log
