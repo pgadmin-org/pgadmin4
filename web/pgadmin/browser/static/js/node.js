@@ -139,7 +139,7 @@ define('pgadmin.browser.node', [
           },
           enable: _.isFunction(self.canEdit) ?
             function() {
-              return !!(self.canEdit(arguments));
+              return !!(self.canEdit(...arguments));
             } : (!!self.canEdit),
         }]);
       }
@@ -159,7 +159,7 @@ define('pgadmin.browser.node', [
           },
           enable: _.isFunction(self.canDrop) ?
             function() {
-              return !!(self.canDrop(arguments));
+              return !!(self.canDrop(...arguments));
             } : (!!self.canDrop),
         }]);
 
@@ -177,7 +177,7 @@ define('pgadmin.browser.node', [
             },
             enable: _.isFunction(self.canDropCascade) ?
               function() {
-                return self.canDropCascade(arguments);
+                return self.canDropCascade(...arguments);
               } : (!!self.canDropCascade),
           }]);
         }
