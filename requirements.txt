@@ -8,9 +8,8 @@
 #
 ###############################################################################
 
-Flask==2.3.*; python_version > '3.7'
+Flask==3.0.*; python_version > '3.7'
 Flask==2.2.*; python_version <= '3.7'
-Flask-Gravatar==0.*
 Flask-Login==0.*
 Flask-Mail==0.*
 Flask-Migrate==4.*
@@ -23,13 +22,13 @@ Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==4.0.*; python_version > '3.7'
 Flask-Babel==3.1.*; python_version <= '3.7'
-Flask-Security-Too==5.3.*; python_version > '3.7'
+Flask-Security-Too==5.4.*; python_version > '3.7'
 Flask-Security-Too==5.1.*; python_version <= '3.7'
 Flask-SocketIO==5.3.*
 WTForms==3.1.*; python_version > '3.7'
 WTForms==3.0.*; python_version <= '3.7'
 passlib==1.*
-pytz==2023.*
+pytz==2024.*
 speaklater3==1.*
 sqlparse==0.*
 psutil==5.9.*
@@ -45,7 +44,8 @@ eventlet==0.34.2
 httpagentparser==1.9.*
 user-agents==2.2.0
 pywinpty==2.0.*; sys_platform=="win32"
-Authlib==1.2.*
+Authlib==1.2.*; python_version > '3.7'
+Authlib==1.3.*; python_version <= '3.7'
 pyotp==2.*
 qrcode==7.*
 boto3==1.33.*
@@ -55,11 +55,12 @@ azure-mgmt-resource==23.0.1
 azure-mgmt-subscription==3.1.1
 azure-identity==1.15.0
 google-api-python-client==2.*
-google-auth-oauthlib==1.1.0
+google-auth-oauthlib==1.2.0
 keyring==24.*; python_version > '3.7'
 keyring==23.*; python_version <= '3.7'
-Werkzeug==2.3.*; python_version > '3.7'
+Werkzeug==3.0.*; python_version > '3.7'
 Werkzeug==2.2.3; python_version <= '3.7'
-typer[all]==0.9.*
+typer[all]==0.12.*
 setuptools==69.*; python_version >= '3.12'
 jsonformatter~=0.3.2
+libgravatar==1.0.*
