@@ -659,19 +659,26 @@ export default class BackupSchema extends BaseUISchema {
         return false;
       },
     }, {
-      id: 'exclude_table_data',
-      label: gettext('Exclude table data'),
-      type: 'text',
-      disabled: false,
-      group: gettext('Table Options'),
-      visible: isVisibleForServerBackup(obj.backupType)
-    }, {
       id: 'table_and_children',
       label: gettext('Table and Children'),
       type: 'text',
       disabled: false,
       group: gettext('Table Options'),
       min_version: 160000,
+      visible: isVisibleForServerBackup(obj.backupType)
+    }, {
+      id: 'exclude_table',
+      label: gettext('Exclude table'),
+      type: 'text',
+      disabled: false,
+      group: gettext('Table Options'),
+      visible: isVisibleForServerBackup(obj.backupType)
+    }, {
+      id: 'exclude_table_data',
+      label: gettext('Exclude table data'),
+      type: 'text',
+      disabled: false,
+      group: gettext('Table Options'),
       visible: isVisibleForServerBackup(obj.backupType)
     }, {
       id: 'exclude_table_and_children',
