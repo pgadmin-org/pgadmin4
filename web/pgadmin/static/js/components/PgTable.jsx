@@ -16,6 +16,7 @@ import {
   useFlexLayout,
   useGlobalFilter,
   useExpanded,
+  useFilters,
 } from 'react-table';
 import { VariableSizeList } from 'react-window';
 import { makeStyles } from '@mui/styles';
@@ -32,6 +33,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PgIconButton } from './Buttons';
+import InfiniteLoader from 'react-window-infinite-loader';
 
 /* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
@@ -239,7 +241,7 @@ SortIcon.propTypes = {
   column: PropTypes.object
 };
 
-function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, ExpandedComponent }) {
+function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, ExpandedComponent, isItemLoaded }) {
   const [expandComplete, setExpandComplete] = React.useState(false);
   const rowRef = React.useRef() ;
   const classes = useStyles();
@@ -263,6 +265,7 @@ function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, Expand
     }
   }, [expandComplete]);
 
+
   return (
     <div style={style} key={row.id} ref={rowRef} data-test="row-container">
       <div className={classes.tableRowContent}>
@@ -281,12 +284,22 @@ function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, Expand
             if (row.original.row_type === 'alert'){
               classNames.push(classes.alert);
             }
-            return (
-              <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
-                title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
-                {cell.render('Cell')}
-              </div>
-            );
+
+            if (!isItemLoaded(index)) {
+              return (
+                <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
+                  title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
+                  {'Loading.....'}
+                </div>
+              );
+            } else {
+              return (
+                <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
+                  title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
+                  {cell.render('Cell')}
+                </div>
+              );
+            }
           })}
         </div>
         {!_.isUndefined(row) && row.isExpanded && (
@@ -313,9 +326,10 @@ RenderRow.propTypes = {
   prepareRow: PropTypes.func,
   setRowHeight: PropTypes.func,
   ExpandedComponent: PropTypes.node,
+  isItemLoaded: PropTypes.bool,
 };
 
-export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, tableProps, ...props }) {
+export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, tableProps, hasNextPage, isNextPageLoading, loadNextPage, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const [searchVal, setSearchVal] = React.useState('');
@@ -376,6 +390,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
       },
       ...tableProps,
     },
+    useFilters,
     useGlobalFilter,
     useSortBy,
     useExpanded,
@@ -475,6 +490,11 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
     setGlobalFilter(searchVal || undefined);
   }, [searchVal]);
 
+
+  const itemCount = hasNextPage ? data.length + 1 : data.length;
+  const loadMoreItems = isNextPageLoading ? () => {} : loadNextPage;
+  const isItemLoaded = index => !hasNextPage || index < data.length;
+
   // Render the UI for your table
   return (
     <Box className={classes.pgTableContainer} data-test={props['data-test']}>
@@ -515,7 +535,9 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                       <span>
                         <SortIcon column={column} />
                       </span>
+                      <span>&nbsp;&nbsp;{(column.canFilter && column.hasOwnProperty('Filter') && column.Filter !== undefined) ? column.render('Filter'):null}</span>
                     </div>
+
                     {column.resizable && (
                       <div
                         {...column.getResizerProps()}
@@ -530,24 +552,28 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
           {
             data.length > 0 ? (
               <div {...getTableBodyProps()} className={classes.autoResizerContainer}>
-                <AutoSizer
-                  className={classes.autoResizer}
-                >
-                  {({ height }) => (
-                    <VariableSizeList
-                      ref={windowTableRef}
-                      className={classes.fixedSizeList}
-                      height={isNaN(height) ? 100 : height}
-                      itemCount={rows.length}
-                      itemSize={getRowHeight}
-                      itemData={{rows, prepareRow, setRowHeight}}
-                    >
-                      {({index, style})=>(
-                        <RenderRow index={index} style={style} row={rows[index]} schema={schema} prepareRow={prepareRow}
-                          setRowHeight={setRowHeight} ExpandedComponent={ExpandedComponent} />
-                      )}
-                    </VariableSizeList>)}
-                </AutoSizer>
+                <InfiniteLoader
+                  isItemLoaded={isItemLoaded}
+                  itemCount={itemCount}
+                  loadMoreItems={loadMoreItems}>
+                  {({ onItemsRendered }) => (
+                    <AutoSizer className={classes.autoResizer}>
+                      {({ height }) => (
+                        <VariableSizeList
+                          className={classes.fixedSizeList}
+                          height={isNaN(height) ? 100 : height}
+                          itemCount={rows.length}
+                          itemSize={getRowHeight}
+                          itemData={{rows, prepareRow, setRowHeight}}
+                          onItemsRendered={onItemsRendered}
+                          {...props}
+                        >
+                          {({index, style})=>(
+                            <RenderRow index={index} style={style} row={rows[index]} schema={schema} prepareRow={prepareRow}
+                              setRowHeight={setRowHeight} ExpandedComponent={ExpandedComponent} isItemLoaded={isItemLoaded}/>
+                          )}
+                        </VariableSizeList>)}</AutoSizer>
+                  )}</InfiniteLoader>
               </div>
             ) : (
               <EmptyPanelMessage text={gettext('No rows found')}/>
@@ -585,7 +611,10 @@ PgTable.propTypes = {
   rows: PropTypes.object,
   ExpandedComponent: PropTypes.node,
   tableProps: PropTypes.object,
-  'data-test': PropTypes.string
+  'data-test': PropTypes.string,
+  hasNextPage: PropTypes.bool,
+  isNextPageLoading: PropTypes.bool,
+  loadNextPage: PropTypes.func,
 };
 
 

@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
 import PgTable from 'sources/components/PgTable';
-import { InputCheckbox } from '../../../static/js/components/FormComponents';
+import { InputCheckbox, FormInputSwitch, FormInputToggle } from '../../../static/js/components/FormComponents';
 import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
@@ -21,6 +21,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import StopSharpIcon from '@mui/icons-material/StopSharp';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
+import ServerLog from './ServerLog.ui';
 import _ from 'lodash';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
@@ -39,6 +40,10 @@ import Replication from './Replication';
 import RefreshButton from './components/RefreshButtons';
 import {getExpandCell } from '../../../static/js/components/PgTable';
 
+import CodeMirror from '../../../static/js/components/ReactCodeMirror';
+import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
+import { getBrowser } from '../../../static/js/utils';
+
 function parseData(data) {
   let res = [];
 
@@ -47,7 +52,6 @@ function parseData(data) {
   });
   return res;
 }
-
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     width: '100%',
@@ -129,7 +133,13 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
-  }
+  },
+  downloadButton: {
+    marginLeft: 'auto',
+    height:  '1.9rem',
+    width:  '2.2rem',
+    ...theme.mixins.panelBorder,
+  },
 }));
 
 function Dashboard({
@@ -137,6 +147,7 @@ function Dashboard({
   ...props
 }) {
   const classes = useStyles();
+  const api = getApiInstance();
   let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
   let mainTabs = [gettext('General'), gettext('System Statistics')];
   if(treeNodeInfo?.server?.replication_type) {
@@ -149,10 +160,19 @@ function Dashboard({
   const [tabVal, setTabVal] = useState(0);
   const [mainTabVal, setMainTabVal] = useState(0);
   const [refresh, setRefresh] = useState(false);
+  const [moreData, setMoreData] = useState(true);
   const [activeOnly, setActiveOnly] = useState(false);
+  const [logCol, setLogCol] = useState(false);
+  const [logFormat, setLogFormat] = useState('T');
+  const [logConfigFormat, setLogConfigFormat] = useState([]);
   const [schemaDict, setSchemaDict] = React.useState({});
+  const [schemaLogDict, setSchemaLogDict] = React.useState({});
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
   const [ldid, setLdid] = useState(0);
+
+  const [nextPage, setNextPage] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
   const systemStatsTabChanged = (e, tabVal) => {
     setSystemStatsTabVal(tabVal);
@@ -171,6 +191,7 @@ function Dashboard({
 
   if (!did) {
     tabs.push(gettext('Configuration'));
+    tabs.push(gettext('Log Entries'));
   }
 
   const tabChanged = (e, tabVal) => {
@@ -224,6 +245,119 @@ function Dashboard({
       sortable: true,
       resizable: true,
       disableGlobalFilter: false,
+    },
+  ];
+
+  const ColumnFilter = ({column}) => {
+    const {filterValue, setFilter} = column;
+    return (
+      <span>
+        <input
+          value={filterValue || ''}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder='Search'
+        />
+      </span>
+    );
+  };
+
+  const downloadServerLogs = async () => {
+    let extension = '.txt',
+      type = 'plain',
+      respData = '';
+
+    if(logCol === false) {
+      if (logFormat == 'C') {
+        extension = '.csv';
+        type = 'csv';
+      } else if (logFormat == 'J') {
+        extension = '.json';
+        type = 'json';
+      }
+      respData = dashData[0]['pg_read_file'];
+    } else if (logCol === true) {
+      extension = '.csv';
+      type = 'csv';
+      respData = dashData.map((d)=> {return Object.values(d).join(','); }).join('\n');
+    }
+
+    let fileName = 'data-' + new Date().getTime() + extension;
+
+    try {
+      let respBlob = new Blob([respData], {type : 'text/'+type}),
+        urlCreator = window.URL || window.webkitURL,
+        download_url = urlCreator.createObjectURL(respBlob),
+        link = document.createElement('a');
+
+      document.body.appendChild(link);
+
+      if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
+        // IE10+ : (has Blob, but not a[download] or URL)
+        window.navigator.msSaveBlob(respBlob, fileName);
+      } else {
+        link.setAttribute('href', download_url);
+        link.setAttribute('download', fileName);
+        link.click();
+      }
+      document.body.removeChild(link);
+    } catch (error) {
+      setSsMsg(gettext('Failed to download the logs.'));
+    }
+  };
+
+  const serverLogColumns = [
+    {
+      accessor: 'view_log_details',
+      Header: () => null,
+      sortable: false,
+      resizable: false,
+      disableGlobalFilter: false,
+      width: 35,
+      minWidth: 0,
+      id: 'btn-edit',
+      Cell: getExpandCell({
+        onClick: (row) => {
+          let schema = new ServerLog({
+            error_severity: row.original.error_severity,
+            timestamp: row.original.timestamp,
+            message: row.original.message,
+          });
+          setSchemaLogDict(prevState => ({
+            ...prevState,
+            [row.id]: schema
+          }));
+        },
+        title: gettext('View the log details')
+      }),
+    },
+    {
+      accessor: 'error_severity',
+      Header: gettext('Error Severity'),
+      sortable: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      width: 100,
+      minResizeWidth: 150,
+      Filter: ColumnFilter
+    },
+    {
+      accessor: 'timestamp',
+      Header: gettext('Log Prefix/Timestamp'),
+      sortable: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      Filter: ColumnFilter
+    },
+    {
+      accessor: 'message',
+      Header: gettext('Logs'),
+      sortable: false,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      Filter: ColumnFilter
     },
   ];
 
@@ -707,6 +841,38 @@ function Dashboard({
     nodeData?._type === 'database' && setTabVal(0);
   },[nodeData]);
 
+
+  useEffect(() => {
+    if (tabVal == 4) {
+      setLogFormat('T');
+      let url = url_for('dashboard.log_formats') +  '/' + sid;
+      api({
+        url: url,
+        type: 'GET',
+      })
+        .then((res) => {
+          let _format = res.data;
+          let _frm = [];
+          if (_format.includes('stderr')) {
+            _frm.push({'label': gettext('Text'), value: 'T'});
+          }
+          if (_format.includes('jsonlog')) {
+            _frm.push({'label': gettext('JSON'), value: 'J'});
+          }
+          if (_format.includes('csvlog')) {
+            _frm.push({'label': gettext('CSV'), value: 'C'});
+          }
+          setLogConfigFormat(_frm);
+        })
+        .catch((error) => {
+          pgAdmin.Browser.notifier.alert(
+            gettext('Failed to retrieve data from the server.'),
+            _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+          );
+        });
+    }
+  },[nodeData, tabVal]);
+
   useEffect(() => {
     // disable replication tab
     if(!treeNodeInfo?.server?.replication_type && mainTabVal == 2) {
@@ -719,7 +885,7 @@ function Dashboard({
         'Please connect to the selected server to view the dashboard.'
       );
 
-    if(tabVal == 3 && did) {
+    if((tabVal == 3 || tabVal == 4) && did) {
       setTabVal(0);
     }
 
@@ -730,21 +896,30 @@ function Dashboard({
         url = url_for('dashboard.locks');
       } else if (tabVal === 2) {
         url = url_for('dashboard.prepared');
-      } else {
+      } else if (tabVal === 3) {
         url = url_for('dashboard.config');
+      } else if (tabVal === 4) {
+        if(logCol === false) {
+          url = url_for('dashboard.logs', {'frm': logFormat, 'md': 'plain'});
+        } else if (logCol === true) {
+          url = url_for('dashboard.logs', {'frm': logFormat, 'md': 'table'});
+        }
       }
 
       message = gettext('Loading dashboard...');
       if (did && !dbConnected) return;
+
+
       if (did) url += sid + '/' + did;
-      else url += sid;
+      else url += '/' + sid;
 
       if (did && !dbConnected) return;
       if (did && did > 0) ssExtensionCheckUrl += '/' + sid + '/' + did;
       else ssExtensionCheckUrl += '/' + sid;
 
-      const api = getApiInstance();
       if (node) {
+        setSsMsg(gettext('Loading logs...'));
+        setDashData([]);
         if (mainTabVal == 0) {
           api({
             url: url,
@@ -792,7 +967,7 @@ function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal]);
+  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal, moreData, logCol, logFormat]);
 
   const filteredDashData = useMemo(()=>{
     if (tabVal == 0 && activeOnly) {
@@ -840,6 +1015,85 @@ function Dashboard({
         value={activeOnly}
         controlProps={CustomActiveOnlyHeaderLabel}
       ></InputCheckbox>);
+  };
+
+  const CustomLogHeaderLabel =
+    {
+      label: gettext('Table based logs'),
+    };
+  const CustomLogHeader = () => {
+    return ( <Box height="100%" className={classes.cardHeader} display="flex" flexDirection="column">
+      <FormInputToggle
+        label={gettext('Log Format')}
+        className={classes.searchInput}
+        value={logFormat}
+        onChange={(val) => {
+          setLogFormat(val);
+        }}
+        options={logConfigFormat}
+        controlProps={CustomLogHeaderLabel}
+        labelGridBasis={3}
+        controlGridBasis={6}
+      ></FormInputToggle>
+      <FormInputSwitch
+        label={gettext('Table Based Logs')}
+        labelPlacement="end"
+        className={classes.searchInput}
+        value={logCol}
+        onChange={(e) => {
+          setLogCol(e.target.checked);
+        }}
+        controlProps={CustomLogHeaderLabel}
+        labelGridBasis={3}
+        controlGridBasis={6}
+      ></FormInputSwitch>
+      <PgIconButton
+        size="xs"
+        className={classes.downloadButton}
+        icon={<GetAppRoundedIcon />}
+        onClick={downloadServerLogs}
+        aria-label="Downloan"
+        title={gettext('Download logs ')}
+      ></PgIconButton>
+    </Box>);
+  };
+
+  const handleScroll = () => {
+    // Set scroll current position of RestSet.
+    setMoreData(true);
+  };
+
+
+  const loadNextPage = () => {
+    setIsNextPageLoading(true);
+    let _nextPage = nextPage + 1;
+    setNextPage(_nextPage);
+    setTimeout(() => {
+      setHasNextPage(true);
+      setIsNextPageLoading(false);
+
+      let _url = url_for('dashboard.logs', {'frm': logFormat, 'md': 'table'});
+      _url += '/' + sid + '/' + _nextPage;
+
+      const api = getApiInstance();
+      api({
+        url: _url,
+        type: 'GET',
+      })
+        .then((res) => {
+          let _d = dashData.concat(parseData(res.data));
+          setDashData(_d);
+        })
+        .catch((error) => {
+          pgAdmin.Browser.notifier.alert(
+            gettext('Failed to retrieve data from the server.'),
+            _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+          );
+          // show failed message.
+          setMsg(gettext('Failed to retrieve data from the server.'));
+        });
+
+    }, 500);
   };
 
   return (
@@ -914,6 +1168,34 @@ function Dashboard({
                         columns={serverConfigColumns}
                         data={dashData}
                       ></PgTable>
+                    </TabPanel>
+                    <TabPanel value={tabVal} index={4} classNameRoot={classes.tabPanel}>
+                      <Box>
+                        <CustomLogHeader/>
+                      </Box>
+                      {dashData.length == 0 && <div className={classes.emptyPanel}>
+                        <EmptyPanelMessage text={ssMsg}/>
+                      </div>}
+                      {dashData && logCol === false && dashData.length == 1 && <CodeMirror
+                        id='tests'
+                        className={classes.textArea}
+                        value={dashData[0]['pg_read_file']}
+                        readonly={true}
+                        options={{
+                          lineNumbers: true,
+                          mode: 'text/plain',
+                        }}
+                        onScroll={handleScroll}
+                      />}
+                      {dashData && logCol === true && <PgTable
+                        caveTable={true}
+                        columns={serverLogColumns}
+                        data={dashData}
+                        hasNextPage={hasNextPage}
+                        isNextPageLoading={isNextPageLoading}
+                        loadNextPage={loadNextPage}
+                        schema={schemaLogDict}
+                      ></PgTable>}
                     </TabPanel>
                   </SectionContainer>
                 )}
@@ -1006,6 +1288,7 @@ Dashboard.propTypes = {
   serverConnected: PropTypes.bool,
   dbConnected: PropTypes.bool,
   isActive: PropTypes.bool,
+  column: PropTypes.object,
 };
 
 export default withStandardTabInfo(Dashboard, BROWSER_PANELS.DASHBOARD);

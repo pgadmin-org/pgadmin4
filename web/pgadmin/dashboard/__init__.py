@@ -16,7 +16,7 @@ from flask_security import login_required
 import json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
-    internal_server_error
+    internal_server_error, make_json_response
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
@@ -24,7 +24,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
     PREF_LABEL_REFRESH_RATES
 
-from config import PG_DEFAULT_DRIVER
+from config import PG_DEFAULT_DRIVER,ON_DEMAND_LOG_COUNT
 
 MODULE_NAME = 'dashboard'
 
@@ -239,6 +239,9 @@ class DashboardModule(PgAdminModule):
             'dashboard.get_prepared_by_database_id',
             'dashboard.config',
             'dashboard.get_config_by_server_id',
+            'dashboard.log_formats',
+            'dashboard.logs',
+            'dashboard.get_logs_by_server_id',
             'dashboard.check_system_statistics',
             'dashboard.check_system_statistics_sid',
             'dashboard.check_system_statistics_did',
@@ -270,7 +273,7 @@ def check_precondition(f):
         )
 
         def get_error(i_node_type):
-            stats_type = ('activity', 'prepared', 'locks', 'config')
+            stats_type = ('activity', 'prepared', 'locks', 'config', 'logs')
             if f.__name__ in stats_type:
                 return precondition_required(
                     gettext("Please connect to the selected {0}"
@@ -532,6 +535,142 @@ def config(sid=None):
     :return:
     """
     return get_data(sid, None, 'config.sql')
+
+
+@blueprint.route('/log_formats', endpoint='log_formats')
+@blueprint.route('/log_formats/<int:sid>', endpoint='log_formats')
+@login_required
+@check_precondition
+def log_formats(sid=None):
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    sql = render_template(
+        "/".join([g.template_path, 'log_format.sql'])
+    )
+    status, _format = g.conn.execute_scalar(sql)
+
+    if not status:
+        return internal_server_error(errormsg=_format)
+
+    return ajax_response(
+        response=_format,
+        status=200
+    )
+
+
+@blueprint.route('/logs/<frm>/<md>', endpoint='logs')
+@blueprint.route('/logs/<frm>/<md>/<int:sid>',
+                 endpoint='get_logs_by_server_id')
+@blueprint.route('/logs/<frm>/<md>/<int:sid>/<int:page>',
+                 endpoint='get_logs_by_server_id')
+@blueprint.route('/logs/<frm>/<md>/<int:sid>/<int:page>/',
+                 endpoint='get_logs_by_server_id')
+@login_required
+@check_precondition
+def logs(frm=None, md=None, sid=None, page=0):
+    """
+    This function returns server logs information
+    """
+
+    LOG_STATEMENTS = 'DEBUG:|STATEMENT:|LOG:|WARNING:|NOTICE:|INFO:' \
+                     '|ERROR:|FATAL:|PANIC:'
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    sql = render_template(
+        "/".join([g.template_path, 'log_format.sql'])
+    )
+    status, _format = g.conn.execute_scalar(sql)
+
+    log_format = ''
+    if frm == 'C' and 'csvlog' in _format:
+        log_format = 'csvlog'
+    elif frm == 'J' and 'jsonlog' in _format:
+        log_format = 'jsonlog'
+    sql = render_template(
+        "/".join([g.template_path, 'log_stat.sql']),
+        log_format=log_format, conn=g.conn
+    )
+    status, res = g.conn.execute_scalar(sql)
+    file_stat = json.loads(res[0])
+
+    st = 0
+    ed = ON_DEMAND_LOG_COUNT
+    page = int(page)
+    if page > 0:
+        st = page * int(ON_DEMAND_LOG_COUNT)
+        ed = st + int(ON_DEMAND_LOG_COUNT)
+    if st < file_stat:
+        if md == 'plain':
+            ed = file_stat
+        sql = render_template(
+            "/".join([g.template_path, 'logs.sql']), st=st, ed=ed,
+            log_format=log_format, conn=g.conn
+        )
+        status, res = g.conn.execute_dict(sql)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        if frm == 'J':
+            final_cols = []
+            final_res = res['rows'][0]['pg_read_file'].split('\n')
+            for f in final_res:
+                try:
+                    _tmp_log = json.loads(f)
+                    final_cols.append(
+                        {"error_severity": _tmp_log['error_severity'],
+                         "timestamp": _tmp_log['timestamp'],
+                         "message": _tmp_log['message']})
+                except Exception as e:
+                    pass
+
+        elif frm == 'C':
+            final_cols = []
+            final_res = res['rows'][0]['pg_read_file'].split('\n')
+            for f in final_res:
+                try:
+                    _tmp_log = f.split(',')
+                    final_cols.append({"error_severity": _tmp_log[11],
+                                       "timestamp": _tmp_log[0],
+                                       "message": _tmp_log[13]})
+                except Exception as e:
+                    pass
+
+        else:
+            import re
+            final_res = res['rows'][0]['pg_read_file'].split('\n')
+            col1 = []
+            col2 = []
+            final_cols = []
+            _pattern = re.compile(LOG_STATEMENTS)
+            for f in final_res:
+                tmp = re.search(LOG_STATEMENTS, f)
+                fsp = _pattern.split(f)
+
+                if not tmp:
+                    last_val = final_cols.pop() if len(final_cols) > 0\
+                        else {'message': ''}
+                    last_val['message'] += f
+                    final_cols.append(last_val)
+                else:
+                    _tmp = re.split(LOG_STATEMENTS, f)
+
+                    final_cols.append({
+                        "error_severity": tmp.group(0),
+                        "message": _tmp[1] if len(_tmp) > 1 else ''})
+
+    if md == 'plain':
+        final_response = res['rows']
+    else:
+        final_response = final_cols
+        print("Final==",final_response)
+
+    return ajax_response(
+        response=final_response,
+        status=200
+    )
 
 
 @blueprint.route(

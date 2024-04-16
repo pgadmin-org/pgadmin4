@@ -926,6 +926,12 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 ENABLE_SERVER_PASS_EXEC_CMD = False
 
 #############################################################################
+# Number of records to fetch in one batch for server logs.
+##############################################################################
+
+ON_DEMAND_LOG_COUNT = 2000
+
+#############################################################################
 # Patch the default config with custom config and other manipulations
 #############################################################################
 from pgadmin.evaluate_config import evaluate_and_patch_config

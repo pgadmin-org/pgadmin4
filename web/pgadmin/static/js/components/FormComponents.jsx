@@ -157,7 +157,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
     <Grid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
         {
-          labelTooltip ?
+          labelTooltip ? 
             <Tooltip title={labelTooltip}>
               {labelComponent}
             </Tooltip> : labelComponent
