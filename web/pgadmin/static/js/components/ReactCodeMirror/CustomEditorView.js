@@ -216,7 +216,7 @@ export default class CustomEditorView extends EditorView {
         pos = line.to;
       }
     }
-    this.dispatch({ selection: { anchor: pos, head: pos } });
+    this.dispatch({ selection: { anchor: pos, head: pos }, scrollIntoView: true});
   }
 
   getCurrentLineNo() {
@@ -311,6 +311,7 @@ export default class CustomEditorView extends EditorView {
   }
 
   setActiveLine(line) {
-    this.dispatch({ effects: activeLineEffect.of({ from: line, to: line }) });
+    let scrollEffect = line >= 0 ? [EditorView.scrollIntoView(this.state.doc.line(line).from, {y: 'center'})] : [];
+    this.dispatch({ effects: [activeLineEffect.of({ from: line, to: line })].concat(scrollEffect) });
   }
 }
