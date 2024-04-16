@@ -27,8 +27,8 @@ import keyring
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
 from flask_babel import gettext
-from flask_gravatar import Gravatar
-from flask_login import current_user, login_required
+from libgravatar import Gravatar
+from flask_security import current_user, login_required
 from flask_login.utils import login_url
 from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
@@ -360,24 +360,27 @@ def _get_supported_browser():
     return browser_name, browser_known, version
 
 
+@blueprint.add_app_template_filter
+def gravatar(username):
+    """
+    This function adds a template filter which
+    returns gravatar image for user.
+    :return: gravatar image
+    """
+    g = Gravatar(username)
+    return g.get_image(
+        size=100,
+        rating='g',
+        default='retro'
+    )
+
+
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
 @mfa_required
 def index():
     """Render and process the main browser window."""
-    # Register Gravatar module with the app only if required
-    if config.SHOW_GRAVATAR_IMAGE:
-        Gravatar(
-            current_app,
-            size=100,
-            rating='g',
-            default='retro',
-            force_default=False,
-            force_lower=True,
-            use_ssl=True,
-            base_url=None
-        )
 
     # Check the browser is a supported version
     # NOTE: If the checks here are updated, make sure the supported versions
