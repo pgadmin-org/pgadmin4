@@ -27,6 +27,7 @@ Housekeeping
 ************
 
   | `Issue #7213 <https://github.com/pgadmin-org/pgadmin4/issues/7213>`_ -  Update UI library MUI from v4 to v5, more details `here <https://github.com/pgadmin-org/pgadmin4/commit/102e0a983956be57fdb63abb356b5b8fcb8b74ba>`_
+  | `Issue #7362 <https://github.com/pgadmin-org/pgadmin4/issues/7362>`_ -  Upgraded Flask, Flask-Security-Too, Werkzeug, and other dependencies, ensuring compatibility with Python 3.7.
 
 Bug fixes
 *********
