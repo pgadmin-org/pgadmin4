@@ -18,7 +18,7 @@ import CustomPropTypes from '../custom_prop_types';
 import { DepListenerContext } from './DepListener';
 import { getFieldMetaData } from './FormView';
 import FieldSet from '../components/FieldSet';
-import { Box } from '@mui/material';
+import { Grid } from '@mui/material';
 
 export default function FieldSetView({
   value, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label, visible}) {
@@ -101,9 +101,9 @@ export default function FieldSetView({
           withContainer: false, controlGridBasis: 3
         }));
         viewFields.push(
-          <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={controlClassName} rowGap="8px" flexWrap="wrap">
+          <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={controlClassName} rowGap="8px">
             {inlineComponents}
-          </Box>
+          </Grid>
         );
         inlineComponents = [];
       } else {
@@ -113,9 +113,9 @@ export default function FieldSetView({
   }
   if(inlineComponents?.length > 0) {
     viewFields.push(
-      <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={controlClassName} rowGap="8px" flexWrap="wrap">
+      <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={controlClassName} rowGap="8px">
         {inlineComponents}
-      </Box>
+      </Grid>
     );
   }
 

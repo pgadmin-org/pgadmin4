@@ -499,6 +499,7 @@ function getFinalTheme(baseTheme) {
             '&[readonly], &.Mui-disabled': {
               color: baseTheme.palette.text.muted,
               backgroundColor: baseTheme.otherVars.inputDisabledBg,
+              WebkitTextFillColor: baseTheme.palette.text.muted
             },
             '&:focus': {
               outline: '0 !important',

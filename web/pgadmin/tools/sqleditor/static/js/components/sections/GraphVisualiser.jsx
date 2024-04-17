@@ -26,6 +26,7 @@ import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
   CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
+import { useTheme } from '@mui/material';
 
 // Numeric data type used to separate out the options for Y axis.
 const NUMERIC_TYPES = ['oid', 'smallint', 'integer', 'bigint', 'decimal', 'numeric',
@@ -202,7 +203,7 @@ function getPieChartData(rows, colName, colPosition, queryToolCtx) {
 }
 
 // This function is used to get the graph data set for the X axis and Y axis
-function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx) {
+function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, graphColors) {
   // Function is used to the find the position of the column
   function getColumnPosition(colName) {
     return _.find(columns, (c)=>(c.name==colName))?.pos;
@@ -227,7 +228,7 @@ function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx) {
       }
       colorIndex = colorIndex + 1;
 
-      let color = CHART_THEME_COLORS[queryToolCtx.preferences.misc.theme][colorIndex];
+      let color = graphColors[colorIndex];
       let colPosition = getColumnPosition(colName);
 
       // Loop is used to set the index for DATA_POINT_STYLE array
@@ -262,6 +263,8 @@ export function GraphVisualiser({initColumns}) {
   const [columns, setColumns] = useState(initColumns);
   const [graphHeight, setGraphHeight] = useState();
   const [expandedState, setExpandedState] = useState(true);
+  const [graphColor, setGraphColor] = useState([]);
+  const theme = useTheme();
 
 
   // Create X axis options for drop down.
@@ -339,7 +342,25 @@ export function GraphVisualiser({initColumns}) {
     if (graphType === 'P') {
       setYAxis('');
     }
-  }, [graphType]);
+  }, [graphType, theme]);
+
+  useEffect(()=>{
+    setGraphColor(CHART_THEME_COLORS[queryToolCtx.preferences.misc.theme]);
+  }, [queryToolCtx.preferences.misc.theme, theme]);
+
+  const graphBackgroundColor = useMemo(() => {
+    return theme.palette.background.default;
+  },[theme]);
+
+
+  const beforeDrawFunc = (chart) => {
+    const ctx = chart.canvas.getContext('2d');
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = graphBackgroundColor;
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  };
 
   // Generate button callback
   const onGenerate = async ()=>{
@@ -359,7 +380,7 @@ export function GraphVisualiser({initColumns}) {
     setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
-      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx), prev[1] + 1]
+      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx, graphColor), prev[1] + 1]
     );
 
     setLoaderText('');
@@ -382,12 +403,7 @@ export function GraphVisualiser({initColumns}) {
   // when downloading the graph.
   const plugin = {
     beforeDraw: (chart) => {
-      const ctx = chart.canvas.getContext('2d');
-      ctx.save();
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-bg');
-      ctx.fillRect(0, 0, chart.width, chart.height);
-      ctx.restore();
+      beforeDrawFunc(chart);
     }
   };
 
@@ -444,7 +460,7 @@ export function GraphVisualiser({initColumns}) {
         <Box style={{height:`${graphHeight}px`}}>
           {useMemo(()=> <GenerateGraph graphType={graphType} graphData={graphData} onInit={(chartObj)=> {
             chartObjRef.current = chartObj;
-          }} plugins={plugin}/>, [graphDataKey])}
+          }} plugins={[plugin]}/>, [graphDataKey])}
         </Box>
       </Box>
     </Box>
