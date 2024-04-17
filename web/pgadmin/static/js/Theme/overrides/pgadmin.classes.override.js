@@ -1,6 +1,10 @@
 export default function pgadminOverride(theme) {
   return {
-
+    '.dialog-node-icon': {
+      marginRight: '2px !important',
+      padding: '0px 10px',
+      backgroundPosition: '50%'
+    },
     '.icon-server-connecting': {
       backgroundImage: theme.otherVars.iconLoaderUrl,
       backgroundRepeat: 'no-repeat',
@@ -9,7 +13,6 @@ export default function pgadminOverride(theme) {
       verticalAlign: 'middle',
       height: '1.3em',
     },
-
     '.dashboard-pg-doc': {
       backgroundImage: theme.otherVars.dashboardPgDoc,
       display: 'inline-block',
