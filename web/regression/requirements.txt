@@ -27,4 +27,4 @@ testtools==2.7.1
 traceback2==1.4.0
 selenium==4.19.0
 # Pinned for https://github.com/eventlet/eventlet/issues/805
-dnspython==2.3.0
+dnspython==2.6.1
