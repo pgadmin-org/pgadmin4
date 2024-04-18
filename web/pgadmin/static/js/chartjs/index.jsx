@@ -11,6 +11,7 @@ import { Chart, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { useTheme } from '@mui/material';
 
 export const DATA_POINT_STYLE = ['circle', 'cross', 'crossRot', 'rect',
   'rectRounded', 'rectRot', 'star', 'triangle'];
@@ -59,7 +60,6 @@ const defaultOptions = {
       },
       ticks: {
         display: false,
-        color: getComputedStyle(document.documentElement).getPropertyValue('--color-fg'),
       },
     },
     y: {
@@ -69,12 +69,9 @@ const defaultOptions = {
             return label;
           }
         },
-        color: getComputedStyle(document.documentElement).getPropertyValue('--color-fg'),
       },
       grid: {
         drawBorder: false,
-        zeroLineColor: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
-        color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
       },
     },
   },
@@ -101,6 +98,7 @@ const defaultOptions = {
 export default function BaseChart({type='line', id, options, data, redraw=false, plugins={}, ...props}) {
   const chartRef = React.useRef();
   const chartObj = React.useRef();
+  const theme = useTheme();
 
   const initChart = function() {
     Chart.register(...registerables);
@@ -125,6 +123,30 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
     initChart();
     return destroyChart;
   }, []);
+
+  useEffect(()=>{
+    let theme1 = {
+      scales: {
+        x: {
+          ticks: {
+            color: theme.palette.text.primary,
+          },
+        },
+        y: {
+          ticks: {
+            color: theme.palette.text.primary,
+          },
+          grid: {
+            zeroLineColor: theme.otherVars.borderColor,
+            color: theme.otherVars.borderColor
+          },
+        },
+      },
+    };
+    let merged = _.merge(options, theme1);
+    chartObj.current.options = merged;
+    chartObj.current.update(props.updateOptions || {});
+  },[theme]);
 
   useEffect(()=>{
     if(typeof(chartObj.current) != 'undefined') {

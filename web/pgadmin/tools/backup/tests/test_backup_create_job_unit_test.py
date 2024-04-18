@@ -708,6 +708,31 @@ class BackupCreateJobTest(BaseTestGenerator):
              message='--large-objects is not supported by EPAS/PG server '
                      'less than 16'
          )),
+        ('When backup the object with option - Exclude table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 exclude_table="table1"
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--exclude-table', 'table1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When backup a schema with default options (< v16)',
          dict(
              class_params=dict(

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs, Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -381,9 +381,9 @@ export default function FormView({
             withContainer: false, controlGridBasis: 3
           }));
           tabs[group].push(
-            <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={classes.controlRow} rowGap="8px" flexWrap="wrap">
+            <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={classes.controlRow} rowGap="8px">
               {inlineComponents}
-            </Box>
+            </Grid>
           );
           inlineComponents = [];
           inlineCompGroup = null;
@@ -396,9 +396,9 @@ export default function FormView({
 
   if(inlineComponents?.length > 0) {
     tabs[inlineCompGroup].push(
-      <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={classes.controlRow} rowGap="8px" flexWrap="wrap">
+      <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={classes.controlRow} rowGap="8px">
         {inlineComponents}
-      </Box>
+      </Grid>
     );
   }
 
