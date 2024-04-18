@@ -22,7 +22,6 @@ import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent'
 import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
-import {shortcut_key} from 'sources/keyboard_shortcuts';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import PropTypes from 'prop-types';
 
@@ -138,6 +137,24 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
 
   useKeyboardShortcuts([
     {
+      shortcut: queryToolPref.btn_add_row,
+      options: {
+        callback: ()=>{canEdit && addRow();}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_paste_row,
+      options: {
+        callback: ()=>{canEdit && pasteRows();}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_delete_row,
+      options: {
+        callback: ()=>{!(buttonsDisabled['delete-rows'] || !canEdit) && deleteRows();}
+      }
+    },
+    {
       shortcut: queryToolPref.save_data,
       options: {
         callback: ()=>{saveData();}
@@ -156,17 +173,17 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
       <Box className={classes.root}>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
-            accesskey={shortcut_key(queryToolPref.btn_add_row)} disabled={!canEdit} onClick={addRow} />
+            shortcut={queryToolPref.btn_add_row} disabled={!canEdit} onClick={addRow} />
           <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
             shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']} onClick={copyData} />
           <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
-            accesskey={shortcut_key(queryToolPref.btn_paste_row)} disabled={!canEdit} onClick={pasteRows} />
+            shortcut={queryToolPref.btn_paste_row} disabled={!canEdit} onClick={pasteRows} />
           <PgIconButton title={gettext('Paste options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-pasteoptions" ref={pasetMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Delete')} icon={<DeleteRoundedIcon />}
-            accesskey={shortcut_key(queryToolPref.btn_delete_row)} disabled={buttonsDisabled['delete-rows'] || !canEdit} onClick={deleteRows} />
+            shortcut={queryToolPref.btn_delete_row} disabled={buttonsDisabled['delete-rows'] || !canEdit} onClick={deleteRows} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Save Data Changes')} icon={<SaveDataIcon />}

@@ -25,7 +25,6 @@ import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
-import { getBrowserAccesskey } from '../../../../static/js/components/ShortcutTitle';
 import usePreferences from '../store';
 
 class PreferencesSchema extends BaseUISchema {
@@ -340,8 +339,6 @@ export default function PreferencesComponent({ ...props }) {
     // Check and add the note for the element.
     if (subNode.label == gettext('Nodes') && node.label == gettext('Browser')) {
       note = [gettext('This settings is to Show/Hide nodes in the object explorer.')].join('');
-    } if(nodeData.name == 'keyboard_shortcuts') {
-      note = gettext('The Accesskey here is %s.', getBrowserAccesskey().join(' + '));
     } else {
       note = [note].join('');
     }

@@ -1083,6 +1083,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
       node_name: retrieveNodeName(selectedNodeInfo),
     },
     preferences: preferences,
+    containerRef: containerRef,
   }), [preferences]);
 
   // Define the debugger layout components such as DebuggerEditor to show queries and

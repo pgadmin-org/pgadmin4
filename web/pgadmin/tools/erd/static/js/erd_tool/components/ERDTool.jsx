@@ -51,7 +51,7 @@ export class KeyboardShortcutAction extends Action {
     for(let shortcut_val of shortcut_handlers){
       let [key, handler] = shortcut_val;
       if(key) {
-        this.shortcuts[this.shortcutKey(key.alt, key.control, key.shift, false, key.key.key_code)] = handler;
+        this.shortcuts[this.shortcutKey(key.alt, key.ctrl_is_meta ? false : key.control, key.shift, Boolean(key.ctrl_is_meta), key.key.key_code)] = handler;
       }
     }
   }
@@ -63,6 +63,8 @@ export class KeyboardShortcutAction extends Action {
   callHandler(event) {
     let handler = this.shortcuts[this.shortcutKey(event.altKey, event.ctrlKey, event.shiftKey, event.metaKey, event.keyCode)];
     if(handler) {
+      event.stopPropagation();
+      event.preventDefault();
       handler();
     }
   }

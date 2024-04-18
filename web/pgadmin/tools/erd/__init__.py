@@ -73,6 +73,7 @@ class ERDModule(PgAdminModule):
                 'alt': False,
                 'shift': False,
                 'control': True,
+                'ctrl_is_meta': True,
                 'key': {
                     'key_code': 79,
                     'char': 'o'
@@ -91,6 +92,7 @@ class ERDModule(PgAdminModule):
                 'alt': False,
                 'shift': False,
                 'control': True,
+                'ctrl_is_meta': True,
                 'key': {
                     'key_code': 83,
                     'char': 's'

@@ -10,7 +10,7 @@
 import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -18,8 +18,9 @@ import url_for from 'sources/url_for';
 import getApiInstance from '../../../../../static/js/api_instance';
 import CodeMirror from '../../../../../static/js/components/ReactCodeMirror';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
-import { DebuggerEventsContext } from './DebuggerComponent';
+import { DebuggerContext, DebuggerEventsContext } from './DebuggerComponent';
 import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
+import { isShortcutValue, toCodeMirrorKey } from '../../../../../static/js/utils';
 
 
 const useStyles = makeStyles(() => ({
@@ -33,6 +34,8 @@ export default function DebuggerEditor({ getEditor, params }) {
   const editor = React.useRef();
   const eventBus = useContext(DebuggerEventsContext);
   const pgAdmin = usePgAdmin();
+  const debuggerCtx = useContext(DebuggerContext);
+  let preferences = debuggerCtx.preferences.debugger;
 
   const api = getApiInstance();
 
@@ -70,6 +73,29 @@ export default function DebuggerEditor({ getEditor, params }) {
     getEditor(editor.current);
   }, [editor.current]);
 
+  const shortcutOverrideKeys = useMemo(
+    ()=>{
+      return Object.values(preferences)
+        .filter((p)=>isShortcutValue(p))
+        .map((p)=>({
+          key: toCodeMirrorKey(p), run: (_v, e)=>{
+            debuggerCtx.containerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
+              which: e.which,
+              keyCode: e.keyCode,
+              altKey: e.altKey,
+              shiftKey: e.shiftKey,
+              ctrlKey: e.ctrlKey,
+              metaKey: e.metaKey,
+            }));
+            return true;
+          },
+          preventDefault: true,
+          stopPropagation: true,
+        }));
+    },
+    [preferences]
+  );
+
   return (
     <CodeMirror
       currEditor={(obj) => {
@@ -81,6 +107,7 @@ export default function DebuggerEditor({ getEditor, params }) {
       }}
       className={classes.sql}
       readonly={true}
+      customKeyMap={shortcutOverrideKeys}
       breakpoint
     />);
 }
