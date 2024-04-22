@@ -28,7 +28,7 @@ import {
   keymap,
 } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
-import { history, defaultKeymap, historyKeymap, indentLess, indentMore } from '@codemirror/commands';
+import { history, defaultKeymap, historyKeymap, indentLess, indentMore, deleteCharBackwardStrict } from '@codemirror/commands';
 import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import {
   foldGutter,
@@ -118,6 +118,10 @@ const defaultExtensions = [
   },{
     key: 'Tab',
     run: acceptCompletion,
+  },{
+    key: 'Backspace',
+    preventDefault: true,
+    run: deleteCharBackwardStrict,
   }]),
   sql({
     dialect: PgSQL,
