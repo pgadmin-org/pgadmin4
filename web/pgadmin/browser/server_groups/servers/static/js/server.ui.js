@@ -224,7 +224,8 @@ export default class ServerSchema extends BaseUISchema {
           return state.connect_now && obj.isNew(state);
         },
         controlProps: {
-          maxLength: null
+          maxLength: null,
+          autoComplete: 'new-password'
         },
         disabled: function(state) {return state.kerberos_conn;},
       },{

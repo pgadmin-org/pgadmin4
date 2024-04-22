@@ -141,7 +141,7 @@ export default function AboutComponent() {
             }}>{copyText}</DefaultButton>
           </Box>
           <Box flexGrow="1" paddingTop="1px">
-            <InputText style={{height: '100%'}} controlProps={{multiline: true}} inputStyle={{resize: 'none', height: '100%'}}
+            <InputText style={{height: '100%'}} controlProps={{multiline: true, rows: 8}} inputStyle={{resize: 'none'}}
               value={aboutData.settings}/>
           </Box>
         </Box>
