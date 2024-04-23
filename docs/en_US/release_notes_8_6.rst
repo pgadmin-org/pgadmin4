@@ -37,3 +37,4 @@ Bug fixes
   | `Issue #7282 <https://github.com/pgadmin-org/pgadmin4/issues/7282>`_ -  Fixed an XSS vulnerability in the /settings/store endpoint.
   | `Issue #7294 <https://github.com/pgadmin-org/pgadmin4/issues/7294>`_ -  Fixed an issue where double dollar quoted code is treated as string in syntax highlighter.
   | `Issue #7317 <https://github.com/pgadmin-org/pgadmin4/issues/7317>`_ -  Fixed an issue where pressing backspace should remove the spaces and not the entire tab width, on enabling 'Use spaces?' in the preferences.
+  | `Issue #7384 <https://github.com/pgadmin-org/pgadmin4/issues/7384>`_ -  Fixed an issue when closing the view data second tab; it raises the error that the 'ViewCommand' object has no attribute 'auto_commit'.

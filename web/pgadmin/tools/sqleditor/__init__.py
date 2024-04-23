@@ -690,7 +690,7 @@ def close_sqleditor_session(trans_id):
                     manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
         # Close the auto complete connection
-        if cmd_obj.conn_id_ac is not None:
+        if hasattr(cmd_obj, 'conn_id_ac') and cmd_obj.conn_id_ac is not None:
             manager = get_driver(
                 PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
             if manager is not None:
@@ -1735,7 +1735,7 @@ def check_and_upgrade_to_qt(trans_id, connect):
 
     if 'gridData' in session and str(trans_id) in session['gridData']:
         data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
-        if data.object_type == 'table':
+        if data.object_type == 'table' or data.object_type == 'view':
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 data.sid)
             default_conn = manager.connection(conn_id=data.conn_id,
