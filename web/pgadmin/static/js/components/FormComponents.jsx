@@ -268,8 +268,12 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
     placeholder = controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z';
   }
 
-  const handleChange = (dateVal, stringVal) => {
-    onChange(stringVal);
+  const handleChange = (dateVal) => {
+    if(DateFns.isValid(dateVal)) {
+      onChange(DateFns.format(dateVal, format));
+    } else{
+      onChange(null);
+    }
   };
 
   /* Value should be a date object instead of string */
