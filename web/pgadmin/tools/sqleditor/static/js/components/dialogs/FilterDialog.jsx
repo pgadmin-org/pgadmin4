@@ -1,12 +1,3 @@
-/////////////////////////////////////////////////////////////
-//
-// pgAdmin 4 - PostgreSQL Tools
-//
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
-// This software is released under the PostgreSQL Licence
-//
-//////////////////////////////////////////////////////////////
-import { makeStyles } from '@mui/styles';
 import React from 'react';
 import SchemaView from '../../../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../../../static/js/SchemaView/base_schema.ui';
@@ -14,6 +5,7 @@ import gettext from 'sources/gettext';
 import { QueryToolContext } from '../QueryToolComponent';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
+
 
 class SortingCollection extends BaseUISchema {
   constructor(columnOptions) {
@@ -80,14 +72,8 @@ class FilterSchema extends BaseUISchema {
   }
 }
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    ...theme.mixins.tabPanel,
-  },
-}));
-
 export default function FilterDialog({onClose, onSave}) {
-  const classes = useStyles();
+
   const queryToolCtx = React.useContext(QueryToolContext);
   const filterSchemaObj = React.useMemo(()=>new FilterSchema([]));
 
@@ -144,7 +130,6 @@ export default function FilterDialog({onClose, onSave}) {
       disableSqlHelp={true}
       disableDialogHelp={true}
       isTabView={false}
-      formClassName={classes.root}
       checkDirtyOnEnableSave={true}
     />
   );

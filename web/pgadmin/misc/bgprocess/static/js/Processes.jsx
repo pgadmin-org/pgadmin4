@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
 import { PgButtonGroup, PgIconButton } from '../../../../static/js/components/Buttons';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -26,66 +26,35 @@ import ErrorBoundary from '../../../../static/js/helpers/ErrorBoundary';
 import ProcessDetails from './ProcessDetails';
 
 
-const useStyles = makeStyles((theme) => ({
-  stopButton: {
+const Root = styled('div')(({theme}) => ({
+  height: '100%',
+  '& .Processes-stopButton': {
     color: theme.palette.error.main
   },
-  buttonClick: {
-    backgroundColor: theme.palette.grey[400]
-  },
-  emptyPanel: {
-    minHeight: '100%',
-    minWidth: '100%',
-    background: theme.otherVars.emptySpaceBg,
-    overflow: 'auto',
-    padding: '8px',
-    display: 'flex',
-  },
-  panelIcon: {
-    width: '80%',
-    margin: '0 auto',
-    marginTop: '25px !important',
-    position: 'relative',
-    textAlign: 'center',
-  },
-  panelMessage: {
-    marginLeft: '0.5rem',
-    fontSize: '0.875rem',
-  },
-  autoResizer: {
-    height: '100% !important',
-    width: '100% !important',
-    background: theme.palette.grey[400],
-    padding: '7.5px',
-    overflow: 'auto !important',
-    minHeight: '100%',
-    minWidth: '100%',
-  },
-  noPadding: {
-    padding: 0,
-  },
-  bgSucess: {
-    backgroundColor: theme.palette.success.light,
-    height: '100%',
-    padding: '4px',
-  },
-  bgFailed: {
-    backgroundColor: theme.palette.error.light,
-    height: '100%',
-    padding: '4px',
-  },
-  bgTerm: {
-    backgroundColor: theme.palette.warning.light,
-    height: '100%',
-    padding: '4px',
-  },
-  bgRunning: {
-    backgroundColor: theme.palette.primary.light,
-    height: '100%',
-    padding: '4px',
+  '& .Processes-noPadding': {
+    padding: '0 !important',
+    '& .Processes-bgSucess': {
+      backgroundColor: theme.palette.success.light,
+      height: '100%',
+      padding: '4px',
+    },
+    '& .Processes-bgFailed': {
+      backgroundColor: theme.palette.error.light,
+      height: '100%',
+      padding: '4px',
+    },
+    '& .Processes-bgTerm': {
+      backgroundColor: theme.palette.warning.light,
+      height: '100%',
+      padding: '4px',
+    },
+    '& .Processes-bgRunning': {
+      backgroundColor: theme.palette.primary.light,
+      height: '100%',
+      padding: '4px',
+    }
   },
 }));
-
 
 const ProcessStateTextAndColor = {
   [BgProcessManagerProcessState.PROCESS_NOT_STARTED]: [gettext('Not started'), 'bgRunning'],
@@ -96,7 +65,7 @@ const ProcessStateTextAndColor = {
   [BgProcessManagerProcessState.PROCESS_FAILED]: [gettext('Failed'), 'bgFailed'],
 };
 export default function Processes() {
-  const classes = useStyles();
+
   const pgAdmin = usePgAdmin();
   const [tableData, setTableData] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState({});
@@ -130,7 +99,7 @@ export default function Processes() {
           size="xs"
           noBorder
           icon={<CancelIcon />}
-          className={classes.stopButton}
+          className='Processes-stopButton'
           disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
             || row.original.server_id != null}
           onClick={(e) => {
@@ -165,7 +134,7 @@ export default function Processes() {
 
     const StatusCell = ({row})=>{
       const [text, bgcolor] = ProcessStateTextAndColor[row.original.process_state];
-      return <Box className={classes[bgcolor]}>{text}</Box>;
+      return <Box className={'Processes-'+bgcolor}>{text}</Box>;
     };
     StatusCell.displayName = 'StatusCell';
     StatusCell.propTypes = cellPropTypes;
@@ -247,7 +216,7 @@ export default function Processes() {
       width: 120,
       minWidth: 120,
       accessorFn: (row)=>ProcessStateTextAndColor[row.process_state][0],
-      dataClassName: classes.noPadding,
+      dataClassName: 'Processes-noPadding',
       cell: StatusCell,
     },
     {
@@ -274,48 +243,48 @@ export default function Processes() {
   }, []);
 
   return (
-    <PgTable
-      data-test="processes"
-      className={classes.autoResizer}
-      columns={columns}
-      data={tableData}
-      sortOptions={[{id: 'stime', desc: true}]}
-      selectedRows={selectedRows}
-      setSelectedRows={setSelectedRows}
-      hasSelectRow={true}
-      tableProps={{
-        getRowId: (row)=>{
-          return row.id;
-        }
-      }}
-      CustomHeader={()=>{
-        return (
-          <Box>
-            <PgButtonGroup>
-              <PgIconButton
-                icon={<DeleteIcon style={{height: '1.4rem'}}/>}
-                aria-label="Acknowledge and Remove"
-                title={gettext('Acknowledge and Remove')}
-                onClick={() => {
-                  pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRowIDs);
-                    setSelectedRows({});
-                  });
-                }}
-                disabled={selectedRowIDs.length <= 0}
-              ></PgIconButton>
-              <PgIconButton
-                icon={<HelpIcon style={{height: '1.4rem'}}/>}
-                aria-label="Help"
-                title={gettext('Help')}
-                onClick={() => {
-                  window.open(url_for('help.static', {'filename': 'processes.html'}));
-                }}
-              ></PgIconButton>
-            </PgButtonGroup>
-          </Box>
-        );
-      }}
-    ></PgTable>
+    <Root>
+      <PgTable
+        data-test="processes"
+        columns={columns}
+        data={tableData}
+        sortOptions={[{id: 'stime', desc: true}]}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        hasSelectRow={true}
+        tableProps={{
+          getRowId: (row)=>{
+            return row.id;
+          }
+        }}
+        CustomHeader={()=>{
+          return (
+            <Box>
+              <PgButtonGroup>
+                <PgIconButton
+                  icon={<DeleteIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Acknowledge and Remove"
+                  title={gettext('Acknowledge and Remove')}
+                  onClick={() => {
+                    pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+                      pgAdmin.Browser.BgProcessManager.acknowledge(selectedRowIDs);
+                      setSelectedRows({});
+                    });
+                  }}
+                  disabled={selectedRowIDs.length <= 0}
+                ></PgIconButton>
+                <PgIconButton
+                  icon={<HelpIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Help"
+                  title={gettext('Help')}
+                  onClick={() => {
+                    window.open(url_for('help.static', {'filename': 'processes.html'}));
+                  }}
+                ></PgIconButton>
+              </PgButtonGroup>
+            </Box>
+          );
+        }}
+      ></PgTable></Root>
   );
 }

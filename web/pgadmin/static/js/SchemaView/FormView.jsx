@@ -8,11 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Box, Tab, Tabs, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 
 import { MappedFormControl } from './MappedControl';
 import TabPanel from '../components/TabPanel';
@@ -26,44 +25,45 @@ import { useOnScreen } from '../custom_hooks';
 import { DepListenerContext } from './DepListener';
 import FieldSetView from './FieldSetView';
 
-const useStyles = makeStyles((theme)=>({
-  fullSpace: {
-    padding: 0,
-    height: '100%',
-    overflow: 'hidden',
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .FormView-nestedControl': {
+    height: 'unset !important',
+    '& .FormView-controlRow': {
+      marginBottom: theme.spacing(1),
+    },
+    '& .FormView-nestedTabPanel': {
+      backgroundColor: theme.otherVars.headerBg,
+    }
   },
-  controlRow: {
-    marginBottom: theme.spacing(1),
-  },
-  nestedTabPanel: {
-    backgroundColor: theme.otherVars.headerBg,
-  },
-  nestedControl: {
-    height: 'unset',
-  },
-  fullControl: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  errorMargin: {
+  '& .FormView-errorMargin': {
     /* Error footer space */
     paddingBottom: '36px !important',
   },
-  sqlTabInput: {
-    border: 0,
+  '& .FormView-fullSpace': {
+    padding: '0 !important',
+    height: '100%',
+    overflow: 'hidden',
+    '& .FormView-fullControl': {
+      display: 'flex',
+      flexDirection: 'column',
+      '& .FormView-sqlTabInput': {
+        border: 0,
+      },
+    }
   },
-  nonTabPanel: {
-    padding: 0,
-    background: 'inherit',
+  '& .FormView-nonTabPanel': {
+    backgroundColor: 'inherit',
+    '& .FormView-nonTabPanelContent': {
+      height: 'unset',
+      '& .FormView-controlRow': {
+        marginBottom: theme.spacing(1),
+      },
+    }
   },
-  nonTabPanelContent: {
-    height: 'unset'
-  }
 }));
 
 /* Optional SQL tab */
 function SQLTab({active, getSQLValue}) {
-  const classes = useStyles();
   const [sql, setSql] = useState('Loading...');
   useEffect(()=>{
     let unmounted = false;
@@ -84,7 +84,7 @@ function SQLTab({active, getSQLValue}) {
       readOnly: true,
     }}
     readonly={true}
-    className={classes.sqlTabInput}
+    className='FormView-sqlTabInput'
   />;
 }
 
@@ -167,7 +167,7 @@ export default function FormView({
   let tabs = {};
   let tabsClassname = {};
   const [tabValue, setTabValue] = useState(0);
-  const classes = useStyles();
+
   const firstEleID = useRef();
   const formRef = useRef();
   const onScreenTracker = useRef(false);
@@ -272,7 +272,7 @@ export default function FormView({
         tabs[group].push(
           <FieldSetView key={`nested${tabs[group].length}`} value={value} viewHelperProps={viewHelperProps}
             schema={field.schema} accessPath={accessPath} dataDispatch={dataDispatch} isNested={true} isDataGridForm={isDataGridForm}
-            controlClassName={classes.controlRow}
+            controlClassName='FormView-controlRow'
             {...field} visible={visible}/>
         );
       } else if(field.type === 'collection') {
@@ -293,7 +293,7 @@ export default function FormView({
           key: field.id,  ...field,
           value: value[field.id] || [], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
-          containerClassName: classes.controlRow,
+          containerClassName: 'FormView-controlRow',
           canAdd: canAdd, canReorder: canReorder,
           canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
@@ -315,7 +315,7 @@ export default function FormView({
          * from there as well.
          */
         if(field.isFullTab) {
-          tabsClassname[group] = classes.fullSpace;
+          tabsClassname[group] ='FormView-fullSpace';
           fullTabs.push(group);
         }
 
@@ -353,7 +353,7 @@ export default function FormView({
             });
           }}
           hasError={hasError}
-          className={classes.controlRow}
+          className='FormView-controlRow'
           noLabel={field.isFullTab}
           memoDeps={[
             value[id],
@@ -361,7 +361,7 @@ export default function FormView({
             disabled,
             visible,
             hasError,
-            classes.controlRow,
+            'FormView-controlRow',
             ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
           ]}
         />;
@@ -383,7 +383,7 @@ export default function FormView({
             withContainer: false, controlGridBasis: 3
           }));
           tabs[group].push(
-            <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={classes.controlRow} rowGap="8px">
+            <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className='FormView-controlRow' rowGap="8px">
               {inlineComponents}
             </Grid>
           );
@@ -398,7 +398,7 @@ export default function FormView({
 
   if(inlineComponents?.length > 0) {
     tabs[inlineCompGroup].push(
-      <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className={classes.controlRow} rowGap="8px">
+      <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`} className='FormView-controlRow' rowGap="8px">
         {inlineComponents}
       </Grid>
     );
@@ -415,7 +415,7 @@ export default function FormView({
     finalTabs[sqlTabName] = [
       <SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />,
     ];
-    tabsClassname[sqlTabName] = classes.fullSpace;
+    tabsClassname[sqlTabName] = 'FormView-fullSpace';
     fullTabs.push(sqlTabName);
   }
 
@@ -430,7 +430,7 @@ export default function FormView({
 
   if(isTabView) {
     return (
-      <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
+      <StyledBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
         <Box>
           <Tabs
             value={tabValue}
@@ -447,33 +447,34 @@ export default function FormView({
           </Tabs>
         </Box>
         {Object.keys(finalTabs).map((tabName, i)=>{
-          let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
+          let contentClassName = [(stateUtils.formErr.message ? 'FormView-errorMargin': null)];
           if(fullTabs.indexOf(tabName) == -1) {
-            contentClassName.push(classes.nestedControl);
+            contentClassName.push('FormView-nestedControl');
           } else {
-            contentClassName.push(classes.fullControl);
+            contentClassName.push('FormView-fullControl');
           }
           return (
-            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-              className={clsx(contentClassName)} data-testid={tabName}>
+            <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={[tabsClassname[tabName], (isNested ? 'FormView-nestedTabPanel' : null)].join(' ')}
+              className={contentClassName.join(' ')} data-testid={tabName}>
               {finalTabs[tabName]}
             </TabPanel>
           );
         })}
-      </Box>);
+      </StyledBox>
+    );
   } else {
-    let contentClassName = [classes.nonTabPanelContent, stateUtils.formErr.message ? classes.errorMargin : null];
+    let contentClassName = ['FormView-nonTabPanelContent', (stateUtils.formErr.message ? 'FormView-errorMargin' : null)];
     return (
-      <Box height="100%" display="flex" flexDirection="column" className={clsx(className)} ref={formRef} data-test="form-view">
-        <TabPanel value={tabValue} index={0} classNameRoot={classes.nonTabPanel}
-          className={clsx(contentClassName)}>
+      <StyledBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
+        <TabPanel value={tabValue} index={0} classNameRoot='FormView-nonTabPanel'
+          className={contentClassName.join(' ')}>
           {Object.keys(finalTabs).map((tabName)=>{
             return (
               <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>
             );
           })}
         </TabPanel>
-      </Box>);
+      </StyledBox>);
   }
 }
 

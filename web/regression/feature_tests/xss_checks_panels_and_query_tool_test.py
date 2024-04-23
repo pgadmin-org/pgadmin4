@@ -213,7 +213,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         # Check for history entry
         history_ele = self.page\
             .find_by_css_selector(
-                QueryToolLocators.query_history_specific_entry.format(2))
+                QueryToolLocators.query_history_specific_entry.format(1))
 
         source_code = history_ele.get_attribute('innerHTML')
 

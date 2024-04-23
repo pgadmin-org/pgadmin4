@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import DataGridView, { DataGridHeader } from '../SchemaView/DataGridView';
 import SchemaView, { SCHEMA_STATE_ACTIONS } from '../SchemaView';
 import { DefaultButton } from '../components/Buttons';
@@ -18,22 +18,22 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import _ from 'lodash';
 
-const useStyles = makeStyles((theme)=>({
-  formBorder: {
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .DataGridViewWithHeaderForm-border': {
     ...theme.mixins.panelBorder,
     borderBottom: 0,
+    '& .DataGridViewWithHeaderForm-body': {
+      padding: '0.25rem',
+      '& .DataGridViewWithHeaderForm-addBtn': {
+        marginLeft: 'auto',
+      }
+    },
   },
-  form: {
-    padding: '0.25rem',
-  },
-  addBtn: {
-    marginLeft: 'auto',
-  }
 }));
 
 export default function DataGridViewWithHeaderForm(props) {
   let {containerClassName, headerSchema, headerVisible, ...otherProps} = props;
-  const classes = useStyles();
+
   const headerFormData = useRef({});
   const schemaRef = useRef(otherProps.schema);
   const [addDisabled, setAddDisabled] = useState(true);
@@ -61,10 +61,10 @@ export default function DataGridViewWithHeaderForm(props) {
 
   headerVisible = headerVisible && evalFunc(null, headerVisible, state);
   return (
-    <Box className={containerClassName}>
-      <Box className={classes.formBorder}>
+    <StyledBox className={containerClassName}>
+      <Box className='DataGridViewWithHeaderForm-border'>
         {props.label && <DataGridHeader label={props.label} />}
-        {headerVisible && <Box className={classes.form}>
+        {headerVisible && <Box className='DataGridViewWithHeaderForm-body'>
           <SchemaView
             formType={'dialog'}
             getInitData={()=>Promise.resolve({})}
@@ -80,12 +80,12 @@ export default function DataGridViewWithHeaderForm(props) {
             resetKey={headerFormResetKey}
           />
           <Box display="flex">
-            <DefaultButton className={classes.addBtn} onClick={onAddClick} disabled={addDisabled}>Add</DefaultButton>
+            <DefaultButton className='DataGridViewWithHeaderForm-addBtn' onClick={onAddClick} disabled={addDisabled}>Add</DefaultButton>
           </Box>
         </Box>}
       </Box>
       <DataGridView {...otherProps} label="" canAdd={false}/>
-    </Box>
+    </StyledBox>
   );
 }
 

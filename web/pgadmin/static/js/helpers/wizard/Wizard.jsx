@@ -7,8 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -21,119 +20,110 @@ import { Box } from '@mui/material';
 import gettext from 'sources/gettext';
 import Loader from 'sources/components/Loader';
 
+const StyledBox = styled(Box)(({theme}) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: theme.palette.background.default + ' !important',
+  '& .Wizard-root': {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    minHeight: 0,
 
-const useStyles = makeStyles((theme) =>
-  ({
-    wizardBase: {
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default
-    },
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-      minHeight: 0
-    },
-    rightPanel: {
-      position: 'relative',
-      display: 'flex',
-      flexBasis: '75%',
-      overflow: 'auto',
-      height: '100%',
-      minHeight: '100px'
-    },
-    leftPanel: {
-      display: 'flex',
-      flexBasis: '25%',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      borderRight: '1px solid',
-      ...theme.mixins.panelBorder.right,
-    },
-    label: {
-      display: 'inline-block',
-      position: 'relative',
-      paddingLeft: '0.5rem',
-      flexBasis: '70%'
-    },
-    labelArrow: {
-      display: 'inline-block',
-      position: 'relative',
-      flexBasis: '30%'
-    },
-    labelDone: {
-      display: 'inline-block',
-      position: 'relative',
-      flexBasis: '30%',
-      color: theme.otherVars.activeStepBg + ' !important',
-      padding: '4px'
-    },
-    stepLabel: {
-      padding: '1em',
-      paddingRight: 0
-    },
-    active: {
-      fontWeight: 600
-    },
-    activeIndex: {
-      backgroundColor: theme.otherVars.activeStepBg + ' !important',
-      color: theme.otherVars.activeStepFg + ' !important'
-    },
-    stepIndex: {
-      padding: '0.5em 1em ',
-      height: '2.5em',
-      borderRadius: '2em',
-      backgroundColor: theme.otherVars.stepBg,
-      color: theme.otherVars.stepFg,
-      display: 'inline-block',
-      flex: 0.5,
-
-    },
-    wizard: {
+    '& .Wizard-body': {
       width: '100%',
       height: '100%',
       minHeight: 100,
       display: 'flex',
       flexWrap: 'wrap',
+      '& .Wizard-rightPanel': {
+        position: 'relative',
+        display: 'flex',
+        flexBasis: '75%',
+        overflow: 'auto',
+        height: '100%',
+        minHeight: '100px',
+        '& .Wizard-stepDefaultStyle': {
+          width: '100%',
+          height: '100%',
+          padding: '8px',
+          display: 'flex',
+          flexDirection: 'column',
+        },
+        '& .Wizard-hidden': {
+          display: 'none',
+        }
+      },
+      '& .Wizard-active': {
+        fontWeight: 600
+      },
+      '& .Wizard-leftPanel': {
+        display: 'flex',
+        flexBasis: '25%',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        borderRight: '1px solid',
+        ...theme.mixins.panelBorder.right,
+        '& .Wizard-active': {
+          fontWeight: 600
+        },
+        '& .Wizard-stepLabel': {
+          padding: '1em',
+          paddingRight: 0,
+          '& .Wizard-stepIndex': {
+            padding: '0.5em 1em ',
+            height: '2.5em',
+            borderRadius: '2em',
+            backgroundColor: theme.otherVars.stepBg,
+            color: theme.otherVars.stepFg,
+            display: 'inline-block',
+            flex: 0.5,
+            '& .Wizard-activeIndex': {
+              backgroundColor: theme.otherVars.activeStepBg + ' !important',
+              color: theme.otherVars.activeStepFg + ' !important'
+            },
+          },
+          '& .Wizard-label': {
+            display: 'inline-block',
+            position: 'relative',
+            paddingLeft: '0.5rem',
+            flexBasis: '70%'
+          },      
+          '& .Wizard-labelArrow': {
+            display: 'inline-block',
+            position: 'relative',
+            flexBasis: '30%'
+          },
+          '& .Wizard-labelDone': {
+            display: 'inline-block',
+            position: 'relative',
+            flexBasis: '30%',
+            color: theme.otherVars.activeStepBg + ' !important',
+            padding: '4px'
+          },
+        },
+      },
     },
-    wizardFooter: {
-      borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
-      padding: '0.5rem',
-      display: 'flex',
-      width: '100%',
-      background: theme.otherVars.headerBg,
-      zIndex: 999,
-    },
-    backButton: {
-      marginRight: theme.spacing(1),
-    },
-    instructions: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-    },
-    actionBtn: {
+  },
+  '& .Wizard-footer': {
+    borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
+    padding: '0.5rem',
+    display: 'flex',
+    width: '100%',
+    background: theme.otherVars.headerBg,
+    zIndex: 999,
+    '& .Wizard-actionBtn': {
       alignItems: 'flex-start',
+      '& .Wizard-buttonMargin': {
+        marginLeft: '0.5em'
+      },
     },
-    buttonMargin: {
-      marginLeft: '0.5em'
-    },
-    stepDefaultStyle: {
-      width: '100%',
-      height: '100%',
-      padding: '8px',
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    hidden: {
-      display: 'none',
-    }
-  }),
-);
+  },
+}));
 
 function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
-  const classes = useStyles();
+
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = stepList && stepList.length > 0 ? stepList : [];
   const [disableNext, setDisableNext] = React.useState(false);
@@ -183,25 +173,25 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
 
   return (
-    <Box className={classes.wizardBase}>
-      <div className={clsx(classes.root, props?.rootClass)}>
-        <div className={clsx(classes.wizard, className)}>
-          <Box className={classes.leftPanel}>
+    <StyledBox>
+      <div className={'Wizard-root ' + (props?.rootClass ? props.rootClass : '') }>
+        <div className={'Wizard-body ' + className}>
+          <Box className='Wizard-leftPanel'>
             {steps.map((label, index) => (
-              <Box key={label} className={clsx(classes.stepLabel, index === activeStep ? classes.active : '')}>
-                <Box className={clsx(classes.stepIndex, index === activeStep ? classes.activeIndex : '')}>{index + 1}</Box>
-                <Box className={classes.label}>{label} </Box>
-                <Box className={classes.labelArrow}>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
-                <Box className={classes.labelDone}>{index < activeStep ? <DoneIcon />: null}</Box>
+              <Box key={label} className={'Wizard-stepLabel ' + (index === activeStep ? 'Wizard-active' : '')}>
+                <Box className={'Wizard-stepIndex ' + (index === activeStep ? 'Wizard-activeIndex' : '')}>{index + 1}</Box>
+                <Box className='Wizard-label'>{label} </Box>
+                <Box className='Wizard-labelArrow'>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
+                <Box className='Wizard-labelDone'>{index < activeStep ? <DoneIcon />: null}</Box>
               </Box>
             ))}
           </Box>
-          <div className={clsx(classes.rightPanel, props.stepPanelCss)}>
+          <div className={'Wizard-rightPanel ' + props.stepPanelCss}>
             <Loader message={props?.loaderText} />
             {
               React.Children.map(props.children, (child) => {
                 return (
-                  <div className={clsx(classes.stepDefaultStyle, child.props.className, (child.props.stepId !== activeStep ? classes.hidden : ''))}>
+                  <div className={'Wizard-stepDefaultStyle ' + child.props.className + ' ' +(child.props.stepId !== activeStep ? 'Wizard-hidden' : '')}>
                     {child}
                   </div>
                 );
@@ -210,24 +200,24 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
           </div>
         </div>
       </div>
-      <div className={classes.wizardFooter}>
+      <div className='Wizard-footer'>
         <Box>
           <PgIconButton data-test="dialog-help" onClick={() => props.onHelp()} icon={<HelpIcon />} title="Help for this dialog."
             disabled={props.disableDialogHelp} />
         </Box>
-        <Box className={classes.actionBtn} marginLeft="auto">
-          <DefaultButton onClick={handleBack} disabled={activeStep === 0} className={classes.buttonMargin} startIcon={<FastRewindIcon />}>
+        <Box className='Wizard-actionBtn' marginLeft="auto">
+          <DefaultButton onClick={handleBack} disabled={activeStep === 0} className='Wizard-buttonMargin' startIcon={<FastRewindIcon />}>
             {gettext('Back')}
           </DefaultButton>
-          <DefaultButton onClick={() => handleNext()} className={classes.buttonMargin} startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
+          <DefaultButton onClick={() => handleNext()} className='Wizard-buttonMargin' startIcon={<FastForwardIcon />} disabled={activeStep == steps.length - 1 || disableNext}>
             {gettext('Next')}
           </DefaultButton>
-          <PrimaryButton className={classes.buttonMargin} startIcon={<CheckIcon />} disabled={activeStep !== (steps.length - 1) } onClick={onSave}>
+          <PrimaryButton className='Wizard-buttonMargin' startIcon={<CheckIcon />} disabled={activeStep !== (steps.length - 1) } onClick={onSave}>
             {gettext('Finish')}
           </PrimaryButton>
         </Box>
       </div>
-    </Box>
+    </StyledBox>
   );
 }
 

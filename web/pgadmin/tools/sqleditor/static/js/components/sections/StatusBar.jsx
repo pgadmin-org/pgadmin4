@@ -8,9 +8,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useState, useContext }  from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import clsx from 'clsx';
 import _ from 'lodash';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import { useStopwatch } from '../../../../../../static/js/custom_hooks';
@@ -18,28 +17,26 @@ import { QueryToolEventsContext } from '../QueryToolComponent';
 import gettext from 'sources/gettext';
 
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    ...theme.mixins.panelBorder.top,
-    flexWrap: 'wrap',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    userSelect: 'text',
-  },
-  padding: {
+const StyledBox = styled(Box)(({theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  ...theme.mixins.panelBorder.top,
+  flexWrap: 'wrap',
+  backgroundColor: theme.otherVars.editorToolbarBg,
+  userSelect: 'text',
+  '& .StatusBar-padding': {
     padding: '2px 12px',
+    '& .StatusBar-mlAuto': {
+      marginLeft: 'auto',
+    },
+    '& .StatusBar-divider': {
+      ...theme.mixins.panelBorder.right,
+    },
   },
-  divider: {
-    ...theme.mixins.panelBorder.right,
-  },
-  mlAuto: {
-    marginLeft: 'auto',
-  }
 }));
 
 export function StatusBar() {
-  const classes = useStyles();
+
   const eventBus = useContext(QueryToolEventsContext);
   const [position, setPosition] = useState([1, 1]);
   const [lastTaskText, setLastTaskText] = useState(null);
@@ -97,22 +94,22 @@ export function StatusBar() {
   }
 
   return (
-    <Box className={classes.root}>
-      <Box className={clsx(classes.padding, classes.divider)}>{gettext('Total rows: %s of %s', rowsCount[0], rowsCount[1])}</Box>
+    <StyledBox>
+      <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s of %s', rowsCount[0], rowsCount[1])}</Box>
       {lastTaskText &&
-        <Box className={clsx(classes.padding, classes.divider)}>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
+        <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
       {!lastTaskText && !_.isNull(lastTaskText) &&
-        <Box className={clsx(classes.padding, classes.divider)}>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
+        <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
       {Boolean(selectedRowsCount) &&
-        <Box className={clsx(classes.padding, classes.divider)}>{gettext('Rows selected: %s',selectedRowsCount)}</Box>}
+        <Box className='StatusBar-padding StatusBar-divider'>{gettext('Rows selected: %s',selectedRowsCount)}</Box>}
       {stagedText &&
-        <Box className={clsx(classes.padding, classes.divider)}>
+        <Box className='StatusBar-padding StatusBar-divider'>
           <span>{gettext('Changes staged: %s', stagedText)}</span>
         </Box>
       }
-      <Box className={clsx(classes.padding, classes.mlAuto)}>{gettext('Ln %s, Col %s', position[0], position[1])}</Box>
-    </Box>
+      <Box className='StatusBar-padding StatusBar-mlAuto'>{gettext('Ln %s, Col %s', position[0], position[1])}</Box>
+    </StyledBox>
   );
 }

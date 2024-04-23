@@ -291,40 +291,25 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             server_types = default_binary_path.keys()
             path_already_set = True
             for serv in server_types:
-                if serv == 'pg' and server_version is not None and \
-                        default_binary_path['pg'] != '':
-                    path_input = \
-                        self.page.find_by_css_selector(
-                            "div[class='pgrd-row-cell'][title='PostgreSQL {}']"
-                            "+div[class='pgrd-row-cell'] input"
-                            .format(server_version)
-                        )
-                    existing_path = path_input.get_property("value")
-                    if existing_path != default_binary_path['pg']:
-                        path_already_set = False
-                        self.page.clear_edit_box(path_input)
-                        path_input.click()
-                        path_input.send_keys(default_binary_path['pg'])
-                elif serv == 'ppas' and server_version is not None and \
-                        default_binary_path['ppas'] != '':
-                    path_input = \
-                        self.page.find_by_xpath(
-                            "//div[span[text()='EDB Advanced Server {}']]"
-                            "/following-sibling::div//div/input".format(
-                                server_version))
-                    existing_path = path_input.get_property("value")
-                    if existing_path != default_binary_path['ppas']:
-                        path_already_set = False
-                        path_input = self.page.find_by_xpath(
-                            "//div[span[text()='EDB Advanced Server {}']]"
-                            "/following-sibling::div//div/input".format(
-                                server_version))
-                        self.page.clear_edit_box(path_input)
-                        path_input.click()
-                        path_input.send_keys(default_binary_path['ppas'])
+                if server_version is not None:
+                    server_type = 'PostgreSQL' if serv == 'pg' \
+                        else 'EDB Advanced Server'
+                    path_input_css = "div[class='pgrd-row-cell ']" \
+                                     "[title='{0} {1}']" \
+                                     "+div[class='pgrd-row-cell '] input"\
+                        .format(server_type, server_version)
+                    path_input = self.page.find_by_css_selector(path_input_css)
+                    if default_binary_path[serv] != '':
+                        existing_path = path_input.get_property("value")
+                        if existing_path != default_binary_path[serv]:
+                            path_already_set = False
+                            self.page.clear_edit_box(path_input)
+                            path_input.click()
+                            path_input.send_keys(default_binary_path[serv])
+                    else:
+                        print('Binary path Key is Incorrect')
                 else:
-                    print('Binary path Key is Incorrect or '
-                          'server version is None.')
+                    print('Server version is None.')
 
         # save and close the preference dialog.
         if path_already_set:

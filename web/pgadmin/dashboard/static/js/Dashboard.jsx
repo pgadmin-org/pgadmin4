@@ -7,12 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useMemo, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
 import PgTable from 'sources/components/PgTable';
 import { InputCheckbox } from '../../../static/js/components/FormComponents';
-import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
 import { Box, Tab, Tabs } from '@mui/material';
@@ -48,88 +48,39 @@ function parseData(data) {
   return res;
 }
 
-const useStyles = makeStyles((theme) => ({
-  emptyPanel: {
+const Root = styled('div')(({theme}) => ({
+  height: '100%',
+  width: '100%',
+  '& .Dashboard-dashboardPanel': {
+    height: '100%',
+    background: theme.palette.grey[400],
+    '& .Dashboard-panelContent': {
+      ...theme.mixins.panelBorder.all,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden !important',
+      height: '100%',
+      width: '100%',
+      minHeight: '400px',
+      padding: '4px',
+      '& .Dashboard-mainTabs': {
+        ...theme.mixins.panelBorder.all,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        '& .Dashboard-terminateButton': {
+          color: theme.palette.error.main
+        },
+      },
+    },
+  },
+  '& .Dashboard-emptyPanel': {
     width: '100%',
     background: theme.otherVars.emptySpaceBg,
     overflow: 'auto',
     padding: '8px',
     display: 'flex',
   },
-  dashboardPanel: {
-    height: '100%',
-    background: theme.palette.grey[400],
-  },
-  cardHeader: {
-    padding: '0.25rem 0.5rem',
-    fontWeight: 'bold !important',
-    backgroundColor: theme.otherVars.tableBg,
-    borderBottom: '1px solid',
-    borderBottomColor: theme.otherVars.borderColor,
-  },
-  searchPadding: {
-    display: 'flex',
-    flex: 2.5,
-  },
-  component: {
-    padding: '8px',
-  },
-  searchInput: {
-    flex: 1,
-  },
-  panelIcon: {
-    width: '80%',
-    margin: '0 auto',
-    marginTop: '25px !important',
-    position: 'relative',
-    textAlign: 'center',
-  },
-  panelMessage: {
-    marginLeft: '0.5rem',
-    fontSize: '0.875rem',
-  },
-  panelContent: {
-    ...theme.mixins.panelBorder.all,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden !important',
-    height: '100%',
-    width: '100%',
-    minHeight: '400px',
-    padding: '4px'
-  },
-  mainTabs: {
-    ...theme.mixins.panelBorder.all,
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  terminateButton: {
-    color: theme.palette.error.main
-  },
-  chartCard: {
-    border: '1px solid '+theme.otherVars.borderColor,
-  },
-  chartCardContent: {
-    padding: '0.25rem 0.5rem',
-    height: '165px',
-    display: 'flex',
-  },
-  chartLegend: {
-    marginLeft: 'auto',
-    '& > div': {
-      display: 'flex',
-      fontWeight: 'normal',
-      flexWrap: 'wrap',
-
-      '& .legend-value': {
-        marginLeft: '4px',
-        '& .legend-label': {
-          marginLeft: '4px',
-        }
-      }
-    }
-  }
 }));
 
 let activeQSchemaObj = new ActiveQuery();
@@ -138,7 +89,7 @@ function Dashboard({
   nodeItem, nodeData, node, treeNodeInfo,
   ...props
 }) {
-  const classes = useStyles();
+
   let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
   let mainTabs = [gettext('General'), gettext('System Statistics')];
   if(treeNodeInfo?.server?.replication_type) {
@@ -261,7 +212,7 @@ function Dashboard({
             size="xs"
             noBorder
             icon={<CancelIcon />}
-            className={classes.terminateButton}
+            className='Dashboard-terminateButton'
             onClick={() => {
               if (
                 !canTakeAction(row, 'terminate')
@@ -796,8 +747,8 @@ function Dashboard({
   const showDefaultContents = () => {
     return (
       sid && !serverConnected ? (
-        <Box className={classes.dashboardPanel}>
-          <div className={classes.emptyPanel}>
+        <Box className='Dashboard-dashboardPanel'>
+          <div className='Dashboard-emptyPanel'>
             <EmptyPanelMessage text={msg}/>
           </div>
         </Box>
@@ -823,7 +774,7 @@ function Dashboard({
       <InputCheckbox
         label={gettext('Active sessions only')}
         labelPlacement="end"
-        className={classes.searchInput}
+        className='Dashboard-searchInput'
         onChange={(e) => {
           e.preventDefault();
           setActiveOnly(e.target.checked);
@@ -834,11 +785,11 @@ function Dashboard({
   };
 
   return (
-    <>
+    (<Root>
       {sid && serverConnected ? (
-        <Box className={classes.dashboardPanel}>
-          <Box className={classes.panelContent}>
-            <Box className={classes.mainTabs}>
+        <Box className='Dashboard-dashboardPanel'>
+          <Box className='Dashboard-panelContent'>
+            <Box className='Dashboard-mainTabs'>
               <Box>
                 <Tabs
                   value={mainTabVal}
@@ -850,7 +801,7 @@ function Dashboard({
                 </Tabs>
               </Box>
               {/* General Statistics */}
-              <TabPanel value={mainTabVal} index={0} classNameRoot={classes.tabPanel}>
+              <TabPanel value={mainTabVal} index={0}>
                 {!_.isUndefined(preferences) && preferences.show_graphs && (
                   <Graphs
                     key={sid + did}
@@ -876,7 +827,7 @@ function Dashboard({
                         }}/>
                       </Tabs>
                     </Box>
-                    <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
+                    <TabPanel value={tabVal} index={0}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -886,7 +837,7 @@ function Dashboard({
                         schema={activeQSchemaObj}
                       ></PgTable>
                     </TabPanel>
-                    <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
+                    <TabPanel value={tabVal} index={1}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -894,7 +845,7 @@ function Dashboard({
                         data={dashData}
                       ></PgTable>
                     </TabPanel>
-                    <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                    <TabPanel value={tabVal} index={2}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -902,7 +853,7 @@ function Dashboard({
                         data={dashData}
                       ></PgTable>
                     </TabPanel>
-                    <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                    <TabPanel value={tabVal} index={3}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -914,7 +865,7 @@ function Dashboard({
                 )}
               </TabPanel>
               {/* System Statistics */}
-              <TabPanel value={mainTabVal} index={1} classNameRoot={classes.tabPanel}>
+              <TabPanel value={mainTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
                 <Box height="100%" display="flex" flexDirection="column">
                   {ssMsg === 'installed' && did === ldid ?
                     <ErrorBoundary>
@@ -928,7 +879,7 @@ function Dashboard({
                           })}
                         </Tabs>
                       </Box>
-                      <TabPanel value={systemStatsTabVal} index={0} classNameRoot={classes.tabPanel}>
+                      <TabPanel value={systemStatsTabVal} index={0} classNameRoot='Dashboard-tabPanel'>
                         <Summary
                           key={sid + did}
                           preferences={preferences}
@@ -938,7 +889,7 @@ function Dashboard({
                           serverConnected={serverConnected}
                         />
                       </TabPanel>
-                      <TabPanel value={systemStatsTabVal} index={1} classNameRoot={classes.tabPanel}>
+                      <TabPanel value={systemStatsTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
                         <CPU
                           key={sid + did}
                           preferences={preferences}
@@ -948,7 +899,7 @@ function Dashboard({
                           serverConnected={serverConnected}
                         />
                       </TabPanel>
-                      <TabPanel value={systemStatsTabVal} index={2} classNameRoot={classes.tabPanel}>
+                      <TabPanel value={systemStatsTabVal} index={2} classNameRoot='Dashboard-tabPanel'>
                         <Memory
                           key={sid + did}
                           preferences={preferences}
@@ -958,7 +909,7 @@ function Dashboard({
                           serverConnected={serverConnected}
                         />
                       </TabPanel>
-                      <TabPanel value={systemStatsTabVal} index={3} classNameRoot={classes.tabPanel}>
+                      <TabPanel value={systemStatsTabVal} index={3} classNameRoot='Dashboard-tabPanel'>
                         <Storage
                           key={sid + did}
                           preferences={preferences}
@@ -970,14 +921,14 @@ function Dashboard({
                         />
                       </TabPanel>
                     </ErrorBoundary> :
-                    <div className={classes.emptyPanel}>
+                    <div className='Dashboard-emptyPanel'>
                       <EmptyPanelMessage text={ssMsg}/>
                     </div>
                   }
                 </Box>
               </TabPanel>
               {/* Replication */}
-              <TabPanel value={mainTabVal} index={2} classNameRoot={classes.tabPanel}>
+              <TabPanel value={mainTabVal} index={2} classNameRoot='Dashboard-tabPanel'>
                 <Replication key={sid} sid={sid} node={node}
                   preferences={preferences} treeNodeInfo={treeNodeInfo} nodeData={nodeData} pageVisible={props.isActive} />
               </TabPanel>
@@ -985,7 +936,7 @@ function Dashboard({
           </Box>
         </Box>
       ) : showDefaultContents() }
-    </>
+    </Root>)
   );
 }
 

@@ -9,28 +9,25 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
-export const tabPanelStyles = makeStyles((theme)=>({
-  root: {
-    ...theme.mixins.tabPanel,
-  },
-  content: {
+
+const StyledBox = styled(Box)(({theme})=>({
+  ...theme.mixins.tabPanel,
+  '& .TabPanel-content':{
     height: '100%',
   }
 }));
 
 /* Material UI does not have any tabpanel component, we create one for us */
 export default function TabPanel({children, classNameRoot, className, value, index, ...props}) {
-  const classes = tabPanelStyles();
   const active = value === index;
   return (
-    <Box className={clsx(classes.root, classNameRoot)} component="div" hidden={!active} data-test="tabpanel" {...props}>
-      <Box className={clsx(classes.content, className)}>{children}</Box>
-    </Box>
+    <StyledBox className={[classNameRoot].join(' ')} component="div" hidden={!active} data-test="tabpanel" {...props}>
+      <Box className={['TabPanel-content', className].join(' ')}>{children}</Box>
+    </StyledBox>
   );
 }
 

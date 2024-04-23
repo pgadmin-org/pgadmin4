@@ -8,12 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
 import React, { useCallback, useState } from 'react';
 
-import { makeStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 
@@ -21,32 +20,24 @@ import gettext from 'sources/gettext';
 
 import { DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
-import { commonTableStyles } from '../../../../../static/js/Theme';
 import { InputText, InputDateTimePicker } from '../../../../../static/js/components/FormComponents';
+import Table from '../../../../../static/js/components/Table';
 
-
-const useStyles = makeStyles(() => ({
-  table: {
-    minWidth: 650,
+const StyledPaper = styled(Paper)(() => ({
+  flexGrow: 1,
+  minHeight: 0,
+  overflow: 'auto',
+  maxHeight: '100%',
+  '& .LocalVariablesAndParams-container': {
+    maxHeight: '100%',
+    '& .LocalVariablesAndParams-cell': {
+      textAlign: 'center'
+    }
   },
-  summaryContainer: {
-    flexGrow: 1,
-    minHeight: 0,
-    overflow: 'auto',
-    maxHeight: '100%'
-  },
-  container: {
-    maxHeight: '100%'
-  },
-  cell: {
-    textAlign: 'center'
-  }
-
 }));
 
 export function LocalVariablesAndParams({ type }) {
-  const classes = useStyles();
-  const tableClasses = commonTableStyles();
+
   const eventBus = React.useContext(DebuggerEventsContext);
   const [variablesData, setVariablesData] = useState([]);
   const preValue = React.useRef({});
@@ -104,9 +95,9 @@ export function LocalVariablesAndParams({ type }) {
   };
 
   return (
-    <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
-      <TableContainer className={classes.container}>
-        <table className={clsx(tableClasses.table)} aria-label="sticky table">
+    <StyledPaper variant="outlined" elevation={0}>
+      <TableContainer className='LocalVariablesAndParams-container'>
+        <Table aria-label="sticky table">
           <thead>
             <tr>
               <th>{gettext('Name')}</th>
@@ -151,15 +142,15 @@ export function LocalVariablesAndParams({ type }) {
             ))}
             {
               variablesData.length == 0 &&
-              <tr key={_.uniqueId('c')} className={classes.cell}>
+              <tr key={_.uniqueId('c')} className='LocalVariablesAndParams-cell'>
                 <td colSpan={3} >{gettext('No data found')}</td>
               </tr>
             }
 
           </tbody>
-        </table>
+        </Table>
       </TableContainer>
-    </Paper>
+    </StyledPaper>
   );
 }
 

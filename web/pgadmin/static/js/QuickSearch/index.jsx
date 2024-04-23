@@ -7,9 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useRef,useState, useEffect} from 'react';
+import { styled } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import {useDelayDebounce} from 'sources/custom_hooks';
 import {onlineHelpSearch} from './online_help';
 import {menuSearch} from './menuitems_help';
@@ -18,8 +17,19 @@ import PropTypes from 'prop-types';
 import { InputText } from '../components/FormComponents';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 
-const useStyles = makeStyles((theme)=>({
-  helpGroup: {
+const StyledDiv = styled('div')(({theme}) => ({
+  '& .QuickSearch-loaderRoot': {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '8px',
+    justifyContent: 'center',
+    '& .QuickSearch-loader': {
+      height: '25px !important',
+      width: '25px !important',
+      marginRight: '8px',
+    }
+  },
+  '& .QuickSearch-helpGroup': {
     backgroundColor: theme.palette.grey[400],
     padding: '6px',
     fontSize: '0.85em',
@@ -27,7 +37,7 @@ const useStyles = makeStyles((theme)=>({
     display: 'flex',
     alignItems: 'center',
   },
-  searchItem: {
+  '& .QuickSearch-searchItem': {
     display: 'flex',
     flexDirection: 'column',
     padding: '4px 8px',
@@ -44,30 +54,18 @@ const useStyles = makeStyles((theme)=>({
       pointerEvents: 'none',
     }
   },
-  showAll: {
+  '& .QuickSearch-showAll': {
     marginLeft: 'auto',
     color: 'inherit',
     textDecoration: 'none'
   },
-  loaderRoot: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px',
-    justifyContent: 'center',
-  },
-  loader: {
-    height: '25px !important',
-    width: '25px !important',
-    marginRight: '8px',
-  },
 }));
 
 function SearchLoader({loading=false}) {
-  const classes = useStyles();
   if(loading) {
     return (
-      <div className={classes.loaderRoot}>
-        <CircularProgress className={classes.loader} />
+      <div className='QuickSearch-loaderRoot'>
+        <CircularProgress className='QuickSearch-loader' />
         <Typography>{gettext('Searching...')}</Typography>
       </div>
     );
@@ -79,10 +77,10 @@ SearchLoader.propTypes = {
 };
 
 function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
-  const classes = useStyles();
+
   return (isHelpLoading && !(isMenuLoading??true)) ? (
-    <div>
-      <div className={classes.helpGroup}>
+    <>
+      <div className='QuickSearch-helpGroup'>
         <span className='fa fa-question-circle'></span>
           &nbsp;HELP ARTICLES&nbsp;
         {Object.keys(helpSearchResult.data).length > 10
@@ -95,7 +93,7 @@ function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
         }
       </div>
       <SearchLoader loading={true} />
-    </div>) : <></>;
+    </>) : <></>;
 }
 
 HelpArticleContents.propTypes = {
@@ -105,7 +103,7 @@ HelpArticleContents.propTypes = {
 };
 
 export default function QuickSearch({closeModal}) {
-  const classes = useStyles();
+
   const wrapperRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isShowMinLengthMsg, setIsShowMinLengthMsg] = useState(false);
@@ -192,7 +190,7 @@ export default function QuickSearch({closeModal}) {
       let menuItemsHtmlElement = [];
       items.forEach((i) => {
         menuItemsHtmlElement.push(
-          <div key={ 'li-menu-' + i.label }><a tabIndex={i.isDisabled ? '-1' : '0'} id={ 'li-menu-' + i.label } href={'#'} className={ (i.isDisabled ? clsx(classes.searchItem, 'disabled'):classes.searchItem)} onClick={
+          <div key={ 'li-menu-' + i.label }><a tabIndex={i.isDisabled ? '-1' : '0'} id={ 'li-menu-' + i.label } href={'#'} className={ (i.isDisabled ? 'QuickSearch-searchItem disabled':'QuickSearch-searchItem')} onClick={
             () => {
               closeModal();
               i.callback();
@@ -261,7 +259,7 @@ export default function QuickSearch({closeModal}) {
   return (
     <div id='quick-search-container' onClick={setSearchTerm} onKeyDown={()=>{/* no need */}}></div>,
     <div id='quick-search-container' ref={wrapperRef} role="menu">
-      <div>
+      <StyledDiv>
         <div>
           <div style={{padding: '2px 2px 2px 2px'}}>
             <InputText value={searchTerm} autoComplete='off' autoFocus
@@ -276,7 +274,7 @@ export default function QuickSearch({closeModal}) {
             <div >
               { (menuSearchResult.fetched && !(isMenuLoading??true) ) ?
                 <div>
-                  <div className={classes.helpGroup}>
+                  <div className='QuickSearch-helpGroup'>
                     <span className='fa fa-bars'></span> &nbsp;{gettext('MENU ITEMS')} ({menuSearchResult.data.length})
                   </div>
 
@@ -293,16 +291,16 @@ export default function QuickSearch({closeModal}) {
 
               { (helpSearchResult.fetched && !(isHelpLoading??true)) ?
                 <div>
-                  <div className={classes.helpGroup}>
+                  <div className='QuickSearch-helpGroup'>
                     <span className='fa fa-question-circle'></span> &nbsp;{gettext('HELP ARTICLES')} {Object.keys(helpSearchResult.data).length > 10 ?
                       <span> (10 of {Object.keys(helpSearchResult.data).length})</span>:
                       '(' + Object.keys(helpSearchResult.data).length + ')'}&nbsp;
                     { !helpSearchResult.clearedPooling ? <CircularProgress style={{height: '18px', width: '18px'}} /> :''}
-                    { Object.keys(helpSearchResult.data).length > 10 ? <a href={helpSearchResult.url} className={classes.showAll} target='_blank' rel='noreferrer'>{gettext('Show all')} &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''}
+                    { Object.keys(helpSearchResult.data).length > 10 ? <a href={helpSearchResult.url} className='QuickSearch-showAll' target='_blank' rel='noreferrer'>{gettext('Show all')} &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''}
                   </div>
 
                   {Object.keys(helpSearchResult.data).map( (value, index) => {
-                    if(index <= 9) {  return <div key={ 'li-help-' + value }><a tabIndex='0' href={helpSearchResult.data[value]} className={classes.searchItem} target='_blank' rel='noreferrer'>{value}</a></div>; }
+                    if(index <= 9) {  return <div key={ 'li-help-' + value }><a tabIndex='0' href={helpSearchResult.data[value]} className='QuickSearch-searchItem' target='_blank' rel='noreferrer'>{value}</a></div>; }
                   })}
 
                   {(Object.keys(helpSearchResult.data).length == 0) &&
@@ -315,7 +313,7 @@ export default function QuickSearch({closeModal}) {
             </div>
           </div>
         </div>
-      </div>
+      </StyledDiv>
       <div id='quick-search-iframe-container' />
     </div>
   );

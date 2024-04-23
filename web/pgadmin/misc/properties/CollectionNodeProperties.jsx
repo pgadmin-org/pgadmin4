@@ -7,13 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import getApiInstance from 'sources/api_instance';
-import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/material';
 import { generateCollectionURL } from '../../browser/static/js/node_ajax';
 import gettext from 'sources/gettext';
 import PgTable from 'sources/components/PgTable';
-import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { PgButtonGroup, PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,46 +24,16 @@ import { evalFunc } from '../../static/js/utils';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
 import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
 
-const useStyles = makeStyles((theme) => ({
-  emptyPanel: {
+const StyledBox = styled(Box)(({theme}) => ({
+  height: '100%',
+  '&.CollectionNodeProperties-emptyPanel': {
     minHeight: '100%',
     minWidth: '100%',
     background: theme.otherVars.emptySpaceBg,
     overflow: 'auto',
     padding: '8px',
     display: 'flex',
-  },
-  panelIcon: {
-    width: '80%',
-    margin: '0 auto',
-    marginTop: '25px !important',
-    position: 'relative',
-    textAlign: 'center',
-  },
-  panelMessage: {
-    marginLeft: '0.5rem',
-    fontSize: '0.875rem',
-  },
-  searchPadding: {
-    flex: 2.5
-  },
-  searchInput: {
-    flex: 1,
-    margin: '4 0 4 0',
-    borderLeft: 'none',
-    paddingLeft: 5
-  },
-  propertiesPanel: {
-    height: '100%'
-  },
-  autoResizer: {
-    height: '100% !important',
-    width: '100% !important',
-    background: theme.palette.grey[400],
-    padding: '8px',
-    overflow: 'hidden !important',
-    overflowX: 'auto !important'
-  },
+  }
 }));
 
 export default function CollectionNodeProperties({
@@ -76,9 +45,7 @@ export default function CollectionNodeProperties({
   isStale,
   setIsStale
 }) {
-  const classes = useStyles();
   const pgAdmin = usePgAdmin();
-
   const [data, setData] = React.useState([]);
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
   const [selectedObject, setSelectedObject] = React.useState({});
@@ -193,7 +160,6 @@ export default function CollectionNodeProperties({
       }
 
       setLoaderText(gettext('Loading...'));
-
       if (!_.isUndefined(nodeObj.getSchema)) {
         schemaRef.current = nodeObj.getSchema?.(treeNodeInfo, nodeData);
         schemaRef.current?.fields.forEach((field) => {
@@ -231,7 +197,6 @@ export default function CollectionNodeProperties({
           tableColumns.push(column);
         });
       }
-
 
       api({
         url: url,
@@ -307,15 +272,14 @@ export default function CollectionNodeProperties({
   };
 
   return (
-    <Theme className='obj_properties'>
+    <>
       <Loader message={loaderText}/>
-      <Box className={classes.propertiesPanel}>
+      <StyledBox>
         {data.length > 0 ?
           (
             <PgTable
               hasSelectRow={!('catalog' in treeNodeInfo) && (nodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
               CustomHeader={CustomHeader}
-              className={classes.autoResizer}
               columns={pgTableColumns}
               data={data}
               type={'panel'}
@@ -326,13 +290,13 @@ export default function CollectionNodeProperties({
           )
           :
           (
-            <div className={classes.emptyPanel}>
+            <div className='CollectionNodeProperties-emptyPanel'>
               <EmptyPanelMessage text={gettext(infoMsg)}/>
             </div>
           )
         }
-      </Box>
-    </Theme>
+      </StyledBox>
+    </>
   );
 }
 

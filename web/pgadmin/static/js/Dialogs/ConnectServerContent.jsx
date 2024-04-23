@@ -14,11 +14,11 @@ import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
-import { useModalStyles } from '../helpers/ModalProvider';
 import { FormFooterMessage, InputCheckbox, InputText, MESSAGE_TYPE } from '../components/FormComponents';
+import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 
 export default function ConnectServerContent({closeModal, data, onOK, setHeight}) {
-  const classes = useModalStyles();
+
   const containerRef = useRef();
   const firstEleRef = useRef();
   const okBtnRef = useRef();
@@ -58,7 +58,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
   }
 
   return (
-    <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
+    <ModalContent ref={containerRef}>
       <Box flexGrow="1" p={2}>
         {data.prompt_tunnel_password && <>
           <Box>
@@ -105,11 +105,11 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
           position: 'unset', padding: '12px 0px 0px'
         }}/>
       </Box>
-      <Box className={classes.footer}>
+      <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton ref={okBtnRef} data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={()=>{
+        <PrimaryButton ref={okBtnRef} data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
           let postFormData = new FormData();
           if(data.prompt_tunnel_password) {
             postFormData.append('tunnel_password', formData.tunnel_password);
@@ -124,8 +124,8 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
           onOK?.(postFormData);
           closeModal();
         }} >{gettext('OK')}</PrimaryButton>
-      </Box>
-    </Box>
+      </ModalFooter>
+    </ModalContent>
   );
 }
 

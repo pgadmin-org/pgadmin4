@@ -7,29 +7,20 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Box, Card, CardContent, CardHeader } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 
-
-const useStyles = makeStyles((theme) => ({
-  chartCard: {
-    border: '1px solid '+theme.otherVars.borderColor,
-    height: '100%',
-  },
-  chartCardContent: {
-    padding: '0.25rem 0.5rem',
-    height: '165px',
-    display: 'flex',
-  },
-  chartLegend: {
+const StyledCard = styled(Card)(({theme}) => ({
+  border: '1px solid '+theme.otherVars.borderColor,
+  height: '100%',
+  '& .ChartContainer-chartLegend': {
     marginLeft: 'auto',
     '& > div': {
       display: 'flex',
       fontWeight: 'normal',
-
       '& .legend-value': {
         marginLeft: '4px',
         '& .legend-label': {
@@ -37,17 +28,22 @@ const useStyles = makeStyles((theme) => ({
         }
       }
     }
+  },
+  '& .ChartContainer-cardContent': {
+    padding: '0.25rem 0.5rem',
+    height: '165px',
+    display: 'flex',
   }
 }));
 
 export default function ChartContainer(props) {
-  const classes = useStyles();
+
 
   return (
-    <Card className={classes.chartCard} elevation={0} data-testid="chart-container">
+    <StyledCard elevation={0} data-testid="chart-container">
       <CardHeader title={<Box display="flex" justifyContent="space-between">
         <div id={props.id}>{props.title}</div>
-        <div className={classes.chartLegend}>
+        <div className='ChartContainer-chartLegend'>
           <div style={{display: 'flex', flexWrap: 'wrap'}}>
             {props.datasets?.map((datum)=>(
               <div className="legend-value" key={datum.label}>
@@ -58,11 +54,11 @@ export default function ChartContainer(props) {
           </div>
         </div>
       </Box>} />
-      <CardContent className={classes.chartCardContent}>
+      <CardContent className='ChartContainer-cardContent'>
         {!props.errorMsg && !props.isTest && props.children}
         {props.errorMsg && <EmptyPanelMessage text={props.errorMsg}/>}
       </CardContent>
-    </Card>
+    </StyledCard>
   );
 }
 

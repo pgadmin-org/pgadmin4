@@ -1,26 +1,27 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { isMac } from '../keyboard_shortcuts';
 import _ from 'lodash';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
 
-const useStyles = makeStyles((theme)=>({
-  shortcutTitle: {
+
+const Root = styled('div')(({theme}) => ({
+  '& .ShortcutTitle-title': {
     width: '100%',
     textAlign: 'center',
   },
-  shortcut: {
+  '& .ShortcutTitle-shortcut': {
     justifyContent: 'center',
     marginTop: '0.125rem',
     display: 'flex',
-  },
-  key: {
-    padding: '0 0.25rem',
-    border: `1px solid ${theme.otherVars.borderColor}`,
-    marginRight: '0.125rem',
-    borderRadius: theme.shape.borderRadius,
+    '& .ShortcutTitle-key': {
+      padding: '0 0.25rem',
+      border: `1px solid ${theme.otherVars.borderColor}`,
+      marginRight: '0.125rem',
+      borderRadius: theme.shape.borderRadius,
+    }
   },
 }));
 
@@ -67,17 +68,17 @@ export function shortcutToString(shortcut, accesskey=null, asArray=false) {
 
 /* The tooltip content to show shortcut details */
 export default function ShortcutTitle({title, shortcut, accesskey}) {
-  const classes = useStyles();
+
   let keys = shortcutToString(shortcut, accesskey, true);
   return (
-    <>
-      <div className={classes.shortcutTitle}>{title}</div>
-      <div className={classes.shortcut}>
+    (<Root>
+      <div className='ShortcutTitle-title'>{title}</div>
+      <div className='ShortcutTitle-shortcut'>
         {keys.map((key)=>{
-          return <div key={key} className={classes.key}>{key}</div>;
+          return <div key={key} className='ShortcutTitle-key'>{key}</div>;
         })}
       </div>
-    </>
+    </Root>)
   );
 }
 

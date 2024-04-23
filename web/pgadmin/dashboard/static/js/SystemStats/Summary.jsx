@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import getApiInstance from 'sources/api_instance';
 import {getGCD, getEpoch} from 'sources/utils';
@@ -20,31 +20,22 @@ import StreamingChart from '../../../../static/js/components/PgChart/StreamingCh
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import axios from 'axios';
 import { getStatsUrl, transformData,statsReducer, X_AXIS_LENGTH } from './utility.js';
-import clsx from 'clsx';
-import { commonTableStyles } from '../../../../static/js/Theme';
+import Table from '../../../../static/js/components/Table';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    height: 'auto',
-    padding: '0px !important',
-    marginBottom: '4px',
-  },
-  tableContainer: {
+const Root = styled('div')(({theme}) => ({
+  '& .Summary-tableContainer': {
     background: theme.otherVars.tableBg,
     padding: '0px',
     border: '1px solid '+theme.otherVars.borderColor,
     borderCollapse: 'collapse',
     borderRadius: '4px',
     overflow: 'hidden',
-  },
-  chartContainer: {
-    padding: '4px',
-  },
-  containerHeader: {
-    fontWeight: 'bold',
-    marginBottom: '0px',
-    borderBottom: '1px solid '+theme.otherVars.borderColor,
-    padding: '4px 8px',
+    '& .Summary-containerHeader': {
+      fontWeight: 'bold',
+      marginBottom: '0px',
+      borderBottom: '1px solid '+theme.otherVars.borderColor,
+      padding: '4px 8px',
+    }
   },
 }));
 
@@ -53,10 +44,9 @@ const chartsDefault = {
 };
 
 const SummaryTable = (props) => {
-  const tableClasses = commonTableStyles();
   const data = props.data;
   return (
-    <table className={clsx(tableClasses.table)}>
+    <Table >
       <thead>
         <tr>
           <th>Property</th>
@@ -71,7 +61,7 @@ const SummaryTable = (props) => {
           </tr>
         ))}
       </tbody>
-    </table>
+    </Table>
   );
 };
 
@@ -224,7 +214,7 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
   }, enablePoll ? pollDelay : -1);
 
   return (
-    <>
+    (<Root>
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <SummaryWrapper
@@ -238,7 +228,7 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
           isTest={false}
         />
       }
-    </>
+    </Root>)
   );
 }
 
@@ -251,7 +241,7 @@ Summary.propTypes = {
 };
 
 function SummaryWrapper(props) {
-  const classes = useStyles();
+
   const options = useMemo(()=>({
     showDataPoints: props.showDataPoints,
     showTooltip: props.showTooltip,
@@ -259,23 +249,23 @@ function SummaryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   return (
     <>
-      <Grid container spacing={0.5} className={classes.container}>
+      <Grid container spacing={0.5} sx={{height: 'auto', padding: '0px !important', marginBottom: '4px'}}>
         <Grid item md={6}>
-          <div className={classes.tableContainer}>
-            <div className={classes.containerHeader}>{gettext('OS information')}</div>
+          <div className='Summary-tableContainer'>
+            <div className='Summary-containerHeader'>{gettext('OS information')}</div>
             <SummaryTable data={props.osStats} />
           </div>
         </Grid>
-        <Grid item md={6}className={classes.chartContainer}>
+        <Grid item md={6} sx={{padding: '4px'}}>
           <ChartContainer id='hpc-graph' title={gettext('Process & handle count')} datasets={props.processHandleCount.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.processHandleCount} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} showSecondAxis={true} />
           </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={0.5} className={classes.container}>
+      <Grid container spacing={0.5} sx={{height: 'auto', padding: '0px !important', marginBottom: '4px'}}>
         <Grid item md={6}>
-          <div className={classes.tableContainer}>
-            <div className={classes.containerHeader}>{gettext('CPU information')}</div>
+          <div className='Summary-tableContainer'>
+            <div className='Summary-containerHeader'>{gettext('CPU information')}</div>
             <SummaryTable data={props.cpuStats} />
           </div>
         </Grid>

@@ -1,18 +1,15 @@
-/////////////////////////////////////////////////////////////
-//
-// pgAdmin 4 - PostgreSQL Tools
-//
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
-// This software is released under the PostgreSQL Licence
-//
-//////////////////////////////////////////////////////////////
-
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import BaseUISchema from '../SchemaView/base_schema.ui';
 import SchemaView from '../SchemaView';
+
+const StyledSchemaView = styled(SchemaView )(({theme}) => ({
+  '& .ChangePasswordContent-root': {
+    ...theme.mixins.tabPanel,
+  }
+}));
 
 class ChangePasswordSchema extends BaseUISchema {
   constructor(user, isPgpassFileUsed, hasCsrfToken=false, showUser=true) {
@@ -73,17 +70,9 @@ class ChangePasswordSchema extends BaseUISchema {
   }
 }
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    ...theme.mixins.tabPanel,
-  },
-}));
-
 export default function ChangePasswordContent({getInitData=() => { /*This is intentional (SonarQube)*/ },
   onSave, onClose, hasCsrfToken=false, showUser=true}) {
-  const classes = useStyles();
-
-  return<SchemaView
+  return <StyledSchemaView
     formType={'dialog'}
     getInitData={getInitData}
     schema={new ChangePasswordSchema('', false, hasCsrfToken, showUser)}
@@ -97,7 +86,7 @@ export default function ChangePasswordContent({getInitData=() => { /*This is int
     disableSqlHelp={true}
     disableDialogHelp={true}
     isTabView={false}
-    formClassName={classes.root}
+    formClassName='ChangePasswordContent-root'
   />;
 }
 ChangePasswordContent.propTypes = {

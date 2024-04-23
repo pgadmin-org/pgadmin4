@@ -159,7 +159,7 @@ class QueryToolLocators:
     query_history_entries = "#id-history li[data-label='history-entry']"
 
     query_history_specific_entry = \
-        "#id-history li[data-label='history-entry']:nth-child({0})"
+        "#id-history li[data-label='history-entry']:nth-of-type({0})"
 
     query_history_detail = "#id-history div[data-label='history-detail']"
 

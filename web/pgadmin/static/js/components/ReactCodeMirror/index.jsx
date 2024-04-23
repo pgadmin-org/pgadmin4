@@ -8,10 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 import gettext from 'sources/gettext';
@@ -24,12 +23,10 @@ import CustomPropTypes from '../../custom_prop_types';
 import FindDialog from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    position: 'relative',
-    height: '100%'
-  },
-  copyButton: {
+const Root = styled('div')(() => ({
+  position: 'relative',
+  height: '100%',
+  '& .CodeMirror-copyButton': {
     position: 'absolute',
     zIndex: 99,
     right: '4px',
@@ -39,14 +36,14 @@ const useStyles = makeStyles(() => ({
 
 
 function CopyButton({ editor }) {
-  const classes = useStyles();
+
   const [isCopied, setIsCopied] = useState(false);
   const revertCopiedText = useDelayedCaller(() => {
     setIsCopied(false);
   });
 
   return (
-    <PgIconButton size="small" className={classes.copyButton} icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
+    <PgIconButton size="small" className='CodeMirror-copyButton' icon={isCopied ? <CheckRoundedIcon /> : <FileCopyRoundedIcon />}
       title={isCopied ? gettext('Copied!') : gettext('Copy')}
       onClick={() => {
         copyToClipboard(editor?.getValue());
@@ -63,7 +60,6 @@ CopyButton.propTypes = {
 
 
 export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, ...props}) {
-  const classes = useStyles();
   const editor = useRef();
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
   const [showGoto, setShowGoto] = useState(false);
@@ -140,12 +136,12 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
 
 
   return (
-    <div className={clsx(className, classes.root)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <Root className={[className].join(' ')} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
       <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
       <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
       <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
-    </div>
+    </Root>
   );
 }
 

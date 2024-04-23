@@ -11,7 +11,6 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import React from 'react';
 import { Box, Paper } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import {FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
@@ -30,42 +29,9 @@ import EventBus from '../../../../static/js/helpers/EventBus';
 import { CLOUD_PROVIDERS, CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
 
-
-const useStyles = makeStyles(() =>
-  ({
-    messageBox: {
-      marginBottom: '1em',
-      display: 'flex',
-    },
-    messagePadding: {
-      paddingTop: '10px',
-      flex: 2.5,
-    },
-    buttonMarginEDB: {
-      position: 'relative',
-      top: '20%',
-    },
-    toggleButton: {
-      height: '100px',
-    },
-    summaryContainer: {
-      flexGrow: 1,
-      minHeight: 0,
-      overflow: 'auto',
-    },
-    boxText: {
-      paddingBottom: '5px'
-    },
-    authButton: {
-      marginLeft: '12em'
-    }
-  }),
-);
-
 export const CloudWizardEventsContext = React.createContext();
 
 export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}) {
-  const classes = useStyles();
   const eventBus = React.useRef(new EventBus());
 
   let steps = [gettext('Cloud Provider'), gettext('Credentials'), gettext('Cluster Type'),
@@ -416,10 +382,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
   });
 
   let cloud_providers = [
-    {label: gettext(CLOUD_PROVIDERS_LABELS.AWS), value: CLOUD_PROVIDERS.AWS, icon: <AWSIcon className={classes.icon} />},
-    {label: gettext(CLOUD_PROVIDERS_LABELS.BIGANIMAL), value: CLOUD_PROVIDERS.BIGANIMAL, icon: <BigAnimalIcon className={classes.icon} />},
-    {label: gettext(CLOUD_PROVIDERS_LABELS.AZURE), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon className={classes.icon} /> },
-    {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon className={classes.icon} /> }];
+    {label: gettext(CLOUD_PROVIDERS_LABELS.AWS), value: CLOUD_PROVIDERS.AWS, icon: <AWSIcon  />},
+    {label: gettext(CLOUD_PROVIDERS_LABELS.BIGANIMAL), value: CLOUD_PROVIDERS.BIGANIMAL, icon: <BigAnimalIcon />},
+    {label: gettext(CLOUD_PROVIDERS_LABELS.AZURE), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon  /> },
+    {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon  /> }];
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
@@ -433,10 +399,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         beforeNext={onBeforeNext}
         beforeBack={onBeforeBack}>
         <WizardStep stepId={0}>
-          <Box className={classes.messageBox}>
-            <Box className={classes.messagePadding}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
+          <Box sx={{ marginBottom: '1em', display: 'flex'}}>
+            <Box sx={{paddingTop: '10px', flex: 2.5}}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
           </Box>
-          <Box className={classes.messageBox}>
+          <Box sx={{ marginBottom: '1em', display: 'flex'}}>
             <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}
               options={cloud_providers}
             ></ToggleButtons>
@@ -444,8 +410,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
         </WizardStep>
         <WizardStep stepId={1} >
-          <Box className={classes.buttonMarginEDB}>
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
+          <Box sx={{ position: 'relative',top: '20%'}}>
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box sx={{ marginBottom: '1em', display: 'flex'}}>
               <Box>{gettext('The verification code to authenticate the pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
                 <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
               </Box>
@@ -453,7 +419,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
             {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>
               {gettext('Click here to authenticate yourself to EDB BigAnimal')}
             </PrimaryButton>}
-            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box className={classes.messageBox}>
+            {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box sx={{ marginBottom: '1em', display: 'flex'}}>
               <Box ></Box>
             </Box>}
           </Box>
@@ -542,8 +508,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
           }
         </WizardStep>
         <WizardStep stepId={5} >
-          <Box className={classes.boxText}>{gettext('Please review the details before creating the cloud instance.')}</Box>
-          <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
+          <Box sx={{ paddingBottom: '5px'}}>{gettext('Please review the details before creating the cloud instance.')}</Box>
+          <Paper variant="outlined" elevation={0} sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto'}}>
             {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 5 && <FinalSummary
               cloudProvider={cloudProvider}
               instanceData={cloudInstanceDetails}

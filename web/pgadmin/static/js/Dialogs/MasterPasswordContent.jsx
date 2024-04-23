@@ -11,19 +11,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-
 import { Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import HelpIcon from '@mui/icons-material/Help';
-
 import { DefaultButton, PrimaryButton, PgIconButton } from '../components/Buttons';
-import { useModalStyles } from '../helpers/ModalProvider';
 import { FormFooterMessage, FormNote, InputText, MESSAGE_TYPE } from '../components/FormComponents';
+import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 
 export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data, keyringName}) {
-  const classes = useModalStyles();
   const containerRef = useRef();
   const firstEleRef = useRef();
   const okBtnRef = useRef();
@@ -57,9 +54,8 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
     setHeight?.(containerRef.current?.offsetHeight);
   }, [containerRef.current]);
 
-
   return (
-    <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
+    <ModalContent ref={containerRef}>
       {isKeyring ?
         <Box flexGrow="1" p={2}>
           <Box>
@@ -98,7 +94,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
           }} />
         </Box>
       }
-      <Box className={classes.footer}>
+      <ModalFooter>
         <Box style={{ marginRight: 'auto' }}>
           <PgIconButton data-test="help-masterpassword" title={gettext('Help')} style={{ padding: '0.3rem', paddingLeft: '0.7rem' }} startIcon={<HelpIcon />} onClick={() => {
             let _url = url_for('help.static', {
@@ -120,7 +116,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             closeModal();
           }} >{gettext('Cancel')}</DefaultButton>
         }
-        <PrimaryButton ref={okBtnRef} data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />}
+        <PrimaryButton ref={okBtnRef} data-test="save" startIcon={<CheckRoundedIcon />}
           disabled={formData.password.length == 0}
           onClick={() => {
             let postFormData = new FormData();
@@ -132,8 +128,8 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
         >
           {gettext('OK')}
         </PrimaryButton>
-      </Box>
-    </Box>);
+      </ModalFooter>
+    </ModalContent>);
 }
 
 MasterPasswordContent.propTypes = {

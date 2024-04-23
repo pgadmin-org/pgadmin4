@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styled } from '@mui/styles';
+import { ModalContent } from '../../../../../../static/js/components/ModalContent';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
@@ -8,6 +8,7 @@ import HTMLReactParser from 'html-react-parser';
 import PropTypes from 'prop-types';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import { InputCheckbox } from '../../../../../../static/js/components/FormComponents';
+import { styled } from '@mui/material/styles';
 
 const StyledFooter = styled('div')(({theme})=>({
   display: 'flex',
@@ -25,7 +26,7 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
   });
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <ModalContent>
       <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <StyledFooter>
         <InputCheckbox controlProps={{ label: gettext('Don\'t ask again') }} value={formData['save_user_choice']}
@@ -43,7 +44,7 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
           }} autoFocus={true} >{gettext('Continue')}</PrimaryButton>
         </Box>
       </StyledFooter>
-    </Box>
+    </ModalContent>
   );
 }
 

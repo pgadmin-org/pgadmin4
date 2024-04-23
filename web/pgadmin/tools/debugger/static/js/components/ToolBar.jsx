@@ -9,8 +9,9 @@
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
 import FormatIndentDecreaseIcon from '@mui/icons-material/FormatIndentDecrease';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
@@ -28,20 +29,20 @@ import { DebuggerContext, DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS, MENUS } from '../DebuggerConstants';
 import { useKeyboardShortcuts } from '../../../../../static/js/custom_hooks';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    flexWrap: 'wrap',
-    ...theme.mixins.panelBorder.bottom,
-  },
+
+
+const StyledBox = styled(Box)(({theme}) => ({
+  padding: '2px 4px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  backgroundColor: theme.otherVars.editorToolbarBg,
+  flexWrap: 'wrap',
+  ...theme.mixins.panelBorder.bottom,
 }));
 
 export function ToolBar() {
-  const classes = useStyles();
+
   const debuggerCtx = useContext(DebuggerContext);
   const eventBus = useContext(DebuggerEventsContext);
   let preferences = debuggerCtx.preferences.debugger;
@@ -161,7 +162,7 @@ export function ToolBar() {
   ], debuggerCtx.containerRef);
 
   return (
-    <Box className={classes.root}>
+    <StyledBox>
       <PgButtonGroup size="small">
         <PgIconButton data-test='step-in' title={gettext('Step into')} disabled={buttonsDisabled[MENUS.STEPINTO]} icon={<FormatIndentIncreaseIcon />} onClick={() => { stepInTODebugger(); }}
           shortcut={preferences?.btn_step_into} />
@@ -189,6 +190,6 @@ export function ToolBar() {
         <PgIconButton title={gettext('Reset layout')} icon={<RotateLeftRoundedIcon />}
           onClick={onResetLayout} />
       </PgButtonGroup>
-    </Box>
+    </StyledBox>
   );
 }

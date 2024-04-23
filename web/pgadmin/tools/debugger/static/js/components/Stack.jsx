@@ -8,39 +8,31 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 
 import React, { useState } from 'react';
 
-import { makeStyles } from '@mui/styles';
 import TableContainer from '@mui/material/TableContainer';
 import Paper from '@mui/material/Paper';
 
 import { DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
-import { commonTableStyles } from '../../../../../static/js/Theme';
 import { InputText } from '../../../../../static/js/components/FormComponents';
+import Table from '../../../../../static/js/components/Table';
 
-
-const useStyles = makeStyles(() => ({
-  table: {
-    minWidth: 650,
-  },
-  summaryContainer: {
-    flexGrow: 1,
-    minHeight: 0,
-    overflow: 'auto',
-    maxHeight: '100%'
-  },
-  container: {
+const StyledPaper = styled(Paper)(() => ({
+  flexGrow: 1,
+  minHeight: 0,
+  overflow: 'auto',
+  maxHeight: '100%',
+  '& .Stack-container': {
     maxHeight: '100%'
   }
 }));
 
 export function Stack() {
-  const classes = useStyles();
-  const tableClasses = commonTableStyles();
+
   const eventBus = React.useContext(DebuggerEventsContext);
   const [stackData, setStackData] = useState([]);
   const [disableFrameSelection, setDisableFrameSelection] = useState(false);
@@ -54,9 +46,9 @@ export function Stack() {
     });
   }, []);
   return (
-    <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
-      <TableContainer className={classes.container}>
-        <table className={clsx(tableClasses.table)} aria-label="sticky table">
+    <StyledPaper variant="outlined" elevation={0}>
+      <TableContainer className='Stack-container'>
+        <Table aria-label="sticky table">
           <thead>
             <tr>
               <th>{gettext('Name')}</th>
@@ -77,8 +69,8 @@ export function Stack() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </TableContainer>
-    </Paper>
+    </StyledPaper>
   );
 }

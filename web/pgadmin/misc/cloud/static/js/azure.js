@@ -18,15 +18,6 @@ import getApiInstance from '../../../../static/js/api_instance';
 import { CloudWizardEventsContext } from './CloudWizard';
 import {MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import gettext from 'sources/gettext';
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles(() =>
-  ({
-    formClass: {
-      overflow: 'auto',
-    }
-  }),
-);
 
 // Azure credentials
 export function AzureCredentials(props) {
@@ -111,7 +102,6 @@ AzureCredentials.propTypes = {
 // Azure Instance
 export function AzureInstanceDetails(props) {
   const [azureInstanceSchema, setAzureInstanceSchema] = React.useState();
-  const classes = useStyles();
 
   React.useMemo(() => {
     const AzureSchema = new AzureClusterSchema({
@@ -195,7 +185,6 @@ export function AzureInstanceDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setAzureInstanceData(changedData);
     }}
-    formClassName={classes.formClass}
   />;
 }
 AzureInstanceDetails.propTypes = {
@@ -211,7 +200,6 @@ AzureInstanceDetails.propTypes = {
 // Azure Database Details
 export function AzureDatabaseDetails(props) {
   const [azureDBInstance, setAzureDBInstance] = React.useState();
-  const classes = useStyles();
 
   React.useMemo(() => {
     const azureDBSchema = new AzureDatabaseSchema({
@@ -235,7 +223,6 @@ export function AzureDatabaseDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setAzureDatabaseData(changedData);
     }}
-    formClassName={classes.formClass}
   />;
 }
 AzureDatabaseDetails.propTypes = {

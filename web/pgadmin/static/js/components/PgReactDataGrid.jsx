@@ -9,23 +9,22 @@
 import React, { useContext, useEffect } from 'react';
 import ReactDataGrid, { Row } from 'react-data-grid';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import gettext from 'sources/gettext';
+import { styled } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme)=>({
-  root: {
+const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
+  '&.ReactGrid-root': {
     height: '100%',
     color: theme.palette.text.primary,
     backgroundColor: theme.otherVars.qtDatagridBg,
     fontSize: '12px',
     border: 'none',
     '--rdg-selection-color': theme.palette.primary.main,
-    '& .rdg-cell': {
+    '&.rdg-cell': {
       ...theme.mixins.panelBorder.right,
       ...theme.mixins.panelBorder.bottom,
       fontWeight: 'abc',
@@ -44,7 +43,7 @@ const useStyles = makeStyles((theme)=>({
     '& .rdg-header-row': {
       backgroundColor: theme.palette.background.default,
     },
-    '& .rdg-row': {
+    '&.rdg-row': {
       backgroundColor: theme.palette.background.default,
       '&[aria-selected=true]': {
         backgroundColor: theme.palette.primary.light,
@@ -52,7 +51,7 @@ const useStyles = makeStyles((theme)=>({
       },
     }
   },
-  cellSelection: {
+  '&.ReactGrid-cellSelection': {
     '& .rdg-cell': {
       '&[aria-selected=true]:not([role="columnheader"])': {
         outlineWidth: '1px',
@@ -62,7 +61,7 @@ const useStyles = makeStyles((theme)=>({
       }
     },
   },
-  hasSelectColumn: {
+  '&.ReactGrid-hasSelectColumn': {
     '& .rdg-cell': {
       '&[aria-selected=true][aria-colindex="1"]': {
         outlineWidth: '2px',
@@ -71,7 +70,7 @@ const useStyles = makeStyles((theme)=>({
         color: theme.palette.text.primary,
       }
     },
-    '& .rdg-row[aria-selected=true] .rdg-cell:nth-child(1)': {
+    '& .rdg-row[aria-selected=true] .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
     }
@@ -131,16 +130,16 @@ CustomRow.propTypes = {
 
 export default function PgReactDataGrid({gridRef, className, hasSelectColumn=true, onItemEnter, onItemSelect,
   onItemClick, noRowsText, noRowsIcon,...props}) {
-  const classes = useStyles();
-  let finalClassName = [classes.root];
-  hasSelectColumn && finalClassName.push(classes.hasSelectColumn);
-  props.enableCellSelect && finalClassName.push(classes.cellSelection);
+
+  let finalClassName = ['ReactGrid-root'];
+  hasSelectColumn && finalClassName.push('ReactGrid-hasSelectColumn');
+  props.enableCellSelect && finalClassName.push('ReactGrid-cellSelection');
   finalClassName.push(className);
   return (
     <GridContextUtils.Provider value={{onItemEnter, onItemSelect, onItemClick}}>
-      <ReactDataGrid
+      <StyledReactDataGrid
         ref={gridRef}
-        className={clsx(finalClassName)}
+        className={finalClassName.join(' ')}
         components={{
           sortIcon: CutomSortIcon,
           rowRenderer: CustomRow,

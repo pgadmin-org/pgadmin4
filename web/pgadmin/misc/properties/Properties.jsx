@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import CollectionNodeProperties from './CollectionNodeProperties';
 import ErrorBoundary from '../../static/js/helpers/ErrorBoundary';
 import withStandardTabInfo from '../../static/js/helpers/withStandardTabInfo';
@@ -16,23 +17,19 @@ import ObjectNodeProperties from './ObjectNodeProperties';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-    background: theme.otherVars.emptySpaceBg,
-    display: 'flex',
-    flexDirection: 'column'
-  },
+const StyledBox = styled(Box)(({theme}) => ({
+  height: '100%',
+  background: theme.otherVars.emptySpaceBg,
+  display: 'flex',
+  flexDirection: 'column'
 }));
 
 function Properties(props) {
   const isCollection = props.nodeData?._type?.startsWith('coll-') || props.nodeData?._type == 'dbms_job_scheduler';
-  const classes = useStyles();
   const pgAdmin = usePgAdmin();
   let noPropertyMsg = '';
 
@@ -44,27 +41,27 @@ function Properties(props) {
 
   if(noPropertyMsg) {
     return (
-      <Box className={classes.root}>
+      <StyledBox>
         <Box margin={'4px auto'}>
           <EmptyPanelMessage text={noPropertyMsg} />
         </Box>
-      </Box>
+      </StyledBox>
     );
   }
 
   if(isCollection) {
     return (
-      <Box className={classes.root}>
+      <StyledBox>
         <ErrorBoundary>
           <CollectionNodeProperties
             {...props}
           />
         </ErrorBoundary>
-      </Box>
+      </StyledBox>
     );
   } else {
     return (
-      <Box className={classes.root}>
+      <StyledBox>
         <ErrorBoundary>
           <ObjectNodeProperties
             {...props}
@@ -77,7 +74,7 @@ function Properties(props) {
             }}
           />
         </ErrorBoundary>
-      </Box>
+      </StyledBox>
     );
   }
 }

@@ -13,7 +13,6 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { makeStyles } from '@mui/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
@@ -30,6 +29,7 @@ import jsonEditorOverride from './overrides/jsoneditor.override';
 import pgadminOverride from './overrides/pgadmin.classes.override';
 import reactAspenOverride from './overrides/reactaspen.override';
 import usePreferences from '../../../preferences/static/js/store';
+import szhMenuOverride from './overrides/szhmenu.override';
 
 /* Common settings across all themes */
 let basicSettings = createTheme();
@@ -423,7 +423,8 @@ function getFinalTheme(baseTheme) {
           ...cmOverride(baseTheme),
           ...jsonEditorOverride(baseTheme),
           ...pgadminOverride(baseTheme),
-          ...reactAspenOverride(baseTheme)
+          ...reactAspenOverride(baseTheme),
+          ...szhMenuOverride(baseTheme)
         },
       },
       MuiOutlinedInput:  {
@@ -805,83 +806,3 @@ export default function Theme({children}) {
 Theme.propTypes = {
   children: CustomPropTypes.children,
 };
-
-export const commonTableStyles = makeStyles((theme)=>({
-  table: {
-    borderSpacing: 0,
-    width: '100%',
-    overflow: 'auto',
-    backgroundColor: theme.otherVars.tableBg,
-    border: '1px solid '+theme.otherVars.borderColor,
-    '& tbody td, & thead th': {
-      margin: 0,
-      padding: theme.spacing(0.5),
-      border: '1px solid '+theme.otherVars.borderColor,
-      borderBottom: 'none',
-      position: 'relative',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      userSelect: 'text',
-      maxWidth: '250px',
-      '&:first-of-type':{
-        borderLeft: 'none',
-      },
-    },
-    '& thead tr:first-of-type th': {
-      borderTop: 'none',
-    },
-    '& tbody tr:last-of-type': {
-      '&:hover td': {
-        borderBottomColor: theme.palette.primary.main,
-      },
-      '& td': {
-        borderBottomColor: theme.otherVars.borderColor,
-      }
-    },
-    '& th': {
-      fontWeight: theme.typography.fontWeightBold,
-      padding: theme.spacing(1, 0.5),
-      textAlign: 'left',
-    },
-    '& tbody > tr': {
-      '&:hover': {
-        backgroundColor: theme.palette.primary.light,
-        '& td': {
-          borderBottom: '1px solid '+theme.palette.primary.main,
-          borderTop: '1px solid '+theme.palette.primary.main,
-        },
-        '&:last-of-type td': {
-          borderBottomColor: theme.palette.primary.main,
-        },
-      },
-    },
-  },
-  noBorder: {
-    border: 0,
-  },
-  borderBottom: {
-    '& tbody tr:last-of-type td': {
-      borderBottom: '1px solid '+theme.otherVars.borderColor,
-    },
-  },
-  wrapTd: {
-    '& tbody td': {
-      whiteSpace: 'pre-wrap',
-    }
-  },
-  noHover: {
-    '& tbody > tr': {
-      '&:hover': {
-        backgroundColor: theme.otherVars.tableBg,
-        '& td': {
-          borderBottomColor: theme.otherVars.borderColor,
-          borderTopColor: theme.otherVars.borderColor,
-        },
-        '&:last-of-type td': {
-          borderBottomColor: theme.otherVars.borderColor,
-        },
-      },
-    },
-  }
-}));

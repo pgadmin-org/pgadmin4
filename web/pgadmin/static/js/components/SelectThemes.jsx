@@ -9,20 +9,14 @@
 
 import gettext from 'sources/gettext';
 import { Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import React, { useMemo } from 'react';
 import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
-const useStyles = makeStyles(() => ({
-  preview: {
-    paddingTop: 10
-  }
-}));
 
 export default function SelectThemes({onChange, ...props}) {
-  const classes = useStyles();
+
   const previewSrc = useMemo(()=>(props.options?.find((o)=>o.value==props.value)?.preview_src), [props.value]);
 
   return (
@@ -30,7 +24,7 @@ export default function SelectThemes({onChange, ...props}) {
       <Grid item lg={12} md={12} sm={12} xs={12}>
         <InputSelect ref={props.inputRef} onChange={onChange} {...props} />
       </Grid>
-      <Grid item lg={12} md={12} sm={12} xs={12} className={classes.preview}>
+      <Grid item lg={12} md={12} sm={12} xs={12} sx={{paddingTop: 10}}>
         <img className='img-fluid mx-auto d-block border' src={previewSrc} alt={gettext('Preview not available...')} />
       </Grid>
     </Grid>

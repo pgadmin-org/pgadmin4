@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useCallback, useReducer, useEffect, useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import { Box, List, ListItem } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import { PgIconButton } from '../../../../../static/js/components/Buttons';
 import gettext from 'sources/gettext';
@@ -18,20 +18,19 @@ import convert from 'convert-units';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    backgroundColor: theme.palette.background.default,
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '4px',
-  },
-  uploadArea: {
+
+const StyledBox = styled(Box)(({theme}) => ({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 1,
+  backgroundColor: theme.palette.background.default,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '4px',
+  '& .Uploader-uploadArea': {
     border: `1px dashed ${theme.palette.grey[600]}`,
     display: 'flex',
     alignItems: 'center',
@@ -42,19 +41,12 @@ const useStyles = makeStyles((theme)=>({
     textAlign: 'center',
     padding: '4px',
   },
-  uploadFilesRoot: {
+  '& .Uploader-uploadFilesRoot': {
     width: '350px',
     border: `1px dashed ${theme.palette.grey[600]}`,
     borderLeft: 'none',
     overflowX: 'hidden',
     overflowY: 'auto'
-  },
-  uploadProgress: {
-    position: 'unset',
-    padding: 0,
-  },
-  uploadPending: {
-
   }
 }));
 
@@ -131,7 +123,7 @@ UploadedFile.propTypes = {
 
 
 export default function Uploader({fmUtilsObj, onClose}) {
-  const classes = useStyles();
+
   const [files, dispatchFileAction] = useReducer(filesReducer, []);
   const onDrop = useCallback(acceptedFiles => {
     dispatchFileAction({
@@ -173,18 +165,18 @@ export default function Uploader({fmUtilsObj, onClose}) {
   }, [files.length]);
 
   return (
-    <Box className={classes.root}>
+    <StyledBox>
       <Box display="flex" justifyContent="flex-end">
         <PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={onClose} />
       </Box>
       <Box display="flex" flexGrow={1} overflow="hidden">
-        <Box className={classes.uploadArea} {...getRootProps()}>
+        <Box className='Uploader-uploadArea' {...getRootProps()}>
           <input {...getInputProps()} />
           <Box>{gettext('Drop files here, or click to select files.')}</Box>
           <Box>{gettext('The file size limit (per file) is %s MB.', fmUtilsObj.config?.upload?.fileSizeLimit)}</Box>
         </Box>
         {files.length > 0 &&
-          <Box className={classes.uploadFilesRoot}>
+          <Box className='Uploader-uploadFilesRoot'>
             <List>
               {files.map((upfile)=>(
                 <UploadedFile key={upfile.id} upfile={upfile} removeFile={async ()=>{
@@ -197,7 +189,7 @@ export default function Uploader({fmUtilsObj, onClose}) {
             </List>
           </Box>}
       </Box>
-    </Box>
+    </StyledBox>
   );
 }
 Uploader.propTypes = {

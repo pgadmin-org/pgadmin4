@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import _ from 'lodash';
+import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState }  from 'react';
 import QueryToolDataGrid, { GRID_ROW_SELECT_KEY } from '../QueryToolDataGrid';
 import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
@@ -25,11 +26,17 @@ import { getBrowser } from '../../../../../../static/js/utils';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
-import { makeStyles } from '@mui/styles';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 import pgAdmin from 'sources/pgadmin';
+
+const StyledBox = styled(Box)(({theme}) => ({
+  display: 'flex',
+  height: '100%',
+  flexDirection: 'column',
+  backgroundColor: theme.otherVars.qtDatagridBg,
+}));
 
 export class ResultSetUtils {
   constructor(api, transId, isQueryTool=true) {
@@ -735,17 +742,8 @@ function dataChangeReducer(state, action) {
   return dataChange;
 }
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    display: 'flex',
-    height: '100%',
-    flexDirection: 'column',
-    backgroundColor: theme.otherVars.qtDatagridBg,
-  }
-}));
-
 export function ResultSet() {
-  const classes = useStyles();
+
   const containerRef = React.useRef(null);
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -1381,7 +1379,7 @@ export function ResultSet() {
 
   const rowKeyGetter = React.useCallback((row)=>row[rsu.current.clientPK]);
   return (
-    <Box className={classes.root} ref={containerRef} tabIndex="0">
+    <StyledBox ref={containerRef} tabIndex="0">
       <Loader message={loaderText} />
       <Loader data-label="loader-more-rows" message={isLoadingMore ? gettext('Loading more rows...') : null} style={{top: 'unset', right: 'unset', padding: '0.5rem 1rem'}}/>
       {!queryData &&
@@ -1413,6 +1411,6 @@ export function ResultSet() {
           />
         </Box>
       </>}
-    </Box>
+    </StyledBox>
   );
 }

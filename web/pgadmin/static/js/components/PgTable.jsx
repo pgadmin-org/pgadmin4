@@ -17,7 +17,7 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { styled } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Checkbox, Box } from '@mui/material';
 import { InputText } from './FormComponents';
@@ -28,7 +28,7 @@ import EmptyPanelMessage from './EmptyPanelMessage';
 import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent } from './PgReactTableStyled';
 
 const ROW_HEIGHT = 30;
-function TableRow({ index, style, schema, row, measureElement }) {
+function TableRow({ index, style, schema, row, measureElement}) {
   const [expandComplete, setExpandComplete] = React.useState(false);
   const rowRef = React.useRef();
 
@@ -199,8 +199,6 @@ const StyledPgTableRoot = styled('div')(({theme})=>({
   overflow: 'hidden',
   flexDirection: 'column',
   height: '100%',
-
-
   '& .pgtable-header': {
     display: 'flex',
     background: theme.palette.background.default,
@@ -210,7 +208,6 @@ const StyledPgTableRoot = styled('div')(({theme})=>({
       minWidth: '300px'
     },
   },
-
   '& .pgtable-body': {
     flexGrow: 1,
     minHeight: 0,
@@ -218,13 +215,11 @@ const StyledPgTableRoot = styled('div')(({theme})=>({
     flexDirection: 'column',
     backgroundColor: theme.otherVars.emptySpaceBg,
   },
-
   '&.pgtable-pgrt-border': {
     '& .pgrt': {
       border: '1px solid ' + theme.otherVars.borderColor,
     }
   },
-
   '&.pgtable-pgrt-cave': {
     '& .pgtable-body': {
       padding: '8px',
@@ -244,7 +239,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, ...pro
   return (
     <StyledPgTableRoot className={[tableNoBorder ? '' : 'pgtable-pgrt-border', caveTable ? 'pgtable-pgrt-cave' : ''].join(' ')} data-test={props['data-test']}>
       <Box className='pgtable-header'>
-        {props.CustomHeader && (<Box className='pgtable-custom-header-section'> <props.CustomHeader /></Box>)}
+        {props.CustomHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}> <props.CustomHeader /></Box>)}
         <Box marginLeft="auto">
           <InputText
             placeholder={gettext('Search')}
@@ -268,5 +263,6 @@ PgTable.propTypes = {
   CustomHeader: PropTypes.func,
   caveTable: PropTypes.bool,
   tableNoBorder: PropTypes.bool,
-  'data-test': PropTypes.string
+  'data-test': PropTypes.string,
+  'className': PropTypes.string
 };

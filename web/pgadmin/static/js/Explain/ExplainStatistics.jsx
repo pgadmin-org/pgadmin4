@@ -7,43 +7,42 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Box, Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import gettext from 'sources/gettext';
-import { commonTableStyles } from '../Theme';
-import clsx from 'clsx';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import Table from '../components/Table';
 
-const useStyles = makeStyles((theme)=>({
-  title: {
+
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .ExplainStatistics-title': {
     fontWeight: 'bold',
     padding: '4px',
     backgroundColor: theme.otherVars.cardHeaderBg,
     borderTopLeftRadius: theme.shape.borderRadius,
     borderTopRightRadius: theme.shape.borderRadius,
   },
-  tableRow: {
-    backgroundColor: theme.palette.grey[200]
-  },
-  tableName:{
-    fontWeight: 'bold',
-  },
-  nodeName: {
-    paddingLeft: '30px',
+  '& .ExplainStatistics-tableRow': {
+    backgroundColor: theme.palette.grey[200],
+    '& .ExplainStatistics-tableName': {
+      fontWeight: 'bold',
+      '& .ExplainStatistics-nodeName': {
+        paddingLeft: '30px',
+      }
+    },
   },
 }));
 
 export default function ExplainStatistics({explainTable}) {
   // _renderStatisticsTable
-  const classes = useStyles();
-  const tableClasses = commonTableStyles();
+
   return (
-    <Box p={1}>
+    <StyledBox p={1}>
       <Grid container spacing={1}>
         <Grid item lg={6} md={12}>
-          <div className={classes.title}>{gettext('Statistics per Node Type')}</div>
-          <table className={clsx(tableClasses.table)}>
+          <div className='ExplainStatistics-title'>{gettext('Statistics per Node Type')}</div>
+          <Table >
             <thead>
               <tr>
                 <th>{gettext('Node type')}</th>
@@ -67,11 +66,11 @@ export default function ExplainStatistics({explainTable}) {
                 </tr>;
               })}
             </tbody>
-          </table>
+          </Table>
         </Grid>
         <Grid item lg={6} md={12}>
-          <div className={classes.title}>{gettext('Statistics per Relation')}</div>
-          <table className={clsx(tableClasses.table)}>
+          <div className='ExplainStatistics-title'>{gettext('Statistics per Relation')}</div>
+          <Table>
             <thead>
               <tr>
                 <th>{gettext('Relation name')}</th>
@@ -95,8 +94,8 @@ export default function ExplainStatistics({explainTable}) {
                 let table = explainTable.statistics.tables[key];
                 table.sum_of_times = _.sumBy(Object.values(table.nodes), 'sum_of_times');
                 return <React.Fragment key={i}>
-                  <tr className={classes.tableRow}>
-                    <td className={classes.tableName}>{table.name}</td>
+                  <tr className='ExplainStatistics-tableRow'>
+                    <td className='ExplainStatistics-tableName'>{table.name}</td>
                     <td>{table.count}</td>
                     {explainTable.show_timings && <>
                       <td>{Math.ceil10(table.sum_of_times, -3) + ' ms'}</td>
@@ -106,7 +105,7 @@ export default function ExplainStatistics({explainTable}) {
                   {_.sortBy(Object.keys(table.nodes)).map((nodeKey, j)=>{
                     let node = table.nodes[nodeKey];
                     return <tr key={j}>
-                      <td><div className={classes.nodeName}>{node.name}</div></td>
+                      <td><div className='ExplainStatistics-nodeName'>{node.name}</div></td>
                       <td>{node.count}</td>
                       {explainTable.show_timings && <>
                         <td>{Math.ceil10(node.sum_of_times, -3) + ' ms'}</td>
@@ -117,10 +116,10 @@ export default function ExplainStatistics({explainTable}) {
                 </React.Fragment>;
               })}
             </tbody>
-          </table>
+          </Table>
         </Grid>
       </Grid>
-    </Box>
+    </StyledBox>
   );
 }
 

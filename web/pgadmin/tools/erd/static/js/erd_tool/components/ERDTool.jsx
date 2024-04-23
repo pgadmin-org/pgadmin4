@@ -27,7 +27,6 @@ import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveC
 import Loader from '../../../../../../static/js/components/Loader';
 import { MainToolBar } from './MainToolBar';
 import { Box } from '@mui/material';
-import { withStyles } from '@mui/styles';
 import EventBus from '../../../../../../static/js/helpers/EventBus';
 import { ERD_EVENTS } from '../ERDConstants';
 import getApiInstance, { callFetch, parseApiError } from '../../../../../../static/js/api_instance';
@@ -35,6 +34,7 @@ import { openSocket, socketApiGet } from '../../../../../../static/js/socket_ins
 import { LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { styled } from '@mui/material/styles';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -77,30 +77,30 @@ const getCanvasGrid = (theme)=>{
   return `url("data:image/svg+xml, %3Csvg width='100%25' viewBox='0 0 45 45' style='background-color:${erdCanvasBg}' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='smallGrid' width='15' height='15' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 15 0 L 0 0 0 15' fill='none' stroke='${erdGridColor}' stroke-width='0.5'/%3E%3C/pattern%3E%3Cpattern id='grid' width='45' height='45' patternUnits='userSpaceOnUse'%3E%3Crect width='100' height='100' fill='url(%23smallGrid)'/%3E%3Cpath d='M 100 0 L 0 0 0 100' fill='none' stroke='${erdGridColor}' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)' /%3E%3C/svg%3E%0A")`;
 };
 
-const styles = ((theme)=>({
-  diagramContainer: {
+const StyledBox = styled(Box)(({theme})=>({
+  '& .ERDTool-diagramContainer': {
     position: 'relative',
     width: '100%',
     flexGrow: 1,
     minHeight: 0,
+    '& .ERDTool-diagramCanvas': {
+      width: '100%',
+      height: '100%',
+      color: theme.palette.text.primary,
+      backgroundColor: theme.otherVars.erdCanvasBg,
+      backgroundImage: getCanvasGrid(theme),
+      cursor: 'unset',
+      flexGrow: 1,
+    },
   },
-  diagramCanvas: {
-    width: '100%',
-    height: '100%',
-    color: theme.palette.text.primary,
-    backgroundColor: theme.otherVars.erdCanvasBg,
-    backgroundImage: getCanvasGrid(theme),
-    cursor: 'unset',
-    flexGrow: 1,
-  },
-  html2canvasReset: {
+  '& .ERDTool-html2canvasReset': {
     backgroundImage: 'none !important',
     overflow: 'auto !important',
   }
 }));
 
 /* The main body container for the ERD */
-class ERDTool extends React.Component {
+export default class ERDTool extends React.Component {
   static contextType = ModalContext;
   constructor(props) {
     super(props);
@@ -715,7 +715,7 @@ class ERDTool extends React.Component {
      * the canvas back to original state.
      * Code referred from - zoomToFitNodes function.
      */
-    this.diagramContainerRef.current?.classList.add(this.props.classes.html2canvasReset);
+    this.diagramContainerRef.current?.classList.add('ERDTool-html2canvasReset');
     const margin = 10;
     let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes());
     let linksRect = this.diagram.getBoundingLinksRect();
@@ -788,7 +788,7 @@ class ERDTool extends React.Component {
           pgAdmin.Browser.notifier.alert(gettext('Error'), msg);
         }).then(()=>{
           /* Revert back to the original CSS styles */
-          this.diagramContainerRef.current.classList.remove(this.props.classes.html2canvasReset);
+          this.diagramContainerRef.current.classList.remove('ERDTool-html2canvasReset');
           this.canvasEle.style.width = '';
           this.canvasEle.style.height = '';
           this.canvasEle.childNodes.forEach((ele)=>{
@@ -923,7 +923,7 @@ class ERDTool extends React.Component {
     this.erdDialogs.modal = this.context;
 
     return (
-      <Box ref={this.containerRef} height="100%" display="flex" flexDirection="column">
+      <StyledBox ref={this.containerRef} height="100%" display="flex" flexDirection="column">
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
@@ -932,20 +932,20 @@ class ERDTool extends React.Component {
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
-        <div className={this.props.classes.diagramContainer} data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
+        <div className='ERDTool-diagramContainer' data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
           <ERDCanvasSettings.Provider value={{
             cardinality_notation: this.state.cardinality_notation
           }}>
-            {!this.props.isTest && <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />}
+            {!this.props.isTest && <CanvasWidget className='ERDTool-diagramCanvas' ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />}
           </ERDCanvasSettings.Provider>
         </div>
-      </Box>
+      </StyledBox>
     );
   }
 }
 
-export default withStyles(styles)(ERDTool);
+//export default withStyles(styles)(ERDTool);
 
 ERDTool.propTypes = {
   params:PropTypes.shape({

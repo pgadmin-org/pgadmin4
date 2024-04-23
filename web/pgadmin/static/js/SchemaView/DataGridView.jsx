@@ -10,8 +10,8 @@
 /* The DataGridView component is based on react-table component */
 
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { PgIconButton } from '../components/Buttons';
 import AddIcon from '@mui/icons-material/AddOutlined';
 import { MappedCellControl } from './MappedControl';
@@ -44,64 +44,58 @@ import { usePgAdmin } from '../BrowserComponent';
 import { requestAnimationAndFocus } from '../utils';
 import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent } from '../components/PgReactTableStyled';
 
-const useStyles = makeStyles((theme)=>({
-  grid: {
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .DataGridView-grid': {
     ...theme.mixins.panelBorder,
     backgroundColor: theme.palette.background.default,
-  },
-  gridHeader: {
-    display: 'flex',
-    ...theme.mixins.panelBorder.bottom,
-    backgroundColor: theme.otherVars.headerBg,
-  },
-  gridHeaderText: {
-    padding: theme.spacing(0.5, 1),
-    fontWeight: theme.typography.fontWeightBold,
-  },
-  gridControls: {
-    marginLeft: 'auto',
-  },
-  gridControlsButton: {
-    border: 0,
-    borderRadius: 0,
-    ...theme.mixins.panelBorder.left,
-  },
-  gridRowButton: {
-    border: 0,
-    borderRadius: 0,
-    padding: 0,
-    minWidth: 0,
-    backgroundColor: 'inherit',
-    '&.Mui-disabled': {
-      border: 0,
+    '& .DataGridView-gridHeader': {
+      display: 'flex',
+      ...theme.mixins.panelBorder.bottom,
+      backgroundColor: theme.otherVars.headerBg,
+      '& .DataGridView-gridHeaderText': {
+        padding: theme.spacing(0.5, 1),
+        fontWeight: theme.typography.fontWeightBold,
+      },
+      '& .DataGridView-gridControls': {
+        marginLeft: 'auto',
+        '& .DataGridView-gridControlsButton': {
+          border: 0,
+          borderRadius: 0,
+          ...theme.mixins.panelBorder.left,
+        },
+      },
     },
-  },
-  gridTableContainer: {
-    overflow: 'auto',
-    width: '100%',
-  },
-  table: {
-    '&.pgrt-table': {
-      '& .pgrt-body':{
-        '& .pgrt-row': {
-          position: 'unset',
-          backgroundColor: theme.otherVars.emptySpaceBg,
-
-          '& .pgrt-row-content':{
-            '& .pgrd-row-cell': {
-              height: 'auto',
-              padding: theme.spacing(0.5),
-
-              '&.btn-cell, &.expanded-icon-cell': {
-                padding: '2px 0px'
+    '& .DataGridView-table': {
+      '&.pgrt-table': {
+        '& .pgrt-body':{
+          '& .pgrt-row': {
+            position: 'unset',
+            backgroundColor: theme.otherVars.emptySpaceBg,
+            '& .pgrt-row-content':{
+              '& .pgrd-row-cell': {
+                height: 'auto',
+                padding: theme.spacing(0.5),
+                '&.btn-cell, &.expanded-icon-cell': {
+                  padding: '2px 0px'
+                },
+                '& .DataGridView-gridRowButton': {
+                  border: 0,
+                  borderRadius: 0,
+                  padding: 0,
+                  minWidth: 0,
+                  backgroundColor: 'inherit',
+                  '&.Mui-disabled': {
+                    border: 0,
+                  },
+                },
               }
-            }
-          },
+            },
+          }
         }
       }
-    }
+    },
   },
-  tableRowHovered: {
+  '& .DataGridView-tableRowHovered': {
     position: 'relative',
     '& .hover-overlay': {
       backgroundColor: theme.palette.primary.light,
@@ -110,23 +104,11 @@ const useStyles = makeStyles((theme)=>({
       opacity: 0.75,
     }
   },
-  tableCellHeader: {
-    fontWeight: theme.typography.fontWeightBold,
-    padding: theme.spacing(1, 0.5),
-    textAlign: 'left',
-  },
-  tableContentWidth: {
-    width: 'calc(100% - 3px)',
-  },
-  btnCell: {
-    padding: theme.spacing(0.5, 0),
-    textAlign: 'center',
-  },
-  btnReorder: {
+  '& .DataGridView-btnReorder': {
     cursor: 'move',
     padding: '4px 2px',
   },
-  resizer: {
+  '& .DataGridView-resizer': {
     display: 'inline-block',
     width: '5px',
     height: '100%',
@@ -137,17 +119,17 @@ const useStyles = makeStyles((theme)=>({
     zIndex: 1,
     touchAction: 'none',
   },
-  expandedForm: {
+  '& .DataGridView-expandedForm': {
     border: '1px solid '+theme.palette.grey[400],
   },
-  expandedIconCell: {
+  '& .DataGridView-expandedIconCell': {
     backgroundColor: theme.palette.grey[400],
     borderBottom: 'none',
   }
 }));
 
 function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex, viewHelperProps}) {
-  const classes = useStyles();
+
   const [key, setKey] = useState(false);
   const depListener = useContext(DepListenerContext);
   const rowRef = useRef(null);
@@ -259,7 +241,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
   drop(rowRef);
 
   return useMemo(()=>
-    <PgReactTableRowContent ref={rowRef} row={row} data-handler-id={handlerId} className={isHovered ? classes.tableRowHovered : null} data-test='data-table-row' style={{position: 'initial'}}>
+    <PgReactTableRowContent ref={rowRef} row={row} data-handler-id={handlerId} className={isHovered ? 'DataGridView-tableRowHovered' : null} data-test='data-table-row' style={{position: 'initial'}}>
       {row.getVisibleCells().map((cell) => {
         let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
 
@@ -280,16 +262,14 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
 }
 
 export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTextChange}) {
-  const classes = useStyles();
   const [searchText, setSearchText] = useState('');
-
   return (
-    <Box className={classes.gridHeader}>
+    <Box className='DataGridView-gridHeader'>
       { label &&
-      <Box className={classes.gridHeaderText}>{label}</Box>
+      <Box className='DataGridView-gridHeaderText'>{label}</Box>
       }
       { canSearch &&
-        <Box className={classes.gridHeaderText} width={'100%'}>
+        <Box className='DataGridView-gridHeaderText' width={'100%'}>
           <InputText value={searchText}
             onChange={(value)=>{
               onSearchTextChange(value);
@@ -299,12 +279,12 @@ export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTe
           </InputText>
         </Box>
       }
-      <Box className={classes.gridControls}>
+      <Box className='DataGridView-gridControls'>
         {canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={()=>{
           setSearchText('');
           onSearchTextChange('');
           onAddClick();
-        }} icon={<AddIcon />} className={classes.gridControlsButton} />}
+        }} icon={<AddIcon />} className='DataGridView-gridControlsButton' />}
       </Box>
     </Box>
   );
@@ -320,7 +300,7 @@ DataGridHeader.propTypes = {
 export default function DataGridView({
   value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
   fixedRows, ...props}) {
-  const classes = useStyles();
+
   const stateUtils = useContext(StateUtilsContext);
   const checkIsMounted = useIsMounted();
   const [hoverIndex, setHoverIndex] = useState();
@@ -345,7 +325,7 @@ export default function DataGridView({
           maxSize: 26,
           minSize: 26,
           cell: ()=>{
-            return <div className={classes.btnReorder}>
+            return <div className='DataGridView-btnReorder'>
               <DragIndicatorRoundedIcon fontSize="small" />
             </div>;
           }
@@ -369,7 +349,7 @@ export default function DataGridView({
             if(props.canEditRow) {
               canEditRow = evalFunc(schemaRef.current, props.canEditRow, row || {});
             }
-            return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon fontSize="small" />} className={classes.gridRowButton}
+            return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon fontSize="small" />} className='DataGridView-gridRowButton'
               onClick={()=>{
                 row.toggleExpanded();
               }} disabled={!canEditRow}
@@ -423,7 +403,7 @@ export default function DataGridView({
                       }
                     );
                   }
-                }} className={classes.gridRowButton} disabled={!canDeleteRow} />
+                }} className='DataGridView-gridRowButton' disabled={!canDeleteRow} />
             );
           }
         };
@@ -607,8 +587,8 @@ export default function DataGridView({
   }
 
   return (
-    <Box className={containerClassName}>
-      <Box className={classes.grid}>
+    <StyledBox className={containerClassName}>
+      <Box className='DataGridView-grid'>
         {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick}
           canSearch={props.canSearch}
           onSearchTextChange={(value)=>{
@@ -616,7 +596,7 @@ export default function DataGridView({
           }}
         />}
         <DndProvider backend={HTML5Backend}>
-          <PgReactTable ref={tableRef} table={table} data-test="data-grid-view" tableClassName={classes.table}>
+          <PgReactTable ref={tableRef} table={table} data-test="data-grid-view" tableClassName='DataGridView-table'>
             <PgReactTableHeader table={table} />
             <PgReactTableBody>
               {rows.map((row, i) => {
@@ -628,7 +608,7 @@ export default function DataGridView({
                   {props.canEdit &&
                     <PgReactTableRowExpandContent row={row}>
                       <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
-                        schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
+                        schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className='DataGridView-expandedForm'
                         isDataGridForm={true} firstEleRef={(ele)=>{
                           requestAnimationAndFocus(ele);
                         }}/>
@@ -640,7 +620,7 @@ export default function DataGridView({
           </PgReactTable>
         </DndProvider>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }
 
