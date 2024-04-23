@@ -13,6 +13,8 @@ import { isEmptyString } from 'sources/validators';
 import moment from 'moment';
 import { WEEKDAYS, MONTHDAYS, MONTHS, HOURS, MINUTES } from '../../../../../../static/js/constants';
 
+const PGAGENT_MONTHDAYS = [...MONTHDAYS].concat([{label: gettext('Last day'), value: 'Last Day'}]);
+
 export class ExceptionsSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
@@ -126,7 +128,7 @@ export class DaysSchema extends BaseUISchema {
           placeholder: gettext('Select the month days...'),
           formatter: BooleanArrayFormatter,
         },
-        options: MONTHDAYS,
+        options: PGAGENT_MONTHDAYS,
       }, {
         id: 'jscmonths', label: gettext('Months'), type: 'select',
         group: gettext('Days'),
@@ -185,7 +187,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
       jscstart: null,
       jscend: null,
       jscweekdays: _.map(WEEKDAYS, function() { return false; }),
-      jscmonthdays: _.map(MONTHDAYS, function() { return false; }),
+      jscmonthdays: _.map(PGAGENT_MONTHDAYS, function() { return false; }),
       jscmonths: _.map(MONTHS, function() { return false; }),
       jschours: _.map(HOURS, function() { return false; }),
       jscminutes: _.map(MINUTES, function() { return false; }),
@@ -274,7 +276,7 @@ export default class PgaJobScheduleSchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (backendVal)=> {
-              return obj.customFromRaw(backendVal, MONTHDAYS);
+              return obj.customFromRaw(backendVal, PGAGENT_MONTHDAYS);
             }
           },
         }

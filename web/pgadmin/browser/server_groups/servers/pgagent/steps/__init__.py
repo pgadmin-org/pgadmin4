@@ -524,7 +524,7 @@ SELECT EXISTS(
         sql = ''
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, 'utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
