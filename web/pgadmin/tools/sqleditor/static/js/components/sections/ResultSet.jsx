@@ -280,7 +280,7 @@ export class ResultSetUtils {
   handlePollError(error, explainObject, flags) {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
-    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, error.response.data.data.transaction_status);
+    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, error.response.data.data?.transaction_status);
     if (!flags.external) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, parseApiError(error, true));
     }
