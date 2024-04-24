@@ -23,7 +23,7 @@ import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
-import { getSwitchCell } from '../../static/js/components/PgTable';
+import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -81,48 +81,38 @@ export default function CollectionNodeProperties({
 
   const [data, setData] = React.useState([]);
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
-  const [selectedObject, setSelectedObject] = React.useState([]);
+  const [selectedObject, setSelectedObject] = React.useState({});
   const [loaderText, setLoaderText] = React.useState('');
   const schemaRef = React.useRef();
 
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
-      Header: 'properties',
-      accessor: 'Properties',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: 'properties',
+      accessorKey: 'Properties',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      Header: 'value',
-      accessor: 'value',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: 'value',
+      accessorKey: 'value',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ]);
 
-  const getTableSelectedRows = (selRows) => {
-    setSelectedObject(selRows);
-  };
-
   const onDrop = (type) => {
-    let selRowModels = selectedObject,
-      selRows = [],
+    let selRows = [],
       selItem = pgAdmin.Browser.tree.selected(),
       selectedItemData = selItem ? pgAdmin.Browser.tree.itemData(selItem) : null,
       selNode = selectedItemData && pgAdmin.Browser.Nodes[selectedItemData._type],
       url, msg, title;
 
-    if (selNode?.type == 'coll-constraints') {
-      // In order to identify the constraint type, the type should be passed to the server
-      selRows = selRowModels.map((row) => ({
-        id: row.original.oid,
-        _type: row.original._type,
-      }));
-    } else {
-      selRows = selRowModels.map((row) => row.original[schemaRef.current.idAttribute]);
-    }
+    selRows = Object.keys(selectedObject).map((i)=>(selNode?.type == 'coll-constraints' ? {
+      id: data[i].oid,
+      _type: data[i]._type,
+    } : data[i][schemaRef.current.idAttribute]));
 
     if (selRows.length === 0) {
       pgAdmin.Browser.notifier.alert(
@@ -166,6 +156,7 @@ export default function CollectionNodeProperties({
           }
           pgAdmin.Browser.tree.refresh(selItem);
           setIsStale(true);
+          setSelectedObject({});
         })
         .catch(function (error) {
           pgAdmin.Browser.notifier.alert(
@@ -209,22 +200,20 @@ export default function CollectionNodeProperties({
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
               column = {
-                Header: field.label,
-                accessor: field.id,
-                sortable: true,
-                resizable: true,
-                disableGlobalFilter: false,
-                minWidth: 0,
-                Cell: getSwitchCell()
+                header: field.label,
+                accessorKey: field.id,
+                enableSorting: true,
+                enableResizing: true,
+                enableFilters: true,
+                cell: getSwitchCell()
               };
             } else {
               column = {
-                Header: field.label,
-                accessor: field.id,
-                sortable: true,
-                resizable: true,
-                disableGlobalFilter: false,
-                minWidth: 0,
+                header: field.label,
+                accessorKey: field.id,
+                enableSorting: true,
+                enableResizing: true,
+                enableFilters: true,
               };
             }
             tableColumns.push(column);
@@ -233,12 +222,11 @@ export default function CollectionNodeProperties({
       }else{
         node.columns.forEach((field) => {
           column = {
-            Header: field,
-            accessor: field,
-            sortable: true,
-            resizable: true,
-            disableGlobalFilter: false,
-            minWidth: 0,
+            header: field,
+            accessorKey: field,
+            enableSorting: true,
+            enableResizing: true,
+            enableFilters: true,
           };
           tableColumns.push(column);
         });
@@ -283,7 +271,7 @@ export default function CollectionNodeProperties({
               onDrop('drop');
             }}
             disabled={
-              (selectedObject.length > 0)
+              (Object.keys(selectedObject).length > 0)
                 ? !canDrop
                 : true
             }
@@ -296,7 +284,7 @@ export default function CollectionNodeProperties({
               onDrop('dropCascade');
             }}
             disabled={
-              (selectedObject.length > 0)
+              (Object.keys(selectedObject).length > 0)
                 ? !canDropCascade
                 : true
             }
@@ -309,7 +297,7 @@ export default function CollectionNodeProperties({
                 onDrop('dropForce');
               }}
               disabled={
-                (selectedObject.length > 0)
+                (Object.keys(selectedObject).length > 0)
                   ? !canDropForce
                   : true
               }
@@ -325,14 +313,15 @@ export default function CollectionNodeProperties({
         {data.length > 0 ?
           (
             <PgTable
-              isSelectRow={!('catalog' in treeNodeInfo) && (nodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
+              hasSelectRow={!('catalog' in treeNodeInfo) && (nodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
               CustomHeader={CustomHeader}
               className={classes.autoResizer}
               columns={pgTableColumns}
               data={data}
               type={'panel'}
               isSearch={false}
-              getSelectedRows={getTableSelectedRows}
+              selectedRows={selectedObject}
+              setSelectedRows={setSelectedObject}
             />
           )
           :

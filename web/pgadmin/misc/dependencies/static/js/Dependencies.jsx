@@ -83,29 +83,30 @@ function Dependencies({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStal
 
   let columns = [
     {
-      Header: 'Type',
-      accessor: 'type',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      Cell: ({row})=>{
-        return pgAdmin.Browser.Nodes?.[row.original.type]?.label??row.original.type;
+      header: 'Type',
+      accessorKey: 'type',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      cell: (info)=>{
+        const type = info.getValue();
+        return pgAdmin.Browser.Nodes?.[type]?.label ?? type;
       }
     },
     {
-      Header: 'Name',
-      accessor: 'name',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: 'Name',
+      accessorKey: 'name',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      Header: 'Restriction',
-      accessor: 'field',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 280,
+      header: 'Restriction',
+      accessorKey: 'field',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 280,
     },
   ];
 

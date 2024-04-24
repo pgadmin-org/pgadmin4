@@ -77,25 +77,25 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
 
   const tableHeader = [
     {
-      Header: gettext('PID'),
-      accessor: 'pid',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: gettext('PID'),
+      accessorKey: 'pid',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      Header: gettext('Name'),
-      accessor: 'name',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: gettext('Name'),
+      accessorKey: 'name',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      Header: gettext('CPU usage'),
-      accessor: 'cpu_usage',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: gettext('CPU usage'),
+      accessorKey: 'cpu_usage',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ];
 

@@ -751,22 +751,23 @@ function SchemaDialogView({
     sessDispatch(dispatchPayload);
   };
 
-  const stateUtils = useMemo(()=>({
-    dataDispatch: sessDispatchWithListener,
-    initOrigData: (path, value)=>{
-      if(path) {
-        let data = prepareData(value);
-        _.set(schema.origData, path, data);
-        sessDispatchWithListener({
-          type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-          path: path,
-          value: data,
-        });
-      }
-    },
-    formResetKey: formResetKey,
-    formErr: formErr,
-  }), [formResetKey, formErr]);
+  const stateUtils = useMemo(()=>{
+    return {
+      dataDispatch: sessDispatchWithListener,
+      initOrigData: (path, value)=>{
+        if(path) {
+          let data = prepareData(value);
+          _.set(schema.origData, path, data);
+          sessDispatchWithListener({
+            type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+            path: path,
+            value: data,
+          });
+        }
+      },
+      formResetKey: formResetKey,
+      formErr: formErr,
+    };}, [formResetKey, formErr.name, formErr.message]);
 
   const getButtonIcon = () => {
     if(props.customSaveBtnIconType == 'upload') {

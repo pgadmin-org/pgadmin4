@@ -99,7 +99,8 @@ export default function Processes() {
   const classes = useStyles();
   const pgAdmin = usePgAdmin();
   const [tableData, setTableData] = React.useState([]);
-  const [selectedRows, setSelectedRows] = React.useState([]);
+  const [selectedRows, setSelectedRows] = React.useState({});
+  const selectedRowIDs = useMemo(()=>Object.keys(selectedRows).filter((k)=>selectedRows[k]), [selectedRows]);
 
   const onViewDetailsClick = useCallback((p)=>{
     const panelTitle = gettext('Process Watcher - %s', p.type_desc);
@@ -123,7 +124,7 @@ export default function Processes() {
       row: PropTypes.any,
     };
 
-    const CancelCell = ({ row }) => {
+    const CancelCell = ({row}) => {
       return (
         <PgIconButton
           size="xs"
@@ -170,93 +171,91 @@ export default function Processes() {
     StatusCell.propTypes = cellPropTypes;
 
     return [{
-      accessor: 'stop_process',
-      Header: () => null,
-      sortable: false,
-      resizable: false,
-      disableGlobalFilter: true,
-      width: 35,
-      maxWidth: 35,
-      minWidth: 35,
+      header: () => null,
+      enableSorting: false,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
       id: 'btn-stop',
-      Cell: CancelCell,
+      cell: CancelCell,
     },
     {
-      accessor: 'view_details',
-      Header: () => null,
-      sortable: false,
-      resizable: false,
-      disableGlobalFilter: true,
-      width: 35,
-      maxWidth: 35,
-      minWidth: 35,
+      header: () => null,
+      enableSorting: false,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
       id: 'btn-logs',
-      Cell: LogsCell,
+      cell: LogsCell,
     },
     {
-      Header: gettext('PID'),
-      accessor: 'utility_pid',
-      sortable: true,
-      resizable: false,
+      header: gettext('PID'),
+      accessorKey: 'utility_pid',
+      enableSorting: true,
+      enableResizing: false,
       width: 70,
       minWidth: 70,
-      disableGlobalFilter: false,
+      enableFilters: true,
     },
     {
-      Header: gettext('Type'),
-      accessor: (row)=>row.details?.type,
-      sortable: true,
-      resizable: true,
+      header: gettext('Type'),
+      accessorFn: (row)=>row.details?.type,
+      enableSorting: true,
+      enableResizing: true,
       width: 100,
       minWidth: 70,
-      disableGlobalFilter: false,
+      enableFilters: true,
     },
     {
-      Header: gettext('Server'),
-      accessor: (row)=>row.details?.server,
-      sortable: true,
-      resizable: true,
+      header: gettext('Server'),
+      accessorFn: (row)=>row.details?.server,
+      enableSorting: true,
+      enableResizing: true,
       width: 200,
       minWidth: 120,
-      disableGlobalFilter: false,
+      enableFilters: true,
     },
     {
-      Header: gettext('Object'),
-      accessor: (row)=>row.details?.object,
-      sortable: true,
-      resizable: true,
+      header: gettext('Object'),
+      accessorFn: (row)=>row.details?.object,
+      enableSorting: true,
+      enableResizing: true,
       width: 200,
       minWidth: 120,
-      disableGlobalFilter: false,
+      enableFilters: true,
     },
     {
       id: 'stime',
-      Header: gettext('Start Time'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: true,
+      header: gettext('Start Time'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: false,
       width: 150,
       minWidth: 150,
-      accessor: (row)=>(new Date(row.stime)),
-      Cell: ({row})=>(new Date(row.original.stime).toLocaleString()),
+      accessorFn: (row)=>(new Date(row.stime)),
+      cell: (info)=>(info.getValue().toLocaleString()),
     },
     {
-      Header: gettext('Status'),
-      sortable: true,
-      resizable: false,
-      disableGlobalFilter: false,
+      header: gettext('Status'),
+      enableSorting: true,
+      enableResizing: false,
+      enableFilters: true,
       width: 120,
       minWidth: 120,
-      accessor: (row)=>ProcessStateTextAndColor[row.process_state][0],
+      accessorFn: (row)=>ProcessStateTextAndColor[row.process_state][0],
       dataClassName: classes.noPadding,
-      Cell: StatusCell,
+      cell: StatusCell,
     },
     {
-      Header: gettext('Time Taken (sec)'),
-      accessor: 'execution_time',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: true,
+      header: gettext('Time Taken (sec)'),
+      accessorKey: 'execution_time',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: false,
     }];
   }, []);
 
@@ -281,10 +280,10 @@ export default function Processes() {
       columns={columns}
       data={tableData}
       sortOptions={[{id: 'stime', desc: true}]}
-      getSelectedRows={(rows)=>{setSelectedRows(rows);}}
-      isSelectRow={true}
+      selectedRows={selectedRows}
+      setSelectedRows={setSelectedRows}
+      hasSelectRow={true}
       tableProps={{
-        autoResetSelectedRows: false,
         getRowId: (row)=>{
           return row.id;
         }
@@ -299,10 +298,11 @@ export default function Processes() {
                 title={gettext('Acknowledge and Remove')}
                 onClick={() => {
                   pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRowIDs);
+                    setSelectedRows({});
                   });
                 }}
-                disabled={selectedRows.length <= 0}
+                disabled={selectedRowIDs.length <= 0}
               ></PgIconButton>
               <PgIconButton
                 icon={<HelpIcon style={{height: '1.4rem'}}/>}

@@ -3173,6 +3173,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-table@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "@tanstack/react-table@npm:8.16.0"
+  dependencies:
+    "@tanstack/table-core": 8.16.0
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 9a80668ba7531b49425d3c08fe34fbd4bbcdf936fbca120114d2d090013242c3ea1b573c1381719289600bc866f2ded9e3e13c7c4923285d2cf4eee1c1d489e7
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@tanstack/react-virtual@npm:3.4.0"
+  dependencies:
+    "@tanstack/virtual-core": 3.4.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 73c272d4a6242d1e49e37e56cec3985d8ff3108e8cd33d2f0c8c3f6ec3d84fece50813e875ee15ee025de4c47f051fcdf8829b1a9c824fd360ae0a569eddb1f5
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.16.0":
+  version: 8.16.0
+  resolution: "@tanstack/table-core@npm:8.16.0"
+  checksum: c2c33c542c60788eb90806feb8f1f0340aa565ef9bb031bc5562d43598394a4089d61007f55ed6ab1fa16bbe93228cb2673b564ecf90b416bf463f42a56f3d85
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.4.0":
+  version: 3.4.0
+  resolution: "@tanstack/virtual-core@npm:3.4.0"
+  checksum: dee878179e504bb2d62ffb36a97e1c37e777af1802cadb03566b732099b13d7d053590997e3c17ce098bcb2adf527f53f69795d38cb607e308cde21dc809702e
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.0.0":
   version: 8.20.1
   resolution: "@testing-library/dom@npm:8.20.1"
@@ -13769,15 +13807,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-table@npm:^7.6.3":
-  version: 7.8.0
-  resolution: "react-table@npm:7.8.0"
-  peerDependencies:
-    react: ^16.8.3 || ^17.0.0-0 || ^18.0.0
-  checksum: 44ca0fb848c6869cd793cede8dc33072b38ebb8f8d2833565afe7cf3eac5d1fa455ac5fb9d06838b16fab0523d5d03e3e82f7645032f71245096e67b892313b9
-  languageName: node
-  linkType: hard
-
 "react-timer-hook@npm:^3.0.5":
   version: 3.0.7
   resolution: "react-timer-hook@npm:3.0.7"
@@ -13822,7 +13851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.3.1, react-window@npm:^1.8.10, react-window@npm:^1.8.5":
+"react-window@npm:^1.3.1, react-window@npm:^1.8.10":
   version: 1.8.10
   resolution: "react-window@npm:1.8.10"
   dependencies:
@@ -14265,6 +14294,8 @@ __metadata:
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
     "@szhsin/react-menu": ^2.2.0
+    "@tanstack/react-table": ^8.16.0
+    "@tanstack/react-virtual": ^3.4.0
     "@testing-library/jest-dom": ^6.1.2
     "@testing-library/react": 12
     "@testing-library/user-event": ^14.4.3
@@ -14356,10 +14387,8 @@ __metadata:
     react-resize-detector: ^9.1.0
     react-rnd: ^10.3.5
     react-select: ^5.7.2
-    react-table: ^7.6.3
     react-timer-hook: ^3.0.5
     react-virtualized-auto-sizer: ^1.0.6
-    react-window: ^1.8.5
     resize-observer-polyfill: ^1.5.1
     shim-loader: ^1.0.1
     snapsvg-cjs: ^0.0.6

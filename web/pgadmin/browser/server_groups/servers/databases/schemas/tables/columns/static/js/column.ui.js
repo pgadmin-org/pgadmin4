@@ -166,7 +166,7 @@ export default class ColumnSchema extends BaseUISchema {
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name', ['primary_key']],
+      cell: 'switch', type: 'switch',  width: 100, enableResizing: false, deps:['name', ['primary_key']],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
@@ -280,7 +280,7 @@ export default class ColumnSchema extends BaseUISchema {
       },
     },{
       id: 'attlen', label: gettext('Length/Precision'),
-      deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, disableResizing: true,
+      deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, enableResizing: false,
       cell: (state)=>{
         return obj.attCell(state);
       },
@@ -311,7 +311,7 @@ export default class ColumnSchema extends BaseUISchema {
     },{
       id: 'max_val_attlen', skipChange: true, visible: false, type: '',
     },{
-      id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
+      id: 'attprecision', label: gettext('Scale'), width: 60, enableResizing: false,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
       cell: (state)=>{
         return obj.attCell(state);
@@ -439,7 +439,7 @@ export default class ColumnSchema extends BaseUISchema {
       },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
-      type: 'switch', width: 80, disableResizing: true,
+      type: 'switch', width: 80, enableResizing: false,
       group: gettext('Constraints'), editable: this.editableCheckForTable,
       deps: ['colconstype'],
       readonly: (state) => {

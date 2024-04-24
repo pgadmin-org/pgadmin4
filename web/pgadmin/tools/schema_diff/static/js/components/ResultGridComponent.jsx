@@ -738,7 +738,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
             treeDepth={2}
             enableRowSelect={true}
             defaultColumnOptions={{
-              resizable: true
+              enableResizing: true
             }}
             headerRowHeight={28}
             rowHeight={28}

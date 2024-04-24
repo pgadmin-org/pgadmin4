@@ -54,8 +54,8 @@ def open_process_details(tester):
     time.sleep(3)
     tester.page.find_by_css_selector(
         "div[data-test='processes'] "
-        "div[data-test='row-container']:nth-child(1) "
-        "div[role='row'] div[role='cell']:nth-child(3) button").click()
+        "div[role='row']:nth-child(1) "
+        "div[role='cell']:nth-child(3) button").click()
 
     tester.page.wait_for_element_to_disappear(
         lambda driver: driver.find_element(

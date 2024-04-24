@@ -294,10 +294,11 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 if serv == 'pg' and server_version is not None and \
                         default_binary_path['pg'] != '':
                     path_input = \
-                        self.page.find_by_xpath(
-                            "//div[span[text()='PostgreSQL {}']]"
-                            "/following-sibling::div//div/input".format(
-                                server_version))
+                        self.page.find_by_css_selector(
+                            "div[class='pgrd-row-cell'][title='PostgreSQL {}']"
+                            "+div[class='pgrd-row-cell'] input"
+                            .format(server_version)
+                        )
                     existing_path = path_input.get_property("value")
                     if existing_path != default_binary_path['pg']:
                         path_already_set = False

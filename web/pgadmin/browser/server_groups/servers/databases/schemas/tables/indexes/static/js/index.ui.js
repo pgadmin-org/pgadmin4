@@ -130,7 +130,7 @@ class IndexColumnSchema extends BaseUISchema {
     return [
       {
         id: 'is_exp', label: '', type:'', cell: '', editable: false, width: 20,
-        disableResizing: true,
+        enableResizing: false,
         controlProps: {
           formatter: {
             fromRaw: function (rawValue) {
@@ -182,7 +182,7 @@ class IndexColumnSchema extends BaseUISchema {
           {label: 'ASC', value: false},
           {label: 'DESC', value: true},
         ],
-        width: 110, disableResizing: true,
+        width: 110, enableResizing: false,
         controlProps: {
           allowClear: false,
         },
@@ -211,7 +211,7 @@ class IndexColumnSchema extends BaseUISchema {
           {label: 'FIRST', value: true},
           {label: 'LAST', value: false},
         ], controlProps: {allowClear: false},
-        width: 110, disableResizing: true,
+        width: 110, enableResizing: false,
         editable: function(state) {
           return obj.isEditable(state);
         },
@@ -243,7 +243,7 @@ export class WithSchema extends BaseUISchema {
     super({});
     this.node_info = node_info;
   }
-  
+
   get baseFields() {
     let withSchemaObj = this;
     return [
@@ -308,7 +308,7 @@ export class WithSchema extends BaseUISchema {
         depChange: (state, source) => {
           if (state.amname !== 'btree') {
             return {deduplicate_items:undefined};
-          } else if (state.amname === 'btree' && source[0] !== 'deduplicate_items' && 
+          } else if (state.amname === 'btree' && source[0] !== 'deduplicate_items' &&
             withSchemaObj.node_info.server.version >= 130000) {
             return {deduplicate_items: true};
           }

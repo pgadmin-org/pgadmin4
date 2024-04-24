@@ -18,8 +18,15 @@ import { MappedCellControl } from './MappedControl';
 import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded, useGlobalFilter } from 'react-table';
-import clsx from 'clsx';
+
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getExpandedRowModel,
+  flexRender,
+} from '@tanstack/react-table';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -35,6 +42,7 @@ import { useIsMounted } from '../custom_hooks';
 import { InputText } from '../components/FormComponents';
 import { usePgAdmin } from '../BrowserComponent';
 import { requestAnimationAndFocus } from '../utils';
+import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent } from '../components/PgReactTableStyled';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -73,10 +81,25 @@ const useStyles = makeStyles((theme)=>({
     width: '100%',
   },
   table: {
-    borderSpacing: 0,
-    width: '100%',
-    overflow: 'auto',
-    backgroundColor: theme.otherVars.tableBg,
+    '&.pgrt-table': {
+      '& .pgrt-body':{
+        '& .pgrt-row': {
+          position: 'unset',
+          backgroundColor: theme.otherVars.emptySpaceBg,
+
+          '& .pgrt-row-content':{
+            '& .pgrd-row-cell': {
+              height: 'auto',
+              padding: theme.spacing(0.5),
+
+              '&.btn-cell, &.expanded-icon-cell': {
+                padding: '2px 0px'
+              }
+            }
+          },
+        }
+      }
+    }
   },
   tableRowHovered: {
     position: 'relative',
@@ -86,16 +109,6 @@ const useStyles = makeStyles((theme)=>({
       inset: 0,
       opacity: 0.75,
     }
-  },
-  tableCell: {
-    margin: 0,
-    padding: theme.spacing(0.5),
-    ...theme.mixins.panelBorder.bottom,
-    ...theme.mixins.panelBorder.right,
-    position: 'relative',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
@@ -111,6 +124,7 @@ const useStyles = makeStyles((theme)=>({
   },
   btnReorder: {
     cursor: 'move',
+    padding: '4px 2px',
   },
   resizer: {
     display: 'inline-block',
@@ -124,58 +138,13 @@ const useStyles = makeStyles((theme)=>({
     touchAction: 'none',
   },
   expandedForm: {
-    borderTopWidth: theme.spacing(0.5),
-    borderStyle: 'solid ',
-    borderColor: theme.palette.grey[400],
+    border: '1px solid '+theme.palette.grey[400],
   },
   expandedIconCell: {
     backgroundColor: theme.palette.grey[400],
     borderBottom: 'none',
   }
 }));
-
-function DataTableHeader({headerGroups, viewHelperProps, schema}) {
-  const classes = useStyles();
-
-  /* Using ref so that schema variable is not frozen in columns closure */
-  const schemaRef = useRef(schema);
-
-  const sortIcon = (isDesc) => {
-    return isDesc ? ' 🔽' : ' 🔼';
-  };
-  return (
-    <div className={classes.tableContentWidth}>
-      {headerGroups.map((headerGroup, hi) => (
-        <div key={hi} {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map((column, ci) => {
-            let {modeSupported} = column.field ? getFieldMetaData(column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
-            return( modeSupported &&
-              <div key={ci} {...column.getHeaderProps()}>
-                <div {...(column.sortable ? column.getSortByToggleProps() : {})} className={clsx(classes.tableCell, classes.tableCellHeader)}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? sortIcon(column.isSortedDesc) : ''}
-                  </span>
-                </div>
-                {!column.disableResizing &&
-                  <div
-                    {...column.getResizerProps()}
-                    className={classes.resizer}
-                  />}
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-DataTableHeader.propTypes = {
-  headerGroups: PropTypes.array.isRequired,
-  viewHelperProps: PropTypes.object.isRequired,
-  schema: CustomPropTypes.schemaUI.isRequired,
-};
 
 function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex, viewHelperProps}) {
   const classes = useStyles();
@@ -188,7 +157,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
    * If table data changes, then react-table re-renders the complete tables
    * We can avoid re-render by if row data is not changed
    */
-  let depsMap = _.values(row.values, Object.keys(row.values).filter((k)=>!k.startsWith('btn')));
+  let depsMap = _.values(row.original, Object.keys(row.original).filter((k)=>!k.startsWith('btn')));
   const externalDeps = useMemo(()=>{
     let retVal = [];
     /* Calculate the fields which depends on the current field
@@ -284,37 +253,30 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
 
   /* External deps values are from top schema sess data */
   depsMap = depsMap.concat(externalDeps.map((source)=>_.get(schemaRef.current.top?.sessData, source)));
-  depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing, isHovered]);
+  depsMap = depsMap.concat([totalRows, row.getIsExpanded(), key, isResizing, isHovered]);
 
   drag(dragHandleRef);
   drop(rowRef);
 
   return useMemo(()=>
-    <div {...row.getRowProps()} ref={rowRef} data-handler-id={handlerId}
-      className={isHovered ? classes.tableRowHovered : null}
-      data-test='data-table-row'
-    >
-      {row.cells.map((cell, ci) => {
-        let classNames = [classes.tableCell];
+    <PgReactTableRowContent ref={rowRef} row={row} data-handler-id={handlerId} className={isHovered ? classes.tableRowHovered : null} data-test='data-table-row' style={{position: 'initial'}}>
+      {row.getVisibleCells().map((cell) => {
+        let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
 
-        let {modeSupported} = cell.column.field? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+        const content = flexRender(cell.column.columnDef.cell, {
+          key: cell.column.columnDef.cell.type,
+          ...cell.getContext(),
+          reRenderRow: ()=>{setKey((currKey)=>!currKey);}
+        });
 
-        if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
-          classNames.push(classes.btnCell);
-        }
-        if(cell.column.id == 'btn-edit' && row.isExpanded) {
-          classNames.push(classes.expandedIconCell);
-        }
         return (modeSupported &&
-            <div ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null} key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
-              {cell.render('Cell', {
-                reRenderRow: ()=>{setKey((currKey)=>!currKey);}
-              })}
-            </div>
+          <PgReactTableCell cell={cell} row={row} key={cell.id} ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null}>
+            {content}
+          </PgReactTableCell>
         );
       })}
       <div className='hover-overlay'></div>
-    </div>, depsMap);
+    </PgReactTableRowContent>, depsMap);
 }
 
 export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTextChange}) {
@@ -355,7 +317,7 @@ DataGridHeader.propTypes = {
   onSearchTextChange: PropTypes.func,
 };
 
-export default function DataGridView({
+function DataGridView({
   value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
   fixedRows, ...props}) {
   const classes = useStyles();
@@ -364,76 +326,77 @@ export default function DataGridView({
   const [hoverIndex, setHoverIndex] = useState();
   const newRowIndex = useRef();
   const pgAdmin = usePgAdmin();
+  const [searchVal, setSearchVal] = useState('');
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
-  let columns = useMemo(
+  const columns = useMemo(
     ()=>{
       let cols = [];
       if(props.canReorder) {
         let colInfo = {
-          Header: <>&nbsp;</>,
+          header: <>&nbsp;</>,
           id: 'btn-reorder',
-          accessor: ()=>{/*This is intentional (SonarQube)*/},
-          disableResizing: true,
-          sortable: false,
+          accessorFn: ()=>{/*This is intentional (SonarQube)*/},
+          enableResizing: false,
+          enableSorting: false,
           dataType: 'reorder',
-          width: 26,
-          minWidth: 26,
-          maxWidth: 26,
-          Cell: ()=>{
+          size: 36,
+          maxSize: 26,
+          minSize: 26,
+          cell: ()=>{
             return <div className={classes.btnReorder}>
               <DragIndicatorRoundedIcon fontSize="small" />
             </div>;
           }
         };
-        colInfo.Cell.displayName = 'Cell';
+        colInfo.cell.displayName = 'Cell';
         cols.push(colInfo);
       }
       if(props.canEdit) {
         let colInfo = {
-          Header: <>&nbsp;</>,
+          header: <>&nbsp;</>,
           id: 'btn-edit',
-          accessor: ()=>{/*This is intentional (SonarQube)*/},
-          disableResizing: true,
-          sortable: false,
+          accessorFn: ()=>{/*This is intentional (SonarQube)*/},
+          enableResizing: false,
+          enableSorting: false,
           dataType: 'edit',
-          width: 26,
-          minWidth: 26,
-          maxWidth: 26,
-          Cell: ({row})=>{
+          size: 26,
+          maxSize: 26,
+          minSize: 26,
+          cell: ({row})=>{
             let canEditRow = true;
             if(props.canEditRow) {
-              canEditRow = evalFunc(schemaRef.current, props.canEditRow, row.original || {});
+              canEditRow = evalFunc(schemaRef.current, props.canEditRow, row || {});
             }
             return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon fontSize="small" />} className={classes.gridRowButton}
               onClick={()=>{
-                row.toggleRowExpanded(!row.isExpanded);
+                row.toggleExpanded();
               }} disabled={!canEditRow}
             />;
           }
         };
-        colInfo.Cell.displayName = 'Cell';
-        colInfo.Cell.propTypes = {
+        colInfo.cell.displayName = 'Cell';
+        colInfo.cell.propTypes = {
           row: PropTypes.object.isRequired,
         };
         cols.push(colInfo);
       }
       if(props.canDelete) {
         let colInfo = {
-          Header: <>&nbsp;</>,
+          header: <>&nbsp;</>,
           id: 'btn-delete',
-          accessor: ()=>{/*This is intentional (SonarQube)*/},
-          disableResizing: true,
-          sortable: false,
+          accessorFn: ()=>{/*This is intentional (SonarQube)*/},
+          enableResizing: false,
+          enableSorting: false,
           dataType: 'delete',
-          width: 26,
-          minWidth: 26,
-          maxWidth: 26,
-          Cell: ({row}) => {
+          size: 26,
+          maxSize: 26,
+          minSize: 26,
+          cell: ({row}) => {
             let canDeleteRow = true;
             if(props.canDeleteRow) {
-              canDeleteRow = evalFunc(schemaRef.current, props.canDeleteRow, row.original || {});
+              canDeleteRow = evalFunc(schemaRef.current, props.canDeleteRow, row || {});
             }
 
             return (
@@ -449,7 +412,7 @@ export default function DataGridView({
                   };
 
                   if (props.onDelete){
-                    props.onDelete(row.original || {}, deleteRow);
+                    props.onDelete(row || {}, deleteRow);
                   } else {
                     pgAdmin.Browser.notifier.confirm(
                       props.customDeleteTitle || gettext('Delete Row'),
@@ -464,8 +427,8 @@ export default function DataGridView({
             );
           }
         };
-        colInfo.Cell.displayName = 'Cell';
-        colInfo.Cell.propTypes = {
+        colInfo.cell.displayName = 'Cell';
+        colInfo.cell.propTypes = {
           row: PropTypes.object.isRequired,
         };
         cols.push(colInfo);
@@ -482,28 +445,29 @@ export default function DataGridView({
         }).map((field)=>{
           let widthParms = {};
           if(field.width) {
-            widthParms.width = field.width;
-            widthParms.minWidth = field.width;
+            widthParms.size = field.width;
+            widthParms.minSize = field.width;
           } else {
-            widthParms.width = 75;
-            widthParms.minWidth = 75;
+            widthParms.size = 75;
+            widthParms.minSize = 75;
           }
           if(field.minWidth) {
-            widthParms.minWidth = field.minWidth;
+            widthParms.minSize = field.minWidth;
           }
           if(field.maxWidth) {
-            widthParms.maxWidth = field.maxWidth;
+            widthParms.maxSize = field.maxWidth;
           }
-          widthParms.disableResizing = Boolean(field.disableResizing);
+          widthParms.enableResizing = _.isUndefined(field.enableResizing) ? true : Boolean(field.enableResizing);
 
           let colInfo = {
-            Header: field.label||<>&nbsp;</>,
-            accessor: field.id,
+            header: field.label||<>&nbsp;</>,
+            accessorKey: field.id,
             field: field,
-            disableResizing: false,
-            sortable: true,
+            enableResizing: true,
+            enableSorting: false,
             ...widthParms,
-            Cell: ({value, row, ...other}) => {
+            cell: ({row, ...other}) => {
+              const value = other.getValue();
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
@@ -514,7 +478,7 @@ export default function DataGridView({
               }
 
               return modeSupported && <MappedCellControl rowIndex={row.index} value={value}
-                row={row.original} {...field}
+                row={row} {...field}
                 readonly={!editable}
                 disabled={disabled}
                 visible={true}
@@ -537,8 +501,8 @@ export default function DataGridView({
               />;
             },
           };
-          colInfo.Cell.displayName = 'Cell';
-          colInfo.Cell.propTypes = {
+          colInfo.cell.displayName = 'Cell';
+          colInfo.cell.propTypes = {
             row: PropTypes.object.isRequired,
             value: PropTypes.any,
             onCellChange: PropTypes.func,
@@ -567,35 +531,33 @@ export default function DataGridView({
     });
   }, [props.canAddRow, rows?.length]);
 
-  const defaultColumn = useMemo(()=>({
-  }), []);
+  const columnVisibility = useMemo(()=>{
+    const ret = {};
 
-  let tablePlugins = [
-    useGlobalFilter,
-    useFlexLayout,
-    useResizeColumns,
-    useSortBy,
-    useExpanded,
-  ];
+    columns.forEach(column => {
+      let {modeSupported} = column.field ? getFieldMetaData(column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+      ret[column.id] = modeSupported;
+    });
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setGlobalFilter,
-  } = useTable(
-    {
-      columns,
-      data: value,
-      defaultColumn,
-      manualSortBy: true,
-      autoResetSortBy: false,
-      autoResetExpanded: false,
+    return ret;
+  }, [columns, viewHelperProps]);
+
+  const table = useReactTable({
+    columns,
+    data: value,
+    autoResetAll: false,
+    state: {
+      globalFilter: searchVal,
+      columnVisibility: columnVisibility,
     },
-    ...tablePlugins,
-  );
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+  });
+
+  const rows = table.getRowModel().rows;
 
   useEffect(()=>{
     let rowsPromise = fixedRows;
@@ -617,10 +579,12 @@ export default function DataGridView({
 
   useEffect(()=>{
     if(newRowIndex.current >= 0) {
-      rows[newRowIndex.current]?.toggleRowExpanded(true);
+      rows[newRowIndex.current]?.toggleExpanded(true);
       newRowIndex.current = null;
     }
   }, [rows?.length]);
+
+  const tableRef = useRef();
 
   const moveRow = (dragIndex, hoverIndex) => {
     dataDispatch({
@@ -631,7 +595,7 @@ export default function DataGridView({
     });
   };
 
-  const isResizing = _.flatMap(headerGroups, headerGroup => headerGroup.headers.map(col=>col.isResizing)).includes(true);
+  const isResizing = _.flatMap(table.getHeaderGroups(), headerGroup => headerGroup.headers.map(header=>header.column.getIsResizing())).includes(true);
 
   if(!props.visible) {
     return <></>;
@@ -643,35 +607,45 @@ export default function DataGridView({
         {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick}
           canSearch={props.canSearch}
           onSearchTextChange={(value)=>{
-            setGlobalFilter(value || undefined);
+            setSearchVal(value || undefined);
           }}
         />}
         <DndProvider backend={HTML5Backend}>
-          <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table} data-test="data-grid-view">
-            <DataTableHeader headerGroups={headerGroups} viewHelperProps={viewHelperProps} schema={schema} />
-            <div {...getTableBodyProps()} className={classes.tableContentWidth}>
+          <PgReactTable ref={tableRef} table={table} data-test="data-grid-view" tableClassName={classes.table}>
+            <PgReactTableHeader table={table} />
+            <PgReactTableBody>
               {rows.map((row, i) => {
-                prepareRow(row);
-                return <React.Fragment key={row.index}>
-                  <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
+                return <PgReactTableRow key={row.index}>
+                  <DataTableRow index={i} key={i} row={row} totalRows={rows.length} isResizing={isResizing}
                     schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
-                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}/>
-                  {props.canEdit && row.isExpanded &&
-                    <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
-                      schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
-                      isDataGridForm={true} firstEleRef={(ele)=>{
-                        requestAnimationAndFocus(ele);
-                      }}/>
+                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}
+                  />
+                  {props.canEdit &&
+                    <PgReactTableRowExpandContent row={row}>
+                      <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
+                        schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
+                        isDataGridForm={true} firstEleRef={(ele)=>{
+                          requestAnimationAndFocus(ele);
+                        }}/>
+                    </PgReactTableRowExpandContent>
                   }
-                </React.Fragment>;
+                </PgReactTableRow>;
               })}
-            </div>
-          </div>
+            </PgReactTableBody>
+          </PgReactTable>
         </DndProvider>
       </Box>
     </Box>
   );
 }
+
+export default function DataGridViewMoized({memoDeps, ...props}) {
+  return useMemo(()=><DataGridView {...props} />, memoDeps??[]);
+}
+
+DataGridViewMoized.propTypes = {
+  memoDeps: PropTypes.array,
+};
 
 DataGridView.propTypes = {
   label: PropTypes.string,

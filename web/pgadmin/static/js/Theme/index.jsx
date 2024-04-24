@@ -347,6 +347,7 @@ function getFinalTheme(baseTheme) {
       overflow: 'auto',
       backgroundColor: baseTheme.palette.grey[400],
       position: 'relative',
+      flexGrow: 1,
     },
     fontSourceCode: {
       fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
