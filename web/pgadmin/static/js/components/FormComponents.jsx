@@ -394,7 +394,7 @@ export const InputText = forwardRef(({
         'aria-describedby': helpid,
         ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
         style: inputStyle || {},
-        autoComplete: _.isUndefined(controlProps?.autoComplete) ? 'nope' : controlProps?.autoComplete,
+        autoComplete: _.isUndefined(controlProps?.autoComplete) ? 'off' : controlProps?.autoComplete,
         'data-testid': 'input-text',
         title: controlProps?.title,
       }}

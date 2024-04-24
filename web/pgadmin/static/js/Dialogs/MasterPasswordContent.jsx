@@ -91,7 +91,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
           </Box>
           <Box marginTop='12px'>
             <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
-              onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)}/>
+              onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)} controlProps={{autoComplete: 'new-password'}}/>
           </Box>
           <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={data.errmsg} closable={false} style={{
             position: 'unset', padding: '12px 0px 0px'
