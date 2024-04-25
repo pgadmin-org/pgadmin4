@@ -50,7 +50,7 @@ Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
 Priority: optional
-Depends: ${PYTHON_BINARY}, libpq5 (>= 11.0), libgssapi-krb5-2, python-dbus
+Depends: ${PYTHON_BINARY}, libpq5 (>= 11.0), libgssapi-krb5-2, python-dbus | python3-dbus
 Recommends: postgresql-client | postgresql-client-15 | postgresql-client-14 | postgresql-client-13 | postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -73,7 +73,7 @@ Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
 Priority: optional
-Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, python-dbus
+Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, python-dbus | python3-dbus
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF
