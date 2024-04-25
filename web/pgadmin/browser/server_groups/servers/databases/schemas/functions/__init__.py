@@ -1521,23 +1521,18 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if len(res['rows']) == 0:
             return gone(gettext("The specified function could not be found."))
 
+        # Fetch only arguments
+        arg_string = res['rows'][0]['func_with_identity_arguments']
+        # Split argument by comma, Remove unwanted spaces and,
+        # format argument like "\n\t <args>"
+        args = ','.join(
+            ['\n\t<' + arg.strip(' ') + '>' for arg in arg_string.split(',')]
+        ) + '\n' if len(arg_string) > 0 else ''
+
         name = self.qtIdent(
             self.conn, res['rows'][0]['nspname'],
             res['rows'][0]['proname']
-        ) + '(' + res['rows'][0]['func_with_identity_arguments'] + ')'
-
-        # Fetch only arguments
-        arg_string = name[name.rfind('('):].strip('(').strip(')')
-        if len(arg_string) > 0:
-            args = arg_string.split(',')
-            # Remove unwanted spaces from arguments
-            args = [arg.strip(' ') for arg in args]
-
-            # Remove duplicate and then format arguments
-            for arg in list(set(args)):
-                formatted_arg = '\n\t<' + arg + '>'
-                name = name.replace(arg, formatted_arg)
-            name = name.replace(')', '\n)')
+        ) + '(' + args + ')'
 
         sql = "SELECT {0}".format(name)
 
@@ -1566,22 +1561,18 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 resp_data['pronamespace']
             )
 
-        name = resp_data['pronamespace'] + "." + resp_data['name_with_args']
-
         # Fetch only arguments
-        if name.rfind('(') != -1:
-            args = name[name.rfind('('):].strip('(').strip(')').split(',')
-            # Remove unwanted spaces from arguments
-            args = [arg.strip(' ') for arg in args]
+        arg_string = resp_data['proargs']
+        # Split argument by comma, Remove unwanted spaces and,
+        # format argument like "\n\t <args>"
+        args = ','.join(
+            ['\n\t<' + arg.strip(' ') + '>' for arg in arg_string.split(',')]
+        ) + '\n' if len(arg_string) > 0 else ''
 
-            # Remove duplicate and then format arguments
-            for arg in list(set(args)):
-                formatted_arg = '\n\t<' + arg + '>'
-                name = name.replace(arg, formatted_arg)
-
-            name = name.replace(')', '\n)')
-        else:
-            name += '()'
+        name = self.qtIdent(
+            self.conn, resp_data['pronamespace'],
+            resp_data['proname']
+        ) + '(' + args + ')'
 
         if self.manager.server_type == 'pg':
             sql = "CALL {0}".format(name)
