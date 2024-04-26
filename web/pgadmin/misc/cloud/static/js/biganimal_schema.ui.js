@@ -421,7 +421,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
         },
       },{
         id: 'password', label: gettext('Database password'), type: 'password',
-        mode: ['create'], noEmpty: true,
+        mode: ['create'], noEmpty: true, controlProps: { autoComplete: 'new-password' }
       },{
         id: 'confirm_password', label: gettext('Confirm password'), type: 'password',
         mode: ['create'], noEmpty: true,

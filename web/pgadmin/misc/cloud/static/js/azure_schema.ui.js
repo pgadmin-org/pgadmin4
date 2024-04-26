@@ -491,7 +491,7 @@ class AzureDatabaseSchema extends BaseUISchema {
         noEmpty: true,
         helpMessage: gettext(
           'The password must be 8-128 characters long and must contain characters from three of the following categories - English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.), and cannot contain all or part of the login name'
-        ),
+        ), controlProps: { autoComplete: 'new-password' }
       },
       {
         id: 'db_confirm_password',
