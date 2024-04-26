@@ -382,18 +382,20 @@ export class MiscellaneousSchema extends BaseUISchema {
     }, {
       id: 'exclude_schema',
       label: gettext('Exclude schema'),
-      type: 'text',
+      type: 'select',
       disabled: false,
       group: gettext('Miscellaneous'),
-      visible: isVisibleForServerBackup(obj?._top?.backupType)
+      visible: isVisibleForServerBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
     }, {
       id: 'exclude_database',
       label: gettext('Exclude database'),
-      type: 'text',
+      type: 'select',
       disabled: false,
       min_version: 160000,
       group: gettext('Miscellaneous'),
-      visible: isVisibleForObjectBackup(obj?._top?.backupType)
+      visible: isVisibleForObjectBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
     }, {
       id: 'extra_float_digits',
       label: gettext('Extra float digits'),
@@ -415,8 +417,67 @@ export function getMiscellaneousSchema(fieldOptions) {
   return new MiscellaneousSchema(fieldOptions);
 }
 
+export class ExcludePatternsSchema extends BaseUISchema {
+  constructor(fieldOptions={}, initValues={}) {
+    super({
+      ...initValues,
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+  }
+
+  get idAttribute() {
+    return 'id';
+  }
+
+  get baseFields() {
+    let obj = this;
+    return [{
+      id: 'exclude_table',
+      label: gettext('Table(s)'),
+      type: 'select',
+      disabled: false,
+      group: gettext('Table Options'),
+      visible: isVisibleForServerBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
+    }, {
+      id: 'exclude_table_data',
+      label: gettext('Table(s) data'),
+      type: 'select',
+      disabled: false,
+      group: gettext('Table Options'),
+      visible: isVisibleForServerBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
+    }, {
+      id: 'exclude_table_and_children',
+      label: gettext('Table(s) and children'),
+      type: 'select',
+      disabled: false,
+      group: gettext('Table Options'),
+      min_version: 160000,
+      visible: isVisibleForServerBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
+    }, {
+      id: 'exclude_table_data_and_children',
+      label: gettext('Table(s) data and children'),
+      type: 'select',
+      disabled: false,
+      group: gettext('Table Options'),
+      min_version: 160000,
+      visible: isVisibleForServerBackup(obj?._top?.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
+    }];
+  }
+}
+
+export function getExcludePatternsSchema() {
+  return new ExcludePatternsSchema();
+}
+
 export default class BackupSchema extends BaseUISchema {
-  constructor(sectionSchema, typeObjSchema, saveOptSchema, disabledOptionSchema, miscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server', objects={}) {
+  constructor(sectionSchema, typeObjSchema, saveOptSchema, disabledOptionSchema, miscellaneousSchema, excludePatternsSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server', objects={}) {
     super({
       file: undefined,
       format: 'custom',
@@ -439,6 +500,7 @@ export default class BackupSchema extends BaseUISchema {
     this.getSaveOptSchema = saveOptSchema;
     this.getDisabledOptionSchema = disabledOptionSchema;
     this.getMiscellaneousSchema = miscellaneousSchema;
+    this.getExcludePatternsSchema = excludePatternsSchema;
   }
 
   get idAttribute() {
@@ -641,61 +703,20 @@ export default class BackupSchema extends BaseUISchema {
       visible: isVisibleForServerBackup(obj.backupType),
       helpMessage: gettext('This option is enabled only when Use INSERT Commands is enabled.')
     }, {
-      id: 'with_oids',
-      label: gettext('With OID(s)'),
-      type: 'switch',
-      deps: ['use_column_inserts', 'use_insert_commands'],
-      group: gettext('Table Options'),
-      disabled: function(state) {
-        let serverInfo = _.isUndefined(obj.treeNodeInfo) ? undefined : obj.treeNodeInfo.server;
-
-        if (!_.isUndefined(serverInfo) && serverInfo.version >= 120000)
-          return true;
-
-        if (state.use_column_inserts || state.use_insert_commands) {
-          state.with_oids = false;
-          return true;
-        }
-        return false;
-      },
-    }, {
       id: 'table_and_children',
-      label: gettext('Table and Children'),
-      type: 'text',
+      label: gettext('Include table(s) and Children'),
+      type: 'select',
       disabled: false,
       group: gettext('Table Options'),
       min_version: 160000,
-      visible: isVisibleForServerBackup(obj.backupType)
+      visible: isVisibleForServerBackup(obj.backupType),
+      controlProps: { multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: ' ' }
     }, {
-      id: 'exclude_table',
-      label: gettext('Exclude table'),
-      type: 'text',
-      disabled: false,
+      type: 'nested-fieldset',
+      label: gettext('Exclude patterns'),
       group: gettext('Table Options'),
-      visible: isVisibleForServerBackup(obj.backupType)
-    }, {
-      id: 'exclude_table_data',
-      label: gettext('Exclude table data'),
-      type: 'text',
-      disabled: false,
-      group: gettext('Table Options'),
-      visible: isVisibleForServerBackup(obj.backupType)
-    }, {
-      id: 'exclude_table_and_children',
-      label: gettext('Exclude table and children'),
-      type: 'text',
-      disabled: false,
-      group: gettext('Table Options'),
-      min_version: 160000,
-      visible: isVisibleForServerBackup(obj.backupType)
-    }, {
-      id: 'exclude_table_data_and_children',
-      label: gettext('Exclude table data and children'),
-      type: 'text',
-      disabled: false,
-      group: gettext('Table Options'),
-      min_version: 160000,
-      visible: isVisibleForServerBackup(obj.backupType)
+      schema: obj.getExcludePatternsSchema(),
+      visible: isVisibleForServerBackup(obj.backupType),
     }, {
       type: 'nested-fieldset',
       label: gettext('Disable'),

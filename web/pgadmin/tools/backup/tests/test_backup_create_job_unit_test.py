@@ -500,7 +500,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  schemas=[],
                  tables=[],
                  database='postgres',
-                 exclude_table_data='table1',
+                 exclude_table_data=['table1'],
              ),
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--exclude-table-data', 'table1'],
@@ -560,12 +560,11 @@ class BackupCreateJobTest(BaseTestGenerator):
                  database='postgres',
                  disable_quoting=True,
                  use_set_session_auth=True,
-                 with_oids=True,
                  dqoute=True
              ),
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=[VERBOSE, '--quote-all-identifiers',
-                                '--disable-dollar-quoting', '--oids',
+                                '--disable-dollar-quoting',
                                 '--use-set-session-authorization'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -588,7 +587,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  schemas=[],
                  tables=[],
                  database='postgres',
-                 exclude_schema="sch*"
+                 exclude_schema=["sch*"]
              ),
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=[VERBOSE, '--exclude-schema', 'sch*'],
@@ -726,7 +725,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  schemas=[],
                  tables=[],
                  database='postgres',
-                 exclude_table="table1"
+                 exclude_table=["table1"]
              ),
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--exclude-table', 'table1'],
@@ -1174,12 +1173,11 @@ class BackupCreateJobTest(BaseTestGenerator):
                  verbose=True,
                  disable_quoting=True,
                  use_set_session_auth=True,
-                 with_oids=True,
                  dqoute=True
              ),
              url=BACKUP_SERVER_URL,
              expected_cmd_opts=[VERBOSE, '--quote-all-identifiers',
-                                '--disable-dollar-quoting', '--oids',
+                                '--disable-dollar-quoting',
                                 '--use-set-session-authorization'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
