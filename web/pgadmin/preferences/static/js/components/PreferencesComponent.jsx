@@ -555,11 +555,12 @@ export default function PreferencesComponent({ ...props }) {
           gettext('Object explorer refresh required'),
           gettext('An object explorer refresh is required. Do you wish to refresh it now?'),
           function () {
-            pgAdmin.Browser.tree.destroy({
-              success: function () {
+            pgAdmin.Browser.tree.destroy().then(
+              () => {
+                pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
                 return true;
-              },
-            });
+              }
+            );
           },
           function () {
             return true;

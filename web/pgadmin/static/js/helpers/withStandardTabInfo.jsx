@@ -42,6 +42,7 @@ export default function withStandardTabInfo(Component, tabId) {
         setNodeInfo([true, item, data]);
       };
 
+      let destroyTree = pgAdmin.Browser.Events.on('pgadmin-browser:tree:destroyed', onUpdate);
       let deregisterTree = pgAdmin.Browser.Events.on('pgadmin-browser:node:selected', onUpdate);
       let deregisterTreeUpdate = pgAdmin.Browser.Events.on('pgadmin-browser:tree:updated', onUpdate);
       let deregisterDbConnected = pgAdmin.Browser.Events.on('pgadmin:database:connected', onUpdate);
@@ -54,6 +55,7 @@ export default function withStandardTabInfo(Component, tabId) {
 
       return ()=>{
         onTabActive?.cancel();
+        destroyTree();
         deregisterTree();
         deregisterTreeUpdate();
         deregisterDbConnected();

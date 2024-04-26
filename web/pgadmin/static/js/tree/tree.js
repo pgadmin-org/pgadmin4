@@ -120,7 +120,7 @@ export class Tree {
     this.rootNode.children = [];
     if (model.root) {
       model.root.isExpanded = false;
-      await model.root.hardReloadChildren();
+      return Promise.resolve(await model.root.hardReloadChildren());
     }
   }
 
