@@ -26,7 +26,7 @@ import json
 from flask import render_template, Response, session, request as req, \
     url_for, current_app, send_from_directory
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, unauthorized, \
@@ -184,7 +184,7 @@ blueprint = FileManagerModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/", endpoint='index')
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=gettext("This URL cannot be called directly.")
@@ -192,7 +192,7 @@ def index():
 
 
 @blueprint.route("/utility.js")
-@login_required
+@pga_login_required
 def utility():
     """render the required javascript"""
     return Response(response=render_template(
@@ -204,7 +204,7 @@ def utility():
 @blueprint.route(
     "/init", methods=["POST"], endpoint='init'
 )
-@login_required
+@pga_login_required
 def init_filemanager():
     if len(req.data) != 0:
         configs = json.loads(req.data)
@@ -259,7 +259,7 @@ def init_filemanager():
     "/delete_trans_id/<int:trans_id>",
     methods=["DELETE"], endpoint='delete_trans_id'
 )
-@login_required
+@pga_login_required
 def delete_trans_id(trans_id):
     Filemanager.release_transaction(trans_id)
     return make_json_response(
@@ -270,7 +270,7 @@ def delete_trans_id(trans_id):
 @blueprint.route(
     "/save_last_dir/<int:trans_id>", methods=["POST"], endpoint='save_last_dir'
 )
-@login_required
+@pga_login_required
 def save_last_directory_visited(trans_id):
     blueprint.last_directory_visited.set(req.json['path'])
     blueprint.last_storage.set(req.json['storage_folder'])
@@ -281,7 +281,7 @@ def save_last_directory_visited(trans_id):
     "/save_file_dialog_view/<int:trans_id>", methods=["POST"],
     endpoint='save_file_dialog_view'
 )
-@login_required
+@pga_login_required
 def save_file_dialog_view(trans_id):
     blueprint.file_dialog_view.set(req.json['view'])
     return make_json_response(status=200)
@@ -291,7 +291,7 @@ def save_file_dialog_view(trans_id):
     "/save_show_hidden_file_option/<int:trans_id>", methods=["PUT"],
     endpoint='save_show_hidden_file_option'
 )
-@login_required
+@pga_login_required
 def save_show_hidden_file_option(trans_id):
     blueprint.show_hidden_files.set(req.json['show_hidden'])
     return make_json_response(status=200)
@@ -1108,7 +1108,7 @@ class Filemanager():
     "/filemanager/<int:trans_id>/",
     methods=["POST"], endpoint='filemanager'
 )
-@login_required
+@pga_login_required
 def file_manager(trans_id):
     """
     It is the common function for every call which is made

@@ -15,7 +15,7 @@ import json
 from flask import Response, request, render_template, url_for, current_app
 from flask_babel import gettext
 from flask_login import current_user
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request,\
     success_return, internal_server_error
@@ -80,13 +80,13 @@ def get_setting(setting, default=''):
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=gettext("This URL cannot be called directly."))
 
 
 @blueprint.route("/settings.js")
-@login_required
+@pga_login_required
 def script():
     """Render the required Javascript"""
     return Response(response=render_template("settings/settings.js"),
@@ -96,7 +96,7 @@ def script():
 
 @blueprint.route("/store", methods=['POST'], endpoint='store_bulk')
 @blueprint.route("/store/<setting>/<value>", methods=['PUT'], endpoint='store')
-@login_required
+@pga_login_required
 def store(setting=None, value=None):
     """Store a configuration setting, or if this is a POST request and a
     count value is present, store multiple settings at once."""
@@ -131,7 +131,7 @@ def store(setting=None, value=None):
 
 
 @blueprint.route("/layout", methods=['DELETE'], endpoint='reset_layout')
-@login_required
+@pga_login_required
 def reset_layout():
     """Reset configuration setting"""
 
@@ -162,7 +162,7 @@ def reset_layout():
 
 @blueprint.route("/reset_tree_state", methods=['DELETE'],
                  endpoint='reset_tree_state')
-@login_required
+@pga_login_required
 def reset_tree_state():
     """Reset the saved tree state."""
 
@@ -182,7 +182,7 @@ def reset_tree_state():
 
 @blueprint.route("/save_tree_state/", endpoint="save_tree_state",
                  methods=['POST'])
-@login_required
+@pga_login_required
 def save_browser_tree_state():
     """Save the browser tree state."""
     data = request.form if request.form else request.data.decode('utf-8')
@@ -210,7 +210,7 @@ def save_browser_tree_state():
 
 @blueprint.route("/get_tree_state/", endpoint="get_tree_state",
                  methods=['GET'])
-@login_required
+@pga_login_required
 def get_browser_tree_state():
     """Get the browser tree state."""
 
@@ -228,7 +228,7 @@ def get_browser_tree_state():
 @blueprint.route("/save_file_format_setting/",
                  endpoint="save_file_format_setting",
                  methods=['POST'])
-@login_required
+@pga_login_required
 def save_file_format_setting():
     """
     This function save the selected file format.save_file_format_setting
@@ -247,7 +247,7 @@ def save_file_format_setting():
 @blueprint.route("/get_file_format_setting/",
                  endpoint="get_file_format_setting",
                  methods=['GET'])
-@login_required
+@pga_login_required
 def get_file_format_setting():
     """
     This function return the last selected file format

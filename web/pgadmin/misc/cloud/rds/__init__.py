@@ -16,7 +16,7 @@ import pickle
 from boto3.session import Session
 from flask_babel import gettext
 from flask import session, current_app, request
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
@@ -48,7 +48,7 @@ blueprint = RDSModule(MODULE_NAME, __name__,
 
 @blueprint.route('/verify_credentials/',
                  methods=['POST'], endpoint='verify_credentials')
-@login_required
+@pga_login_required
 def verify_credentials():
     """Verify Credentials."""
     msg = ''
@@ -80,7 +80,7 @@ def verify_credentials():
 
 @blueprint.route('/db_instances/',
                  methods=['GET'], endpoint='db_instances')
-@login_required
+@pga_login_required
 def get_db_instances():
     """
     Fetch AWS DB Instances based on engine version.
@@ -116,7 +116,7 @@ def get_db_instances():
 
 @blueprint.route('/db_versions/',
                  methods=['GET'], endpoint='db_versions')
-@login_required
+@pga_login_required
 def get_db_versions():
     """GET AWS Database Versions for AWS."""
     if 'aws' not in session:
@@ -142,7 +142,7 @@ def get_db_versions():
 
 @blueprint.route('/regions/',
                  methods=['GET'], endpoint='regions')
-@login_required
+@pga_login_required
 def get_regions():
     """GET Regions for AWS."""
     try:

@@ -19,7 +19,8 @@ from flask import Response, request
 from flask import render_template, copy_current_request_context, \
     current_app as app
 from flask_babel import gettext
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.constants import MIMETYPE_APP_JS
@@ -71,7 +72,7 @@ blueprint = PSQLModule('psql', __name__, static_url_path='/static')
 
 
 @blueprint.route("/psql.js")
-@login_required
+@pga_login_required
 def script():
     """render the required javascript"""
     return Response(
@@ -84,7 +85,7 @@ def script():
 @blueprint.route('/panel/<int:trans_id>',
                  methods=["POST"],
                  endpoint="panel")
-@login_required
+@pga_login_required
 def panel(trans_id):
     """
     Return panel template for PSQL tools.

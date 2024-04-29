@@ -14,7 +14,7 @@ from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
 from pgadmin.utils import PgAdminModule
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 import json
 from flask import session, current_app, request
 from flask_login import current_user
@@ -59,7 +59,7 @@ blueprint = AzurePostgresqlModule(MODULE_NAME, __name__,
 
 @blueprint.route('/verify_credentials/',
                  methods=['POST'], endpoint='verify_credentials')
-@login_required
+@pga_login_required
 def verify_credentials():
     """Verify Credentials."""
     data = json.loads(request.data)
@@ -96,7 +96,7 @@ def verify_credentials():
 
 @blueprint.route('/get_azure_verification_codes/',
                  methods=['GET'], endpoint='get_azure_verification_codes')
-@login_required
+@pga_login_required
 def get_azure_verification_codes():
     """Get azure code for authentication."""
     azure_auth_code = None
@@ -110,7 +110,7 @@ def get_azure_verification_codes():
 
 @blueprint.route('/check_cluster_name_availability/',
                  methods=['GET'], endpoint='check_cluster_name_availability')
-@login_required
+@pga_login_required
 def check_cluster_name_availability():
     """Check Server Name availability."""
     data = request.args
@@ -129,7 +129,7 @@ def check_cluster_name_availability():
 
 @blueprint.route('/subscriptions/',
                  methods=['GET'], endpoint='subscriptions')
-@login_required
+@pga_login_required
 def get_azure_subscriptions():
     """
     List subscriptions.
@@ -142,7 +142,7 @@ def get_azure_subscriptions():
 
 @blueprint.route('/resource_groups/<subscription_id>',
                  methods=['GET'], endpoint='resource_groups')
-@login_required
+@pga_login_required
 def get_azure_resource_groups(subscription_id):
     """
     Fetch resource groups based on subscription.
@@ -156,7 +156,7 @@ def get_azure_resource_groups(subscription_id):
 
 @blueprint.route('/regions/<subscription_id>',
                  methods=['GET'], endpoint='regions')
-@login_required
+@pga_login_required
 def get_azure_regions(subscription_id):
     """List Regions for Azure."""
     if not subscription_id:
@@ -169,7 +169,7 @@ def get_azure_regions(subscription_id):
 
 @blueprint.route('/zone_redundant_ha_supported/<region_name>',
                  methods=['GET'], endpoint='zone_redundant_ha_supported')
-@login_required
+@pga_login_required
 def is_ha_supported(region_name):
     """Check high availability support in given region."""
     azure = session['azure']['azure_obj']
@@ -181,7 +181,7 @@ def is_ha_supported(region_name):
 
 @blueprint.route('/availability_zones/<region_name>',
                  methods=['GET'], endpoint='availability_zones')
-@login_required
+@pga_login_required
 def get_azure_availability_zones(region_name):
     """List availability zones in given region."""
     if not region_name:
@@ -194,7 +194,7 @@ def get_azure_availability_zones(region_name):
 
 @blueprint.route('/db_versions/<availability_zone>',
                  methods=['GET'], endpoint='db_versions')
-@login_required
+@pga_login_required
 def get_azure_postgresql_server_versions(availability_zone):
     """Get azure postgres database versions."""
     if not availability_zone:
@@ -208,7 +208,7 @@ def get_azure_postgresql_server_versions(availability_zone):
 
 @blueprint.route('/instance_types/<availability_zone>/<db_version>',
                  methods=['GET'], endpoint='instance_types')
-@login_required
+@pga_login_required
 def get_azure_instance_types(availability_zone, db_version):
     """Get instance types for Azure."""
     if not db_version:
@@ -220,7 +220,7 @@ def get_azure_instance_types(availability_zone, db_version):
 
 @blueprint.route('/storage_types/<availability_zone>/<db_version>',
                  methods=['GET'], endpoint='storage_types')
-@login_required
+@pga_login_required
 def list_azure_storage_types(availability_zone, db_version):
     """Get the storage types supported."""
     if not db_version:
@@ -232,7 +232,7 @@ def list_azure_storage_types(availability_zone, db_version):
 
 @blueprint.route('/clear_session',
                  methods=['GET'], endpoint='clear_session')
-@login_required
+@pga_login_required
 def clear_session():
     clear_azure_session()
     return make_json_response(success=1)

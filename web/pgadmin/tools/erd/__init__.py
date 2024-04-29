@@ -12,7 +12,7 @@ import json
 
 from flask import url_for, request, Response
 from flask import render_template, current_app as app
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from werkzeug.user_agent import UserAgent
 from pgadmin.utils import PgAdminModule, \
@@ -431,7 +431,7 @@ blueprint = ERDModule(MODULE_NAME, __name__, static_url_path='/static')
     methods=["POST"],
     endpoint='panel'
 )
-@login_required
+@pga_login_required
 def panel(trans_id):
     """
     This method calls index.html to render the erd tool.
@@ -496,7 +496,7 @@ def panel(trans_id):
     '/initialize/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
     methods=["POST"], endpoint='initialize'
 )
-@login_required
+@pga_login_required
 def initialize_erd(trans_id, sgid, sid, did):
     """
     This method is responsible for instantiating and initializing
@@ -551,7 +551,7 @@ def _get_connection(sid, did, trans_id):
 @blueprint.route('/prequisite/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
                  methods=["GET"],
                  endpoint='prequisite')
-@login_required
+@pga_login_required
 def prequisite(trans_id, sgid, sid, did):
     conn = _get_connection(sid, did, trans_id)
     helper = ERDHelper(trans_id, sid, did)
@@ -608,7 +608,7 @@ def translate_foreign_keys(tab_fks, tab_data, all_nodes):
 @blueprint.route('/sql/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
                  methods=["POST"],
                  endpoint='sql')
-@login_required
+@pga_login_required
 def sql(trans_id, sgid, sid, did):
     data = json.loads(request.data)
     with_drop = False
@@ -687,7 +687,7 @@ def tables(params):
 @blueprint.route('/close/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
                  methods=["DELETE"],
                  endpoint='close')
-@login_required
+@pga_login_required
 def close(trans_id, sgid, sid, did):
     manager = get_driver(
         PG_DEFAULT_DRIVER).connection_manager(sid)

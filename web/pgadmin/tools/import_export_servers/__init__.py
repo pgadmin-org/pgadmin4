@@ -16,7 +16,8 @@ import secrets
 
 from flask import Response, render_template, request
 from flask_babel import gettext as _
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.constants import MIMETYPE_APP_JS
@@ -54,13 +55,13 @@ blueprint = ImportExportServersModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/js/import_export_servers.js")
-@login_required
+@pga_login_required
 def script():
     """render the import/export javascript file"""
     return Response(
@@ -72,7 +73,7 @@ def script():
 
 
 @blueprint.route('/get_servers', methods=['GET'], endpoint='get_servers')
-@login_required
+@pga_login_required
 def get_servers():
     """
     This function is used to get the servers with server groups
@@ -102,7 +103,7 @@ def get_servers():
 
 
 @blueprint.route('/load_servers', methods=['POST'], endpoint='load_servers')
-@login_required
+@pga_login_required
 def load_servers():
     """
     This function is used to load the servers from the json file.
@@ -167,7 +168,7 @@ def load_servers():
 
 
 @blueprint.route('/save', methods=['POST'], endpoint='save')
-@login_required
+@pga_login_required
 def save():
     """
     This function is used to import or export based on the data

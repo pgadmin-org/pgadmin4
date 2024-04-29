@@ -35,10 +35,11 @@ Bug fixes
   | `Issue #2410 <https://github.com/pgadmin-org/pgadmin4/issues/2410>`_ -  Fixed all input boxes in pgAdmin to show browser auto-fill only where it is relevant.
   | `Issue #7173 <https://github.com/pgadmin-org/pgadmin4/issues/7173>`_ -  Install dbus-python, an in-direct dependency of the Keyring package as a system package for Debian platforms.
   | `Issue #7275 <https://github.com/pgadmin-org/pgadmin4/issues/7275>`_ -  Fixed an issue where debugger was not scrolling automatically on stepping.
-  | `Issue #7282 <https://github.com/pgadmin-org/pgadmin4/issues/7282>`_ -  Fixed an XSS vulnerability in the /settings/store endpoint.
+  | `Issue #7282 <https://github.com/pgadmin-org/pgadmin4/issues/7282>`_ -  Fixed an XSS vulnerability in the /settings/store endpoint (CVE-2024-4216).
   | `Issue #7294 <https://github.com/pgadmin-org/pgadmin4/issues/7294>`_ -  Fixed an issue where double dollar quoted code is treated as string in syntax highlighter.
   | `Issue #7317 <https://github.com/pgadmin-org/pgadmin4/issues/7317>`_ -  Fixed an issue where pressing backspace should remove the spaces and not the entire tab width, on enabling 'Use spaces?' in the preferences.
   | `Issue #7334 <https://github.com/pgadmin-org/pgadmin4/issues/7334>`_ -  Fixed an issue where incorrect select/exec scripts were generated for functions/procedures.
   | `Issue #7372 <https://github.com/pgadmin-org/pgadmin4/issues/7372>`_ -  Fixed an issue where connection to the database is not automatically re-established after connectivity drop.
   | `Issue #7384 <https://github.com/pgadmin-org/pgadmin4/issues/7384>`_ -  Fixed an issue when closing the view data second tab; it raises the error that the 'ViewCommand' object has no attribute 'auto_commit'.
   | `Issue #7390 <https://github.com/pgadmin-org/pgadmin4/issues/7390>`_ -  Fixed violates check constraint issue when creating a pgAgent schedule.
+  | `Issue #7425 <https://github.com/pgadmin-org/pgadmin4/issues/7425>`_ -  Fixed Multi-Factor Authentication bypass vulnerability (CVE-2024-4215).

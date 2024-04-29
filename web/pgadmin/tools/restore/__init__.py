@@ -13,7 +13,8 @@ import json
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
     get_server, filename_with_file_manager_path
@@ -109,13 +110,13 @@ class RestoreMessage(IProcessDesc):
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/restore.js")
-@login_required
+@pga_login_required
 def script():
     """render own javascript"""
     return Response(
@@ -350,7 +351,7 @@ def _set_args_param_values(data, manager, server, driver, conn, _file):
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
-@login_required
+@pga_login_required
 def create_restore_job(sid):
     """
     Args:
@@ -410,7 +411,7 @@ def create_restore_job(sid):
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
-@login_required
+@pga_login_required
 def check_utility_exists(sid):
     """
     This function checks the utility file exist on the given path.

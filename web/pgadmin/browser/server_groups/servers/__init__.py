@@ -13,7 +13,8 @@ import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
 from flask_babel import gettext
-from flask_security import current_user, login_required
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
 from pgadmin.browser.server_groups.servers.types import ServerType
@@ -218,7 +219,7 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         return servers
 
-    @login_required
+    @pga_login_required
     def get_nodes(self, gid):
         """Return a JSON document listing the server groups for the user"""
 
@@ -564,7 +565,7 @@ class ServerNode(PGChildNodeView):
 
             data['connection_params'] = existing_conn_params
 
-    @login_required
+    @pga_login_required
     def nodes(self, gid):
         res = []
         """
@@ -650,7 +651,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(result=res)
 
-    @login_required
+    @pga_login_required
     def node(self, gid, sid):
         """Return a JSON document listing the server groups for the user"""
         server = Server.query.filter_by(id=sid).first()
@@ -733,7 +734,7 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=e.message)
 
-    @login_required
+    @pga_login_required
     def delete(self, gid, sid):
         """Delete a server node in the settings database."""
         servers = Server.query.filter_by(user_id=current_user.id, id=sid)
@@ -783,7 +784,7 @@ class ServerNode(PGChildNodeView):
         return make_json_response(success=1,
                                   info=gettext("Server deleted"))
 
-    @login_required
+    @pga_login_required
     def update(self, gid, sid):
         """Update the server settings"""
         server = Server.query.filter_by(id=sid).first()
@@ -988,7 +989,7 @@ class ServerNode(PGChildNodeView):
                         ).format(disp_lbl[arg])
                     )
 
-    @login_required
+    @pga_login_required
     def list(self, gid):
         """
         Return list of attributes of all servers.
@@ -1035,7 +1036,7 @@ class ServerNode(PGChildNodeView):
             response=res
         )
 
-    @login_required
+    @pga_login_required
     def properties(self, gid, sid):
         """Return list of attributes of a server"""
 
@@ -1154,7 +1155,7 @@ class ServerNode(PGChildNodeView):
         display_conn_string = make_conninfo(**con_info_ord)
         return display_conn_string
 
-    @login_required
+    @pga_login_required
     def create(self, gid):
         """Add a server node to the settings database"""
         required_args = ['name', 'db']
@@ -1376,15 +1377,15 @@ class ServerNode(PGChildNodeView):
                 errormsg=str(e)
             )
 
-    @login_required
+    @pga_login_required
     def sql(self, gid, sid):
         return make_json_response(data='')
 
-    @login_required
+    @pga_login_required
     def modified_sql(self, gid, sid):
         return make_json_response(data='')
 
-    @login_required
+    @pga_login_required
     def statistics(self, gid, sid):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -1408,11 +1409,11 @@ class ServerNode(PGChildNodeView):
             )
         )
 
-    @login_required
+    @pga_login_required
     def dependencies(self, gid, sid):
         return make_json_response(data='')
 
-    @login_required
+    @pga_login_required
     def dependents(self, gid, sid):
         return make_json_response(data='')
 

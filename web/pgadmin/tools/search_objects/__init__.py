@@ -11,7 +11,7 @@
 
 from flask import request
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request,\
@@ -54,20 +54,20 @@ blueprint = SearchObjectsModule(
 
 
 @blueprint.route("/", endpoint='index')
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=gettext("This URL cannot be called directly."))
 
 
 @blueprint.route("types/<int:sid>/<int:did>", endpoint='types')
-@login_required
+@pga_login_required
 def types(sid, did):
     so_obj = SearchObjectsHelper(sid, did, blueprint.show_system_objects())
     return make_json_response(data=so_obj.get_supported_types())
 
 
 @blueprint.route("search/<int:sid>/<int:did>", endpoint='search')
-@login_required
+@pga_login_required
 def search(sid, did):
     """
     URL args:

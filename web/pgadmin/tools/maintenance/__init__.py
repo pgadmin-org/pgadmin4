@@ -13,7 +13,8 @@ import json
 
 from flask import url_for, Response, render_template, request, current_app
 from flask_babel import gettext as _
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
 from pgadmin.utils.ajax import bad_request, make_json_response
@@ -122,7 +123,7 @@ class Message(IProcessDesc):
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=_("This URL cannot be called directly.")
@@ -130,7 +131,7 @@ def index():
 
 
 @blueprint.route("/js/maintenance.js")
-@login_required
+@pga_login_required
 def script():
     """render the maintenance tool of vacuum javascript file"""
     return Response(
@@ -160,7 +161,7 @@ def get_index_name(data):
 @blueprint.route(
     '/job/<int:sid>/<int:did>', methods=['POST'], endpoint='create_job'
 )
-@login_required
+@pga_login_required
 def create_maintenance_job(sid, did):
     """
     Args:
@@ -252,7 +253,7 @@ def create_maintenance_job(sid, did):
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
-@login_required
+@pga_login_required
 def check_utility_exists(sid):
     """
     This function checks the utility file exist on the given path.

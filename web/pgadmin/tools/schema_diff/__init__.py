@@ -15,7 +15,8 @@ import copy
 
 from flask import Response, session, url_for, request
 from flask import render_template, current_app as app
-from flask_security import current_user, login_required
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
@@ -109,7 +110,7 @@ blueprint = SchemaDiffModule(MODULE_NAME, __name__, static_url_path='/static')
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=gettext('This URL cannot be requested directly.')
@@ -193,7 +194,7 @@ def update_session_diff_transaction(trans_id, session_obj, diff_model_obj):
     methods=["GET"],
     endpoint="initialize"
 )
-@login_required
+@pga_login_required
 def initialize():
     """
     This function will initialize the schema diff and return the list
@@ -261,7 +262,7 @@ def close(trans_id):
     methods=["GET"],
     endpoint="servers"
 )
-@login_required
+@pga_login_required
 def servers():
     """
     This function will return the list of servers for the specified
@@ -317,7 +318,7 @@ def servers():
     methods=["GET"],
     endpoint="get_server"
 )
-@login_required
+@pga_login_required
 def get_server(sid, did):
     """
     This function will return the server details for the specified
@@ -354,7 +355,7 @@ def get_server(sid, did):
     methods=["POST"],
     endpoint="connect_server"
 )
-@login_required
+@pga_login_required
 def connect_server(sid):
     # Check if server is already connected then no need to reconnect again.
     driver = get_driver(PG_DEFAULT_DRIVER)
@@ -377,7 +378,7 @@ def connect_server(sid):
     methods=["POST"],
     endpoint="connect_database"
 )
-@login_required
+@pga_login_required
 def connect_database(sid, did):
     server = Server.query.filter_by(id=sid).first()
     view = SchemaDiffRegistry.get_node_view('database')
@@ -389,7 +390,7 @@ def connect_database(sid, did):
     methods=["GET"],
     endpoint="databases"
 )
-@login_required
+@pga_login_required
 def databases(sid):
     """
     This function will return the list of databases for the specified
@@ -426,7 +427,7 @@ def databases(sid):
     methods=["GET"],
     endpoint="schemas"
 )
-@login_required
+@pga_login_required
 def schemas(sid, did):
     """
     This function will return the list of schemas for the specified
@@ -668,7 +669,7 @@ def compare_schema(params):
     methods=["GET"],
     endpoint="ddl_compare"
 )
-@login_required
+@pga_login_required
 def ddl_compare(trans_id, source_sid, source_did, source_scid,
                 target_sid, target_did, target_scid, source_oid,
                 target_oid, node_type, comp_status):

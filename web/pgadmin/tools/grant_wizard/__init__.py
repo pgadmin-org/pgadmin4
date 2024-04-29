@@ -13,7 +13,7 @@ import json
 from flask import Response, url_for
 from flask import render_template, request, current_app
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from urllib.parse import unquote
 
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
@@ -115,7 +115,7 @@ def check_precondition(f):
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=gettext("This URL cannot be called directly.")
@@ -123,7 +123,7 @@ def index():
 
 
 @blueprint.route("/grant_wizard.js")
-@login_required
+@pga_login_required
 def script():
     """render own javascript"""
     return Response(response=render_template(
@@ -135,7 +135,7 @@ def script():
 @blueprint.route(
     '/acl/<int:sid>/<int:did>/', methods=['GET'], endpoint='acl'
 )
-@login_required
+@pga_login_required
 @check_precondition
 def acl_list(sid, did):
     """render list of acls"""
@@ -255,7 +255,7 @@ def get_node_sql_with_type(node_id, node_type, server_prop,
     '/<int:sid>/<int:did>/<int:node_id>/<node_type>/',
     methods=['GET'], endpoint='objects'
 )
-@login_required
+@pga_login_required
 @check_precondition
 def properties(sid, did, node_id, node_type):
     """It fetches the properties of object types
@@ -411,7 +411,7 @@ def set_priv_for_package(server_prop, data, acls):
     '/sql/<int:sid>/<int:did>/',
     methods=['POST'], endpoint='modified_sql'
 )
-@login_required
+@pga_login_required
 @check_precondition
 def msql(sid, did):
     """
@@ -545,7 +545,7 @@ def parse_priv(data, acls, server_prop):
 @blueprint.route(
     '/<int:sid>/<int:did>/', methods=['POST'], endpoint='apply'
 )
-@login_required
+@pga_login_required
 @check_precondition
 def save(sid, did):
     """

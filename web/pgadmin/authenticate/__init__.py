@@ -23,12 +23,10 @@ from flask_security.utils import logout_user, config_value
 from flask_login import current_user
 from flask_socketio import disconnect, ConnectionRefusedError
 
-
 from pgadmin.model import db, User
-from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
-    get_safe_post_logout_redirect
 from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP,\
     MessageType
+import pgadmin.utils as pga_utils
 from pgadmin.authenticate.registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
@@ -84,7 +82,7 @@ def socket_login_required(f):
     return wrapped
 
 
-class AuthenticateModule(PgAdminModule):
+class AuthenticateModule(pga_utils.PgAdminModule):
     def get_exposed_url_endpoints(self):
         return ['authenticate.login']
 
@@ -135,7 +133,7 @@ def _login():
                           'Administrator.'),
                   MessageType.WARNING)
             logout_user()
-            return redirect(get_safe_post_logout_redirect())
+            return redirect(pga_utils.get_safe_post_logout_redirect())
 
     # Validate the user
     if not auth_obj.validate():
@@ -161,7 +159,7 @@ def _login():
                     flash_login_attempt_error = None
                 flash(error, MessageType.WARNING)
 
-        return redirect(get_safe_post_logout_redirect())
+        return redirect(pga_utils.get_safe_post_logout_redirect())
 
     # Authenticate the user
     status, msg = auth_obj.authenticate()
@@ -177,7 +175,7 @@ def _login():
                     'authenticate.kerberos_login'), url_for('browser.index')))
 
             flash(msg, MessageType.ERROR)
-            return redirect(get_safe_post_logout_redirect())
+            return redirect(pga_utils.get_safe_post_logout_redirect())
 
         session['auth_source_manager'] = current_auth_obj
 
@@ -187,7 +185,7 @@ def _login():
 
         if 'auth_obj' in session:
             session.pop('auth_obj')
-        return redirect(get_safe_post_login_redirect())
+        return redirect(pga_utils.get_safe_post_login_redirect())
 
     elif isinstance(msg, Response):
         return msg

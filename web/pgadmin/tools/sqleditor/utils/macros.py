@@ -12,7 +12,8 @@
 import json
 from flask_babel import gettext
 from flask import current_app, request
-from flask_security import login_required, current_user
+from pgadmin.user_login_check import pga_login_required
+from flask_security import current_user
 from pgadmin.utils.ajax import make_response as ajax_response,\
     make_json_response
 from pgadmin.model import db, Macros, UserMacros

@@ -13,7 +13,7 @@ from pgadmin.utils import driver
 from flask import render_template, Response, request, current_app
 from flask.helpers import url_for
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from pathlib import Path
 from pgadmin.utils import PgAdminModule, replace_binary_path, \
     get_binary_path_versions
@@ -221,7 +221,7 @@ def shutdown():
 @blueprint.route("/validate_binary_path",
                  endpoint="validate_binary_path",
                  methods=["POST"])
-@login_required
+@pga_login_required
 def validate_binary_path():
     """
     This function is used to validate the specified utilities path by
@@ -255,7 +255,7 @@ def validate_binary_path():
 
 @blueprint.route("/upgrade_check", endpoint="upgrade_check",
                  methods=['GET'])
-@login_required
+@pga_login_required
 def upgrade_check():
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.

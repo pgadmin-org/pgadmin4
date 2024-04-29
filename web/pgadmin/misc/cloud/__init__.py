@@ -13,7 +13,8 @@ import json
 from flask import Response, url_for
 from flask import render_template, request
 from flask_babel import gettext
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 
 from pgadmin.utils import PgAdminModule, html
 from pgadmin.utils.ajax import make_json_response,\
@@ -81,7 +82,7 @@ blueprint = CloudModule(
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=gettext("This URL cannot be called directly.")
@@ -89,7 +90,7 @@ def index():
 
 
 @blueprint.route("/cloud.js")
-@login_required
+@pga_login_required
 def script():
     """render own javascript"""
     res = Response(response=render_template(
@@ -101,7 +102,7 @@ def script():
 
 @blueprint.route('/clear_cloud_session/',
                  methods=['POST'], endpoint='clear_cloud_session')
-@login_required
+@pga_login_required
 def clear_session():
     """Get host IP Address"""
     clear_cloud_session()
@@ -110,7 +111,7 @@ def clear_session():
 
 @blueprint.route('/get_host_ip/',
                  methods=['GET'], endpoint='get_host_ip')
-@login_required
+@pga_login_required
 def get_host_ip():
     """Get host IP Address"""
     ip = get_my_ip()
@@ -120,7 +121,7 @@ def get_host_ip():
 @blueprint.route(
     '/deploy', methods=['POST'], endpoint='deploy_on_cloud'
 )
-@login_required
+@pga_login_required
 def deploy_on_cloud():
     """Deploy on Cloud."""
 
@@ -219,7 +220,7 @@ def clear_cloud_session(pid=None):
     '/update_cloud_process/<sid>', methods=['GET'],
     endpoint='update_cloud_process'
 )
-@login_required
+@pga_login_required
 def update_cloud_process(sid):
     """Update Cloud Server Process"""
     _process = Process.query.filter_by(user_id=current_user.id,
@@ -233,7 +234,7 @@ def update_cloud_process(sid):
     '/update_cloud_server', methods=['POST'],
     endpoint='update_cloud_server'
 )
-@login_required
+@pga_login_required
 def update_cloud_server():
     """Update Cloud Server."""
     server_data = json.loads(request.data)

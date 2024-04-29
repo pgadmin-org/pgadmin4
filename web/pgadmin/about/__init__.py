@@ -11,7 +11,8 @@
 
 from flask import Response, render_template, request
 from flask_babel import gettext
-from flask_security import current_user, login_required
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
@@ -53,7 +54,7 @@ blueprint = AboutModule(MODULE_NAME, __name__, static_url_path='')
 # A test page
 ##########################################################################
 @blueprint.route("/", endpoint='index')
-@login_required
+@pga_login_required
 def index():
     """Render the about box."""
     info = {}
@@ -138,7 +139,7 @@ def detect_browser(request):
 
 
 @blueprint.route("/about.js")
-@login_required
+@pga_login_required
 def script():
     """render the required javascript"""
     return Response(

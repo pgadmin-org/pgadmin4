@@ -14,7 +14,8 @@ import copy
 
 from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
-from flask_security import login_required, current_user
+from flask_security import current_user
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
     does_utility_exist, get_server, filename_with_file_manager_path
@@ -135,13 +136,13 @@ class IEMessage(IProcessDesc):
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/js/import_export.js")
-@login_required
+@pga_login_required
 def script():
     """render the import/export javascript file"""
     return Response(
@@ -226,7 +227,7 @@ def _save_import_export_settings(settings):
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
-@login_required
+@pga_login_required
 def create_import_export_job(sid):
     """
     Args:
@@ -358,7 +359,7 @@ def create_import_export_job(sid):
 
 
 @blueprint.route('/get_settings/', methods=['GET'], endpoint='get_settings')
-@login_required
+@pga_login_required
 def get_import_export_settings():
     settings = get_setting('import_export_setting', None)
     if settings is None:
@@ -371,7 +372,7 @@ def get_import_export_settings():
 @blueprint.route(
     '/utility_exists/<int:sid>', endpoint='utility_exists'
 )
-@login_required
+@pga_login_required
 def check_utility_exists(sid):
     """
     This function checks the utility file exist on the given path.

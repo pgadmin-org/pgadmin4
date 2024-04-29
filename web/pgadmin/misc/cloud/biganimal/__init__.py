@@ -14,7 +14,7 @@ import json
 import pickle
 from flask_babel import gettext
 from flask import session, current_app
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
@@ -52,7 +52,7 @@ blueprint = BigAnimalModule(MODULE_NAME, __name__,
 
 @blueprint.route('/verification_ack/',
                  methods=['GET'], endpoint='verification_ack')
-@login_required
+@pga_login_required
 def biganimal_verification_ack():
     """Check the Verification is done or not."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -65,7 +65,7 @@ def biganimal_verification_ack():
 
 @blueprint.route('/verification/',
                  methods=['GET'], endpoint='verification')
-@login_required
+@pga_login_required
 def verification():
     """Verify Credentials."""
     biganimal = BigAnimalProvider()
@@ -78,7 +78,7 @@ def verification():
 
 @blueprint.route('/projects/',
                  methods=['GET'], endpoint='projects')
-@login_required
+@pga_login_required
 def biganimal_projects():
     """Get Providers."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -88,7 +88,7 @@ def biganimal_projects():
 
 @blueprint.route('/providers/<project_id>',
                  methods=['GET'], endpoint='providers')
-@login_required
+@pga_login_required
 def biganimal_providers(project_id):
     """Get Providers."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -99,7 +99,7 @@ def biganimal_providers(project_id):
 
 @blueprint.route('/regions/',
                  methods=['GET'], endpoint='regions')
-@login_required
+@pga_login_required
 def biganimal_regions():
     """Get Regions."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -110,7 +110,7 @@ def biganimal_regions():
 
 @blueprint.route('/db_types/',
                  methods=['GET'], endpoint='db_types')
-@login_required
+@pga_login_required
 def biganimal_db_types():
     """Get Database Types."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -120,7 +120,7 @@ def biganimal_db_types():
 
 @blueprint.route('/db_versions/<cluster_type>/<pg_type>',
                  methods=['GET'], endpoint='db_versions')
-@login_required
+@pga_login_required
 def biganimal_db_versions(cluster_type, pg_type):
     """Get Database Version."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
@@ -130,7 +130,7 @@ def biganimal_db_versions(cluster_type, pg_type):
 
 @blueprint.route('/instance_types/<region_id>/<provider_id>',
                  methods=['GET'], endpoint='instance_types')
-@login_required
+@pga_login_required
 def biganimal_instance_types(region_id, provider_id):
     """Get Instance Types."""
     if not region_id or not provider_id:
@@ -143,7 +143,7 @@ def biganimal_instance_types(region_id, provider_id):
 
 @blueprint.route('/volume_types/<region_id>/<provider_id>',
                  methods=['GET'], endpoint='volume_types')
-@login_required
+@pga_login_required
 def biganimal_volume_types(region_id, provider_id):
     """Get Volume Types."""
     if not region_id or not provider_id:
@@ -155,7 +155,7 @@ def biganimal_volume_types(region_id, provider_id):
 
 @blueprint.route('/volume_properties/<region_id>/<provider_id>/<volume_type>',
                  methods=['GET'], endpoint='volume_properties')
-@login_required
+@pga_login_required
 def biganimal_volume_properties(region_id, provider_id, volume_type):
     """Get Volume Properties."""
     if not region_id or not provider_id:

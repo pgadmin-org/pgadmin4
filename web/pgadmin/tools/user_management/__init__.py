@@ -13,7 +13,8 @@ import json
 from flask import render_template, request, \
     Response, abort, current_app, session
 from flask_babel import gettext as _
-from flask_security import login_required, roles_required, current_user
+from flask_security import roles_required, current_user
+from pgadmin.user_login_check import pga_login_required
 from flask_security.utils import hash_password
 from werkzeug.exceptions import InternalServerError
 
@@ -73,13 +74,13 @@ blueprint = UserManagementModule(
 
 
 @blueprint.route("/")
-@login_required
+@pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
 @blueprint.route("/user_management.js")
-@login_required
+@pga_login_required
 def script():
     """render own javascript"""
     return Response(
@@ -95,7 +96,7 @@ def script():
 
 @blueprint.route("/current_user.js")
 @pgCSRFProtect.exempt
-@login_required
+@pga_login_required
 def current_user_info():
     return Response(
         response=render_template(

@@ -8,7 +8,7 @@
 ##########################################################################
 
 from flask import redirect, url_for
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 
 from pgadmin import PgAdminModule
 
@@ -20,7 +20,7 @@ blueprint = PgAdminModule(
 
 
 @blueprint.route('/')
-@login_required
+@pga_login_required
 def index():
     """Redirect users hitting the root to the browser"""
     return redirect(url_for('browser.index'))

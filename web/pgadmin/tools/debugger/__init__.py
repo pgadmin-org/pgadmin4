@@ -16,7 +16,7 @@ import copy
 
 from flask import render_template, request, current_app
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from werkzeug.user_agent import UserAgent
 
 from pgadmin.utils import PgAdminModule, \
@@ -237,7 +237,7 @@ blueprint = DebuggerModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/", endpoint='index')
-@login_required
+@pga_login_required
 def index():
     return bad_request(
         errormsg=gettext("This URL cannot be called directly.")
@@ -350,7 +350,7 @@ def check_node_type(node_type, fid, trid, conn, ppas_server,
     '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>/<int:trid>',
     methods=['GET'], endpoint='init_for_trigger'
 )
-@login_required
+@pga_login_required
 def init_function(node_type, sid, did, scid, fid, trid=None):
     """
     init_function(node_type, sid, did, scid, fid, trid)
@@ -557,7 +557,7 @@ def check_user_ip_req(r_set, data):
 
 
 @blueprint.route('/direct/<int:trans_id>', methods=['GET'], endpoint='direct')
-@login_required
+@pga_login_required
 def direct_new(trans_id):
     de_inst = DebuggerInstance(trans_id)
 
@@ -769,7 +769,7 @@ def get_search_path(conn):
     methods=['POST'],
     endpoint='initialize_target_for_trigger'
 )
-@login_required
+@pga_login_required
 def initialize_target(debug_type, trans_id, sid, did,
                       scid, func_id, tri_id=None):
     """
@@ -894,7 +894,7 @@ def close(trans_id):
 @blueprint.route(
     '/restart/<int:trans_id>', methods=['GET'], endpoint='restart'
 )
-@login_required
+@pga_login_required
 def restart_debugging(trans_id):
     """
     restart_debugging(trans_id)
@@ -959,7 +959,7 @@ def restart_debugging(trans_id):
     '/start_listener/<int:trans_id>', methods=['POST'],
     endpoint='start_listener'
 )
-@login_required
+@pga_login_required
 def start_debugger_listener(trans_id):
     """
     start_debugger_listener(trans_id)
@@ -1203,7 +1203,7 @@ def get_debugger_arg_val(val_list):
     '/execute_query/<int:trans_id>/<query_type>', methods=['GET'],
     endpoint='execute_query'
 )
-@login_required
+@pga_login_required
 def execute_debugger_query(trans_id, query_type):
     """
     execute_debugger_query(trans_id, query_type)
@@ -1290,7 +1290,7 @@ def execute_debugger_query(trans_id, query_type):
 @blueprint.route(
     '/messages/<int:trans_id>/', methods=["GET"], endpoint='messages'
 )
-@login_required
+@pga_login_required
 def messages(trans_id):
     """
     messages(trans_id)
@@ -1348,7 +1348,7 @@ def messages(trans_id):
     '/start_execution/<int:trans_id>/<int:port_num>', methods=['GET'],
     endpoint='start_execution'
 )
-@login_required
+@pga_login_required
 def start_execution(trans_id, port_num):
     """
     start_execution(trans_id, port_num)
@@ -1424,7 +1424,7 @@ def start_execution(trans_id, port_num):
     '/set_breakpoint/<int:trans_id>/<int:line_no>/<int:set_type>',
     methods=['GET'], endpoint='set_breakpoint'
 )
-@login_required
+@pga_login_required
 def set_clear_breakpoint(trans_id, line_no, set_type):
     """
     set_clear_breakpoint(trans_id, line_no, set_type)
@@ -1525,7 +1525,7 @@ def get_debugger_template_path(de_inst):
     '/clear_all_breakpoint/<int:trans_id>', methods=['POST'],
     endpoint='clear_all_breakpoint'
 )
-@login_required
+@pga_login_required
 def clear_all_breakpoint(trans_id):
     """
     clear_all_breakpoint(trans_id)
@@ -1597,7 +1597,7 @@ def clear_all_breakpoint(trans_id):
     '/deposit_value/<int:trans_id>', methods=['POST'],
     endpoint='deposit_value'
 )
-@login_required
+@pga_login_required
 def deposit_parameter_value(trans_id):
     """
     deposit_parameter_value(trans_id)
@@ -1671,7 +1671,7 @@ def deposit_parameter_value(trans_id):
     '/select_frame/<int:trans_id>/<int:frame_id>', methods=['GET'],
     endpoint='select_frame'
 )
-@login_required
+@pga_login_required
 def select_frame(trans_id, frame_id):
     """
     select_frame(trans_id, frame_id)
@@ -1733,7 +1733,7 @@ def select_frame(trans_id, frame_id):
     '/get_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['GET'], endpoint='get_arguments'
 )
-@login_required
+@pga_login_required
 def get_arguments_sqlite(sid, did, scid, func_id):
     """
     get_arguments_sqlite(sid, did, scid, func_id)
@@ -1818,7 +1818,7 @@ def get_array_string(data, i):
     '/set_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['POST'], endpoint='set_arguments'
 )
-@login_required
+@pga_login_required
 def set_arguments_sqlite(sid, did, scid, func_id):
     """
     set_arguments_sqlite(sid, did, scid, func_id)
@@ -1907,7 +1907,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
     '/clear_arguments/<int:sid>/<int:did>/<int:scid>/<int:func_id>',
     methods=['POST'], endpoint='clear_arguments'
 )
-@login_required
+@pga_login_required
 def clear_arguments_sqlite(sid, did, scid, func_id):
     """
     clear_arguments_sqlite(sid, did, scid, func_id)
@@ -2052,7 +2052,7 @@ def check_result(result, conn, statusmsg):
     '/poll_end_execution_result/<int:trans_id>/',
     methods=["GET"], endpoint='poll_end_execution_result'
 )
-@login_required
+@pga_login_required
 def poll_end_execution_result(trans_id):
     """
     poll_end_execution_result(trans_id)
@@ -2128,7 +2128,7 @@ def poll_end_execution_result(trans_id):
 @blueprint.route(
     '/poll_result/<int:trans_id>/', methods=["GET"], endpoint='poll_result'
 )
-@login_required
+@pga_login_required
 def poll_result(trans_id):
     """
     poll_result(trans_id)

@@ -16,7 +16,7 @@ import config
 import json
 from flask import render_template, url_for, Response, request, session
 from flask_babel import gettext
-from flask_security import login_required
+from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
     make_response as ajax_response, internal_server_error
@@ -57,7 +57,7 @@ blueprint = PreferencesModule(MODULE_NAME, __name__)
 
 
 @blueprint.route("/preferences.js")
-@login_required
+@pga_login_required
 def script():
     """render the required javascript"""
     return Response(
@@ -69,7 +69,7 @@ def script():
 
 @blueprint.route("/", methods=["GET"], endpoint='index')
 @blueprint.route("/<module>/<preference>", endpoint='get_by_name')
-@login_required
+@pga_login_required
 def preferences(module=None, preference=None):
     """Fetch all/or requested preferences of pgAdmin IV."""
 
@@ -162,7 +162,7 @@ def _iterate_categories(pref_d, label, res):
 
 
 @blueprint.route("/get_all", methods=["GET"], endpoint='get_all')
-@login_required
+@pga_login_required
 def preferences_s():
     """Fetch all preferences for caching."""
     # Load Preferences
@@ -220,7 +220,7 @@ def get_data():
 
 
 @blueprint.route("/", methods=["PUT"], endpoint="update")
-@login_required
+@pga_login_required
 def save():
     """
     Save a specific preference.
@@ -296,7 +296,7 @@ def save_pref(data):
 
 
 @blueprint.route("/update", methods=["PUT"], endpoint="update_pref")
-@login_required
+@pga_login_required
 def update():
     """
     Update a specific preference.

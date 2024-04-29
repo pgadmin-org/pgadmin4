@@ -28,7 +28,7 @@ from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
 from flask_babel import gettext
 from libgravatar import Gravatar
-from flask_security import current_user, login_required
+from flask_security import current_user
 from flask_login.utils import login_url
 from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
@@ -63,6 +63,8 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
     VW_EDT_DEFAULT_PLACEHOLDER
 from pgadmin.authenticate import AuthSourceManager
 from pgadmin.utils.exception import CryptKeyMissing
+
+from pgadmin.user_login_check import pga_login_required
 
 try:
     from flask_security.views import default_render_json
@@ -377,8 +379,7 @@ def gravatar(username):
 
 @blueprint.route("/")
 @pgCSRFProtect.exempt
-@login_required
-@mfa_required
+@pga_login_required
 def index():
     """Render and process the main browser window."""
 
@@ -471,7 +472,7 @@ def get_shared_storage_list():
 
 @blueprint.route("/js/utils.js")
 @pgCSRFProtect.exempt
-@login_required
+@pga_login_required
 def utils():
     layout = get_setting('Browser/Layout', default='')
     snippets = []
@@ -592,7 +593,7 @@ def exposed_urls():
 
 @blueprint.route("/js/error.js")
 @pgCSRFProtect.exempt
-@login_required
+@pga_login_required
 def error_js():
     return make_response(
         render_template('browser/js/error.js', _=gettext),
@@ -609,7 +610,7 @@ def messages_js():
 
 @blueprint.route("/browser.css")
 @pgCSRFProtect.exempt
-@login_required
+@pga_login_required
 def browser_css():
     """Render and return CSS snippets from the nodes and modules."""
     snippets = []
@@ -624,7 +625,7 @@ def browser_css():
 
 
 @blueprint.route("/nodes/", endpoint="nodes")
-@login_required
+@pga_login_required
 def get_nodes():
     """Build a list of treeview nodes from the child nodes."""
     nodes = []
@@ -931,7 +932,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
     @blueprint.route("/change_password", endpoint="change_password",
                      methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
-    @login_required
+    @pga_login_required
     def change_password():
         """View function which handles a change password request."""
 
