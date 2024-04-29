@@ -156,7 +156,7 @@ export default class SubscriptionSchema extends BaseUISchema{
     },
     {
       id: 'password', label: gettext('Password'), type: 'password',
-      controlProps: { maxLength: null},
+      controlProps: { maxLength: null, autoComplete: 'new-password' },
       group: gettext('Connection'),
       mode: ['create', 'edit'], skipChange: true,
       deps: ['connect_now'],

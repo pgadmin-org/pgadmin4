@@ -97,7 +97,7 @@ class CloudDBCredSchema extends BaseUISchema {
         mode: ['create'], noEmpty: true,
       }, {
         id: 'secret_access_key', label: gettext('AWS secret access key'), type: 'password',
-        mode: ['create'], noEmpty: true,
+        mode: ['create'], noEmpty: true, controlProps: { autoComplete: 'new-password' },
       }, {
         id: 'session_token', label: gettext('AWS session token'), type: 'multiline',
         mode: ['create'], noEmpty: false,
@@ -165,7 +165,7 @@ class DatabaseSchema extends BaseUISchema {
       mode: ['create'], noEmpty: true,
     }, {
       id: 'db_password', label: gettext('Password'), type: 'password',
-      mode: ['create'], noEmpty: true,
+      mode: ['create'], noEmpty: true, controlProps: { autoComplete: 'new-password' },
       helpMessage: gettext('At least 8 printable ASCII characters. Cannot contain any of the following: / (slash), \'(single quote), "(double quote) and @ (at sign).')
     }, {
       id: 'db_confirm_password', label: gettext('Confirm password'),

@@ -391,7 +391,7 @@ class GoogleDatabaseSchema extends BaseUISchema {
         noEmpty: true,
         helpMessage: gettext(
           'Set a password for the default admin user "postgres".'
-        ),
+        ), controlProps: { autoComplete: 'new-password' }
       },
       {
         id: 'db_confirm_password',

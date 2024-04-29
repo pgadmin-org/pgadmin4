@@ -93,6 +93,7 @@ export default class RoleSchema extends BaseUISchema {
         group: gettext('Definition'), mode: ['edit', 'create'],
         control: 'input', deps: ['rolcanlogin'], retype: true,
         cell: 'text', disabled: obj.readOnly,
+        controlProps: { autoComplete: 'new-password' },
       },
       {
         id: 'rolvaliduntil', type: 'datetimepicker',
