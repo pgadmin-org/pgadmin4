@@ -200,31 +200,29 @@ tab related to tables that should be included in the backup.
      contents of the table that they have access to. This option is relevant
      only when dumping the contents of a table which has row security.
 
-   * Move the switch next to *With OIDs* towards right position to include object
-     identifiers as part of the table data for each table.
-
-   * Use the *Table and Children* field to dump the tables and any partitions 
-     or inheritance child tables of the tables matching the table pattern. Multiple patterns
-     can be given separated by space. **Note:** This option is visible only 
-     for database server greater than or equal to 16.
-
-   * Use the *Exclude table* field to not dump the tables matching the table
-     pattern. Multiple patterns can be given separated by space.
-
-   * Use the *Exclude table data* field to not dump data for any tables
-     matching the table pattern. Multiple patterns can be given separated by
-     spaces.
-
-   * Use the *Exclude table and children* field to not dump the tables and any
-     partitions or inheritance child tables of the tables matching the table
-     pattern. Multiple patterns can be given separated by space. **Note:** This
-     option is visible only for database server greater than or equal to 16.
-
-   * Use the *Exclude table data and children* field to not dump data for the
-     tables and any partitions or inheritance child tables of the tables matching 
-     the table pattern. Multiple patterns can be given separated by space.
+   * Use the *Include table(s) and Children* field to dump the tables and any partitions 
+     or inheritance child tables of the tables matching the pattern.
      **Note:** This option is visible only for database server greater than or
      equal to 16.
+    
+   * The Exclude patterns field is utilized to exclude patterns in the following manner:
+
+   * Use the *Table(s)* field to not dump the tables matching the
+     pattern. Multiple patterns can be given separated by space.
+
+   * Use the *Table(s) data* field to not dump data for any tables
+     matching the pattern. Multiple patterns can be given separated by
+     spaces.
+
+   * Use the *Table(s) and children* field to not dump the tables and any
+     partitions or inheritance child tables of the tables matching the pattern.
+     **Note:** This option is visible only for database server greater than or
+     equal to 16.
+
+   * Use the *Table(s) data and children* field to not dump data for the
+     tables and any partitions or inheritance child tables of the tables matching 
+     the table pattern. **Note:** This option is visible only for database server
+     greater than or equal to 16.
 
 Click the *Options* tab to continue. Use the fields in the *Options*
 tab to provide other backup options.

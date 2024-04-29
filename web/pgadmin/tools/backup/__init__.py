@@ -236,10 +236,13 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             return
         val = data.get(key, default_value)
         if val:
-            val = val.split()
-            for c_val in val:
-                args.append(param)
-                args.append(c_val)
+            if isinstance(val, list):
+                for c_val in val:
+                    args.append(param)
+                    args.append(c_val)
+                return
+            args.append(param)
+            args.append(val)
 
     if backup_obj_type != 'objects':
         args.append('--database')
@@ -317,7 +320,6 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('use_column_inserts', '--column-inserts')
     set_param('load_via_partition_root', '--load-via-partition-root',
               manager.version >= 110000)
-    set_param('with_oids', '--oids')
     set_param('enable_row_security', '--enable-row-security')
     set_value('exclude_table_data', '--exclude-table-data')
     set_value('table_and_children', '--table-and-children', None,

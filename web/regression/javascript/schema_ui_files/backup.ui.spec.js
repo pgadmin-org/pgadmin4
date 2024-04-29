@@ -11,7 +11,7 @@ import React from 'react';
 
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
+import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema, getExcludePatternsSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
 import { getCreateView, withBrowser } from '../genericFunctions';
 import { act, render } from '@testing-library/react';
 
@@ -23,6 +23,7 @@ describe('BackupSchema', ()=>{
     ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
+    ()=> getExcludePatternsSchema(),
     {
       role: ()=>[],
       encoding: ()=>[],
@@ -44,6 +45,7 @@ describe('BackupSchema', ()=>{
     ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
+    ()=> getExcludePatternsSchema(),
     {
       role: ()=>[],
       encoding: ()=>[],
@@ -83,6 +85,7 @@ describe('BackupSchema', ()=>{
     ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
+    ()=> getExcludePatternsSchema(),
     {
       role: ()=>[],
       encoding: ()=>[],

@@ -136,9 +136,6 @@ tab related to tables that should be included in the backup.
      partition itself. **Note:** This option is visible only for database server
      greater than or equal to 11.
 
-   * Move the switch next to *With OIDs* towards right position to include object
-     identifiers as part of the table data for each table.
-
 Click the *Options* tab to continue. Use the fields in the *Options*
 tab to provide other backup options.
 

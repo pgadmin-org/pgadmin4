@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
-import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
+import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema, getExcludePatternsSchema} from './backup.ui';
 import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSchema} from './backupGlobal.ui';
 import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
@@ -244,6 +244,7 @@ define([
         ()=> getSaveOptSchema({nodeInfo: treeNodeInfo}),
         ()=> getDisabledOptionSchema({nodeInfo: treeNodeInfo}),
         ()=> getMiscellaneousSchema({nodeInfo: treeNodeInfo}),
+        ()=> getExcludePatternsSchema(),
         {
           role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
           encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {
