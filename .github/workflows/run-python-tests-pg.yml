@@ -75,7 +75,7 @@ jobs:
       - name: Create the tablespace directory on macOS
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          sudo mkdir -p /usr/local/var/tablespaces/${{ matrix.pgver }}
+          mkdir -p /opt/homebrew/var/tablespaces/${{ matrix.pgver }}
 
       - name: Create the tablespace directory on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -103,11 +103,11 @@ jobs:
       - name: Start PostgreSQL on macOS
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          echo local all all trust > /usr/local/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
-          sed -i '' "s/#port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /usr/local/var/postgresql@${{ matrix.pgver }}/postgresql.conf
+          echo local all all trust > /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
+          sed -i '' "s/#port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /opt/homebrew/var/postgresql@${{ matrix.pgver }}/postgresql.conf
           brew services restart postgresql@${{ matrix.pgver }}
           
-          until /usr/local/opt/postgresql@${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }} 2>/dev/null; do
+          until /opt/homebrew/opt/postgresql@${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }} 2>/dev/null; do
             >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
             sleep 2
           done
@@ -185,10 +185,10 @@ jobs:
                 "db_port": 59${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
-                "tablespace_path": "${{ matrix.os == 'macos-latest' && format('/usr/local/var/tablespaces/{0}', matrix.pgver) || format('/var/lib/postgresql/tablespaces/{0}', matrix.pgver) }}",
+                "tablespace_path": "${{ matrix.os == 'macos-latest' && format('/opt/homebrew/var/tablespaces/{0}', matrix.pgver) || format('/var/lib/postgresql/tablespaces/{0}', matrix.pgver) }}",
                 "enabled": true,
                 "default_binary_paths": {
-                  "pg": "${{ matrix.os == 'macos-latest' && format('/usr/local/opt/postgresql@{0}/bin', matrix.pgver) || format('/usr/lib/postgresql/{0}/bin', matrix.pgver) }}",
+                  "pg": "${{ matrix.os == 'macos-latest' && format('/opt/homebrew/opt/postgresql@{0}/bin', matrix.pgver) || format('/usr/lib/postgresql/{0}/bin', matrix.pgver) }}",
                   "ppas": ""
                 }
               }
