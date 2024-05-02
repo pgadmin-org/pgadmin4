@@ -521,11 +521,11 @@ define('pgadmin.browser.node', [
         let msg, title;
 
         if (input.url == 'delete' && d._type === 'database') {
-          msg = gettext('Delete database with the force option will attempt to terminate all existing connections to the "%s" database. Are you sure you want to proceed?', d.label);
+          msg = gettext('Delete database with the force option will attempt to terminate all existing connections to the <b>"%s"</b> database. Are you sure you want to proceed?', d.label);
           title = gettext('Delete FORCE %s?', obj.label);
 
         } else if (input.url == 'delete') {
-          msg = gettext('Are you sure you want to delete %s "%s" and all the objects that depend on it?',
+          msg = gettext('Are you sure you want to delete %s <b>"%s"</b> and all the objects that depend on it?',
             obj.label.toLowerCase(), d.label);
           title = gettext('Delete CASCADE %s?', obj.label);
 
@@ -542,7 +542,7 @@ define('pgadmin.browser.node', [
             msg = gettext('Are you sure you want to remove %s "%s"?', obj.label.toLowerCase(), d.label);
             title = gettext('Remove %s?', obj.label);
           } else {
-            msg = gettext('Are you sure you want to delete %s "%s"?', obj.label.toLowerCase(), d.label);
+            msg = gettext('Are you sure you want to delete %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
             title = gettext('Delete %s?', obj.label);
           }
 
