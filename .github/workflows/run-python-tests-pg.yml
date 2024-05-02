@@ -112,7 +112,7 @@ jobs:
             sleep 2
           done
           
-          psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
+          /opt/homebrew/opt/postgresql@${{ matrix.pgver }}/bin/psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
       - name: Install Python dependencies on Linux and macOS
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
