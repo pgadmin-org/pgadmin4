@@ -50,11 +50,13 @@ describe('KeyboardShortcutAction', ()=>{
   });
 
   it('callHandler', ()=>{
-    let keyEvent = {altKey: key1.alt, ctrlKey: key1.control, shiftKey: key1.shift, metaKey: false, keyCode:key1.key.key_code};
+    let keyEvent = {altKey: key1.alt, ctrlKey: key1.control, shiftKey: key1.shift, metaKey: false, keyCode:key1.key.key_code,
+      stopPropagation: jest.fn(), preventDefault: jest.fn()};
     keyAction.callHandler(keyEvent);
     expect(handler1).toHaveBeenCalled();
 
-    keyEvent = {altKey: key2.alt, ctrlKey: key2.control, shiftKey: key2.shift, metaKey: false, keyCode:key2.key.key_code};
+    keyEvent = {altKey: key2.alt, ctrlKey: key2.control, shiftKey: key2.shift, metaKey: false, keyCode:key2.key.key_code,
+      stopPropagation: jest.fn(), preventDefault: jest.fn()};
     keyAction.callHandler(keyEvent);
     expect(handler2).toHaveBeenCalled();
   });

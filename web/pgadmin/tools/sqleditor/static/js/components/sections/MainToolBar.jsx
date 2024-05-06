@@ -26,7 +26,6 @@ import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } 
 import { PgMenu, PgMenuDivider, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
-import {shortcut_key} from 'sources/keyboard_shortcuts';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
 import { InputSelectNonSearch } from '../../../../../../static/js/components/FormComponents';
@@ -342,6 +341,54 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
   /* Button shortcuts */
   useKeyboardShortcuts([
     {
+      shortcut: queryToolPref.btn_open_file,
+      options: {
+        callback: ()=>{openFile();}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_save_file,
+      options: {
+        callback: ()=>{!buttonsDisabled['save']&&saveFile(false);}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_edit_options,
+      options: {
+        callback: ()=>{queryToolCtx.params.is_query_tool&&toggleMenu({
+          currentTarget: {name: 'menu-edit'}
+        });}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_filter_dialog,
+      options: {
+        callback: ()=>{!buttonsDisabled['filter']&&onFilterClick();}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_filter_options,
+      options: {
+        callback: ()=>{!buttonsDisabled['filter']&&toggleMenu({
+          currentTarget: {name: 'menu-filter'}
+        });}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_cancel_query,
+      options: {
+        callback: ()=>{!buttonsDisabled['cancel']&&cancelQuery();}
+      }
+    },
+    {
+      shortcut: queryToolPref.btn_execute_options,
+      options: {
+        callback: ()=>{!buttonsDisabled['execute-options']&&toggleMenu({
+          currentTarget: {name: 'menu-autocommit'}
+        });}
+      }
+    },
+    {
       shortcut: queryToolPref.execute_query,
       options: {
         callback: ()=>{!buttonsDisabled['execute']&&executeQuery();}
@@ -443,9 +490,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       <Box className={classes.root}>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Open File')} icon={<FolderRoundedIcon />} disabled={!queryToolCtx.params.is_query_tool}
-            accesskey={shortcut_key(queryToolPref.btn_open_file)} onClick={openFile} />
+            shortcut={queryToolPref.btn_open_file} onClick={openFile} />
           <PgIconButton title={gettext('Save File')} icon={<SaveRoundedIcon />}
-            accesskey={shortcut_key(queryToolPref.btn_save_file)} disabled={buttonsDisabled['save'] || !queryToolCtx.params.is_query_tool}
+            shortcut={queryToolPref.btn_save_file} disabled={buttonsDisabled['save'] || !queryToolCtx.params.is_query_tool}
             onClick={()=>{saveFile(false);}} />
           <PgIconButton title={gettext('File')} icon={<KeyboardArrowDownIcon />} splitButton disabled={!queryToolCtx.params.is_query_tool}
             name="menu-saveas" ref={saveAsMenuRef} onClick={toggleMenu}
@@ -454,14 +501,14 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Edit')} icon={
             <><EditRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
-          disabled={!queryToolCtx.params.is_query_tool} accesskey={shortcut_key(queryToolPref.btn_edit_options)}
+          disabled={!queryToolCtx.params.is_query_tool} shortcut={queryToolPref.btn_edit_options}
           name="menu-edit" ref={editMenuRef} onClick={toggleMenu}  />
         </PgButtonGroup>
         <PgButtonGroup size="small" >
           <PgIconButton title={gettext('Sort/Filter')} color={highlightFilter ? 'primary' : 'default'} icon={<FilterIcon />}
-            onClick={onFilterClick} disabled={buttonsDisabled['filter']} accesskey={shortcut_key(queryToolPref.btn_filter_dialog)}/>
+            onClick={onFilterClick} disabled={buttonsDisabled['filter']} shortcut={queryToolPref.btn_filter_dialog}/>
           <PgIconButton title={gettext('Filter options')} color={highlightFilter ? 'primary' : 'default'} icon={<KeyboardArrowDownIcon />} splitButton
-            disabled={buttonsDisabled['filter']} name="menu-filter" ref={filterMenuRef} accesskey={shortcut_key(queryToolPref.btn_filter_options)}
+            disabled={buttonsDisabled['filter']} name="menu-filter" ref={filterMenuRef} shortcut={queryToolPref.btn_filter_options}
             onClick={toggleMenu} />
         </PgButtonGroup>
         <InputSelectNonSearch options={[
@@ -472,11 +519,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         ]} value={limit} onChange={onLimitChange} disabled={buttonsDisabled['limit'] || queryToolCtx.params.is_query_tool} />
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
-            onClick={cancelQuery} disabled={buttonsDisabled['cancel']} accesskey={shortcut_key(queryToolPref.btn_cancel_query)} />
+            onClick={cancelQuery} disabled={buttonsDisabled['cancel']} shortcut={queryToolPref.btn_cancel_query} />
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
             onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
-            name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_execute_options)}
+            name="menu-autocommit" ref={autoCommitMenuRef} shortcut={queryToolPref.btn_execute_options}
             onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">

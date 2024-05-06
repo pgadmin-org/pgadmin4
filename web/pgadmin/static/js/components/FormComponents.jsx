@@ -642,6 +642,22 @@ InputRadio.propTypes = {
   labelPlacement: PropTypes.string
 };
 
+export const ToggleCheckButton = forwardRef(({ value, selected, label, ...props }, ref) => {
+  return (
+    <ToggleButton ref={ref} value={value} component={selected ? PrimaryButton : DefaultButton}
+      aria-label={label} {...props}>
+      <CheckRoundedIcon style={{ visibility: selected ? 'visible' : 'hidden', fontSize: '1.2rem' }} />&nbsp;{label}
+    </ToggleButton>
+  );
+});
+ToggleCheckButton.displayName = 'ToggleCheckButton';
+ToggleCheckButton.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
+  selected: PropTypes.bool,
+  options: PropTypes.array,
+  label: PropTypes.string,
+};
+
 export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled, readonly, helpid, ...props }, ref) => {
   return (
     <>
@@ -655,12 +671,10 @@ export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled
           (options || []).map((option, i) => {
             const isSelected = option.value === value;
             const isDisabled = disabled || option.disabled || (readonly && !isSelected);
-            return (
-              <ToggleButton ref={i == 0 ? ref : null} key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
-                disabled={isDisabled} aria-label={option.label}>
-                <CheckRoundedIcon style={{ visibility: isSelected ? 'visible' : 'hidden' }} />&nbsp;{option.label}
-              </ToggleButton>
-            );
+
+            return <ToggleCheckButton ref={i == 0 ? ref : null} key={option.label} label={option.label}
+              selected={isSelected} value={option.value} disabled={isDisabled}
+            />;
           })
         }
       </ToggleButtonGroup>

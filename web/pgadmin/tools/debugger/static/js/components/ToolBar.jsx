@@ -21,12 +21,12 @@ import HelpIcon from '@mui/icons-material/HelpRounded';
 import RotateLeftRoundedIcon from '@mui/icons-material/RotateLeftRounded';
 
 import gettext from 'sources/gettext';
-import { shortcut_key } from 'sources/keyboard_shortcuts';
 import url_for from 'sources/url_for';
 
 import { PgButtonGroup, PgIconButton } from '../../../../../static/js/components/Buttons';
 import { DebuggerContext, DebuggerEventsContext } from './DebuggerComponent';
 import { DEBUGGER_EVENTS, MENUS } from '../DebuggerConstants';
+import { useKeyboardShortcuts } from '../../../../../static/js/custom_hooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -120,27 +120,67 @@ export function ToolBar() {
   }, []);
 
 
+  /* Button shortcuts */
+  useKeyboardShortcuts([
+    {
+      shortcut: preferences.btn_step_into,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.STEPINTO] && stepInTODebugger();}
+      }
+    },
+    {
+      shortcut: preferences.btn_step_over,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.STEPOVER] && stepOverDebugger();}
+      }
+    },
+    {
+      shortcut: preferences.btn_start,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.START] && continueDebugger();}
+      }
+    },
+    {
+      shortcut: preferences.btn_toggle_breakpoint,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.TOGGLE_BREAKPOINT] && toggleBreakpoint();}
+      }
+    },
+    {
+      shortcut: preferences.btn_clear_breakpoints,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.CLEAR_ALL_BREAKPOINT] && clearAllBreakpoint();}
+      }
+    },
+    {
+      shortcut: preferences.btn_stop,
+      options: {
+        callback: ()=>{!buttonsDisabled[MENUS.STOP] && stop();}
+      }
+    }
+  ], debuggerCtx.containerRef);
+
   return (
     <Box className={classes.root}>
       <PgButtonGroup size="small">
         <PgIconButton data-test='step-in' title={gettext('Step into')} disabled={buttonsDisabled[MENUS.STEPINTO]} icon={<FormatIndentIncreaseIcon />} onClick={() => { stepInTODebugger(); }}
-          accesskey={shortcut_key(preferences?.btn_step_into)} />
+          shortcut={preferences?.btn_step_into} />
         <PgIconButton data-test='step-over' title={gettext('Step over')} disabled={buttonsDisabled[MENUS.STEPOVER]} icon={<FormatIndentDecreaseIcon />} onClick={() => { stepOverDebugger(); }}
-          accesskey={shortcut_key(preferences?.btn_step_over)} />
+          shortcut={preferences?.btn_step_over} />
         <PgIconButton data-test='debugger-contiue' title={gettext('Continue/Start')} disabled={buttonsDisabled[MENUS.START]} icon={<PlayCircleFilledWhiteIcon />} onClick={() => { continueDebugger(); }}
-          accesskey={shortcut_key(preferences?.btn_start)} />
+          shortcut={preferences?.btn_start} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
         <PgIconButton data-test='toggle-breakpoint' title={gettext('Toggle breakpoint')} disabled={buttonsDisabled[MENUS.TOGGLE_BREAKPOINT]} icon={<FiberManualRecordIcon style={{height: '2rem'}} />}
-          accesskey={shortcut_key(preferences?.btn_toggle_breakpoint)} onClick={() => { toggleBreakpoint(); }} />
+          shortcut={preferences?.btn_toggle_breakpoint} onClick={() => { toggleBreakpoint(); }} />
         <PgIconButton data-test='clear-breakpoint' title={gettext('Clear all breakpoints')} disabled={buttonsDisabled[MENUS.CLEAR_ALL_BREAKPOINT]} icon={<NotInterestedIcon />}
-          accesskey={shortcut_key(preferences?.btn_clear_breakpoints)} onClick={() => {
+          shortcut={preferences?.btn_clear_breakpoints} onClick={() => {
             clearAllBreakpoint();
           }} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
         <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopIcon style={{height: '2rem'}} />} disabled={buttonsDisabled[MENUS.STOP]} onClick={() => { stop(); }}
-          accesskey={shortcut_key(preferences?.btn_stop)} />
+          shortcut={preferences?.btn_stop} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
         <PgIconButton data-test='debugger-help' title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />

@@ -20,8 +20,7 @@ from pgadmin.user_login_check import pga_login_required
 from werkzeug.user_agent import UserAgent
 
 from pgadmin.utils import PgAdminModule, \
-    SHORTCUT_FIELDS as shortcut_fields, \
-    ACCESSKEY_FIELDS as accesskey_fields
+    SHORTCUT_FIELDS as shortcut_fields
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, gone
@@ -58,80 +57,98 @@ class DebuggerModule(PgAdminModule):
     def register_preferences(self):
         self.preference.register(
             'keyboard_shortcuts', 'btn_start',
-            gettext('Accesskey (Continue/Start)'), 'keyboardshortcut',
+            gettext('Continue/Start'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 67,
                     'char': 'c'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_stop',
-            gettext('Accesskey (Stop)'), 'keyboardshortcut',
+            gettext('Stop'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 83,
                     'char': 's'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_step_into',
-            gettext('Accesskey (Step into)'), 'keyboardshortcut',
+            gettext('Step into'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 73,
                     'char': 'i'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_step_over',
-            gettext('Accesskey (Step over)'), 'keyboardshortcut',
+            gettext('Step over'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 79,
                     'char': 'o'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_toggle_breakpoint',
-            gettext('Accesskey (Toggle breakpoint)'), 'keyboardshortcut',
+            gettext('Toggle breakpoint'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 84,
                     'char': 't'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
             'keyboard_shortcuts', 'btn_clear_breakpoints',
-            gettext('Accesskey (Clear all breakpoints)'), 'keyboardshortcut',
+            gettext('Clear all breakpoints'), 'keyboardshortcut',
             {
+                'alt': True,
+                'shift': True,
+                'control': False,
                 'key': {
                     'key_code': 88,
                     'char': 'x'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-            fields=accesskey_fields
+            fields=shortcut_fields
         )
 
         self.preference.register(
