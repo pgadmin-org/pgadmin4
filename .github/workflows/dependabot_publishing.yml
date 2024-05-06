@@ -1,0 +1,28 @@
+# This is action publishes the current GitHub Dependabot alerts to a CSV file.
+
+name: Dependabot-Publish-Alerts
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  dependabot-alert-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export Dependabot alerts
+        uses: robertcrockett/dependabot-alert-export@v2
+        with:
+          GITHUB_TOKEN: ${{secrets.PAT_TOKEN}}
+          org_name: "robertcrockett"
+          repo_name: "pgadmin4"
+          csv_path: data/vulnerability.csv
+
+      - name: Upload Vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerability_report
+          path: data/vulnerability.csv
