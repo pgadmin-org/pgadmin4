@@ -208,6 +208,17 @@ function launchPgAdminWindow() {
     // Set zoom in and out events.
     misc.setZoomEvents();
 
+    // Workaround to fix increasing window size.
+    // https://github.com/nwjs/nw.js/issues/7973
+    pgadminWindow.on('close', function () {
+      // Resize Window
+      resizeHeightBy = pgadminWindow.window.outerHeight - pgadminWindow.window.innerHeight;
+      pgadminWindow.resizeBy(0, -resizeHeightBy);
+      // Remove 'close' event handler, and then close window
+      pgadminWindow.removeAllListeners('close');
+      pgadminWindow.close()
+    });
+
     pgadminWindow.on('closed', function () {
       misc.cleanupAndQuitApp();
     });

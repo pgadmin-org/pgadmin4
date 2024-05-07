@@ -21,11 +21,14 @@ New features
 ************
 
   | `Issue #7192 <https://github.com/pgadmin-org/pgadmin4/issues/7192>`_ -  Changes in Query Tool, Debugger, and ERD Tool shortcuts to remove the use of Accesskey which will allow them to be customized.
+  | `Issue #7411 <https://github.com/pgadmin-org/pgadmin4/issues/7411>`_ -  Enhance the Delete dialog by highlighting the names of the objects to be deleted in bold.
 
 Housekeeping
 ************
 
+  | `Issue #7419 <https://github.com/pgadmin-org/pgadmin4/issues/7419>`_ -  Upgrade react-table from v7 to v8.
 
 Bug fixes
 *********
 
+  | `Issue #6464 <https://github.com/pgadmin-org/pgadmin4/issues/6464>`_ -  Fixed an issue of the pgAdmin window size increasing each time it was reopened.
