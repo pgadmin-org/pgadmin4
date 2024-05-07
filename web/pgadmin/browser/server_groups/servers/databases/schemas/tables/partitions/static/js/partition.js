@@ -216,7 +216,7 @@ function(
 
           pgAdmin.Browser.notifier.confirm(
             gettext('Truncate Table'),
-            gettext('Are you sure you want to truncate table %s?', d.label),
+            gettext('Are you sure you want to truncate table <b>%s</b>?', d.label),
             function () {
               let data = d;
               getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
