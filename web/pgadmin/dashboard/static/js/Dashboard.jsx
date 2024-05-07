@@ -37,7 +37,7 @@ import { parseApiError } from '../../../static/js/api_instance';
 import SectionContainer from './components/SectionContainer';
 import Replication from './Replication';
 import RefreshButton from './components/RefreshButtons';
-import {getExpandCell } from '../../../static/js/components/PgTable';
+import { getExpandCell } from '../../../static/js/components/PgReactTableStyled';
 
 function parseData(data) {
   let res = [];
@@ -132,6 +132,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+let activeQSchemaObj = new ActiveQuery();
+
 function Dashboard({
   nodeItem, nodeData, node, treeNodeInfo,
   ...props
@@ -150,7 +152,6 @@ function Dashboard({
   const [mainTabVal, setMainTabVal] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
-  const [schemaDict, setSchemaDict] = React.useState({});
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
   const [ldid, setLdid] = useState(0);
 
@@ -183,64 +184,62 @@ function Dashboard({
 
   const serverConfigColumns = [
     {
-      accessor: 'name',
-      Header: gettext('Name'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
-      width: 100,
-      minResizeWidth: 150,
+      accessorKey: 'name',
+      header: gettext('Name'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 100,
+      size: 100,
     },
     {
-      accessor: 'category',
-      Header: gettext('Category'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
+      accessorKey: 'category',
+      header: gettext('Category'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
-      accessor: 'setting',
-      Header: gettext('Value'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
-      width: 100,
+      accessorKey: 'setting',
+      header: gettext('Value'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 100,
     },
     {
-      accessor: 'unit',
-      Header: gettext('Unit'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 30,
+      accessorKey: 'unit',
+      header: gettext('Unit'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 30,
+      size: 30,
     },
     {
-      accessor: 'short_desc',
-      Header: gettext('Description'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'short_desc',
+      header: gettext('Description'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ];
 
   const activityColumns = [
     {
-      accessor: 'terminate_query',
-      Header: () => null,
-      sortable: true,
-      resizable: false,
-      disableGlobalFilter: false,
-      disableResizing: true,
-      width: 35,
-      maxWidth: 35,
-      minWidth: 35,
+      header: () => null,
+      enableSorting: true,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
       id: 'btn-terminate',
       // eslint-disable-next-line react/display-name
-      Cell: ({ row }) => {
+      cell: ({ row }) => {
         let terminate_session_url =
           url_for('dashboard.index') + 'terminate_session' + '/' + sid,
           title = gettext('Terminate Session?'),
@@ -268,7 +267,7 @@ function Dashboard({
                 !canTakeAction(row, 'terminate')
               )
                 return;
-              let url = action_url + '/' + row.values.pid;
+              let url = action_url + '/' + row.original.pid;
               pgAdmin.Browser.notifier.confirm(
                 title,
                 txtConfirm,
@@ -302,15 +301,15 @@ function Dashboard({
       },
     },
     {
-      accessor: 'cancel_Query',
-      Header: () => null,
-      sortable: true,
-      resizable: false,
-      disableGlobalFilter: false,
-      width: 35,
-      minWidth: 0,
+      header: () => null,
+      enableSorting: true,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
       id: 'btn-cancel',
-      Cell: ({ row }) => {
+      cell: ({ row }) => {
         let cancel_query_url =
           url_for('dashboard.index') + 'cancel_query' + '/' + sid,
           title = gettext('Cancel Active Query?'),
@@ -334,7 +333,7 @@ function Dashboard({
             onClick={() => {
               if (!canTakeAction(row, 'cancel'))
                 return;
-              let url = action_url + '/' + row.values.pid;
+              let url = action_url + '/' + row.original.pid;
               pgAdmin.Browser.notifier.confirm(
                 title,
                 txtConfirm,
@@ -370,280 +369,272 @@ function Dashboard({
       },
     },
     {
-      accessor: 'view_active_query',
-      Header: () => null,
-      sortable: true,
-      resizable: false,
-      disableGlobalFilter: false,
-      width: 35,
-      minWidth: 0,
+      header: () => null,
+      enableSorting: true,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
       id: 'btn-edit',
-      Cell: getExpandCell({
-        onClick: (row) => {
-          let schema = new ActiveQuery({
-            query: row.original.query,
-            backend_type: row.original.backend_type,
-            state_change: row.original.state_change,
-            query_start: row.original.query_start,
-          });
-          setSchemaDict(prevState => ({
-            ...prevState,
-            [row.id]: schema
-          }));
-        },
+      cell: getExpandCell({
         title: gettext('View the active session details')
       }),
     },
     {
-      accessor: 'pid',
-      Header: gettext('PID'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 60,
+      accessorKey: 'pid',
+      header: gettext('PID'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 60,
     },
     {
-      accessor: 'datname',
-      Header: gettext('Database'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 80,
-      isVisible: !did
+      accessorKey: 'datname',
+      header: gettext('Database'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      enableVisibility: !did,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'usename',
-      Header: gettext('User'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 60
+      accessorKey: 'usename',
+      header: gettext('User'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 60,
     },
     {
-      accessor: 'application_name',
-      Header: gettext('Application'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
+      accessorKey: 'application_name',
+      header: gettext('Application'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
     },
     {
-      accessor: 'client_addr',
-      Header: gettext('Client'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
+      accessorKey: 'client_addr',
+      header: gettext('Client'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 100
     },
     {
-      accessor: 'backend_start',
-      Header: gettext('Backend start'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 100,
+      accessorKey: 'backend_start',
+      header: gettext('Backend start'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 100,
     },
     {
-      accessor: 'xact_start',
-      Header: gettext('Transaction start'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
+      accessorKey: 'xact_start',
+      header: gettext('Transaction start'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 100,
     },
     {
-      accessor: 'state',
-      Header: gettext('State'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width:40
+      accessorKey: 'state',
+      header: gettext('State'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
 
     {
-      accessor: 'waiting',
-      Header: gettext('Waiting'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      isVisible: treeNodeInfo?.server?.version < 90600
+      accessorKey: 'waiting',
+      header: gettext('Waiting'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      enableVisibility: treeNodeInfo?.server?.version < 90600
     },
     {
-      accessor: 'wait_event',
-      Header: gettext('Wait event'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'wait_event',
+      header: gettext('Wait event'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      accessor: 'blocking_pids',
-      Header: gettext('Blocking PIDs'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'blocking_pids',
+      header: gettext('Blocking PIDs'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ];
 
   const databaseLocksColumns = [
     {
-      accessor: 'pid',
-      Header: gettext('PID'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 50,
+      accessorKey: 'pid',
+      header: gettext('PID'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
-      accessor: 'datname',
-      Header: gettext('Database'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      isVisible: !did,
-      width: 80
+      accessorKey: 'datname',
+      header: gettext('Database'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      enableVisibility: !did,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'locktype',
-      Header: gettext('Lock type'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 80,
+      accessorKey: 'locktype',
+      header: gettext('Lock type'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'relation',
-      Header: gettext('Target relation'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'relation',
+      header: gettext('Target relation'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      accessor: 'page',
-      Header: gettext('Page'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 80,
+      accessorKey: 'page',
+      header: gettext('Page'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'tuple',
-      Header: gettext('Tuple'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
+      accessorKey: 'tuple',
+      header: gettext('Tuple'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
-      accessor: 'virtualxid',
-      Header: gettext('vXID (target)'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
-      width: 80
+      accessorKey: 'virtualxid',
+      header: gettext('vXID (target)'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
-      accessor: 'transactionid',
-      Header: gettext('XID (target)'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
-      width: 80,
+      accessorKey: 'transactionid',
+      header: gettext('XID (target)'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'classid',
-      Header: gettext('Class'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 26,
-      width: 80,
+      accessorKey: 'classid',
+      header: gettext('Class'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'objid',
-      Header: gettext('Object ID'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
-      width: 80,
-
+      accessorKey: 'objid',
+      header: gettext('Object ID'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
     },
     {
-      accessor: 'virtualtransaction',
-      Header: gettext('vXID (owner)'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 50,
+      accessorKey: 'virtualtransaction',
+      header: gettext('vXID (owner)'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
-      accessor: 'mode',
-      Header: gettext('Mode'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'mode',
+      header: gettext('Mode'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 50,
     },
     {
       id: 'granted',
-      accessor: 'granted',
-      Header: gettext('Granted?'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
-      minWidth: 30,
-      width: 80,
-      Cell: ({ value }) => String(value)
+      accessorKey: 'granted',
+      header: gettext('Granted?'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      minSize: 50,
+      size: 80,
+      cell: ({ value }) => String(value)
     },
   ];
 
   const databasePreparedColumns = [
     {
-      accessor: 'git',
-      Header: gettext('Name'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'git',
+      header: gettext('Name'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      accessor: 'datname',
-      Header: gettext('Database'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'datname',
+      header: gettext('Database'),
+      enableSorting: true,
+      enableResizing: true,
+      enableVisibility: !did,
+      enableFilters: true,
       minWidth: 26,
       width: 80,
-      isVisible: !did
     },
     {
-      accessor: 'Owner',
-      Header: gettext('Owner'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'Owner',
+      header: gettext('Owner'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      accessor: 'transaction',
-      Header: gettext('XID'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'transaction',
+      header: gettext('XID'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      accessor: 'prepared',
-      Header: gettext('Prepared at'),
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      accessorKey: 'prepared',
+      header: gettext('Prepared at'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ];
 
@@ -888,15 +879,17 @@ function Dashboard({
                     <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
                       <PgTable
                         caveTable={false}
+                        tableNoBorder={false}
                         CustomHeader={CustomActiveOnlyHeader}
                         columns={activityColumns}
                         data={filteredDashData}
-                        schema={schemaDict}
+                        schema={activeQSchemaObj}
                       ></PgTable>
                     </TabPanel>
                     <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
                       <PgTable
                         caveTable={false}
+                        tableNoBorder={false}
                         columns={databaseLocksColumns}
                         data={dashData}
                       ></PgTable>
@@ -904,6 +897,7 @@ function Dashboard({
                     <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
                       <PgTable
                         caveTable={false}
+                        tableNoBorder={false}
                         columns={databasePreparedColumns}
                         data={dashData}
                       ></PgTable>
@@ -911,6 +905,7 @@ function Dashboard({
                     <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
                       <PgTable
                         caveTable={false}
+                        tableNoBorder={false}
                         columns={serverConfigColumns}
                         data={dashData}
                       ></PgTable>

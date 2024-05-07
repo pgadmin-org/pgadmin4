@@ -453,7 +453,7 @@ export class ColumnSchema extends BaseUISchema {
       },{
         id: 'max_val_attlen', skipChange: true, visible: false, type: '',
       },{
-        id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
+        id: 'attprecision', label: gettext('Scale'), width: 60, enableResizing: false,
         deps: ['cltype'], type: 'int', group: gettext('Definition'),
         cell: (state)=>{
           return obj.attCell(state);

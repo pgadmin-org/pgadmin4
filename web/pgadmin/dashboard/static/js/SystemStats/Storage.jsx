@@ -178,44 +178,44 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
 
   const tableHeader = [
     {
-      Header: gettext('File system'),
-      accessor: 'file_system',
+      header: gettext('File system'),
+      accessorKey: 'file_system',
     },
     {
-      Header: gettext('File system type'),
-      accessor: 'file_system_type',
+      header: gettext('File system type'),
+      accessorKey: 'file_system_type',
     },
     {
-      Header: gettext('Mount point'),
-      accessor: 'mount_point',
+      header: gettext('Mount point'),
+      accessorKey: 'mount_point',
     },
     {
-      Header: gettext('Drive letter'),
-      accessor: 'drive_letter',
+      header: gettext('Drive letter'),
+      accessorKey: 'drive_letter',
     },
     {
-      Header: gettext('Total space'),
-      accessor: 'total_space',
+      header: gettext('Total space'),
+      accessorKey: 'total_space',
     },
     {
-      Header: gettext('Used space'),
-      accessor: 'used_space',
+      header: gettext('Used space'),
+      accessorKey: 'used_space',
     },
     {
-      Header: gettext('Free space'),
-      accessor: 'free_space',
+      header: gettext('Free space'),
+      accessorKey: 'free_space',
     },
     {
-      Header: gettext('Total inodes'),
-      accessor: 'total_inodes',
+      header: gettext('Total inodes'),
+      accessorKey: 'total_inodes',
     },
     {
-      Header: gettext('Used inodes'),
-      accessor: 'used_inodes',
+      header: gettext('Used inodes'),
+      accessorKey: 'used_inodes',
     },
     {
-      Header: gettext('Free inodes'),
-      accessor: 'free_inodes',
+      header: gettext('Free inodes'),
+      accessorKey: 'free_inodes',
     },
   ];
 

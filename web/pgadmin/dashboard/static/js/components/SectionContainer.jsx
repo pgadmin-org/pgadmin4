@@ -46,7 +46,7 @@ export default function SectionContainer({title, titleExtras, children, style}) 
           {titleExtras}
         </div>
       </Box>
-      <Box height="100%" display="flex" flexDirection="column">
+      <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
         {children}
       </Box>
     </Box>

@@ -289,10 +289,12 @@ export default function FormView({
           canDelete = false;
         }
 
-        const props = {
-          key: field.id, value: value[field.id] || [], viewHelperProps: viewHelperProps,
+        const ctrlProps = {
+          key: field.id,  ...field,
+          value: value[field.id] || [], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
-          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canReorder: canReorder,
+          containerClassName: classes.controlRow,
+          canAdd: canAdd, canReorder: canReorder,
           canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
           expandEditOnAdd: field.expandEditOnAdd,
@@ -301,9 +303,14 @@ export default function FormView({
         };
 
         if(CustomControl) {
-          tabs[group].push(<CustomControl {...props}/>);
+          tabs[group].push(<CustomControl {...ctrlProps}/>);
         } else {
-          tabs[group].push(<DataGridView {...props}/>);
+          tabs[group].push(<DataGridView {...ctrlProps} memoDeps={[
+            JSON.stringify(ctrlProps.value),
+            ctrlProps.containerClassName,
+            ctrlProps.visible,
+            ...(evalFunc(null, ctrlProps.deps) || []).map((dep)=>value[dep]),
+          ]} />);
         }
       } else {
         /* Its a form control */

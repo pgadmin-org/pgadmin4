@@ -135,7 +135,7 @@ const columns = [
   },{
     key: 'path',
     name: gettext('Object path'),
-    sortable: false,
+    enableSorting: false,
     formatter: TypePathFormatter,
   }
 ];
@@ -411,8 +411,8 @@ export default function SearchObjects({nodeData}) {
             columns={columns}
             rows={sortedItems}
             defaultColumnOptions={{
-              sortable: true,
-              resizable: true
+              enableSorting: true,
+              enableResizing: true
             }}
             headerRowHeight={28}
             rowHeight={28}

@@ -270,7 +270,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   /* padding 8 on both sides*/
   rowNumWidth += 16;
   let rowNumCol = {
-    key: ROWNUM_KEY, name: '', frozen: true, resizable: false,
+    key: ROWNUM_KEY, name: '', frozen: true, enableResizing: false,
     minWidth: 45, width: rowNumWidth,
   };
   rowNumCol.cellClass = cellClassGetter(rowNumCol);

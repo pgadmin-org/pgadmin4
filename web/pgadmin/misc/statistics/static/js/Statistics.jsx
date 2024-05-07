@@ -60,29 +60,29 @@ function getColumn(data, singleLineStatistics, prettifyFields=[]) {
     if (!_.isUndefined(data)) {
       data.forEach((row) => {
         columns.push({
-          Header: row.name,
-          accessor: row.name,
-          sortable: true,
-          resizable: true,
-          disableGlobalFilter: false,
+          header: row.name,
+          accessorKey: row.name,
+          enableSorting: true,
+          enableResizing: true,
+          enableFilters: true,
         });
       });
     }
   } else {
     columns = [
       {
-        Header: gettext('Statistics'),
-        accessor: 'name',
-        sortable: true,
-        resizable: true,
-        disableGlobalFilter: false,
+        header: gettext('Statistics'),
+        accessorKey: 'name',
+        enableSorting: true,
+        enableResizing: true,
+        enableFilters: true,
       },
       {
-        Header: 'Value',
-        accessor: 'value',
-        sortable: false,
-        resizable: true,
-        disableGlobalFilter: false,
+        header: 'Value',
+        accessorKey: 'value',
+        enableSorting: false,
+        enableResizing: true,
+        enableFilters: true,
       },
     ];
   }
@@ -153,18 +153,18 @@ function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
   const [loaderText, setLoaderText] = React.useState('');
   const [columns, setColumns] = React.useState([
     {
-      Header: 'Statictics',
-      accessor: 'name',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: 'Statictics',
+      accessorKey: 'name',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
     {
-      Header: 'Value',
-      accessor: 'value',
-      sortable: true,
-      resizable: true,
-      disableGlobalFilter: false,
+      header: 'Value',
+      accessorKey: 'value',
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
     },
   ]);
   const pgAdmin = usePgAdmin();

@@ -254,7 +254,7 @@ MappedFormControl.propTypes = {
 
 export const MappedCellControl = (props) => {
   let newProps = { ...props };
-  let cellProps = evalFunc(null, newProps.cell, newProps.row);
+  let cellProps = evalFunc(null, newProps.cell, newProps.row.original);
   if (typeof (cellProps) === 'object') {
     newProps = {
       ...newProps,

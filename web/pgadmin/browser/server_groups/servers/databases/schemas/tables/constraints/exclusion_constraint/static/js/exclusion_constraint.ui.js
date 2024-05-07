@@ -137,7 +137,7 @@ class ExclusionColumnSchema extends BaseUISchema {
     let obj = this;
     return [{
       id: 'is_exp', label: '', type:'', cell: '', editable: false, width: 20,
-      disableResizing: true,
+      enableResizing: false,
       controlProps: {
         formatter: {
           fromRaw: function (rawValue) {
@@ -162,7 +162,7 @@ class ExclusionColumnSchema extends BaseUISchema {
         {label: 'ASC', value: true},
         {label: 'DESC', value: false},
       ],
-      editable: obj.isEditable, width: 110, disableResizing: true,
+      editable: obj.isEditable, width: 110, enableResizing: false,
       controlProps: {
         allowClear: false,
       },
@@ -172,7 +172,7 @@ class ExclusionColumnSchema extends BaseUISchema {
         {label: 'FIRST', value: true},
         {label: 'LAST', value: false},
       ], controlProps: {allowClear: false},
-      editable: obj.isEditable, width: 110, disableResizing: true,
+      editable: obj.isEditable, width: 110, enableResizing: false,
     },{
       id: 'operator', label: gettext('Operator'), type: 'select',
       width: 95,
