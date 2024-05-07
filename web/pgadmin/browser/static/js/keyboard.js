@@ -279,9 +279,9 @@ _.extend(pgBrowser.keyboardNavigation, {
     if (!tree.d || (type !== 'function' && type !== 'procedure'))
       return;
 
-    if (pgAdmin.Tools.Debugger.can_debug(tree.d, tree.i, {'debug_type': 'direct'})) {
+    if (pgAdmin.Tools.Debugger.canDebug(tree.d, tree.i, {'debug_type': 'direct'})) {
       // Call debugger callback
-      pgAdmin.Tools.Debugger.get_function_information(pgAdmin.Browser.Nodes[type]);
+      pgAdmin.Tools.Debugger.getFunctionInformation(pgAdmin.Browser.Nodes[type]);
     }
   },
   isPropertyPanelVisible: function() {
