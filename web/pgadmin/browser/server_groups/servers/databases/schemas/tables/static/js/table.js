@@ -125,6 +125,9 @@ define('pgadmin.node.table', [
           name: 'generate_erd', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'generate_erd',
           category: 'erd', priority: 5, label: gettext('ERD For Table'),
+          enable: (_, item) => {
+            return !('catalog' in pgAdmin.Browser.tree.getTreeNodeHierarchy(item));
+          }
         }
         ]);
         pgBrowser.Events.on(
