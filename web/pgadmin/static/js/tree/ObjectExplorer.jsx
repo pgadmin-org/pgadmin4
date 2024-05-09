@@ -13,7 +13,7 @@ import { usePgAdmin } from '../BrowserComponent';
 function postTreeReady(b) {
   const draggableTypes = [
     'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar',
-    'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule',
+    'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule publication subscription',
     'trigger trigger_function',
     'edbfunc function edbproc procedure',
     'coll-column'
