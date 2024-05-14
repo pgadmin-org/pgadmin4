@@ -324,21 +324,6 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
-        'context_menu',
-        gettext('Open context menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 67, 'char': 'c'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts',
         'direct_debugging',
         gettext('Direct debugging'),
         'keyboardshortcut',
