@@ -151,7 +151,7 @@ export default class Psql {
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
       {title: escapedTitle, db: db_label},
-      {title: panelTitle, icon: 'fas fa-terminal psql-tab-style', manualClose: false, renamable: true},
+      {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
 

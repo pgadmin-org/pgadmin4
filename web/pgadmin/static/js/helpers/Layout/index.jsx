@@ -49,7 +49,7 @@ function TabTitle({id, closable, defaultInternal}) {
 
   return (
     <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
-      {attrs.icon && <span style={{fontSize: '1rem', marginRight: '4px'}} className={attrs.icon}></span>}
+      {attrs.icon && <span className={`dock-tab-icon ${attrs.icon}`}></span>}
       <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);

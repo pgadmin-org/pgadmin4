@@ -132,6 +132,10 @@ export default function rcdockOverride(theme) {
               top: '-5px',
             }
           }
+        },
+        '& .dock-tab-icon': {
+          fontSize: '1rem',
+          marginRight: '4px'
         }
       },
       '& .dock-extra-content': {

@@ -27,6 +27,7 @@ Housekeeping
 ************
 
   | `Issue #7419 <https://github.com/pgadmin-org/pgadmin4/issues/7419>`_ -  Upgrade react-table from v7 to v8.
+  | `Issue #7472 <https://github.com/pgadmin-org/pgadmin4/issues/7472>`_ -  Replace the current FontAwesome based PSQL tool icon with MUI Terminal icon.
 
 Bug fixes
 *********

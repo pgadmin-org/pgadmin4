@@ -19,5 +19,10 @@ export default function pgadminOverride(theme) {
       width: '50px',
       height: '50px',
       backgroundAize: '50px 50px'
+    },
+    '.pg-font-icon': {
+      '&.icon-terminal': {
+        fontSize: '1.3rem !important',
+      }
     }
   };}
