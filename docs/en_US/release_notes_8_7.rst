@@ -32,5 +32,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5849 <https://github.com/pgadmin-org/pgadmin4/issues/5849>`_ -  Disable ERD for system catalogs.
+  | `Issue #6060 <https://github.com/pgadmin-org/pgadmin4/issues/6060>`_ -  Disable Debugger for system catalogs.
   | `Issue #6086 <https://github.com/pgadmin-org/pgadmin4/issues/6086>`_ -  Fixed an issue where drag and drop publication and subscription name in SQL editors was not working.
   | `Issue #6464 <https://github.com/pgadmin-org/pgadmin4/issues/6464>`_ -  Fixed an issue of the pgAdmin window size increasing each time it was reopened.
