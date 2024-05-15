@@ -26,7 +26,6 @@ _build_runtime() {
     echo "Assembling the runtime environment..."
 
     echo "Update yarn version..."
-    corepack enable
     yarn set version berry
     yarn set version 3
 

@@ -36,3 +36,5 @@ Bug fixes
   | `Issue #6060 <https://github.com/pgadmin-org/pgadmin4/issues/6060>`_ -  Disable Debugger for system catalogs.
   | `Issue #6086 <https://github.com/pgadmin-org/pgadmin4/issues/6086>`_ -  Fixed an issue where drag and drop publication and subscription name in SQL editors was not working.
   | `Issue #6464 <https://github.com/pgadmin-org/pgadmin4/issues/6464>`_ -  Fixed an issue of the pgAdmin window size increasing each time it was reopened.
+  | `Issue #7349 <https://github.com/pgadmin-org/pgadmin4/issues/7349>`_ -  Update the documentation for preferences dialog and keyboard shortcuts.
+  | `Issue #7458 <https://github.com/pgadmin-org/pgadmin4/issues/7458>`_ -  Remove query info notifier timeout field from Query Tool Preferences Dialog.
