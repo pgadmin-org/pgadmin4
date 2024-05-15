@@ -24,6 +24,12 @@ _cleanup() {
 
 _build_runtime() {
     echo "Assembling the runtime environment..."
+
+    echo "Update yarn version..."
+    corepack enable
+    yarn set version berry
+    yarn set version 3
+
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
 
     # Get a fresh copy of nwjs.
@@ -288,9 +294,6 @@ _complete_bundle() {
 
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
-        corepack enable
-        yarn set version berry
-        yarn set version 3
         yarn install
         yarn run bundle
 
