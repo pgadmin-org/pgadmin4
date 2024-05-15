@@ -29,9 +29,9 @@ File Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Open File*          | Click the *Open File* icon to display a previously saved query in the SQL Editor.                 | Accesskey + O  |
+   | *Open File*          | Click the *Open File* icon to display a previously saved query in the SQL Editor.                 | Cmd/Ctrl + O   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Save File*          | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Accesskey + S  |
+   | *Save File*          | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Cmd/Ctrl + S   |
    |                      | *Save* menu:                                                                                      |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Save* to save the selected content of the SQL Editor panel in a  file.                 |                |
@@ -50,7 +50,7 @@ Filter/Limit Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in *View/Edit data| Accesskey + F  |
+   | *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in *View/Edit data| Option/Alt + F |
    |                      | mode*. Click the down arrow to access other filtering and sorting options:                        |                |
    |                      |                                                                                                   |                |
    |                      |  * In the *SQL Filter*, you can enter a SQL query as filtering criteria.                          |                |
@@ -63,7 +63,7 @@ Filter/Limit Options
    |                      |                                                                                                   |                |
    |                      |  * Click *Remove Sort/Filter* to remove any previously selected sort or filtering options.        |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | Limit Selector       | Select a value in the *Limit Selector* to limit the size of the dataset to a number of rows.      | Accesskey + R  |
+   | Limit Selector       | Select a value in the *Limit Selector* to limit the size of the dataset to a number of rows.      | Option/Alt + R |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Query Editing Options
@@ -80,24 +80,25 @@ Query Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+-----------------------+
    | Icon                 | Behavior                                                                                          | Shortcut              |
    +======================+===================================================================================================+=======================+
-   | *Edit*               | Use the *Edit* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                       |
+   | *Edit*               | Use the *Edit* menu to search, replace, or navigate the code displayed in the SQL Editor:         | Option/Alt + Shift + N|
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd+F                 |
+   |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd/Ctrl + F          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Option+Cmd+F (MAC)    |
-   |                      |                                                                                                   | Ctrl+Shift+F (Others) |
+   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Option + Cmd + F (MAC)|
+   |                      |                                                                                                   | Ctrl + Shift + F      |
+   |                      |                                                                                                   | (Others)              |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Go to Line/Column* to go to specified line number and column position                     | Cmd+L or Ctrl+L       |
+   |                      | Select *Go to Line/Column* to go to specified line number and column position                     | Cmd/Ctrl + L          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
    |                      | Select *Indent Selection* to indent the currently selected text.                                  | Tab                   |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Unindent Selection* to remove indentation from the currently selected text.               | Shift+Tab             |
+   |                      | Select *Unindent Selection* to remove indentation from the currently selected text.               | Shift + Tab           |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Toggle Comment* to comment/uncomment any lines that contain the selection in SQL style.   | Cmd+/                 |
+   |                      | Select *Toggle Comment* to comment/uncomment any lines that contain the selection in SQL style.   | Cmd/Ctrl + /          |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Clear Query* to clear the query editor window.                                            | Cmd+.                 |
+   |                      | Select *Clear Query* to clear the query editor window.                                            | Option/Alt + Ctrl + L |
    |                      +---------------------------------------------------------------------------------------------------+-----------------------+
-   |                      | Select *Format SQL* to format the selected SQL or all the SQL if none is selected                 | Shift+Cmd+K           |
+   |                      | Select *Format SQL* to format the selected SQL or all the SQL if none is selected                 | Cmd/Ctrl + K          |
    +----------------------+---------------------------------------------------------------------------------------------------+-----------------------+
 
 Query Execution
@@ -114,7 +115,8 @@ Query Execution
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     | Accesskey + Q  |
+   | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     |Option + Shift +|
+   |                      |                                                                                                   |Q               |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Execute script*     | Click the *Execute script* icon to either execute or refresh the query highlighted in the SQL     | F5             |
    |                      | editor panel. Click the down arrow to access other execution options:                             |                |
@@ -130,7 +132,7 @@ Query Execution
    |                      | EXPLAIN is displayed graphically on the *Explain* tab of the output panel, and in text            |                |
    |                      | form on the *Data Output* tab.                                                                    |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Explain analyze*    | Click the *Explain analyze* icon to invoke an EXPLAIN ANALYZE command on the current query.       | Shift+F7       |
+   | *Explain analyze*    | Click the *Explain analyze* icon to invoke an EXPLAIN ANALYZE command on the current query.       | Shift + F7     |
    |                      |                                                                                                   |                |
    |                      | Navigate through the *Explain Options* menu to select options for the EXPLAIN command:            |                |
    |                      |                                                                                                   |                |
@@ -151,9 +153,9 @@ Query Execution
    |                      |                                                                                                   |                |
    |                      |  * Select *Wal* to include the information on WAL record generation.                              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Commit*             | Click the *Commit* icon to commit the transaction.                                                | Shift+CTRL+M   |
+   | *Commit*             | Click the *Commit* icon to commit the transaction.                                                |Shift + Ctrl + M|
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Rollback*           | Click the *Rollback* icon to rollback the transaction.                                            | Shift+CTRL+R   |
+   | *Rollback*           | Click the *Rollback* icon to rollback the transaction.                                            |Shift + Ctrl + R|
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Macros*             | Click the *Macros* icon to manage the macros. You can create, edit or clear the macros through    |                |
    |                      | the *Manage Macros* option.                                                                       |                |
@@ -175,21 +177,23 @@ Data Editing Options
    +======================+===================================================================================================+================+
    | *Add row*            | Click the *Add row* icon to add a new row                                                         |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Copy*               | Click the *Copy* icon to copy the content with or without header:                                 |  Accesskey + C |
+   | *Copy*               | Click the *Copy* icon to copy the content with or without header:                                 | Cmd/Ctrl + C   |
    |                      |                                                                                                   |                |
    |                      |  * Click the *Copy* icon to copy the content that is currently highlighted in the Data Output     |                |
    |                      |     panel.                                                                                        |                |
    |                      |                                                                                                   |                |
    |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Paste*              | Click the *Paste* icon to paste a previously copied row with or without serial/identity values:   | Accesskey + P  |
+   | *Paste*              | Click the *Paste* icon to paste a previously copied row with or without serial/identity values:   | Option/Alt +   |
+   |                      |                                                                                                   | Shift + P      |
    |                      |                                                                                                   |                |
    |                      |  * Click the *Paste* icon to paste a previously copied row into a new row.                        |                |
    |                      |                                                                                                   |                |
    |                      |  * Click the *Paste with SERIAL/IDENTITY values?* if you want to paste the copied column values   |                |
    |                      |    in the serial/identity columns.                                                                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     | Accesskey + D  |
+   | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     | Option/Alt +   |
+   |                      |                                                                                                   | Shift + D      |
    |                      | when you click the *Save Data Changes* icon.                                                      |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Save Data Changes*  | Click the *Save Data Changes* icon to save data changes (insert, update, or delete) in the Data   | F6             |

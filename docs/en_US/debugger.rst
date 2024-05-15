@@ -100,25 +100,29 @@ The toolbar options are:
     :alt: Debugger navigation toolbar
     :align: center
 
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| Option                  | Action                                                                                                    |
-+=========================+===========================================================================================================+
-| *Step into*             | Click the *Step into* icon to execute the currently highlighted line of code.                             |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Step over*             | Click the *Step over* icon to execute a line of code, stepping over any sub-functions invoked by the code.|
-|                         | The sub-function executes, but is not debugged unless it contains a breakpoint.                           |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Continue/Start*        | Click the *Continue/Start* icon to execute the highlighted code, and continue until the program           |
-|                         | encounters a breakpoint or completes.                                                                     |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Toggle breakpoint*     | Use the *Toggle breakpoint* icon to enable or disable a breakpoint (without removing the breakpoint).     |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Clear all breakpoints* | Click the *Clear all breakpoints* icon to remove all breakpoints from the program.                        |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Stop*                  | Click the *Stop* icon to halt the execution of a program.                                                 |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
-| *Help*                  | Click the *Help* icon to open debugger documentation.                                                     |
-+-------------------------+-----------------------------------------------------------------------------------------------------------+
+.. table::
+    :class: longtable
+    :widths: 1 4 1
+
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | Option                  | Action                                                                                                    | Shortcut               |
+    +=========================+===========================================================================================================+========================+
+    | *Step into*             | Click the *Step into* icon to execute the currently highlighted line of code.                             | Option/Alt + Shift + I |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Step over*             | Click the *Step over* icon to execute a line of code, stepping over any sub-functions invoked by the code.| Option/Alt + Shift + O |
+    |                         | The sub-function executes, but is not debugged unless it contains a breakpoint.                           |                        |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Continue/Start*        | Click the *Continue/Start* icon to execute the highlighted code, and continue until the program           | Option/Alt + Shift + C |
+    |                         | encounters a breakpoint or completes.                                                                     |                        |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Toggle breakpoint*     | Use the *Toggle breakpoint* icon to enable or disable a breakpoint (without removing the breakpoint).     | Option/Alt + Shift + T |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Clear all breakpoints* | Click the *Clear all breakpoints* icon to remove all breakpoints from the program.                        | Option/Alt + Shift + X |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Stop*                  | Click the *Stop* icon to halt the execution of a program.                                                 | Option/Alt + Shift + S |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
+    | *Help*                  | Click the *Help* icon to open debugger documentation.                                                     |                        |
+    +-------------------------+-----------------------------------------------------------------------------------------------------------+------------------------+
 
 The top panel of the debugger window displays the program body; click in the
 grey margin next to a line number to add a breakpoint.  The highlighted line in

@@ -48,7 +48,6 @@ _.extend(pgBrowser.keyboardNavigation, {
           'sub_menu_create': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_create')?.value),
           'sub_menu_delete': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_delete')?.value),
           'sub_menu_refresh': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_refresh')?.value),
-          'context_menu': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'context_menu')?.value),
           'direct_debugging': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'direct_debugging')?.value),
           'add_grid_row': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'add_grid_row')?.value),
           'open_quick_search': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'open_quick_search')?.value),
@@ -69,7 +68,6 @@ _.extend(pgBrowser.keyboardNavigation, {
           'bindSubMenuCreate': {'shortcuts': this.keyboardShortcut.sub_menu_create}, // Sub menu - Create Object,
           'bindSubMenuDelete': {'shortcuts': this.keyboardShortcut.sub_menu_delete}, // Sub menu - Delete object,
           'bindSubMenuRefresh': {'shortcuts': this.keyboardShortcut.sub_menu_refresh, 'bindElem': '#tree'}, // Sub menu - Refresh object,
-          'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
           'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
           'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
           'bindOpenQuickSearch': {'shortcuts': this.keyboardShortcut.open_quick_search}, // Subnode Grid Refresh Row
@@ -306,6 +304,12 @@ _.extend(pgBrowser.keyboardNavigation, {
   bindOpenQuickSearch: function() {
     pgWindow.pgAdmin.Browser.all_menus_cache.help.mnu_quick_search_help.callback();
   },
+  bindAddGridRow: function() {
+    let gridElem = document.activeElement.closest('.pgrt')?.parentElement;
+    if (gridElem) {
+      gridElem.querySelector('button[data-test="add-row"]')?.click();
+    }
+  }
 });
 
 module.exports = pgAdmin.Browser.keyboardNavigation;

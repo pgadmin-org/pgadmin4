@@ -48,9 +48,9 @@ File Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Open File*          | Click the *Open File* icon to load a previously saved diagram.                                    | Ctrl + O       |
+   | *Open File*          | Click the *Open File* icon to load a previously saved diagram.                                    | Cmd/Ctrl + O   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Save*               | Click the *Save* icon to perform a quick-save of a previously saved diagram, or to save the       | Ctrl + S       |
+   | *Save*               | Click the *Save* icon to perform a quick-save of a previously saved diagram, or to save the       | Cmd/Ctrl + S   |
    |                      | diagram to a file.                                                                                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Save as*            | Click the *Save As* to open a new browser dialog and specify a new location to save the diagram.  | Ctrl + Shift + |
@@ -67,13 +67,13 @@ Export Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Generate SQL*       | Click the *Generate SQL* icon to generate the DDL SQL for the diagram and open a query tool       | Option + Ctrl +|
-   |                      | with the generated SQL ready for execution.                                                       | S              |
+   | *Generate SQL*       | Click the *Generate SQL* icon to generate the DDL SQL for the diagram and open a query tool       | Option/Alt +   |
+   |                      | with the generated SQL ready for execution.                                                       | Ctrl + S       |
    |                      | You can select the option *With DROP Table* if you wish to have DROP Table DDL statements before  |                |
    |                      | each CREATE Table DDL. You can see the option by clicking the down arrow beside the SQL button.   |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option + Ctrl +|
-   |                      |                                                                                                   | I              |
+   | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option/Alt +   |
+   |                      |                                                                                                   | Ctrl + I       |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Editing Options
