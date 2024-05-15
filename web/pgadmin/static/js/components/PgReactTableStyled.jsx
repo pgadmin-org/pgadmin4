@@ -224,8 +224,8 @@ PgReactTableRowExpandContent.propTypes = {
 export function PgReactTableHeader({table}) {
   return (
     <div className='pgrt-header'>
-      {table.getHeaderGroups().map((headerGroup) => (
-        <div key={''} className='pgrt-header-row' style={{  }}>
+      {table.getHeaderGroups().map((headerGroup, idx) => (
+        <div key={idx} className='pgrt-header-row' style={{  }}>
           {headerGroup.headers.map((header) => (
             <div
               key={header.id}
