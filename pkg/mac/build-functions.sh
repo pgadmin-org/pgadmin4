@@ -72,6 +72,7 @@ _build_runtime() {
     cp -R "${SOURCE_DIR}/runtime/assets" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
     cp -R "${SOURCE_DIR}/runtime/src" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
     cp "${SOURCE_DIR}/runtime/package.json" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
+    cp "${SOURCE_DIR}/runtime/.yarnrc.yml" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
 
     # Install the runtime node_modules, then replace the package.json
     pushd "${BUNDLE_DIR}/Contents/Resources/app.nw/" > /dev/null || exit
