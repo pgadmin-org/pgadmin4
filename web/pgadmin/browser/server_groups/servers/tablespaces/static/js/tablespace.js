@@ -47,7 +47,7 @@ define('pgadmin.node.tablespace', [
       hasStatistics: true,
       statsPrettifyFields: [gettext('Size')],
       Init: function() {
-        /* Avoid mulitple registration of menus */
+        /* Avoid multiple registration of menus */
         if (this.initialized)
           return;
 

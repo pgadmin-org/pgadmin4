@@ -32,7 +32,7 @@ class SchemaDiffModel:
 
     def set_result(self, node_name, compare_result):
         """
-        This method set the result of the comparision based on nodes.
+        This method set the result of the Comparison based on nodes.
         """
         self._comparison_result[node_name] = compare_result
 

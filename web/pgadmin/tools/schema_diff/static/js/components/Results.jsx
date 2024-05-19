@@ -76,7 +76,7 @@ export function Results() {
   return (
     <>
       <Box className={classes.header}>
-        <span>{gettext('DDL Comparision')}</span>
+        <span>{gettext('DDL Comparison')}</span>
       </Box>
       <Box className={classes.labelContainer}>
         <Box className={classes.label}>{gettext('Source')}</Box>

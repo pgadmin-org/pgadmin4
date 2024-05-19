@@ -638,7 +638,7 @@ rolmembership:{
     def check_precondition(action=None):
         """
         This function will behave as a decorator which will checks the status
-        of the database connection for the maintainance database of the server,
+        of the database connection for the maintenance database of the server,
         beforeexecuting rest of the operation for the wrapped function. It will
         also attach manager, conn (maintenance connection for the server) as
         properties of the instance.

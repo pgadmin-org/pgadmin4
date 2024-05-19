@@ -618,7 +618,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         Convert acl coming from client to required db parsing format.
         :param data: Data.
-        :param old_data: old data for comparision and get name.
+        :param old_data: old data for Comparison and get name.
         """
         # If name is not present in data then
         # we will fetch it from old data, we also need schema & table name

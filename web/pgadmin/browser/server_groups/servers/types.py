@@ -25,7 +25,7 @@ class ServerType():
 
     Create an instance of this class to define new type of the server support,
     In order to define new type of instance, you may want to override this
-    class with overriden function - instanceOf for type checking for
+    class with overridden function - instanceOf for type checking for
     identification based on the version.
     """
     registry = dict()

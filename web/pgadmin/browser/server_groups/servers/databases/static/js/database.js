@@ -66,7 +66,7 @@ define('pgadmin.node.database', [
       },
       width: '700px',
       Init: function() {
-        /* Avoid mulitple registration of menus */
+        /* Avoid multiple registration of menus */
         if (this.initialized)
           return;
 

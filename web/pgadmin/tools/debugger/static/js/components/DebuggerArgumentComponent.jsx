@@ -736,7 +736,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               .catch((error) => {
                 setLoaderText('');
                 pgAdmin.Browser.notifier.alert(
-                  gettext('Error occured: '),
+                  gettext('Error occurred: '),
                   parseApiError(error)
                 );
               });

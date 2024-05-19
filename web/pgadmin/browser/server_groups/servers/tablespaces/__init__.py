@@ -516,7 +516,7 @@ class TablespaceView(PGChildNodeView):
 
     def get_sql(self, gid, sid, data, tsid=None):
         """
-        This function will genrate sql from model/properties data
+        This function will generate sql from model/properties data
         """
         required_args = [
             'name'

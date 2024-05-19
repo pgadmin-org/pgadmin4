@@ -42,7 +42,7 @@ define('pgadmin.node.package', [
       hasSQL: true,
       hasDepends: true,
       Init: function() {
-        /* Avoid mulitple registration of menus */
+        /* Avoid multiple registration of menus */
         if (this.initialized)
           return;
 

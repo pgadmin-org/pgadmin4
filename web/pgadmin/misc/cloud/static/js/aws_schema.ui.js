@@ -139,7 +139,7 @@ class DatabaseSchema extends BaseUISchema {
     }
     if (data.db_confirm_password.includes('\'') || data.db_confirm_password.includes('"') ||
     data.db_confirm_password.includes('@') || data.db_confirm_password.includes('/')) {
-      setErrMsg('db_confirm_password', gettext('Invalid passowrd.'));
+      setErrMsg('db_confirm_password', gettext('Invalid password.'));
       return true;
     }
 
