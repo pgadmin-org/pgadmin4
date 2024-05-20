@@ -99,7 +99,7 @@
     "bignumber.js": "^9.0.1",
     "brace": "^0.11.1",
     "browserfs": "^1.4.3",
-    "chart.js": "^3.0.0",
+    "chart.js": "^4.4.3",
     "chartjs-plugin-zoom": "^2.0.1",
     "classnames": "^2.2.6",
     "closest": "^0.0.1",
