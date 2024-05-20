@@ -23,10 +23,11 @@ import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import { InputSelect } from '../../../../../../static/js/components/FormComponents';
 import { DefaultButton, PgButtonGroup, PgIconButton} from '../../../../../../static/js/components/Buttons';
 import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
-  CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, LightenDarkenColor} from 'sources/chartjs';
+  LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
 import { useTheme } from '@mui/material';
+import { getChartColor } from '../../../../../../static/js/utils';
 
 // Numeric data type used to separate out the options for Y axis.
 const NUMERIC_TYPES = ['oid', 'smallint', 'integer', 'bigint', 'decimal', 'numeric',
@@ -163,7 +164,7 @@ GenerateGraph.propTypes = {
 };
 
 // This function is used to get the dataset for Line Chart and Stacked Line Chart.
-function getLineChartData(graphType, rows, colName, colPosition, color, colorIndex, styleIndex, queryToolCtx) {
+function getLineChartData(graphType, rows, colName, colPosition, color, styleIndex, queryToolCtx) {
   return {
     label: colName,
     data: rows.map((r)=>r[colPosition]),
@@ -188,28 +189,23 @@ function getBarChartData(rows, colName, colPosition, color) {
 
 // This function is used to get the dataset for Pie Chart.
 function getPieChartData(rows, colName, colPosition, queryToolCtx) {
-  let rowCount = -1;
   return {
     label: colName,
     data: rows.map((r)=>r[colPosition]),
-    backgroundColor: rows.map(()=> {
-      if (rowCount >= (CHART_THEME_COLORS_LENGTH - 1)) {
-        rowCount = -1;
-      }
-      rowCount = rowCount + 1;
-      return CHART_THEME_COLORS[queryToolCtx.preferences.misc.theme][rowCount];
+    backgroundColor: rows.map((_v, i)=> {
+      return getChartColor(i, queryToolCtx.preferences.misc.theme);
     }),
   };
 }
 
 // This function is used to get the graph data set for the X axis and Y axis
-function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, graphColors) {
+function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, theme) {
   // Function is used to the find the position of the column
   function getColumnPosition(colName) {
     return _.find(columns, (c)=>(c.name==colName))?.pos;
   }
 
-  let styleIndex = -1, colorIndex = -1;
+  let styleIndex = -1;
 
   return {
     'labels': rows.map((r, index)=>{
@@ -221,14 +217,8 @@ function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, g
       return r[colPosition];
     }),
 
-    'datasets': yaxis.map((colName)=>{
-      // Loop is used to set the index for random color array
-      if (colorIndex >= (CHART_THEME_COLORS_LENGTH - 1)) {
-        colorIndex = -1;
-      }
-      colorIndex = colorIndex + 1;
-
-      let color = graphColors[colorIndex];
+    'datasets': yaxis.map((colName, i)=>{
+      let color = getChartColor(i, theme);
       let colPosition = getColumnPosition(colName);
 
       // Loop is used to set the index for DATA_POINT_STYLE array
@@ -242,8 +232,7 @@ function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, g
       } else if (graphType === 'B' || graphType === 'SB') {
         return getBarChartData(rows, colName, colPosition, color);
       } else if (graphType === 'L' || graphType === 'SL') {
-        return getLineChartData(graphType, rows, colName, colPosition, color,
-          colorIndex, styleIndex, queryToolCtx);
+        return getLineChartData(graphType, rows, colName, colPosition, color, styleIndex, queryToolCtx);
       }
     }),
   };
@@ -263,7 +252,6 @@ export function GraphVisualiser({initColumns}) {
   const [columns, setColumns] = useState(initColumns);
   const [graphHeight, setGraphHeight] = useState();
   const [expandedState, setExpandedState] = useState(true);
-  const [graphColor, setGraphColor] = useState([]);
   const theme = useTheme();
 
 
@@ -344,10 +332,6 @@ export function GraphVisualiser({initColumns}) {
     }
   }, [graphType, theme]);
 
-  useEffect(()=>{
-    setGraphColor(CHART_THEME_COLORS[queryToolCtx.preferences.misc.theme]);
-  }, [queryToolCtx.preferences.misc.theme, theme]);
-
   const graphBackgroundColor = useMemo(() => {
     return theme.palette.background.default;
   },[theme]);
@@ -380,7 +364,10 @@ export function GraphVisualiser({initColumns}) {
     setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
-      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx, graphColor), prev[1] + 1]
+      (prev)=> [
+        getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx, queryToolCtx.preferences.misc.theme),
+        prev[1] + 1
+      ]
     );
 
     setLoaderText('');

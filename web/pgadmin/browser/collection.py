@@ -61,7 +61,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
         return True
 
     def generate_browser_node(
-            self, node_id, parent_id, label, icon, **kwargs
+            self, node_id, parent_id, label, icon=None, **kwargs
     ):
         obj = {
             "id": "%s_%s" % (self.node_type, node_id),

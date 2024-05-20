@@ -10,16 +10,16 @@ import { render } from '@testing-library/react';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
-    expect(transformData({'Label1': [], 'Label2': []}, 1, false)).toEqual({
+    expect(transformData({'Label1': [], 'Label2': []}, 1)).toEqual({
       datasets: [{
         label: 'Label1',
         data: [],
-        borderColor: '#00BCD4',
+        borderColor: '#1F77B4',
         pointHitRadius: DATA_POINT_SIZE,
       },{
         label: 'Label2',
         data: [],
-        borderColor: '#9CCC65',
+        borderColor: '#FF7F0E',
         pointHitRadius: DATA_POINT_SIZE,
       }],
       refreshRate: 1,

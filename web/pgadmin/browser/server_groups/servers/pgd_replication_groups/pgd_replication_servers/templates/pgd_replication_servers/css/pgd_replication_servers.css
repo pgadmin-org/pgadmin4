@@ -1,0 +1,35 @@
+.icon-pgd_node_data {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/pgd_node_data.svg' )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pgd_node_standby {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/pgd_node_standby.svg' )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pgd_node_witness {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/pgd_node_witness.svg' )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-pgd_node_subscriber-only {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/pgd_node_subscriber-only.svg' )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

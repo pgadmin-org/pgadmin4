@@ -42,7 +42,7 @@ function TableRow({ index, style, schema, row, measureElement }) {
   }, [row.getIsExpanded(), expandComplete]);
 
   return (
-    <PgReactTableRow data-index={index} ref={rowRef} style={style} row={row}>
+    <PgReactTableRow data-index={index} ref={rowRef} style={style}>
       <PgReactTableRowContent>
         {row.getVisibleCells().map((cell) => {
           const content = flexRender(cell.column.columnDef.cell, cell.getContext());
@@ -115,7 +115,12 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
     enableResizing: false,
     maxSize: 35,
   }] : []).concat(
-    columns.filter((c)=>_.isUndefined(c.enableVisibility) ? true : c.enableVisibility)
+    columns.filter((c)=>_.isUndefined(c.enableVisibility) ? true : c.enableVisibility).map((c)=>({
+      ...c,
+      // if data is null then global search doesn't work
+      // Use accessorFn to return empty string if data is null.
+      accessorFn: c.accessorFn ?? (c.accessorKey ? (row)=>row[c.accessorKey] ?? '' : undefined),
+    }))
   ), [hasSelectRow, columns]);
 
   // Render the UI for your table

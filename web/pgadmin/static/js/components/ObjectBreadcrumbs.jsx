@@ -81,8 +81,8 @@ export default function ObjectBreadcrumbs() {
         <AccountTreeIcon style={{height: '1rem', marginRight: '0.125rem'}} data-label="AccountTreeIcon"/>
         <div className={classes.overflow}>
           {
-            objectData.path?.reduce((res, item)=>(
-              res.concat(<span key={item}>{item}</span>, <ArrowForwardIosRoundedIcon key={item+'-arrow'} style={{height: '0.8rem', width: '1.25rem'}} />)
+            objectData.path?.reduce((res, item, i)=>(
+              res.concat(<span key={item+i}>{item}</span>, <ArrowForwardIosRoundedIcon key={item+i+'-arrow'} style={{height: '0.8rem', width: '1.25rem'}} />)
             ), []).slice(0, -1)
           }
         </div>

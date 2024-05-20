@@ -17,17 +17,17 @@ import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
 import { Grid } from '@mui/material';
+import { getChartColor } from '../../../static/js/utils';
 
 export const X_AXIS_LENGTH = 75;
 
 /* Transform the labels data to suit ChartJS */
-export function transformData(labels, refreshRate) {
-  const colors = ['#00BCD4', '#9CCC65', '#E64A19'];
+export function transformData(labels, refreshRate, theme='standard') {
   let datasets = Object.keys(labels).map((label, i)=>{
     return {
       label: label,
       data: labels[label] || [],
-      borderColor: colors[i],
+      borderColor: getChartColor(i, theme),
       pointHitRadius: DATA_POINT_SIZE,
     };
   }) || [];

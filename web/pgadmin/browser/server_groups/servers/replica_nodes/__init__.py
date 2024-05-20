@@ -103,7 +103,7 @@ class ReplicationNodesModule(CollectionNodeModule):
             conn = manager.connection(sid=kwargs['sid'])
 
             replication_type = get_replication_type(conn, manager.version)
-            return bool(replication_type)
+            return replication_type == 'log'
 
 
 blueprint = ReplicationNodesModule(__name__)
@@ -248,7 +248,6 @@ class ReplicationNodesView(PGChildNodeView):
                     row['pid'],
                     sid,
                     row['name'],
-                    icon="icon-replica_nodes"
                 ))
 
         return make_json_response(

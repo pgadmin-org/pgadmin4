@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
     minHeight: '400px',
+    borderRadius: theme.shape.borderRadius,
   },
   cardHeader: {
     backgroundColor: theme.otherVars.tableBg,
