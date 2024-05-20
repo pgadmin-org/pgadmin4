@@ -38,3 +38,4 @@ Bug fixes
   | `Issue #6464 <https://github.com/pgadmin-org/pgadmin4/issues/6464>`_ -  Fixed an issue of the pgAdmin window size increasing each time it was reopened.
   | `Issue #7349 <https://github.com/pgadmin-org/pgadmin4/issues/7349>`_ -  Update the documentation for preferences dialog and keyboard shortcuts.
   | `Issue #7458 <https://github.com/pgadmin-org/pgadmin4/issues/7458>`_ -  Remove query info notifier timeout field from Query Tool Preferences Dialog.
+  | `Issue #7485 <https://github.com/pgadmin-org/pgadmin4/issues/7485>`_ -  Fixed incorrect highlighting for C-Style escape strings in SQL editor.

@@ -4,6 +4,7 @@ const extraKeywords = 'unsafe';
 const keywords = PostgreSQL.spec.keywords.replace(/\b\w\b/, '') + ' ' + extraKeywords;
 
 const PgSQL = SQLDialect.define({
+  backslashEscapes: true,
   charSetCasts: true,
   doubleDollarQuotedStrings: false,
   operatorChars: '+-*/<>=~!@#%^&|`?',
