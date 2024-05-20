@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { flexRender } from '@tanstack/react-table';
 import { styled } from '@mui/styles';
 import PropTypes from 'prop-types';
@@ -57,6 +57,12 @@ const StyledDiv = styled('div')(({theme})=>({
           overflow: 'hidden',
           ...theme.mixins.panelBorder.bottom,
           ...theme.mixins.panelBorder.right,
+
+          '& > div': {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            textWrap: 'nowrap'
+          },
 
           '& .pgrt-header-resizer': {
             display: 'inline-block',
@@ -160,8 +166,8 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
 
   return (
     <div ref={ref} key={cell.id} style={{
-      flex: `var(--col-${cell.column.id}-size) 0 auto`,
-      width: `calc(var(--col-${cell.column.id}-size)*1px)`,
+      flex: `var(--col-${cell.column.id.replace(/\W/g, '_')}-size) 0 auto`,
+      width: `calc(var(--col-${cell.column.id.replace(/\W/g, '_')}-size)*1px)`,
       ...(cell.column.columnDef.maxSize ? { maxWidth: `${cell.column.columnDef.maxSize}px` } : {})
     }} role='cell'
     className={clsx(...classNames)}
@@ -231,14 +237,14 @@ export function PgReactTableHeader({table}) {
               key={header.id}
               className='pgrt-header-cell'
               style={{
-                flex: `var(--header-${header?.id}-size) 0 auto`,
-                width: `calc(var(--header-${header?.id}-size)*1px)`,
+                flex: `var(--header-${header?.id.replace(/\W/g, '_')}-size) 0 auto`,
+                width: `calc(var(--header-${header?.id.replace(/\W/g, '_')}-size)*1px)`,
                 ...(header.column.columnDef.maxSize ? { maxWidth: `${header.column.columnDef.maxSize}px` } : {}),
                 cursor: header.column.getCanSort() ? 'pointer' : 'initial',
               }}
               onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
             >
-              <div>
+              <div title={flexRender(header.column.columnDef.header, header.getContext())}>
                 {flexRender(header.column.columnDef.header, header.getContext())}
                 {header.column.getCanSort() && header.column.getIsSorted() &&
                   <span>
@@ -280,22 +286,32 @@ PgReactTableBody.propTypes = {
 
 export const PgReactTable = forwardRef(({children, table, rootClassName, tableClassName, ...props}, ref)=>{
   const columns = table.getAllColumns();
-  // Render the UI for your table
-  const maxExpandWidth = (ref.current?.getBoundingClientRect().width ?? 430) - 30; //margin,scrollbar,etc.
+
+  useEffect(()=>{
+    const setMaxExpandWidth = ()=>{
+      if(ref.current) {
+        ref.current.style['--expand-width'] = (ref.current.getBoundingClientRect().width ?? 430) - 30; //margin,scrollbar,etc.
+      }
+    };
+    const tableResizeObserver = new ResizeObserver(()=>{
+      setMaxExpandWidth();
+    });
+    tableResizeObserver.observe(ref.current);
+  }, []);
 
   const columnSizeVars = React.useMemo(() => {
     const headers = table.getFlatHeaders();
     const colSizes = {};
     for (let i = 0; i < headers.length; i++) {
       const header = headers[i];
-      colSizes[`--header-${header.id}-size`] = header.getSize();
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+      colSizes[`--header-${header.id.replace(/\W/g, '_')}-size`] = header.getSize();
+      colSizes[`--col-${header.column.id.replace(/\W/g, '_')}-size`] = header.column.getSize();
     }
     return colSizes;
   }, [columns, table.getState().columnSizingInfo]);
 
   return (
-    <StyledDiv className={clsx('pgrt', rootClassName)} style={{'--expand-width': maxExpandWidth }} ref={ref} >
+    <StyledDiv className={clsx('pgrt', rootClassName)} ref={ref} >
       <div className={clsx('pgrt-table', tableClassName)} style={{ ...columnSizeVars }} {...props}>
         {children}
       </div>

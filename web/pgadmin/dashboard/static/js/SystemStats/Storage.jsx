@@ -23,6 +23,7 @@ import { getStatsUrl, transformData, X_AXIS_LENGTH } from './utility.js';
 import { toPrettySize } from '../../../../static/js/utils';
 import clsx from 'clsx';
 import { commonTableStyles } from '../../../../static/js/Theme';
+import SectionContainer from '../components/SectionContainer.jsx';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -33,20 +34,8 @@ const useStyles = makeStyles((theme) => ({
   driveContainer: {
     width: '100%',
   },
-  diskInfoContainer: {
-    height: 'auto',
-    padding: '8px 8px 0px 8px',
-    marginBottom: '0px',
-  },
-  diskInfoSummary: {
-    height: 'auto',
-    padding: '0px 0px 4px 0px',
-    marginBottom: '0px',
-  },
   diskInfoCharts: {
-    height: 'auto',
-    padding: '0px 0px 2px 0px',
-    marginBottom: '0px',
+    marginBottom: '4px',
   },
   containerHeaderText: {
     fontWeight: 'bold',
@@ -54,13 +43,12 @@ const useStyles = makeStyles((theme) => ({
   },
   tableContainer: {
     background: theme.otherVars.tableBg,
-    padding: '0px',
     border: '1px solid '+theme.otherVars.borderColor,
     borderCollapse: 'collapse',
     borderRadius: '4px',
     overflow: 'auto',
     width: '100%',
-    margin: '4px 4px 4px 4px',
+    marginBottom: '4px',
   },
   tableWhiteSpace: {
     '& td, & th': {
@@ -143,7 +131,7 @@ const DiskStatsTable = (props) => {
       <thead>
         <tr>
           {tableHeader.map((item, index) => (
-            <th key={index}>{item.Header}</th>
+            <th key={index}>{item.header}</th>
           ))}
         </tr>
       </thead>
@@ -151,7 +139,7 @@ const DiskStatsTable = (props) => {
         {data.map((item, index) => (
           <tr key={index}>
             {tableHeader.map((header, id) => (
-              <td key={header.accessor+'-'+id}>{item[header.accessor]}</td>
+              <td key={header.accessorKey+'-'+id}>{item[header.accessorKey]}</td>
             ))}
           </tr>
         ))}
@@ -428,112 +416,101 @@ export function StorageWrapper(props) {
 
   return (
     <>
-      <Grid container spacing={1} className={classes.diskInfoContainer}>
-        <Grid container spacing={1} className={classes.diskInfoSummary}>
-          <div className={classes.tableContainer}>
-            <div className={classes.containerHeaderText}>{gettext('Disk information')}</div>
-            <DiskStatsTable tableHeader={props.tableHeader} data={props.diskStats} />
-          </div>
-        </Grid>
-        <Grid container spacing={1} className={classes.diskInfoCharts}>
-          <Grid item md={6} sm={12}>
-            <ChartContainer
-              id='t-space-graph'
-              title={''}
-              datasets={props.diskStats.map((item, index) => ({
-                borderColor: colors[(index + 2) % colors.length],
-                label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
-              }))}
-              errorMsg={props.errorMsg}
-              isTest={props.isTest}>
-              <PieChart data={{
-                labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
-                datasets: [
-                  {
-                    data: props.diskStats.map((item) => item.total_space_actual?item.total_space_actual:0),
-                    backgroundColor: props.diskStats.map((item, index) => colors[(index + 2) % colors.length]),
-                  },
-                ],
-              }}
-              options={{
-                animation: false,
-                ...chartJsExtraOptions,
-              }}
-              />
-            </ChartContainer>
-          </Grid>
-          <Grid item md={6} sm={12}>
-            <ChartContainer id='ua-space-graph' title={''} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
-              <BarChart data={{
-                labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
-                datasets: [
-                  {
-                    label: 'Used space',
-                    data: props.diskStats.map((item) => item.used_space_actual?item.used_space_actual:0),
-                    backgroundColor: '#FF6384',
-                    borderColor: '#FF6384',
-                    borderWidth: 1,
-                  },
-                  {
-                    label: 'Available space',
-                    data: props.diskStats.map((item) => item.free_space_actual?item.free_space_actual:0),
-                    backgroundColor: '#36a2eb',
-                    borderColor: '#36a2eb',
-                    borderWidth: 1,
-                  },
-                ],
-              }}
-              options={
+      <div className={classes.tableContainer}>
+        <div className={classes.containerHeaderText}>{gettext('Disk information')}</div>
+        <DiskStatsTable tableHeader={props.tableHeader} data={props.diskStats} />
+      </div>
+      <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
+        <Grid item md={6} sm={12}>
+          <ChartContainer
+            id='t-space-graph'
+            title={''}
+            datasets={props.diskStats.map((item, index) => ({
+              borderColor: colors[(index + 2) % colors.length],
+              label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
+            }))}
+            errorMsg={props.errorMsg}
+            isTest={props.isTest}>
+            <PieChart data={{
+              labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
+              datasets: [
                 {
-                  scales: {
-                    x: {
+                  data: props.diskStats.map((item) => item.total_space_actual?item.total_space_actual:0),
+                  backgroundColor: props.diskStats.map((item, index) => colors[(index + 2) % colors.length]),
+                },
+              ],
+            }}
+            options={{
+              animation: false,
+              ...chartJsExtraOptions,
+            }}
+            />
+          </ChartContainer>
+        </Grid>
+        <Grid item md={6} sm={12}>
+          <ChartContainer id='ua-space-graph' title={''} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
+            <BarChart data={{
+              labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
+              datasets: [
+                {
+                  label: 'Used space',
+                  data: props.diskStats.map((item) => item.used_space_actual?item.used_space_actual:0),
+                  backgroundColor: '#FF6384',
+                  borderColor: '#FF6384',
+                  borderWidth: 1,
+                },
+                {
+                  label: 'Available space',
+                  data: props.diskStats.map((item) => item.free_space_actual?item.free_space_actual:0),
+                  backgroundColor: '#36a2eb',
+                  borderColor: '#36a2eb',
+                  borderWidth: 1,
+                },
+              ],
+            }}
+            options={
+              {
+                scales: {
+                  x: {
+                    display: true,
+                    stacked: true,
+                    ticks: {
                       display: true,
-                      stacked: true,
-                      ticks: {
-                        display: true,
-                      },
                     },
-                    y: {
-                      beginAtZero: true,
-                      stacked: true,
-                      ticks: {
-                        callback: function (value) {
-                          return toPrettySize(value);
-                        },
+                  },
+                  y: {
+                    beginAtZero: true,
+                    stacked: true,
+                    ticks: {
+                      callback: function (value) {
+                        return toPrettySize(value);
                       },
                     },
                   },
-                  ...chartJsExtraOptions,
-                }
+                },
+                ...chartJsExtraOptions,
               }
-              />
-            </ChartContainer>
-          </Grid>
+            }
+            />
+          </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={0.5} className={classes.container}>
-        {Object.keys(props.ioInfo).map((drive, index) => (
-          <Grid key={`disk-${index}`} container spacing={1} className={classes.container}>
-            <div className={classes.driveContainer}>
-              <Grid container spacing={1} className={classes.driveContainerHeader}>
-                <div className={classes.containerHeaderText}>{gettext(drive)}</div>
+      {Object.keys(props.ioInfo).map((drive) => (
+        <SectionContainer key={drive} title={drive} style={{minHeight: 'unset', height: 'auto', marginBottom: '0.5px'}}>
+          <Grid container spacing={0.5} p={0.5}>
+            {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
+              <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
+                <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+                  <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+                    valueFormatter={(v)=>{
+                      return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : type.endsWith('_total_rw') ? toPrettySize(v, ''): toPrettySize(v);
+                    }} />
+                </ChartContainer>
               </Grid>
-              <Grid container spacing={0.5} className={classes.driveContainerBody}>
-                {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
-                  <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
-                    <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-                      <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
-                        valueFormatter={(v)=>{
-                          return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : type.endsWith('_total_rw') ? toPrettySize(v, ''): toPrettySize(v);
-                        }} />
-                    </ChartContainer>
-                  </Grid>
-                ))}
-              </Grid>
-            </div>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </SectionContainer>
+      ))}
     </>
   );
 }

@@ -305,12 +305,7 @@ export default function FormView({
         if(CustomControl) {
           tabs[group].push(<CustomControl {...ctrlProps}/>);
         } else {
-          tabs[group].push(<DataGridView {...ctrlProps} memoDeps={[
-            JSON.stringify(ctrlProps.value),
-            ctrlProps.containerClassName,
-            ctrlProps.visible,
-            ...(evalFunc(null, ctrlProps.deps) || []).map((dep)=>value[dep]),
-          ]} />);
+          tabs[group].push(<DataGridView {...ctrlProps} />);
         }
       } else {
         /* Its a form control */

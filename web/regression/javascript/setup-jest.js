@@ -22,13 +22,14 @@ global.matchMedia =  (query)=>({
   dispatchEvent: jest.fn(),
 });
 
-class IntersectionObserver {
+class GeneralObserver {
   observe() {return null;}
   unobserve() {return null;}
   disconnect() {return null;}
 }
 
-global.IntersectionObserver = IntersectionObserver;
+global.IntersectionObserver = GeneralObserver;
+global.ResizeObserver = GeneralObserver;
 
 import lodash from 'lodash';
 global._ = lodash;

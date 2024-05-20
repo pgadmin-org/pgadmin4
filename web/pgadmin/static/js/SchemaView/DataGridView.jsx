@@ -317,7 +317,7 @@ DataGridHeader.propTypes = {
   onSearchTextChange: PropTypes.func,
 };
 
-function DataGridView({
+export default function DataGridView({
   value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
   fixedRows, ...props}) {
   const classes = useStyles();
@@ -638,14 +638,6 @@ function DataGridView({
     </Box>
   );
 }
-
-export default function DataGridViewMoized({memoDeps, ...props}) {
-  return useMemo(()=><DataGridView {...props} />, memoDeps??[]);
-}
-
-DataGridViewMoized.propTypes = {
-  memoDeps: PropTypes.array,
-};
 
 DataGridView.propTypes = {
   label: PropTypes.string,

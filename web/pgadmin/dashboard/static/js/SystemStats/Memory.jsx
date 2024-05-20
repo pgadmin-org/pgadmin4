@@ -20,6 +20,7 @@ import {useInterval, usePrevious} from 'sources/custom_hooks';
 import axios from 'axios';
 import { getStatsUrl, transformData, statsReducer, X_AXIS_LENGTH } from './utility.js';
 import { toPrettySize } from '../../../../static/js/utils';
+import SectionContainer from '../components/SectionContainer.jsx';
 
 const useStyles = makeStyles((theme) => ({
   autoResizer: {
@@ -255,7 +256,7 @@ export function MemoryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
 
   return (
-    <>
+    <Box display="flex" flexDirection="column" height="100%">
       <Grid container spacing={0.5} className={classes.container}>
         <Grid item md={6}>
           <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
@@ -270,22 +271,20 @@ export function MemoryWrapper(props) {
           </ChartContainer>
         </Grid>
       </Grid>
-      <Grid container spacing={0.5} className={classes.fixedContainer}>
-        <div className={classes.tableContainer}>
+      <Box flexGrow={1} minHeight={0}>
+        <SectionContainer title={gettext('Process memory usage')}>
           <PgTable
             className={classes.autoResizer}
-            CustomHeader={() => {
-              return <div className={classes.containerHeader}>{gettext('Process memory usage')}</div>;
-            }}
             columns={props.tableHeader}
             data={props.processMemoryUsageStats}
             msg={props.errorMsg}
             type={'panel'}
             caveTable={false}
+            tableNoBorder={false}
           ></PgTable>
-        </div>
-      </Grid>
-    </>
+        </SectionContainer>
+      </Box>
+    </Box>
   );
 }
 
