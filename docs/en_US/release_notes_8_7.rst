@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #7192 <https://github.com/pgadmin-org/pgadmin4/issues/7192>`_ -  Changes in Query Tool, Debugger, and ERD Tool shortcuts to remove the use of Accesskey which will allow them to be customized.
+  | `Issue #7215 <https://github.com/pgadmin-org/pgadmin4/issues/7215>`_ -  Added support for viewing PGD Clusters.
   | `Issue #7411 <https://github.com/pgadmin-org/pgadmin4/issues/7411>`_ -  Enhance the Delete dialog by highlighting the names of the objects to be deleted in bold.
 
 Housekeeping
@@ -32,6 +33,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5762 <https://github.com/pgadmin-org/pgadmin4/issues/5762>`_ -  Ensure that Schema Diff does not indicate a table as different when the trigger names are the same but the trigger function body is different.
   | `Issue #5849 <https://github.com/pgadmin-org/pgadmin4/issues/5849>`_ -  Disable ERD for system catalogs.
   | `Issue #6060 <https://github.com/pgadmin-org/pgadmin4/issues/6060>`_ -  Disable Debugger for system catalogs.
   | `Issue #6086 <https://github.com/pgadmin-org/pgadmin4/issues/6086>`_ -  Fixed an issue where drag and drop publication and subscription name in SQL editors was not working.

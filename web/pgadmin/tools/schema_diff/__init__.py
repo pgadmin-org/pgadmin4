@@ -457,6 +457,7 @@ def compare_database(params):
     This function will compare the two databases.
     """
     # Check the pre validation before compare
+    SchemaDiffRegistry.set_schema_diff_compare_mode('Database Objects')
     status, error_msg, diff_model_obj, session_obj = \
         compare_pre_validation(params['trans_id'], params['source_sid'],
                                params['target_sid'])
@@ -606,6 +607,7 @@ def compare_schema(params):
     This function will compare the two schema.
     """
     # Check the pre validation before compare
+    SchemaDiffRegistry.set_schema_diff_compare_mode('Schema Objects')
     status, error_msg, diff_model_obj, session_obj = \
         compare_pre_validation(params['trans_id'], params['source_sid'],
                                params['target_sid'])

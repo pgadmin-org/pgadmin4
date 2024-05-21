@@ -33,8 +33,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                  'conkey', 'indkey', 'references_table_name',
                                  'refnspoid']
 
-    trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
-                              'tgqual', 'tgconstraint']
+    trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tgqual',
+                              'tgconstraint']
     index_keys_to_ignore = ['indrelid', 'indclass']
 
     keys_to_ignore = table_keys_to_ignore + column_keys_to_ignore + \
