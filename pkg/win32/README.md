@@ -14,13 +14,12 @@ builds may still work with suitable adjustments.
 
 3. Install various command line tools:
 
-        choco install -y  awk bzip2 cmake diffutils dotnet3.5 gnuwin32-coreutils.install gzip git html-help-workshop innosetup nodejs-lts python sed strawberryperl wget yarn
+        choco install -y awk bzip2 cmake diffutils dotnet3.5 gnuwin32-coreutils.install gzip git html-help-workshop meson innosetup ninja nodejs-lts python sed strawberryperl wget winflexbison3 yarn
 
 4. Ensure the GNU CoreUtils and Microsoft HTML Help Workshop are in the system path - add:
 
     * C:\Program Files (x86)\GnuWin32\bin
     * C:\Program Files (x86)\HTML Help Workshop
-   
 
 5. Upgrade pip:
 
@@ -32,7 +31,7 @@ builds may still work with suitable adjustments.
 
 ## Building dependencies
 
-The following steps should be run from a Visual Studio 2017 64bit command
+The following steps should be run from a Visual Studio 64bit command
 prompt.
 
 1. Create a directory for the dependencies:
@@ -41,22 +40,30 @@ prompt.
 
 2. Download the zlib source code, unpack, and build it:
 
-        wget https://zlib.net/zlib-1.2.11.tar.gz
-        tar -zxvf zlib-1.2.11.tar.gz
-        cd zlib-1.2.11
-        cmake -DCMAKE_INSTALL_PREFIX=C:/build64/zlib -G "Visual Studio 15 2017 Win64" .
-        msbuild ALL_BUILD.vcxproj /p:Configuration=Release
-        msbuild RUN_TESTS.vcxproj /p:Configuration=Release
-        msbuild INSTALL.vcxproj /p:Configuration=Release
-        copy C:\build64\zlib\lib\zlib.lib C:\build64\zlib\lib\zdll.lib
+        wget https://zlib.net/zlib-1.3.11.tar.gz
+        tar -zxvf zlib-1.3.1.tar.gz
+        cd zlib-1.3.1
+        nmake -f win32/Makefile.msc
+        mkdir c:\build64\zlib
+        mkdir c:\build64\zlib\bin
+        copy zlib1.dll c:\build64\zlib\bin\
+        copy zlib1.pdb c:\build64\zlib\bin\
+        mkdir c:\build64\zlib\include
+        copy zlib.h c:\build64\zlib\include\
+        copy zconf.h c:\build64\zlib\include\
+        mkdir c:\build64\zlib\lib
+        copy zlib.lib c:\build64\zlib\lib\
+        copy zlib.pdb c:\build64\zlib\lib\
+        copy zdll.lib c:\build64\zlib\lib\
+        copy zdll.exp c:\build64\zlib\lib\
         cd ..
 
 3. Download the OpenSSL source code, unpack and build it:
 
-        wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
-        tar -zxvf openssl-1.1.1k.tar.gz
-        cd openssl-1.1.1k
-        perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl no-ssl2 no-ssl3 no-comp
+        wget https://www.openssl.org/source/openssl-3.0.13.tar.gz
+        tar -zxvf openssl-3.0.13.tar.gz
+        cd openssl-3.0.13
+        perl Configure VC-WIN64A no-asm --prefix=C:\build64\openssl no-ssl3 no-comp
         nmake
         nmake test
         nmake install
@@ -70,12 +77,12 @@ users could potentially write to.
 
 4. Download the MIT Kerberos source code, unpack and build it:
 
-   In a *32bit* Visual Studio 2017 command prompt:
+   In a *32bit* Visual Studio command prompt:
 
-        wget https://kerberos.org/dist/krb5/1.19/krb5-1.19.1.tar.gz
-        tar -zxvf krb5-1.19.1.tar.gz
+        wget https://kerberos.org/dist/krb5/1.21/krb5-1.21.2.tar.gz
+        tar -zxvf krb5-1.21.2.tar.gz
         mkdir C:\build64\krb5
-        cd krb5-1.19.1\src
+        cd krb5-1.21.2\src
         set KRB_INSTALL_DIR=C:\build64\krb5
         nmake -f Makefile.in prep-windows
 
@@ -84,20 +91,20 @@ users could potentially write to.
         nmake NODEBUG=1
         nmake install NODEBUG=1
 
-   In a *64bit* Visual Studio 2017 command prompt:
+   In a *64bit* Visual Studio command prompt:
 
-        cd krb5-1.19.1\src
+        cd krb5-1.21.2\src
         set PATH=%PATH%;"%WindowsSdkVerBinPath%"\x86
         set KRB_INSTALL_DIR=C:\build64\krb5
         nmake NODEBUG=1
         nmake install NODEBUG=1
         cd ..\..
 
-5. Download the PostgreSQL source code, unpack and build it:
+5. [PostgreSQL 16 and below]: Download the PostgreSQL source code, unpack and build it:
 
-        wget https://ftp.postgresql.org/pub/source/v13.3/postgresql-13.3.tar.gz
-        tar -zxvf postgresql-13.3.tar.gz
-        cd postgresql-13.3\src\tools\msvc
+        wget https://ftp.postgresql.org/pub/source/v13.3/postgresql-16.3.tar.gz
+        tar -zxvf postgresql-16.3.tar.gz
+        cd postgresql-16.3\src\tools\msvc
         
         >> config.pl echo # Configuration arguments for vcbuild.
         >> config.pl echo use strict;
@@ -128,10 +135,10 @@ users could potentially write to.
         
         perl build.pl Release
         perl vcregress.pl check
-        perl install.pl C:\build64\pgsql
-        copy C:\build64\zlib\bin\zlib.dll C:\build64\pgsql\bin"
-        copy C:\build64\openssl\bin\libssl-1_1-x64.dll C:\build64\pgsql\bin"
-        copy C:\build64\openssl\bin\libcrypto-1_1-x64.dll C:\build64\pgsql\bin"
+        perl install.pl c:\build64\pgsql
+        copy c:\build64\zlib\bin\zlib1.dll c:\build64\pgsql\bin\
+        copy c:\build64\openssl\bin\libssl-3-x64.dll c:\build64\pgsql\bin\
+        copy c:\build64\openssl\bin\libcrypto-3-x64.dll c:\build64\pgsql\bin\
 
 ## Setting up a dev environment
 
@@ -168,7 +175,7 @@ defaults for the build system, so if they match your requirements you don't
 need to set them:
 
         SET "PGADMIN_POSTGRES_DIR=C:\build64\pgsql"
-        SET "PGADMIN_PYTHON_DIR=C:\Python39"
+        SET "PGADMIN_PYTHON_DIR=C:\Python312"
         SET "PGADMIN_KRB5_DIR=C:\build64\krb5"
         SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
         SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
