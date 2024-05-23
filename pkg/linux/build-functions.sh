@@ -23,7 +23,7 @@ _setup_env() {
     # new Python versions installed parallel to the old ones.
     OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
     SYSTEM_PYTHON_PATH='/usr/bin/python3'
-    PYTHON_BINARY='python3'
+    PYTHON_BINARY=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print('python%d.%.d' % (sys.version_info.major, sys.version_info.minor))")
     if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
       SYSTEM_PYTHON_PATH='/usr/bin/python3.9'
       PYTHON_BINARY='python3.9'
