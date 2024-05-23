@@ -242,7 +242,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     queryToolCtx.modal.showModal(gettext('Commit transaction?'), (closeModal)=>(
       <ConfirmTransactionContent
         closeModal={closeModal}
-        text={gettext('The current transaction is not commited to the database. '
+        text={gettext('The current transaction is not committed to the database. '
           +'Do you want to commit or rollback the transaction?')}
         onRollback={()=>{
           onExecutionDone();

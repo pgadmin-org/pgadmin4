@@ -97,7 +97,7 @@ class EdbFuncModule(CollectionNodeModule):
         """
         Register preferences for this module.
         """
-        # Add the node informaton for browser, not in respective
+        # Add the node information for browser, not in respective
         # node preferences
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(
@@ -665,7 +665,7 @@ class EdbProcModule(CollectionNodeModule):
         """
         Register preferences for this module.
         """
-        # Add the node informaton for browser, not in respective
+        # Add the node information for browser, not in respective
         # node preferences
         self.browser_preference = Preferences.module('browser')
         self.pref_show_system_objects = self.browser_preference.preference(

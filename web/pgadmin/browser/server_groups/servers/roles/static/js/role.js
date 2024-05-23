@@ -78,7 +78,7 @@ define('pgadmin.node.role', [
         return gettext('Group Role') + ' - ' + d.label;
       },
       Init: function() {
-        /* Avoid mulitple registration of menus */
+        /* Avoid multiple registration of menus */
         if (this.initialized)
           return;
 

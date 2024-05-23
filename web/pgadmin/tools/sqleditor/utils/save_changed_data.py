@@ -28,7 +28,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
         conn: The connection object
         columns_info: session_obj['columns_info']
         client_primary_key: session_obj['client_primary_key']
-        auto_commit: If the changes should be commited automatically.
+        auto_commit: If the changes should be committed automatically.
     """
     status = False
     res = None
