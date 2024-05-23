@@ -37,8 +37,8 @@ def __handle_mfa_validation_request(
     mfa_method: str, user_mfa_auths: dict, form_data: dict
 ) -> None:
     """
-    An internal utility function to execute mfa.validate(...) method in case, it
-    matched the following conditions:
+    An internal utility function to execute mfa.validate(...) method in case,
+    it matched the following conditions:
     1. Method specified is a valid and in the supported methods list.
     2. User has registered for this auth method.
 
