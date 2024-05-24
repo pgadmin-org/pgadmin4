@@ -485,6 +485,12 @@ To create a macro, select the *Manage Macros* option from the *Macros* menu on t
    :alt: Query Tool Manage Macros dialogue
    :align: center
 
+To add a query to macros, write and select your query, then go to the *Macros* menu in the Query Tool and click *Add to macros*. Your query will be automatically saved to macros.
+
+.. image:: images/query_tool_add_to_macro.png
+   :alt: Query Tool Add To Macros
+   :align: center
+
 To delete a macro, select the macro on the *Manage Macros* dialogue, and then click the *Delete* button.
 The server will prompt you for confirmation to delete the macro.
 

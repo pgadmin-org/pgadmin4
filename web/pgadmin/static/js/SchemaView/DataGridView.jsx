@@ -518,8 +518,13 @@ export default function DataGridView({
     if(!props.canAddRow) {
       return;
     }
-
     let newRow = schemaRef.current.getNewData();
+
+    const current_macros = schemaRef.current?._top?._sessData?.macro || null;
+    if (current_macros){
+      newRow = schemaRef.current.getNewData(current_macros);
+    }
+
     if(props.expandEditOnAdd && props.canEdit) {
       newRowIndex.current = rows.length;
     }

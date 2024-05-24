@@ -50,6 +50,21 @@ function initConnection(api, params, passdata) {
   return api.post(url_for('NODE-server.connect_id', params), passdata);
 }
 
+export function getRandomName(existingNames) {
+  const maxNumber = existingNames.reduce((max, name) => {
+    const match = name.match(/\d+$/); // Extract the number from the name
+    if (match) {
+      const number = parseInt(match[0], 10);
+      return number > max ? number : max;
+    }
+    return max;
+  }, 0);
+
+  // Generate the new name
+  const newName = `Macro ${maxNumber + 1}`;
+  return newName;
+}
+
 function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
   if(qtState.current_file) {
     title = qtState.current_file.split('\\').pop().split('/').pop();
@@ -194,6 +209,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }],
   });
 
+  const [selectedText, setSelectedText] = useState('');
+
   const setQtState = (state)=>{
     _setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
   };
@@ -250,7 +267,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               maximizable: true,
               tabs: [
-                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
+                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)}/>}),
                 LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
                   cached: undefined}),
               ],
@@ -796,7 +813,38 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }}
       onClose={onClose}/>
     }, 850, 500);
-  }, [qtState.preferences.browser]);
+  }, [qtState.preferences.browser]); 
+
+  const onAddToMacros = () => {
+    if (selectedText){
+      let currMacros = qtState.params.macros;
+      const existingNames = currMacros.map(macro => macro.name);
+      const newName = getRandomName(existingNames);
+      let changed = [{ 'name': newName, 'sql': selectedText }];
+    
+      api.put(
+        url_for('sqleditor.set_macros', {
+          'trans_id': qtState.params.trans_id,
+        }),
+        { changed: changed }
+      )
+        .then(({ data: respData }) => {
+          const filteredData = respData.filter(m => Boolean(m.name));
+          setQtState(prev => ({
+            ...prev,
+            params: {
+              ...prev.params,
+              macros: filteredData,
+            },
+          }));
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+    setSelectedText('');
+  };
+  
 
   const onFilterClick = useCallback(()=>{
     const onClose = ()=>docker.current.close('filter-dialog');
@@ -884,8 +932,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               <MainToolBar
                 containerRef={containerRef}
                 onManageMacros={onManageMacros}
+                onAddToMacros={onAddToMacros}
                 onFilterClick={onFilterClick}
-              />), [containerRef.current, onManageMacros, onFilterClick])}
+              />), [containerRef.current, onManageMacros, onFilterClick, onAddToMacros])}
             <Layout
               getLayoutInstance={(obj)=>docker.current=obj}
               defaultLayout={defaultLayout}

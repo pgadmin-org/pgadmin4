@@ -107,11 +107,15 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
       props.onClick(e);
     };
   }
+  const keyVal = shortcutToString(shortcut, accesskey);
+
   const dataLabel = typeof(children) == 'string' ? children : props.datalabel;
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} data-label="CheckIcon"/>}
     {children}
-    {(shortcut || accesskey) && <div className={classes.shortcut}>({shortcutToString(shortcut, accesskey)})</div>}
+    <div className={classes.shortcut}>
+      {keyVal ? `(${keyVal})` : ''}
+    </div>
   </MenuItem>;
 });
 

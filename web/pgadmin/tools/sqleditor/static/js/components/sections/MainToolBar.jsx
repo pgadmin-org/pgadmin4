@@ -54,7 +54,7 @@ function autoCommitRollback(type, api, transId, value) {
   return api.post(url, JSON.stringify(value));
 }
 
-export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
+export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
   const classes = useStyles();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -633,6 +633,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         label={gettext('Macros Menu')}
       >
         <PgMenuItem onClick={onManageMacros}>{gettext('Manage macros')}</PgMenuItem>
+        <PgMenuItem onClick={onAddToMacros}>{gettext('Add to macros')}</PgMenuItem>
         <PgMenuDivider />
         {queryToolCtx.params?.macros?.map((m)=>{
           return (
@@ -656,4 +657,5 @@ MainToolBar.propTypes = {
   containerRef: CustomPropTypes.ref,
   onFilterClick: PropTypes.func,
   onManageMacros: PropTypes.func,
+  onAddToMacros: PropTypes.func
 };
