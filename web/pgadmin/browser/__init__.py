@@ -1073,7 +1073,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
         for errors in form.errors.values():
             for error in errors:
-                flash(error, MessageType.WARNING)
+                flash(str(error), MessageType.WARNING)
 
         return _security.render_template(
             config_value('FORGOT_PASSWORD_TEMPLATE'),
@@ -1108,6 +1108,9 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         form_class = _security.forms.get('reset_password_form').cls
         form = form_class(request.form) if request.form else form_class()
 
+        if sys.version_info >= (3, 8):
+            form.user = user
+
         if form.validate_on_submit():
             try:
                 update_password(user, form.password.data)
@@ -1135,7 +1138,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 has_error = True
 
             if not has_error:
-                after_this_request(view_commit)
+                view_commit()
                 auth_obj = AuthSourceManager(form, [INTERNAL])
                 session['_auth_source_manager_obj'] = auth_obj.as_dict()
 
@@ -1150,8 +1153,9 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 auth_obj = AuthSourceManager(form, [INTERNAL])
                 session['auth_source_manager'] = auth_obj.as_dict()
 
-                return redirect(get_url(_security.post_reset_view) or
-                                get_url(_security.post_login_view))
+                return redirect(
+                    current_app.config['SECURITY_POST_RESET_VIEW'] or
+                    current_app.config['SECURITY_POST_LOGIN_VIEW'])
 
         return _security.render_template(
             config_value('RESET_PASSWORD_TEMPLATE'),
