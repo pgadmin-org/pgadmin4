@@ -27,7 +27,7 @@ def get_macros(macro_id, json_resp):
     :param json_resp: Set True to return json response
     """
     if macro_id:
-        macro = UserMacros.query.filter_by(mid=macro_id,
+        macro = UserMacros.query.filter_by(id=macro_id,
                                            uid=current_user.id).first()
         if macro is None:
             return make_json_response(
@@ -37,7 +37,8 @@ def get_macros(macro_id, json_resp):
             )
         else:
             return ajax_response(
-                response={'id': macro.mid,
+                response={'id': macro.id,
+                          'mid':macro.mid,
                           'name': macro.name,
                           'sql': macro.sql},
                 status=200
@@ -45,13 +46,12 @@ def get_macros(macro_id, json_resp):
     else:
         macros = db.session.query(Macros.id, Macros.alt, Macros.control,
                                   Macros.key, Macros.key_code,
-                                  UserMacros.name, UserMacros.sql
-                                  ).outerjoin(
+                                  UserMacros.name, UserMacros.sql,
+                                  UserMacros.id).outerjoin(
             UserMacros, and_(Macros.id == UserMacros.mid,
                              UserMacros.uid == current_user.id)).all()
 
         data = []
-
         for m in macros:
             key_label = 'Ctrl + ' + m[3] if m[2] is True else 'Alt + ' + m[3]
             data.append({'id': m[0], 'alt': m[1],
@@ -74,7 +74,8 @@ def get_user_macros():
     This method is used to get all the user macros.
     """
 
-    macros = db.session.query(UserMacros.name,
+    macros = db.session.query(UserMacros.id,
+                              UserMacros.name,
                               Macros.id,
                               Macros.alt, Macros.control,
                               Macros.key, Macros.key_code,
@@ -86,11 +87,17 @@ def get_user_macros():
     data = []
 
     for m in macros:
-        key_label = 'Ctrl + ' + m[4] if m[3] is True else 'Alt + ' + m[4]
-        data.append({'name': m[0], 'id': m[1], 'key': m[4],
-                     'key_label': key_label, 'alt': 1 if m[2] else 0,
-                     'control': 1 if m[3] else 0, 'key_code': m[5],
-                     'sql': m[6]})
+        key_label = (
+            'Ctrl + ' + str(m[5])
+            if m[4] is True
+            else 'Alt + ' + str(m[5])
+            if m[5] is not None
+            else ''
+        )
+        data.append({'id': m[0], 'name': m[1], 'mid': m[2], 'key': m[5],
+                     'key_label': key_label, 'alt': 1 if m[3] else 0,
+                     'control': 1 if m[4] else 0, 'key_code': m[6],
+                     'sql': m[7]})
 
     return data
 
@@ -111,21 +118,21 @@ def set_macros():
         )
 
     for m in data['changed']:
-        if m['id']:
+        if m.get('id'):
             macro = UserMacros.query.filter_by(
                 uid=current_user.id,
-                mid=m['id']).first()
+                id=m['id']).first()
             if macro:
                 status, msg = update_macro(m, macro)
-            else:
-                status, msg = create_macro(m)
+        else:
+            status, msg = create_macro(m)
 
             if not status:
                 return make_json_response(
                     status=410, success=0, errormsg=msg
                 )
 
-    return get_macros(None, True)
+    return get_user_macros()
 
 
 def create_macro(macro):
@@ -146,7 +153,7 @@ def create_macro(macro):
     try:
         new_macro = UserMacros(
             uid=current_user.id,
-            mid=macro['id'],
+            mid=macro['mid'] if macro.get('mid') else None,
             name=macro['name'],
             sql=macro['sql']
         )
@@ -168,6 +175,7 @@ def update_macro(data, macro):
 
     name = data.get('name', None)
     sql = data.get('sql', None)
+    mid = data.get('mid', None)
 
     if (name or sql) and macro.sql and 'name' in data and name is None:
         return False, gettext(
@@ -177,11 +185,12 @@ def update_macro(data, macro):
             "Could not find the required parameter (sql).")
 
     try:
-        if name or sql:
+        if name or sql or mid:
             if name:
                 macro.name = name
             if sql:
                 macro.sql = sql
+            macro.mid = mid if mid != 0 else None
         else:
             db.session.delete(macro)
 

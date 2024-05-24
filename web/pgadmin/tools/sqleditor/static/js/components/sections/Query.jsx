@@ -23,6 +23,7 @@ import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 import ConfirmPromotionContent from '../dialogs/ConfirmPromotionContent';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
+import PropTypes from 'prop-types';
 
 
 const useStyles = makeStyles(()=>({
@@ -61,7 +62,7 @@ async function registerAutocomplete(editor, api, transId) {
   });
 }
 
-export default function Query() {
+export default function Query({onTextSelect}) {
   const classes = useStyles();
   const editor = React.useRef();
   const eventBus = useContext(QueryToolEventsContext);
@@ -390,7 +391,6 @@ export default function Query() {
 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
-
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
       if(queryToolCtx.preferences.sqleditor.view_edit_promotion_warning){
         checkViewEditDataPromotion();
@@ -480,5 +480,11 @@ export default function Query() {
     onChange={change}
     autocomplete={true}
     customKeyMap={shortcutOverrideKeys}
+    onTextSelect={onTextSelect}
   />;
 }
+
+
+Query.propTypes = {
+  onTextSelect: PropTypes.func,
+};

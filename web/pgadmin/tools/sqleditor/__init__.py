@@ -49,7 +49,7 @@ from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
     read_file_generator
 from pgadmin.tools.sqleditor.utils.filter_dialog import FilterDialog
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
-from pgadmin.tools.sqleditor.utils.macros import get_macros,\
+from pgadmin.tools.sqleditor.utils.macros import get_macros, \
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, \
@@ -130,6 +130,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.clear_query_history',
             'sqleditor.get_macro',
             'sqleditor.get_macros',
+            'sqleditor.get_user_macros',
             'sqleditor.set_macros',
             'sqleditor.get_new_connection_data',
             'sqleditor.get_new_connection_servers',
@@ -2692,3 +2693,15 @@ def update_macros(trans_id):
     _, _, _, _, _ = check_transaction_status(trans_id)
 
     return set_macros()
+
+
+@blueprint.route(
+    '/get_user_macros',
+    methods=["GET"], endpoint='get_user_macros'
+)
+@pga_login_required
+def user_macros(json_resp=True):
+    """
+    This method is used to fetch all user macros.
+    """
+    return get_user_macros()

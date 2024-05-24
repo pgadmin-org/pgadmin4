@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -62,7 +62,7 @@ CopyButton.propTypes = {
 };
 
 
-export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], ...props}) {
+export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, ...props}) {
   const classes = useStyles();
   const editor = useRef();
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
@@ -111,8 +111,36 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const onMouseEnter = useCallback(()=>{showCopyBtn && setShowCopy(true);}, []);
   const onMouseLeave = useCallback(()=>{showCopyBtn && setShowCopy(false);}, []);
 
+  // Use to handle text selection events.
+  useEffect(() => {
+    if (!onTextSelect) return;
+
+    const handleSelection = () => {
+      const selectedText = window.getSelection().toString();
+      if (selectedText) {
+        onTextSelect(selectedText);
+      } else {
+        onTextSelect(''); // Reset if no text is selected
+      }
+    };
+
+    const handleKeyUp = () => {
+      handleSelection();
+    };
+    // Add event listeners for mouseup and keyup events to detect text selection.
+    document.addEventListener('mouseup', handleSelection);
+    document.addEventListener('keyup', handleKeyUp);
+
+    // Cleanup function to remove event listeners when component unmounts or onTextSelect changes.
+    return () => {
+      document.removeEventListener('mouseup', handleSelection);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [onTextSelect]);
+
+
   return (
-    <div className={clsx(className, classes.root)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
+    <div className={clsx(className, classes.root)} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
       <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
@@ -126,4 +154,5 @@ CodeMirror.propTypes = {
   className: CustomPropTypes.className,
   showCopyBtn: PropTypes.bool,
   customKeyMap: PropTypes.array,
+  onTextSelect:PropTypes.func
 };

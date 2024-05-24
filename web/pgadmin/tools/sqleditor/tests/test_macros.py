@@ -32,15 +32,15 @@ class TestMacros(BaseTestGenerator):
              operation='set',
              data={
                  'changed': [
-                     {'id': 1,
+                     {'mid': 1,
                       'name': 'Test Macro 1',
                       'sql': 'SELECT 1;'
                       },
-                     {'id': 2,
+                     {'mid': 2,
                       'name': 'Test Macro 2',
                       'sql': 'SELECT 2;'
                       },
-                     {'id': 3,
+                     {'mid': 3,
                       'name': 'Test Macro 3',
                       'sql': 'SELECT 3;'
                       },
@@ -129,10 +129,11 @@ class TestMacros(BaseTestGenerator):
             self.assertEqual(response.status_code, 200)
 
             for m in self.data['changed']:
+                if self.operation == 'set':
+                    m['id'] = m['mid']
                 url = '/sqleditor/get_macros/{0}/{1}'.format(m['id'],
                                                              self.trans_id)
                 response = self.tester.get(url)
-
                 if self.operation == 'clear':
                     self.assertEqual(response.status_code, 410)
                 elif self.operation == 'set':

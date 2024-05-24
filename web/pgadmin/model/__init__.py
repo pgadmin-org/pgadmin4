@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 39
+SCHEMA_VERSION = 40
 
 ##########################################################################
 #
@@ -433,11 +433,12 @@ class Macros(db.Model):
 class UserMacros(db.Model):
     """Define the macro for a particular user."""
     __tablename__ = 'user_macros'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mid = db.Column(
-        db.Integer, db.ForeignKey('macros.id'), primary_key=True
+        db.Integer, db.ForeignKey('macros.id'), nullable=True
     )
     uid = db.Column(
-        db.Integer, db.ForeignKey(USER_ID), primary_key=True
+        db.Integer, db.ForeignKey(USER_ID)
     )
     name = db.Column(db.String(1024), nullable=False)
     sql = db.Column(db.Text(), nullable=False)
