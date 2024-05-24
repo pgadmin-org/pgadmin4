@@ -19,7 +19,7 @@ export default function ForgotPasswordPage({csrfToken, actionUrl, ...props}) {
         <div>{gettext('Enter the email address for the user account you wish to recover the password for:')}</div>
         <InputText name="email" value={form.email} onChange={(v)=>onTextChange('email', v)} placeholder={gettext('Email Address')} autoFocus
           controlProps={{autoComplete: null}} />
-        <SecurityButton name="internal_button" value="Recover Password">{gettext('Recover Password')}</SecurityButton>
+        <SecurityButton name="internal_button" value="Recover Password" disabled={!form.email}>{gettext('Recover Password')}</SecurityButton>
       </form>
     </BasePage>
   );
