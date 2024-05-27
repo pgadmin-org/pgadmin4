@@ -15,7 +15,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import { FilterIcon, CommitIcon, RollbackIcon } from '../../../../../../static/js/components/ExternalIcon';
+import { FilterIcon, CommitIcon, RollbackIcon, ExecuteQueryIcon } from '../../../../../../static/js/components/ExternalIcon';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
 import ExplicitRoundedIcon from '@mui/icons-material/ExplicitRounded';
@@ -88,7 +88,14 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     setButtonsDisabled((prev)=>({...prev, [name]: disable}));
   }, []);
 
-  const executeQuery = useCallback(()=>{
+  const executeCursor = useCallback(()=>{
+    if(!queryToolCtx.preferences.sqleditor.underline_query_cursor && queryToolCtx.preferences.sqleditor.underlined_query_execute_warning){
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTE_CURSOR_WARNING);
+    } else {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION,true);
+    }
+  }, [queryToolCtx.preferences.sqleditor]);
+  const executeScript = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
   }, []);
   const cancelQuery = useCallback(()=>{
@@ -96,7 +103,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   }, []);
 
   const explain = useCallback((analyze=false)=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, {
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, false, {
       format: 'json',
       analyze: analyze,
       verbose: Boolean(checkedMenuItems['explain_verbose']),
@@ -278,7 +285,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', null, true);
   };
   const executeMacro = (m)=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, m.sql);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION,false, null, m.sql);
   };
   const onLimitChange=(e)=>{
     setLimit(e.target.value);
@@ -389,9 +396,15 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
       }
     },
     {
-      shortcut: queryToolPref.execute_query,
+      shortcut: queryToolPref.execute_script,
       options: {
-        callback: ()=>{!buttonsDisabled['execute']&&executeQuery();}
+        callback: ()=>{!buttonsDisabled['execute']&&executeScript();}
+      }
+    },
+    {
+      shortcut: queryToolPref.execute_cursor,
+      options: {
+        callback: ()=>{!buttonsDisabled['execute']&&executeCursor();}
       }
     },
     {
@@ -521,7 +534,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
             onClick={cancelQuery} disabled={buttonsDisabled['cancel']} shortcut={queryToolPref.btn_cancel_query} />
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
-            onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
+            onClick={executeScript} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_script}/>
+          <PgIconButton title={gettext('Execute query')} icon={<ExecuteQueryIcon style={{padding: '2px 5px'}} />}
+            onClick={executeCursor} disabled={buttonsDisabled['execute'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.execute_cursor}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} shortcut={queryToolPref.btn_execute_options}
             onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>

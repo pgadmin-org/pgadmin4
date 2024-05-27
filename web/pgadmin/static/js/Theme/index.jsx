@@ -335,6 +335,9 @@ function getFinalTheme(baseTheme) {
       },
       right: {
         borderRight: '1px solid '+baseTheme.otherVars.borderColor,
+      },
+      left: {
+        borderLeft: '1px solid '+baseTheme.otherVars.borderColor,
       }
     },
     nodeIcon: {

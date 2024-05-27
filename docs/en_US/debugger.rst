@@ -61,6 +61,7 @@ values required by the program:
 
 .. image:: images/debug_params.png
     :alt: Debugger parameter dialog
+    :align: center
 
 Use the fields on the *Debugger* dialog to provide a value for each parameter:
 

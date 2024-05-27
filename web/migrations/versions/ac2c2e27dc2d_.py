@@ -8,6 +8,8 @@ Create Date: 2024-05-17 19:35:03.700104
 """
 from alembic import op
 import sqlalchemy as sa
+from pgadmin.model import Preferences
+from pgadmin.model import db
 
 # revision identifiers, used by Alembic.
 revision = 'ac2c2e27dc2d'
@@ -17,6 +19,10 @@ depends_on = None
 
 
 def upgrade():
+    db.session.query(Preferences).filter(
+            Preferences.name == 'execute_query').update({'name': 'execute_script'})
+    db.session.commit()
+    
     meta = sa.MetaData()
     meta.reflect(op.get_bind(), only=('user_macros',))
     user_macros_table = sa.Table('user_macros', meta)

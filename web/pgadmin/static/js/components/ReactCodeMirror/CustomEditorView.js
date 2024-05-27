@@ -6,6 +6,7 @@ import { syntaxTree } from '@codemirror/language';
 import { autocompletion } from '@codemirror/autocomplete';
 import {undo, indentMore, indentLess, toggleComment} from '@codemirror/commands';
 import { errorMarkerEffect } from './extensions/errorMarker';
+import { currentQueryHighlighterEffect } from './extensions/currentQueryHighlighter';
 import { activeLineEffect, activeLineField } from './extensions/activeLineMarker';
 import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/breakpointGutter';
 
@@ -102,7 +103,7 @@ export default class CustomEditorView extends EditorView {
         // We already had found valid text
         if(validTextFound) {
           // continue till it reaches start so we can check for empty lines, etc.
-          if(statementStartPos > 0 && statementStartPos < startPos) {
+          if(statementStartPos >= 0 && statementStartPos < startPos) {
             startPos -= 1;
             continue;
           }
@@ -166,10 +167,18 @@ export default class CustomEditorView extends EditorView {
       if(startPos < 0) startPos = 0;
       if(endPos > this.state.doc.length) endPos = this.state.doc.length;
 
-      return this.state.sliceDoc(startPos, endPos).trim();
+      return {
+        value: this.state.sliceDoc(startPos, endPos).trim(),
+        from: startPos,
+        to: endPos,
+      };
     } catch (error) {
       console.error(error);
-      return this.getValue();
+      return {
+        value: '',
+        from: 0,
+        to: 0,
+      };
     }
   }
 
@@ -313,5 +322,9 @@ export default class CustomEditorView extends EditorView {
   setActiveLine(line) {
     let scrollEffect = line >= 0 ? [EditorView.scrollIntoView(this.state.doc.line(line).from, {y: 'center'})] : [];
     this.dispatch({ effects: [activeLineEffect.of({ from: line, to: line })].concat(scrollEffect) });
+  }
+
+  setQueryHighlightMark(from,to) {
+    this.dispatch({ effects: currentQueryHighlighterEffect.of({ from, to }) });
   }
 }

@@ -39,6 +39,10 @@ export default function cmOverride(theme) {
             backgroundColor: editor.activeline,
           },
 
+          '& .cm-current-query': {
+            borderBottom: `1px solid ${editor.currentQueryBorderColor}`
+          },
+
           '& .tok-keyword': {
             color: editor.keyword,
             fontWeight: 600

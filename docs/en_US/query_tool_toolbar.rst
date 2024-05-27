@@ -128,6 +128,9 @@ Query Execution
    |                      |    transaction.  Any changes made by the transaction will be visible to others, and               |                |
    |                      |    durable in the event of a crash.                                                               |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Execute query*      | Click the *Execute query* icon to either execute the query where the cursor is present or         | Option+F5 (MAC)|
+   |                      | refresh the query highlighted in the SQL editor panel.                                            | Alt+F5 (Others)|
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Explain*            | Click the *Explain* icon to view an explanation plan for the current query. The result of the     | F7             |
    |                      | EXPLAIN is displayed graphically on the *Explain* tab of the output panel, and in text            |                |
    |                      | form on the *Data Output* tab.                                                                    |                |
@@ -205,6 +208,8 @@ Data Editing Options
    |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Graph Visualiser     | Use the Graph Visualiser button to generate graphs of the query results.                          |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | SQL                  | Use the SQL button to check the current query that gave the data.                                 |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Status Bar

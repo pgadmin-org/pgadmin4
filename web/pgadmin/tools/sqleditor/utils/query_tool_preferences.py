@@ -129,6 +129,40 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.view_edit_promotion_warning = self.preference.register(
+        'Options', 'view_edit_promotion_warning',
+        gettext("Show View/Edit Data Promotion Warning?"),
+        'boolean', True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'If set to True, View/Edit Data tool will show promote to '
+            'Query tool confirm dialog on query edit.'
+        )
+    )
+
+    self.underline_query_cursor = self.preference.register(
+        'Options', 'underline_query_cursor',
+        gettext("Underline query at cursor?"),
+        'boolean', True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'If set to True, query tool will parse and underline '
+            'the query at the cursor position.'
+        )
+    )
+
+    self.underlined_query_execute_warning = self.preference.register(
+        'Options', 'underlined_query_execute_warning',
+        gettext("Underlined query execute warning?"),
+        'boolean', True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'If set to True, query tool will warn upon clicking the '
+            'Execute Query button in the query tool. The warning will '
+            'appear only if Underline query at cursor? is set to False.'
+        )
+    )
+
     self.sql_font_size = self.preference.register(
         'Editor', 'plain_editor_mode',
         gettext("Plain text mode?"), 'boolean', False,
@@ -177,17 +211,6 @@ def register_query_tool_preferences(self):
         help_str=gettext(
             'Specifies whether or not to highlight matched braces '
             'in the editor.'
-        )
-    )
-
-    self.view_edit_promotion_warning = self.preference.register(
-        'Editor', 'view_edit_promotion_warning',
-        gettext("Show View/Edit Data Promotion Warning?"),
-        'boolean', True,
-        category_label=PREF_LABEL_OPTIONS,
-        help_str=gettext(
-            'If set to True, View/Edit Data tool will show promote to '
-            'Query tool confirm dialog on query edit.'
         )
     )
 
@@ -366,11 +389,29 @@ def register_query_tool_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
-        'execute_query',
+        'execute_script',
         gettext('Execute script'),
         'keyboardshortcut',
         {
             'alt': False,
+            'shift': False,
+            'control': False,
+            'key': {
+                'key_code': 116,
+                'char': 'F5'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'execute_cursor',
+        gettext('Execute query'),
+        'keyboardshortcut',
+        {
+            'alt': True,
             'shift': False,
             'control': False,
             'ctrl_is_meta': False,
@@ -380,6 +421,7 @@ def register_query_tool_preferences(self):
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
     )
 
     self.preference.register(

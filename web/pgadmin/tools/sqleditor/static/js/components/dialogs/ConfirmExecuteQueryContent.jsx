@@ -4,10 +4,23 @@ import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
-import HTMLReactParser from 'html-react-parser';
 import PropTypes from 'prop-types';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import { InputCheckbox } from '../../../../../../static/js/components/FormComponents';
+import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
+
+const StyledEditor = styled('div')(({theme})=>({
+  flexGrow: 1,
+  backgroundColor: theme.palette.background.default,
+  padding: '1rem',
+  '& .textarea': {
+    ...theme.mixins.panelBorder?.all,
+    outline: 0,
+    resize: 'both',
+    maxHeight: '500px',
+    overflowY: 'scroll',
+  },
+}));
 
 const StyledFooter = styled('div')(({theme})=>({
   display: 'flex',
@@ -19,14 +32,21 @@ const StyledFooter = styled('div')(({theme})=>({
   },
 }));
 
-export default function ConfirmPromotionContent({ onContinue, onClose, closeModal, text }) {
+export default function ConfirmExecuteQueryContent({ onContinue, onClose, closeModal, text }) {
   const [formData, setFormData] = useState({
     save_user_choice: false
   });
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <StyledEditor>
+        <Box>Do you want to run this query -</Box>
+        <CodeMirror
+          value={text || ''}
+          className={'textarea'}
+          readonly={true}
+        />
+      </StyledEditor>
       <StyledFooter>
         <InputCheckbox controlProps={{ label: gettext('Don\'t ask again') }} value={formData['save_user_choice']}
           onChange={(e) => setFormData((prev) => ({ ...prev, 'save_user_choice': e.target.checked }))} />
@@ -37,7 +57,7 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
           }} >{gettext('Cancel')}</DefaultButton>
           <PrimaryButton data-test="Continue" className={'margin'} startIcon={<CheckRounded />} onClick={() => {
             let postFormData = new FormData();
-            postFormData.append('pref_data', JSON.stringify([{ 'name': 'view_edit_promotion_warning', 'value': !formData.save_user_choice, 'module': 'sqleditor' }]));
+            postFormData.append('pref_data', JSON.stringify([{ 'name': 'underlined_query_execute_warning', 'value': !formData.save_user_choice, 'module': 'sqleditor' }]));
             onContinue?.(postFormData);
             closeModal();
           }} autoFocus={true} >{gettext('Continue')}</PrimaryButton>
@@ -47,7 +67,7 @@ export default function ConfirmPromotionContent({ onContinue, onClose, closeModa
   );
 }
 
-ConfirmPromotionContent.propTypes = {
+ConfirmExecuteQueryContent.propTypes = {
   closeModal: PropTypes.func,
   text: PropTypes.string,
   onContinue: PropTypes.func,

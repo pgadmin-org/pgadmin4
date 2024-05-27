@@ -45,6 +45,7 @@ import errorMarkerExtn from '../extensions/errorMarker';
 import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
 import activeLineExtn from '../extensions/activeLineMarker';
+import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{fontSize: '1.2em'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{fontSize: '1.2em'}} />);
@@ -328,6 +329,9 @@ export default function Editor({
     }
     if (pref.brace_matching) {
       newConfigExtn.push(bracketMatching());
+    }
+    if (pref.underline_query_cursor){
+      newConfigExtn.push(currentQueryHighlighterExtn());
     }
 
     editor.current.dispatch({
