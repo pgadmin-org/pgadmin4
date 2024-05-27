@@ -245,7 +245,7 @@ class PGDReplicationGroupsView(PGChildNodeView):
                     row['node_group_id'],
                     sid,
                     row['node_group_name'],
-                    icon='icon-server_group',
+                    icon='icon-pgd_replication_groups',
                     inode=True
                 ))
 

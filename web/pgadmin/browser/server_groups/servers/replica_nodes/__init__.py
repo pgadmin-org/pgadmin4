@@ -86,6 +86,10 @@ class ReplicationNodesModule(CollectionNodeModule):
         return False
 
     @property
+    def collection_icon(self):
+        return 'icon-server_group'
+
+    @property
     def script_load(self):
         """
         Load the module script for Replication Nodes, when any of the server
