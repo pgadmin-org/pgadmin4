@@ -14,13 +14,14 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 16.2
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 16.3
 
 
 New features
 ************
 
   | `Issue #4735 <https://github.com/pgadmin-org/pgadmin4/issues/4735>`_ -  Added support for the 'Add to macros' feature and fixed various usability issues.
+  | `Issue #6841 <https://github.com/pgadmin-org/pgadmin4/issues/6841>`_ -  Added support for executing the query at the cursor position in the query tool.
   | `Issue #7192 <https://github.com/pgadmin-org/pgadmin4/issues/7192>`_ -  Changes in Query Tool, Debugger, and ERD Tool shortcuts to remove the use of Accesskey which will allow them to be customized.
   | `Issue #7215 <https://github.com/pgadmin-org/pgadmin4/issues/7215>`_ -  Added support for viewing PGD Clusters.
   | `Issue #7411 <https://github.com/pgadmin-org/pgadmin4/issues/7411>`_ -  Enhance the Delete dialog by highlighting the names of the objects to be deleted in bold.
