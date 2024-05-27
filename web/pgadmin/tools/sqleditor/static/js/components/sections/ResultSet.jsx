@@ -181,7 +181,7 @@ export class ResultSetUtils {
   }
 
   async startExecution(query, explainObject, onIncorrectSQL, flags={
-    isQueryTool: true, external: false, reconnect: false
+    isQueryTool: true, external: false, reconnect: false, executeCursor: false
   }) {
     let startTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
@@ -232,7 +232,7 @@ export class ResultSetUtils {
           is_pgadmin_query: false,
         });
         if(!flags.external) {
-          this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, httpMessageData.data.result);
+          this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, httpMessageData.data.result, flags.executeCursor);
         }
       }
     } catch(e) {
@@ -241,7 +241,7 @@ export class ResultSetUtils {
         e,
         {
           connectionLostCallback: ()=>{
-            this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, flags.external, true);
+            this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, flags.external, true, flags.executeCursor);
           },
           checkTransaction: true,
         }
@@ -282,7 +282,7 @@ export class ResultSetUtils {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, error.response.data.data?.transaction_status);
     if (!flags.external) {
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, parseApiError(error, true));
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, parseApiError(error, true), flags.executeCursor);
     }
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_HISTORY, {
       status: false,
@@ -296,7 +296,7 @@ export class ResultSetUtils {
     });
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
       connectionLostCallback: ()=>{
-        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, flags.external, true);
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, flags.external, true, flags.executeCursor);
       },
       checkTransaction: true,
     });
@@ -751,6 +751,7 @@ export function ResultSet() {
   const queryToolCtx = useContext(QueryToolContext);
   const layoutDocker = useContext(LayoutDockerContext);
   const [loaderText, setLoaderText] = useState('');
+  const [dataOutputQuery,setDataOutputQuery] = useState('');
   const [queryData, setQueryData] = useState(null);
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -791,7 +792,7 @@ export function ResultSet() {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
   };
 
-  const executionStartCallback = async (query, explainObject, external=false, reconnect=false)=>{
+  const executionStartCallback = async (query, explainObject, external=false, reconnect=false, executeCursor=false)=>{
     const yesCallback = async ()=>{
       /* Reset */
       eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, null);
@@ -800,13 +801,14 @@ export function ResultSet() {
       setSelectedColumns(new Set());
       rsu.current.resetClientPKIndex();
       setLoaderText(gettext('Waiting for the query to complete...'));
+      setDataOutputQuery(query);
       return await rsu.current.startExecution(
         query, explainObject,
         ()=>{
           setColumns([]);
           setRows([]);
         },
-        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
+        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect, executeCursor: executeCursor}
       );
     };
 
@@ -835,7 +837,7 @@ export function ResultSet() {
           setRows([]);
         },
         explainObject,
-        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
+        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect, executeCursor: executeCursor}
       );
     };
 
@@ -1386,7 +1388,7 @@ export function ResultSet() {
         <EmptyPanelMessage text={gettext('No data output. Execute a query to get output.')}/>
       }
       {queryData && <>
-        <ResultSetToolbar containerRef={containerRef} canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}/>
+        <ResultSetToolbar containerRef={containerRef} query={dataOutputQuery} canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}/>
         <Box flexGrow="1" minHeight="0">
           <QueryToolDataGrid
             columns={columns}

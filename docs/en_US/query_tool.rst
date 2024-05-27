@@ -26,13 +26,12 @@ allows you to:
     :align: center
 
 You can open multiple copies of the Query tool in individual tabs
-simultaneously.  To close a copy of the Query tool, click the *X* in the
-upper-right hand corner of the tab bar.
+simultaneously.  To close a copy of the Query tool, click the *X* of the tab.
 
 The Query Tool features two panels:
 
 * The upper panel displays the *SQL Editor*. You can use the panel to enter,
-  edit, or execute a query. It also shows the *History* tab which can be used
+  edit, or execute a query or a script. It also shows the *History* tab which can be used
   to view the queries that have been executed in the session, and a *Scratch Pad*
   which can be used to hold text snippets during editing. If the Scratch Pad is
   closed, it can be re-opened (or additional ones opened) by right-clicking in
@@ -75,12 +74,28 @@ key combination to select from a popup menu of autocomplete options.
 
 After entering a query, select the *Execute script* icon from the toolbar. The
 complete contents of the SQL editor panel will be sent to the database server
-for execution. To execute only a section of the code that is displayed in the
-SQL editor, highlight the text that you want the server to execute, and click
-the *Execute script* icon.
+for execution. To execute only a section of the code that is displayed in the 
+SQL editor, highlight the text that you want the server to execute, and click the 
+*Execute script* icon.
 
-.. image:: images/query_execute_section.png
+.. image:: images/query_execute_script.png
+    :alt: Query tool execute script section
+    :align: center
+
+You can also execute a query based on cursor position. Query tool will detect
+a query and underline it when cursor position changes. Now, to execute the
+current underlined query, hit the *Execute query* button on the toolbar. If a section
+is highlighted then it will behave like normal execute.
+
+.. image:: images/query_execute_query.png
     :alt: Query tool execute query section
+    :align: center
+
+The warning will appear only if *Underline query at cursor?* is set to *False* and
+the *Underlined query execute warning?* switch is set to *True* Preferences Query tool's Options.
+
+.. image:: images/query_execute_warning.png
+    :alt: Query tool execute query warning
     :align: center
 
 The message returned by the server when a command executes is displayed on the
@@ -159,8 +174,6 @@ The *Data Output* tab displays the result set of the query in a table format.
 You can:
 
 * Select and copy from the displayed result set.
-* Use the *Execute script* options to retrieve query execution information and
-  set query execution options.
 * Use the *Save results to file* icon to save the content of the *Data Output*
   tab as a comma-delimited file.
 * Edit the data in the result set of a SELECT query if it is updatable.

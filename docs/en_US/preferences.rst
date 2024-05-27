@@ -399,9 +399,6 @@ Use the fields on the *Editor* panel to change settings of the query editor.
   changed to text/plain. Keyword highlighting and code folding will be disabled.
   This will improve editor performance with large files.
 
-* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
-  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
-
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences dialog sqleditor explain options
     :align: center
@@ -474,6 +471,16 @@ Use the fields on the *Options* panel to manage editor preferences.
   by the Primary Key columns by default. When using the First/Last 100 Rows options,
   data is always sorted.
 
+* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
+  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
+
+* When the *Underline query at cursor?* switch is set to *True*, query tool will 
+  parse and underline the query at the cursor position.
+
+* When the *Underlined query execute warning?* switch is set to *True*, query tool 
+  will warn upon clicking the *Execute Query* button in the query tool.  The warning 
+  will appear only if *Underline query at cursor?* is set to *False*.
+
 .. image:: images/preferences_sql_results_grid.png
     :alt: Preferences dialog sql results grid section
     :align: center
@@ -503,7 +510,7 @@ preferences for copied data.
     :align: center
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
-Query Tool window navigation:
+Query Tool window navigation.
 
 .. image:: images/preferences_sql_formatting.png
     :alt: Preferences dialog SQL Formatting section

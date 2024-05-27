@@ -11,6 +11,7 @@ and select *Connect Server...* from the context menu.
 
 .. image:: images/connect_to_server.png
     :alt: Connect to server dialog
+    :align: center
 
 Provide authentication information for the selected server:
 
@@ -26,6 +27,7 @@ Tunnel and Database server passwords if not already saved.
 
 .. image:: images/connect_to_tunneled_server.png
     :alt: Connect to server dialog
+    :align: center
 
 Provide authentication information for the selected server:
 

@@ -7,15 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
-import { makeStyles } from '@mui/styles';
-import { Box } from '@mui/material';
+import { styled } from '@mui/styles';
+import { Portal } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import PlaylistAddRoundedIcon from '@mui/icons-material/PlaylistAddRounded';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
-import { PasteIcon, SaveDataIcon } from '../../../../../../static/js/components/ExternalIcon';
+import { PasteIcon, SQLQueryIcon, SaveDataIcon } from '../../../../../../static/js/components/ExternalIcon';
 import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
 import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -24,23 +24,37 @@ import gettext from 'sources/gettext';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import PropTypes from 'prop-types';
+import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
+import { setEditorPosition } from '../QueryToolDataGrid/Editors';
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    padding: '2px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    ...theme.mixins.panelBorder.bottom,
-  },
+const StyledDiv = styled('div')(({theme})=>({
+  padding: '2px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  backgroundColor: theme.otherVars.editorToolbarBg,
+  ...theme.mixins.panelBorder.bottom,
 }));
 
-export function ResultSetToolbar({canEdit, totalRowCount}) {
-  const classes = useStyles();
+const StyledEditor = styled('div')(({theme})=>({
+  position: 'absolute',
+  backgroundColor: theme.palette.background.default,
+  fontSize: '12px',
+  ...theme.mixins.panelBorder.all,
+  maxWidth:'50%',
+  overflow:'auto',
+  maxHeight:'35%',
+  '& .textarea': {
+    border: 0,
+    outline: 0,
+    resize: 'both',
+  }
+}));
+
+export function ResultSetToolbar({query,canEdit, totalRowCount}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
-
+  const [dataOutputQueryBtn,setDataOutputQueryBtn] = useState(false);
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save-data': true,
     'delete-rows': true,
@@ -168,9 +182,31 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
     },
   ], queryToolCtx.mainContainerRef);
 
+  function suppressEnterKey(e) {
+    if(e.keyCode == 13) {
+      e.stopPropagation();
+    }
+  }
+
+  const ShowDataOutputQueryPopup =()=> {
+    return (
+      <Portal container={document.body}>
+        <StyledEditor ref={(ele)=>{
+          setEditorPosition(document.getElementById('sql-query'), ele, '.MuiBox-root', 29);
+        }} onKeyDown={suppressEnterKey}>
+          <CodeMirror
+            value={query || ''}
+            className={'textarea'}
+            readonly={true}
+          />
+        </StyledEditor>
+      </Portal>
+    );
+  };
+  
   return (
     <>
-      <Box className={classes.root}>
+      <StyledDiv>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
             shortcut={queryToolPref.btn_add_row} disabled={!canEdit} onClick={addRow} />
@@ -198,7 +234,16 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
           <PgIconButton title={gettext('Graph Visualiser')} icon={<TimelineRoundedIcon />}
             onClick={showGraphVisualiser} disabled={buttonsDisabled['save-result']} />
         </PgButtonGroup>
-      </Box>
+        {query && 
+        <>
+          <PgButtonGroup size="small">
+            <PgIconButton title={gettext('SQL query of data')} icon={<SQLQueryIcon />}
+              onClick={()=>{setDataOutputQueryBtn(prev=>!prev);}} onBlur={()=>{setDataOutputQueryBtn(false);}} disabled={!query} id='sql-query'/>
+          </PgButtonGroup>
+          { dataOutputQueryBtn && <ShowDataOutputQueryPopup />}
+        </>
+        }
+      </StyledDiv>
       <PgMenu
         anchorRef={copyMenuRef}
         open={menuOpenId=='menu-copyheader'}
@@ -220,6 +265,7 @@ export function ResultSetToolbar({canEdit, totalRowCount}) {
 }
 
 ResultSetToolbar.propTypes = {
+  query: PropTypes.string,
   canEdit: PropTypes.bool,
   totalRowCount: PropTypes.number,
 };

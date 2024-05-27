@@ -120,7 +120,7 @@ function isValidArray(val) {
   return !(val != '' && (val.charAt(0) != '{' || val.charAt(val.length - 1) != '}'));
 }
 
-function setEditorPosition(cellEle, editorEle) {
+export function setEditorPosition(cellEle, editorEle, closestEle, topValue) {
   if(!editorEle || !cellEle) {
     return;
   }
@@ -128,12 +128,12 @@ function setEditorPosition(cellEle, editorEle) {
   if(editorEle.style.left || editorEle.style.top) {
     return;
   }
-  let gridEle = cellEle.closest('.rdg');
+  let gridEle = cellEle.closest(closestEle);
   let cellRect = cellEle.getBoundingClientRect();
   let gridEleRect = gridEle.getBoundingClientRect();
   let position = {
     left: cellRect.left,
-    top:  Math.max(cellRect.top - editorEle.offsetHeight + 12, 0)
+    top:  Math.max(cellRect.top - editorEle.offsetHeight + topValue, 0)
   };
 
   if ((position.left + editorEle.offsetWidth + 10) > gridEle.offsetWidth) {
@@ -204,7 +204,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
   return(
     <Portal container={document.body}>
       <Box ref={(ele)=>{
-        setEditorPosition(getCellElement(column.idx), ele);
+        setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
       }} className={classes.textEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <textarea ref={autoFocusAndSelect} className={classes.textarea} value={localVal} onChange={onChange} />
         <Box display="flex" justifyContent="flex-end">
@@ -374,7 +374,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   return (
     <Portal container={document.body}>
       <Box ref={(ele)=>{
-        setEditorPosition(getCellElement(column.idx), ele);
+        setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
       }} className={classes.jsonEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <JsonEditor
           value={localVal}

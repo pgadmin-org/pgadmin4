@@ -133,7 +133,7 @@ export default function(basicSettings) {
         foldmarker: '#0000FF',
         activeline: '#323e43',
         activelineLight: '#323e43',
-        activelineBorderColor: 'none',
+        currentQueryBorderColor: '#A5CBE2',
         guttersBg: '#303030',
         guttersFg: '#8A8A8A',
       },
