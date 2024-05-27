@@ -150,20 +150,12 @@ export default function MacrosDialog({onClose, onSave}) {
     try {
       // Fetch user macros data
       let { data: userMacroRespData } = await queryToolCtx.api.get(url_for('sqleditor.get_user_macros'));
-      setUserMacrosData(userMacroRespData);
 
-    } catch (error) {
-      setMacrosErr(error);
-    }
-  }, []);
-
-
-  React.useEffect(async ()=>{
-    try {
-      // Fetch macros data
       let {data: respData} = await queryToolCtx.api.get(url_for('sqleditor.get_macros', {
         'trans_id': queryToolCtx.params.trans_id,
       }));
+
+      setUserMacrosData(userMacroRespData);
       /* Copying id to mid to track key id changes */
       setMacrosData(respData.macro.map((m)=>({...m, mid: m.id})));
 
@@ -171,7 +163,6 @@ export default function MacrosDialog({onClose, onSave}) {
       setMacrosErr(error);
     }
   }, []);
-
 
   const onSaveClick = (_isNew, changeData)=>{
     return new Promise((resolve, reject)=>{
