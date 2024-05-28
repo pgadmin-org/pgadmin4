@@ -648,7 +648,7 @@ function getFinalTheme(baseTheme) {
               backgroundColor: 'abc',
             },
             '&.Mui-selected': {
-              color: baseTheme.palette.primary.main,
+              color: baseTheme.palette.primary.contrastTextLight ?? baseTheme.palette.primary.main,
               backgroundColor: baseTheme.palette.primary.light,
               borderColor: baseTheme.palette.primary.main,
               zIndex: 1,
