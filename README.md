@@ -7,6 +7,7 @@ In the following documentation and examples, *$PGADMIN4_SRC/* is used to denote
 the top-level directory of a copy of the pgAdmin source tree, either from a
 tarball or a git checkout.
 
+
 ## Architecture
 
 pgAdmin 4 is written as a web application with Python(Flask) on the server side
