@@ -1,37 +1,24 @@
 {
   "name": "pgadmin4",
   "description": "pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.",
-  "main": "src/html/pgadmin.html",
   "repository": "https://github.com/postgres/pgadmin4.git",
   "author": "pgAdmin Development Team (https://www.pgadmin.org/)",
   "license": "PostgreSQL",
-  "chromium-args": "--disable-popup-blocking --disable-gpu --disable-devtools",
-  "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
-  "nodejs": true,
-  "window": {
-    "width": 750,
-    "height": 600,
-    "toolbar": false,
-    "fullscreen": false,
-    "frame": false,
-    "show": true,
-    "position": "center",
-    "always-on-top": true,
-    "icon": "assets/pgAdmin4.png"
+  "type": "module",
+  "main": "src/js/pgadmin.js",
+  "scripts": {
+    "start": "electron .",
+    "linter": "yarn run eslint -c .eslintrc.js ."
   },
-  "icons": {
-    "256": "assets/pgAdmin4.png"
+  "packageManager": "yarn@3.8.2",
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "electron": "^30.0.5",
+    "eslint": "^9.5.0"
   },
   "dependencies": {
     "axios": "^1.7.2",
-    "bootstrap": "^4.5.3"
-  },
-  "devDependencies": {
-    "eslint": "^9.5.0",
-    "nw": "0.77.0"
-  },
-  "scripts": {
-    "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js ."
-  },
-  "packageManager": "yarn@3.8.2"
+    "bootstrap": "^4.5.3",
+    "electron-store": "^9.0.0"
+  }
 }

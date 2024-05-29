@@ -22,7 +22,7 @@ const MAIN_MENUS = [
 ];
 
 let { name: browser } = getBrowser();
-if (browser == 'Nwjs') {
+if (browser == 'Electron') {
   let controlKey = isMac() ? 'cmd' : 'ctrl';
   let fullScreenKey = isMac() ? 'F' : 'F10';
 
@@ -47,9 +47,31 @@ if (browser == 'Nwjs') {
 }
 
 
-
-
 export default class MainMenuFactory {
+  static electronCallbacks = {};
+
+  static toElectron() {
+    // we support 2 levels of submenu
+    return pgAdmin.Browser.MainMenus.map((m)=>{
+      return {
+        ...m.serialize(),
+        submenu: m.menuItems.map((sm)=>{
+          const smName = `${m.name}_${sm.name}`;
+          MainMenuFactory.electronCallbacks[smName] = sm.callback;
+          return {
+            ...sm.serialize(),
+            submenu: sm.getMenuItems()?.map((smsm)=>{
+              MainMenuFactory.electronCallbacks[`${smName}_${smsm.name}`] = sm.callback;
+              return {
+                ...smsm.serialize(),
+              };
+            })
+          };
+        })
+      };
+    });
+  }
+
   static createMainMenus() {
     pgAdmin.Browser.MainMenus = [];
     MAIN_MENUS.forEach((_menu) => {
@@ -70,6 +92,12 @@ export default class MainMenuFactory {
     });
 
     pgAdmin.Browser.enable_disable_menus();
+
+    window.electronUI?.onMenuClick((menuName)=>{
+      MainMenuFactory.electronCallbacks[menuName]?.();
+    });
+
+    window.electronUI?.setMenus(MainMenuFactory.toElectron());
   }
 
   static getSeparator(label, priority) {
@@ -78,7 +106,8 @@ export default class MainMenuFactory {
 
   static refreshMainMenuItems(menu, menuItems) {
     menu.setMenuItems(menuItems);
-    pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', menu);
+    window.electronUI?.setMenus(MainMenuFactory.toElectron());
+    pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', pgAdmin.Browser.MainMenus);
   }
 
   static createMenuItem(options) {
@@ -102,6 +131,7 @@ export default class MainMenuFactory {
       }
     }}, (menu, item)=> {
       pgAdmin.Browser.Events.trigger('pgadmin:nw-enable-disable-menu-items', menu, item);
+      window.electronUI?.enableDisableMenuItems(menu?.serialize(), item?.serialize());
     }, (item) => {
       pgAdmin.Browser.Events.trigger('pgadmin:nw-update-checked-menu-item', item);
     });

@@ -24,7 +24,7 @@ import { Box } from '@mui/material';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
 import gettext from 'sources/gettext';
 import NewConnectionDialog from './dialogs/NewConnectionDialog';
-import { evalFunc } from '../../../../../static/js/utils';
+import { evalFunc, getBrowser } from '../../../../../static/js/utils';
 import { Notifications } from './sections/Notifications';
 import MacrosDialog from './dialogs/MacrosDialog';
 import FilterDialog from './dialogs/FilterDialog';
@@ -405,6 +405,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
   };
 
+  const onBeforeUnloadElectron = (e)=>{
+    e.preventDefault();
+    e.returnValue = 'prevent';
+    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
+  };
+
   useEffect(()=>{
     getSQLScript();
     initializeQueryTool();
@@ -418,7 +424,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL, ()=>{
-      qtPanelDocker.close(qtPanelId, true);
+      if(getBrowser().name == 'Electron' && qtState.is_new_tab) {
+        window.removeEventListener('beforeunload', onBeforeUnloadElectron);
+        // somehow window.close was not working may becuase the removeEventListener
+        // was not completely executed. Add timeout.
+        setTimeout(()=>window.close(), 50);
+      } else {
+        qtPanelDocker.close(qtPanelId, true);
+      }
     });
 
     qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
@@ -561,7 +574,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     const events = [
       [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, ()=>{
         let fileParams = {
-          'supported_types': ['*', 'sql'], // file types allowed
+          'supported_types': ['sql', '*'], // file types allowed
           'dialog_type': 'select_file', // open select file dialog
         };
         pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
@@ -573,7 +586,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, qtState.current_file);
         } else {
           let fileParams = {
-            'supported_types': ['*', 'sql'],
+            'supported_types': ['sql', '*'],
             'dialog_type': 'create_file',
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
@@ -632,13 +645,18 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
   useEffect(()=> {
     // Add beforeunload event if "Confirm on close or refresh" option is enabled in the preferences.
-    if(qtState.preferences.browser.confirm_on_refresh_close){
-      window.addEventListener('beforeunload', onBeforeUnload);
+    if(getBrowser().name == 'Electron') {
+      window.addEventListener('beforeunload', onBeforeUnloadElectron);
     } else {
-      window.removeEventListener('beforeunload', onBeforeUnload);
+      if(qtState.preferences.browser.confirm_on_refresh_close){
+        window.addEventListener('beforeunload', onBeforeUnload);
+      } else {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+      }
     }
 
     return () => {
+      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
       window.removeEventListener('beforeunload', onBeforeUnload);
     };
   }, [qtState.preferences.browser]);

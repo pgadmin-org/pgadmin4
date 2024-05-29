@@ -26,56 +26,37 @@ _build_runtime() {
     echo "Assembling the runtime environment..."
 
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
-
-    # Get a fresh copy of nwjs.
-    # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
-    #       in a retry loop as Yarn/Npm don't seem to like that.
-
+    # Get a fresh copy of electron
     # uname -m returns "x86_64" on Intel, but we need "x64"
-    NW_ARCH="x64"
+    ELECTRON_ARCH="x64"
     if [ "$(uname -m)" == "arm64" ]; then
-      NW_ARCH="arm64"
+      ELECTRON_ARCH="arm64"
     fi
 
-    # YARN:
-    # yarn add --cwd "${BUILDROOT}" nw
-    # YARN END
-
-    # WGET:
-    # Comment out the below line as the latest version having some
-    # problem https://github.com/nwjs/nw.js/issues/7964, so for the time being
-    # hardcoded the version to 0.77.0
-    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
-    NW_VERSION="0.77.0"
+    ELECTRON_VERSION=$(yarn info electron | grep latest | awk -F "'" '{ print $2}')
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
-            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip" && break
-            rm "nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip"
+            wget "https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip" && break
+            rm "electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip"
         done
-        unzip "nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip"
+        unzip "electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip"
     popd > /dev/null || exit
     # WGET END
 
-    # YARN:
-    # cp -R "${BUILD_ROOT}/node_modules/nw/nwjs/nwjs.app" "${BUILD_ROOT}/"
-    # YARN END
 
-    # WGET:
-    cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-${NW_ARCH}"/nwjs.app "${BUILD_ROOT}/"
-    # WGET END
-
-    mv "${BUILD_ROOT}/nwjs.app" "${BUNDLE_DIR}"
+    mv "${BUILD_ROOT}/Electron.app" "${BUNDLE_DIR}"
+    find "${BUNDLE_DIR}" -exec touch {} \;
 
     # Copy in the runtime code
-    mkdir "${BUNDLE_DIR}/Contents/Resources/app.nw/"
-    cp -R "${SOURCE_DIR}/runtime/assets" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
-    cp -R "${SOURCE_DIR}/runtime/src" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
-    cp "${SOURCE_DIR}/runtime/package.json" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
-    cp "${SOURCE_DIR}/runtime/.yarnrc.yml" "${BUNDLE_DIR}/Contents/Resources/app.nw/"
+    mkdir "${BUNDLE_DIR}/Contents/Resources/app/"
+    cp -R "${SOURCE_DIR}/runtime/assets" "${BUNDLE_DIR}/Contents/Resources/app/"
+    cp -R "${SOURCE_DIR}/runtime/src" "${BUNDLE_DIR}/Contents/Resources/app/"
+    cp "${SOURCE_DIR}/runtime/package.json" "${BUNDLE_DIR}/Contents/Resources/app/"
+    cp "${SOURCE_DIR}/runtime/.yarnrc.yml" "${BUNDLE_DIR}/Contents/Resources/app/"
 
     # Install the runtime node_modules, then replace the package.json
-    pushd "${BUNDLE_DIR}/Contents/Resources/app.nw/" > /dev/null || exit
+    pushd "${BUNDLE_DIR}/Contents/Resources/app/" > /dev/null || exit
         yarn set version berry
         yarn set version 3
         yarn plugin import workspace-tools
@@ -178,7 +159,6 @@ _fixup_imports() {
     # Find all the files that may need tweaks
     TODO=$(find . -perm +0111 -type f -exec file "{}" \; | \
         grep -v "Frameworks/Python.framework" | \
-        grep -v "Frameworks/nwjs" | \
         grep -E "Mach-O 64-bit" | \
         awk -F ':| ' '{ORS=" "; print $1}' | \
         uniq)
@@ -273,10 +253,19 @@ _complete_bundle() {
     sed -i '' "s/%APPNAME%/${APP_NAME}/g" "${BUNDLE_DIR}/Contents/Info.plist"
     sed -i '' "s/%APPVER%/${APP_LONG_VERSION}/g" "${BUNDLE_DIR}/Contents/Info.plist"
     sed -i '' "s/%APPID%/org.pgadmin.pgadmin4/g" "${BUNDLE_DIR}/Contents/Info.plist"
-    for FILE in "${BUNDLE_DIR}"/Contents/Resources/*.lproj/InfoPlist.strings; do
-        sed -i '' 's/CFBundleGetInfoString =.*/CFBundleGetInfoString = "Copyright (C) 2013 - 2024, The pgAdmin Development Team";/g' "${FILE}"
-        sed -i '' 's/NSHumanReadableCopyright =.*/NSHumanReadableCopyright = "Copyright (C) 2013 - 2024, The pgAdmin Development Team";/g' "${FILE}"
-        echo CFBundleDisplayName = \""${APP_NAME}"\"\; >> "${FILE}"
+
+    # Rename helper execs and Update the plist
+    for helper_exec in "Electron Helper" "Electron Helper (Renderer)" "Electron Helper (Plugin)" "Electron Helper (GPU)"
+    do
+        pgadmin_exec=${helper_exec//Electron/pgAdmin 4}
+        mv "${BUNDLE_DIR}/Contents/Frameworks/${helper_exec}.app/Contents/MacOS/${helper_exec}" "${BUNDLE_DIR}/Contents/Frameworks/${helper_exec}.app/Contents/MacOS/${pgadmin_exec}"
+        mv "${BUNDLE_DIR}/Contents/Frameworks/${helper_exec}.app" "${BUNDLE_DIR}/Contents/Frameworks/${pgadmin_exec}.app"
+
+        info_plist="${BUNDLE_DIR}/Contents/Frameworks/${pgadmin_exec}.app/Contents/Info.plist"
+        cp Info.plist-helper.in "${info_plist}"
+        sed -i '' "s/%APPNAME%/${pgadmin_exec}/g" "${info_plist}"
+        sed -i '' "s/%APPVER%/${APP_LONG_VERSION}/g" "${info_plist}"
+        sed -i '' "s/%APPID%/org.pgadmin.pgadmin4.helper/g" "${info_plist}"
     done
 
     # PkgInfo
@@ -286,10 +275,10 @@ _complete_bundle() {
     cp pgAdmin4.icns "${BUNDLE_DIR}/Contents/Resources/app.icns"
 
     # Rename the executable
-    mv "${BUNDLE_DIR}/Contents/MacOS/nwjs" "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"
+    mv "${BUNDLE_DIR}/Contents/MacOS/Electron" "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"
 
     # Rename the app in package.json so the menu looks as it should
-    sed -i '' "s/\"name\": \"pgadmin4\"/\"name\": \"${APP_NAME}\"/g" "${BUNDLE_DIR}/Contents/Resources/app.nw/package.json"
+    sed -i '' "s/\"name\": \"pgadmin4\"/\"name\": \"${APP_NAME}\"/g" "${BUNDLE_DIR}/Contents/Resources/app/package.json"
 
     # Import the dependencies, and rewrite any library references
         _fixup_imports "${BUNDLE_DIR}"

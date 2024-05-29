@@ -111,8 +111,8 @@ export default function BrowserComponent({pgAdmin}) {
     <PgAdminContext.Provider value={pgAdmin}>
       <ModalProvider>
         <NotifierProvider pgAdmin={pgAdmin} onReady={()=>setUiReady(true)}/>
-        {browser != 'Nwjs' && <AppMenuBar />}
-        <div style={{height: (browser != 'Nwjs' ? 'calc(100% - 30px)' : '100%')}}>
+        {browser != 'Electron' && <AppMenuBar />}
+        <div style={{height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
           <Layout
             getLayoutInstance={(obj)=>{
               pgAdmin.Browser.docker = obj;
