@@ -1687,6 +1687,8 @@ def cancel_transaction(trans_id):
         status, result = _check_and_cancel_transaction(trans_obj,
                                                        delete_connection, conn,
                                                        manager)
+        if not status:
+            return internal_server_error(errormsg=result)
     else:
         status = False
         result = gettext(

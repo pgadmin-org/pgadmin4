@@ -888,11 +888,11 @@ export function ResultSet() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_STOP_EXECUTION, async ()=>{
       try {
         await rsu.current.stopExecution();
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_IDLE);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
       } catch(e) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, e);
+        pgAdmin.Browser.notifier.error(parseApiError(e));
       }
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_IDLE);
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, ()=>{
