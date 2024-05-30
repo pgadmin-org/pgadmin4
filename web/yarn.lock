@@ -8802,12 +8802,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"image-minimizer-webpack-plugin@npm:^3.8.2":
-  version: 3.8.3
-  resolution: "image-minimizer-webpack-plugin@npm:3.8.3"
+"image-minimizer-webpack-plugin@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "image-minimizer-webpack-plugin@npm:4.0.1"
   dependencies:
     schema-utils: ^4.2.0
-    serialize-javascript: ^6.0.1
+    serialize-javascript: ^6.0.2
   peerDependencies:
     webpack: ^5.1.0
   peerDependenciesMeta:
@@ -8819,7 +8819,7 @@ __metadata:
       optional: true
     svgo:
       optional: true
-  checksum: 4c61c6e192d4b5ec0fbdb6727851d7c76c69ab11205a311199b22cef8d9aaa67ad1dd98dbf886daa632758187a4280bfbfbbfd6605f17e9b8b2e04315a2d5811
+  checksum: 6c2fa54061ce7720c6d8f930b9ceed2c9e26e9a8f7a79150d0d8a7756f50ac92dc2ba5dd87d56394fbe8433b31fe9bb44025fd15673b0f4d239854b261722e30
   languageName: node
   linkType: hard
 
@@ -14340,7 +14340,7 @@ __metadata:
     hotkeys-js: ^3.13.3
     html-react-parser: ^5.0.6
     html-to-image: ^1.11.11
-    image-minimizer-webpack-plugin: ^3.8.2
+    image-minimizer-webpack-plugin: ^4.0.1
     imagemin: ^8.0.1
     imagemin-mozjpeg: ^10.0.0
     imagemin-optipng: ^8.0.0
@@ -14590,7 +14590,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serialize-javascript@npm:^6.0.0, serialize-javascript@npm:^6.0.1":
+"serialize-javascript@npm:^6.0.0, serialize-javascript@npm:^6.0.1, serialize-javascript@npm:^6.0.2":
   version: 6.0.2
   resolution: "serialize-javascript@npm:6.0.2"
   dependencies:
