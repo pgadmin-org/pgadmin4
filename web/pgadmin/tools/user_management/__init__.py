@@ -10,6 +10,7 @@
 """Implements pgAdmin4 User Management Utility"""
 
 import json
+from unicodedata import normalize, is_normalized
 from flask import render_template, request, \
     Response, abort, current_app, session
 from flask_babel import gettext as _
@@ -429,6 +430,22 @@ def save():
     )
 
 
+def normalise_password(password):
+    """
+    Normalise the password.
+    Flask security normalized the password prior to changing or comparing using
+    Python unicodedata.normalize(). As we are not using flask security form
+    to add/update user, we need custom function to do the same.
+    """
+    normalise_form = current_app.config.get(
+        'SECURITY_PASSWORD_NORMALIZE_FORM',
+        'NFKD'
+    )
+
+    return password if is_normalized(normalise_form, password) else\
+        normalize(normalise_form, password)
+
+
 def validate_password(data, new_data):
     """
     Check password new and confirm password match. If both passwords are not
@@ -440,7 +457,9 @@ def validate_password(data, new_data):
             'confirmPassword' in data and data['confirmPassword'] != ""):
 
         if data['newPassword'] == data['confirmPassword']:
-            new_data['password'] = hash_password(data['newPassword'])
+            new_data['password'] = hash_password(normalise_password(
+                data['newPassword'])
+            )
         else:
             raise InternalServerError(_("Passwords do not match."))
 
