@@ -64,7 +64,6 @@ export default function Query({onTextSelect}) {
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
   const preferencesStore = usePreferences();
-
   const queryToolPref = queryToolCtx.preferences.sqleditor;
 
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
@@ -175,6 +174,7 @@ export default function Query({onTextSelect}) {
         editor.current.removeErrorMark();
       }
     });
+    
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
@@ -504,6 +504,7 @@ export default function Query({onTextSelect}) {
     autocomplete={true}
     customKeyMap={shortcutOverrideKeys}
     onTextSelect={onTextSelect}
+    disabled={queryToolCtx.editor_disabled}
   />;
 }
 

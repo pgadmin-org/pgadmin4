@@ -207,8 +207,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
     }],
+    editor_disabled:true
   });
-
   const [selectedText, setSelectedText] = useState('');
 
   const setQtState = (state)=>{
@@ -312,27 +312,32 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       ]
     },
   };
-
-  const getSQLScript = ()=>{
+  
+  const getSQLScript = () => {
     // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
-    // Call AJAX only if script type url is present
-    if(qtState.params.is_query_tool && qtState.params.query_url) {
+    // Call AJAX only if script type URL is present
+    if (qtState.params.is_query_tool && qtState.params.query_url) {
       api.get(qtState.params.query_url)
-        .then((res)=>{
+        .then((res) => {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, res.data);
+          setQtState({ editor_disabled: false });
         })
-        .catch((err)=>{
+        .catch((err) => {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+          setQtState({ editor_disabled: true });
         });
-    } else if(qtState.params.sql_id) {
+    } else if (qtState.params.sql_id) {
       let sqlValue = localStorage.getItem(qtState.params.sql_id);
       localStorage.removeItem(qtState.params.sql_id);
-      if(sqlValue) {
+      if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
+      setQtState({ editor_disabled: false });
+    } else {
+      setQtState({ editor_disabled: false });
     }
   };
-
+  
   const initializeQueryTool = (password)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
@@ -871,6 +876,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     params: qtState.params,
     preferences: qtState.preferences,
     mainContainerRef: containerRef,
+    editor_disabled: qtState.editor_disabled,
     toggleQueryTool: () => setQtState((prev)=>{
       return {
         ...prev,
@@ -901,7 +907,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled]);
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,
