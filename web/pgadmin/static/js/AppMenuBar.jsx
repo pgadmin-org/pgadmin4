@@ -74,25 +74,31 @@ export default function AppMenuBar() {
     }, 100));
   }, []);
 
-  const getPgMenuItem = (menuItem, i)=>{
-    if(menuItem.type == 'separator') {
-      return <PgMenuDivider key={i}/>;
+  const getPgMenuItem = (menuItem, i) => {
+    if (menuItem.type === 'separator') {
+      return <PgMenuDivider key={i} />;
     }
-    const hasCheck = typeof menuItem.checked == 'boolean';
 
-    return <PgMenuItem
-      key={i}
-      disabled={menuItem.isDisabled}
-      onClick={()=>{
-        menuItem.callback();
-        if(hasCheck) {
-          reRenderMenus();
-        }
-      }}
-      hasCheck={hasCheck}
-      checked={menuItem.checked}
-      closeOnCheck={true}
-    >{menuItem.label}</PgMenuItem>;
+    const { checked, isDisabled, callback } = menuItem;
+    const hasCheck = typeof checked === 'boolean';
+
+    const handleMenuItemClick = () => {
+      callback();
+      hasCheck && reRenderMenus();
+    };
+
+    return (
+      <PgMenuItem
+        key={i}
+        disabled={isDisabled}
+        onClick={handleMenuItemClick}
+        hasCheck={hasCheck}
+        checked={checked}
+        closeOnCheck={true}
+      >
+        {menuItem.label}
+      </PgMenuItem>
+    );
   };
 
   const userMenuInfo = pgAdmin.Browser.utils.userMenuInfo;
