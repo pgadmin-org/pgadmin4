@@ -30,3 +30,4 @@ Bug fixes
 
   | `Issue #5785 <https://github.com/pgadmin-org/pgadmin4/issues/5785>`_ -  Fix an issue where user authentication fails with special characters in password.
   | `Issue #7480 <https://github.com/pgadmin-org/pgadmin4/issues/7480>`_ -  Fixed an issue where canceling a query without privilege does not display any message on query tool.
+  | `Issue #7524 <https://github.com/pgadmin-org/pgadmin4/issues/7524>`_ -  Fixed an issue where the size displayed as 'NaN B' for all databases in the statistics tab.

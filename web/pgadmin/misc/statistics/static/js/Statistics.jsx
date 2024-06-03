@@ -89,7 +89,7 @@ function getColumn(data, singleLineStatistics, prettifyFields=[]) {
   columns.forEach((c)=>{
     // Prettify the cell view
     if(prettifyFields.includes(c.header)) {
-      c.cell = ({value})=><>{toPrettySize(value)}</>;
+      c.cell = ({cell})=><>{toPrettySize(cell.getValue())}</>;
       c.cell.displayName = 'Cell';
       c.cell.propTypes = {
         value: PropTypes.any,
