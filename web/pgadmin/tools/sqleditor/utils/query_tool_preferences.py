@@ -143,7 +143,7 @@ def register_query_tool_preferences(self):
     self.underline_query_cursor = self.preference.register(
         'Options', 'underline_query_cursor',
         gettext("Underline query at cursor?"),
-        'boolean', True,
+        'boolean', False,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
             'If set to True, query tool will parse and underline '
