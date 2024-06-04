@@ -11,6 +11,7 @@ import os
 import sys
 import json
 import subprocess
+import re
 from collections import defaultdict
 from operator import attrgetter
 
@@ -211,6 +212,25 @@ else:
         return os.path.realpath(os.path.expanduser('~/'))
 
 
+def get_directory_and_file_name(drivefilepath):
+    """
+    Returns directory name if specified and file name
+    :param drivefilepath: file path like '<shared_drive_name>:/filename' or
+    '/filename'
+    :return: directory name and file name
+    """
+    dir_name = ''
+    file_name = drivefilepath
+    if config.SHARED_STORAGE:
+        shared_dirs = [sdir['name'] + ':' for sdir in config.SHARED_STORAGE]
+        if len(re.findall(r"(?=(" + '|'.join(shared_dirs) + r"))",
+                          drivefilepath)) > 0:
+            dir_file_paths = drivefilepath.split(':/')
+            dir_name = dir_file_paths[0]
+            file_name = dir_file_paths[1]
+    return dir_name, file_name
+
+
 def get_complete_file_path(file, validate=True):
     """
     Args:
@@ -226,7 +246,11 @@ def get_complete_file_path(file, validate=True):
     if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
         return file if os.path.isfile(file) else None
 
-    storage_dir = get_storage_directory()
+    # get dir name and file name
+    dir_name, file = get_directory_and_file_name(file)
+
+    storage_dir = get_storage_directory(shared_storage=dir_name) if dir_name \
+        else get_storage_directory()
     if storage_dir:
         file = os.path.join(
             storage_dir,
@@ -246,12 +270,15 @@ def filename_with_file_manager_path(_file, create_file=False,
                                     skip_permission_check=False):
     """
     Args:
-        file: File name returned from client file manager
+        _file: File name returned from client file manager
         create_file: Set flag to False when file creation doesn't require
         skip_permission_check:
     Returns:
         Filename to use for backup with full path taken from preference
     """
+    # get dir name and file name
+    _dir_name, _file = get_directory_and_file_name(_file)
+
     # retrieve storage directory path
     try:
         last_storage = Preferences.module('file_manager').preference(
