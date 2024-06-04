@@ -29,10 +29,6 @@ let pythonPath = misc.getPythonPath();
 let pgadminFile = '../web/pgAdmin4.py';
 let configFile = '../web/config.py';
 
-if (insideFlatpak()) {
-  pgadminFile = '/app/pgAdmin4/web/pgAdmin4.py';
-}
-
 // Override the paths above, if a developer needs to
 if (fs.existsSync('dev_config.json')) {
   try {
