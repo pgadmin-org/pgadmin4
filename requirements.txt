@@ -35,7 +35,7 @@ psutil==5.9.*
 psycopg[c]==3.1.12
 python-dateutil==2.*
 SQLAlchemy==2.*
-bcrypt==4.0.*
+bcrypt==4.1.*
 cryptography==42.0.*
 sshtunnel==0.*
 ldap3==2.*
