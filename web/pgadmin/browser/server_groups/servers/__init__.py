@@ -165,7 +165,6 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_username = sharedserver.tunnel_username
         server.tunnel_password = sharedserver.tunnel_password
         server.save_password = sharedserver.save_password
-        server.tunnel_identity_file = sharedserver.tunnel_identity_file
         if hasattr(server, 'connection_params') and \
             hasattr(sharedserver, 'connection_params') and \
             'passfile' in server.connection_params and \

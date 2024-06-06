@@ -11,7 +11,6 @@ import os
 import sys
 import json
 import subprocess
-import re
 from collections import defaultdict
 from operator import attrgetter
 
@@ -227,14 +226,7 @@ def get_complete_file_path(file, validate=True):
     if current_app.PGADMIN_RUNTIME or not current_app.config['SERVER_MODE']:
         return file if os.path.isfile(file) else None
 
-    dir_path = ''
-    if re.findall(r':/', file):
-        dir_file_paths = file.split(':/')
-        dir_path = dir_file_paths[0]
-        file = dir_file_paths[1]
-
-    storage_dir = get_storage_directory(shared_storage=dir_path) if dir_path \
-        else get_storage_directory()
+    storage_dir = get_storage_directory()
     if storage_dir:
         file = os.path.join(
             storage_dir,
@@ -260,10 +252,6 @@ def filename_with_file_manager_path(_file, create_file=False,
     Returns:
         Filename to use for backup with full path taken from preference
     """
-    # retrieve file path
-    if re.findall(r':/', _file):
-        dir_file_paths = _file.split(':/')
-        _file = dir_file_paths[1]
     # retrieve storage directory path
     try:
         last_storage = Preferences.module('file_manager').preference(
