@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import React, {useState, useEffect, useContext, useRef, useLayoutEffect, useMemo} from 'react';
 import {Row, useRowSelection} from 'react-data-grid';
@@ -16,7 +16,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import * as Editors from './Editors';
 import * as Formatters from './Formatters';
-import clsx from 'clsx';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
 import MapIcon from '@mui/icons-material/Map';
 import { QueryToolEventsContext } from '../QueryToolComponent';
@@ -27,22 +26,22 @@ import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataG
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
 
-const useStyles = makeStyles((theme)=>({
-  columnHeader: {
+const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
+  '& .QueryTool-columnHeader': {
     padding: '3px 6px',
     height: '100%',
     display: 'flex',
     lineHeight: '16px',
     alignItems: 'center',
     fontWeight: 'normal',
+    '& .QueryTool-columnName': {
+      fontWeight: 'bold',
+    },
   },
-  columnName: {
+  '& .QueryTool-editedCell': {
     fontWeight: 'bold',
   },
-  editedCell: {
-    fontWeight: 'bold',
-  },
-  deletedRow: {
+  '& .QueryTool-deletedRow': {
     '&:before': {
       content: '" "',
       position: 'absolute',
@@ -52,15 +51,15 @@ const useStyles = makeStyles((theme)=>({
       width: '100%',
     }
   },
-  rowNumCell: {
+  '& .QueryTool-rowNumCell': {
     padding: '0px 8px',
   },
-  colHeaderSelected: {
+  '& .QueryTool-colHeaderSelected': {
     outlineColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  colSelected: {
+  '& .QueryTool-colSelected': {
     outlineColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
@@ -141,7 +140,6 @@ SelectAllHeaderRenderer.propTypes = {
 };
 
 function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange, isCellSelected}) {
-  const classes = useStyles();
   const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
@@ -170,7 +168,7 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
   }, [isCellSelected]);
 
   return (
-    <Box ref={cellRef} className={clsx(classes.columnHeader, isSelected ? classes.colHeaderSelected : null)} onClick={onClick} tabIndex="0"
+    <Box ref={cellRef} className={'QueryTool-columnHeader ' + (isSelected ? 'QueryTool-colHeaderSelected' : null)} onClick={onClick} tabIndex="0"
       onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)} data-column-key={column.key}>
       {(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') &&
       <Box>
@@ -180,7 +178,7 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
         }}/>
       </Box>}
       <Box marginRight="auto">
-        <span className={classes.columnName}>{column.display_name}</span><br/>
+        <span className='QueryTool-columnName'>{column.display_name}</span><br/>
         <span>{column.display_type}</span>
       </Box>
       <Box marginLeft="4px">{column.can_edit ?
@@ -221,7 +219,7 @@ function setEditorFormatter(col) {
   }
 }
 
-function cellClassGetter(col, classes, isSelected, dataChangeStore, rowKeyGetter){
+function cellClassGetter(col, isSelected, dataChangeStore, rowKeyGetter){
   return (row)=>{
     let cellClasses = [];
     if(dataChangeStore && rowKeyGetter) {
@@ -229,16 +227,16 @@ function cellClassGetter(col, classes, isSelected, dataChangeStore, rowKeyGetter
         && !_.isUndefined(dataChangeStore?.updated[rowKeyGetter(row)]?.data[col.key])
         || rowKeyGetter(row) in (dataChangeStore?.added || {})
       ) {
-        cellClasses.push(classes.editedCell);
+        cellClasses.push('QueryTool-editedCell');
       }
       if(rowKeyGetter(row) in (dataChangeStore?.deleted || {})) {
-        cellClasses.push(classes.deletedRow);
+        cellClasses.push('QueryTool-deletedRow');
       }
     }
     if(isSelected) {
-      cellClasses.push(classes.colSelected);
+      cellClasses.push('QueryTool-colSelected');
     }
-    return clsx(cellClasses);
+    return cellClasses.join(' ');
   };
 }
 
@@ -282,7 +280,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
 function RowNumColFormatter({row, rowKeyGetter, dataChangeStore, onSelectedColumnsChange}) {
   const {rowIdx} = useContext(RowInfoContext);
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
-  const classes = useStyles();
+
 
   let rowKey = rowKeyGetter(row);
   let rownum = rowIdx+1;
@@ -291,7 +289,7 @@ function RowNumColFormatter({row, rowKeyGetter, dataChangeStore, onSelectedColum
   } else if(rowKey in (dataChangeStore?.deleted || {})) {
     rownum = rownum+'-';
   }
-  return (<div className={classes.rowNumCell} onClick={()=>{
+  return (<div className='QueryTool-rowNumCell' onClick={()=>{
     onSelectedColumnsChange(new Set());
     onRowSelectionChange({ row: row, checked: !isRowSelected, isShiftClick: false});
   }} onKeyDown={()=>{/* already taken care by parent */}}>
@@ -305,7 +303,7 @@ RowNumColFormatter.propTypes = {
   onSelectedColumnsChange: PropTypes.func,
 };
 
-function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColumnsChange, rowKeyGetter, classes) {
+function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColumnsChange, rowKeyGetter) {
   let retColumns = [
     ...columns,
   ];
@@ -316,7 +314,7 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColu
 
   for(const [idx, col] of retColumns.entries()) {
     col.headerRenderer = HeaderRenderer;
-    col.cellClass = cellClassGetter(col, classes, selectedColumns.has(idx), dataChangeStore, rowKeyGetter);
+    col.cellClass = cellClassGetter(col, selectedColumns.has(idx), dataChangeStore, rowKeyGetter);
   }
 
   let rowNumCol = retColumns[0];
@@ -363,7 +361,6 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
   onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, ...props}) {
-  const classes = useStyles();
   const [readyColumns, setReadyColumns] = useState([]);
   const eventBus = useContext(QueryToolEventsContext);
   const onSelectedColumnsChangeWrapped = (arg)=>{
@@ -381,18 +378,18 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
   useEffect(()=>{
     let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
-    setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter, classes));
+    setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
   }, [columns]);
 
   useEffect(()=>{
     setReadyColumns((prevCols)=>{
-      return formatColumns(prevCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter, classes);
+      return formatColumns(prevCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter);
     });
   }, [dataChangeStore, selectedColumns]);
 
   return (
     <DataGridExtrasContext.Provider value={dataGridExtras}>
-      <PgReactDataGrid
+      <StyledPgReactDataGrid
         id="datagrid"
         columns={readyColumns}
         rows={rows}

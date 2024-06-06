@@ -10,7 +10,6 @@ import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
 import { Box, Grid } from '@mui/material';
@@ -22,39 +21,6 @@ import { getStatsUrl, transformData, statsReducer, X_AXIS_LENGTH } from './utili
 import { toPrettySize } from '../../../../static/js/utils';
 import SectionContainer from '../components/SectionContainer.jsx';
 
-const useStyles = makeStyles((theme) => ({
-  autoResizer: {
-    height: '100% !important',
-    width: '100% !important',
-    background: theme.palette.grey[400],
-    padding: '8px',
-    overflowX: 'auto !important',
-    overflowY: 'hidden !important',
-    minHeight: '100%',
-    minWidth: '100%',
-  },
-  container: {
-    height: 'auto',
-    padding: '0px !important',
-    marginBottom: '4px',
-  },
-  fixedContainer: {
-    flexGrow: 1,
-    padding: '0px !important',
-    marginBottom: '4px',
-  },
-  tableContainer: {
-    padding: '6px',
-    width: '100%',
-  },
-  containerHeader: {
-    fontSize: '15px',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-  }
-}));
 
 const chartsDefault = {
   'm_stats': {'Total': [], 'Used': [], 'Free': []},
@@ -248,7 +214,7 @@ Memory.propTypes = {
 };
 
 export function MemoryWrapper(props) {
-  const classes = useStyles();
+
   const options = useMemo(()=>({
     showDataPoints: props.showDataPoints,
     showTooltip: props.showTooltip,
@@ -256,35 +222,36 @@ export function MemoryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Grid container spacing={0.5} className={classes.container}>
-        <Grid item md={6}>
-          <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-            <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
-              valueFormatter={toPrettySize}/>
-          </ChartContainer>
+    (
+      <Box display="flex" flexDirection="column" height="100%">
+        <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
+          <Grid item md={6}>
+            <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+              <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+                valueFormatter={toPrettySize}/>
+            </ChartContainer>
+          </Grid>
+          <Grid item md={6}>
+            <ChartContainer id='sm-graph' title={gettext('Swap memory')} datasets={props.swapMemoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+              <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+                valueFormatter={toPrettySize}/>
+            </ChartContainer>
+          </Grid>
         </Grid>
-        <Grid item md={6}>
-          <ChartContainer id='sm-graph' title={gettext('Swap memory')} datasets={props.swapMemoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-            <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
-              valueFormatter={toPrettySize}/>
-          </ChartContainer>
-        </Grid>
-      </Grid>
-      <Box flexGrow={1} minHeight={0}>
-        <SectionContainer title={gettext('Process memory usage')}>
-          <PgTable
-            className={classes.autoResizer}
-            columns={props.tableHeader}
-            data={props.processMemoryUsageStats}
-            msg={props.errorMsg}
-            type={'panel'}
-            caveTable={false}
-            tableNoBorder={false}
-          ></PgTable>
-        </SectionContainer>
+        <Box flexGrow={1} minHeight={0}>
+          <SectionContainer title={gettext('Process memory usage')}>
+            <PgTable
+              columns={props.tableHeader}
+              data={props.processMemoryUsageStats}
+              msg={props.errorMsg}
+              type={'panel'}
+              caveTable={false}
+              tableNoBorder={false}
+            ></PgTable>
+          </SectionContainer>
+        </Box>
       </Box>
-    </Box>
+    )
   );
 }
 

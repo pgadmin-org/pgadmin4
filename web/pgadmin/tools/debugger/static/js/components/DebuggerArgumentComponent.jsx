@@ -9,11 +9,12 @@
 
 import PropTypes from 'prop-types';
 
+import { styled } from '@mui/material/styles';
+
 import React, { useEffect, useRef } from 'react';
 
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
@@ -32,44 +33,40 @@ import { BROWSER_PANELS } from '../../../../../browser/static/js/constants';
 import usePreferences from '../../../../../preferences/static/js/store';
 
 
-const useStyles = makeStyles((theme) =>
-  ({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-      height: '100%',
-      backgroundColor: theme.palette.background.default,
-      overflow: 'hidden',
-    },
-    body: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      minHeight: 0,
-    },
-    actionBtn: {
+const StyledBox = styled(Box)(({theme}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  flexGrow: 1,
+  height: '100%',
+  backgroundColor: theme.palette.background.default,
+  overflow: 'hidden',
+  '& .DebuggerArgument-body': {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    minHeight: 0,
+  },
+  '& .DebuggerArgument-footer': {
+    borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
+    padding: '0.5rem',
+    display: 'flex',
+    width: '100%',
+    background: theme.otherVars.headerBg,
+    '& .DebuggerArgument-actionBtn': {
       alignItems: 'flex-start',
+      '& .DebuggerArgument-buttonMargin': {
+        marginLeft: '0.5em'
+      },
+      '& .DebuggerArgument-debugBtn': {
+        fontSize: '1.12rem !important',
+      },
     },
-    buttonMargin: {
-      marginLeft: '0.5em'
-    },
-    debugBtn: {
-      fontSize: '1.12rem !important',
-    },
-    footer: {
-      borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
-      padding: '0.5rem',
-      display: 'flex',
-      width: '100%',
-      background: theme.otherVars.headerBg,
-    }
-  }),
-);
+  }
+}));
 
 
 export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, isEdbProc, transId, pgTreeInfo, pgData, ...props }) {
-  const classes = useStyles();
+
   const debuggerArgsSchema = useRef(new DebuggerArgumentSchema());
   const api = getApiInstance();
   const debuggerArgsData = useRef([]);
@@ -808,8 +805,8 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   return (
-    <Box className={classes.root}>
-      <Box className={classes.body}>
+    <StyledBox>
+      <Box className='DebuggerArgument-body'>
         {
           loadArgs > 0 &&
           <>
@@ -852,25 +849,24 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           </>
         }
       </Box>
-      <Box className={classes.footer}>
+      <Box className='DebuggerArgument-footer'>
         <Box>
-          <DefaultButton className={classes.buttonMargin} onClick={() => { clearArgs(); }} startIcon={<DeleteSweepIcon onClick={() => { clearArgs(); }} />}>
+          <DefaultButton className='DebuggerArgument-buttonMargin' onClick={() => { clearArgs(); }} startIcon={<DeleteSweepIcon onClick={() => { clearArgs(); }} />}>
             {gettext('Clear All')}
           </DefaultButton>
         </Box>
-        <Box className={classes.actionBtn} marginLeft="auto">
-          <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal(); }} startIcon={<CloseSharpIcon onClick={() => { props.closeModal(); }} />}>
+        <Box className='DebuggerArgument-actionBtn' marginLeft="auto">
+          <DefaultButton className='DebuggerArgument-buttonMargin' onClick={() => { props.closeModal(); }} startIcon={<CloseSharpIcon onClick={() => { props.closeModal(); }} />}>
             {gettext('Cancel')}
           </DefaultButton>
-          <PrimaryButton className={classes.buttonMargin} startIcon={<BugReportRoundedIcon className={classes.debugBtn} />}
+          <PrimaryButton className='DebuggerArgument-buttonMargin' startIcon={<BugReportRoundedIcon className='DebuggerArgument-debugBtn' />}
             disabled={isDisableDebug}
             onClick={() => { startDebugging(); }}>
             {gettext('Debug')}
           </PrimaryButton>
         </Box>
       </Box>
-    </Box>
-
+    </StyledBox>
   );
 }
 

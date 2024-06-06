@@ -11,29 +11,14 @@ import PropTypes from 'prop-types';
 import React, { useContext, useState } from 'react';
 
 import { Box, Grid, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
 import { InputSelect } from '../../../../../static/js/components/FormComponents';
 import { SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 
 
-const useStyles = makeStyles(() => ({
-  root: {
-    padding: '0rem'
-  },
-  spanLabel: {
-    alignSelf: 'center',
-    marginRight: '4px',
-  },
-  inputLabel: {
-    padding: '0.3rem',
-  },
-}));
-
 export function InputComponent({ label, serverList, databaseList, schemaList, diff_type, selectedSid = null, selectedDid=null, selectedScid=null }) {
 
-  const classes = useStyles();
   const [selectedServer, setSelectedServer] = useState(selectedSid);
   const [selectedDatabase, setSelectedDatabase] = useState(selectedDid);
   const [selectedSchema, setSelectedSchema] = useState(selectedScid);
@@ -71,16 +56,16 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
   };
 
   return (
-    <Box className={classes.root}>
+    <Box sx={{padding: '0rem'}}>
       <Grid
         container
         direction="row"
         alignItems="center"
       >
-        <Grid item lg={2} md={2} sm={2} xs={2} className={classes.inputLabel}>
+        <Grid item lg={2} md={2} sm={2} xs={2} sx={{padding: '0.3rem'}}>
           <Typography id={label}>{label}</Typography>
         </Grid>
-        <Grid item lg={4} md={4} sm={4} xs={4} className={classes.inputLabel}>
+        <Grid item lg={4} md={4} sm={4} xs={4} sx={{padding: '0.3rem'}}>
           <InputSelect
             options={serverList}
             optionsReloadBasis={serverList?.length}
@@ -95,7 +80,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
           ></InputSelect>
         </Grid>
 
-        <Grid item lg={3} md={3} sm={3} xs={3} className={classes.inputLabel}>
+        <Grid item lg={3} md={3} sm={3} xs={3} sx={{padding: '0.3rem'}}>
           <InputSelect
             options={databaseList}
             optionsReloadBasis={databaseList?.map ? _.join(databaseList.map((c)=>c.value), ',') : null}
@@ -111,7 +96,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
           ></InputSelect>
         </Grid>
 
-        <Grid item lg={3} md={3} sm={3} xs={3} className={classes.inputLabel}>
+        <Grid item lg={3} md={3} sm={3} xs={3} sx={{padding: '0.3rem'}}>
           <InputSelect
             options={schemaList}
             optionsReloadBasis={schemaList?.map ? _.join(schemaList.map((c)=>c.value), ',') : null}
@@ -127,7 +112,6 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
           ></InputSelect>
         </Grid>
       </Grid>
-
     </Box >
   );
 }

@@ -11,7 +11,6 @@ import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
 import { Box, Grid } from '@mui/material';
@@ -22,40 +21,6 @@ import axios from 'axios';
 import { getStatsUrl, transformData, statsReducer, X_AXIS_LENGTH } from './utility.js';
 import { toPrettySize } from '../../../../static/js/utils';
 import SectionContainer from '../components/SectionContainer.jsx';
-
-const useStyles = makeStyles((theme) => ({
-  autoResizer: {
-    height: '100% !important',
-    width: '100% !important',
-    background: theme.palette.grey[400],
-    padding: '8px',
-    overflowX: 'auto !important',
-    overflowY: 'hidden !important',
-    minHeight: '100%',
-    minWidth: '100%',
-  },
-  container: {
-    height: 'auto',
-    padding: '0px !important',
-    marginBottom: '4px',
-  },
-  fixedContainer: {
-    flexGrow: 1,
-    padding: '0px !important',
-    marginBottom: '4px',
-  },
-  tableContainer: {
-    padding: '6px',
-    width: '100%',
-  },
-  containerHeader: {
-    fontSize: '15px',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-  },
-}));
 
 const chartsDefault = {
   'cpu_stats': {'User Normal': [], 'User Niced': [], 'Kernel': [], 'Idle': []},
@@ -246,15 +211,14 @@ CPU.propTypes = {
 };
 
 export function CPUWrapper(props) {
-  const classes = useStyles();
   const options = useMemo(()=>({
     showDataPoints: props.showDataPoints,
     showTooltip: props.showTooltip,
     lineBorderWidth: props.lineBorderWidth,
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Grid container spacing={0.5} className={classes.container}>
+    (<Box display="flex" flexDirection="column" height="100%">
+      <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
         <Grid item md={6}>
           <ChartContainer id='cu-graph' title={gettext('CPU usage')} datasets={props.cpuUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.cpuUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
@@ -269,7 +233,6 @@ export function CPUWrapper(props) {
       <Box flexGrow={1} minHeight={0}>
         <SectionContainer title={gettext('Process CPU usage')}>
           <PgTable
-            className={classes.autoResizer}
             columns={props.tableHeader}
             data={props.processCpuUsageStats}
             msg={props.errorMsg}
@@ -280,6 +243,7 @@ export function CPUWrapper(props) {
         </SectionContainer>
       </Box>
     </Box>
+    )
   );
 }
 

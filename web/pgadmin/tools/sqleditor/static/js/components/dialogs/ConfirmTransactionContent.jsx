@@ -1,5 +1,5 @@
 import React from 'react';
-import { useModalStyles } from '../../../../../../static/js/helpers/ModalProvider';
+import { ModalContent, ModalFooter } from '../../../../../../static/js/components/ModalContent';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
@@ -9,24 +9,23 @@ import { CommitIcon, RollbackIcon } from '../../../../../../static/js/components
 import PropTypes from 'prop-types';
 
 export default function ConfirmTransactionContent({closeModal, text, onRollback, onCommit}) {
-  const classes = useModalStyles();
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <ModalContent>
       <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
-      <Box className={classes.footer}>
+      <ModalFooter>
         <DefaultButton data-test="cancel" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton data-test="rollback" className={classes.margin} startIcon={<RollbackIcon />} onClick={()=>{
+        <PrimaryButton data-test="rollback" startIcon={<RollbackIcon />} onClick={()=>{
           onRollback?.();
           closeModal();
         }} >{gettext('Rollback')}</PrimaryButton>
-        <PrimaryButton data-test="commit" className={classes.margin} startIcon={<CommitIcon />} onClick={()=>{
+        <PrimaryButton data-test="commit" startIcon={<CommitIcon />} onClick={()=>{
           onCommit?.();
           closeModal();
         }} autoFocus={true} >{gettext('Commit')}</PrimaryButton>
-      </Box>
-    </Box>
+      </ModalFooter>
+    </ModalContent>
   );
 }
 

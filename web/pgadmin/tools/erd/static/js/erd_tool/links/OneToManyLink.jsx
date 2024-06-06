@@ -19,9 +19,9 @@ import {
 import {Point} from '@projectstorm/geometry';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import { ERDCanvasSettings } from '../components/ERDTool';
+import { keyframes } from '@emotion/react';
 
 export const POINTER_SIZE = 30;
 
@@ -79,38 +79,46 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
   }
 }
 
-const useStyles = makeStyles((theme)=>({
-  svgLink: {
+const svgLinkSelected =   keyframes`
+  from { stroke-dashoffset: 24;}
+  to { stroke-dashoffset: 0; }
+`;
+
+const StyledG = styled('g')((
+  {
+    theme
+  }
+) => ({
+
+  '& .OneToMany-svgLink': {
     stroke: theme.palette.text.primary,
     fontSize: '0.8em',
   },
-  '@keyframes svgLinkSelected': {
-    'from': { strokeDashoffset: 24},
-    'to': { strokeDashoffset: 0 }
-  },
-  svgLinkSelected: {
-    strokeDasharray: '10, 2',
-    animation: '$svgLinkSelected 1s linear infinite'
-  },
-  svgLinkCircle: {
+  '& .OneToMany-svgLinkCircle': {
     fill: theme.palette.text.primary,
   },
-  svgLinkPath: {
+
+  '& .OneToMany-svgLinkSelected': {
+    strokeDasharray: '10, 2',
+    animation: `${svgLinkSelected} 1s linear infinite`
+  },
+  '& .OneToMany-svgLinkPath': {
     pointerEvents: 'all',
     cursor: 'move',
   }
 }));
 
+
 function ChenNotation({rotation, type}) {
-  const classes = useStyles();
+
   const textX = Math.sign(rotation) > 0 ? -14 : 8;
   const textY = -5;
   return (
     <>
-      <text className={classes.svgLink} x={textX} y={textY} transform={'rotate(' + -rotation + ')' }>
+      <text className='OneToMany-svgLink' x={textX} y={textY} transform={'rotate(' + -rotation + ')' }>
         {type == 'one' ? '1' : 'N'}
       </text>
-      <line className={classes.svgLink} x1="0" y1="0" x2="0" y2="30"></line>
+      <line className='OneToMany-svgLink' x1="0" y1="0" x2="0" y2="30"></line>
     </>
   );
 }
@@ -121,7 +129,7 @@ ChenNotation.propTypes = {
 
 function CustomLinkEndWidget(props) {
   const { point, rotation, tx, ty, type } = props;
-  const classes = useStyles();
+
   const settings = useContext(ERDCanvasSettings);
 
   const svgForType = (itype) => {
@@ -131,13 +139,13 @@ function CustomLinkEndWidget(props) {
     if(itype == 'many') {
       return (
         <>
-          <circle className={clsx(classes.svgLink, classes.svgLinkCircle)} cx="0" cy="16" r={props.width*2.5} strokeWidth={props.width} />
-          <polyline className={classes.svgLink} points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
+          <circle className={['OneToMany-svgLink','OneToMany-svgLinkCircle'].join(' ')} cx="0" cy="16" r={props.width*2.5} strokeWidth={props.width} />
+          <polyline className='OneToMany-svgLink' points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
         </>
       );
     } else if (itype == 'one') {
       return (
-        <polyline className={classes.svgLink} points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
+        <polyline className='OneToMany-svgLink' points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
       );
     }
   };
@@ -313,16 +321,16 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
 
 
     this.refPaths = [];
-    return <g data-default-link-test={this.props.link.getOptions().testName}>{paths}</g>;
+    return <StyledG data-default-link-test={this.props.link.getOptions().testName}>{paths}</StyledG>;
   }
 }
 
 const LinkSegment = forwardRef(({model, selected, path, ...props}, ref)=>{
-  const classes = useStyles();
+
   return (
     <path
       ref={ref}
-      className={clsx(classes.svgLink, classes.svgLinkPath, (selected ? classes.svgLinkSelected : ''))}
+      className={['OneToMany-svgLink','OneToMany-svgLinkPath', (selected ? 'OneToMany-svgLinkSelected' : '')].join(' ')}
       stroke={model.getOptions().color}
       strokeWidth={model.getOptions().width}
       selected={selected}

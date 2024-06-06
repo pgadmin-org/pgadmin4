@@ -1,17 +1,14 @@
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
-const useStyles = makeStyles((theme)=>({
-  fieldset: {
-    padding: theme.spacing(0.5),
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: 'inherit',
-    border: '1px solid ' + theme.otherVars.borderColor,
-  },
-  legend: {
+const StyledFieldset = styled('fieldset')(({theme}) => ({
+  padding: theme.spacing(0.5),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: 'inherit',
+  border: '1px solid ' + theme.otherVars.borderColor,
+  '& .FieldSet-legend': {
     width: 'unset',
     fontSize: 'inherit',
     fontWeight: 'bold',
@@ -19,12 +16,12 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 export default function FieldSet({title='', className, children}) {
-  const classes = useStyles();
+
   return (
-    <fieldset className={clsx(classes.fieldset, className)}>
-      <legend className={classes.legend}>{title}</legend>
+    <StyledFieldset className={className}>
+      <legend className='FieldSet-legend'>{title}</legend>
       {children}
-    </fieldset>
+    </StyledFieldset>
   );
 }
 

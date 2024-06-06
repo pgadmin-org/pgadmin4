@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box, Dialog, DialogContent, DialogTitle, Paper } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import React, { useState, useMemo } from 'react';
-import clsx from 'clsx';
 import { getEpoch } from 'sources/utils';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../components/Buttons';
 import Draggable from 'react-draggable';
@@ -22,38 +20,38 @@ import HTMLReactParser from 'html-react-parser';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
+import { styled } from '@mui/material/styles';
 
 export const ModalContext = React.createContext({});
 const MIN_HEIGHT = 190;
 const MIN_WIDTH = 500;
-
-export function useModal() {
-  return React.useContext(ModalContext);
-}
-const useAlertStyles = makeStyles((theme) => ({
-  footer: {
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .Alert-footer': {
     display: 'flex',
     justifyContent: 'flex-end',
     padding: '0.5rem',
     ...theme.mixins.panelBorder.top,
   },
-  margin: {
+  '& .Alert-margin': {
     marginLeft: '0.25rem',
-  }
+  },
 }));
 
+export function useModal() {
+  return React.useContext(ModalContext);
+}
+
 function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick }) {
-  const classes = useAlertStyles();
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <StyledBox display="flex" flexDirection="column" height="100%">
       <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
-      <Box className={classes.footer}>
+      <Box className='Alert-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
         }
-        <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+        <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }
 AlertContent.propTypes = {
@@ -143,17 +141,17 @@ ModalProvider.propTypes = {
   children: CustomPropTypes.children,
 };
 
-const dialogStyle = makeStyles((theme) => ({
-  dialog: {
+const StyledRnd = styled(Rnd)(({theme}) => ({
+  '&.Dialog-content': {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,
   },
-  fullScreen: {
+  '&.Dialog-fullScreen': {
     transform: 'none !important'
-  }
+  },
 }));
 
 
@@ -166,7 +164,6 @@ function setEnableResizing(props, resizeable) {
 }
 
 function PaperComponent({minHeight, minWidth, ...props}) {
-  let classes = dialogStyle();
   let [dialogPosition, setDialogPosition] = useState(null);
   let resizeable = checkIsResizable(props);
 
@@ -179,9 +176,9 @@ function PaperComponent({minHeight, minWidth, ...props}) {
 
   return (
     props.isresizeable == 'true' ?
-      <Rnd
+      <StyledRnd
         size={props.isfullscreen == 'true' && { width: '100%', height: '100%' }}
-        className={clsx(classes.dialog, props.isfullscreen == 'true' ? classes.fullScreen : '')}
+        className={'Dialog-content ' + ( props.isfullscreen == 'true' ? 'Dialog-fullScreen' : '')}
         default={{
           x: x_position,
           y: y_position,
@@ -210,7 +207,7 @@ function PaperComponent({minHeight, minWidth, ...props}) {
         dragHandleClassName="modal-drag-area"
       >
         <Paper {...props} style={{ width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' }} />
-      </Rnd>
+      </StyledRnd>
       :
       <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
         <Paper {...props} style={{ minWidth: '600px' }} />
@@ -227,19 +224,15 @@ PaperComponent.propTypes = {
   minHeight: PropTypes.number,
 };
 
-export const useModalStyles = makeStyles((theme) => ({
-  container: {
+const StyleDialog = styled(Dialog)(({theme}) => ({
+  '& .Modal-container': {
     backgroundColor: theme.palette.background.default
   },
-
-  titleBar: {
+  '& .Modal-titleBar': {
     display: 'flex',
     flexGrow: 1
   },
-  title: {
-    flexGrow: 1
-  },
-  icon: {
+  '& .Modal-icon': {
     fill: 'currentColor',
     width: '1em',
     height: '1em',
@@ -249,16 +242,13 @@ export const useModalStyles = makeStyles((theme) => ({
     flexShrink: 0,
     userSelect: 'none',
   },
-  footer: {
+  '& .Modal-footer': {
     display: 'flex',
     justifyContent: 'flex-end',
     padding: '0.5rem',
     ...theme.mixins.panelBorder?.top,
   },
-  margin: {
-    marginLeft: '0.25rem',
-  },
-  iconButtonStyle: {
+  '& .Modal-iconButtonStyle': {
     marginLeft: 'auto',
     marginRight: '4px'
   },
@@ -266,7 +256,6 @@ export const useModalStyles = makeStyles((theme) => ({
 
 function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true }) {
   let useModalRef = useModal();
-  const classes = useModalStyles();
   let closeModal = (_e, reason) => {
     if(reason == 'backdropClick' && showTitle) {
       return;
@@ -279,7 +268,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
   const [isFullScreen, setIsFullScreen] = useState(fullScreen);
 
   return (
-    <Dialog
+    <StyleDialog
       open={true}
       onClose={closeModal}
       PaperComponent={PaperComponent}
@@ -290,15 +279,15 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
     >
       { showTitle &&
         <DialogTitle className='modal-drag-area'>
-          <Box className={classes.titleBar}>
-            <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
+          <Box className='Modal-titleBar'>
+            <Box sx={{ marginRight:'0.25rem', flexGrow: 1}}>{title}</Box>
             {
               showFullScreen && !isFullScreen &&
-                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
+                <Box className='Modal-iconButtonStyle'><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className='Modal-icon' />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
             }
             {
               showFullScreen && isFullScreen &&
-                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
+                <Box className='Modal-iconButtonStyle'><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className='Modal-icon' />} size="xs" noBorder onClick={() => { setIsFullScreen(!isFullScreen); }} /></Box>
             }
 
             <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
@@ -308,7 +297,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       <DialogContent height="100%">
         {useMemo(()=>{ return content(closeModal); }, [])}
       </DialogContent>
-    </Dialog>
+    </StyleDialog>
   );
 }
 ModalContainer.propTypes = {

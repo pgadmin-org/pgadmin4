@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
 import React, { useContext, useEffect, useMemo } from 'react';
@@ -23,14 +23,13 @@ import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 import { isShortcutValue, toCodeMirrorKey } from '../../../../../static/js/utils';
 
 
-const useStyles = makeStyles(() => ({
-  sql: {
+const StyledCodeMirror = styled(CodeMirror)(()=>({
+  '&.Query-sql': {
     height: '100%',
   }
 }));
 
 export default function DebuggerEditor({ getEditor, params }) {
-  const classes = useStyles();
   const editor = React.useRef();
   const eventBus = useContext(DebuggerEventsContext);
   const pgAdmin = usePgAdmin();
@@ -97,7 +96,7 @@ export default function DebuggerEditor({ getEditor, params }) {
   );
 
   return (
-    <CodeMirror
+    <StyledCodeMirror
       currEditor={(obj) => {
         editor.current = obj;
       }}
@@ -105,7 +104,7 @@ export default function DebuggerEditor({ getEditor, params }) {
       onBreakPointChange={(line, on)=>{
         setBreakpoint(line, on ? 1 : 0);
       }}
-      className={classes.sql}
+      className='Query-sql'
       readonly={true}
       customKeyMap={shortcutOverrideKeys}
       breakpoint

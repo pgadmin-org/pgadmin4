@@ -129,10 +129,10 @@ describe('CodeMirror', ()=>{
     it('toggle match case', ()=>{
       ctrlMount({});
       const btn = screen.getAllByRole('button').at(0);
-      expect(btn.className.includes('makeStyles-defaultButton')).toBe(true);
+      expect(btn.className.includes('Buttons-defaultButton')).toBe(true);
       fireEvent.click(btn);
 
-      expect(screen.getAllByRole('button').at(0).className.includes('makeStyles-primaryButton')).toBe(true);
+      expect(screen.getAllByRole('button').at(0).className.includes('Buttons-primaryButton')).toBe(true);
     });
 
     it('toggle regex', ()=>{
@@ -143,7 +143,7 @@ describe('CodeMirror', ()=>{
       });
 
       const btn = screen.getAllByRole('button').at(1);
-      expect(btn.className.includes('makeStyles-defaultButton')).toBe(true);
+      expect(btn.className.includes('Buttons-defaultButton')).toBe(true);
       fireEvent.click(btn);
     });
 

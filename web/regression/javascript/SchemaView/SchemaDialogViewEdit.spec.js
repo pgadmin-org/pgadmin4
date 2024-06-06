@@ -46,7 +46,7 @@ describe('SchemaView', ()=>{
     jest.spyOn(pgAdmin.Browser.notifier, 'alert').mockImplementation(() => {});
   });
 
-  describe('SchemaDialogView', ()=>{
+  describe('SchemaDialogViewEdit', ()=>{
     let ctrl,
       onSave=jest.fn(() => Promise.resolve()),
       onClose=jest.fn(),

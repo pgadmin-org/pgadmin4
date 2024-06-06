@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
@@ -35,16 +35,14 @@ import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    flexWrap: 'wrap',
-    ...theme.mixins.panelBorder.bottom,
-  },
+const StyledBox = styled(Box)(({theme}) => ({
+  padding: '2px 4px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  backgroundColor: theme.otherVars.editorToolbarBg,
+  flexWrap: 'wrap',
+  ...theme.mixins.panelBorder.bottom,
 }));
 
 function autoCommitRollback(type, api, transId, value) {
@@ -55,7 +53,6 @@ function autoCommitRollback(type, api, transId, value) {
 }
 
 export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddToMacros}) {
-  const classes = useStyles();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
@@ -499,8 +496,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   ], containerRef);
 
   return (
-    <>
-      <Box className={classes.root}>
+    (<>
+      <StyledBox>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Open File')} icon={<FolderRoundedIcon />} disabled={!queryToolCtx.params.is_query_tool}
             shortcut={queryToolPref.btn_open_file} onClick={openFile} />
@@ -564,7 +561,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
         </PgButtonGroup>
-      </Box>
+      </StyledBox>
       <PgMenu
         anchorRef={saveAsMenuRef}
         open={openMenuName=='menu-saveas'}
@@ -664,7 +661,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           );
         })}
       </PgMenu>
-    </>
+    </>)
   );
 }
 

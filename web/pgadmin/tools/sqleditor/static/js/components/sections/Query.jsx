@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { makeStyles } from '@mui/styles';
 import React, {useContext, useCallback, useEffect, useMemo } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -26,12 +25,6 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 
-
-const useStyles = makeStyles(()=>({
-  sql: {
-    height: '100%',
-  }
-}));
 
 async function registerAutocomplete(editor, api, transId) {
   editor.registerAutocomplete((context, onAvailable)=>{
@@ -64,7 +57,6 @@ async function registerAutocomplete(editor, api, transId) {
 }
 
 export default function Query({onTextSelect}) {
-  const classes = useStyles();
   const editor = React.useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -507,7 +499,6 @@ export default function Query({onTextSelect}) {
       editor.current=obj;
     }}
     value={''}
-    className={classes.sql}
     onCursorActivity={cursorActivity}
     onChange={change}
     autocomplete={true}

@@ -1,53 +1,45 @@
-/////////////////////////////////////////////////////////////
-//
-// pgAdmin 4 - PostgreSQL Tools
-//
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
-// This software is released under the PostgreSQL Licence
-//
-//////////////////////////////////////////////////////////////
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
-import clsx from 'clsx';
 import _ from 'lodash';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import HTMLReactParse from 'html-react-parser';
-import { commonTableStyles } from '../Theme';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
+import Table from '../components/Table';
 
-const useStyles = makeStyles((theme)=>({
-  collapsible: {
+
+const StyledTable = styled(Table)(({theme}) => ({
+  '& .Analysis-collapsible': {
     cursor: 'pointer',
   },
-  collapseParent: {
+  '& .Analysis-collapseParent': {
     borderBottom: '2px dashed '+theme.palette.primary.main,
   },
-  level2: {
+  '& .Analysis-textRight': {
+    textAlign: 'right',
+  },
+  '& .Analysis-level2': {
     backgroundColor: theme.otherVars.explain.sev2.bg,
     color: theme.otherVars.explain.sev2.color,
   },
-  level3: {
+  '& .Analysis-level3': {
     backgroundColor: theme.otherVars.explain.sev3.bg,
     color: theme.otherVars.explain.sev3.color,
   },
-  level4: {
+  '& .Analysis-level4': {
     backgroundColor: theme.otherVars.explain.sev4.bg,
     color: theme.otherVars.explain.sev4.color,
   },
-  textRight: {
-    textAlign: 'right',
-  },
 }));
 
-function getRowClassname(classes, data, collapseParent) {
+function getRowClassname(data, collapseParent) {
   let className = [];
   if(data['Plans']?.length > 0) {
-    className.push(classes.collapsible);
+    className.push('Analysis-collapsible');
   }
   if(collapseParent) {
-    className.push(classes.collapseParent);
+    className.push('Analysis-collapseParent');
   }
   return className;
 }
@@ -70,11 +62,11 @@ NodeText.propTypes = {
 
 function ExplainRow({row, show, activeExId, setActiveExId, collapsedExId, toggleCollapseExId}) {
   let data = row['data'];
-  const classes = useStyles();
+
   const exId = `pga_ex_${data['level'].join('_')}`;
   const parentExId = `pga_ex_${data['parent_node']}`;
   const collapsed = collapsedExId.findIndex((v)=>parentExId.startsWith(v)) > -1;
-  const className = getRowClassname(classes, data, collapsedExId.indexOf(exId) > -1);
+  const className = getRowClassname(data, collapsedExId.indexOf(exId) > -1);
   let onRowClick = (e)=>{
     toggleCollapseExId(e.currentTarget.getAttribute('data-ex-id'), data['Plans']?.length);
   };
@@ -82,35 +74,35 @@ function ExplainRow({row, show, activeExId, setActiveExId, collapsedExId, toggle
   return (
     <tr onMouseEnter={(e)=>{setActiveExId(e.currentTarget.getAttribute('data-ex-id'));}}
       onMouseLeave={()=>{setActiveExId(null);}}
-      className={clsx(className)} data-parent={parentExId}
+      className={className} data-parent={parentExId}
       data-ex-id={`pga_ex_${data['level'].join('_')}`}
       style={collapsed ? {display: 'none'} : {}}
       onClick={onRowClick}>
       <td>
         <FiberManualRecordIcon fontSize="small" style={{visibility: activeExId==parentExId ? 'visible' : 'hidden'}} />
       </td>
-      <td className={classes.textRight}>{data['_serial']}.</td>
+      <td className='Analysis-textRight'>{data['_serial']}.</td>
       <td style={{paddingLeft: data['level'].length*30+'px'}} title={row['tooltip_text']}>
         <NodeText displayText={row['display_text']} extraInfo={row['node_extra_info']} />
       </td>
-      <td className={clsx(classes.textRight, classes['level'+data['exclusive_flag']])} style={show.show_timings ? {} : {display: 'none'}}>
+      <td className={'Analysis-textRight ' + 'Analysis-' +['level'+data['exclusive_flag']]} style={show.show_timings ? {} : {display: 'none'}}>
         {data['exclusive'] && (data['exclusive']+' ms')}
       </td>
-      <td className={clsx(classes.textRight, classes['level'+data['inclusive_flag']])} style={show.show_timings ? {} : {display: 'none'}}>
+      <td className={'Analysis-textRight ' + 'Analysis-' +['level'+data['inclusive_flag']]} style={show.show_timings ? {} : {display: 'none'}}>
         {data['inclusive'] && (data['inclusive']+' ms')}
       </td>
-      <td className={clsx(classes.textRight, classes['level'+data['rowsx_flag']])} style={show.show_rowsx ? {} : {display: 'none'}}>
+      <td className={'Analysis-textRight ' + 'Analysis-' +['level'+data['rowsx_flag']]} style={show.show_rowsx ? {} : {display: 'none'}}>
         {!_.isUndefined(data['rowsx_flag'])
           && (data['rowsx_direction'] == 'positive' ? <>&uarr;</> : <>&darr;</>)
         }&nbsp;{data['rowsx']}
       </td>
-      <td className={classes.textRight} style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
+      <td className='Analysis-textRight' style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
         {data['Actual Rows']}
       </td>
-      <td className={classes.textRight} style={(show.show_rowsx || show.show_plan_rows) ? {} : {display: 'none'}}>
+      <td className='Analysis-textRight' style={(show.show_rowsx || show.show_plan_rows) ? {} : {display: 'none'}}>
         {data['Plan Rows']}
       </td>
-      <td className={classes.textRight} style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
+      <td className='Analysis-textRight' style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
         {data['Actual Loops']}
       </td>
     </tr>
@@ -151,7 +143,6 @@ ExplainRow.propTypes = {
 };
 
 export default function Analysis({explainTable}) {
-  const tableClasses = commonTableStyles();
   const [activeExId, setActiveExId] = React.useState();
   const [collapsedExId, setCollapsedExId] = React.useState([]);
 
@@ -165,46 +156,48 @@ export default function Analysis({explainTable}) {
       });
     }
   };
-  return <table className={clsx(tableClasses.table, tableClasses.noBorder, tableClasses.borderBottom)}>
-    <thead>
-      <tr>
-        <th rowSpan="2" style={{width: '30px'}}></th>
-        <th rowSpan="2"><button disabled="">#</button></th>
-        <th rowSpan="2"><button disabled="">Node</button></th>
-        <th colSpan="2" style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">{gettext('Timings')}</button>
-        </th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows || explainTable.show_plan_rows) ? {} : {display: 'none'}}
-          colSpan={(explainTable.show_rowsx) ? '3' : '1'}>
-          <button disabled="">{gettext('Rows')}</button>
-        </th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} rowSpan="2">
-          <button disabled="">{gettext('Loops')}</button>
-        </th>
-      </tr>
-      <tr>
-        <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">{gettext('Exclusive')}</button>
-        </th>
-        <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">{gettext('Inclusive')}</button>
-        </th>
-        <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button disabled="">{gettext('Rows X')}</button></th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Actual')}</button></th>
-        <th style={(explainTable.show_rowsx || explainTable.show_plan_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Plan')}</button></th>
-      </tr>
-    </thead>
-    <tbody>
-      {_.sortBy(explainTable.rows,(r)=>r['data']['_serial']).map((row)=>{
-        return <ExplainRow key={row?.data?.arr_id} row={row} show={{
-          show_timings: explainTable.show_timings,
-          show_rowsx: explainTable.show_rowsx,
-          show_rows: explainTable.show_rows,
-          show_plan_rows: explainTable.show_plan_rows,
-        }} activeExId={activeExId} setActiveExId={setActiveExId} collapsedExId={collapsedExId} toggleCollapseExId={toggleCollapseExId} />;
-      })}
-    </tbody>
-  </table>;
+  return (
+    <StyledTable>
+      <thead>
+        <tr>
+          <th rowSpan="2" style={{width: '30px'}}></th>
+          <th rowSpan="2"><button disabled="">#</button></th>
+          <th rowSpan="2"><button disabled="">Node</button></th>
+          <th colSpan="2" style={explainTable.show_timings ? {} : {display: 'none'}}>
+            <button disabled="">{gettext('Timings')}</button>
+          </th>
+          <th style={(explainTable.show_rowsx || explainTable.show_rows || explainTable.show_plan_rows) ? {} : {display: 'none'}}
+            colSpan={(explainTable.show_rowsx) ? '3' : '1'}>
+            <button disabled="">{gettext('Rows')}</button>
+          </th>
+          <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} rowSpan="2">
+            <button disabled="">{gettext('Loops')}</button>
+          </th>
+        </tr>
+        <tr>
+          <th style={explainTable.show_timings ? {} : {display: 'none'}}>
+            <button disabled="">{gettext('Exclusive')}</button>
+          </th>
+          <th style={explainTable.show_timings ? {} : {display: 'none'}}>
+            <button disabled="">{gettext('Inclusive')}</button>
+          </th>
+          <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button disabled="">{gettext('Rows X')}</button></th>
+          <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Actual')}</button></th>
+          <th style={(explainTable.show_rowsx || explainTable.show_plan_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Plan')}</button></th>
+        </tr>
+      </thead>
+      <tbody>
+        {_.sortBy(explainTable.rows,(r)=>r['data']['_serial']).map((row)=>{
+          return <ExplainRow key={row?.data?.arr_id} row={row} show={{
+            show_timings: explainTable.show_timings,
+            show_rowsx: explainTable.show_rowsx,
+            show_rows: explainTable.show_rows,
+            show_plan_rows: explainTable.show_plan_rows,
+          }} activeExId={activeExId} setActiveExId={setActiveExId} collapsedExId={collapsedExId} toggleCollapseExId={toggleCollapseExId} />;
+        })}
+      </tbody>
+    </StyledTable>
+  );
 }
 
 Analysis.propTypes = {

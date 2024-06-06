@@ -14,7 +14,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpIcon from '@mui/icons-material/HelpRounded';
-import { makeStyles } from '@mui/styles';
+
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -33,32 +33,6 @@ import { openSocket, socketApiGet } from '../../../../../static/js/socket_instan
 import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    minWidth: 650,
-  },
-  summaryContainer: {
-    flexGrow: 1,
-    minHeight: 0,
-    overflow: 'auto',
-  },
-  note: {
-    marginTop: '1.2rem',
-    textAlign: 'center',
-  },
-  helpBtn: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    paddingRight: '0.3rem'
-  },
-  compareComp: {
-    flexGrow: 1,
-  },
-  diffBtn: {
-    display: 'flex',
-    justifyContent: 'flex-end'
-  }
-}));
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
   _.each(Object.keys(script_array).reverse(), function (s) {
@@ -114,7 +88,6 @@ const onHelpClick=()=>{
 };
 
 export function SchemaDiffCompare({ params }) {
-  const classes = useStyles();
   const schemaDiffToolContext = useContext(SchemaDiffContext);
   const eventBus = useContext(SchemaDiffEventsContext);
 
@@ -728,7 +701,7 @@ export function SchemaDiffCompare({ params }) {
               diff_type={TYPE.SOURCE}
             ></InputComponent>
           </Grid>
-          <Grid item lg={5} md={5} sm={2} xs={2} className={classes.helpBtn}>
+          <Grid item lg={5} md={5} sm={2} xs={2} sx={{  display: 'flex',flexDirection: 'row-reverse',paddingRight: '0.3rem'}}>
             <PgButtonGroup size="small">
               <PgIconButton data-test='schema-diff-help' title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
             </PgButtonGroup>
@@ -752,7 +725,7 @@ export function SchemaDiffCompare({ params }) {
             ></InputComponent>
           </Grid>
 
-          <Grid item lg={5} md={5} sm={12} xs={12} className={classes.diffBtn}>
+          <Grid item lg={5} md={5} sm={12} xs={12}>
             <SchemaDiffButtonComponent
               sourceData={{
                 'sid': selectedSourceSid,
@@ -792,7 +765,7 @@ export function SchemaDiffCompare({ params }) {
           }}
         ></ResultGridComponent>
         :
-        <Box className={classes.note}>
+        <Box sx={{  marginTop: '1.2rem',textAlign: 'center'}}>
           <InfoRoundedIcon style={{ fontSize: '1.2rem' }} />
           {gettext(' Source and Target database server must be of the same major version.')}<br />
           <strong>{gettext(' Database Compare:')}</strong>

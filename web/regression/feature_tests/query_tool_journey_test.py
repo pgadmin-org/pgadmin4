@@ -360,7 +360,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _check_history_queries_and_icons(self, history_queries, history_icons):
         # Select first query history entry
         self.page.find_by_css_selector(
-            QueryToolLocators.query_history_specific_entry.format(2)).click()
+            QueryToolLocators.query_history_specific_entry.format(1)).click()
         for icon, query in zip(history_icons, history_queries):
             # Check query
             query_history_selected_item = self.page.find_by_css_selector(

@@ -9,7 +9,6 @@
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Box, Accordion, AccordionSummary, AccordionDetails} from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SaveIcon from '@mui/icons-material/Save';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -21,7 +20,6 @@ import HelpIcon from '@mui/icons-material/HelpRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
-import clsx from 'clsx';
 
 import {FormFooterMessage, MESSAGE_TYPE } from 'sources/components/FormComponents';
 import { PrimaryButton, DefaultButton, PgIconButton } from 'sources/components/Buttons';
@@ -41,35 +39,45 @@ import { useIsMounted } from '../custom_hooks';
 import ErrorBoundary from '../helpers/ErrorBoundary';
 import { usePgAdmin } from '../BrowserComponent';
 import { PgButtonGroup } from '../components/Buttons';
+import { styled } from '@mui/material/styles';
 
-const useDialogStyles = makeStyles((theme)=>({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  form: {
+const StyledBox = styled(Box)(({theme})=>({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  minHeight: 0,
+  '& .Dialog-form': {
     flexGrow: 1,
     position: 'relative',
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
   },
-  formProperties: {
-    backgroundColor: theme.palette.grey[400],
-  },
-  footer: {
+  '& .Dialog-footer': {
     padding: theme.spacing(1),
     background: theme.otherVars.headerBg,
     display: 'flex',
     zIndex: 1010,
     ...theme.mixins.panelBorder.top,
+    '& .Dialog-buttonMargin': {
+      marginRight: '0.5rem',
+    },
   },
-  mappedControl: {
-    paddingBottom: theme.spacing(1),
+  '& .Properties-toolbar': {
+    padding: theme.spacing(1),
+    background: theme.palette.background.default,
+    ...theme.mixins.panelBorder.bottom,
   },
-  buttonMargin: {
-    marginRight: '0.5rem',
+  '& .Properties-form': {
+    padding: theme.spacing(1),
+    overflow: 'auto',
+    flexGrow: 1,
+    '& .Properties-controlRow': {
+      marginBottom: theme.spacing(1),
+    },
+  },
+  '& .Properties-noPadding': {
+    padding: 0,
   },
 }));
 
@@ -476,7 +484,6 @@ function prepareData(val, createMode=false) {
 /* If its the dialog */
 function SchemaDialogView({
   getInitData, viewHelperProps, loadingText, schema={}, showFooter=true, isTabView=true, checkDirtyOnEnableSave=false, ...props}) {
-  const classes = useDialogStyles();
   /* Some useful states */
   const [dirty, setDirty] = useState(false);
   /* formErr has 2 keys - name and message.
@@ -784,10 +791,10 @@ function SchemaDialogView({
 
   /* I am Groot */
   return (
-    <StateUtilsContext.Provider value={stateUtils}>
-      <DepListenerContext.Provider value={depListenerObj.current}>
-        <Box className={classes.root}>
-          <Box className={classes.form}>
+    <StyledBox>
+      <StateUtilsContext.Provider value={stateUtils}>
+        <DepListenerContext.Provider value={depListenerObj.current}>
+          <Box className='Dialog-form'>
             <Loader message={loaderText || loadingText}/>
             <FormView value={sessData} viewHelperProps={viewHelperProps}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
@@ -795,18 +802,18 @@ function SchemaDialogView({
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
               onClose={onErrClose} />
           </Box>
-          {showFooter && <Box className={classes.footer}>
+          {showFooter && <Box className='Dialog-footer'>
             {(!props.disableSqlHelp || !props.disableDialogHelp) && <Box>
               <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
-                disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
+                disabled={props.disableSqlHelp} className='Dialog-buttonMargin' title="SQL help for this object type."/>
               <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."
                 disabled={props.disableDialogHelp}/>
             </Box>}
             <Box marginLeft="auto">
-              <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
+              <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className='Dialog-buttonMargin'>
                 {gettext('Close')}
               </DefaultButton>
-              <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
+              <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className='Dialog-buttonMargin'>
                 {gettext('Reset')}
               </DefaultButton>
               <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' || checkDirtyOnEnableSave ? dirty : true) || saving || Boolean(formErr.name && formErr.name !== 'apierror') || !formReady}>
@@ -814,9 +821,9 @@ function SchemaDialogView({
               </PrimaryButton>
             </Box>
           </Box>}
-        </Box>
-      </DepListenerContext.Provider>
-    </StateUtilsContext.Provider>
+        </DepListenerContext.Provider>
+      </StateUtilsContext.Provider>
+    </StyledBox>
   );
 }
 
@@ -851,38 +858,12 @@ SchemaDialogView.propTypes = {
   checkDirtyOnEnableSave: PropTypes.bool,
 };
 
-const usePropsStyles = makeStyles((theme)=>({
-  root: {
-    height: '100%',
-    minHeight: 0,
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  controlRow: {
-    marginBottom: theme.spacing(1),
-  },
-  form: {
-    padding: theme.spacing(1),
-    overflow: 'auto',
-    flexGrow: 1,
-  },
-  toolbar: {
-    padding: theme.spacing(1),
-    background: theme.palette.background.default,
-    ...theme.mixins.panelBorder.bottom,
-  },
-  buttonMargin: {
-    marginRight: '0.5rem',
-  },
-  noPadding: {
-    padding: 0,
-  }
-}));
+
 
 /* If its the properties tab */
 function SchemaPropertiesView({
   getInitData, viewHelperProps, schema={}, updatedData, ...props}) {
-  const classes = usePropsStyles();
+
   let defaultTab = 'General';
   let tabs = {};
   let tabsClassname = {};
@@ -926,7 +907,7 @@ function SchemaPropertiesView({
     group = group || defaultTab;
 
     if(field.isFullTab) {
-      tabsClassname[group] = classes.noPadding;
+      tabsClassname[group] = 'Properties-noPadding';
     }
 
     if(modeSupported) {
@@ -944,7 +925,7 @@ function SchemaPropertiesView({
             viewHelperProps={viewHelperProps}
             schema={field.schema}
             accessPath={[]}
-            controlClassName={classes.controlRow}
+            controlClassName='Properties-controlRow'
             {...field}
             visible={visible}
           />
@@ -959,7 +940,7 @@ function SchemaPropertiesView({
             schema={field.schema}
             accessPath={[field.id]}
             formErr={{}}
-            containerClassName={classes.controlRow}
+            containerClassName='Properties-controlRow'
             canAdd={false}
             canEdit={false}
             canDelete={false}
@@ -983,11 +964,11 @@ function SchemaPropertiesView({
             readonly={readonly}
             disabled={disabled}
             visible={visible}
-            className={field.isFullTab ? null : classes.controlRow}
+            className={field.isFullTab ? null :'Properties-controlRow'}
             noLabel={field.isFullTab}
             memoDeps={[
               origData[field.id],
-              classes.controlRow,
+              'Properties-controlRow',
               field.isFullTab
             ]}
           />
@@ -998,9 +979,9 @@ function SchemaPropertiesView({
 
   let finalTabs = _.pickBy(tabs, (v, tabName)=>schema.filterGroups.indexOf(tabName) <= -1);
   return (
-    <Box className={classes.root}>
+    <StyledBox>
       <Loader message={loaderText}/>
-      <Box className={classes.toolbar}>
+      <Box className='Properties-toolbar'>
         <PgButtonGroup size="small">
           <PgIconButton
             data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
@@ -1009,7 +990,7 @@ function SchemaPropertiesView({
             onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
         </PgButtonGroup>
       </Box>
-      <Box className={clsx(classes.form, classes.formProperties)}>
+      <Box className={'Properties-form'}>
         <Box>
           {Object.keys(finalTabs).map((tabName)=>{
             let id = tabName.replace(' ', '');
@@ -1032,7 +1013,7 @@ function SchemaPropertiesView({
           })}
         </Box>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }
 

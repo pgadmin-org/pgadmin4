@@ -8,12 +8,29 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import { Box, Tooltip, CircularProgress } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { ConnectedIcon, DisonnectedIcon } from '../../../../../../static/js/components/ExternalIcon';
+
+const StyledBox = styled(Box)(({theme}) => ({
+  padding: '2px 4px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  backgroundColor: theme.otherVars.editorToolbarBg,
+  flexWrap: 'wrap',
+  '& .Status-connectionButton': {
+    display: 'flex',
+    width: '450px',
+    backgroundColor: theme.palette.default.main,
+    color: theme.palette.default.contrastText,
+    border: '1px solid ' + theme.palette.default.borderColor,
+    justifyContent: 'flex-start',
+  }
+}));
 
 export const STATUS = {
   CONNECTED: 1,
@@ -36,28 +53,9 @@ ConnectionStatusIcon.propTypes = {
   status: PropTypes.oneOf(Object.values(STATUS)).isRequired,
 };
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    flexWrap: 'wrap',
-  },
-  connectionButton: {
-    display: 'flex',
-    width: '450px',
-    backgroundColor: theme.palette.default.main,
-    color: theme.palette.default.contrastText,
-    border: '1px solid ' + theme.palette.default.borderColor,
-    justifyContent: 'flex-start',
-  },
-}));
-
 /* The connection bar component */
 export default function ConnectionBar({status, bgcolor, fgcolor, title}) {
-  const classes = useStyles();
+
   const connTitle = useMemo(()=>{
     if(status == STATUS.CONNECTED) {
       return gettext('Connected');
@@ -70,14 +68,14 @@ export default function ConnectionBar({status, bgcolor, fgcolor, title}) {
     }
   }, [status]);
   return (
-    <Box className={classes.root}>
+    <StyledBox>
       <PgButtonGroup size="small">
         <PgIconButton
           title={connTitle}
           icon={<ConnectionStatusIcon status={status} />}
           data-test="btn-conn-status"
         />
-        <DefaultButton className={classes.connectionButton} style={{backgroundColor: bgcolor, color: fgcolor}} data-test="btn-conn-title">
+        <DefaultButton className='Status-connectionButton' style={{backgroundColor: bgcolor, color: fgcolor}} data-test="btn-conn-title">
           <Tooltip title={title}>
             <Box display="flex" width="100%">
               <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">
@@ -89,7 +87,7 @@ export default function ConnectionBar({status, bgcolor, fgcolor, title}) {
           </Tooltip>
         </DefaultButton>
       </PgButtonGroup>
-    </Box>
+    </StyledBox>
   );
 }
 

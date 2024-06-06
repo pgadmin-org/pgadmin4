@@ -1,18 +1,9 @@
-/////////////////////////////////////////////////////////////
-//
-// pgAdmin 4 - PostgreSQL Tools
-//
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
-// This software is released under the PostgreSQL Licence
-//
-//////////////////////////////////////////////////////////////
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import React, { useContext } from 'react';
 import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstants';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
-import clsx from 'clsx';
 import { Box, Grid, List, ListItem, ListSubheader } from '@mui/material';
 import url_for from 'sources/url_for';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -32,64 +23,71 @@ import { parseApiError } from '../../../../../../static/js/api_instance';
 import * as clipboard from '../../../../../../static/js/clipboard';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 
-const useStyles = makeStyles((theme)=>({
-  leftRoot: {
+const Root = styled('div')(({ theme }) => ({
+  display: 'flex', 
+  height: '100%',
+  '.QuerySources-leftRoot': {
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.otherVars.editorToolbarBg,
     ...theme.mixins.panelBorder.right,
+    '& .QuerySources-header': {
+      padding: '0.25rem',
+      display: 'flex',
+      flexWrap: 'wrap'
+    },
+    '& .QuerySources-listRoot': {
+      ...theme.mixins.panelBorder.top,
+      '& .QuerySources-removePadding': {
+        padding: 0,
+        '& .QuerySources-listSubheader': {
+          padding: '0.25rem',
+          lineHeight: 'unset',
+          color: theme.palette.text.muted,
+          backgroundColor: theme.palette.background.default,
+          ...theme.mixins.panelBorder.bottom,
+          ...theme.mixins.fontSourceCode,
+        },
+        '& .QuerySources-fontSourceCode': {
+          ...theme.mixins.fontSourceCode,
+          userSelect: 'text',
+        },
+        '& .QuerySources-itemError': {
+          backgroundColor: theme.palette.error.light,
+          '&.Mui-selected': {
+            backgroundColor: theme.palette.error.light,
+            '&:hover': {
+              backgroundColor: theme.palette.error.light,
+            }
+          }
+        },
+      },
+    },
   },
-  listRoot: {
-    ...theme.mixins.panelBorder.top,
-  },
-  listSubheader: {
-    padding: '0.25rem',
-    lineHeight: 'unset',
-    color: theme.palette.text.muted,
-    backgroundColor: theme.palette.background.default,
-    ...theme.mixins.panelBorder.bottom,
-    ...theme.mixins.fontSourceCode,
-  },
-  removePadding: {
-    padding: 0,
-  },
-  fontSourceCode:{
-    ...theme.mixins.fontSourceCode,
-    userSelect: 'text',
-  },
-  itemError: {
-    backgroundColor: theme.palette.error.light,
-    '&.Mui-selected': {
-      backgroundColor: theme.palette.error.light,
-      '&:hover': {
-        backgroundColor: theme.palette.error.light,
-      }
-    }
-  },
-  detailsQuery: {
+  '& .QuerySources-detailsQuery': {
     marginTop: '0.5rem',
     ...theme.mixins.panelBorder.all,
+    '& .QuerySources-copyBtn': {
+      borderRadius: 0,
+      paddingLeft: '8px',
+      paddingRight: '8px',
+      borderTop: 'none',
+      borderLeft: 'none',
+      borderColor: theme.otherVars.borderColor,
+      fontSize: '13px',
+    },
+    '& .QuerySources-queryMargin': {
+      marginTop: '12px',
+    },
+    '& .QuerySources-removeBtnMargin': {
+      marginLeft: '0.25rem',
+    },
   },
-  copyBtn: {
-    borderRadius: 0,
-    paddingLeft: '8px',
-    paddingRight: '8px',
-    borderTop: 'none',
-    borderLeft: 'none',
-    borderColor: theme.otherVars.borderColor,
-    fontSize: '13px',
-  },
-  infoHeader: {
+  '& .QuerySources-infoHeader': {
     fontSize: '13px',
     padding: '0.5rem',
     backgroundColor: theme.otherVars.editorToolbarBg,
   },
-  removeBtnMargin: {
-    marginLeft: '0.25rem',
-  },
-  queryMargin: {
-    marginTop: '12px',
-  }
 }));
 
 export const QuerySources = {
@@ -268,13 +266,12 @@ QuerySourceIcon.propTypes = {
 };
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
-  const classes = useStyles();
-  return <ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
+  return <Root><ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
     selectedItemKey==itemKey && ele && ele.scrollIntoView({
       block: 'center',
       behavior: 'smooth',
     });
-  }} className={clsx(classes.fontSourceCode, entry.status ? '' : classes.itemError)} selected={selectedItemKey==itemKey} onClick={onClick}>
+  }} className={'QuerySources-fontSourceCode ' + (entry.status ? '' : 'QuerySources-itemError')} selected={selectedItemKey==itemKey} onClick={onClick}>
     <Box whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" >
       <QuerySourceIcon source={entry.query_source}/>
       {entry.query}
@@ -282,7 +279,8 @@ function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick
     <Box fontSize="12px">
       {formatEntryDate(entry.start_time)}
     </Box>
-  </ListItem>;
+  </ListItem>
+  </Root>;
 }
 
 const EntryPropType = PropTypes.shape({
@@ -305,7 +303,7 @@ HistoryEntry.propTypes = {
 };
 
 function QueryHistoryDetails({entry}) {
-  const classes = useStyles();
+
   const [copyText, setCopyText] = React.useState(gettext('Copy'));
   const eventBus = React.useContext(QueryToolEventsContext);
   const revertCopiedText = useDelayedCaller(()=>{
@@ -323,14 +321,16 @@ function QueryHistoryDetails({entry}) {
   }, [entry]);
 
   if(!entry) {
-    return <Box display="flex" height="100%">
-      <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
-    </Box>;
+    return <Root>
+      <Box display="flex" height="100%">
+        <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
+      </Box>
+    </Root>;
   }
 
   return (
-    <>
-      {entry.info && <Box className={classes.infoHeader}>{entry.info}</Box>}
+    <Root>
+      {entry.info && <Box className='QuerySources-infoHeader'>{entry.info}</Box>}
       <Box padding="0.5rem" data-label="history-detail">
         <Grid container>
           <Grid item sm={4}>{getDateFormatted(entry.start_time) + ' ' + getTimeFormatted(entry.start_time)}</Grid>
@@ -342,9 +342,9 @@ function QueryHistoryDetails({entry}) {
           <Grid item sm={4}>{gettext('Rows affected')}</Grid>
           <Grid item sm={4}>{gettext('Duration')}</Grid>
         </Grid>
-        <Box className={classes.detailsQuery}>
-          <DefaultButton size="xs" className={classes.copyBtn} onClick={onCopyClick}>{copyText}</DefaultButton>
-          <DefaultButton size="xs" className={classes.copyBtn} onClick={onCopyToEditor}>{gettext('Copy to Query Editor')}</DefaultButton>
+        <Box className='QuerySources-detailsQuery'>
+          <DefaultButton size="xs" className='QuerySources-copyBtn' onClick={onCopyClick}>{copyText}</DefaultButton>
+          <DefaultButton size="xs" className='QuerySources-copyBtn' onClick={onCopyToEditor}>{gettext('Copy to Query Editor')}</DefaultButton>
           <CodeMirror
             value={entry.query}
             readonly={true}
@@ -353,15 +353,15 @@ function QueryHistoryDetails({entry}) {
               lineNumbers: false,
               gutters: [],
             }}
-            className={classes.queryMargin}
+            className='QuerySources-queryMargin'
           />
         </Box>
         <Box marginTop="0.5rem">
           <Box>{gettext('Messages')}</Box>
-          <Box className={classes.fontSourceCode} fontSize="13px" whiteSpace="pre-wrap">{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
+          <Box className='QuerySources-fontSourceCode' fontSize="13px" whiteSpace="pre-wrap">{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
         </Box>
       </Box>
-    </>
+    </Root>
   );
 }
 
@@ -373,7 +373,7 @@ export function QueryHistory() {
   const qhu = React.useRef(new QueryHistoryUtils());
   const queryToolCtx = React.useContext(QueryToolContext);
   const queryToolConnCtx = React.useContext(QueryToolConnectionContext);
-  const classes = useStyles();
+
   const eventBus = React.useContext(QueryToolEventsContext);
   const [selectedItemKey, setSelectedItemKey] = React.useState(1);
   const [showInternal, setShowInternal] = React.useState(true);
@@ -488,15 +488,15 @@ export function QueryHistory() {
   };
 
   return (
-    <>
+    <Root>
       <Loader message={loaderText} />
       {React.useMemo(()=>(
         <Box display="flex" height="100%">
           {qhu.current.size() == 0 ?
             <EmptyPanelMessage text={gettext('No history found')} />:
             <>
-              <Box flexBasis="50%" maxWidth="50%" className={classes.leftRoot}>
-                <Box padding="0.25rem" display="flex" flexWrap="wrap">
+              <Box flexBasis="50%" maxWidth="50%" className='QuerySources-leftRoot'>
+                <Box className='QuerySources-header'>
                   <Box marginRight="auto">
                     {gettext('Show queries generated internally by pgAdmin?')}
                     <InputSwitch value={showInternal} onChange={(e)=>{
@@ -508,15 +508,15 @@ export function QueryHistory() {
                   <Box>
                     <DefaultButton size="small" disabled={!selectedItemKey} onClick={onRemove}>{gettext('Remove')}</DefaultButton>
                     <DefaultButton size="small" disabled={!qhu.current?.getGroups()?.length}
-                      className={classes.removeBtnMargin} onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
+                      className='QuerySources-removeBtnMargin' onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
                   </Box>
                 </Box>
-                <Box flexGrow="1" overflow="auto" className={classes.listRoot}>
-                  <List ref={listRef} className={classes.root} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
+                <Box flexGrow="1" overflow="auto" className='QuerySources-listRoot'>
+                  <List ref={listRef} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
                     {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
-                      <ListItem key={`section-${groupKey}`} className={classes.removePadding}>
-                        <List className={classes.removePadding}>
-                          <ListSubheader className={classes.listSubheader}>{groupHeader}</ListSubheader>
+                      <ListItem key={`section-${groupKey}`} className='QuerySources-removePadding'>
+                        <List className='QuerySources-removePadding'>
+                          <ListSubheader className='QuerySources-listSubheader'>{groupHeader}</ListSubheader>
                           {qhu.current.getGroupEntries(groupKey).map((entry) => (
                             <HistoryEntry key={entry.itemKey} entry={entry} formatEntryDate={qhu.current.formatEntryDate}
                               itemKey={entry.itemKey} selectedItemKey={selectedItemKey} onClick={()=>{setSelectedItemKey(entry.itemKey);}}/>
@@ -533,6 +533,6 @@ export function QueryHistory() {
             </>}
         </Box>
       ), [selectedItemKey, showInternal, qhu.current.size()])}
-    </>
+    </Root>
   );
 }

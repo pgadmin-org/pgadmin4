@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useState} from 'react';
-import { styled } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import { Portal } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';

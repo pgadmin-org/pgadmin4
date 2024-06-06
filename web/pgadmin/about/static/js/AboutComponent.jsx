@@ -8,35 +8,27 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
+import { styled } from '@mui/material/styles';
 import url_for from 'sources/url_for';
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Grid, InputLabel } from '@mui/material';
 import { DefaultButton } from '../../../static/js/components/Buttons';
-import { makeStyles } from '@mui/styles';
 import { InputText } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';
 import { copyToClipboard } from '../../../static/js/clipboard';
 import { useDelayedCaller } from '../../../static/js/custom_hooks';
 import { usePgAdmin } from '../../../static/js/BrowserComponent';
 
-
-const useStyles = makeStyles((theme)=>({
-  container: {
-    padding: '16px',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  copyBtn: {
+const StyledDefaultButton = styled(DefaultButton)(({theme}) => ({
+  '&.AboutComponent-copyBtn': {
     marginRight: '1px',
     float: 'right',
     borderColor: theme.otherVars.borderColor,
     fontSize: '13px',
-  },
+  }
 }));
 
 export default function AboutComponent() {
-  const classes = useStyles();
   const containerRef = useRef();
   const [aboutData, setAboutData] = useState([]);
   const [copyText, setCopyText] = useState(gettext('Copy'));
@@ -57,7 +49,7 @@ export default function AboutComponent() {
   }, []);
 
   return (
-    <Box className={classes.container} ref={containerRef}>
+    <Box sx={{ padding: '16px', height: '100%', display: 'flex',flexDirection: 'column'}} ref={containerRef}>
       <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Version')}</InputLabel>
@@ -134,11 +126,11 @@ export default function AboutComponent() {
         <Box flexGrow="1" display="flex" flexDirection="column">
           <Box>
             <span style={{fontWeight: 'bold'}}>{gettext('Server Configuration')}</span>
-            <DefaultButton className={classes.copyBtn} onClick={()=>{
+            <StyledDefaultButton className='AboutComponent-copyBtn' onClick={()=>{
               copyToClipboard(aboutData.settings);
               setCopyText(gettext('Copied!'));
               revertCopiedText(1500);
-            }}>{copyText}</DefaultButton>
+            }}>{copyText}</StyledDefaultButton>
           </Box>
           <Box flexGrow="1" paddingTop="1px">
             <InputText style={{height: '100%'}} controlProps={{multiline: true, rows: 8}} inputStyle={{resize: 'none'}}

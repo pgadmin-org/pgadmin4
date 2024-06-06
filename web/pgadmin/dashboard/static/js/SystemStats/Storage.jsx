@@ -7,9 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import url_for from 'sources/url_for';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
@@ -21,52 +21,29 @@ import axios from 'axios';
 import { BarChart, PieChart } from '../../../../static/js/chartjs';
 import { getStatsUrl, transformData, X_AXIS_LENGTH } from './utility.js';
 import { toPrettySize } from '../../../../static/js/utils';
-import clsx from 'clsx';
-import { commonTableStyles } from '../../../../static/js/Theme';
+import Table from '../../../../static/js/components/Table';
 import SectionContainer from '../components/SectionContainer.jsx';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    height: 'auto',
-    padding: '8px',
-    marginBottom: '6px',
-  },
-  driveContainer: {
-    width: '100%',
-  },
-  diskInfoCharts: {
-    marginBottom: '4px',
-  },
-  containerHeaderText: {
-    fontWeight: 'bold',
-    padding: '4px 8px',
-  },
-  tableContainer: {
+
+const Root = styled('div')(({theme}) => ({
+  '& .Storage-tableContainer': {
     background: theme.otherVars.tableBg,
+    padding: '0px',
     border: '1px solid '+theme.otherVars.borderColor,
     borderCollapse: 'collapse',
     borderRadius: '4px',
     overflow: 'auto',
     width: '100%',
-    marginBottom: '4px',
-  },
-  tableWhiteSpace: {
-    '& td, & th': {
-      whiteSpace: 'break-spaces !important',
+    margin: '4px 4px 4px 4px',
+    '& .Storage-containerHeaderText': {
+      fontWeight: 'bold',
+      padding: '4px 8px',
     },
-  },
-  driveContainerHeader: {
-    height: 'auto',
-    padding: '5px 0px 0px 0px',
-    background: theme.otherVars.tableBg,
-    marginBottom: '5px',
-    borderRadius: '4px 4px 0px 0px',
-  },
-  driveContainerBody: {
-    height: 'auto',
-    padding: '0px',
-    background: theme.otherVars.tableBg,
-    borderRadius: '0px 0px 4px 4px',
+    '& .Storage-tableWhiteSpace': {
+      '& td, & th': {
+        whiteSpace: 'break-spaces !important',
+      },
+    },
   },
 }));
 
@@ -122,12 +99,11 @@ const chartsDefault = {
 
 
 const DiskStatsTable = (props) => {
-  const tableClasses = commonTableStyles();
-  const classes = useStyles();
+
   const tableHeader = props.tableHeader;
   const data = props.data;
   return (
-    <table className={clsx(tableClasses.table, classes.tableWhiteSpace)}>
+    <Table classNameRoot='Storage-tableWhiteSpace'>
       <thead>
         <tr>
           {tableHeader.map((item, index) => (
@@ -144,7 +120,7 @@ const DiskStatsTable = (props) => {
           </tr>
         ))}
       </tbody>
-    </table>
+    </Table>
   );
 };
 
@@ -358,7 +334,7 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
   }, enablePoll ? pollDelay : -1);
 
   return (
-    <>
+    (<Root>
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <StorageWrapper
@@ -373,7 +349,7 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
           isTest={false}
         />
       }
-    </>
+    </Root>)
   );
 }
 
@@ -387,7 +363,7 @@ Storage.propTypes = {
 };
 
 export function StorageWrapper(props) {
-  const classes = useStyles();
+
   const options = useMemo(()=>({
     showDataPoints: props.showDataPoints,
     showTooltip: props.showTooltip,
@@ -414,10 +390,10 @@ export function StorageWrapper(props) {
     },
   };
 
-  return (
-    <>
-      <div className={classes.tableContainer}>
-        <div className={classes.containerHeaderText}>{gettext('Disk information')}</div>
+  return ( 
+    <Root>
+      <div className='Storage-tableContainer'>
+        <div className='Storage-containerHeaderText'>{gettext('Disk information')}</div>
         <DiskStatsTable tableHeader={props.tableHeader} data={props.diskStats} />
       </div>
       <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
@@ -511,7 +487,7 @@ export function StorageWrapper(props) {
           </Grid>
         </SectionContainer>
       ))}
-    </>
+    </Root>
   );
 }
 

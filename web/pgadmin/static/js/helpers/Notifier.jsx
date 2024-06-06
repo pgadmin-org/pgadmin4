@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { SnackbarProvider, SnackbarContent } from 'notistack';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import {Box} from '@mui/material';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
@@ -23,6 +23,19 @@ import _ from 'lodash';
 import { useModal } from './ModalProvider';
 import { parseApiError } from '../api_instance';
 
+
+const Root = styled('div')(({theme}) => ({
+  '& .Notifier-footer': {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder.top,
+    '& .Notifier-margin': {
+      marginLeft: '0.25rem',
+    }
+  },
+}));
+
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
 export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
@@ -33,27 +46,15 @@ FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,
 };
 
-const useModalStyles = makeStyles((theme)=>({
-  footer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: '0.5rem',
-    ...theme.mixins.panelBorder.top,
-  },
-  margin: {
-    marginLeft: '0.25rem',
-  },
-}));
 function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
-  const classes = useModalStyles();
   return (
     <Box display="flex" flexDirection="column" height="100%">
       <Box flexGrow="1" p={2}>{HTMLReactParser(text)}</Box>
-      <Box className={classes.footer}>
+      <Box className='Notifier-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
         }
-        <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+        <PrimaryButton className='Notifier-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
       </Box>
     </Box>
   );
@@ -197,23 +198,25 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onR
   // if open in a window, then create your own Snackbar
   if(window.self == window.top) {
     return (
-      <SnackbarProvider
-        maxSnack={30}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        ref={(obj)=>{
-          pgAdmin.Browser.notifier = new Notifier(modal, new SnackbarNotifier(obj));
-          getInstance?.(pgAdmin.Browser.notifier);
-          onReady?.();
-        }}
-      >
-        {children}
-      </SnackbarProvider>
+      <Root>
+        <SnackbarProvider
+          maxSnack={30}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          ref={(obj)=>{
+            pgAdmin.Browser.notifier = new Notifier(modal, new SnackbarNotifier(obj));
+            getInstance?.(pgAdmin.Browser.notifier);
+            onReady?.();
+          }}
+        >
+          {children}
+        </SnackbarProvider>
+      </Root>
     );
   }
   return (
-    <>
+    (<Root>
       {children}
-    </>
+    </Root>)
   );
 }
 

@@ -1,6 +1,5 @@
 import { Checkbox } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import React, { useEffect, useRef } from 'react';
 import { Tree } from 'react-arborist';
@@ -13,35 +12,34 @@ import EmptyPanelMessage from '../components/EmptyPanelMessage';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 
-const useStyles = makeStyles((theme) => ({
-  node: {
-    display: 'inline-block',
-    paddingLeft: '1.5rem',
-    height: '100%',
-  },
-  checkboxStyle: {
-    fill: theme.palette.primary.main
-  },
-  tree: {
+
+const Root = styled('div')(({theme}) => ({
+  height: '100%',
+  '& .PgTree-tree': {
     background: theme.palette.background.default,
     height: '100%',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-  },
-  focusedNode: {
-    background: theme.palette.primary.light,
-  },
-  leafNode: {
-    marginLeft: '1.5rem'
+    '& .PgTree-leafNode': {
+      marginLeft: '1.5rem'
+    },
+    '& .PgTree-node': {
+      display: 'inline-block',
+      paddingLeft: '1.5rem',
+      height: '100%',
+    },
+    '& .PgTree-focusedNode': {
+      background: theme.palette.primary.light,
+    },
   },
 }));
 
 export const PgTreeSelectionContext = React.createContext();
 
 export default function PgTreeView({ data = [], hasCheckbox = false, selectionChange = null}) {
-  let classes = useStyles();
+
   let treeData = data;
   const treeObj = useRef();
   const treeContainerRef = useRef();
@@ -69,10 +67,10 @@ export default function PgTreeView({ data = [], hasCheckbox = false, selectionCh
     selectionChange?.(selectedChNodes);
   };
 
-  return (<>
+  return (<Root>
     { treeData.length > 0 ?
       <PgTreeSelectionContext.Provider value={selectedCheckBoxNodes}>
-        <div ref={(containerRef) => treeContainerRef.current = containerRef} className={clsx(classes.tree)}>
+        <div ref={(containerRef) => treeContainerRef.current = containerRef} className={'PgTree-tree'}>
           <AutoSizer>
             {({ width, height }) => (
               <Tree
@@ -97,7 +95,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false, selectionCh
       :
       <EmptyPanelMessage text={gettext('No objects are found to display')}/>
     }
-  </>
+  </Root>
   );
 }
 
@@ -108,7 +106,7 @@ PgTreeView.propTypes = {
 };
 
 function Node({ node, style, tree, hasCheckbox, onNodeSelectionChange}) {
-  const classes = useStyles();
+
   const pgTreeSelCtx = React.useContext(PgTreeSelectionContext);
   const [isSelected, setIsSelected] = React.useState(pgTreeSelCtx.includes(node.id) || node.data?.isSelected);
   const [isIndeterminate, setIsIndeterminate] = React.useState(node?.parent.level==0);
@@ -173,16 +171,16 @@ function Node({ node, style, tree, hasCheckbox, onNodeSelectionChange}) {
   };
 
   return (
-    <div style={style} className={clsx(node.isFocused ? classes.focusedNode : '')} onClick={onSelect} onKeyDown={onKeyDown}>
+    <div style={style} className={node.isFocused ? 'PgTree-focusedNode' : ''} onClick={onSelect} onKeyDown={onKeyDown}>
       <CollectionArrow node={node} tree={tree} selectedNodeIds={pgTreeSelCtx} />
       {
-        hasCheckbox ? <Checkbox style={{ padding: 0 }} color="primary" className={clsx(!node.isInternal ? classes.leafNode: null)}
+        hasCheckbox ? <Checkbox style={{ padding: 0 }} color="primary" className={!node.isInternal ? 'PgTree-leafNode': null}
           checked={isSelected}
           checkedIcon={isIndeterminate  ? <IndeterminateCheckBoxIcon style={{height: '1.4rem'}} />: <CheckBoxIcon style={{height: '1.4rem'}} />}
           onChange={onCheckboxSelection}/> :
-          <span className={clsx(node.data.icon)}></span>
+          <span className={node.data.icon}></span>
       }
-      <div className={clsx(node.data.icon, classes.node)}>{node.data.name}</div>
+      <div className={node.data.icon + ' PgTree-node'}>{node.data.name}</div>
     </div>
   );
 }

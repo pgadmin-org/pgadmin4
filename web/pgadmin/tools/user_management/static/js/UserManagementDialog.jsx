@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import SchemaView from '../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../static/js/SchemaView/base_schema.ui';
 import pgAdmin from 'sources/pgadmin';
@@ -21,6 +21,13 @@ import { isEmptyString } from '../../../../static/js/validators';
 import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import _ from 'lodash';
+
+const StyledSchemaView = styled(SchemaView)(({theme}) => ({
+  '& .UserManagementDialog-root': {
+    ...theme.mixins.tabPanel,
+    padding: 0,
+  }
+}));
 
 class UserManagementCollection extends BaseUISchema {
   constructor(authSources, roleOptions) {
@@ -303,15 +310,8 @@ class UserManagementSchema extends BaseUISchema {
   }
 }
 
-const useStyles = makeStyles((theme)=>({
-  root: {
-    ...theme.mixins.tabPanel,
-    padding: 0,
-  },
-}));
-
 function UserManagementDialog({onClose}) {
-  const classes = useStyles();
+
   const [authSources, setAuthSources] = React.useState([]);
   const [roles, setRoles] = React.useState([]);
   const api = getApiInstance();
@@ -393,7 +393,7 @@ function UserManagementDialog({onClose}) {
     window.open(url_for('help.static', { 'filename': 'user_management.html' }), 'pgadmin_help');
   };
 
-  return <SchemaView
+  return <StyledSchemaView
     formType={'dialog'}
     getInitData={()=>{ return new Promise((resolve, reject)=>{
       api.get(url_for('user_management.users'))
@@ -414,7 +414,7 @@ function UserManagementDialog({onClose}) {
     hasSQL={false}
     disableSqlHelp={true}
     isTabView={false}
-    formClassName={classes.root}
+    formClassName='UserManagementDialog-root'
   />;
 }
 

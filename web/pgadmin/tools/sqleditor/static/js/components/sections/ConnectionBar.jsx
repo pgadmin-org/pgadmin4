@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -25,32 +25,27 @@ import PropTypes from 'prop-types';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
-const useStyles = makeStyles((theme)=>({
-  root: {
+const Root = styled('div')(({theme}) => ({
+  '.ConnectionBar-root': {
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
     backgroundColor: theme.otherVars.editorToolbarBg,
+    '& .ConnectionBar-connectionButton': {
+      display: 'flex',
+      width: '450px',
+      backgroundColor: theme.palette.default.main,
+      color: theme.palette.default.contrastText,
+      border: '1px solid ' + theme.palette.default.borderColor,
+      justifyContent: 'flex-start',
+    },
   },
-  connectionButton: {
-    display: 'flex',
-    width: '450px',
-    backgroundColor: theme.palette.default.main,
-    color: theme.palette.default.contrastText,
-    border: '1px solid ' + theme.palette.default.borderColor,
-    justifyContent: 'flex-start',
-  },
-  viewDataConnTitle: {
-    marginTop: 'auto',
-    marginBottom: 'auto',
-    padding: '0px 4px',
-  },
-  menu: {
+  '.ConnectionBar-menu': {
     '& .szh-menu': {
       minWidth: '450px',
     }
-  }
+  },
 }));
 
 function ConnectionStatusIcon({connected, connecting, status}) {
@@ -82,7 +77,7 @@ ConnectionStatusIcon.propTypes = {
 
 export function ConnectionBar({connected, connecting, connectionStatus, connectionStatusMsg,
   connectionList, onConnectionChange, onNewConnClick, onNewQueryToolClick, onResetLayout, containerRef}) {
-  const classes = useStyles();
+
   const connMenuRef = React.useRef();
   const [connDropdownOpen, setConnDropdownOpen] = React.useState(false);
   const queryToolCtx = React.useContext(QueryToolContext);
@@ -104,14 +99,14 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
 
   const connTitle = React.useMemo(()=>_.find(connectionList, (c)=>c.is_selected)?.conn_title, [connectionList]);
   return (
-    <>
-      <Box className={classes.root}>
+    (<Root>
+      <Box className='ConnectionBar-root'>
         <PgButtonGroup size="small">
           {queryToolCtx.preferences?.sqleditor?.connection_status &&
           <PgIconButton title={CONNECTION_STATUS_MESSAGE[connected ? connectionStatus : -1] ?? connectionStatusMsg}
             icon={<ConnectionStatusIcon connecting={connecting} status={connectionStatus} connected={connected}/>}
           />}
-          <DefaultButton className={classes.connectionButton} ref={connMenuRef}
+          <DefaultButton className='ConnectionBar-connectionButton' ref={connMenuRef}
             onClick={queryToolCtx.params.is_query_tool ? ()=>setConnDropdownOpen(true) : undefined}
             style={{backgroundColor: queryToolCtx.params.bgcolor, color: queryToolCtx.params.fgcolor}}
           >
@@ -133,7 +128,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
         anchorRef={connMenuRef}
         open={connDropdownOpen}
         onClose={()=>{setConnDropdownOpen(false);}}
-        className={classes.menu}
+        className='ConnectionBar-menu'
       >
         {(connectionList||[]).map((conn, i)=>{
           return (
@@ -143,7 +138,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
         })}
         <PgMenuItem onClick={onNewConnClick}>{`< ${gettext('New Connection...')} >`}</PgMenuItem>
       </PgMenu>
-    </>
+    </Root>)
   );
 }
 

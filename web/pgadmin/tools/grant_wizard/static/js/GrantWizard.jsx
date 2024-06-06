@@ -12,7 +12,6 @@ import _ from 'lodash';
 import url_for from 'sources/url_for';
 import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import PgTable from 'sources/components/PgTable';
@@ -20,46 +19,12 @@ import { getNodePrivilegeRoleSchema } from '../../../../../pgadmin/browser/serve
 import { InputSQL, FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import getApiInstance from '../../../../static/js/api_instance';
 import SchemaView from '../../../../static/js/SchemaView';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from './privilege_schema.ui';
 import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
-const useStyles = makeStyles(() =>
-  ({
-    root: {
-      height: '100%'
-    },
-    searchBox: {
-      marginBottom: '1em',
-      display: 'flex',
-    },
-    searchPadding: {
-      flex: 2.5
-    },
-    searchInput: {
-      flex: 1,
-      marginTop: 2,
-      borderLeft: 'none',
-      paddingLeft: 5
-    },
-    grantWizardSql: {
-      height: '90% !important',
-      width: '100%'
-    },
-    privilegeStep: {
-      height: '100%',
-      overflow: 'auto'
-    },
-    panelContent: {
-      flexGrow: 1,
-      minHeight: 0
-    }
-  }),
-);
-
 export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
-  const classes = useStyles();
+
   let columns = [
     {
 
@@ -310,11 +275,10 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       loaderText={loaderText}
     >
       <WizardStep stepId={0}>
-        <Box className={classes.panelContent}>
+        <Box sx={{flexGrow: 1, minHeight: 0}}>
           <PgTable
             caveTable={false}
             tableNoBorder={false}
-            className={classes.table}
             height={window.innerHeight - 450}
             columns={columns}
             data={tableData}
@@ -327,7 +291,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       </WizardStep>
       <WizardStep
         stepId={1}
-        className={clsx(classes.privilegeStep)}>
+        sx={{ height:'100%', overflow:'auto'}}>
         {privSchemaInstance &&
           <SchemaView
             formType={'dialog'}
@@ -347,7 +311,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
         <Box>{gettext('The SQL below will be executed on the database server to grant the selected privileges. Please click on Finish to complete the process.')}</Box>
         <InputSQL
           onLable={true}
-          className={classes.grantWizardSql}
           readonly={true}
           value={msqlData.toString()} />
       </WizardStep>

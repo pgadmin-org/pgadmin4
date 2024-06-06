@@ -9,13 +9,12 @@
 
 import React, { forwardRef, useEffect } from 'react';
 import { flexRender } from '@tanstack/react-table';
-import { styled } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { PgIconButton } from './Buttons';
-import clsx from 'clsx';
 import CustomPropTypes from '../custom_prop_types';
 import { InputSwitch } from './FormComponents';
 
@@ -161,6 +160,9 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
   if(row.original.icon && row.original.icon[cell.column.id]) {
     classNames.push(row.original.icon[cell.column.id], 'cell-with-icon');
   }
+  if(cell.column.columnDef.dataClassName){
+    classNames.push(cell.column.columnDef.dataClassName);
+  }
 
   classNames.push(className);
 
@@ -170,7 +172,7 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
       width: `calc(var(--col-${cell.column.id.replace(/\W/g, '_')}-size)*1px)`,
       ...(cell.column.columnDef.maxSize ? { maxWidth: `${cell.column.columnDef.maxSize}px` } : {})
     }} role='cell'
-    className={clsx(...classNames)}
+    className={classNames.join(' ')}
     title={String(cell.getValue() ?? '')}>
       <div className='pgrd-row-cell-content'>{children}</div>
     </div>
@@ -187,7 +189,7 @@ PgReactTableCell.propTypes = {
 
 export const PgReactTableRow = forwardRef(({ children, className, ...props }, ref)=>{
   return (
-    <div className={clsx('pgrt-row', className)} ref={ref} role="row" {...props}>
+    <div className={['pgrt-row', className].join(' ')} ref={ref} role="row" {...props}>
       {children}
     </div>
   );
@@ -200,7 +202,7 @@ PgReactTableRow.propTypes = {
 
 export const PgReactTableRowContent = forwardRef(({children, className, ...props}, ref)=>{
   return (
-    <div className={clsx('pgrt-row-content', className)} ref={ref} {...props}>
+    <div className={['pgrt-row-content', className].join(' ')} ref={ref} {...props}>
       {children}
     </div>
   );
@@ -311,8 +313,8 @@ export const PgReactTable = forwardRef(({children, table, rootClassName, tableCl
   }, [columns, table.getState().columnSizingInfo]);
 
   return (
-    <StyledDiv className={clsx('pgrt', rootClassName)} ref={ref} >
-      <div className={clsx('pgrt-table', tableClassName)} style={{ ...columnSizeVars }} {...props}>
+    <StyledDiv className={['pgrt', rootClassName].join(' ')} ref={ref} >
+      <div className={['pgrt-table', tableClassName].join(' ')} style={{ ...columnSizeVars }} {...props}>
         {children}
       </div>
     </StyledDiv>

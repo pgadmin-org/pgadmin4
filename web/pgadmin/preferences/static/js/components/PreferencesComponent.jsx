@@ -8,24 +8,80 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
+import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import url_for from 'sources/url_for';
 import React, { useEffect, useMemo } from 'react';
 import { FileType } from 'react-aspen';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@mui/styles';
 import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
-import clsx from 'clsx';
 import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
 import usePreferences from '../store';
+
+
+const StyledBox = styled(Box)(({theme}) => ({
+  '& .PreferencesComponent-root': {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    height: '100%',
+    backgroundColor: theme.palette.background.default,
+    overflow: 'hidden',
+    '&$disabled': {
+      color: '#ddd',
+    },
+    '& .PreferencesComponent-body': {
+      borderColor: theme.otherVars.borderColor,
+      display: 'flex',
+      flexGrow: 1,
+      height: '100%',
+      minHeight: 0,
+      overflow: 'hidden',
+      '& .PreferencesComponent-treeContainer': {
+        flexBasis: '25%',
+        alignItems: 'flex-start',
+        paddingLeft: '5px',
+        minHeight: 0,
+        flexGrow: 1,
+        '& .PreferencesComponent-tree': {
+          height: '100%',
+          flexGrow: 1
+        },
+      },
+      '& .PreferencesComponent-preferencesContainer': {
+        flexBasis: '75%',
+        padding: '5px',
+        borderColor: theme.otherVars.borderColor + '!important',
+        borderLeft: '1px solid',
+        position: 'relative',
+        height: '100%',
+        paddingTop: '5px',
+        overflow: 'auto',
+      },
+    },
+    '& .PreferencesComponent-footer': {
+      borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
+      padding: '0.5rem',
+      display: 'flex',
+      width: '100%',
+      background: theme.otherVars.headerBg,
+      '& .PreferencesComponent-actionBtn': {
+        alignItems: 'flex-start',
+      },
+      '& .PreferencesComponent-buttonMargin': {
+        marginLeft: '0.5em'
+      },
+    },
+  },
+}));
 
 class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
@@ -48,81 +104,6 @@ class PreferencesSchema extends BaseUISchema {
     return this.schemaFields;
   }
 }
-
-const useStyles = makeStyles((theme) =>
-  ({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-      height: '100%',
-      backgroundColor: theme.palette.background.default,
-      overflow: 'hidden',
-      '&$disabled': {
-        color: '#ddd',
-      }
-    },
-    body: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      minHeight: 0,
-    },
-    preferences: {
-      borderColor: theme.otherVars.borderColor,
-      display: 'flex',
-      flexGrow: 1,
-      height: '100%',
-      minHeight: 0,
-      overflow: 'hidden'
-
-    },
-    treeContainer: {
-      flexBasis: '25%',
-      alignItems: 'flex-start',
-      paddingLeft: '5px',
-      minHeight: 0,
-      flexGrow: 1
-    },
-    tree: {
-      height: '100%',
-      flexGrow: 1
-    },
-    preferencesContainer: {
-      flexBasis: '75%',
-      padding: '5px',
-      borderColor: theme.otherVars.borderColor + '!important',
-      borderLeft: '1px solid',
-      position: 'relative',
-      height: '100%',
-      paddingTop: '5px',
-      overflow: 'auto'
-    },
-    actionBtn: {
-      alignItems: 'flex-start',
-    },
-    buttonMargin: {
-      marginLeft: '0.5em'
-    },
-    footer: {
-      borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
-      padding: '0.5rem',
-      display: 'flex',
-      width: '100%',
-      background: theme.otherVars.headerBg,
-    },
-    customTreeClass: {
-      '& .react-checkbox-tree': {
-        height: '100% !important',
-        border: 'none !important',
-      },
-    },
-    preferencesTree: {
-      height: 'calc(100% - 50px)',
-      minHeight: 0
-    }
-  }),
-);
 
 
 function RightPanel({ schema, ...props }) {
@@ -157,7 +138,7 @@ RightPanel.propTypes = {
 
 
 export default function PreferencesComponent({ ...props }) {
-  const classes = useStyles();
+
   const [disableSave, setDisableSave] = React.useState(true);
   const prefSchema = React.useRef(new PreferencesSchema({}, []));
   const prefChangedData = React.useRef({});
@@ -594,18 +575,17 @@ export default function PreferencesComponent({ ...props }) {
   };
 
   return (
-    <Box height={'100%'}>
-      <Box className={classes.root}>
-        <Box className={clsx(classes.preferences)}>
-          <Box className={clsx(classes.treeContainer)} >
-
-            <Box className={clsx(classes.tree)} id={'treeContainer'} tabIndex={0}>
+    <StyledBox height={'100%'}>
+      <Box className='PreferencesComponent-root'>
+        <Box className='PreferencesComponent-body'>
+          <Box className='PreferencesComponent-treeContainer' >
+            <Box className='PreferencesComponent-tree' id={'treeContainer'} tabIndex={0}>
               {
                 useMemo(() => (prefTreeData && props.renderTree(prefTreeData)), [prefTreeData])
               }
             </Box>
           </Box>
-          <Box className={clsx(classes.preferencesContainer)}>
+          <Box className='PreferencesComponent-preferencesContainer'>
             {
               prefSchema.current && loadTree > 0 &&
                 <RightPanel schema={prefSchema.current} initValues={initValues} onDataChange={(changedData) => {
@@ -615,21 +595,21 @@ export default function PreferencesComponent({ ...props }) {
             }
           </Box>
         </Box>
-        <Box className={classes.footer}>
+        <Box className='PreferencesComponent-footer'>
           <Box>
             <PgIconButton data-test="dialog-help" onClick={onDialogHelp} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
           </Box>
-          <Box className={classes.actionBtn} marginLeft="auto">
-            <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
+          <Box className='PreferencesComponent-actionBtn' marginLeft="auto">
+            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
               {gettext('Cancel')}
             </DefaultButton>
-            <PrimaryButton className={classes.buttonMargin} startIcon={<SaveSharpIcon />} disabled={disableSave} onClick={() => { savePreferences(prefChangedData, initValues); }}>
+            <PrimaryButton className='PreferencesComponent-buttonMargin' startIcon={<SaveSharpIcon />} disabled={disableSave} onClick={() => { savePreferences(prefChangedData, initValues); }}>
               {gettext('Save')}
             </PrimaryButton>
           </Box>
         </Box>
       </Box >
-    </Box>
+    </StyledBox>
   );
 }
 

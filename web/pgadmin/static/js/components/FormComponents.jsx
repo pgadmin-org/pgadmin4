@@ -9,7 +9,7 @@
 /* Common form components used in pgAdmin */
 
 import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import {
   Box, FormControl, OutlinedInput, FormHelperText, ToggleButton, ToggleButtonGroup,
   Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
@@ -24,7 +24,6 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedIn from '@mui/icons-material/AssignmentTurnedIn';
 import Select, { components as RSComponents } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
 
@@ -46,52 +45,40 @@ import PgTreeView from '../PgTreeView';
 import Loader from 'sources/components/Loader';
 
 
-const useStyles = makeStyles((theme) => ({
-  formRoot: {
-    padding: '1rem'
+const Root = styled('div')(({theme}) => ({
+  '& .Form-optionIcon': {
+    ...theme.mixins.nodeIcon,
   },
-  img: {
-    maxWidth: '100%',
-    height: 'auto'
-  },
-  info: {
-    color: theme.palette.info.main,
-    marginLeft: '0.25rem',
-    fontSize: '1rem',
-  },
-  formLabel: {
-    margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
-    display: 'flex',
-    wordBreak: 'break-word'
-  },
-  formLabelError: {
-    color: theme.palette.error.main,
-  },
-  sql: {
+  // '& .Form-label': {
+  //   margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
+  //   display: 'flex',
+  //   wordBreak: 'break-word'
+  // },
+  // '& .Form-labelError': {
+  //   color: theme.palette.error.main,
+  // },
+  '& .Form-sql': {
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,
     height: '100%',
   },
-  optionIcon: {
-    ...theme.mixins.nodeIcon,
+  '& .Form-readOnlySwitch': {
+    opacity: 0.75,
+    '& .MuiSwitch-track': {
+      opacity: theme.palette.action.disabledOpacity,
+    }
   },
-  colorBtn: {
+  '& .Form-colorBtn': {
     height: theme.spacing(3.5),
     minHeight: theme.spacing(3.5),
     width: theme.spacing(3.5),
     minWidth: theme.spacing(3.5),
   },
-  noteRoot: {
+  '& .Form-noteRoot': {
     display: 'flex',
     backgroundColor: theme.otherVars.borderColor,
     padding: theme.spacing(1),
   },
-  readOnlySwitch: {
-    opacity: 0.75,
-    '& .MuiSwitch-track': {
-      opacity: theme.palette.action.disabledOpacity,
-    }
-  }
 }));
 
 
@@ -125,36 +112,47 @@ FormIcon.propTypes = {
   close: PropTypes.bool,
 };
 
+const StyledGrid = styled(Grid)(({theme}) => ({
+  '& .Form-label': {
+    margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
+    display: 'flex',
+    wordBreak: 'break-word'
+  },
+  '& .Form-labelError': {
+    color: theme.palette.error.main,
+  },
+}));
+
 /* Wrapper on any form component to add label, error indicator and help message */
 export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='' }) {
-  const classes = useStyles();
+
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
   if(!withContainer) {
     return (
-      <>
-        <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
-          <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+      (<>
+        <StyledGrid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
+          <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={'Form-label ' + (error ? 'Form-labelError' : null)} required={required}>
             {label}
             <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
           </InputLabel>
-        </Grid>
-        <Grid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
+        </StyledGrid>
+        <StyledGrid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
           <FormControl error={Boolean(error)} fullWidth>
             {React.cloneElement(children, { cid, helpid })}
           </FormControl>
           <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
-        </Grid>
-      </>
+        </StyledGrid>
+      </>)
     );
   }
 
-  let labelComponent = <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+  let labelComponent = <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={'Form-label ' + (error ? 'Form-labelError' : null)} required={required}>
     {label}
     <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
   </InputLabel>;
   return (
-    <Grid container spacing={0} className={className} data-testid="form-input">
+    <StyledGrid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
         {
           labelTooltip ?
@@ -169,7 +167,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
         </FormControl>
         <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 }
 FormInput.propTypes = {
@@ -188,24 +186,26 @@ FormInput.propTypes = {
 };
 
 export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
-  const classes = useStyles();
+
   const editor = useRef();
 
   return (
-    <CodeMirror
-      currEditor={(obj) => {
-        editor.current = obj;
-        inputRef?.(obj);
-      }}
-      value={value || ''}
-      options={{
-        ...options,
-      }}
-      className={clsx(classes.sql, className)}
-      onChange={onChange}
-      {...controlProps}
-      {...props}
-    />
+    <Root style={{height: '100%'}}>
+      <CodeMirror
+        currEditor={(obj) => {
+          editor.current = obj;
+          inputRef?.(obj);
+        }}
+        value={value || ''}
+        options={{
+          ...options,
+        }}
+        className={'Form-sql ' + className}
+        onChange={onChange}
+        {...controlProps}
+        {...props}
+      />
+    </Root>
   );
 }
 InputSQL.propTypes = {
@@ -510,7 +510,7 @@ FormInputFileSelect.propTypes = {
 };
 
 export function InputSwitch({ cid, helpid, value, onChange, readonly, controlProps, ...props }) {
-  const classes = useStyles();
+
   return (
     <Switch color="primary"
       checked={Boolean(value)}
@@ -523,7 +523,7 @@ export function InputSwitch({ cid, helpid, value, onChange, readonly, controlPro
       }}
       {...controlProps}
       {...props}
-      className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
+      className={(readonly || props.disabled) ? 'Form-readOnlySwitch' : null}
     />
   );
 }
@@ -605,7 +605,6 @@ FormInputCheckbox.propTypes = {
 };
 
 export function InputRadio({ helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
-  const classes = useStyles();
   controlProps = controlProps || {};
   return (
     <FormControlLabel
@@ -624,11 +623,10 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, la
           disableRipple
           {...props}
         />
-
       }
       label={controlProps.label}
       labelPlacement={labelPlacement}
-      className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
+      className={(readonly || props.disabled) ? 'Form-readOnlySwitch' : null}
     />
   );
 }
@@ -811,13 +809,13 @@ const customReactSelectStyles = (theme, readonly) => ({
 });
 
 function OptionView({ image, imageUrl, label }) {
-  const classes = useStyles();
+
   return (
-    <>
-      {image && <span className={clsx(classes.optionIcon, image)}></span>}
+    <Root>
+      {image && <span className={'Form-optionIcon ' + image}></span>}
       {imageUrl && <img style={{height: '20px', marginRight: '4px'}} src={imageUrl} />}
       <span>{label}</span>
-    </>
+    </Root>
   );
 }
 OptionView.propTypes = {
@@ -1063,11 +1061,9 @@ FormInputSelect.propTypes = {
 
 const ColorButton = withColorPicker(PgIconButton);
 export function InputColor({ value, controlProps, disabled, onChange, currObj }) {
-  const classes = useStyles();
-
   let btnStyles = { backgroundColor: value };
   return (
-    <ColorButton title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={disabled}
+    <ColorButton title={gettext('Select the color')} className='Form-colorBtn' style={btnStyles} disabled={disabled}
       icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon data-label="CloseIcon" />} options={{
         ...controlProps,
         disabled: disabled
@@ -1115,15 +1111,17 @@ PlainString.propTypes = {
 };
 
 export function FormNote({ text, className, controlProps }) {
-  const classes = useStyles();
+
   /* If raw, then remove the styles and icon */
   return (
-    <Box className={className}>
-      <Paper elevation={0} className={controlProps?.raw ? '' : classes.noteRoot}>
-        {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
-        <Box>{HTMLReactParse(text || '')}</Box>
-      </Paper>
-    </Box>
+    <Root>
+      <Box className={className}>
+        <Paper elevation={0} className={controlProps?.raw ? '' : 'Form-noteRoot'}>
+          {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
+          <Box>{HTMLReactParse(text || '')}</Box>
+        </Paper>
+      </Box>
+    </Root>
   );
 }
 FormNote.propTypes = {
@@ -1132,76 +1130,25 @@ FormNote.propTypes = {
   controlProps: PropTypes.object,
 };
 
-const useStylesFormFooter = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(0.5),
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  container: {
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(0.5),
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '36px',
-  },
-  containerSuccess: {
-    borderColor: theme.palette.success.main,
-    backgroundColor: theme.palette.success.light,
-  },
-  iconSuccess: {
-    color: theme.palette.success.main,
-  },
-  containerError: {
-    borderColor: theme.palette.error.main,
-    backgroundColor: theme.palette.error.light,
-  },
-  iconError: {
-    color: theme.palette.error.main,
-  },
-  containerInfo: {
-    borderColor: theme.palette.primary.main,
-    backgroundColor: theme.palette.primary.light,
-  },
-  iconInfo: {
-    color: theme.palette.primary.main,
-  },
-  containerWarning: {
-    borderColor: theme.palette.warning.main,
-    backgroundColor: theme.palette.warning.light,
-  },
-  iconWarning: {
-    color: theme.palette.warning.main,
-  },
-  message: {
-    color: theme.palette.text.primary,
-    marginLeft: theme.spacing(0.5),
-  },
-  messageCenter: {
-    color: theme.palette.text.primary,
-    margin: 'auto',
-  },
-  closeButton: {
-    marginLeft: 'auto',
-  },
+
+const StyledBox = styled(Box)(({theme}) => ({
+  padding: theme.spacing(0.5),
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 10,
 }));
 
 /* The form footer used mostly for showing error */
 export function FormFooterMessage({style, ...props}) {
-  const classes = useStylesFormFooter();
-
   if (!props.message) {
     return <></>;
   }
   return (
-    <Box className={classes.root} style={style}>
+    <StyledBox style={style}>
       <NotifierMessage {...props}></NotifierMessage>
-    </Box>
+    </StyledBox>
   );
 }
 
@@ -1210,18 +1157,17 @@ FormFooterMessage.propTypes = {
   message: PropTypes.string,
 };
 
-const useStylesKeyboardShortcut = makeStyles(() => ({
-  customRow: {
+const StyledFormInput = styled(FormInput)(() => ({
+  '&.FormInput-customRow': {
     paddingTop: 5
   }
 }));
 
 export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, onChange, labelTooltip, ...props }) {
-  const classes = useStylesKeyboardShortcut();
   return (
-    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage} labelTooltip={labelTooltip}>
+    <StyledFormInput label={label} error={hasError} className={'FormInput-customRow ' + className} helpMessage={helpMessage} labelTooltip={labelTooltip}>
       <KeyboardShortcuts onChange={onChange} {...props} />
-    </FormInput>
+    </StyledFormInput>
 
   );
 }
@@ -1276,20 +1222,66 @@ FormInputSelectThemes.propTypes = {
   labelTooltip: PropTypes.string
 };
 
+const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(0.5),
+  display: 'flex',
+  alignItems: 'center',
+  minHeight: '36px',
+  '&.FormFooter-containerError': {
+    borderColor: theme.palette.error.main,
+    backgroundColor: theme.palette.error.light,
+    '& .FormFooter-iconError': {
+      color: theme.palette.error.main,
+    },
+  },
+  '&.FormFooter-containerSuccess': {
+    borderColor: theme.palette.success.main,
+    backgroundColor: theme.palette.success.light,
+    '& .FormFooter-iconSuccess': {
+      color: theme.palette.success.main,
+    },
+  },
+  '&.FormFooter-containerInfo': {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
+    '& .FormFooter-iconInfo': {
+      color: theme.palette.primary.main,
+    },
+  },
+  '&.FormFooter-containerWarning': {
+    borderColor: theme.palette.warning.main,
+    backgroundColor: theme.palette.warning.light,
+    '& .FormFooter-iconWarning': {
+      color: theme.palette.warning.main,
+    },
+  },
+  '& .FormFooter-message': {
+    color: theme.palette.text.primary,
+    marginLeft: theme.spacing(0.5),
+  },
+  '& .FormFooter-messageCenter': {
+    color: theme.palette.text.primary,
+    margin: 'auto',
+  },
+  '& .FormFooter-closeButton': {
+    marginLeft: 'auto',
+  },
+}));
 
 export function NotifierMessage({
   type = MESSAGE_TYPE.SUCCESS, message, style, closable = true, showIcon=true, textCenter=false,
   onClose = () => {/*This is intentional (SonarQube)*/ }}) {
-  const classes = useStylesFormFooter();
-
   return (
-    <Box className={clsx(classes.container, classes[`container${type}`])} style={style} data-test="notifier-message">
-      {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
-      <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
-      {closable && <IconButton title={gettext('Close Message')} className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
+    <StyledNotifierMessageBox className={`FormFooter-container${type}`} style={style} data-test="notifier-message">
+      {showIcon && <FormIcon type={type} className={`FormFooter-icon${type}`} />}
+      <Box className={textCenter ? 'FormFooter-messageCenter' : 'FormFooter-message'}>{HTMLReactParse(message || '')}</Box>
+      {closable && <IconButton title={gettext('Close Message')} className={'FormFooter-closeButton ' + `FormFooter-icon${type}`} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}
-    </Box>
+    </StyledNotifierMessageBox>
   );
 }
 

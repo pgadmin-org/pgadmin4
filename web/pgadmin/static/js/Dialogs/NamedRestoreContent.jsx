@@ -14,12 +14,11 @@ import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
-import { useModalStyles } from '../helpers/ModalProvider';
+import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 import { InputText } from '../components/FormComponents';
 import { isEmptyString } from '../../../static/js/validators';
 
 export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
-  const classes = useModalStyles();
   const containerRef = useRef();
   const firstEleRef = useRef();
   const okBtnRef = useRef();
@@ -55,7 +54,7 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
   const isOKDisabled = isEmptyString(formData.namedRestorePoint);
 
   return (
-    <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
+    <ModalContent ref={containerRef}>
       <Box flexGrow="1" p={2}>
         <Box>
           <span style={{fontWeight: 'bold'}}>
@@ -67,18 +66,18 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
             onChange={(e)=>onTextChange(e, 'namedRestorePoint')} onKeyDown={(e)=>onKeyDown(e)}/>
         </Box>
       </Box>
-      <Box className={classes.footer}>
+      <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton ref={okBtnRef} data-test="save" disabled={isOKDisabled} className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={()=>{
+        <PrimaryButton ref={okBtnRef} data-test="save" disabled={isOKDisabled} startIcon={<CheckRoundedIcon />} onClick={()=>{
           let postFormData = new FormData();
           postFormData.append('value', formData.namedRestorePoint);
           onOK?.(postFormData);
           closeModal();
         }} >{gettext('OK')}</PrimaryButton>
-      </Box>
-    </Box>
+      </ModalFooter>
+    </ModalContent>
   );
 }
 

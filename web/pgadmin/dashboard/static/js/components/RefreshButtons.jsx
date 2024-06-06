@@ -8,36 +8,33 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
 import { PgIconButton } from '../../../../static/js/components/Buttons';
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme) => ({
-  refreshButton: {
+const StyledPgIconButton = styled(PgIconButton)(({theme}) => ({
+  '&.RefreshButtons': {
     marginLeft: 'auto',
-    height:  '1.9rem',
-    width:  '2.2rem',
+    height: '1.9rem !important',
+    width: '2.2rem !important',
     ...theme.mixins.panelBorder,
-  },
+  }
 }));
 
-
 export default function RefreshButton({onClick}) {
-  const classes = useStyles();
-
-  return(
-    <PgIconButton
+  return (
+    <StyledPgIconButton
       size="xs"
       noBorder
-      className={classes.refreshButton}
+      className='RefreshButtons'
       icon={<CachedOutlinedIcon />}
       onClick={onClick}
       color="default"
       aria-label="Refresh"
       title={gettext('Refresh')}
-    ></PgIconButton>
+    ></StyledPgIconButton>
   );
 }
 

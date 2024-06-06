@@ -18,11 +18,10 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import gettext from 'sources/gettext';
 
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
-import { useModalStyles } from '../helpers/ModalProvider';
+import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 import { FormFooterMessage, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 
 export default function RenameTabContent({ panelId, panelDocker, closeModal}) {
-  const classes = useModalStyles();
   const containerRef = useRef();
   const okBtnRef = useRef();
   const panelData = useMemo(()=>panelDocker.find(panelId));
@@ -63,7 +62,7 @@ export default function RenameTabContent({ panelId, panelDocker, closeModal}) {
   const isValid = formData['title'].length != 0;
 
   return (
-    <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
+    <ModalContent ref={containerRef}>
       <Box padding="8px">
         <Box marginBottom="4px">Current: {initialTitle}</Box>
         <InputText type="text" value={formData['title']} controlProps={{ maxLength: null }}
@@ -71,15 +70,15 @@ export default function RenameTabContent({ panelId, panelDocker, closeModal}) {
       </Box>
       <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={!isValid ? gettext('Title cannot be empty') : ''}
         closable={false} style={{position: 'initial'}} />
-      <Box className={classes.footer}>
+      <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={() => {
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton data-test="save" startIcon={<CheckRoundedIcon />} onClick={onOkClick} className={classes.margin} disabled={!isValid}>
+        <PrimaryButton data-test="save" startIcon={<CheckRoundedIcon />} onClick={onOkClick} disabled={!isValid}>
           {gettext('OK')}
         </PrimaryButton>
-      </Box>
-    </Box>
+      </ModalFooter>
+    </ModalContent>
   );
 }
 

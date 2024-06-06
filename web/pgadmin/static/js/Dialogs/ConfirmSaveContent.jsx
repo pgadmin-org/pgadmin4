@@ -1,5 +1,5 @@
 import React from 'react';
-import { useModalStyles } from '../helpers/ModalProvider';
+import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
@@ -10,24 +10,23 @@ import HTMLReactParser from 'html-react-parser';
 import PropTypes from 'prop-types';
 
 export default function ConfirmSaveContent({closeModal, text, onDontSave, onSave}) {
-  const classes = useModalStyles();
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <ModalContent>
       <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParser(text) : text}</Box>
-      <Box className={classes.footer}>
+      <ModalFooter>
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <DefaultButton data-test="dont-save" className={classes.margin} startIcon={<DeleteRoundedIcon />} onClick={()=>{
+        <DefaultButton data-test="dont-save"  startIcon={<DeleteRoundedIcon />} onClick={()=>{
           onDontSave?.();
           closeModal();
         }} >{gettext('Don\'t save')}</DefaultButton>
-        <PrimaryButton data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={()=>{
+        <PrimaryButton data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
           onSave?.();
           closeModal();
         }} autoFocus={true} >{gettext('Save')}</PrimaryButton>
-      </Box>
-    </Box>
+      </ModalFooter>
+    </ModalContent>
   );
 }
 

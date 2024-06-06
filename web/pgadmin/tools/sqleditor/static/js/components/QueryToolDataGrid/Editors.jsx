@@ -7,21 +7,21 @@
 //
 //////////////////////////////////////////////////////////////
 import { Box, Portal } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import React, {useContext, useLayoutEffect, useRef} from 'react';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import gettext from 'sources/gettext';
-import clsx from 'clsx';
 import JSONBigNumber from 'json-bignumber';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 
-const useStyles = makeStyles((theme)=>({
-  textEditor: {
+
+const StyledEditorDiv = styled(Box)(({ theme }) => ({
+  '&.Editors-textEditor': {
     position: 'absolute',
     zIndex: 1080,
     backgroundColor: theme.palette.background.default,
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme)=>({
     fontSize: '12px',
     ...theme.mixins.panelBorder.all,
     left: 0,
-    // bottom: 0,
     top: 0,
     '& textarea': {
       width: '250px',
@@ -37,9 +36,51 @@ const useStyles = makeStyles((theme)=>({
       border: 0,
       outline: 0,
       resize: 'both',
-    }
+      '& .Editors-textarea': {
+        resize: 'both',
+      },
+    },
   },
-  jsonEditor: {
+  '&.Editors-input': {
+    appearance: 'none',
+    width: '100%',
+    height: '100%',
+    verticalAlign: 'top',
+    outline: 'none',
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
+    border: 0,
+    boxShadow: 'inset 0 0 0 1.5px ' + theme.palette.primary.main,
+    padding: '0 2px',
+    '::selection': {
+      background: theme.palette.primary.light,
+    },
+  },
+  '& .Editors-check': {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: '16px',
+    height: '16px',
+    border: '1px solid ' + theme.palette.grey[800],
+    margin: '3px',
+    textAlign: 'center',
+    lineHeight: '16px',
+    '&.checked, &.unchecked': {
+      background: theme.palette.grey[200],
+    },
+    '&.checked:after': {
+      content: '\'\\2713\'',
+      fontWeight: 'bold',
+    },
+    '&.intermediate': {
+      background: theme.palette.grey[200],
+      '&:after': {
+        content: '\'\\003F\'',
+        fontWeight: 'bold',
+      },
+    },
+  },
+  '&.Editors-jsonEditor': {
     position: 'absolute',
     zIndex: 1080,
     backgroundColor: theme.palette.background.default,
@@ -58,56 +99,13 @@ const useStyles = makeStyles((theme)=>({
       height: 'abc',
       border: 'none',
       '& .ace-jsoneditor .ace_marker-layer .ace_active-line': {
-        background: theme.palette.primary.light
-      }
-    }
-  },
-  buttonMargin: {
-    marginLeft: '0.5rem',
-  },
-  textarea: {
-    resize: 'both'
-  },
-  input: {
-    appearance: 'none',
-    width: '100%',
-    height: '100%',
-    verticalAlign: 'top',
-    outline: 'none',
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.primary,
-    border: 0,
-    boxShadow: 'inset 0 0 0 1.5px '+theme.palette.primary.main,
-    padding: '0 2px',
-    '::selection': {
-      background: theme.palette.primary.light,
-    }
-  },
-  check: {
-    display: 'inline-block',
-    verticalAlign: 'top',
-    width: '16px',
-    height: '16px',
-    border: '1px solid '+theme.palette.grey[800],
-    margin: '3px',
-    textAlign: 'center',
-    lineHeight: '16px',
-
-    '&.checked, &.unchecked': {
-      background: theme.palette.grey[200],
-    },
-    '&.checked:after': {
-      content: '\'\\2713\'',
-      fontWeight: 'bold',
-    },
-    '&.intermediate': {
-      background: theme.palette.grey[200],
-      '&:after': {
-        content: '\'\\003F\'',
-        fontWeight: 'bold',
+        background: theme.palette.primary.light,
       },
     },
-  }
+  },
+  '& .Editors-buttonMargin': {
+    marginLeft: '0.5rem',
+  },
 }));
 
 function autoFocusAndSelect(input) {
@@ -177,7 +175,7 @@ function suppressEnterKey(e) {
   }
 }
 export function TextEditor({row, column, onRowChange, onClose}) {
-  const classes = useStyles();
+
   const value = row[column.key] ?? '';
   const [localVal, setLocalVal] = React.useState(value);
   const {getCellElement} = useContext(RowInfoContext);
@@ -201,30 +199,30 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     }
   };
 
-  return(
+  return (
     <Portal container={document.body}>
-      <Box ref={(ele)=>{
+      <StyledEditorDiv ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
-      }} className={classes.textEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
-        <textarea ref={autoFocusAndSelect} className={classes.textarea} value={localVal} onChange={onChange} />
+      }} className='Editors-textEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
+        <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
             {gettext('Cancel')}
           </DefaultButton>
           {column.can_edit &&
-            <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className={classes.buttonMargin}>
+            <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className='Editors-buttonMargin'>
               {gettext('OK')}
             </PrimaryButton>
           }
         </Box>
-      </Box>
+      </StyledEditorDiv>
     </Portal>
   );
 }
 TextEditor.propTypes = EditorPropTypes;
 
 export function NumberEditor({row, column, onRowChange, onClose}) {
-  const classes = useStyles();
+
   const pgAdmin = usePgAdmin();
 
   const value = row[column.key] ?? '';
@@ -268,24 +266,26 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
     }
   };
   return (
-    <input
-      className={classes.input}
-      ref={autoFocusAndSelect}
-      value={value}
-      onChange={(e)=>{
-        if(column.can_edit) {
-          onRowChange({ ...row, [column.key]: (e.target.value == '' ? null :  e.target.value)});
-        }
-      }}
-      onBlur={onBlur}
-      onKeyDown={onKeyDown}
-    />
+    <StyledEditorDiv>
+      <input
+        className='Editors-input'
+        ref={autoFocusAndSelect}
+        value={value}
+        onChange={(e)=>{
+          if(column.can_edit) {
+            onRowChange({ ...row, [column.key]: (e.target.value == '' ? null :  e.target.value)});
+          }
+        }}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+      />
+    </StyledEditorDiv>
   );
 }
 NumberEditor.propTypes = EditorPropTypes;
 
 export function CheckboxEditor({row, column, onRowChange, onClose}) {
-  const classes = useStyles();
+
   const value = row[column.key] ?? null;
   const containerRef = useRef();
   const changeValue = ()=>{
@@ -321,15 +321,15 @@ export function CheckboxEditor({row, column, onRowChange, onClose}) {
   }, []);
 
   return (
-    <div ref={containerRef} onClick={changeValue} onKeyDown={onSpaceHit} tabIndex="0" onBlur={onBlur} data-label="pg-checkbox-editor">
-      <span className={clsx(classes.check, className)}></span>
-    </div>
+    <StyledEditorDiv ref={containerRef} onClick={changeValue} onKeyDown={onSpaceHit} tabIndex="0" onBlur={onBlur} data-label="pg-checkbox-editor">
+      <span className={['Editors-check', className].join(' ')}></span>
+    </StyledEditorDiv>
   );
 }
 CheckboxEditor.propTypes = EditorPropTypes;
 
 export function JsonTextEditor({row, column, onRowChange, onClose}) {
-  const classes = useStyles();
+
   const {getCellElement} = useContext(RowInfoContext);
   const pgAdmin = usePgAdmin();
 
@@ -373,9 +373,9 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   };
   return (
     <Portal container={document.body}>
-      <Box ref={(ele)=>{
+      <StyledEditorDiv ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
-      }} className={classes.jsonEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
+      }} className='Editors-jsonEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <JsonEditor
           value={localVal}
           options={{
@@ -389,12 +389,12 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
             {gettext('Cancel')}
           </DefaultButton>
           {column.can_edit &&
-            <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className={classes.buttonMargin}>
+            <PrimaryButton startIcon={<CheckRoundedIcon />} onClick={onOK} size="small" className='Editors-buttonMargin'>
               {gettext('OK')}
             </PrimaryButton>
           }
         </Box>
-      </Box>
+      </StyledEditorDiv>
     </Portal>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styled } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
@@ -38,7 +38,7 @@ export default function ConfirmExecuteQueryContent({ onContinue, onClose, closeM
   });
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <>
       <StyledEditor>
         <Box>Do you want to run this query -</Box>
         <CodeMirror
@@ -63,7 +63,7 @@ export default function ConfirmExecuteQueryContent({ onContinue, onClose, closeM
           }} autoFocus={true} >{gettext('Continue')}</PrimaryButton>
         </Box>
       </StyledFooter>
-    </Box>
+    </>
   );
 }
 

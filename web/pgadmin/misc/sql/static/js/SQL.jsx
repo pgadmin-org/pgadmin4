@@ -8,29 +8,29 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { generateNodeUrl } from '../../../../browser/static/js/node_ajax';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
-import { makeStyles } from '@mui/styles';
 import CodeMirror from '../../../../static/js/components/ReactCodeMirror';
 import Loader from 'sources/components/Loader';
 import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
-const useStyles = makeStyles((theme) => ({
-  textArea: {
+
+const Root = styled('div')(({theme}) => ({
+  '& .SQL-textArea': {
     height: '100% !important',
     width: '100% !important',
     background: theme.palette.grey[400],
     minHeight: '100%',
     minWidth: '100%',
-  },
+  }
 }));
 
 function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
-  const classes = useStyles();
   const did = ((!_.isUndefined(treeNodeInfo)) && (!_.isUndefined(treeNodeInfo['database']))) ? treeNodeInfo['database']._id: 0;
   const dbConnected = !_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['database']) ? treeNodeInfo.database.connected: false;
   const [nodeSQL, setNodeSQL] = React.useState('');
@@ -92,15 +92,15 @@ function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
   }, [isStale, isActive, nodeData?.id]);
 
   return (
-    <>
+    (<Root style={{height: '100%'}} >
       <Loader message={loaderText}/>
       <CodeMirror
-        className={classes.textArea}
+        className='SQL-textArea'
         value={nodeSQL}
         readonly={true}
         showCopyBtn
       />
-    </>
+    </Root>)
   );
 }
 
