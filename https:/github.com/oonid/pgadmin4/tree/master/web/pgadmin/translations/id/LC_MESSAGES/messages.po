@@ -8,26 +8,30 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-05-23 18:44+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-06-07 12:48+0000\n"
+"Last-Translator: oon arfiandwi <oon.arfiandwi@gmail.com>\n"
+"Language-Team: Indonesian <http://webl.oo.or.id/projects/pgadmin4/"
+"web-pgadmin/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5.5\n"
 "Generated-By: Babel 2.15.0\n"
 
 #: pgadmin/__init__.py:348 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
-msgstr ""
+msgstr "Nama pengguna atau sandi salah."
 
 #: pgadmin/__init__.py:660 pgadmin/__init__.py:710
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr ""
+"Instalasi {0} yang terdeteksi secara otomatis dengan direktori data di {1}"
 
 #: pgadmin/__init__.py:793
 msgid "403 FORBIDDEN"
-msgstr ""
+msgstr "403 DILARANG"
 
 #: pgadmin/about/__init__.py:41
 #, python-format
