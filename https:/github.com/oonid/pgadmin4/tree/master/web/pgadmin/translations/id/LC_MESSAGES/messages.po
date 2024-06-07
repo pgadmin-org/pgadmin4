@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-05-23 18:44+0530\n"
-"PO-Revision-Date: 2024-06-07 13:21+0000\n"
-"Last-Translator: oon arfiandwi <oon@oo.or.id>\n"
+"PO-Revision-Date: 2024-06-07 13:52+0000\n"
+"Last-Translator: oon arfiandwi <oon.arfiandwi@gmail.com>\n"
 "Language-Team: Indonesian <http://webl.oo.or.id/projects/pgadmin4/"
 "web-pgadmin/id/>\n"
 "Language: id\n"
@@ -178,7 +178,7 @@ msgstr "Kesalahan dalam menghubungkan ke server LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:48
 msgid "ldap"
-msgstr "LDAP"
+msgstr "ldap"
 
 #: pgadmin/authenticate/ldap.py:65
 msgid "LDAP configuration error: Set the bind password."
@@ -366,7 +366,7 @@ msgstr "Tidak ada metode otentikasi pengguna yang tersedia"
 
 #: pgadmin/authenticate/mfa/views.py:175
 msgid "'{}' is already registered'"
-msgstr ""
+msgstr "'{}' sudah terdaftar'"
 
 #: pgadmin/authenticate/mfa/views.py:182
 msgid "'{}' unregistered from the authentication list."
@@ -1754,82 +1754,82 @@ msgstr "Jenis target harus dipilih."
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler.js:23
 msgid "DBMS Job Scheduler"
-msgstr ""
+msgstr "Penjadwal Pekerjaan DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:50
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:24
 msgid "DBMS Jobs"
-msgstr ""
+msgstr "Pekerjaan DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:256
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:331
 msgid "Could not find the specified job."
-msgstr ""
+msgstr "Tidak dapat menemukan pekerjaan yang ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:418
 msgid "Job creation failed."
-msgstr ""
+msgstr "Pembuatan pekerjaan gagal."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:674
 msgid "Job enabled"
-msgstr ""
+msgstr "Pekerjaan diaktifkan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:675
 msgid "Job disabled"
-msgstr ""
+msgstr "Pekerjaan dinonaktifkan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/__init__.py:756
 msgid "Started the Job execution."
-msgstr ""
+msgstr "Memulai eksekusi Pekerjaan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:40
 msgid "DBMS Job"
-msgstr ""
+msgstr "Pekerjaan DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:59
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:64
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:69
 msgid "DBMS Job..."
-msgstr ""
+msgstr "Pekerjaan DBMS..."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:74
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:132
 msgid "Enable Job"
-msgstr ""
+msgstr "Aktifkan Pekerjaan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:76
 msgid "Job is already enabled."
-msgstr ""
+msgstr "Pekerjaan sudah diaktifkan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:81
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:174
 msgid "Disable Job"
-msgstr ""
+msgstr "Nonaktifkan Pekerjaan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:83
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:90
 msgid "Job is already disabled."
-msgstr ""
+msgstr "Pekerjaan sudah dinonaktifkan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:88
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:209
 msgid "Run Job"
-msgstr ""
+msgstr "Lakukan Pekerjaan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:133
 #, python-format
 msgid "Are you sure you want to enable the job %s?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin mengaktifkan pekerjaan %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:175
 #, python-format
 msgid "Are you sure you want to disable the job %s?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin menonaktifkan pekerjaan %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.js:210
 #, python-format
 msgid "Are you sure you want to run the job %s now?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin melakukan pekerjaan %s sekarang?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:64
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.ui.js:42
@@ -1857,15 +1857,15 @@ msgstr "Diaktifkan?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:74
 msgid "Job Type"
-msgstr ""
+msgstr "Jenis Pekerjaan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:77
 msgid "SELF-CONTAINED"
-msgstr ""
+msgstr "MANDIRI"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:78
 msgid "PRE-DEFINED"
-msgstr ""
+msgstr "TERDEFINISI"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:86
 msgid ""
@@ -1874,31 +1874,35 @@ msgid ""
 "Type is Pre-Defined you need to specify the existing Program and Schedule"
 " names in the Pre-Defined tab."
 msgstr ""
+"Jika Jenis Pekerjaan adalah Mandiri, Anda perlu menentukan tindakan dan "
+"interval pengulangan masing-masing di tab Tindakan dan Pengulangan. Jika "
+"Jenis Pekerjaan Terdefinisi, Anda perlu menentukan nama Program dan Jadwal "
+"yang ada di tab Terdefinisi."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:89
 msgid "Run Count"
-msgstr ""
+msgstr "Lakukan Perhitungan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:92
 msgid "Failure Count"
-msgstr ""
+msgstr "Kegagalan Perhitungan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:103
 msgid "Program Name"
-msgstr ""
+msgstr "Nama program"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:104
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:117
 msgid "Pre-Defined"
-msgstr ""
+msgstr "Terdefinisi"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:116
 msgid "Schedule Name"
-msgstr ""
+msgstr "Nama Jadwal"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:135
 msgid "Job Type cannot be empty."
-msgstr ""
+msgstr "Jenis Pekerjaan tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:142
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.ui.js:63
@@ -1911,12 +1915,12 @@ msgstr "Kode tidak boleh kosong."
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:149
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.ui.js:70
 msgid "Procedure cannot be empty."
-msgstr ""
+msgstr "Prosedur tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:159
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.ui.js:64
 msgid "Either Start time or Repeat interval must be specified."
-msgstr ""
+msgstr "Waktu mulai atau Interval pengulangan harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:175
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.ui.js:80
@@ -1926,30 +1930,30 @@ msgstr "Waktu mulai harus kurang dari waktu akhir"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:185
 msgid "Pre-Defined program name cannot be empty."
-msgstr ""
+msgstr "Nama program terdefinisi tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:191
 msgid "Pre-Defined schedule name cannot be empty."
-msgstr ""
+msgstr "Nama jadwal terdefinisi tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:49
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:23
 msgid "DBMS Programs"
-msgstr ""
+msgstr "Program DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:244
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:303
 msgid "Could not find the specified program."
-msgstr ""
+msgstr "Tidak dapat menemukan program yang ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:366
 msgid "Job program creation failed."
-msgstr ""
+msgstr "Pembuatan program Pekerjaan gagal."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:482
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:487
 msgid "Could not find the DBMS Schedule."
-msgstr ""
+msgstr "Tidak dapat menemukan Jadwal DBMS."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:563
 msgid "Program enabled"
