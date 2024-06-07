@@ -10,8 +10,8 @@
 import os
 import sys
 
-if sys.version_info < (3, 4):
-    raise Exception('This application must be run under Python 3.4 or later.')
+if sys.version_info < (3, 8):
+    raise Exception('This application must be run under Python 3.8 or later.')
 
 import builtins
 
