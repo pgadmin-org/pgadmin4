@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-05-23 18:44+0530\n"
-"PO-Revision-Date: 2024-06-07 13:52+0000\n"
-"Last-Translator: oon arfiandwi <oon.arfiandwi@gmail.com>\n"
+"PO-Revision-Date: 2024-06-08 07:11+0000\n"
+"Last-Translator: oon arfiandwi <oon@oo.or.id>\n"
 "Language-Team: Indonesian <http://webl.oo.or.id/projects/pgadmin4/"
 "web-pgadmin/id/>\n"
 "Language: id\n"
@@ -1957,59 +1957,59 @@ msgstr "Tidak dapat menemukan Jadwal DBMS."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:563
 msgid "Program enabled"
-msgstr ""
+msgstr "Program diaktifkan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/__init__.py:564
 msgid "Program disabled"
-msgstr ""
+msgstr "Program dinonaktifkan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:39
 msgid "DBMS Program"
-msgstr ""
+msgstr "Program DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:58
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:63
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:68
 msgid "DBMS Program..."
-msgstr ""
+msgstr "Program DBMS..."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:73
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:124
 msgid "Enable Program"
-msgstr ""
+msgstr "Aktifkan Program"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:75
 msgid "Program is already enabled."
-msgstr ""
+msgstr "Program sudah diaktifkan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:80
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:166
 msgid "Disable Program"
-msgstr ""
+msgstr "Nonaktifkan Program"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:82
 msgid "Program is already disabled."
-msgstr ""
+msgstr "Program sudah dinonaktifkan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:125
 #, python-format
 msgid "Are you sure you want to enable the program %s?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin mengaktifkan program %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.js:167
 #, python-format
 msgid "Are you sure you want to disable the program %s?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin menonaktifkan program %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:47
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:21
 msgid "DBMS Schedules"
-msgstr ""
+msgstr "Jadwal DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:240
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:296
 msgid "Could not find the specified schedule."
-msgstr ""
+msgstr "Tidak dapat menemukan jadwal yang ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:371
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/__init__.py:383
@@ -2018,17 +2018,17 @@ msgstr "Pembuatan jadwal pekerjaan gagal."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:37
 msgid "DBMS Schedule"
-msgstr ""
+msgstr "Jadwal DBMS"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:56
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:61
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:66
 msgid "DBMS Schedule..."
-msgstr ""
+msgstr "Jadwal DBMS..."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:30
 msgid "Repeat Interval"
-msgstr ""
+msgstr "Interval Pengulangan"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:32
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:35
@@ -2067,11 +2067,11 @@ msgstr "Akhir"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:62
 msgid "Frequency"
-msgstr ""
+msgstr "Frekuensi"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:65
 msgid "Select the frequency..."
-msgstr ""
+msgstr "Pilih frekuensi..."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:83
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:38
@@ -2081,7 +2081,7 @@ msgstr "Tanggal"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:86
 msgid "YYYYMMDD"
-msgstr ""
+msgstr "YYYYMMDD"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:97
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:133
@@ -2186,7 +2186,7 @@ msgstr "Prosedur"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:220
 msgid "Number of Arguments"
-msgstr ""
+msgstr "Jumlah Argumen"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:224
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:225
@@ -2259,11 +2259,11 @@ msgstr "Waktu mulai"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_jobscheduler.ui.js:40
 msgid "End Time"
-msgstr ""
+msgstr "Akhir waktu"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_jobscheduler.ui.js:42
 msgid "Next Run"
-msgstr ""
+msgstr "Operasi Berikutnya"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:49
 msgid "Event Triggers"
@@ -3308,17 +3308,17 @@ msgstr "Salin Collation"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:113
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:147
 msgid "Locale Provider"
-msgstr ""
+msgstr "Penyedia Lokal"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:93
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:152
 msgid "icu"
-msgstr ""
+msgstr "icu"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:96
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:155
 msgid "libc"
-msgstr ""
+msgstr "libc"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:119
 msgid "Locale"
@@ -3334,7 +3334,7 @@ msgstr "LC_TYPE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:151
 msgid "Deterministic"
-msgstr ""
+msgstr "Deterministik"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:188
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:45
@@ -3348,11 +3348,11 @@ msgstr "Sistem collation?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:258
 msgid "Definition incomplete. Please provide LC_TYPE."
-msgstr ""
+msgstr "Definisi tidak lengkap. Harap berikan LC_TYPE."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:263
 msgid "Definition incomplete. Please provide LC_COLLATE."
-msgstr ""
+msgstr "Definisi tidak lengkap. Harap berikan LC_COLLATE."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.js:27
@@ -3572,7 +3572,7 @@ msgstr "Foreign server tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:410
 msgid "Inherited from"
-msgstr ""
+msgstr "Diwarisi dari"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:456
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:314
@@ -3970,7 +3970,7 @@ msgstr "Argumen tanda tangan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:249
 msgid "Custom return type?"
-msgstr ""
+msgstr "Jenis pengembalian khusus?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:253
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:276
@@ -4444,7 +4444,7 @@ msgstr "Skema..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:67
 msgid "ERD For Schema"
-msgstr ""
+msgstr "ERD Untuk Skema"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:52
 msgid "System schema?"
@@ -4578,31 +4578,31 @@ msgstr "Panjang/Presisi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:346
 msgid "Compression"
-msgstr ""
+msgstr "Kompresi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:348
 msgid "Select compression"
-msgstr ""
+msgstr "Pilih kompresi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:394
 msgid "PLAIN"
-msgstr ""
+msgstr "POLOS"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:396
 msgid "MAIN"
-msgstr ""
+msgstr "UTAMA"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:398
 msgid "EXTERNAL"
-msgstr ""
+msgstr "LUAR"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:400
 msgid "EXTENDED"
-msgstr ""
+msgstr "DIPERPANJANG"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:405
 msgid "DEFAULT"
-msgstr ""
+msgstr "BAWAAN"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:460
 msgid "IDENTITY"
@@ -5382,7 +5382,7 @@ msgstr "Bangun bersamaan?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:637
 msgid "You must specify at least one column/expression."
-msgstr ""
+msgstr "Anda harus menentukan setidaknya satu kolom/ekspresi."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:29
@@ -5539,7 +5539,7 @@ msgstr "Kosongkan Tabel"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:188
 #, python-format
 msgid "Are you sure you want to truncate table <b>%s</b>?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin memotong tabel <b>%s</b>?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:244
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:222
@@ -6037,19 +6037,19 @@ msgstr "Dengan komentar?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:299
 msgid "With compression?"
-msgstr ""
+msgstr "Dengan kompresi?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:304
 msgid "With generated?"
-msgstr ""
+msgstr "Dengan yang dihasilkan?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:309
 msgid "With identity?"
-msgstr ""
+msgstr "Dengan identitas?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:314
 msgid "With statistics?"
-msgstr ""
+msgstr "Dengan statistik?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:515
 msgid "Select to inherit from..."
@@ -6197,7 +6197,7 @@ msgstr "Blok indeks diakses"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/indexes/sql/16_plus/coll_stats.sql:7
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/indexes/sql/16_plus/stats.sql:8
 msgid "Last index scan"
-msgstr ""
+msgstr "Pemindaian indeks terakhir"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/16_plus/stats.sql:12
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/exclusion_constraint/sql/default/stats.sql:11
@@ -6397,7 +6397,7 @@ msgstr "Autoanalize terakhir"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/16_plus/coll_table_stats.sql:19
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/16_plus/stats.sql:24
 msgid "Last sequential scan"
-msgstr ""
+msgstr "Pemindaian berurutan terakhir"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/16_plus/coll_table_stats.sql:20
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/coll_table_stats.sql:19
@@ -7199,15 +7199,15 @@ msgstr "Pengkodean"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:134
 msgid "Strategy"
-msgstr ""
+msgstr "Strategi"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:139
 msgid "WAL Log"
-msgstr ""
+msgstr "Catatan WAL"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:142
 msgid "File Copy"
-msgstr ""
+msgstr "Salinan Berkas"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:173
 msgid "Character type"
@@ -7215,15 +7215,15 @@ msgstr "Tipe karakter"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:186
 msgid "ICU Locale"
-msgstr ""
+msgstr "Lokal ICU"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:200
 msgid "Collation Version"
-msgstr ""
+msgstr "Versi Kolasi"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:204
 msgid "ICU Rules"
-msgstr ""
+msgstr "Peraturan ICU"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:217
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:113
@@ -7538,7 +7538,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:376
 msgid "Streaming"
-msgstr ""
+msgstr "Pengaliran"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:404
 msgid ""
@@ -7546,10 +7546,14 @@ msgid ""
 "this subscription. By default, all transactions are fully decoded on the "
 "publisher and only then sent to the subscriber as a whole."
 msgstr ""
+"Menentukan apakah akan mengaktifkan pengaliran transaksi yang sedang "
+"berlangsung untuk langganan ini. Secara bawaan, semua transaksi didekodekan "
+"sepenuhnya pada penerbit dan baru kemudian dikirim ke pelanggan secara "
+"keseluruhan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:408
 msgid "Binary?"
-msgstr ""
+msgstr "Biner?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:412
 msgid ""
@@ -7558,18 +7562,22 @@ msgid ""
 "enabled, only data types having binary send and receive functions will be"
 " transferred in binary."
 msgstr ""
+"Menentukan apakah langganan akan meminta penerbit mengirimkan data dalam "
+"format biner (bukan teks). Meskipun opsi ini diaktifkan, hanya tipe data "
+"yang memiliki fungsi pengiriman dan penerimaan biner yang akan ditransfer "
+"dalam biner."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:416
 msgid "Two phase?"
-msgstr ""
+msgstr "Dua fase?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:420
 msgid "Specifies whether two-phase commit is enabled for this subscription."
-msgstr ""
+msgstr "Menentukan apakah penerapan dua fase diaktifkan untuk langganan ini."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:424
 msgid "Disable on error?"
-msgstr ""
+msgstr "Nonaktifkan saat kesalahan?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:428
 msgid ""
@@ -7577,10 +7585,13 @@ msgid ""
 "any errors are detected by subscription workers during data replication "
 "from the publisher."
 msgstr ""
+"Menentukan apakah langganan harus dinonaktifkan secara otomatis jika ada "
+"kesalahan yang terdeteksi oleh pekerja langganan selama replikasi data dari "
+"penerbit."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:432
 msgid "Run as owner?"
-msgstr ""
+msgstr "Operasikan sebagai pemilik?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:436
 msgid ""
@@ -7588,10 +7599,13 @@ msgid ""
 " If false, replication workers will perform actions on each table as the "
 "owner of that table."
 msgstr ""
+"Jika benar, semua tindakan replikasi dilakukan sebagai pemilik langganan. "
+"Jika salah, pekerja replikasi akan melakukan tindakan pada setiap tabel "
+"sebagai pemilik tabel tersebut."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:440
 msgid "Password required?"
-msgstr ""
+msgstr "Diperlukan kata sandi?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:444
 msgid ""
@@ -7599,16 +7613,19 @@ msgid ""
 "subscription must use password authentication. Only superusers can set "
 "this value to false."
 msgstr ""
+"Menentukan apakah sambungan ke penerbit yang dibuat sebagai hasil langganan "
+"ini harus menggunakan autentikasi kata sandi. Hanya pengguna super yang "
+"dapat menyetel nilai ini ke salah."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:448
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:31
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:31
 msgid "Origin"
-msgstr ""
+msgstr "Asal"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:455
 msgid "none"
-msgstr ""
+msgstr "tidak ada"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:456
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:553
@@ -7624,6 +7641,12 @@ msgid ""
 "origin to any means that the publisher sends changes regardless of their "
 "origin."
 msgstr ""
+"Menentukan apakah langganan akan meminta penerbit untuk hanya mengirim "
+"perubahan yang tidak memiliki asal atau mengirim perubahan tanpa "
+"memperhatikan asal usulnya. Menyetel asal ke tidak ada berarti langganan "
+"akan meminta penerbit untuk hanya mengirimkan perubahan yang tidak memiliki "
+"asal. Menetapkan asal ke apa pun berarti penerbit mengirimkan perubahan "
+"terlepas dari asal usulnya."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:467
 msgid "Either Host name, Address must be specified."
@@ -7728,7 +7751,7 @@ msgstr "Jadwal..."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:16
 msgid "Last day"
-msgstr ""
+msgstr "Hari terakhir"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:40
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:46
@@ -8066,26 +8089,26 @@ msgstr "Keluaran"
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/__init__.py:49
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_groups.js:22
 msgid "PGD Replication Groups"
-msgstr ""
+msgstr "Grup Replikasi PGD"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/__init__.py:276
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/__init__.py:268
 #: pgadmin/browser/server_groups/servers/replica_nodes/__init__.py:276
 msgid "Could not find the Replication Node."
-msgstr ""
+msgstr "Tidak dapat menemukan Node Replikasi."
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_server_node.ui.js:21
 msgid "Sequence ID"
-msgstr ""
+msgstr "ID Urutan"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_server_node.ui.js:33
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:23
 msgid "Group Name"
-msgstr ""
+msgstr "Nama Grup"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_server_node.ui.js:36
 msgid "Local DB Name"
-msgstr ""
+msgstr "Nama DB Lokal"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_group_node.ui.js:27
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:61
@@ -8096,25 +8119,25 @@ msgstr "Lokasi"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_group_node.ui.js:33
 msgid "Streaming Mode"
-msgstr ""
+msgstr "Mode Pengaliran"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_group_node.ui.js:36
 msgid "Enable Proxy Routing?"
-msgstr ""
+msgstr "Aktifkan Perutean Proksi?"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_group_node.ui.js:39
 msgid "Enable Raft?"
-msgstr ""
+msgstr "Aktifkan Rakit?"
 
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_groups.js:41
 msgid "PGD Replication Group"
-msgstr ""
+msgstr "Grup Replikasi PGD"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/__init__.py:56
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.js:22
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.js:40
 msgid "Replica Nodes"
-msgstr ""
+msgstr "Node Replika"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:21
 #: pgadmin/dashboard/static/js/Dashboard.jsx:386
@@ -8131,21 +8154,21 @@ msgstr "PID"
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:43
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:31
 msgid "App Name"
-msgstr ""
+msgstr "Nama Aplikasi"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:30
 msgid "Client Address"
-msgstr ""
+msgstr "Alamat Klien"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:33
 msgid "Client Hostname"
-msgstr ""
+msgstr "Nama Host Klien"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:36
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:51
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:39
 msgid "Client Port"
-msgstr ""
+msgstr "Port Klien"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:39
 #: pgadmin/dashboard/static/js/Dashboard.jsx:447
@@ -8161,7 +8184,7 @@ msgstr "Status"
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:59
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:47
 msgid "Sent LSN"
-msgstr ""
+msgstr "Mengirim LSN"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:43
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:47
@@ -8171,63 +8194,63 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:63
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:67
 msgid "WAL Details"
-msgstr ""
+msgstr "Detail WAL"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:46
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:63
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:51
 msgid "Write LSN"
-msgstr ""
+msgstr "Tulis LSN"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:50
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:67
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:55
 msgid "Flush LSN"
-msgstr ""
+msgstr "Mengalirkan LSN"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:54
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:71
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:59
 msgid "Replay LSN"
-msgstr ""
+msgstr "Putar Ulang LSN"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:58
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:65
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:75
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:63
 msgid "Write Lag"
-msgstr ""
+msgstr "Jeda Penulisan"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:62
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:73
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:79
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:67
 msgid "Flush Lag"
-msgstr ""
+msgstr "Keterlambatan Pengaliran"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:66
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:81
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:83
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:71
 msgid "Replay Lag"
-msgstr ""
+msgstr "Keterlambatan Putar Ulang"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:70
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:120
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:23
 msgid "Slot Name"
-msgstr ""
+msgstr "Nama Slot"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:71
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:75
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:79
 msgid "Replication Slot"
-msgstr ""
+msgstr "Slot Replikasi"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:74
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:27
 msgid "Slot Type"
-msgstr ""
+msgstr "Jenis Slot"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:78
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:128
@@ -8762,7 +8785,7 @@ msgstr "Dapatkah memulai replikasi streaming dan pencadangan?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:159
 msgid "Bypass RLS?"
-msgstr ""
+msgstr "Lewati RLS?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:164
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:172
@@ -8859,7 +8882,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:213
 msgid "Reassign/Drop"
-msgstr ""
+msgstr "Tetapkan Ulang/Lepaskan"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:34
 msgid "Set as default"
@@ -8943,12 +8966,12 @@ msgstr "Daftar - %s"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:48
 #, python-format
 msgid "Copy Server - %s"
-msgstr ""
+msgstr "Salin Server - %s"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:57
 #, python-format
 msgid "Copy of %s"
-msgstr ""
+msgstr "Salinan %s"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:79
 #: pgadmin/browser/server_groups/servers/static/js/server.js:84
@@ -9040,7 +9063,7 @@ msgstr "Sandi Terowongan SSH tidak disimpan untuk server yang dipilih."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:160
 msgid "Copy Server..."
-msgstr ""
+msgstr "Salin Server..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:276
 #, python-format
@@ -9144,7 +9167,7 @@ msgstr "Bersama?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:136
 msgid "Shared Username"
-msgstr ""
+msgstr "Nama Pengguna Bersama"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:166
 msgid "Connection String"
@@ -9212,7 +9235,7 @@ msgstr "File identitas"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:333
 msgid "Keep alive (seconds)"
-msgstr ""
+msgstr "Tetap hidup (detik)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:342
 msgid "DB restriction"
@@ -9228,7 +9251,7 @@ msgstr "Kedaluwarsa eksekusi sandi (detik)"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:362
 msgid "Prepare threshold"
-msgstr ""
+msgstr "Siapkan ambang batas"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:366
 msgid ""
@@ -9236,10 +9259,12 @@ msgid ""
 " If it is set to blank, prepared statements are disabled on the "
 "connection."
 msgstr ""
+"Jika disetel ke 0, setiap kueri disiapkan saat pertama kali dijalankan. Jika "
+"disetel ke kosong, pernyataan yang disiapkan akan dinonaktifkan pada koneksi."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:375
 msgid "Server group must be specified."
-msgstr ""
+msgstr "Grup server harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:383
 msgid "Either Host name or Service must be specified."
@@ -9267,7 +9292,7 @@ msgstr "File identitas Terowongan SSH harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
 msgid "Keep alive must be specified. Specify 0 for no keep alive."
-msgstr ""
+msgstr "Tetap hidup harus ditentukan. Tentukan 0 untuk tidak tetap hidup."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:472
 msgid "Host address"
@@ -9451,11 +9476,11 @@ msgstr "mengutamakan-standby"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:556
 msgid "Load balance hosts"
-msgstr ""
+msgstr "Host penyeimbang beban"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:558
 msgid "random"
-msgstr ""
+msgstr "acak"
 
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:66
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:112
@@ -9649,7 +9674,7 @@ msgstr "Memasuki Layar Penuh"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:38
 msgid "Exit Full Screen"
-msgstr ""
+msgstr "Keluar dari Layar Penuh"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:39
 msgid "Actual Size"
@@ -10256,6 +10281,8 @@ msgid ""
 "existing connections to the <b>\"%s\"</b> database. Are you sure you want"
 " to proceed?"
 msgstr ""
+"Hapus basis data dengan opsi paksa akan mencoba mengakhiri semua koneksi "
+"yang ada ke basis data <b>\"%s\"</b>. Apakah Anda yakin ingin melanjutkan?"
 
 #: pgadmin/browser/static/js/node.js:525
 #, python-format
@@ -10268,6 +10295,8 @@ msgid ""
 "Are you sure you want to delete %s <b>\"%s\"</b> and all the objects that"
 " depend on it?"
 msgstr ""
+"Apakah Anda yakin ingin menghapus %s <b>\"%s\"</b> dan semua objek yang "
+"bergantung padanya?"
 
 #: pgadmin/browser/static/js/node.js:530
 #, python-format
@@ -10292,7 +10321,7 @@ msgstr "Hapus %s?"
 #: pgadmin/browser/static/js/node.js:545
 #, python-format
 msgid "Are you sure you want to delete %s <b>\"%s\"</b>?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin menghapus %s <b>\"%s\"</b>?"
 
 #: pgadmin/browser/static/js/node.js:546
 #, python-format
@@ -10507,37 +10536,39 @@ msgstr "Statistik Blok I/O Refresh Rate"
 
 #: pgadmin/dashboard/__init__.py:94
 msgid "Handle & Process count statistics refresh rate"
-msgstr ""
+msgstr "Menangani & Memproses kecepatan penyegaran statistik penghitungan"
 
 #: pgadmin/dashboard/__init__.py:102
 msgid ""
 "Percentage of CPU time used by different process                 modes "
 "statistics refresh rate"
 msgstr ""
+"Persentase waktu CPU yang digunakan yang digunakan oleh proses "
+"lain                 kecepatan penyegaran statistik mode"
 
 #: pgadmin/dashboard/__init__.py:112
 msgid "Average load statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik beban rata-rata"
 
 #: pgadmin/dashboard/__init__.py:120
 msgid "CPU usage per process statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik penggunaan CPU per proses"
 
 #: pgadmin/dashboard/__init__.py:128
 msgid "Memory usage statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik penggunaan memory"
 
 #: pgadmin/dashboard/__init__.py:136
 msgid "Swap memory usage statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik penggunaan memori swap"
 
 #: pgadmin/dashboard/__init__.py:144
 msgid "Memory usage per process statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik penggunaan memori per proses"
 
 #: pgadmin/dashboard/__init__.py:152
 msgid "I/O analysis statistics refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran statistik analisis I/O"
 
 #: pgadmin/dashboard/__init__.py:160
 msgid "Show graphs?"
@@ -10619,7 +10650,7 @@ msgstr "Gagal"
 
 #: pgadmin/dashboard/pgd_replication.py:29
 msgid "PGD replication lag refresh rate"
-msgstr ""
+msgstr "Kecepatan penyegaran jeda replikasi PGD"
 
 #: pgadmin/dashboard/precondition.py:40
 msgid "Please connect to the selected {0} to view the table."
@@ -10710,7 +10741,7 @@ msgstr "Transaksi yang disiapkan"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:143
 msgid "System Statistics"
-msgstr ""
+msgstr "Statistik Sistem"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:147
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:59
@@ -10720,12 +10751,12 @@ msgstr "Ringkasan"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:147
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:147
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:262
 msgid "Memory"
-msgstr ""
+msgstr "Penyimpanan"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:174
 msgid "Configuration"
@@ -10764,7 +10795,7 @@ msgstr "Terjadi kesalahan saat mengakhiri kueri aktif."
 #: pgadmin/dashboard/static/js/Dashboard.jsx:287
 #: pgadmin/dashboard/static/js/Dashboard.jsx:355
 msgid "Failed to perform the operation."
-msgstr ""
+msgstr "Gagal melakukan operasi."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:315
 msgid "Cancel Active Query?"
@@ -10888,10 +10919,13 @@ msgid ""
 "extension in a database using the \"CREATE EXTENSION system_stats;\" SQL "
 "command. Reload pgAdmin once it is installed."
 msgstr ""
+"Ekstensi system_stats tidak diinstal. Anda dapat menginstal ekstensi dalam "
+"database menggunakan perintah SQL \"CREATE EXTENSION system_stats;\". Muat "
+"ulang pgAdmin setelah diinstal."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:772
 msgid "Failed to verify the presence of system stats extension."
-msgstr ""
+msgstr "Gagal memverifikasi keberadaan ekstensi statistik sistem."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:819
 #: pgadmin/dashboard/static/js/Dashboard.jsx:824
@@ -11033,61 +11067,61 @@ msgstr "Melihat rincian"
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:47
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:35
 msgid "Client Addr"
-msgstr ""
+msgstr "Alamat Klien"
 
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:89
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:75
 msgid "Reply Time"
-msgstr ""
+msgstr "Waktu Balasan"
 
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:112
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:47
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:23
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:35
 msgid "Active PID"
-msgstr ""
+msgstr "PID aktif"
 
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:173
 msgid "Replication Stats"
-msgstr ""
+msgstr "Statistik Replikasi"
 
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:185
 msgid "Replication Slots"
-msgstr ""
+msgstr "Slot Replikasi"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:63
 msgid "Slot"
-msgstr ""
+msgstr "Slot"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:71
 msgid "Write lag"
-msgstr ""
+msgstr "Jeda penulisan"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:79
 msgid "Flush lag"
-msgstr ""
+msgstr "Jeda pengaliran"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:87
 msgid "Replay lag"
-msgstr ""
+msgstr "Jeda putar ulang"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:134
 msgid "Replay timestamp"
-msgstr ""
+msgstr "Stempel waktu putar ulang"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:145
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:203
 msgid "Node"
-msgstr ""
+msgstr "Node"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:153
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:211
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:161
 msgid "Peer state"
-msgstr ""
+msgstr "Keadaan rekan"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:177
 #: pgadmin/misc/cloud/static/js/aws.js:223
@@ -11098,51 +11132,51 @@ msgstr "Versi PostgreSQL"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:185
 msgid "BDR version"
-msgstr ""
+msgstr "versi BDR"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:193
 msgid "Catchup state"
-msgstr ""
+msgstr "Penginian keadaan"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:227
 msgid "Leader type"
-msgstr ""
+msgstr "Tipe pemimpin"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:235
 msgid "Leader"
-msgstr ""
+msgstr "Pemimpin"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:243
 msgid "Voting?"
-msgstr ""
+msgstr "Pemungutan suara?"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:252
 msgid "Voting for"
-msgstr ""
+msgstr "Memberikan suara untuk"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:409
 msgid "Replication lag (Time)"
-msgstr ""
+msgstr "Jeda replikasi (Waktu)"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:416
 msgid "Replication lag (Size)"
-msgstr ""
+msgstr "Jeda replikasi (Ukuran)"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:426
 msgid "Cluster nodes"
-msgstr ""
+msgstr "Node kluster"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:438
 msgid "Raft status"
-msgstr ""
+msgstr "Status rakit"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:450
 msgid "Outgoing Replication"
-msgstr ""
+msgstr "Replikasi Keluar"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:463
 msgid "Incoming Replication"
-msgstr ""
+msgstr "Replikasi Masuk"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:35
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:35
@@ -11152,263 +11186,263 @@ msgstr "Target"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:39
 msgid "Enabled"
-msgstr ""
+msgstr "Diaktifkan"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:47
 msgid "Receive LSN"
-msgstr ""
+msgstr "Terima LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:51
 msgid "Receive Commit LSN"
-msgstr ""
+msgstr "Terima Komit LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:55
 msgid "Last Replay LSN"
-msgstr ""
+msgstr "Putar Ulang Terakhir LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:59
 msgid "Last Flush LSN"
-msgstr ""
+msgstr "Pengaliran Terakhir LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_incoming.ui.js:63
 msgid "Replay Timestamp"
-msgstr ""
+msgstr "Stempel Waktu Putar Ulang"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:27
 msgid "Target DB"
-msgstr ""
+msgstr "Sasaran DB"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:39
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:27
 msgid "Usename"
-msgstr ""
+msgstr "Gunakan nama"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:39
 msgid "Restart LSN"
-msgstr ""
+msgstr "Mulai Ulang LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:43
 msgid "Confirmed Flush LSN"
-msgstr ""
+msgstr "Pengaliran Terkonfirmasi LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:47
 msgid "WAL Status"
-msgstr ""
+msgstr "Status WAL"
 
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:95
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:259
 msgid "CPU usage"
-msgstr ""
+msgstr "Penggunaan CPU"
 
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:264
 msgid "Load average"
-msgstr ""
+msgstr "Rata-rata muatan"
 
 #: pgadmin/dashboard/static/js/SystemStats/CPU.jsx:270
 msgid "Process CPU usage"
-msgstr ""
+msgstr "Proses penggunaan CPU"
 
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:93
 msgid "Memory usage"
-msgstr ""
+msgstr "Penggunaan memori"
 
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:100
 msgid "Memory bytes"
-msgstr ""
+msgstr "Byte memori"
 
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:268
 msgid "Swap memory"
-msgstr ""
+msgstr "Memori swap"
 
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:275
 msgid "Process memory usage"
-msgstr ""
+msgstr "Proses penggunaan memori"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:169
 msgid "File system"
-msgstr ""
+msgstr "Sistem berkas"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:173
 msgid "File system type"
-msgstr ""
+msgstr "Jenis sistem berkas"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:177
 msgid "Mount point"
-msgstr ""
+msgstr "Titik pemasangan"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:181
 msgid "Drive letter"
-msgstr ""
+msgstr "Huruf kandar"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:185
 msgid "Total space"
-msgstr ""
+msgstr "Jumlah ruang"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:189
 msgid "Used space"
-msgstr ""
+msgstr "Ruang yang digunakan"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:197
 msgid "Total inodes"
-msgstr ""
+msgstr "Jumlah inode"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:201
 msgid "Used inodes"
-msgstr ""
+msgstr "Inode yang digunakan"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:205
 msgid "Free inodes"
-msgstr ""
+msgstr "Inode yang tersedia"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:260
 msgid "file_system"
-msgstr ""
+msgstr "berkas_sistem"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:261
 msgid "file_system_type"
-msgstr ""
+msgstr "jenis_sistem_berkas"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:262
 msgid "mount_point"
-msgstr ""
+msgstr "titik_pemasangan"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:263
 msgid "drive_letter"
-msgstr ""
+msgstr "huruf_kandar"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:420
 msgid "Disk information"
-msgstr ""
+msgstr "Informasi diska"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:503
 msgid "Data transfer"
-msgstr ""
+msgstr "Transfer data"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:503
 msgid "I/O operations count"
-msgstr ""
+msgstr "Penghitungan operasi I/O"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:503
 msgid "Time spent in I/O operations"
-msgstr ""
+msgstr "Waktu yang dihabiskan dalam operasi I/O"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:145
 msgid "version"
-msgstr ""
+msgstr "versi"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:146
 msgid "Host name"
-msgstr ""
+msgstr "Nama host"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:146
 msgid "host_name"
-msgstr ""
+msgstr "nama_host"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:147
 msgid "Domain name"
-msgstr ""
+msgstr "Nama domain"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:147
 msgid "domain_name"
-msgstr ""
+msgstr "nama domain"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:148
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:159
 msgid "Architecture"
-msgstr ""
+msgstr "Arsitektur"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:148
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:159
 msgid "architecture"
-msgstr ""
+msgstr "arsitektur"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:149
 msgid "Os up since seconds"
-msgstr ""
+msgstr "Os hidup sejak detik"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:149
 msgid "os_up_since_seconds"
-msgstr ""
+msgstr "os_hidup_sejak_detik"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:155
 msgid "Vendor"
-msgstr ""
+msgstr "Vendor"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:155
 msgid "vendor"
-msgstr ""
+msgstr "vendor"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:156
 msgid "description"
-msgstr ""
+msgstr "deskripsi"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:157
 msgid "Model name"
-msgstr ""
+msgstr "Nama model"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:157
 msgid "model_name"
-msgstr ""
+msgstr "nama_model"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:158
 msgid "No of cores"
-msgstr ""
+msgstr "Jumlah inti"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:158
 msgid "no_of_cores"
-msgstr ""
+msgstr "jumlah_dari_inti"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:160
 msgid "Clock speed Hz"
-msgstr ""
+msgstr "Kecepatan pemrosesan Hz"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:160
 msgid "clock_speed_hz"
-msgstr ""
+msgstr "kecepatan_pemrosesan_hz"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:161
 msgid "L1 dcache size"
-msgstr ""
+msgstr "Ukuran dcache L1"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:161
 msgid "l1dcache_size"
-msgstr ""
+msgstr "ukuran_l1dcache"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
 msgid "L1 icache size"
-msgstr ""
+msgstr "Ukuran icache L1"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:162
 msgid "l1icache_size"
-msgstr ""
+msgstr "ukuran_l1icache"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
 msgid "L2 cache size"
-msgstr ""
+msgstr "Ukuran cache L2"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:163
 msgid "l2cache_size"
-msgstr ""
+msgstr "ukuran_l2cache"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
 msgid "L3 cache size"
-msgstr ""
+msgstr "Ukuran cache L3"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:164
 msgid "l3cache_size"
-msgstr ""
+msgstr "ukuran_l3cache"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:265
 msgid "OS information"
-msgstr ""
+msgstr "Informasi OS"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:270
 msgid "Process & handle count"
-msgstr ""
+msgstr "Jumlah proses & penanganan"
 
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:278
 msgid "CPU information"
-msgstr ""
+msgstr "Informasi CPU"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:7
 msgid "Total"
@@ -11460,11 +11494,11 @@ msgstr "Diakses"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/system_statistics.sql:22
 msgid "Process"
-msgstr ""
+msgstr "Proses"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/system_statistics.sql:23
 msgid "Handle"
-msgstr ""
+msgstr "Penanganan"
 
 #: pgadmin/help/__init__.py:33
 msgid "Online Help"
@@ -11954,7 +11988,7 @@ msgstr "Sandi harus 8 karakter atau lebih."
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:142
 msgid "Invalid password."
-msgstr ""
+msgstr "Kata sandi salah."
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:155
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:469
@@ -12310,7 +12344,7 @@ msgstr "Volume IOPS"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:249
 msgid "Disk Throughput"
-msgstr ""
+msgstr "Kecepatan Keluaran Disk"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:254
 msgid "Database Type"
@@ -13113,7 +13147,7 @@ msgstr "Ubah Kata Sandi Pengguna pgAdmin"
 
 #: pgadmin/static/js/Dialogs/index.jsx:364
 msgid "Rename Tab"
-msgstr ""
+msgstr "Ganti Nama Tab"
 
 #: pgadmin/static/js/Explain/Analysis.jsx:175
 msgid "Timings"
@@ -13258,7 +13292,7 @@ msgstr ""
 
 #: pgadmin/static/js/PgTreeView/index.jsx:98
 msgid "No objects are found to display"
-msgstr ""
+msgstr "Tidak ada objek yang ditemukan untuk ditampilkan"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:71
 msgid "Searching..."
@@ -13266,7 +13300,7 @@ msgstr "Mencari..."
 
 #: pgadmin/static/js/QuickSearch/index.jsx:272
 msgid "Please enter minimum 3 characters to search"
-msgstr ""
+msgstr "Silakan masukkan minimal 3 karakter untuk pencarian"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:280
 msgid "MENU ITEMS"
@@ -13419,7 +13453,7 @@ msgstr "Ketik Ulang Sandi"
 
 #: pgadmin/static/js/components/ContextMenu.jsx:47
 msgid "No options"
-msgstr ""
+msgstr "Tidak ada pilihan"
 
 #: pgadmin/static/js/components/FormComponents.jsx:473
 msgid "Select a file"
@@ -13439,15 +13473,15 @@ msgstr "Pilih warnanya"
 
 #: pgadmin/static/js/components/FormComponents.jsx:1289
 msgid "Close Message"
-msgstr ""
+msgstr "Tutup Pesan"
 
 #: pgadmin/static/js/components/FormComponents.jsx:1342
 msgid "Loading"
-msgstr ""
+msgstr "Memuat"
 
 #: pgadmin/static/js/components/KeyboardShortcuts.jsx:93
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 #: pgadmin/static/js/components/PgReactDataGrid.jsx:147
 msgid "No rows found."
@@ -13455,11 +13489,11 @@ msgstr "Tidak ada baris yang ditemukan."
 
 #: pgadmin/static/js/components/PgTable.jsx:97
 msgid "Select All Rows"
-msgstr ""
+msgstr "Pilih Semua Baris"
 
 #: pgadmin/static/js/components/PgTable.jsx:110
 msgid "Select Row"
-msgstr ""
+msgstr "Pilih Baris"
 
 #: pgadmin/static/js/components/PgTable.jsx:169
 msgid "No rows found"
@@ -13501,11 +13535,11 @@ msgstr "Ganti Semua"
 
 #: pgadmin/static/js/helpers/MainMoreToolbar.jsx:14
 msgid "More"
-msgstr ""
+msgstr "Lagi"
 
 #: pgadmin/static/js/helpers/MainMoreToolbar.jsx:33
 msgid "Nothing to open"
-msgstr ""
+msgstr "Tidak ada yang perlu dibuka"
 
 #: pgadmin/static/js/helpers/Menu.js:37 pgadmin/static/js/helpers/Menu.js:61
 msgid "Invalid MenuItem instance"
@@ -13539,11 +13573,11 @@ msgstr "Pulihkan"
 
 #: pgadmin/static/js/helpers/Layout/index.jsx:427
 msgid "Close Others"
-msgstr ""
+msgstr "Tutup Lainnya"
 
 #: pgadmin/static/js/helpers/Layout/index.jsx:435
 msgid "Close All"
-msgstr ""
+msgstr "Tutup Semua"
 
 #: pgadmin/static/js/helpers/wizard/Wizard.jsx:220
 msgid "Back"
@@ -13813,7 +13847,7 @@ msgstr "Kunci batas waktu tunggu"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:439
 msgid "Table(s)"
-msgstr ""
+msgstr "Tabel"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:442
 #: pgadmin/tools/backup/static/js/backup.ui.js:450
@@ -13831,15 +13865,15 @@ msgstr "Opsi Tabel"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:447
 msgid "Table(s) data"
-msgstr ""
+msgstr "Data tabel"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:455
 msgid "Table(s) and children"
-msgstr ""
+msgstr "Tabel dan turunannya"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:464
 msgid "Table(s) data and children"
-msgstr ""
+msgstr "Data table dan turunannya"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:514
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:71
@@ -13958,26 +13992,26 @@ msgstr "Opsi ini diaktifkan hanya saat Gunakan Perintah INSERT diaktifkan."
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:707
 msgid "Include table(s) and Children"
-msgstr ""
+msgstr "Menyertakan tabel dan Turunannya"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:716
 msgid "Exclude patterns"
-msgstr ""
+msgstr "Kecualikan pola"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:732
 #: pgadmin/tools/backup/static/js/backup.ui.js:738
 msgid "Objects"
-msgstr ""
+msgstr "Objek"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:737
 msgid "objects"
-msgstr ""
+msgstr "objek"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:740
 msgid ""
 "If Schema(s) is selected then it will take the backup of that selected "
 "schema(s) only"
-msgstr ""
+msgstr "Jika Skema dipilih maka akan mengambil cadangan skema yang dipilih saja"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:774
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:106
@@ -14235,7 +14269,7 @@ msgstr "Pembersihan gagal"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:739
 msgid "Error occurred: "
-msgstr ""
+msgstr "Terjadi kesalahan: "
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:771
 msgid "Debugger Listener Startup Error"
@@ -14591,6 +14625,8 @@ msgid ""
 "org/pgadmin4/issues/new/choose if you find any bugs, including "
 "reproduction steps.\n"
 msgstr ""
+"-- Harap catat masalah di https://github.com/pgadmin-org/pgadmin4/issues/new/"
+"choose jika Anda menemukan bug, termasuk langkah reproduksi.\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:684
 msgid "Preparing the SQL..."
@@ -15103,23 +15139,23 @@ msgstr "Pemeliharaan"
 
 #: pgadmin/tools/maintenance/__init__.py:72
 msgid "on database '{0}'"
-msgstr ""
+msgstr "pada basis data '{0}'"
 
 #: pgadmin/tools/maintenance/__init__.py:74
 msgid "on constraint '{0}/{1}/{2}/{3}'"
-msgstr ""
+msgstr "pada batasan '{0}/{1}/{2}/{3}'"
 
 #: pgadmin/tools/maintenance/__init__.py:79
 msgid "on index '{0}/{1}/{2}/{3}'"
-msgstr ""
+msgstr "pada indeks '{0}/{1}/{2}/{3}'"
 
 #: pgadmin/tools/maintenance/__init__.py:83
 msgid "on table '{0}/{1}/{2}'"
-msgstr ""
+msgstr "pada tabel '{0}/{1}/{2}'"
 
 #: pgadmin/tools/maintenance/__init__.py:86
 msgid "on schema '{0}/{1}'"
-msgstr ""
+msgstr "pada skema '{0}/{1}'"
 
 #: pgadmin/tools/maintenance/__init__.py:92
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:371
@@ -15147,7 +15183,7 @@ msgstr "REINDEX TABLE"
 
 #: pgadmin/tools/maintenance/__init__.py:104
 msgid "REINDEX SCHEMA"
-msgstr ""
+msgstr "INDEKS ULANG SKEMA"
 
 #: pgadmin/tools/maintenance/__init__.py:106
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:386
@@ -15156,7 +15192,7 @@ msgstr "CLUSTER"
 
 #: pgadmin/tools/maintenance/__init__.py:108
 msgid "{0} {1} of server {2}"
-msgstr ""
+msgstr "{0} {1} dari server {2}"
 
 #: pgadmin/tools/maintenance/__init__.py:249
 msgid "Maintenance job created."
@@ -15195,51 +15231,51 @@ msgstr "FREEZE"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:87
 msgid "DISABLE PAGE SKIPPING"
-msgstr ""
+msgstr "NONAKTIFKAN LEWATKAN HALAMAN"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:103
 msgid "SKIP LOCKED"
-msgstr ""
+msgstr "LEWATKAN TERKUNCI"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:137
 msgid "PROCESS TOAST"
-msgstr ""
+msgstr "PROSES TOAST"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:154
 msgid "PROCESS MAIN"
-msgstr ""
+msgstr "PROSES UTAMA"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:171
 msgid "SKIP DATABASE STATS"
-msgstr ""
+msgstr "LEWATKAN STATISTIK BASIS DATA"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:188
 msgid "ONLY DATABASE STATS"
-msgstr ""
+msgstr "HANYA STATISTIK BASIS DATA"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:205
 msgid "INDEX CLEANUP"
-msgstr ""
+msgstr "PEMBERSIHAN INDEKS"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:209
 msgid "ON"
-msgstr ""
+msgstr "HIDUP"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:213
 msgid "OFF"
-msgstr ""
+msgstr "MATI"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:219
 msgid "AUTO"
-msgstr ""
+msgstr "OTOMATIS"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:241
 msgid "PARALLEL"
-msgstr ""
+msgstr "PARALEL"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:258
 msgid "BUFFER USAGE LIMIT"
-msgstr ""
+msgstr "BATAS PENGGUNAAN BUFFER"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:269
 msgid ""
@@ -15247,20 +15283,23 @@ msgid ""
 "followed by any one of the following memory units: kB (kilobytes), MB "
 "(megabytes), GB (gigabytes), or TB (terabytes)"
 msgstr ""
+"Ukuran harus ditentukan sebagai teks yang berisi ukuran numerik diikuti oleh "
+"salah satu dari unit memori berikut: kB (kilobytes), MB (megabytes), GB "
+"(gigabytes), atau TB (terabytes)"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:275
 msgid "SYSTEM"
-msgstr ""
+msgstr "SISTEM"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:286
 msgid ""
 "This option is enabled only when the database is selected in the object "
 "explorer."
-msgstr ""
+msgstr "Opsi ini diaktifkan hanya ketika database dipilih di penjelajah objek."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:305
 msgid "TABLESPACE"
-msgstr ""
+msgstr "RUANG TABEL"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:366
 msgid "Maintenance operation"
@@ -15286,7 +15325,7 @@ msgstr "Sesi tidak valid.\n"
 
 #: pgadmin/tools/psql/static/js/PsqlModule.js:94
 msgid "Please select a database from the object explorer to access Pql Tool."
-msgstr ""
+msgstr "Silakan pilih database dari penjelajah objek untuk mengakses Alat Pql."
 
 #: pgadmin/tools/psql/static/js/PsqlModule.js:107
 #: pgadmin/tools/psql/static/js/PsqlModule.js:115
@@ -15388,7 +15427,7 @@ msgstr "Membandingkan objek..."
 #: pgadmin/tools/schema_diff/__init__.py:74
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:71
 msgid "Ignore Whitespace"
-msgstr ""
+msgstr "Abaikan Spasi"
 
 #: pgadmin/tools/schema_diff/__init__.py:76
 msgid ""
@@ -15401,7 +15440,7 @@ msgstr ""
 #: pgadmin/tools/schema_diff/__init__.py:83
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:70
 msgid "Ignore Owner"
-msgstr ""
+msgstr "Abaikan Pemilik"
 
 #: pgadmin/tools/schema_diff/__init__.py:85
 msgid ""
@@ -15414,23 +15453,27 @@ msgstr ""
 #: pgadmin/tools/schema_diff/__init__.py:92
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:72
 msgid "Ignore Tablespace"
-msgstr ""
+msgstr "Abaikan Ruang table"
 
 #: pgadmin/tools/schema_diff/__init__.py:94
 msgid ""
 "Set ignore tablespace on or off by default in the drop-down menu near the"
 " Compare button in the Schema Diff tab."
 msgstr ""
+"Setel abaikan ruang tabel aktif atau nonaktif secara bawaan di menu tarik-"
+"turun di dekat tombol Bandingkan di tab Perbedaan Skema."
 
 #: pgadmin/tools/schema_diff/__init__.py:101
 msgid "Ignore Grants/Revoke"
-msgstr ""
+msgstr "Abaikan Perizinan/Pembatalan"
 
 #: pgadmin/tools/schema_diff/__init__.py:103
 msgid ""
 "Set ignore grants/revoke on or off by default in the drop-down menu near "
 "the Compare button in the Schema Diff tab."
 msgstr ""
+"Setel abaikan perizinan/pembatalan aktif atau nonaktif secara bawaan di menu "
+"tarik-turun di dekat tombol Bandingkan di tab Perbedaan Skema."
 
 #: pgadmin/tools/schema_diff/__init__.py:643
 msgid "Schema Objects"
@@ -15496,7 +15539,7 @@ msgstr "Berbeda"
 
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:73
 msgid "Ignore Grant/Revoke"
-msgstr ""
+msgstr "Abaikan Perizinan/Pembatalan"
 
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:74
 msgid "Error in schema diff initialize ${error.response.data}"
@@ -15512,7 +15555,7 @@ msgstr "Memuat grid hasil..."
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:79
 msgid "DDL Comparison"
-msgstr ""
+msgstr "Perbandingan DDL"
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:82
 msgid "Source"
@@ -15547,6 +15590,8 @@ msgstr "Pilih sumber dan target yang berbeda."
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:315
 msgid " (this may take a few minutes)... ${Math.round(res.diff_percentage)} %"
 msgstr ""
+" (ini mungkin memakan waktu beberapa menit)... ${Math.round(res."
+"diff_percentage)} %"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:341
 msgid "Generating script..."
@@ -15844,6 +15889,8 @@ msgid ""
 "-- Query text not stored as it exceeds maximum length of "
 "${MAX_QUERY_LENGTH}"
 msgstr ""
+"-- Teks kueri tidak disimpan karena melebihi panjang maksimum "
+"${MAX_QUERY_LENGTH}"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:492
 msgid "Connection Warning"
@@ -15930,7 +15977,7 @@ msgstr "Lihat semua geometri di kolom ini"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmPromotionContent.jsx:40
 msgid "Don't ask again"
-msgstr ""
+msgstr "Jangan tanya lagi"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:23
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:541
@@ -16084,13 +16131,14 @@ msgstr "Sumbu Y"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:227
 msgid "Close query tool?"
-msgstr ""
+msgstr "Tutup alat kueri?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:230
 msgid ""
 "There is an active query running currently. Are you sure you want to "
 "close?"
 msgstr ""
+"Ada kueri aktif yang sedang berjalan. Apakah Anda yakin ingin menutupnya?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:242
 msgid "Commit transaction?"
@@ -16101,6 +16149,8 @@ msgid ""
 "The current transaction is not committed to the database. Do you want to "
 "commit or rollback the transaction?"
 msgstr ""
+"Transaksi saat ini tidak dilanjut proses ke database. Apakah Anda ingin "
+"lanjut proses atau kembalikan transaksi?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:492
 msgid "Open File"
@@ -16143,7 +16193,7 @@ msgstr "Batalkan kueri"
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:523
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:370
 msgid "Execute script"
-msgstr ""
+msgstr "Eksekusi skrip"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:525
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:651
@@ -16178,7 +16228,7 @@ msgstr "Temukan"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:572
 msgid "Go to Line/Column"
-msgstr ""
+msgstr "Pergi ke Baris/Kolom"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:575
 msgid "Indent Selection"
@@ -16260,7 +16310,7 @@ msgstr "Pengaturan"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:627
 msgid "Wal"
-msgstr ""
+msgstr "Wal"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:633
 msgid "Macros Menu"
@@ -16296,7 +16346,7 @@ msgstr "Teks kueri telah berubah. Apakah Anda ingin menyimpan perubahan?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:411
 msgid "Promote to Query Tool"
-msgstr ""
+msgstr "Promosikan ke Alat Kueri"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:159
 msgid "Today - "
@@ -16622,7 +16672,7 @@ msgstr "Tampilkan pengaturan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:59
 msgid "Show wal?"
-msgstr ""
+msgstr "Tunjukkan wal?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:67
 msgid "Set auto commit on or off by default in new Query Tool tabs."
@@ -16748,13 +16798,15 @@ msgstr "Menentukan apakah akan menyoroti kurawal yang cocok di editor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:185
 msgid "Show View/Edit Data Promotion Warning?"
-msgstr ""
+msgstr "Tampilkan Peringatan Promosi Lihat/Edit Data?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:188
 msgid ""
 "If set to True, View/Edit Data tool will show promote to Query tool "
 "confirm dialog on query edit."
 msgstr ""
+"Jika diatur ke Benar, alat Lihat/Edit Data akan menampilkan dialog "
+"konfirmasi promosi ke alat Kueri pada pengeditan kueri."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:196
 msgid "CSV quoting"
@@ -16935,27 +16987,27 @@ msgstr "Unduh Hasil"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:532
 msgid "Open file"
-msgstr ""
+msgstr "Buka berkas"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:549
 msgid "Save file"
-msgstr ""
+msgstr "Simpan berkas"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:583
 msgid "Paste rows"
-msgstr ""
+msgstr "Tempel baris"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:600
 msgid "Delete rows"
-msgstr ""
+msgstr "Hapus baris"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:617
 msgid "Filter dialog"
-msgstr ""
+msgstr "Dialog penyaring"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:685
 msgid "Edit options"
-msgstr ""
+msgstr "Opsi edit"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:703
 msgid "Toggle case of selected text"
@@ -17015,11 +17067,11 @@ msgstr "Huruf kecil"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:801
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:813
 msgid "Preserve"
-msgstr ""
+msgstr "Pertahankan"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:779
 msgid "Convert keywords to upper, lower, or preserve casing."
-msgstr ""
+msgstr "Ubah kata kunci menjadi huruf besar, kecil, atau pertahankan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:786
 msgid "Identifier case"
@@ -17027,23 +17079,23 @@ msgstr "Kasus Identifier"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:791
 msgid "Convert identifiers to upper, lower, or preserve casing."
-msgstr ""
+msgstr "Ubah pengidentifikasi menjadi huruf besar, kecil, atau pertahankan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:798
 msgid "Function case"
-msgstr ""
+msgstr "Kasus fungsi"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:803
 msgid "Convert function names to upper, lower, or preserve casing."
-msgstr ""
+msgstr "Ubah nama fungsi menjadi huruf besar, kecil, atau pertahankan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:810
 msgid "Data type case"
-msgstr ""
+msgstr "Kasus tipe data"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:815
 msgid "Convert data types to upper, lower, or preserve casing."
-msgstr ""
+msgstr "Ubah tipe data menjadi huruf besar, kecil, atau pertahankan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:822
 msgid "Spaces around operators?"
@@ -17075,49 +17127,55 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:851
 msgid "Expression Width"
-msgstr ""
+msgstr "Lebar Ekspresi"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:853
 msgid ""
 "maximum number of characters in parenthesized expressions to be kept on "
 "single line."
 msgstr ""
+"jumlah maksimum karakter dalam ekspresi dalam tanda kurung untuk disimpan "
+"dalam satu baris."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:861
 msgid "Logical operator new line"
-msgstr ""
+msgstr "Operator logika baris baru"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:862
 msgid "Before"
-msgstr ""
+msgstr "Sebelum"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:863
 msgid "After"
-msgstr ""
+msgstr "Setelah"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:865
 msgid ""
 "Decides newline placement before or after logical operators (AND, OR, "
 "XOR)."
 msgstr ""
+"Memutuskan penempatan baris baru sebelum atau sesudah operator logika (AND, "
+"OR, XOR)."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:873
 msgid "Lines between queries"
-msgstr ""
+msgstr "Garis antar kueri"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:877
 msgid ""
 "Decides how many empty lines to leave between SQL statements. If zero it "
 "puts no new line."
 msgstr ""
+"Memutuskan berapa banyak baris kosong yang harus ditinggalkan di antara "
+"pernyataan SQL. Jika nol maka tidak ada baris baru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:885
 msgid "New line before semicolon?"
-msgstr ""
+msgstr "Baris baru sebelum titik koma?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:887
 msgid "Whether to place query separator (;) on a separate line."
-msgstr ""
+msgstr "Apakah akan menempatkan pemisah kueri (;) pada baris terpisah."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:894
 msgid "Row Limit"
@@ -17269,6 +17327,8 @@ msgid ""
 "Please correct the Binary Path in the Preferences dialog. pgAdmin storage"
 " directory can not be a utility binary directory."
 msgstr ""
+"Harap perbaiki Jalur Biner di dialog Preferensi. Direktori penyimpanan "
+"pgAdmin tidak boleh berupa direktori biner utilitas."
 
 #: pgadmin/utils/__init__.py:325
 #, python-format
@@ -17369,7 +17429,7 @@ msgstr "ID transaksi tidak ditemukan di sesi."
 
 #: pgadmin/utils/constants.py:53
 msgid "FAIL TO PROMOTE VIEW/EDIT DATA TO QUERY TOOL"
-msgstr ""
+msgstr "GAGAL MEMPROMOSIKAN LIHAT/EDIT DATA KE ALAT KUERI"
 
 #: pgadmin/utils/constants.py:57
 msgid "Error fetching role information from the database server."
@@ -17381,7 +17441,7 @@ msgstr "Tidak dapat mengambil data."
 
 #: pgadmin/utils/constants.py:62
 msgid "Server ID not specified."
-msgstr ""
+msgstr "ID server tidak ditentukan."
 
 #: pgadmin/utils/constants.py:80
 msgid "EDB Advanced Server 12"
@@ -17401,7 +17461,7 @@ msgstr "EDB Advanced Server 15"
 
 #: pgadmin/utils/constants.py:92
 msgid "EDB Advanced Server 16"
-msgstr ""
+msgstr "EDB Advanced Server 16"
 
 #: pgadmin/utils/constants.py:97
 msgid "PostgreSQL 12"
@@ -17421,7 +17481,7 @@ msgstr "PostgreSQL 15"
 
 #: pgadmin/utils/constants.py:109
 msgid "PostgreSQL 16"
-msgstr ""
+msgstr "PostgreSQL 16"
 
 #: pgadmin/utils/constants.py:117
 #, python-format
