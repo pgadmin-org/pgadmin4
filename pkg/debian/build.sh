@@ -57,7 +57,7 @@ Description: The core server package for pgAdmin. pgAdmin is the most popular an
 EOF
 
 # Build the Debian package for the server
-fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --chmod -R u+rwX,go+rX,go-w "${SERVERROOT}" --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_ARCH}.deb"
 
 #
 # Desktop package
@@ -79,7 +79,7 @@ Description: The desktop user interface for pgAdmin. pgAdmin is the most popular
 EOF
 
 # Build the Debian package for the desktop
-fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}" --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_ARCH}.deb"
 
 #
 # Web package
@@ -108,7 +108,7 @@ mkdir -p "${WEBROOT}/etc/apache2/conf-available"
 cp "${SOURCEDIR}/pkg/debian/pgadmin4.conf" "${WEBROOT}/etc/apache2/conf-available"
 
 # Build the Debian package for the web
-fakeroot dpkg-deb --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}_all.deb"
+fakeroot dpkg-deb --chmod -R u+rwX,go+rX,go-w "${WEBROOT}" --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}_all.deb"
 
 #
 # Meta package
