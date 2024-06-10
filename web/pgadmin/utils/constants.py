@@ -142,3 +142,8 @@ class MessageType:
 
 
 DBMS_JOB_SCHEDULER_ID = 999999
+
+# String Constants
+IP_ADDRESS_STRING = '{}/{}'
+TWO_PARAM_STRING = '{0}/{1}'
+SERVER_NOT_FOUND = gettext("Could not find the specified server.")

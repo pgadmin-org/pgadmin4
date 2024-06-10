@@ -935,9 +935,7 @@ define('pgadmin.browser.node', [
     cache: function(url, node_info, level, data) {
       let cached = this.cached = this.cached || {},
         hash = url,
-        min_priority = (
-          node_info?.[level] && node_info?.[level].priority
-        ) || 0;
+        min_priority = node_info?.[level]?.priority || 0;
 
       if (node_info) {
         _.each(_.sortBy(_.values(_.pickBy(

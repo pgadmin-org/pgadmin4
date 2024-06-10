@@ -72,7 +72,7 @@ export function AzureCredentials(props) {
               })
               .catch((error)=>{
                 clearInterval(interval);
-                reject(error);
+                reject(new Error(error));
               });
           }, 1000);
         });

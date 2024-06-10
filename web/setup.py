@@ -54,6 +54,8 @@ from flask_babel import gettext
 
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
+USER_NOT_FOUND_STR = "User not found"
+SOMETHING_WENT_WRONG = 'Something went wrong. '
 
 
 def update_sqlite_path(f):
@@ -216,13 +218,13 @@ class ManageUsers:
                 uid = ManageUsers.get_user(username=username,
                                            auth_source=auth_source)
                 if not uid:
-                    print("User not found")
+                    print(USER_NOT_FOUND_STR)
                 else:
                     status, msg = delete_user(uid)
                     if status:
                         print('User deleted successfully.')
                     else:
-                        print('Something went wrong. ' + str(msg))
+                        print(SOMETHING_WENT_WRONG + str(msg))
 
     @app.command()
     @update_sqlite_path
@@ -260,7 +262,7 @@ class ManageUsers:
             uid = ManageUsers.get_user(username=email,
                                        auth_source=INTERNAL)
             if not uid:
-                print("User not found")
+                print(USER_NOT_FOUND_STR)
             else:
                 status, msg = user_management_update_user(uid, data)
                 if status:
@@ -269,7 +271,7 @@ class ManageUsers:
                                                           console=False)
                     ManageUsers.display_user(_user[0], console, json)
                 else:
-                    print('Something went wrong. ' + str(msg))
+                    print(SOMETHING_WENT_WRONG + str(msg))
 
     @app.command()
     @update_sqlite_path
@@ -346,7 +348,7 @@ class ManageUsers:
             uid = ManageUsers.get_user(username=username,
                                        auth_source=auth_source)
             if not uid:
-                print("User not found")
+                print(USER_NOT_FOUND_STR)
             else:
                 status, msg = user_management_update_user(uid, data)
                 if status:
@@ -357,7 +359,7 @@ class ManageUsers:
                     )
                     ManageUsers.display_user(_user[0], console, json)
                 else:
-                    print('Something went wrong. ' + str(msg))
+                    print(SOMETHING_WENT_WRONG + str(msg))
 
     def create_user(data, console, json):
         app = create_app(config.APP_NAME + '-cli')
@@ -378,7 +380,7 @@ class ManageUsers:
             if status:
                 ManageUsers.display_user(data, console, json)
             else:
-                print('Something went wrong. ' + str(msg))
+                print(SOMETHING_WENT_WRONG + str(msg))
 
     def get_user(username=None, auth_source=INTERNAL):
         app = create_app(config.APP_NAME + '-cli')
@@ -524,7 +526,7 @@ class ManagePreferences:
         table = Table(title="Updated Pref Details", box=box.ASCII)
         table.add_column("Preference", style="green")
         if not user_id:
-            print("User not found.")
+            print(USER_NOT_FOUND_STR)
             return
 
         prefs = ManagePreferences.fetch_prefs(True)

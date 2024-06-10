@@ -312,7 +312,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       ]
     },
   };
-  
+
   const getSQLScript = () => {
     // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
     // Call AJAX only if script type URL is present
@@ -337,7 +337,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       setQtState({ editor_disabled: false });
     }
   };
-  
+
   const initializeQueryTool = (password)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
@@ -721,7 +721,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             });
           } else {
             selectConn(currSelectedConn, currConnected, false);
-            reject(error);
+            reject(new Error(error));
           }
         });
     });
@@ -763,7 +763,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           }
           updateQueryToolConnection(connectionData, true)
             .catch((err)=>{
-              reject(err);
+              reject(new Error(err));
             }).then(()=>{
               resolve();
               onClose();
@@ -818,7 +818,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }}
       onClose={onClose}/>
     }, 850, 500);
-  }, [qtState.preferences.browser]); 
+  }, [qtState.preferences.browser]);
 
   const onAddToMacros = () => {
     if (selectedText){
@@ -826,7 +826,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       const existingNames = currMacros.map(macro => macro.name);
       const newName = getRandomName(existingNames);
       let changed = [{ 'name': newName, 'sql': selectedText }];
-    
+
       api.put(
         url_for('sqleditor.set_macros', {
           'trans_id': qtState.params.trans_id,
@@ -849,7 +849,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
     setSelectedText('');
   };
-  
+
 
   const onFilterClick = useCallback(()=>{
     const onClose = ()=>docker.current.close('filter-dialog');

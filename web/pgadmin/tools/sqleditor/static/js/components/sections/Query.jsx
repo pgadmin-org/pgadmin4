@@ -50,7 +50,7 @@ async function registerAutocomplete(editor, api, transId) {
         })
         .catch((err) => {
           onAvailable();
-          reject(err);
+          reject(new Error(err));
         });
     });
   });
@@ -174,7 +174,7 @@ export default function Query({onTextSelect}) {
         editor.current.removeErrorMark();
       }
     });
-    
+
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
@@ -339,7 +339,7 @@ export default function Query({onTextSelect}) {
     const formatSQL = ()=>{
       let selection = true, sql = editor.current?.getSelection();
       /* New library does not support capitalize casing
-        so if a user has set capitalize casing we will 
+        so if a user has set capitalize casing we will
         use preserve casing which is default for the library.
       */
       let formatPrefs = {

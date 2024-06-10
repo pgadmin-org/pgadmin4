@@ -75,7 +75,7 @@ class NewConnectionSchema extends BaseUISchema {
           resolve(groupedOptions);
         })
         .catch((error)=>{
-          reject(error);
+          reject(new Error(error));
         });
     });
   }
@@ -97,7 +97,7 @@ class NewConnectionSchema extends BaseUISchema {
           resolve(respData.data.result.data);
         })
         .catch((error)=>{
-          reject(error);
+          reject(new Error(error));
         });
     });
   }

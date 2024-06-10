@@ -191,22 +191,11 @@ define('pgadmin.browser', [
             if(categoryMenuOptions?.above) {
               menuItemList.push(MainMenuFactory.getSeparator(label, priority));
             }
-            if(!allMenuItemsDisabled && skipDisabled) {
+            if((!allMenuItemsDisabled && skipDisabled) ||  !skipDisabled) {
               let _menuItem = MainMenuFactory.createMenuItem({
                 name: c,
                 label: label,
                 module: c,
-                category: c,
-                menu_items: category[c],
-                priority: priority
-              });
-
-              menuItemList.push(_menuItem);
-            } else if(!skipDisabled){
-              let _menuItem = MainMenuFactory.createMenuItem({
-                name: c,
-                label: label,
-                module:c,
                 category: c,
                 menu_items: category[c],
                 priority: priority
@@ -223,9 +212,7 @@ define('pgadmin.browser', [
             });
 
             category[c].forEach((m)=> {
-              if(!skipDisabled) {
-                menuItemList.push(m);
-              } else if(skipDisabled && !m.isDisabled){
+              if(!skipDisabled || (skipDisabled && !m.isDisabled)) {
                 menuItemList.push(m);
               }
             });
@@ -1127,7 +1114,7 @@ define('pgadmin.browser', [
               this.t.openPath(this.i);
               this.t.select(this.i);
               if (
-                _ctx.o && _ctx.o.success && typeof(_ctx.o.success) == 'function'
+                _ctx.o?.success && typeof(_ctx.o?.success) == 'function'
               ) {
                 _ctx.o.success.apply(_ctx.t, [_ctx.i, _new]);
               }
@@ -1356,7 +1343,7 @@ define('pgadmin.browser', [
             ctx.b._refreshNode(ctx, ctx.branch);
           },
           error: function() {
-            let fail = (_opts.o && _opts.o.fail) || _opts.fail;
+            let fail = _opts.o?.fail || _opts?.fail;
 
             if (typeof(fail) == 'function') {
               fail();
@@ -1673,7 +1660,7 @@ define('pgadmin.browser', [
     _refreshNode: function(_ctx, _d) {
       let traverseNodes = function(__d) {
         let __ctx = this, idx = 0, ctx, d,
-          size = (__d.branch && __d.branch.length) || 0,
+          size = __d?.branch?.length || 0,
           findNode = function(i_findNode, d_findNode, ctx_findNode) {
             setTimeout(
               function() {
@@ -1703,7 +1690,7 @@ define('pgadmin.browser', [
         }
       }.bind(_ctx, _d);
 
-      if (!_d || !_d.open)
+      if (!_d?.open)
         return;
 
       if (!_ctx.t.isOpen(_ctx.i)) {

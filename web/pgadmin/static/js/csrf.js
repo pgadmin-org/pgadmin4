@@ -22,7 +22,7 @@ export function setPGCSRFToken(header, token) {
 
     return config;
   }, function (error) {
-    return Promise.reject(error);
+    return Promise.reject(new Error(error));
   });
 
 }

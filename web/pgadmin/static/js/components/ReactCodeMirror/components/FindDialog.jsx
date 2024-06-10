@@ -79,7 +79,7 @@ export default function FindDialog({editor, show, replace, onClose}) {
       // Get selected text from editor and set it to find/replace input.
       let selText = editor.getSelection();
       setFindVal(selText);
-      findInputRef.current && findInputRef.current.select();
+      findInputRef.current?.select();
     }
   }, [show]);
 

@@ -122,7 +122,7 @@ class AzureCredSchema extends BaseUISchema {
                   }));
                 })
                 .catch((err)=>{
-                  reject(err);
+                  reject(new Error(err));
                 });
             }
           });
@@ -152,7 +152,7 @@ class AzureCredSchema extends BaseUISchema {
                   });
                 })
                 .catch((err)=>{
-                  reject(err);
+                  reject(new Error(err));
                 });
             }
           });

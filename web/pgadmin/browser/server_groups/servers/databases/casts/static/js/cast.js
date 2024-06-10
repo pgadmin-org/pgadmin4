@@ -91,7 +91,7 @@ define('pgadmin.node.cast', [
                     resolve(data);
                   })
                   .catch((err)=>{
-                    reject(err);
+                    reject(new Error(err));
                   });
               } else {
                 data = [];

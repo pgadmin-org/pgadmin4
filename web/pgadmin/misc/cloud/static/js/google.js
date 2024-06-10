@@ -87,7 +87,7 @@ export function GoogleCredentials(props) {
               })
               .catch((error)=>{
                 clearInterval(interval);
-                reject(error);
+                reject(new Error(error));
               });
             countdown = countdown - 1;
           }, 1000);

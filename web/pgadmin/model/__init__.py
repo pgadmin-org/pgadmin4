@@ -49,6 +49,7 @@ db = SQLAlchemy(
 
 USER_ID = 'user.id'
 SERVER_ID = 'server.id'
+CASCADE_STR = "all, delete-orphan"
 
 # Define models
 roles_users = db.Table(
@@ -173,7 +174,7 @@ class Server(db.Model):
     discovery_id = db.Column(db.String(128), nullable=True)
     servers = db.relationship(
         'ServerGroup',
-        backref=db.backref('server', cascade="all, delete-orphan"),
+        backref=db.backref('server', cascade=CASCADE_STR),
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
@@ -388,7 +389,7 @@ class SharedServer(db.Model):
     discovery_id = db.Column(db.String(128), nullable=True)
     servers = db.relationship(
         'ServerGroup',
-        backref=db.backref('sharedserver', cascade="all, delete-orphan"),
+        backref=db.backref('sharedserver', cascade=CASCADE_STR),
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
@@ -452,5 +453,5 @@ class UserMFA(db.Model):
     options = db.Column(db.Text(), nullable=True)
     user = db.relationship(
         'User',
-        backref=db.backref('user', cascade="all, delete-orphan")
+        backref=db.backref('user', cascade=CASCADE_STR)
     )

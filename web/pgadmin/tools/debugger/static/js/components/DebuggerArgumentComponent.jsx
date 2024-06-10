@@ -438,7 +438,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     try {
       resolve(debuggerArgsData.current);
     } catch (error) {
-      reject(error);
+      reject(new Error(error));
     }
   });
 

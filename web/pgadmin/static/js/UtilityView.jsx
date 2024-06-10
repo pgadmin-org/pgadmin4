@@ -67,8 +67,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
   onSave, extraData, saveBtnName, urlBase, sqlHelpUrl, helpUrl, isTabView=true}) {
 
   const pgAdmin = usePgAdmin();
-  const serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
-  pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
+  const serverInfo = treeNodeInfo && ('server' in treeNodeInfo) && pgAdmin.Browser.serverInfo?.[treeNodeInfo.server._id];
   const api = getApiInstance();
   const url = ()=>{
     return urlBase;
@@ -89,14 +88,14 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
     return api({
       url: url(),
       method: isNew ? 'POST' : 'PUT',
-      data: Object.assign({}, data, extraData),
+      data: {...data, ...extraData},
     }).then((res)=>{
       /* Don't warn the user before closing dialog */
       resolve(res.data);
       onSave?.(res.data);
       onClose();
     }).catch((err)=>{
-      reject(err);
+      reject(new Error(err));
     });
   });
 
@@ -112,7 +111,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
         resolve(res.data.data);
       }).catch((err)=>{
         onError(err);
-        reject(err);
+        reject(new Error(err));
       });
     });
   };
@@ -162,7 +161,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
           } else if(err.message){
             console.error('error msg', err.message);
           }
-          reject(err);
+          reject(new Error(err));
         });
     }
 

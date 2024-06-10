@@ -27,10 +27,10 @@ export function openSocket(namespace, options) {
       resolve(socketObj);
     });
     socketObj.on('connect_error', (err)=>{
-      reject(err);
+      reject(new Error(err));
     });
     socketObj.on('disconnect', (err)=>{
-      reject(err);
+      reject(new Error(err));
     });
   });
 }
@@ -42,10 +42,10 @@ export function socketApiGet(socket, endpoint, params) {
       resolve(data);
     });
     socket.on(`${endpoint}_failed`, (data)=>{
-      reject(data);
+      reject(new Error(data));
     });
     socket.on('disconnect', ()=>{
-      reject(gettext('Connection to pgAdmin server has been lost'));
+      reject(new Error(gettext('Connection to pgAdmin server has been lost')));
     });
   });
 }

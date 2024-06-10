@@ -35,6 +35,7 @@ from pgadmin import socketio
 MODULE_NAME = 'schema_diff'
 COMPARE_MSG = gettext("Comparing objects...")
 SOCKETIO_NAMESPACE = '/{0}'.format(MODULE_NAME)
+SCH_OBJ_STR = 'Schema Objects'
 
 
 class SchemaDiffModule(PgAdminModule):
@@ -607,7 +608,7 @@ def compare_schema(params):
     This function will compare the two schema.
     """
     # Check the pre validation before compare
-    SchemaDiffRegistry.set_schema_diff_compare_mode('Schema Objects')
+    SchemaDiffRegistry.set_schema_diff_compare_mode(SCH_OBJ_STR)
     status, error_msg, diff_model_obj, session_obj = \
         compare_pre_validation(params['trans_id'], params['source_sid'],
                                params['target_sid'])
@@ -640,7 +641,7 @@ def compare_schema(params):
                 target_sid=params['target_sid'],
                 target_did=params['target_did'],
                 target_scid=params['target_scid'],
-                schema_name=gettext('Schema Objects'),
+                schema_name=gettext(SCH_OBJ_STR),
                 diff_model_obj=diff_model_obj,
                 total_percent=total_percent,
                 node_percent=node_percent,
@@ -853,7 +854,7 @@ def compare_schema_objects(**kwargs):
     for node_name, node_view in all_registered_nodes.items():
         view = SchemaDiffRegistry.get_node_view(node_name)
         if hasattr(view, 'compare'):
-            if schema_name == 'Schema Objects':
+            if schema_name == SCH_OBJ_STR:
                 msg = gettext('Comparing {0} '). \
                     format(gettext(view.blueprint.collection_label))
             else:

@@ -363,7 +363,7 @@ function UserManagementDialog({onClose}) {
             onClose();
           })
           .catch((err)=>{
-            reject(err);
+            reject(new Error(err));
           });
       } catch (error) {
         reject(parseApiError(error));
@@ -401,7 +401,7 @@ function UserManagementDialog({onClose}) {
           resolve({userManagement:res.data});
         })
         .catch((err)=>{
-          reject(err);
+          reject(new Error(err));
         });
     }); }}
     schema={new UserManagementSchema(authSourcesOptions, roleOptions)}

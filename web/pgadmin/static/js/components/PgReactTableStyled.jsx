@@ -157,7 +157,7 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
   if (row.original.row_type === 'alert') {
     classNames.push('row-alert');
   }
-  if(row.original.icon && row.original.icon[cell.column.id]) {
+  if(row.original.icon?.[cell.column.id]) {
     classNames.push(row.original.icon[cell.column.id], 'cell-with-icon');
   }
   if(cell.column.columnDef.dataClassName){
@@ -304,8 +304,8 @@ export const PgReactTable = forwardRef(({children, table, rootClassName, tableCl
   const columnSizeVars = React.useMemo(() => {
     const headers = table.getFlatHeaders();
     const colSizes = {};
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i];
+    for (let value of headers) {
+      const header = value;
       colSizes[`--header-${header.id.replace(/\W/g, '_')}-size`] = header.getSize();
       colSizes[`--col-${header.column.id.replace(/\W/g, '_')}-size`] = header.column.getSize();
     }

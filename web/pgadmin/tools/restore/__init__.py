@@ -13,7 +13,6 @@ import json
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
-from flask_security import current_user
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
@@ -22,7 +21,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 
 # set template path for sql scripts
 MODULE_NAME = 'restore'
@@ -164,7 +163,7 @@ def _connect_server(sid):
     if server is None:
         return True, make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=SERVER_NOT_FOUND
         ), None, None, None, None, None
 
     # To fetch MetaData for the server
@@ -427,7 +426,7 @@ def check_utility_exists(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=SERVER_NOT_FOUND
         )
 
     from pgadmin.utils.driver import get_driver

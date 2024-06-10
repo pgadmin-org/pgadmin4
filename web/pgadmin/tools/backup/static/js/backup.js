@@ -265,7 +265,7 @@ define([
               }).then((response)=> {
                 resolve(response.data.data);
               }).catch((err)=>{
-                reject(err);
+                reject(new Error(err));
               });
             });
           }}

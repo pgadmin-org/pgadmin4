@@ -11,9 +11,8 @@
 
 import json
 
-from flask import url_for, Response, render_template, request, current_app
+from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
-from flask_security import current_user
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
@@ -22,7 +21,7 @@ from pgadmin.utils.driver import get_driver
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 
 MODULE_NAME = 'maintenance'
 
@@ -269,7 +268,7 @@ def check_utility_exists(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=SERVER_NOT_FOUND
         )
 
     from pgadmin.utils.driver import get_driver

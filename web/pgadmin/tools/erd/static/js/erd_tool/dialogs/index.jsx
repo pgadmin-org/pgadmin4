@@ -23,7 +23,7 @@ export default class ERDDialogs {
     return new Promise((resolve, reject)=>{
       let errorMsg = okCallback(data);
       if(errorMsg) {
-        reject(errorMsg);
+        reject(new Error(errorMsg));
       } else {
         closeModal();
         resolve();

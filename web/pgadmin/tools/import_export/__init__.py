@@ -23,7 +23,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
-from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 from pgadmin.settings import get_setting, store_setting
 
 MODULE_NAME = 'import_export'
@@ -388,7 +388,7 @@ def check_utility_exists(sid):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the specified server.")
+            errormsg=SERVER_NOT_FOUND
         )
 
     from pgadmin.utils.driver import get_driver

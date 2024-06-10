@@ -638,7 +638,7 @@ export class ResultSetUtils {
       && data.types[0] && data.types[0].typname === 'json') {
       /* json is sent as text, parse it */
       let planJson = JSON.parse(data.result[0][0]);
-      if (planJson?.[0] && planJson?.[0].hasOwnProperty('Plan') &&
+      if (planJson?.[0]?.hasOwnProperty('Plan') &&
             _.isObject(planJson[0]['Plan'])
       ) {
         return planJson;

@@ -13,6 +13,7 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as servers_utils
 import json
 from unittest.mock import patch, MagicMock
+from pgadmin.utils.constants import TWO_PARAM_STRING
 
 
 class ServersConnectTestCase(BaseTestGenerator):
@@ -82,7 +83,7 @@ class ServersConnectTestCase(BaseTestGenerator):
                     server_id = 99999
                 response = self.server_disonnect(server_id)
             elif hasattr(self, "connect"):
-                url = self.url + '{0}/{1}'.format(
+                url = self.url + TWO_PARAM_STRING.format(
                     utils.SERVER_GROUP,
                     self.server_id)
                 self.server['password'] = self.server['db_password']
@@ -134,7 +135,7 @@ class ServersConnectTestCase(BaseTestGenerator):
                 connect_url = '/browser/server/connect/{0}/{1}'.format(
                     utils.SERVER_GROUP,
                     self.server_id)
-                url = self.url + '{0}/{1}'.format(
+                url = self.url + TWO_PARAM_STRING.format(
                     utils.SERVER_GROUP,
                     self.server_id)
 

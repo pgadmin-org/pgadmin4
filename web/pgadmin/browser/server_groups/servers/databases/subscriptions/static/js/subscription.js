@@ -104,7 +104,7 @@ define('pgadmin.node.subscription', [
                           gettext('Publication fetched successfully.')
                         );
                       }else if(!_.isNull(res.data.errormsg) && _.isNull(res.data.data)){
-                        reject(res.data.errormsg);
+                        reject(new Error(res.data.errormsg));
                         pgAdmin.Browser.notifier.alert(
                           gettext('Check connection?'),
                           gettext(res.data.errormsg)
@@ -112,7 +112,7 @@ define('pgadmin.node.subscription', [
                       }
                     })
                     .catch((err)=>{
-                      reject(err);
+                      reject(new Error(err));
                     });
                 }
               });

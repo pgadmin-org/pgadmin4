@@ -19,7 +19,7 @@ import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 
-const StyledSchemaView= styled(SchemaView)(() => 
+const StyledSchemaView= styled(SchemaView)(() =>
   ({
     '& .aws-formClass': {
       overflow: 'auto',
@@ -90,7 +90,7 @@ export function AwsInstanceDetails(props) {
                 resolve(data);
               })
               .catch((err)=>{
-                reject(err);
+                reject(new Error(err));
               });
           } else {
             resolve(options);

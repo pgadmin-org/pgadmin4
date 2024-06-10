@@ -19,6 +19,7 @@ import config as app_config
 from pgadmin.utils.route import BaseTestGenerator
 from regression.feature_utils.pgadmin_page import PgadminPage
 from regression.python_test_utils import test_utils
+from pgadmin.utils.constants import TWO_PARAM_STRING
 
 
 class BaseFeatureTest(BaseTestGenerator):
@@ -86,7 +87,7 @@ class BaseFeatureTest(BaseTestGenerator):
 
     def _screenshot(self):
         screenshots_directory = '{0}/../screenshots'.format(self.CURRENT_PATH)
-        screenshots_server_directory = '{0}/{1}'.format(
+        screenshots_server_directory = TWO_PARAM_STRING.format(
             screenshots_directory,
             self.server["name"].replace(" ", "_")
         )

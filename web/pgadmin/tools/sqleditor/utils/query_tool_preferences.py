@@ -16,6 +16,10 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields
 from config import ON_DEMAND_RECORD_COUNT
 
+UPPER_CASE_STR = gettext('Upper case')
+LOWER_CASE_STR = gettext('Lower case')
+PRESERVE_STR = gettext('Preserve')
+
 
 def register_query_tool_preferences(self):
     self.explain_verbose = self.preference.register(
@@ -814,9 +818,9 @@ def register_query_tool_preferences(self):
     self.keyword_case = self.preference.register(
         'editor', 'keyword_case',
         gettext("Keyword case"), 'radioModern', 'upper',
-        options=[{'label': gettext('Upper case'), 'value': 'upper'},
-                 {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Preserve'), 'value': 'preserve'}],
+        options=[{'label': UPPER_CASE_STR, 'value': 'upper'},
+                 {'label': LOWER_CASE_STR, 'value': 'lower'},
+                 {'label': PRESERVE_STR, 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert keywords to upper, lower, or preserve casing.'
@@ -826,9 +830,9 @@ def register_query_tool_preferences(self):
     self.identifier_case = self.preference.register(
         'editor', 'identifier_case',
         gettext("Identifier case"), 'radioModern', 'upper',
-        options=[{'label': gettext('Upper case'), 'value': 'upper'},
-                 {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Preserve'), 'value': 'preserve'}],
+        options=[{'label': UPPER_CASE_STR, 'value': 'upper'},
+                 {'label': LOWER_CASE_STR, 'value': 'lower'},
+                 {'label': PRESERVE_STR, 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert identifiers to upper, lower, or preserve casing.'
@@ -838,9 +842,9 @@ def register_query_tool_preferences(self):
     self.function_case = self.preference.register(
         'editor', 'function_case',
         gettext("Function case"), 'radioModern', 'upper',
-        options=[{'label': gettext('Upper case'), 'value': 'upper'},
-                 {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Preserve'), 'value': 'preserve'}],
+        options=[{'label': UPPER_CASE_STR, 'value': 'upper'},
+                 {'label': LOWER_CASE_STR, 'value': 'lower'},
+                 {'label': PRESERVE_STR, 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert function names to upper, lower, or preserve casing.'
@@ -850,9 +854,9 @@ def register_query_tool_preferences(self):
     self.data_type_case = self.preference.register(
         'editor', 'data_type_case',
         gettext("Data type case"), 'radioModern', 'upper',
-        options=[{'label': gettext('Upper case'), 'value': 'upper'},
-                 {'label': gettext('Lower case'), 'value': 'lower'},
-                 {'label': gettext('Preserve'), 'value': 'preserve'}],
+        options=[{'label': UPPER_CASE_STR, 'value': 'upper'},
+                 {'label': LOWER_CASE_STR, 'value': 'lower'},
+                 {'label': PRESERVE_STR, 'value': 'preserve'}],
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Convert data types to upper, lower, or preserve casing.'

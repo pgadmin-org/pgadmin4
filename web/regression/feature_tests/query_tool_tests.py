@@ -15,11 +15,13 @@ from selenium.common.exceptions import StaleElementReferenceException, \
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 import config
 from regression.feature_utils.locators import \
     QueryToolLocators
+
+DATA_OUTPUT_STR = "Data Output"
+CREATE_TABLE_STR = 'CREATE TABLE'
 
 
 class QueryToolFeatureTest(BaseFeatureTest):
@@ -257,7 +259,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab("Data Output")
+        self.page.click_tab(DATA_OUTPUT_STR)
 
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
@@ -292,7 +294,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab("Data Output")
+        self.page.click_tab(DATA_OUTPUT_STR)
 
         self.wait.until(EC.presence_of_element_located(
             (By.XPATH, QueryToolLocators.output_cell_xpath.format(2, 2)))
@@ -332,7 +334,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.click_tab('Messages')
 
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            QueryToolLocators.sql_editor_message.format(CREATE_TABLE_STR)),
             self.table_creation_fail_error)
 
         # do the ROLLBACK and check if the table is present or not
@@ -357,7 +359,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab("Data Output")
+        self.page.click_tab(DATA_OUTPUT_STR)
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -413,7 +415,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            QueryToolLocators.sql_editor_message.format(CREATE_TABLE_STR)),
             self.table_creation_fail_error)
 
         self.page.clear_query_tool()
@@ -441,7 +443,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab("Data Output")
+        self.page.click_tab(DATA_OUTPUT_STR)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         canvas = self.wait.until(EC.presence_of_element_located(
@@ -492,7 +494,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
-            QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
+            QueryToolLocators.sql_editor_message.format(CREATE_TABLE_STR)),
             self.table_creation_fail_error)
         self.page.clear_query_tool()
 
@@ -537,7 +539,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab("Data Output")
+        self.page.click_tab(DATA_OUTPUT_STR)
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 

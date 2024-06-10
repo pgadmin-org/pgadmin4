@@ -11,6 +11,7 @@ import secrets
 import string
 import urllib3
 import ipaddress
+from pgadmin.utils.constants import IP_ADDRESS_STRING
 
 
 def get_my_ip():
@@ -29,11 +30,11 @@ def get_my_ip():
 
     ip = ipaddress.ip_address(external_ip)
     if isinstance(ip, ipaddress.IPv4Address):
-        return '{}/{}'.format(external_ip, 32)
+        return IP_ADDRESS_STRING.format(external_ip, 32)
     elif isinstance(ip, ipaddress.IPv6Address):
-        return '{}/{}'.format(external_ip, 128)
+        return IP_ADDRESS_STRING.format(external_ip, 128)
 
-    return '{}/{}'.format(external_ip, 32)
+    return IP_ADDRESS_STRING.format(external_ip, 32)
 
 
 def get_random_id():

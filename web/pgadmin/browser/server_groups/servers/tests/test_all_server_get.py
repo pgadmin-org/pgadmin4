@@ -13,6 +13,7 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as servers_utils
 import json
+from pgadmin.utils.constants import TWO_PARAM_STRING
 
 
 class AllServersGetTestCase(BaseTestGenerator):
@@ -71,16 +72,16 @@ class AllServersGetTestCase(BaseTestGenerator):
                     utils.SERVER_GROUP, secrets.choice(range(1, 9999999)))
             elif hasattr(self, 'children'):
 
-                self.url = self.url + '{0}/{1}'.format(
+                self.url = self.url + TWO_PARAM_STRING.format(
                     utils.SERVER_GROUP, self.server_id)
             elif hasattr(self, 'server_list'):
                 if hasattr(self, 'servers'):
                     server_id = ''
-                self.url = self.url + '{0}/{1}'.format(
+                self.url = self.url + TWO_PARAM_STRING.format(
                     utils.SERVER_GROUP, server_id)
             else:
                 if hasattr(self, "connected"):
-                    url = '/browser/server/connect/' + '{0}/{1}'.format(
+                    url = '/browser/server/connect/' + TWO_PARAM_STRING.format(
                         utils.SERVER_GROUP,
                         self.server_id)
                     self.server['password'] = self.server['db_password']

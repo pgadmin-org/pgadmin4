@@ -44,6 +44,7 @@ ASYNC_OK = 1
 DEBUGGER_SQL_PATH = 'debugger/sql'
 DEBUGGER_SQL_V1_PATH = 'debugger/sql/v1'
 DEBUGGER_SQL_V3_PATH = 'debugger/sql/v3'
+SET_SEARCH_PATH = "SET search_path={0};"
 
 
 class DebuggerModule(PgAdminModule):
@@ -262,7 +263,7 @@ def index():
 
 
 def execute_dict_search_path(conn, sql, search_path):
-    sql_search = "SET search_path={0};".format(search_path)
+    sql_search = SET_SEARCH_PATH.format(search_path)
     status, res = conn.execute_void(sql_search)
 
     if not status:
@@ -275,7 +276,7 @@ def execute_dict_search_path(conn, sql, search_path):
 
 
 def execute_async_search_path(conn, sql, search_path):
-    sql_search = "SET search_path={0};".format(search_path)
+    sql_search = SET_SEARCH_PATH.format(search_path)
     status, res = conn.execute_void(sql_search)
 
     if not status:
@@ -679,7 +680,7 @@ def get_debugger_version(conn, search_path):
     :return:
     """
     debugger_version = 0
-    status, res = conn.execute_void("SET search_path={0};".format(search_path))
+    status, res = conn.execute_void(SET_SEARCH_PATH.format(search_path))
 
     if not status:
         return False, internal_server_error(errormsg=res)

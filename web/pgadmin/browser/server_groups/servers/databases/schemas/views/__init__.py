@@ -32,6 +32,7 @@ from .schema_diff_view_utils import SchemaDiffViewCompare
 from pgadmin.utils import html, does_utility_exist, get_server
 from pgadmin.model import Server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
+from pgadmin.utils.constants import SERVER_NOT_FOUND
 
 
 """
@@ -2425,7 +2426,7 @@ class MViewNode(ViewNode, VacuumSettings):
         if server is None:
             return make_json_response(
                 success=0,
-                errormsg=gettext("Could not find the specified server.")
+                errormsg=SERVER_NOT_FOUND
             )
 
         driver = get_driver(PG_DEFAULT_DRIVER)

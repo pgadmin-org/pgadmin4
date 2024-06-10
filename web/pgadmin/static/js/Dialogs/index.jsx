@@ -206,7 +206,7 @@ export function showChangeServerPassword() {
                 onClose();
               })
               .catch((error)=>{
-                reject(error);
+                reject(new Error(error));
               });
           });
         }}
@@ -233,7 +233,7 @@ export function showChangeUserPassword(url) {
                 resolve(res.data);
               })
               .catch((err)=>{
-                reject(err);
+                reject(new Error(err));
               });
           });
         }}
@@ -259,7 +259,7 @@ export function showChangeUserPassword(url) {
               onClose();
               pgAdmin.Browser.notifier.success(res.data.info);
             }).catch((err)=>{
-              reject(err);
+              reject(new Error(err));
             });
           });
         }}
@@ -332,7 +332,7 @@ export function showChangeOwnership() {
                 resolve(respData.data);
               })
               .catch((err)=>{
-                reject(err);
+                reject(new Error(err));
               });
           }
         });

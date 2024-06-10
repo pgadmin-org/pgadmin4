@@ -13,6 +13,7 @@ from . import utils as servers_utils
 from unittest.mock import patch, MagicMock
 import json
 from psycopg import OperationalError
+from pgadmin.utils.constants import TWO_PARAM_STRING
 
 
 class ServersSSHConnectTestCase(BaseTestGenerator):
@@ -51,7 +52,7 @@ class ServersSSHConnectTestCase(BaseTestGenerator):
             self.manager.connection().connect.side_effect = \
                 MagicMock(side_effect=OperationalError())
 
-            url = self.url + '{0}/{1}'.format(utils.SERVER_GROUP, 1)
+            url = self.url + TWO_PARAM_STRING.format(utils.SERVER_GROUP, 1)
 
             class TestMockServer():
                 def __init__(self, name, id, username, use_ssh_tunnel,

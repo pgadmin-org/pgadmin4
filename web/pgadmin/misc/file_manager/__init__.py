@@ -17,7 +17,7 @@ import time
 from urllib.parse import unquote
 from sys import platform as _platform
 from flask_security import current_user
-from pgadmin.utils.constants import ACCESS_DENIED_MESSAGE
+from pgadmin.utils.constants import ACCESS_DENIED_MESSAGE, TWO_PARAM_STRING
 import config
 import codecs
 import pathlib
@@ -748,12 +748,12 @@ class Filemanager():
             if path.startswith('/') or path.startswith('\\'):
                 return "{}{}".format(in_dir[:-1], path)
             else:
-                return "{}/{}".format(in_dir, path)
+                return TWO_PARAM_STRING.format(in_dir, path)
         else:
             if path.startswith('/') or path.startswith('\\'):
                 return "{}{}".format(in_dir, path)
             else:
-                return "{}/{}".format(in_dir, path)
+                return TWO_PARAM_STRING.format(in_dir, path)
 
     def validate_request(self, capability):
         """
@@ -952,7 +952,7 @@ class Filemanager():
             file_path = "{}{}/".format(path, new_name)
             create_path = file_path
             if in_dir != "":
-                create_path = "{}/{}".format(in_dir, file_path)
+                create_path = TWO_PARAM_STRING.format(in_dir, file_path)
 
             if not path_exists(create_path):
                 return create_path, file_path, new_name

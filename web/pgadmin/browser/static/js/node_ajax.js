@@ -124,7 +124,7 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
           otherParams.useCache && cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel, data);
           resolve(transform(data));
         }).catch((err)=>{
-          reject(err);
+          reject(new Error(err));
         });
       } else {
         // To fetch only options from cache, we do not need time from 'at'

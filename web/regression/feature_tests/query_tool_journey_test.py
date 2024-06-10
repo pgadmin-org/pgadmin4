@@ -21,6 +21,8 @@ from regression.feature_utils.locators import QueryToolLocators
 import time
 from selenium.webdriver.support import expected_conditions as EC
 
+QUERY_HISTORY_STR = "Query History"
+
 
 class QueryToolJourneyTest(BaseFeatureTest):
     """
@@ -36,7 +38,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     invalid_table_name = ""
 
     select_query = "SELECT * FROM %s"
-    query_history_tab_name = "Query History"
+    query_history_tab_name = QUERY_HISTORY_STR
     query_history_tab_id = "id-history"
     query_editor_tab_name = "Query Editor"
     query_editor_tab_id = "id-query"
@@ -102,8 +104,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
             print(" OK.", file=sys.stderr)
         except Exception as e:
             traceback.print_exc()
-            self.assertTrue(False, 'Exception occurred in run test Tests the '
-                                   'path through the query tool data' + str(e))
+            raise AssertionError('Exception occurred in run test Tests the '
+                                 'path through the query tool data' + str(e))
 
     def _test_copies_rows(self):
         self.page.driver.switch_to.default_content()
@@ -153,9 +155,9 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         clipboard_text = scratch_pad_ele.get_attribute("value")
 
-        self.assertTrue('"Some-Name"' in clipboard_text)
-        self.assertTrue('"Some-Other-Name"' in clipboard_text)
-        self.assertTrue('"Yet-Another-Name"' in clipboard_text)
+        self.assertIn('"Some-Name"', clipboard_text)
+        self.assertIn('"Some-Other-Name"', clipboard_text)
+        self.assertIn('"Yet-Another-Name"', clipboard_text)
         scratch_pad_ele.clear()
 
     def _test_history_tab(self):
@@ -169,7 +171,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(editor_input)
         self.page.execute_query(self.select_query % self.invalid_table_name)
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(QUERY_HISTORY_STR)
         self.page.wait_for_query_tool_loading_indicator_to_disappear(
             container_id="id-history")
         selected_history_entry = self.page.find_by_css_selector(
@@ -223,13 +225,13 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 QueryToolLocators.btn_execute_query_css).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(QUERY_HISTORY_STR)
 
         query_list = self.page.wait_for_elements(
             lambda driver: driver.find_elements(
                 By.CSS_SELECTOR, QueryToolLocators.query_history_entries))
 
-        self.assertTrue(17, len(query_list))
+        self.assertEqual(17, len(query_list))
 
     def _test_query_sources_and_generated_queries(self):
         self.__clear_query_history()
@@ -240,7 +242,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_tab("Query")
         self._execute_sources_test_queries()
 
-        self.page.click_tab("Query History")
+        self.page.click_tab(QUERY_HISTORY_STR)
 
         history_entries_icons = [
             'CommitIcon',
@@ -368,13 +370,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
             )
             query_history_selected_item = \
                 query_history_selected_item.text.split('\n')[0]
-            self.assertTrue(query_history_selected_item in history_queries)
+            self.assertIn(query_history_selected_item, history_queries)
             # Check source icon
             query_history_selected_icon = self.page.find_by_css_selector(
                 QueryToolLocators.query_history_selected_icon)
-            self.assertTrue(
-                icon == query_history_selected_icon.get_attribute(
-                    'data-label'))
+            self.assertEqual(icon, query_history_selected_icon.get_attribute(
+                'data-label'))
             # Move to next entry
             ActionChains(self.page.driver) \
                 .send_keys(Keys.ARROW_DOWN) \
@@ -412,7 +413,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         )
 
     def __clear_query_history(self):
-        self.page.click_tab("Query History")
+        self.page.click_tab(QUERY_HISTORY_STR)
         self.page.wait_for_query_tool_loading_indicator_to_disappear(
             container_id="id-history")
         self.page.click_element(

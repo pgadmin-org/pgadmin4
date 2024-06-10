@@ -188,7 +188,7 @@ export function generateViewDataTitle(pgBrowser, treeIdentifier, custom_title=nu
   );
 
   const namespaceName = retrieveNameSpaceName(parentData);
-  const db_label = !_.isUndefined(backend_entity) && backend_entity != null && backend_entity.hasOwnProperty('db_name') ? backend_entity['db_name'] : getDatabaseLabel(parentData);
+  const db_label = !_.isUndefined(backend_entity) && backend_entity?.hasOwnProperty('db_name') ? backend_entity['db_name'] : getDatabaseLabel(parentData);
   const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
 
   let dtg_title_placeholder = '';

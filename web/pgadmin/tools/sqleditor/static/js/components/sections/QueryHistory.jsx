@@ -24,7 +24,7 @@ import * as clipboard from '../../../../../../static/js/clipboard';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 
 const Root = styled('div')(({ theme }) => ({
-  display: 'flex', 
+  display: 'flex',
   height: '100%',
   '.QuerySources-leftRoot': {
     display: 'flex',
@@ -267,7 +267,7 @@ QuerySourceIcon.propTypes = {
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
   return <Root><ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
-    selectedItemKey==itemKey && ele && ele.scrollIntoView({
+    selectedItemKey==itemKey && ele?.scrollIntoView({
       block: 'center',
       behavior: 'smooth',
     });

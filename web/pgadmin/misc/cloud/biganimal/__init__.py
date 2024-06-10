@@ -15,13 +15,12 @@ import pickle
 from flask_babel import gettext
 from flask import session, current_app
 from pgadmin.user_login_check import pga_login_required
-from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response
 from config import root
-from pgadmin.utils.constants import MIMETYPE_APP_JSON
+from pgadmin.utils.constants import MIMETYPE_APP_JSON, TWO_PARAM_STRING
 
 MODULE_NAME = 'biganimal'
 
@@ -192,15 +191,15 @@ class BigAnimalProvider():
 
     def get_auth_provider(self):
         """Get Authentication Provider Relevant Information."""
-        provider_resp = requests.get("{0}/{1}".format(self.BASE_URL,
-                                                      'auth/provider'))
+        provider_resp = requests.get(TWO_PARAM_STRING.format(self.BASE_URL,
+                                                             'auth/provider'))
         if provider_resp.status_code == 200 and provider_resp.content:
             self.provider = json.loads(provider_resp.content)
 
     def get_device_code(self):
         """Get device code"""
-        _url = "{0}/{1}".format(self.provider['issuerUri'],
-                                'oauth/device/code')
+        _url = TWO_PARAM_STRING.format(self.provider['issuerUri'],
+                                       'oauth/device/code')
         _headers = {"content-type": "application/x-www-form-urlencoded"}
         _data = {
             'client_id': self.provider['clientId'],
@@ -217,7 +216,8 @@ class BigAnimalProvider():
 
     def polling_for_token(self):
         # Polling for the Token
-        _url = "{0}/{1}".format(self.provider['issuerUri'], 'oauth/token')
+        _url = TWO_PARAM_STRING.format(self.provider['issuerUri'],
+                                       'oauth/token')
         _headers = {"content-type": "application/x-www-form-urlencoded"}
         _data = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
@@ -245,7 +245,7 @@ class BigAnimalProvider():
         return False, None
 
     def exchange_token(self):
-        _url = "{0}/{1}".format(self.BASE_URL, 'auth/token')
+        _url = TWO_PARAM_STRING.format(self.BASE_URL, 'auth/token')
         _headers = {"content-type": "application/json",
                     "accept": "application/json"}
         _data = {'token': self.raw_access_token}
@@ -266,7 +266,7 @@ class BigAnimalProvider():
         There is no direct way to do this, so just checking the create cluster
         permission.
         """
-        _url = "{0}/{1}".format(
+        _url = TWO_PARAM_STRING.format(
             self.BASE_URL,
             'user-info')
         resp = requests.get(_url, headers=self._get_headers())

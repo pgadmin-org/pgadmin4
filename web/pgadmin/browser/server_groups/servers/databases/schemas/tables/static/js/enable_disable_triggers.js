@@ -20,7 +20,7 @@ export function enableTriggers(tree, generateUrl, args) {
 function setTriggers(tree, generateUrl, args, params) {
   const treeNode = retrieveTreeNode(args, tree);
 
-  if (!treeNode || treeNode.getData() === null || treeNode.getData() === undefined)
+  if (!treeNode?.getData())
     return false;
 
   axios.put(

@@ -25,7 +25,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   const nodeType = nodeData?._type;
   const pgAdmin = usePgAdmin();
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
-      pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
+      pgAdmin.Browser.serverInfo?.[treeNodeInfo.server._id];
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
   let isActionTypeCopy = actionType == 'copy';
   // If the actionType is set to 'copy' it is necessary to retrieve the details
@@ -85,9 +85,9 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
             if (msg == 'CRYPTKEY_SET') {
               return Promise.resolve(initData());
             } else if (msg == 'CRYPTKEY_NOT_SET') {
-              reject(gettext('The master password is not set.'));
+              reject(new Error(gettext('The master password is not set.')));
             }
-            reject(err);
+            reject(new Error(err));
           });
 
         })
@@ -114,9 +114,9 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
         if (msg == 'CRYPTKEY_SET') {
           return Promise.resolve(onSaveClick(isNew, data));
         } else if (msg == 'CRYPTKEY_NOT_SET') {
-          reject(gettext('The master password is not set.'));
+          reject(new Error(gettext('The master password is not set.')));
         }
-        reject(err);
+        reject(new Error(err));
       });
     });
   });
@@ -133,7 +133,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
         resolve(res.data.data);
       }).catch((err)=>{
         onError(err);
-        reject(err);
+        reject(new Error(err));
       });
     });
   };

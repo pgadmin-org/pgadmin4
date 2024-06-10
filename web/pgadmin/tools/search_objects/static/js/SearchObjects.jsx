@@ -383,11 +383,11 @@ export default function SearchObjects({nodeData}) {
           })
           .catch((err)=>{
             pgAdmin.Browser.notifier.error(parseApiError(err));
-            reject(err);
+            reject(new Error(err));
           });
       } catch (error) {
         pgAdmin.Browser.notifier.error(parseApiError(error));
-        reject(error);
+        reject(new Error(error));
       }
     });
   };
