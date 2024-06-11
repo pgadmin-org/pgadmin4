@@ -25,3 +25,10 @@ CREATE POLICY {{ conn|qtIdent(data.name) }}
 
     WITH CHECK ({{ data.withcheck }});
 {% endif %}
+
+{% if data.description %}
+
+COMMENT ON POLICY {{ conn|qtIdent(data.name) }}
+    ON {{ conn|qtIdent(data.schema, data.table) }}
+    IS {{ data.description|qtLiteral(conn) }};
+{% endif %}

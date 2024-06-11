@@ -39,7 +39,8 @@
         "event": "SELECT",
         "policyowner": "public",
         "schema": "public",
-        "type": "PERMISSIVE"
+        "type": "PERMISSIVE",
+        "description": "This is test description"
       },
       "expected_sql_file": "create_select_policy.sql",
       "expected_msql_file": "create_select_policy_msql.sql"

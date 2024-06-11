@@ -21,6 +21,7 @@ Use the fields in the *General* tab to define the RLS Policy:
 * Use the *Name* field to add a descriptive name for the RLS Policy. The name will be displayed in the *pgAdmin* tree control.
 * Use the drop-down listbox next to *Role* to select the Role to which the RLS Policy is to be applied.
 * Use the drop-down listbox next to *Type* to select the type of the policy.
+* Store notes about the policy in the Comment field.
 
 Click the *Commands* tab to continue.
 

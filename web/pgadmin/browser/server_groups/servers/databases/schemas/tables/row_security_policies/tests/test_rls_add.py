@@ -61,6 +61,8 @@ class RulesAddTestCase(BaseTestGenerator):
         """This function will Policy under table node."""
         self.test_data['name'] = \
             "test_policy_add_%s" % (str(uuid.uuid4())[1:8])
+        self.test_data['description'] = \
+            "test_comment_add_%s" % (str(uuid.uuid4())[1:8])
 
         if hasattr(self, "owner_policy"):
             self.test_data['policyowner'] = self.role_name
