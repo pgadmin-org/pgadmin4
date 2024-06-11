@@ -46,7 +46,7 @@ urllib3==1.26.*
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.1.1
 azure-mgmt-subscription==3.1.1
-azure-identity==1.16.0
+azure-identity==1.16.1
 google-api-python-client==2.*
 google-auth-oauthlib==1.2.0
 keyring==24.*
