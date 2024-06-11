@@ -13,6 +13,9 @@ import json
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
+# This unused import is required as API test cases will fail if we remove it,
+# Have to identify the cause and then remove it.
+from flask_security import current_user
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \

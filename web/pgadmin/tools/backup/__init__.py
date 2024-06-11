@@ -25,6 +25,7 @@ from config import PG_DEFAULT_DRIVER
 # This unused import is required as API test cases will fail if we remove it,
 # Have to identify the cause and then remove it.
 from pgadmin.model import Server, SharedServer
+from flask_security import current_user
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 from pgadmin.tools.grant_wizard import get_data
