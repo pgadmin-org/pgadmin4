@@ -43,6 +43,7 @@ import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
 import PgTreeView from '../PgTreeView';
 import Loader from 'sources/components/Loader';
+import { MY_STORAGE } from '../../../misc/file_manager/static/js/components/FileManagerConstants';
 
 
 const Root = styled('div')(({theme}) => ({
@@ -459,8 +460,12 @@ export function InputFileSelect({ controlProps, onChange, disabled, readonly, is
       dialog_title: controlProps.dialogTitle || '',
       btn_primary: controlProps.btnPrimary || '',
     };
-    showFileManager(params, (fileName)=>{
-      onChange?.(decodeURI(fileName));
+    showFileManager(params, (fileName, dir)=>{
+      if (dir && dir != MY_STORAGE){
+        onChange?.(dir + ':' + decodeURI(fileName));
+      }else{
+        onChange?.(decodeURI(fileName));
+      }
       inpRef.current.focus();
     });
   };
