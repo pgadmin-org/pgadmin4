@@ -14,7 +14,7 @@ let testElem = document.createElement('test'),
   defaultView = document.defaultView,
   getComputedStyle = defaultView?.getComputedStyle,
   computedValueBug,
-  runit = /^(-?[\d+\.\-]+)([a-z]+|%)$/i,
+  runit = /^(-?[\d+.-]+)([a-z]+|%)$/i,
   convert = {},
   conversions = [1 / 25.4, 1 / 2.54, 1 / 72, 1 / 6],
   units = ['mm', 'cm', 'pt', 'pc', 'in', 'mozmm'],
@@ -53,7 +53,7 @@ export default function toPx(value, prop, force, el) {
   // use width as the default property, or specify your own
   prop = prop || 'width';
 
-  var style,
+  let style,
     inlineValue,
     ret,
     unit = (value.match(runit) || [])[2],
@@ -63,7 +63,10 @@ export default function toPx(value, prop, force, el) {
   if (conversion || rem.test(unit) && !force) {
     // calculate known conversions immediately
     // find the correct element for absolute units or rem or fontSize + em or em
-    elem = conversion ? elem : unit === 'rem' ? docElement : prop === 'fontSize' ? elem.parentNode || elem : elem;
+    if (unit === 'rem')
+      elem = docElement;
+    else if (prop === 'fontSize')
+      elem = elem.parentNode || elem;
 
     // use the pre-calculated conversion or fontSize of the element for rem and em
     conversion = conversion || parseFloat(curCSS(elem, 'fontSize'));
@@ -101,7 +104,7 @@ export default function toPx(value, prop, force, el) {
 
 // return the computed value of a CSS property
 function curCSS(elem, prop) {
-  var value,
+  let value,
     pixel,
     unit,
     rvpos = /^(top|bottom)/,
@@ -132,7 +135,8 @@ function curCSS(elem, prop) {
     // WebKit won't convert percentages for top, bottom, left, right, margin and text-indent
     if (rvpos.test(prop)) {
       // Top and bottom require measuring the innerHeight of the parent.
-      innerHeight = (parent = elem.parentNode || elem).offsetHeight;
+      parent = elem.parentNode || elem;
+      innerHeight = parent.offsetHeight;
       while (i--) {
         innerHeight -= parseFloat(curCSS(parent, outerProp[i]));
       }

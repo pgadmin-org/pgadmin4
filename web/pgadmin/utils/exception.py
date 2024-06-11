@@ -32,7 +32,7 @@ class ConnectionLost(HTTPException):
     def name(self):
         return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
-    def get_response(self, environ=None):
+    def get_response(self, environ=None, scope=None):
         return service_unavailable(
             _("Connection to the server has been lost."),
             info="CONNECTION_LOST",
@@ -65,7 +65,7 @@ class SSHTunnelConnectionLost(HTTPException):
     def name(self):
         return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
-    def get_response(self, environ=None):
+    def get_response(self, environ=None, scope=None):
         return service_unavailable(
             _("Connection to the SSH Tunnel for host '{0}' has been lost. "
               "Reconnect to the database server.").format(self.tunnel_host),
@@ -97,7 +97,7 @@ class CryptKeyMissing(HTTPException):
     def name(self):
         return HTTP_STATUS_CODES.get(503, SERVICE_UNAVAILABLE)
 
-    def get_response(self, environ=None):
+    def get_response(self, environ=None, scope=None):
         return service_unavailable(
             _(self.CRYPT_KEY_MISSING),
             info="CRYPTKEY_MISSING",
@@ -123,7 +123,7 @@ class ObjectGone(HTTPException):
     def name(self):
         return HTTP_STATUS_CODES.get(410, 'Gone')
 
-    def get_response(self, environ=None):
+    def get_response(self, environ=None, scope=None):
         return gone(self.error_msg)
 
     def __str__(self):
@@ -146,7 +146,7 @@ class ExecuteError(HTTPException):
     def name(self):
         return HTTP_STATUS_CODES.get(500, 'Internal server error')
 
-    def get_response(self, environ=None):
+    def get_response(self, environ=None, scope=None):
         return internal_server_error(self.error_msg)
 
     def __str__(self):

@@ -46,7 +46,7 @@ export default function GotoDialog({editor, show, onClose}) {
   const onKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if(!/^[ ]*[1-9][0-9]*[ ]*(,[ ]*[1-9][0-9]*[ ]*){0,1}$/.test(gotoVal)) {
+      if(!/^ *[1-9]\d* *(, *[1-9]\d* *)?$/.test(gotoVal)) {
         return;
       }
       const v = gotoVal.split(',').map(Number);

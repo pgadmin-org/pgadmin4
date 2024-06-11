@@ -13,7 +13,7 @@ module.exports = function(endpoint, substitutions) {
   let rawURL = endpoints[endpoint];
 
   // captures things of the form <path:substitutionName>
-  let substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
+  let substitutionGroupsRegExp = /(<)([^:^>]*:)?([^>]+)(>)/g,
     interpolated = rawURL;
 
   if (!rawURL)

@@ -51,7 +51,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       onScroll={this.props.onScroll}
       ref={this.wrapperRef}
       style={{
-        height: height ? height : 'calc(100vh - 60px)',
+        height: height || 'calc(100vh - 60px)',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -66,7 +66,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
             model={model}
             itemHeight={FileTreeItem.renderHeight}
             onReady={this.handleTreeReady}
-            disableCache={disableCache ? disableCache : false}
+            disableCache={disableCache || false}
           >
             {(props: IItemRendererProps) => <FileTreeItem
               item={props.item}
@@ -267,7 +267,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
     } else {
       await this.fileTreeHandle.openDirectory(parentDir as Directory);
       maybeFile = await create(parentDir.path, itemData);
-      if (maybeFile && maybeFile.type && maybeFile.name) {
+      if (maybeFile?.type && maybeFile?.name) {
         model.root.inotify({
           type: WatchEvent.Added,
           directory: parentDir.path,
@@ -378,7 +378,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       : fileOrDirOrPath;
 
     if (fileH === FileType.Directory || fileH === FileType.File) {
-      return fileH.parent ? true : false;
+      return fileH.parent;
     }
 
     return false;
@@ -608,8 +608,8 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
   };
 
   private resize = (scrollX, scrollY) => {
-    const scrollXPos = scrollX ? scrollX : 0;
-    const scrollYPos = scrollY ? scrollY : this.props.model.state.scrollOffset;
+    const scrollXPos = scrollX || 0;
+    const scrollYPos = scrollY || this.props.model.state.scrollOffset;
     const div = this.wrapperRef.current.querySelector('div').querySelector('div') as HTMLDivElement;
     div.scroll(scrollXPos, scrollYPos);
 

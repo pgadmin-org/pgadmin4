@@ -65,7 +65,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
               ? 'file'
               : 'directory';
 
-    if (this.props.item.parent && this.props.item.parent.path) {
+    if (this.props.item.parent?.path) {
       this.props.item.resolvedPathCache = this.props.item.parent.path + '/' + this.props.item._metadata.data.id;
     }
 
@@ -98,8 +98,8 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
 
         <span className='file-label'>
           {
-            item._metadata && item._metadata.data.icon ?
-              <i className={cn('file-icon', item._metadata && item._metadata.data.icon ? item._metadata.data.icon : fileOrDir)} /> : null
+            item._metadata?.data?.icon ?
+              <i className={cn('file-icon', item._metadata?.data?.icon ? item._metadata.data.icon : fileOrDir)} /> : null
           }
           <span className='file-name'>
             { _.unescape(this.props.item.getMetadata('data')._label)}

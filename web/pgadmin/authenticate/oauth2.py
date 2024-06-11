@@ -275,6 +275,6 @@ class OAuth2Authentication(BaseAuthentication):
                 authorized_claims = [authorized_claims]
             if any(item in authorized_claims for item in claim):
                 reason = "Claim match found. Authorized access."
-                return (True, reason)
-        reason = f"No match was found."
-        return (False, reason)
+                return True, reason
+        reason = "No match was found."
+        return False, reason

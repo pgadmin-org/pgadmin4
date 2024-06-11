@@ -363,7 +363,7 @@ export function evalFunc(obj, func, ...param) {
 }
 
 export function getBrowser() {
-  let ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  let ua=navigator.userAgent,tem,M=(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i).exec(ua) || [];
   if(/trident/i.test(M[1])) {
     tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
     return {name:'IE', version:(tem[1]||'')};
@@ -374,12 +374,12 @@ export function getBrowser() {
   }
 
   if(M[1]==='Chrome') {
-    tem=ua.match(/\bOPR|Edge\/(\d+)/);
+    tem=(/\bOPR|Edge\/(\d+)/).exec(ua);
     if(tem!=null) {return {name:tem[0], version:tem[1]};}
   }
 
   M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-  if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+  if((tem=(/version\/(\d+)/i).exec(ua))!=null) {M.splice(1,1,tem[1]);}
   return {
     name: M[0],
     version: M[1],

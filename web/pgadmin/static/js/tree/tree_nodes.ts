@@ -44,7 +44,7 @@ export class ManageTreeNodes {
   public removeNode = async (_path)  => {
     const item = this.findNode(_path);
 
-    if (item && item.parentNode) {
+    if (item?.parentNode) {
       item.children = [];
       item.parentNode.children.splice(item.parentNode.children.indexOf(item), 1);
     }
@@ -85,8 +85,8 @@ export class ManageTreeNodes {
         console.error(node, 'It\'s a leaf node');
         return [];
       }
-      else {
-        if (node.children.length != 0) return node.children;
+      else if (node.children.length != 0) {
+        return node.children;
       }
     }
 
@@ -99,14 +99,12 @@ export class ManageTreeNodes {
       if (node.metadata.data._pid == null ) {
         url = node.metadata.data._type + '/children/' + node.metadata.data._id;
       }
+      else if (node.metadata.data._type.includes('coll-')) {
+        const _type = node.metadata.data._type.replace('coll-', '');
+        url = _type + '/nodes/' + _parent_url + '/';
+      }
       else {
-        if (node.metadata.data._type.includes('coll-')) {
-          const _type = node.metadata.data._type.replace('coll-', '');
-          url = _type + '/nodes/' + _parent_url + '/';
-        }
-        else {
-          url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
-        }
+        url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
       }
 
       url = base_url + url;
@@ -168,7 +166,8 @@ export class ManageTreeNodes {
     // Replace the table with the last partition as in reality partition node is not child of the table
     if(_partitions.length > 0) _parent_path[0]  = _partitions[_partitions.length-1];
 
-    return _parent_path.reverse().join('/');
+    _parent_path.reverse();
+    return _parent_path.join('/');
   };
 }
 
@@ -183,7 +182,7 @@ export class TreeNode {
     this.domNode = domNode;
     this.metadata = metadata;
     this.name = metadata ? metadata.data.label : '';
-    this.type = type ? type : undefined;
+    this.type = type || undefined;
   }
 
   hasParent() {
@@ -211,7 +210,7 @@ export class TreeNode {
     } else if (this.data === null) {
       return null;
     }
-    return Object.assign({}, this.data);
+    return {...this.data};
   }
 
   getHtmlIdentifier() {
@@ -272,7 +271,7 @@ export class TreeNode {
             resolve(true);
           },
           ()=>{
-            reject();
+            reject(new Error());
           });
     });
   }
@@ -285,7 +284,7 @@ export class TreeNode {
       } else if(tree.isOpen(this.domNode)) {
         resolve(true);
       } else {
-        tree.open(this.domNode).then(() => resolve(true), () => reject(true));
+        tree.open(this.domNode).then(() => resolve(true), () => reject(new Error(true)));
       }
     });
   }

@@ -29,13 +29,13 @@ export function getBrowserAccesskey() {
   /* Ref: https://www.w3schools.com/tags/att_accesskey.asp */
   let ua = window.navigator.userAgent;
   // macOS
-  if (ua.match(/macintosh/i)) {
+  if ((/macintosh/i).exec(ua)) {
     return ['Ctrl', 'Option'];
   }
 
   // Windows / Linux
-  if (ua.match(/windows/i) || ua.match(/linux/i)) {
-    if(ua.match(/firefox/i)) {
+  if ((/windows/i).exec(ua) || (/linux/i).exec(ua)) {
+    if((/firefox/i).exec(ua)) {
       return ['Alt', 'Shift'];
     }
     return ['Alt'];

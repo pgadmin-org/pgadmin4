@@ -390,7 +390,34 @@ export function StorageWrapper(props) {
     },
   };
 
-  return ( 
+  function getLabel(item, index) {
+    if (item.mount_point !== '')
+      return item.mount_point;
+
+    return item.drive_letter !== '' ? item.drive_letter : 'disk' + index;
+  }
+
+  function getChartContainerTitle(type) {
+    if (type.endsWith('_bytes_rw'))
+      return gettext('Data transfer');
+    if (type.endsWith('_total_rw'))
+      return gettext('I/O operations count');
+    if (type.endsWith('_time_rw'))
+      return gettext('Time spent in I/O operations');
+
+    return '';
+  }
+
+  function getValue(type, v) {
+    if (type.endsWith('_time_rw'))
+      return toPrettySize(v, 'ms');
+    if (type.endsWith('_total_rw'))
+      return toPrettySize(v, '');
+
+    return toPrettySize(v);
+  }
+
+  return (
     <Root>
       <div className='Storage-tableContainer'>
         <div className='Storage-containerHeaderText'>{gettext('Disk information')}</div>
@@ -403,12 +430,12 @@ export function StorageWrapper(props) {
             title={''}
             datasets={props.diskStats.map((item, index) => ({
               borderColor: colors[(index + 2) % colors.length],
-              label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
+              label: getLabel(item, index),
             }))}
             errorMsg={props.errorMsg}
             isTest={props.isTest}>
             <PieChart data={{
-              labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
+              labels: props.diskStats.map((item, index) => getLabel(item, index)),
               datasets: [
                 {
                   data: props.diskStats.map((item) => item.total_space_actual?item.total_space_actual:0),
@@ -426,7 +453,7 @@ export function StorageWrapper(props) {
         <Grid item md={6} sm={12}>
           <ChartContainer id='ua-space-graph' title={''} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <BarChart data={{
-              labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
+              labels: props.diskStats.map((item, index) => getLabel(item, index)),
               datasets: [
                 {
                   label: 'Used space',
@@ -476,10 +503,10 @@ export function StorageWrapper(props) {
           <Grid container spacing={0.5} p={0.5}>
             {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
               <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
-                <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+                <ChartContainer id={`io-graph-${type}`} title={getChartContainerTitle(type)} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
                   <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
                     valueFormatter={(v)=>{
-                      return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : type.endsWith('_total_rw') ? toPrettySize(v, ''): toPrettySize(v);
+                      return getValue(type, v);
                     }} />
                 </ChartContainer>
               </Grid>

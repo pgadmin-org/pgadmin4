@@ -39,7 +39,7 @@ export class ManagePreferenceTreeNodes {
   public removeNode = async (_path) => {
     const item = this.findNode(_path);
 
-    if (item && item.parentNode) {
+    if (item?.parentNode) {
       item.children = [];
       item.parentNode.children.splice(item.parentNode.children.indexOf(item), 1);
     }
@@ -77,10 +77,10 @@ export class ManagePreferenceTreeNodes {
 
     if (node && node.children.length > 0) {
       if (!node.type === FileType.File) {
-        rej('It\'s a leaf node');
+        rej(new Error('It\'s a leaf node'));
       }
-      else {
-        if (node?.children.length != 0) res(node.children);
+      else if (node?.children.length != 0) {
+        res(node.children);
       }
     }
 
@@ -131,7 +131,7 @@ export class TreeNode {
     this.domNode = domNode;
     this.metadata = metadata;
     this.name = metadata ? metadata.data.label : '';
-    this.type = type ? type : undefined;
+    this.type = type || undefined;
   }
 
   hasParent() {
@@ -159,7 +159,7 @@ export class TreeNode {
     } else if (this.data === null) {
       return null;
     }
-    return Object.assign({}, this.data);
+    return {...this.data};
   }
 
   getHtmlIdentifier() {
@@ -220,7 +220,7 @@ export class TreeNode {
             resolve(true);
           },
           () => {
-            reject();
+            reject(new Error());
           });
     });
   }
@@ -233,7 +233,7 @@ export class TreeNode {
       } else if (tree.isOpen(this.domNode)) {
         resolve(true);
       } else {
-        tree.open(this.domNode).then(() => resolve(true), () => reject(true));
+        tree.open(this.domNode).then(() => resolve(true), () => reject(new Error(true)));
       }
     });
   }

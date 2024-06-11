@@ -41,7 +41,7 @@ class BaseAuthentication(metaclass=AuthSourceRegistry):
         pass
 
     @abstractmethod
-    def authenticate(self):
+    def authenticate(self, form):
         pass
 
     def validate(self, form):
