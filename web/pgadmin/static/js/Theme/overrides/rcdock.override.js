@@ -20,6 +20,9 @@ export default function rcdockOverride(theme) {
           transition: 'none !important',
         }
       },
+      '& .dock-content': {
+        backgroundColor: theme.palette.background.default,
+      },
       '& .dock-bar': {
         paddingLeft: 0,
         backgroundColor: theme.palette.background.default,
