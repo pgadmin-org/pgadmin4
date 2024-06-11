@@ -773,10 +773,11 @@ function getFinalTheme(baseTheme) {
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
-  const [themeName, setThemeName] = useState(prefStore.getPreferencesForModule('misc')?.theme);
+  const [currentTheme, setCurrentTheme] = useState(prefStore.getPreferencesForModule('misc')?.theme);
+
   const themeObj = useMemo(()=>{
     let baseTheme = getStandardTheme(basicSettings);
-    switch(themeName) {
+    switch(currentTheme) {
     case 'dark':
       baseTheme = getDarkTheme(baseTheme);
       break;
@@ -785,11 +786,20 @@ export default function Theme({children}) {
       break;
     }
     return getFinalTheme(baseTheme);
-  }, [themeName]);
+  }, [currentTheme]);
 
   useEffect(() => usePreferences.subscribe(
     state => {
-      setThemeName(state.getPreferencesForModule('misc').theme);
+      let selectdTheme = state.getPreferencesForModule('misc').theme;
+      if(selectdTheme === 'system'){
+        const themeQuery = window.matchMedia('(prefers-color-scheme: light)');
+        setCurrentTheme(themeQuery.matches ? 'light' : 'dark');
+        themeQuery.addEventListener('change', ({ matches }) => {
+          setCurrentTheme(matches ? 'light' : 'dark');
+        });
+      }else{
+        setCurrentTheme(selectdTheme);
+      }
     }
   ), []);
 

@@ -20,7 +20,6 @@ from pgadmin.utils import PgAdminModule, replace_binary_path, \
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
-from pgadmin.utils.constants import MIMETYPE_APP_JS, UTILITIES_ARRAY
 from pgadmin.utils.ajax import precondition_required, make_json_response, \
     internal_server_error
 from pgadmin.utils.heartbeat import log_server_heartbeat, \
@@ -74,20 +73,21 @@ class MiscModule(PgAdminModule):
                 'preview_src': url_for(
                     'static', filename='js/generated/img/' +
                                        theme_data['preview_img']
-                )
+                ) if 'preview_img' in theme_data else None
             })
 
         self.preference.register(
             'themes', 'theme',
-            gettext("Theme"), 'options', 'standard',
+            gettext("Theme"), 'options', 'light',
             category_label=gettext('Themes'),
             options=theme_options,
             control_props={
                 'allowClear': False,
+                'creatable': False,
             },
             help_str=gettext(
-                'A refresh is required to apply the theme. Above is the '
-                'preview of the theme'
+                'Click the save button to apply the theme. Below is the '
+                'preview of the theme.'
             )
         )
 
