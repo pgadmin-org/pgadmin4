@@ -30,3 +30,5 @@ Bug fixes
 *********
 
   | `Issue #6357 <https://github.com/pgadmin-org/pgadmin4/issues/6357>`_ -  Disable the query tool editor input if any SQL is being loaded to prevent users from typing.
+  | `Issue #7306 <https://github.com/pgadmin-org/pgadmin4/issues/7306>`_ -  Ensure that a user can connect to a server using SSL certificates and identity files from a shared storage.
+  | `Issue #7481 <https://github.com/pgadmin-org/pgadmin4/issues/7481>`_ -  Fixed an issue where dark theme shows white background when all tabs are closed.
