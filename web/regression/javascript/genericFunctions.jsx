@@ -95,6 +95,6 @@ export const addNewDatagridRow = async (user, ctrl)=>{
   await user.click(ctrl.container.querySelector('[data-test="add-row"] button'));
 };
 
-export let genericBeforeEach = ()=> {
+export const genericBeforeEach = ()=> {
   pgWindow.pgAdmin = pgAdmin;
 };

@@ -166,10 +166,10 @@ class UserManagementCollection extends BaseUISchema {
 
     if (state.auth_source != AUTH_METHODS['INTERNAL']) {
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
-          if (obj.top._sessData.userManagement[i]?.id &&
-            obj.top._sessData.userManagement[i].username.toLowerCase() == state.username.toLowerCase() &&
-            obj.top._sessData.userManagement[i].auth_source == state.auth_source) {
+        for (let user in obj.top._sessData.userManagement) {
+          if (user?.id &&
+            user.username.toLowerCase() == state.username.toLowerCase() &&
+            user.auth_source == state.auth_source) {
             msg = gettext('User name \'%s\' already exists', state.username);
             setError('username', msg);
             return true;
@@ -179,7 +179,7 @@ class UserManagementCollection extends BaseUISchema {
     }
 
     if (state.auth_source == AUTH_METHODS['INTERNAL']) {
-      let email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      let email_filter = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       if (isEmptyString(state.email)) {
         msg = gettext('Email cannot be empty');
         setError('email', msg);
@@ -193,9 +193,9 @@ class UserManagementCollection extends BaseUISchema {
       }
 
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
-          if (obj.top._sessData.userManagement[i]?.id &&
-            obj.top._sessData.userManagement[i].email?.toLowerCase() == state.email?.toLowerCase()) {
+        for (let user in obj.top._sessData.userManagement) {
+          if (user?.id &&
+            user.email?.toLowerCase() == state.email?.toLowerCase()) {
             msg = gettext('Email address \'%s\' already exists', state.email);
             setError('email', msg);
             return true;

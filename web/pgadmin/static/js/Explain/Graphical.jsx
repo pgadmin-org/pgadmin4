@@ -158,9 +158,9 @@ function Multitext({currentXpos, currentYpos, label, maxWidth}) {
       return res;
     };
 
-  for (let i = 0; i < words.length; i++) {
+  for (let word in words) {
     let tmpArr = splitTextInMultiLine(
-      currLine, widthSoFar, words[i]
+      currLine, widthSoFar, word
     );
 
     if (currLine) {

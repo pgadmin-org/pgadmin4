@@ -8,14 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { DefaultButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import PropTypes from 'prop-types';
 import { getAWSSummary } from './aws';
 import  {getAzureSummary} from './azure';
 import { getBigAnimalSummary } from './biganimal';
-import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import gettext from 'sources/gettext';
 import { getGoogleSummary } from './google';
 import { CLOUD_PROVIDERS_LABELS } from './cloud_constants';

@@ -212,7 +212,7 @@ function launchPgAdminWindow() {
     // https://github.com/nwjs/nw.js/issues/7973
     pgadminWindow.on('close', function () {
       // Resize Window
-      resizeHeightBy = pgadminWindow.window.outerHeight - pgadminWindow.window.innerHeight;
+      let resizeHeightBy = pgadminWindow.window.outerHeight - pgadminWindow.window.innerHeight;
       pgadminWindow.resizeBy(0, -resizeHeightBy);
       // Remove 'close' event handler, and then close window
       pgadminWindow.removeAllListeners('close');
@@ -554,7 +554,7 @@ function getSubMenu(menuItem) {
                 if (sub.submenu?.items?.length) {
                   sub.submenu.items.forEach((m) => {
                     if (m.type == 'checkbox') {
-                      m.label == item.label ? m.checked = true : m.checked = false;
+                      m.checked = m.label == item.label;
                     }
                   });
                 }

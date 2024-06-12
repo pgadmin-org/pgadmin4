@@ -80,7 +80,7 @@ class IEMessage(IProcessDesc):
 
         replace_next = False
         for arg in _args:
-            if arg and len(arg) >= 2 and arg[:2] == '--':
+            if arg and len(arg) >= 2 and arg.startswith('--'):
                 if arg == '--command':
                     replace_next = True
                 self._cmd += ' ' + arg

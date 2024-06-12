@@ -24,7 +24,7 @@ class EmptySchema extends BaseUISchema {
 }
 
 export function getTableDialogSchema(attributes, isNew, tableNodesDict, colTypes, schemas) {
-  let treeNodeInfo = undefined;
+  let treeNodeInfo;
 
   let columnSchema = new ColumnSchema(
     ()=>{/*This is intentional (SonarQube)*/},

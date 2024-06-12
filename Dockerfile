@@ -70,7 +70,7 @@ FROM alpine:latest AS env-builder
 
 # Install dependencies
 COPY requirements.txt /
-RUN     apk add --no-cache \
+RUN apk add --no-cache \
         make \
         python3 \
         py3-pip && \
@@ -187,7 +187,7 @@ COPY LICENSE /pgadmin4/LICENSE
 COPY DEPENDENCIES /pgadmin4/DEPENDENCIES
 
 # Install runtime dependencies and configure everything in one RUN step
-RUN apk add \
+RUN apk add --no-cache \
         python3 \
         py3-pip \
         postfix \

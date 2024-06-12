@@ -10,7 +10,7 @@
 import * as Node from 'pgbrowser/node';
 import * as SchemaTreeNode from './schema_child_tree_node';
 
-let SchemaChildNode = Node.extend({
+const SchemaChildNode = Node.extend({
   parent_type: ['schema', 'catalog'],
   canDrop: SchemaTreeNode.isTreeItemOfChildOfSchema,
   canDropCascade: SchemaTreeNode.isTreeItemOfChildOfSchema,

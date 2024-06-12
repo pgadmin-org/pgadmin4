@@ -72,7 +72,7 @@ class RestoreMessage(IProcessDesc):
             return ''
 
         for arg in _args:
-            if arg and len(arg) >= 2 and arg[:2] == '--':
+            if arg and len(arg) >= 2 and arg.startswith('--'):
                 self.cmd += ' ' + arg
             else:
                 self.cmd += cmd_arg(arg)

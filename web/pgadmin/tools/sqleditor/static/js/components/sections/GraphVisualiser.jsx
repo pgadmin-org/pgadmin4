@@ -14,7 +14,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -26,7 +26,6 @@ import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
   LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
-import { useTheme } from '@mui/material';
 import { getChartColor } from '../../../../../../static/js/utils';
 
 const StyledBox = styled(Box)(({theme}) => ({

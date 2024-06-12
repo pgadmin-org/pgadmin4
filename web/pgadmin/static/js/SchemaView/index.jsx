@@ -103,14 +103,11 @@ function isValueEqual(val1, val2) {
   /* If the orig value was null and new one is empty string, then its a "no change" */
   /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
   /* If the orig value is undefined or null and new value is boolean false "no change" */
-  if (_.isEqual(val1, val2)
+  return (_.isEqual(val1, val2)
   || ((val1 === null || _.isUndefined(val1)) && val2 === '')
   || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
   || (attrDefined ? (!_.isObject(val1) && _.isEqual(val1.toString(), val2.toString())) : false)
-  ) {
-    return true;
-  }
-  return false;
+  );
 }
 
 /* Compare two objects */
@@ -144,7 +141,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
         if(_.isNull(change) && parseChanges.depth === 0) {
           change = '';
         }
-        return levelChanges[id] = change;
+        levelChanges[id] = change;
       }
     };
 

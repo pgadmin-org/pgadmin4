@@ -273,7 +273,7 @@ export function checkClusternameAvailbility(clusterName){
         resolve(res.data);
       }
     }).catch((error) => {
-      reject(gettext(`Error while checking server name availability with Microsoft Azure: ${error.response.data.errormsg}`));
+      reject(new Error(gettext(`Error while checking server name availability with Microsoft Azure: ${error.response.data.errormsg}`)));
     });
   });
 }

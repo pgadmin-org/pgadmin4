@@ -189,7 +189,7 @@ export default function MacrosDialog({onClose, onSave}) {
       formType={'dialog'}
       getInitData={()=>{
         if(macrosErr) {
-          return Promise.reject(macrosErr);
+          return Promise.reject(new Error(macrosErr));
         }
         return Promise.resolve({macro: userMacrosData.filter((m)=>Boolean(m.name))});
       }}

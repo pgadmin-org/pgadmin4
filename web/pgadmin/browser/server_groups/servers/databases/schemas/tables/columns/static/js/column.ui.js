@@ -587,7 +587,7 @@ export default class ColumnSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    let msg = undefined;
+    let msg;
 
     if (!_.isUndefined(state.cltype) && !isEmptyString(state.attlen)) {
       // Validation for Length field

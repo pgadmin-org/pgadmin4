@@ -758,7 +758,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             );
           });
           if(existIdx > -1) {
-            reject(gettext('Connection with this configuration already present.'));
+            reject(new Error(gettext('Connection with this configuration already present.')));
             return;
           }
           updateQueryToolConnection(connectionData, true)

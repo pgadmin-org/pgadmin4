@@ -106,14 +106,14 @@ const DiskStatsTable = (props) => {
     <Table classNameRoot='Storage-tableWhiteSpace'>
       <thead>
         <tr>
-          {tableHeader.map((item, index) => (
-            <th key={index}>{item.header}</th>
+          {tableHeader.map((item) => (
+            <th key={item.header}>{item.header}</th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
-          <tr key={index}>
+        {data.map((item) => (
+          <tr key={item.file_system_type + item.mount_point}>
             {tableHeader.map((header, id) => (
               <td key={header.accessorKey+'-'+id}>{item[header.accessorKey]}</td>
             ))}

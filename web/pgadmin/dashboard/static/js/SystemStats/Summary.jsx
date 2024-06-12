@@ -54,8 +54,8 @@ const SummaryTable = (props) => {
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
-          <tr key={index}>
+        {data.map((item) => (
+          <tr key={item.name}>
             <td>{item.name}</td>
             <td>{item.value}</td>
           </tr>

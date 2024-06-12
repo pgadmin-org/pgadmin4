@@ -336,7 +336,7 @@ class Driver(BaseDriver):
             return True
         # certain types should not be quoted even though it contains a space.
         # Evilness.
-        elif for_types and value[-2:] == "[]":
+        elif for_types and value.endswith('[]'):
             val_noarray = value[:-2]
 
         if for_types and val_noarray.lower() in [

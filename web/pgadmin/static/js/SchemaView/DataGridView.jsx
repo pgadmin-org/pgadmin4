@@ -601,7 +601,7 @@ export default function DataGridView({
             <PgReactTableBody>
               {rows.map((row, i) => {
                 return <PgReactTableRow key={row.index}>
-                  <DataTableRow index={i} key={i} row={row} totalRows={rows.length} isResizing={isResizing}
+                  <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
                     schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
                     moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}
                   />

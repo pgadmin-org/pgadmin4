@@ -11,7 +11,7 @@ let getWindowOpener = (opener) => {
   return opener.opener?.pgAdmin ? getWindowOpener(opener.opener) : opener;
 };
 
-let pgWindow = function() {
+const pgWindow = function() {
   let localPgWindow = null;
   try {
     if(window.opener?.pgAdmin) {

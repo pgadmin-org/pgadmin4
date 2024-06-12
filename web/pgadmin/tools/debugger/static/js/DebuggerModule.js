@@ -269,7 +269,7 @@ export default class DebuggerModule {
   }
 
   getUrl(_d, newTreeInfo, trans_id) {
-    let baseUrl = undefined;
+    let baseUrl;
     if (_d._type == 'function' || _d._type == 'edbfunc') {
       baseUrl = url_for(
         'debugger.initialize_target_for_function', {
