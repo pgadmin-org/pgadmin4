@@ -282,7 +282,8 @@ Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
-  Currently we support Standard, Dark and High Contrast theme.
+  Currently we support Standard, Dark and High Contrast and System theme. Selecting System option will follow
+  your computer's settings.
 
 The Paths Node
 **************

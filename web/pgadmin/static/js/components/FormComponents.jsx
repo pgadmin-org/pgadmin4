@@ -1211,8 +1211,8 @@ export function FormInputSelectThemes({ hasError, label, className, helpMessage,
   const cid = _.uniqueId('c');
   const helpid = `h${cid}`;
   return (
-    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
-      <SelectThemes cid={cid} helpid={helpid} onChange={onChange} {...props} />
+    <FormInput label={label} error={hasError} className={className}  testcid={testcid} labelTooltip={labelTooltip}>
+      <SelectThemes cid={cid} helpid={helpid} helpMessage={helpMessage} onChange={onChange} {...props} />
     </FormInput>
   );
 }

@@ -5,9 +5,9 @@ from pgadmin.utils.preferences import Preferences
 
 def get_all_themes():
     all_themes = {
-        "standard": {
-            "disp_name": "Standard",
-            "preview_img": "standard_preview.png"
+        "light": {
+            "disp_name": "Light",
+            "preview_img": "light_preview.png"
         },
         "dark": {
             "disp_name": "dark",
@@ -16,6 +16,9 @@ def get_all_themes():
         "high_contrast": {
             "disp_name": "high_contrast",
             "preview_img": "high_contrast_preview.png"
+        },
+        "system": {
+            "disp_name": "system"
         },
     }
     return all_themes
