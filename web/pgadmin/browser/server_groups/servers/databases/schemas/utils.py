@@ -527,7 +527,7 @@ def parse_rule_definition(res):
             condition_part = condition_part_match.group(1)
 
             condition_match = re.search(
-                r"(?:WHERE)?\s+(\([\s\S]*\))\s+(?:DO)?", condition_part)
+                r"(?:WHERE)\s+(\([\s\S]*\))\s+(?:DO)", condition_part)
 
             if condition_match is not None:
                 condition = condition_match.group(1)
@@ -537,7 +537,7 @@ def parse_rule_definition(res):
 
             # Parse data for statements
         statement_match = re.search(
-            r"(?:DO\s+)?(?:INSTEAD\s+)?([\s\S]*)(?:;)?", data_def)
+            r"(?:DO\s+)(?:INSTEAD\s+)?([\s\S]*)(?:;)", data_def)
 
         statement = ''
         if statement_match is not None:
