@@ -29,8 +29,8 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-if sys.version_info < (3, 4):
-    raise RuntimeError('The test suite must be run under Python 3.4 or later.')
+if sys.version_info < (3, 7):
+    raise RuntimeError('The test suite must be run under Python 3.7 or later.')
 
 import builtins
 

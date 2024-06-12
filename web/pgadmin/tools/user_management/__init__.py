@@ -11,7 +11,9 @@
 
 import json
 
-from unicodedata import normalize, is_normalized
+import sys
+if sys.version_info >= (3, 8):
+    from unicodedata import normalize, is_normalized
 
 from flask import render_template, request, \
     Response, abort, current_app, session
@@ -443,6 +445,10 @@ def normalise_password(password):
         'SECURITY_PASSWORD_NORMALIZE_FORM',
         'NFKD'
     )
+
+    # Remove check of Python version once Python 3.7 support ends
+    if sys.version_info < (3, 8):
+        return password
 
     return password if is_normalized(normalise_form, password) else\
         normalize(normalise_form, password)
