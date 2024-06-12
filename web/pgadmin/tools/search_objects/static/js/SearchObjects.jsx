@@ -397,7 +397,7 @@ export default function SearchObjects({nodeData}) {
       <StyledBox>
         <Loader message={loaderText} />
         <Box className='SearchObjects-toolbar'>
-          <InputText type="search" className='SearchObjects-inputSearch' data-label="search" placeholder={gettext('Type at least 3 characters')} value={search} onChange={setSearch} onKeyPress={onEnterPress}/>
+          <InputText type="search" className='SearchObjects-inputSearch' data-label="search" placeholder={gettext('Type at least 3 characters')} value={search} onChange={setSearch} onKeyPress={onEnterPress} autoFocus/>
           <Box sx={{marginLeft: '4px', width: '50%'}}>
             <InputSelect value={type} controlProps={{allowClear: false}} options={typeOptions} onChange={(v)=>setType(v)}/>
           </Box>
