@@ -496,6 +496,8 @@ class ManagePreferences:
                   sqlite_path: Optional[str] = None,
                   ):
         """Set User preferences."""
+        if not pref_options:
+            pref_options = []
 
         if input_file:
             from urllib.parse import unquote
