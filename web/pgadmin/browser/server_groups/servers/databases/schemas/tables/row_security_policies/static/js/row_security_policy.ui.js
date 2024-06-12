@@ -123,6 +123,10 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
           return obj.nodeInfo.server.version >= 100000;
         },
       },
+      {
+        id: 'description', label: gettext('Comment'), type: 'multiline',
+        mode: ['properties', 'create', 'edit'],
+      }
     ];
   }
 }
