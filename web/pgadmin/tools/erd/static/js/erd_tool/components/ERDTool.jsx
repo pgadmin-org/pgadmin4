@@ -141,10 +141,10 @@ export default class ERDTool extends React.Component {
 
     this.eventBus = new EventBus();
 
-    _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
+    _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onChangeColors', 'onHelpClick', 'onDropNode', 'onBeforeUnload', 'onNotationChange',
+      'onChangeColors', 'onDropNode', 'onBeforeUnload', 'onNotationChange',
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -568,16 +568,6 @@ export default class ERDTool extends React.Component {
     this.setState({cardinality_notation: e.value});
   }
 
-  onHelpClick() {
-    let url = url_for('help.static', {'filename': 'erd_tool.html'});
-    if (this.props.pgWindow) {
-      this.props.pgWindow.open(url, 'pgadmin_help');
-    }
-    else {
-      window.open(url, 'pgadmin_help');
-    }
-  }
-
   onLoadDiagram() {
     const params = {
       'supported_types': ['*','pgerd'], // file types allowed
@@ -620,10 +610,6 @@ export default class ERDTool extends React.Component {
       };
       this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
     }
-  }
-
-  onSaveAsDiagram() {
-    this.onSaveDiagram(true);
   }
 
   saveFile(fileName) {
@@ -945,8 +931,6 @@ export default class ERDTool extends React.Component {
   }
 }
 
-//export default withStyles(styles)(ERDTool);
-
 ERDTool.propTypes = {
   params:PropTypes.shape({
     trans_id: PropTypes.number.isRequired,
@@ -965,7 +949,6 @@ ERDTool.propTypes = {
   pgAdmin: PropTypes.object.isRequired,
   panelId: PropTypes.string,
   panelDocker: PropTypes.object,
-  classes: PropTypes.object,
   isTest: PropTypes.bool,
 };
 

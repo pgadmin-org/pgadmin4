@@ -818,7 +818,7 @@ function OptionView({ image, imageUrl, label }) {
   return (
     <Root>
       {image && <span className={'Form-optionIcon ' + image}></span>}
-      {imageUrl && <img style={{height: '20px', marginRight: '4px'}} src={imageUrl} />}
+      {imageUrl && <img style={{height: '20px', marginRight: '4px'}} src={imageUrl} alt="" />}
       <span>{label}</span>
     </Root>
   );

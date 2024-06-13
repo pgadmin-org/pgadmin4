@@ -60,7 +60,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self._update_preferences()
         db_id = test_utils.create_database(self.server, self.database_name)
         if not db_id:
-            self.assertTrue(False, "Database {} is not "
+            self.assertEqual(0, 1, "Database {} is not "
                                    "created".format(self.database_name))
         self.page.add_server(self.server)
 

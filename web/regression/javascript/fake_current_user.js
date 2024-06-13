@@ -7,13 +7,6 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-// define(function () {
-//   return {
-//     'id': 'pgadmin4@pgadmin.org',
-//     'current_auth_source': 'internal'
-//   };
-// });
-
 module.exports = {
   'id': 'pgadmin4@pgadmin.org',
   'current_auth_source': 'internal'

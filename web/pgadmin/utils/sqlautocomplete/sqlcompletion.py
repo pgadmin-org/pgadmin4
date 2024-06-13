@@ -148,7 +148,7 @@ def suggest_type(full_text, text_before_cursor):
     return suggest_based_on_last_token(stmt.last_token, stmt)
 
 
-named_query_regex = re.compile(r"^\s*\\ns\s+[A-z0-9\-_]+\s+")
+named_query_regex = re.compile(r"^\s*\\ns\s+[A-z0-9\-]+\s+")
 
 
 def _strip_named_query(txt):
@@ -163,7 +163,7 @@ def _strip_named_query(txt):
     return txt
 
 
-function_body_pattern = re.compile(r"(\$.*?\$)([\s\S]*?)\1", re.M)
+function_body_pattern = re.compile(r"(\$[^$]*\$)([\s\S]*?)\1", re.M)
 
 
 def _find_function_body(text):

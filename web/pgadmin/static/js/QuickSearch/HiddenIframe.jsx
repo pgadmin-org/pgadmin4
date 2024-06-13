@@ -17,6 +17,7 @@ export default function HiddenIframe({id, srcURL, onLoad}) {
     <iframe
       id={id}
       src={srcURL}
+      title=" "
       onLoad={onLoad}
       width={'20'}
       height={'20'}

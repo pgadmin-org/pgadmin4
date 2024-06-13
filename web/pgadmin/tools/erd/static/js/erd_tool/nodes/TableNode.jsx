@@ -169,7 +169,7 @@ export class TableNodeModel extends DefaultNodeModel {
 function RowIcon({icon}) {
   return (
     <div style={{padding: '0rem 0.125rem'}}>
-      <img src={icon} crossOrigin="anonymous"/>
+      <img src={icon} alt="" crossOrigin="anonymous"/>
     </div>
   );
 }
@@ -275,7 +275,7 @@ export class TableNodeWidget extends React.Component {
     if(col.attlen) {
       cltype += '('+ col.attlen + (col.attprecision ? ',' + col.attprecision : '') +')';
     }
-    
+
     return (
       <Box className='TableNode-columnSection' key={col.attnum} data-test="column-row">
         <Box marginRight="auto" padding="0" minHeight="0" display="flex" alignItems="center">
@@ -364,8 +364,7 @@ export class TableNodeWidget extends React.Component {
 
 TableNodeWidget.propTypes = {
   node: PropTypes.instanceOf(TableNodeModel),
-  engine: PropTypes.instanceOf(DiagramEngine),
-  classes: PropTypes.object,
+  engine: PropTypes.instanceOf(DiagramEngine)
 };
 
 export class TableNodeFactory extends AbstractReactFactory {

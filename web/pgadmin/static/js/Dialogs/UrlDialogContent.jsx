@@ -23,7 +23,7 @@ export default function UrlDialogContent({ url, helpFile, onClose }) {
   return (
     <ModalContent>
       <Box flexGrow="1">
-        <iframe src={url} width="100%" height="100%" onLoad={(e)=>{
+        <iframe src={url} title=" " width="100%" height="100%" onLoad={(e)=>{
           e.target?.contentWindow?.focus();
         }}/>
       </Box>

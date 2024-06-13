@@ -54,7 +54,6 @@ class StartRunningQuery:
         can_edit = False
         can_filter = False
         notifies = None
-        trans_status = None
         status = -1
         result = None
         if transaction_object is not None and session_obj is not None:
@@ -103,8 +102,6 @@ class StartRunningQuery:
 
             # Get the notifies
             notifies = conn.get_notifies()
-            trans_status = conn.transaction_status()
-
         else:
             status = False
             result = gettext(
@@ -161,10 +158,10 @@ class StartRunningQuery:
                     self.logger.error(e)
                     return internal_server_error(errormsg=str(e))
 
-        _thread = pgAdminThread(target=asyn_exec_query,
-                                args=(conn, sql, trans_obj, is_rollback_req,
-                                      current_app._get_current_object())
-                                )
+        _thread = QueryThread(target=asyn_exec_query,
+                              args=(conn, sql, trans_obj, is_rollback_req,
+                                    current_app._get_current_object())
+                              )
         _thread.start()
         _native_id = _thread.native_id if hasattr(_thread, 'native_id'
                                                   ) else _thread.ident
@@ -215,7 +212,7 @@ class StartRunningQuery:
         return grid_data[str(transaction_id)]
 
 
-class pgAdminThread(Thread):
+class QueryThread(Thread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.app = current_app._get_current_object()

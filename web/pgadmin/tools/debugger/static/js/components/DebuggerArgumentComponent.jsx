@@ -315,16 +315,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     let myObj = [];
     for (let i = 0; i < argType.length; i++) {
       let useDefValue = checkIsDefault(defValList[i]);
-      if (debuggerInfo['proargmodes'] == null) {
-        myObj.push({
-          'name': myargname[i],
-          'type': argType[i],
-          'use_default': useDefValue,
-          'default_value': defValList[i],
-          'disable_use_default': defValList[i] == DEBUGGER_ARGS.NO_DEFAULT_VALUE,
-        });
-      } else if (argMode && (argMode[i] == 'i' || argMode[i] == 'b' ||
-          (isEdbProc && argMode[i] == 'o'))) {
+      if (debuggerInfo['proargmodes'] == null || (argMode?.[i] == 'i' || argMode?.[i] == 'b' || (isEdbProc && argMode?.[i] == 'o'))) {
         myObj.push({
           'name': myargname[i],
           'type': argType[i],

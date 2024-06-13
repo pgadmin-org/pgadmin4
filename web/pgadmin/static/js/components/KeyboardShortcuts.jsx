@@ -84,7 +84,7 @@ export default function KeyboardShortcuts({ value, onChange, fields, name }) {
       {hasKeys &&
       <>
         <ToggleButtonGroup value={value?.shift ? ['shift'] : []} onChange={(e, val)=>{
-          onChangeButton('shift', val.length == 0 ? false : true);
+          onChangeButton('shift', val.length != 0 );
         }}>
           <ToggleCheckButton value="shift" label={gettext('Shift')} selected={value?.shift} />
         </ToggleButtonGroup>
@@ -93,7 +93,7 @@ export default function KeyboardShortcuts({ value, onChange, fields, name }) {
           {isMac() && <ToggleCheckButton value="ctrl_is_meta" label={gettext('Cmd')} selected={ctrlValue == 'ctrl_is_meta'} />}
         </ToggleButtonGroup>
         <ToggleButtonGroup value={value?.alt ? ['alt'] : []} onChange={(e, val)=>{
-          onChangeButton('alt', val.length == 0 ? false : true);
+          onChangeButton('alt', val.length != 0);
         }}>
           <ToggleCheckButton value="alt" label={isMac() ? gettext('Option') : gettext('Alt')} selected={value?.alt} />
         </ToggleButtonGroup>

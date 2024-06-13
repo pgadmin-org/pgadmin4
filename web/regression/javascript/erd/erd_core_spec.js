@@ -190,8 +190,8 @@ describe('ERDCore', ()=>{
 
     it('serialize', ()=>{
       let retVal = erdCoreObj.serialize();
-      expect(Object.prototype.hasOwnProperty.call(retVal,'version')).toBeTruthy();
-      expect(Object.prototype.hasOwnProperty.call(retVal,'data')).toBeTruthy();
+      expect(Object.hasOwn(retVal,'version')).toBeTruthy();
+      expect(Object.hasOwn(retVal,'data')).toBeTruthy();
       expect(erdEngine.getModel().serialize).toHaveBeenCalled();
     });
 

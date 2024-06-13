@@ -13,7 +13,7 @@ import { isEmptyString } from 'sources/validators';
 import pgAdmin from 'sources/pgadmin';
 
 class AzureCredSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues = {}, eventBus) {
+  constructor(eventBus, fieldOptions = {}, initValues = {}) {
     super({
       oid: null,
       auth_type: 'interactive_browser_credential',

@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import ReactDataGrid, { Row } from 'react-data-grid';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -108,7 +108,7 @@ export function CustomRow({inTest=false, ...props}) {
     }
   }, [props.selectedCellIdx]);
   if(inTest) {
-    return <div data-test='test-div' tabIndex={0} onKeyDown={handleKeyDown}></div>;
+    return <div data-test='test-div' tabIndex={-1} onKeyDown={handleKeyDown}></div>;
   }
   const onRowClick = (...args)=>{
     gridUtils.onItemClick?.(props.rowIdx);
@@ -135,8 +135,9 @@ export default function PgReactDataGrid({gridRef, className, hasSelectColumn=tru
   hasSelectColumn && finalClassName.push('ReactGrid-hasSelectColumn');
   props.enableCellSelect && finalClassName.push('ReactGrid-cellSelection');
   finalClassName.push(className);
+  const valObj = useMemo(() => ({onItemEnter, onItemSelect, onItemClick}), [onItemEnter, onItemSelect, onItemClick]);
   return (
-    <GridContextUtils.Provider value={{onItemEnter, onItemSelect, onItemClick}}>
+    <GridContextUtils.Provider value={valObj}>
       <StyledReactDataGrid
         ref={gridRef}
         className={finalClassName.join(' ')}

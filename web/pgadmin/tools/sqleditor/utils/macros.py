@@ -87,13 +87,12 @@ def get_user_macros():
     data = []
 
     for m in macros:
-        key_label = (
-            'Ctrl + ' + str(m[5])
-            if m[4] is True
-            else 'Alt + ' + str(m[5])
-            if m[5] is not None
-            else ''
-        )
+        key_label = ''
+        if m[4] is True:
+            key_label = 'Ctrl + ' + str(m[5])
+        elif m[5] is not None:
+            key_label = 'Alt + ' + str(m[5])
+
         data.append({'id': m[0], 'name': m[1], 'mid': m[2], 'key': m[5],
                      'key_label': key_label, 'alt': 1 if m[3] else 0,
                      'control': 1 if m[4] else 0, 'key_code': m[6],

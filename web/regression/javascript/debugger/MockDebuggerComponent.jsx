@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import {DebuggerContext, DebuggerEventsContext} from '../../../pgadmin/tools/debugger/static/js/components/DebuggerComponent';
@@ -15,8 +15,9 @@ import { withBrowser } from '../genericFunctions';
 
 function MockDebuggerComponent({value, eventsvalue, children}) {
   const containerRef = useRef();
+  const valObj = useMemo(() => ({...value, containerRef: containerRef}), [value]);
   return (
-    <DebuggerContext.Provider value={{...value, containerRef: containerRef}}>
+    <DebuggerContext.Provider value={valObj}>
       <DebuggerEventsContext.Provider value={eventsvalue}>
         <div ref={containerRef} style={{width: '100%', height: '100%'}}>
           {children}

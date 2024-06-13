@@ -193,10 +193,7 @@ let webpackShimConfig = {
   },
   isBrowserNode: function(module) {
     if (module.rawRequest === undefined) { return false; }
-    if(module.rawRequest.startsWith('pgadmin.node')) {
-      return true;
-    }
-    return false;
+    return module.rawRequest.startsWith('pgadmin.node');
   },
   matchModules: function(module, match_modules) {
     if (module.rawRequest === undefined) { return false; }

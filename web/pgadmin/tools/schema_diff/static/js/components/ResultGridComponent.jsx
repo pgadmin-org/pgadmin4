@@ -35,7 +35,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   fontSize: '13px',
   '--rdg-background-color': theme.palette.default.main,
   '--rdg-selection-color': theme.palette.primary.main,
-  '& .ResultGridComponent-gridPanel': { 
+  '& .ResultGridComponent-gridPanel': {
     '--rdg-background-color': theme.palette.default.main + ' !important',
     '&.ResultGridComponent-grid': {
       fontSize: '13px',
@@ -256,8 +256,7 @@ CellExpanderFormatter.propTypes = {
   isCellSelected: PropTypes.bool,
   expanded: PropTypes.bool,
   onCellExpand: PropTypes.func,
-  filterParams: PropTypes.array,
-  classes: PropTypes.object
+  filterParams: PropTypes.array
 };
 
 

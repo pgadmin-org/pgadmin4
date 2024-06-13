@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { useForceUpdate } from './custom_hooks';
 
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -39,7 +40,7 @@ const StyledBox = styled(Box)(({theme}) => ({
     alignItems: 'center',
     gap: '2px',
     marginLeft: '16px',
-  
+
     '& .MuiButton-containedPrimary': {
       padding: '1px 8px',
     }
@@ -59,17 +60,15 @@ const StyledBox = styled(Box)(({theme}) => ({
 
 export default function AppMenuBar() {
 
-  const [,setRefresh] = useState(false);
+  const forceUpdate = useForceUpdate();
   const pgAdmin = usePgAdmin();
-
-  const reRenderMenus = ()=>setRefresh((prev)=>!prev);
 
   useEffect(()=>{
     pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(()=>{
-      reRenderMenus();
+      forceUpdate();
     }, 100));
     pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', _.debounce(()=>{
-      reRenderMenus();
+      forceUpdate();
     }, 100));
   }, []);
 
@@ -85,7 +84,7 @@ export default function AppMenuBar() {
       onClick={()=>{
         menuItem.callback();
         if(hasCheck) {
-          reRenderMenus();
+          forceUpdate();
         }
       }}
       hasCheck={hasCheck}

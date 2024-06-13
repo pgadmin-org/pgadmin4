@@ -15,7 +15,7 @@ import { SaveDataIcon, CommitIcon, RollbackIcon, ViewDataIcon } from '../../../.
 import { InputSwitch } from '../../../../../../static/js/components/FormComponents';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
 import { DefaultButton } from '../../../../../../static/js/components/Buttons';
-import { useDelayedCaller } from '../../../../../../static/js/custom_hooks';
+import { useDelayedCaller, useForceUpdate } from '../../../../../../static/js/custom_hooks';
 import Loader from 'sources/components/Loader';
 import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import PropTypes from 'prop-types';
@@ -377,7 +377,7 @@ export function QueryHistory() {
   const eventBus = React.useContext(QueryToolEventsContext);
   const [selectedItemKey, setSelectedItemKey] = React.useState(1);
   const [showInternal, setShowInternal] = React.useState(true);
-  const [, setRefresh] = React.useState(false);
+  const forceUpdate = useForceUpdate();
   const [loaderText, setLoaderText] = React.useState('');
   const selectedEntry = qhu.current.getEntry(selectedItemKey);
   const layoutDocker = useContext(LayoutDockerContext);
@@ -425,7 +425,7 @@ export function QueryHistory() {
         };
       }
       qhu.current.addEntry(h);
-      setRefresh((prev)=>!prev);
+      forceUpdate();
     };
 
     listRef.current?.focus();

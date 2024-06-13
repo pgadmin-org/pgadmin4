@@ -132,9 +132,10 @@ CREATE TABLE public.nonintpkey
             self._perform_test_for_table('nonintpkey', data_local)
         except Exception:
             traceback.print_exc()
-            self.assertTrue(False, 'Exception occurred in run test '
-                                   'Validate Insert, Update operations in '
-                                   'View/Edit data with given test data')
+            self.assertEqual(0, 1,
+                             'Exception occurred in run test Validate '
+                             'Insert, Update operations in View/Edit data with'
+                             ' given test data')
 
     def after(self):
         self.page.remove_server(self.server)

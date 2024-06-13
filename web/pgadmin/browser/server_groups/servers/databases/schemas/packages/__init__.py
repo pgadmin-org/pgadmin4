@@ -825,7 +825,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         if sql is None:
             return None
         start = 0
-        start_position = re.search("\\s+[is|as]+\\s+", sql, flags=re.I)
+        start_position = re.search("\\s+(is|as)+\\s+", sql, flags=re.I)
 
         if start_position:
             start = start_position.start() + 4

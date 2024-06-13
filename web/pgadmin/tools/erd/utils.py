@@ -55,7 +55,8 @@ class ERDTableView(BaseTableView, DataTypeReader):
 
     @BaseTableView.check_precondition
     def traverse_related_tables(self, did=None, sid=None, scid=None,
-                                tid=None, related={}, maxdepth=0, currdepth=0):
+                                tid=None, related=None, maxdepth=0,
+                                currdepth=0):
 
         status, res = \
             BaseTableView.fetch_tables(self, sid, did, scid, tid=tid,
@@ -63,6 +64,9 @@ class ERDTableView(BaseTableView, DataTypeReader):
 
         if not status:
             return status, res
+
+        if related is None:
+            related = list()
 
         related[tid] = res
         # Max depth limit reached

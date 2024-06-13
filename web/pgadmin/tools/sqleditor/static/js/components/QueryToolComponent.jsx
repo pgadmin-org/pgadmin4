@@ -169,7 +169,7 @@ const FIXED_PREF = {
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
   const preferencesStore = usePreferences();
-  const [qtState, _setQtState] = useState({
+  const [qtState, setQtState] = useState({
     preferences: {
       browser: preferencesStore.getPreferencesForModule('browser'),
       sqleditor: {...preferencesStore.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
@@ -211,8 +211,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   });
   const [selectedText, setSelectedText] = useState('');
 
-  const setQtState = (state)=>{
-    _setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
+  const setQtStatePartial = (state)=>{
+    setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
   };
   const isDirtyRef = useRef(false); // usefull when conn change.
   const eventBus = useRef(eventBusObj || (new EventBus()));
@@ -233,12 +233,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     try {
       let {data: respData} = await fetchConnectionStatus(api, qtState.params.trans_id);
       if(respData.data) {
-        setQtState({
+        setQtStatePartial({
           connected: true,
           connection_status: respData.data.status,
         });
       } else {
-        setQtState({
+        setQtStatePartial({
           connected: false,
           connection_status: null,
           connection_status_msg: gettext('An unexpected error occurred - ensure you are logged into the application.')
@@ -249,7 +249,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }
     } catch (error) {
       console.error(error);
-      setQtState({
+      setQtStatePartial({
         connected: false,
         connection_status: null,
         connection_status_msg: parseApiError(error),
@@ -320,11 +320,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       api.get(qtState.params.query_url)
         .then((res) => {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, res.data);
-          setQtState({ editor_disabled: false });
+          setQtStatePartial({ editor_disabled: false });
         })
         .catch((err) => {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
-          setQtState({ editor_disabled: true });
+          setQtStatePartial({ editor_disabled: true });
         });
     } else if (qtState.params.sql_id) {
       let sqlValue = localStorage.getItem(qtState.params.sql_id);
@@ -332,9 +332,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
-      setQtState({ editor_disabled: false });
+      setQtStatePartial({ editor_disabled: false });
     } else {
-      setQtState({ editor_disabled: false });
+      setQtStatePartial({ editor_disabled: false });
     }
   };
 
@@ -363,7 +363,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       dbname: selectedConn.database_name
     } : JSON.stringify(qtState.params.sql_filter))
       .then(()=>{
-        setQtState({
+        setQtStatePartial({
           connected: true,
           connected_once: true,
           obtaining_conn: false,
@@ -379,7 +379,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               initializeQueryTool();
             })
             .catch((kberr)=>{
-              setQtState({
+              setQtStatePartial({
                 connected: false,
                 obtaining_conn: false,
               });
@@ -389,14 +389,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           connectServerModal(error.response?.data?.result, (passwordData)=>{
             initializeQueryTool(passwordData.password);
           }, ()=>{
-            setQtState({
+            setQtStatePartial({
               connected: false,
               obtaining_conn: false,
               connection_status_msg: gettext('Not Connected'),
             });
           });
         } else {
-          setQtState({
+          setQtStatePartial({
             connected: false,
             obtaining_conn: false,
           });
@@ -414,7 +414,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, (status)=>{
-      setQtState({connection_status: status});
+      setQtStatePartial({connection_status: status});
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL, ()=>{
@@ -431,7 +431,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, _.debounce((currentTabId)=>{
       /* Focus the appropriate panel on visible */
       if(qtPanelId == currentTabId) {
-        setQtState({is_visible: true});
+        setQtStatePartial({is_visible: true});
 
         if(docker.current.isTabVisible(PANELS.QUERY)) {
           docker.current.focus(PANELS.QUERY);
@@ -441,23 +441,23 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
       } else {
-        setQtState({is_visible: false});
+        setQtStatePartial({is_visible: false});
       }
     }, 100));
 
     /* If the tab or window is not visible, applicable for open in new tab */
     document.addEventListener('visibilitychange', function() {
       if(document.hidden) {
-        setQtState({is_visible: false});
+        setQtStatePartial({is_visible: false});
       } else {
-        setQtState({is_visible: true});
+        setQtStatePartial({is_visible: true});
       }
     });
   }, []);
 
   useEffect(() => usePreferences.subscribe(
     state => {
-      setQtState({preferences: {
+      setQtStatePartial({preferences: {
         browser: state.getPreferencesForModule('browser'),
         sqleditor: {...state.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
         graphs: state.getPreferencesForModule('graphs'),
@@ -550,7 +550,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   useEffect(()=>{
     const fileDone = (fileName, success=true)=>{
       if(success) {
-        setQtState({
+        setQtStatePartial({
           current_file: fileName,
         });
         isDirtyRef.current = false;
@@ -648,7 +648,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     let currConnected = qtState.connected;
 
     const selectConn = (newConnData, connected=false, obtainingConn=true)=>{
-      setQtState((prevQtState)=>{
+      setQtStatePartial((prevQtState)=>{
         let newConnList = [...prevQtState.connection_list];
         /* If new, add to the list */
         if(isNew) {
@@ -687,7 +687,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           if(isNew) {
             selectConn(connectionData);
           }
-          setQtState((prev)=>{
+          setQtStatePartial((prev)=>{
             return {
               params: {
                 ...prev.params,
@@ -807,7 +807,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       id: 'manage-macros',
       title: gettext('Manage Macros'),
       content: <MacrosDialog onSave={(newMacros)=>{
-        setQtState((prev)=>{
+        setQtStatePartial((prev)=>{
           return {
             params: {
               ...prev.params,
@@ -835,7 +835,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       )
         .then(({ data: respData }) => {
           const filteredData = respData.filter(m => Boolean(m.name));
-          setQtState(prev => ({
+          setQtStatePartial(prev => ({
             ...prev,
             params: {
               ...prev.params,
@@ -877,7 +877,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     preferences: qtState.preferences,
     mainContainerRef: containerRef,
     editor_disabled: qtState.editor_disabled,
-    toggleQueryTool: () => setQtState((prev)=>{
+    toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
         params: {
@@ -888,7 +888,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }),
     updateTitle: (title) => {
       setPanelTitle(qtPanelDocker, qtPanelId, title, qtState, isDirtyRef.current);
-      setQtState((prev) => {
+      setQtStatePartial((prev) => {
         // Update connection Title
         let newConnList = [...prev.connection_list];
         newConnList.forEach((conn) => {

@@ -61,7 +61,7 @@ export default function LayoutIframeTab({target, src, children}) {
         if(r) setIframeTarget(r.querySelector('#'+target));
       }} container={document.querySelector('#layout-portal')}>
         {src ?
-          <iframe src={src} id={target} style={{position: 'fixed', border: 0}} />:
+          <iframe src={src} title=" " id={target} style={{position: 'fixed', border: 0}} />:
           <Frame src={src} id={target} style={{position: 'fixed', border: 0}}>
             {children}
           </Frame>

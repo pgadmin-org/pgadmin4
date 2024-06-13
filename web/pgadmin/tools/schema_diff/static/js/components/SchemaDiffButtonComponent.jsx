@@ -78,9 +78,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
   useEffect(() => {
     let isDisableComp = true;
     if (sourceData.sid != null && sourceData.did != null && targetData.sid != null && targetData.did != null) {
-      if ((sourceData.scid != null && targetData.scid == null) || (sourceData.scid == null && targetData.scid != null)) {
-        isDisableComp = true;
-      } else {
+      if (!((sourceData.scid != null && targetData.scid == null) || (sourceData.scid == null && targetData.scid != null))) {
         isDisableComp = false;
       }
     }

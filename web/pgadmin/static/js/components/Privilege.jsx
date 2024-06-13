@@ -120,7 +120,7 @@ export default function Privilege({value, onChange, controlProps}) {
   return (
     <Root>
       <InputText value={textValue} readOnly/>
-      <table className={'Privilege-table priv-table'} tabIndex="0">
+      <table className={'Privilege-table priv-table'} tabIndex="-1">
         {(realVal.length > 1) && <thead>
           <tr>
             <td className='Privilege-tableCell'>

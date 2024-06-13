@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {useRef, useEffect, useState, useCallback, useLayoutEffect} from 'react';
+import React, {useRef, useEffect, useState, useCallback, useLayoutEffect} from 'react';
 import moment from 'moment';
 import { isMac } from './keyboard_shortcuts';
 
@@ -204,4 +204,8 @@ export function useWindowSize() {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
   return size;
+}
+
+export function useForceUpdate() {
+  return React.useReducer(() => ({}), {})[1];
 }

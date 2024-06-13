@@ -165,9 +165,8 @@ export default class CollationSchema extends BaseUISchema {
           else {
             if (actionObj.oldState.is_deterministic) {
               return { is_deterministic: false };
-            } else {
-              return { is_deterministic: true };
             }
+            return { is_deterministic: true };
           }
         },
       },

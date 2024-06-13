@@ -77,8 +77,6 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
                 )
             )
 
-            assert True, "Keyboard shortcut change is unsuccessful."
-
             print("OK", file=sys.stderr)
 
     def _update_preferences(self):

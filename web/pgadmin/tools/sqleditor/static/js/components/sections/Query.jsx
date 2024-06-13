@@ -136,11 +136,11 @@ export default function Query({onTextSelect}) {
     }
   };
 
-  const triggerExecution = (executeCursor=false, explainObject, macroSQL)=>{
+  const triggerExecution = (explainObject, macroSQL, executeCursor=false)=>{
     if(queryToolCtx.params.is_query_tool) {
       let external = null;
       let query = editor.current?.getSelection();
-      if(!_.isUndefined(macroSQL)) {
+      if(!_.isEmpty(macroSQL)) {
         const regex = /\$SELECTION\$/gi;
         query =  macroSQL.replace(regex, query);
         external = true;
@@ -445,7 +445,7 @@ export default function Query({onTextSelect}) {
         text={query}
         onContinue={(formData)=>{
           preferencesStore.setPreference(formData);
-          eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION,true);
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, '', true);
         }}
         onClose={()=>{
           closeModal?.();

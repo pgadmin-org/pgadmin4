@@ -25,6 +25,6 @@ export class FakeModel {
   }
 
   toJSON() {
-    return Object.assign({}, this.values);
+    return {...this.values};
   }
 }
