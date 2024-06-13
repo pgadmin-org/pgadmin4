@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box, Portal } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, {useContext, useLayoutEffect, useRef} from 'react';
+import React, {useContext, useLayoutEffect, useRef, useEffect} from 'react';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,6 +18,7 @@ import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
+import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 
 const StyledEditorDiv = styled(Box)(({ theme }) => ({
@@ -108,6 +109,53 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
   },
 }));
 
+const ResizableDiv = ({columnIndex, children, ...otherProps}) => {
+
+  const editorRef = React.useRef(null);
+  const {getCellElement} = useContext(RowInfoContext);
+
+  useEffect(()=>{
+    // Function to check if element is going outsied browser window on resize
+    // and set the height/width to keep it within the browser window.
+    const resizeEditor = () => {
+      const { innerHeight, innerWidth } = window;
+      const box = editorRef.current.getBoundingClientRect();
+      let currentHeight = parseInt(editorRef.current.firstChild.style.height);
+      let heightDiff = parseInt(box.bottom) - innerHeight;
+      let currentWidth = parseInt(editorRef.current.firstChild.style.width);
+      let widthDiff = parseInt(box.right) - innerWidth;
+
+      if (box.bottom > innerHeight) {
+        editorRef.current.firstChild.style.height = `${currentHeight - heightDiff - 20}px`;
+      }
+      if (box.right > innerWidth) {
+        editorRef.current.firstChild.style.width = `${currentWidth - widthDiff - 20}px`;
+      }      
+    };
+    
+    editorRef.current.addEventListener('mousedown', () => {
+      document.addEventListener('mouseup', resizeEditor, {once: true});
+    });
+
+    return () => document.removeEventListener('mouseup', resizeEditor);
+
+  },[]);
+
+  return (
+    <StyledEditorDiv ref={(ele)=>{
+      editorRef.current = ele;
+      setEditorPosition(getCellElement(columnIndex), ele, '.rdg', 12);
+    }} {...otherProps}>
+      {children}
+    </StyledEditorDiv>
+  );
+};
+ResizableDiv.displayName = 'ResizableDiv';
+ResizableDiv.propTypes = {
+  children: CustomPropTypes.children,
+  columnIndex: PropTypes.number
+};
+
 function autoFocusAndSelect(input) {
   input?.focus();
   input?.select();
@@ -178,7 +226,6 @@ export function TextEditor({row, column, onRowChange, onClose}) {
 
   const value = row[column.key] ?? '';
   const [localVal, setLocalVal] = React.useState(value);
-  const {getCellElement} = useContext(RowInfoContext);
   const pgAdmin = usePgAdmin();
 
   const onChange = React.useCallback((e)=>{
@@ -201,9 +248,8 @@ export function TextEditor({row, column, onRowChange, onClose}) {
 
   return (
     <Portal container={document.body}>
-      <StyledEditorDiv ref={(ele)=>{
-        setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
-      }} className='Editors-textEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
+      <ResizableDiv columnIndex={column.idx}
+        className='Editors-textEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
@@ -215,7 +261,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
             </PrimaryButton>
           }
         </Box>
-      </StyledEditorDiv>
+      </ResizableDiv>
     </Portal>
   );
 }
@@ -330,7 +376,6 @@ CheckboxEditor.propTypes = EditorPropTypes;
 
 export function JsonTextEditor({row, column, onRowChange, onClose}) {
 
-  const {getCellElement} = useContext(RowInfoContext);
   const pgAdmin = usePgAdmin();
 
   const value = React.useMemo(()=>{
@@ -373,9 +418,8 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   };
   return (
     <Portal container={document.body}>
-      <StyledEditorDiv ref={(ele)=>{
-        setEditorPosition(getCellElement(column.idx), ele, '.rdg', 12);
-      }} className='Editors-jsonEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
+      <ResizableDiv columnIndex={column.idx}
+        className='Editors-jsonEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <JsonEditor
           value={localVal}
           options={{
@@ -394,7 +438,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
             </PrimaryButton>
           }
         </Box>
-      </StyledEditorDiv>
+      </ResizableDiv>
     </Portal>
   );
 }
