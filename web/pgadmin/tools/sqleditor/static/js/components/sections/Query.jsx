@@ -16,7 +16,7 @@ import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import gettext from 'sources/gettext';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
-import { checkTrojanSource, isShortcutValue, toCodeMirrorKey } from '../../../../../../static/js/utils';
+import { checkTrojanSource, isShortcutValue, parseKeyEventValue, parseShortcutValue } from '../../../../../../static/js/utils';
 import { parseApiError } from '../../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 import ConfirmPromotionContent from '../dialogs/ConfirmPromotionContent';
@@ -470,26 +470,33 @@ export default function Query({onTextSelect}) {
     ()=>{
       // omit CM internal shortcuts
       const queryToolPref = _.omit(queryToolCtx.preferences.sqleditor, ['indent', 'unindent', 'comment']);
-      return Object.values(queryToolPref)
+      const queryToolShortcuts = Object.values(queryToolPref)
         .filter((p)=>isShortcutValue(p))
-        .map((p)=>({
-          key: toCodeMirrorKey(p), run: (_v, e)=>{
-            queryToolCtx.mainContainerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
-              which: e.which,
-              keyCode: e.keyCode,
-              altKey: e.altKey,
-              shiftKey: e.shiftKey,
-              ctrlKey: e.ctrlKey,
-              metaKey: e.metaKey,
-            }));
-            if(toCodeMirrorKey(p) == 'Mod-k') {
+        .map((p)=>parseShortcutValue(p));
+
+      return [{
+        any: (_v, e)=>{
+          const eventStr = parseKeyEventValue(e);
+          if(queryToolShortcuts.includes(eventStr)) {
+            if((isMac() && eventStr == 'meta+k') || eventStr == 'ctrl+k') {
               eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
+            } else {
+              queryToolCtx.mainContainerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
+                which: e.which,
+                keyCode: e.keyCode,
+                altKey: e.altKey,
+                shiftKey: e.shiftKey,
+                ctrlKey: e.ctrlKey,
+                metaKey: e.metaKey,
+              }));
             }
+            e.preventDefault();
+            e.stopPropagation();
             return true;
-          },
-          preventDefault: true,
-          stopPropagation: true,
-        }));
+          }
+          return false;
+        },
+      }];
     },
     [queryToolCtx.preferences]
   );

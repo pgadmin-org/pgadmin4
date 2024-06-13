@@ -23,8 +23,22 @@ export function parseShortcutValue(obj) {
   }
   if (obj.alt) { shortcut += 'alt+'; }
   if (obj.shift) { shortcut += 'shift+'; }
-  if (obj.control) { shortcut += 'ctrl+'; }
+  if (isMac() && obj.ctrl_is_meta) { shortcut += 'meta+'; }
+  else if (obj.control) { shortcut += 'ctrl+'; }
   shortcut += obj?.key.char?.toLowerCase();
+  return shortcut;
+}
+
+export function parseKeyEventValue(e) {
+  let shortcut = '';
+  if(!e) {
+    return null;
+  }
+  if (e.altKey) { shortcut += 'alt+'; }
+  if (e.shiftKey) { shortcut += 'shift+'; }
+  if (isMac() && e.metaKey) { shortcut += 'meta+'; }
+  else if (e.ctrlKey) { shortcut += 'ctrl+'; }
+  shortcut += e.key.toLowerCase();
   return shortcut;
 }
 
