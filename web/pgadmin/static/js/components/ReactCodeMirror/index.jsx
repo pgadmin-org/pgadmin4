@@ -66,25 +66,25 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [showCopy, setShowCopy] = useState(false);
 
   const finalCustomKeyMap = useMemo(()=>[{
-    key: 'Mod-f', run: (_view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    key: 'Mod-f', run: () => {
       setShowFind([false, false]);
       setShowFind([true, false]);
-    }
+    },
+    preventDefault: true,
+    stopPropagation: true,
   }, {
-    key: 'Mod-Alt-f', run: (_view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    key: 'Mod-Alt-f', run: () => {
       setShowFind([false, false]);
       setShowFind([true, true]);
     },
+    preventDefault: true,
+    stopPropagation: true,
   }, {
-    key: 'Mod-l', run: (_view, e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    key: 'Mod-l', run: () => {
       setShowGoto(true);
     },
+    preventDefault: true,
+    stopPropagation: true,
   },
   ...customKeyMap], [customKeyMap]);
 

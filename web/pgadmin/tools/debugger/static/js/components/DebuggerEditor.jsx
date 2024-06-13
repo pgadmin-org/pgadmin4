@@ -20,7 +20,7 @@ import CodeMirror from '../../../../../static/js/components/ReactCodeMirror';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
 import { DebuggerContext, DebuggerEventsContext } from './DebuggerComponent';
 import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
-import { isShortcutValue, toCodeMirrorKey } from '../../../../../static/js/utils';
+import { isShortcutValue, parseKeyEventValue, parseShortcutValue } from '../../../../../static/js/utils';
 
 
 const StyledCodeMirror = styled(CodeMirror)(()=>({
@@ -74,10 +74,15 @@ export default function DebuggerEditor({ getEditor, params }) {
 
   const shortcutOverrideKeys = useMemo(
     ()=>{
-      return Object.values(preferences)
+      // omit CM internal shortcuts
+      const debuggerShortcuts = Object.values(preferences)
         .filter((p)=>isShortcutValue(p))
-        .map((p)=>({
-          key: toCodeMirrorKey(p), run: (_v, e)=>{
+        .map((p)=>parseShortcutValue(p));
+
+      return [{
+        any: (_v, e)=>{
+          const eventStr = parseKeyEventValue(e);
+          if(debuggerShortcuts.includes(eventStr)) {
             debuggerCtx.containerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
               which: e.which,
               keyCode: e.keyCode,
@@ -86,11 +91,13 @@ export default function DebuggerEditor({ getEditor, params }) {
               ctrlKey: e.ctrlKey,
               metaKey: e.metaKey,
             }));
+            e.preventDefault();
+            e.stopPropagation();
             return true;
-          },
-          preventDefault: true,
-          stopPropagation: true,
-        }));
+          }
+          return false;
+        },
+      }];
     },
     [preferences]
   );

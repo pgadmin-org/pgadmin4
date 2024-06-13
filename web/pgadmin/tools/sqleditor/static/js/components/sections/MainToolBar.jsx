@@ -594,7 +594,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={queryToolPref.format_sql}onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}
