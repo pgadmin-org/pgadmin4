@@ -892,6 +892,16 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.sql_font_size = self.preference.register(
+        'Editor', 'indent_new_line',
+        gettext("Auto-indent new line?"), 'boolean', True,
+        category_label=PREF_LABEL_EDITOR,
+        help_str=gettext(
+            'Specifies whether the newly added line using enter key should '
+            'be auto-indented or not'
+        )
+    )
+
     self.expression_width = self.preference.register(
         'editor', 'expression_width',
         gettext("Expression Width"), 'integer', 50,

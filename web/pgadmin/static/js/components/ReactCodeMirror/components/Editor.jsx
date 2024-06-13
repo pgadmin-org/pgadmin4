@@ -36,6 +36,7 @@ import {
   bracketMatching,
   indentUnit,
   foldKeymap,
+  indentService
 } from '@codemirror/language';
 
 import syntaxHighlighting from '../extensions/highlighting';
@@ -46,6 +47,7 @@ import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
 import activeLineExtn from '../extensions/activeLineMarker';
 import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
+import { indentNewLine } from '../extensions/extraStates';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{fontSize: '1.2em'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{fontSize: '1.2em'}} />);
@@ -134,7 +136,15 @@ const defaultExtensions = [
     drop: handleDrop,
     paste: handlePaste,
   }),
-  errorMarkerExtn()
+  errorMarkerExtn(),
+  indentService.of((context, pos) => {
+    if(context.state.facet(indentNewLine)) {
+      const previousLine = context.lineAt(pos, -1);
+      let prevText = previousLine.text.replaceAll('\t', ' '.repeat(context.state.tabSize));
+      return prevText.match(/^\s*/)?.[0].length;
+    }
+    return 0;
+  }),
 ];
 
 export default function Editor({
@@ -310,12 +320,18 @@ export default function Editor({
     );
     if (pref.use_spaces) {
       newConfigExtn.push(
-        indentUnit.of(new Array(pref.tab_size).fill(' ').join('')),
+        indentUnit.of(' '.repeat(pref.tab_size)),
       );
     } else {
       newConfigExtn.push(
         indentUnit.of('\t'),
       );
+    }
+
+    if(pref.indent_new_line) {
+      newConfigExtn.push(indentNewLine.of(true));
+    } else {
+      newConfigExtn.push(indentNewLine.of(false));
     }
 
     if (pref.wrap_code) {
