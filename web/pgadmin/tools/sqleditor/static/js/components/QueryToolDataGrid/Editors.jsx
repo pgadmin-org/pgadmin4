@@ -42,7 +42,7 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
       },
     },
   },
-  '&.Editors-input': {
+  '& .Editors-input': {
     appearance: 'none',
     width: '100%',
     height: '100%',
@@ -312,7 +312,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
     }
   };
   return (
-    <StyledEditorDiv>
+    <StyledEditorDiv height={'100%'}>
       <input
         className='Editors-input'
         ref={autoFocusAndSelect}

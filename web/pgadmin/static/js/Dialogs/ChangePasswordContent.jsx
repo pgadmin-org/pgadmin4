@@ -1,15 +1,8 @@
-import { styled } from '@mui/material/styles';
 import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import BaseUISchema from '../SchemaView/base_schema.ui';
 import SchemaView from '../SchemaView';
-
-const StyledSchemaView = styled(SchemaView )(({theme}) => ({
-  '& .ChangePasswordContent-root': {
-    ...theme.mixins.tabPanel,
-  }
-}));
 
 class ChangePasswordSchema extends BaseUISchema {
   constructor(user, isPgpassFileUsed, hasCsrfToken=false, showUser=true) {
@@ -72,7 +65,7 @@ class ChangePasswordSchema extends BaseUISchema {
 
 export default function ChangePasswordContent({getInitData=() => { /*This is intentional (SonarQube)*/ },
   onSave, onClose, hasCsrfToken=false, showUser=true}) {
-  return <StyledSchemaView
+  return <SchemaView
     formType={'dialog'}
     getInitData={getInitData}
     schema={new ChangePasswordSchema('', false, hasCsrfToken, showUser)}
@@ -86,7 +79,6 @@ export default function ChangePasswordContent({getInitData=() => { /*This is int
     disableSqlHelp={true}
     disableDialogHelp={true}
     isTabView={false}
-    formClassName='ChangePasswordContent-root'
   />;
 }
 ChangePasswordContent.propTypes = {

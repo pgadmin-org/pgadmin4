@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import Table from '../../../../static/js/components/Table';
 
-const StyledBox = styled(Box)(() =>
+const StyledBox = styled(Box)(({theme}) =>
   ({
     height: '100%',
     '& .ImportExportServers-noOverflow': {
@@ -45,6 +45,9 @@ const StyledBox = styled(Box)(() =>
       '& .ImportExportServers-noteContainer': {
         marginTop: '5px',
       }
+    },
+    '& .ImportExportServers-Background':{
+      backgroundColor: theme.palette.background.default + ' !important',
     }
   }));
 
@@ -215,6 +218,7 @@ export default function ImportExportServers({onClose}) {
             schema={new ImportExportSelectionSchema()}
             showFooter={false}
             isTabView={false}
+            formClassName='ImportExportServers-Background'
             onDataChange={(isChanged, changedData) => {
               setSelectionFormData(changedData);
             }}

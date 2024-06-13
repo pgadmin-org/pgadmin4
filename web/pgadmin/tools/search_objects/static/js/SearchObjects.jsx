@@ -18,11 +18,16 @@ import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
-import { ModalContent } from '../../../../static/js/components/ModalContent';
 import { FormFooterMessage, InputSelect, InputText, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../static/js/components/PgReactDataGrid';
 
 const StyledBox = styled(Box)(({theme}) => ({
+  display:'flex',
+  flexGrow: '1',
+  flexDirection:'column',
+  position:'relative',
+  overflow:'hidden',
+  height: '100%',
   '& .SearchObjects-toolbar': {
     padding: '4px',
     display: 'flex',
@@ -41,7 +46,7 @@ const StyledBox = styled(Box)(({theme}) => ({
     alignItems: 'center',
     borderTop: `1px solid ${theme.otherVars.inputBorderColor}`,
   },
-  '&.SearchObjects-footer': {
+  '& .SearchObjects-footer': {
     borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
     padding: '0.5rem',
     display: 'flex',
@@ -393,46 +398,44 @@ export default function SearchObjects({nodeData}) {
   };
 
   return (
-    <ModalContent>
-      <StyledBox>
-        <Loader message={loaderText} />
-        <Box className='SearchObjects-toolbar'>
-          <InputText type="search" className='SearchObjects-inputSearch' data-label="search" placeholder={gettext('Type at least 3 characters')} value={search} onChange={setSearch} onKeyPress={onEnterPress} autoFocus/>
-          <Box sx={{marginLeft: '4px', width: '50%'}}>
-            <InputSelect value={type} controlProps={{allowClear: false}} options={typeOptions} onChange={(v)=>setType(v)}/>
-          </Box>
-          <PrimaryButton style={{width: '120px'}} data-test="search" className='SearchObjects-Btnmargin' startIcon={<SearchRoundedIcon />}
-            onClick={onSearch} disabled={search.length < 3}>{gettext('Search')}</PrimaryButton>
+    <StyledBox>
+      <Loader message={loaderText} />
+      <Box className='SearchObjects-toolbar'>
+        <InputText type="search" className='SearchObjects-inputSearch' data-label="search" placeholder={gettext('Type at least 3 characters')} value={search} onChange={setSearch} onKeyPress={onEnterPress} autoFocus/>
+        <Box sx={{marginLeft: '4px', width: '50%'}}>
+          <InputSelect value={type} controlProps={{allowClear: false}} options={typeOptions} onChange={(v)=>setType(v)}/>
         </Box>
-        <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
-          <PgReactDataGrid
-            id="searchobjects"
-            className='SearchObjects-grid'
-            hasSelectColumn={false}
-            columns={columns}
-            rows={sortedItems}
-            defaultColumnOptions={{
-              enableSorting: true,
-              enableResizing: true
-            }}
-            headerRowHeight={28}
-            rowHeight={28}
-            mincolumnWidthBy={25}
-            enableCellSelect={false}
-            sortColumns={sortColumns}
-            onSortColumnsChange={setSortColumns}
-            onItemEnter={onItemEnter}
-          />
-        </Box>
-        <Box className='SearchObjects-footer1'>
-          <Box>{footerText}</Box>
-        </Box>
-        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errorMsg} closable onClose={()=>setErrorMsg('')}  />
-      </StyledBox>
-      <StyledBox className='SearchObjects-footer'>
+        <PrimaryButton style={{width: '120px'}} data-test="search" className='SearchObjects-Btnmargin' startIcon={<SearchRoundedIcon />}
+          onClick={onSearch} disabled={search.length < 3}>{gettext('Search')}</PrimaryButton>
+      </Box>
+      <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
+        <PgReactDataGrid
+          id="searchobjects"
+          className='SearchObjects-grid'
+          hasSelectColumn={false}
+          columns={columns}
+          rows={sortedItems}
+          defaultColumnOptions={{
+            enableSorting: true,
+            enableResizing: true
+          }}
+          headerRowHeight={28}
+          rowHeight={28}
+          mincolumnWidthBy={25}
+          enableCellSelect={false}
+          sortColumns={sortColumns}
+          onSortColumnsChange={setSortColumns}
+          onItemEnter={onItemEnter}
+        />
+      </Box>
+      <Box className='SearchObjects-footer1'>
+        <Box>{footerText}</Box>
+      </Box>
+      <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errorMsg} closable onClose={()=>setErrorMsg('')}  />
+      <Box className='SearchObjects-footer'>
         <PgIconButton data-test="dialog-help" onClick={onDialogHelp} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
-      </StyledBox>
-    </ModalContent>
+      </Box>
+    </StyledBox>
   );
 }
 

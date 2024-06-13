@@ -24,7 +24,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
     fontSize: '12px',
     border: 'none',
     '--rdg-selection-color': theme.palette.primary.main,
-    '&.rdg-cell': {
+    '& .rdg-cell': {
       ...theme.mixins.panelBorder.right,
       ...theme.mixins.panelBorder.bottom,
       fontWeight: 'abc',
@@ -43,7 +43,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
     '& .rdg-header-row': {
       backgroundColor: theme.palette.background.default,
     },
-    '&.rdg-row': {
+    '& .rdg-row': {
       backgroundColor: theme.palette.background.default,
       '&[aria-selected=true]': {
         backgroundColor: theme.palette.primary.light,

@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SchemaView from '../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../static/js/SchemaView/base_schema.ui';
@@ -22,10 +23,10 @@ import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import _ from 'lodash';
 
-const StyledSchemaView = styled(SchemaView)(({theme}) => ({
+const StyledBox = styled(Box)(() => ({
+  height: '100%',
   '& .UserManagementDialog-root': {
-    ...theme.mixins.tabPanel,
-    padding: 0,
+    padding: 0 + ' !important',
   }
 }));
 
@@ -393,7 +394,7 @@ function UserManagementDialog({onClose}) {
     window.open(url_for('help.static', { 'filename': 'user_management.html' }), 'pgadmin_help');
   };
 
-  return <StyledSchemaView
+  return <StyledBox><SchemaView
     formType={'dialog'}
     getInitData={()=>{ return new Promise((resolve, reject)=>{
       api.get(url_for('user_management.users'))
@@ -415,7 +416,7 @@ function UserManagementDialog({onClose}) {
     disableSqlHelp={true}
     isTabView={false}
     formClassName='UserManagementDialog-root'
-  />;
+  /></StyledBox>;
 }
 
 UserManagementDialog.propTypes = {

@@ -52,7 +52,7 @@ const StyledBox = styled(Box)(({theme}) => ({
     }
   },
   '& .FormView-nonTabPanel': {
-    backgroundColor: 'inherit',
+    ...theme.mixins.tabPanel,
     '& .FormView-nonTabPanelContent': {
       height: 'unset',
       '& .FormView-controlRow': {
@@ -466,7 +466,7 @@ export default function FormView({
     let contentClassName = ['FormView-nonTabPanelContent', (stateUtils.formErr.message ? 'FormView-errorMargin' : null)];
     return (
       <StyledBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
-        <TabPanel value={tabValue} index={0} classNameRoot='FormView-nonTabPanel'
+        <TabPanel value={tabValue} index={0} classNameRoot={['FormView-nonTabPanel',className].join(' ')}
           className={contentClassName.join(' ')}>
           {Object.keys(finalTabs).map((tabName)=>{
             return (

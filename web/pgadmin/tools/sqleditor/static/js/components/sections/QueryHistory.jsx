@@ -27,6 +27,8 @@ const Root = styled('div')(({ theme }) => ({
   display: 'flex',
   height: '100%',
   '.QuerySources-leftRoot': {
+    flexBasis: '50%',
+    maxWidth: '50%',
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.otherVars.editorToolbarBg,
@@ -34,7 +36,10 @@ const Root = styled('div')(({ theme }) => ({
     '& .QuerySources-header': {
       padding: '0.25rem',
       display: 'flex',
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
+      '& .QuerySources-removeBtnMargin': {
+        marginLeft: '0.25rem',
+      },
     },
     '& .QuerySources-listRoot': {
       ...theme.mixins.panelBorder.top,
@@ -78,9 +83,6 @@ const Root = styled('div')(({ theme }) => ({
     },
     '& .QuerySources-queryMargin': {
       marginTop: '12px',
-    },
-    '& .QuerySources-removeBtnMargin': {
-      marginLeft: '0.25rem',
     },
   },
   '& .QuerySources-infoHeader': {
@@ -266,7 +268,7 @@ QuerySourceIcon.propTypes = {
 };
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
-  return <Root><ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
+  return <ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
     selectedItemKey==itemKey && ele?.scrollIntoView({
       block: 'center',
       behavior: 'smooth',
@@ -279,8 +281,7 @@ function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick
     <Box fontSize="12px">
       {formatEntryDate(entry.start_time)}
     </Box>
-  </ListItem>
-  </Root>;
+  </ListItem>;
 }
 
 const EntryPropType = PropTypes.shape({
@@ -321,15 +322,13 @@ function QueryHistoryDetails({entry}) {
   }, [entry]);
 
   if(!entry) {
-    return <Root>
-      <Box display="flex" height="100%">
-        <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
-      </Box>
-    </Root>;
+    return <Box display="flex" height="100%">
+      <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
+    </Box>;
   }
 
   return (
-    <Root>
+    <>
       {entry.info && <Box className='QuerySources-infoHeader'>{entry.info}</Box>}
       <Box padding="0.5rem" data-label="history-detail">
         <Grid container>
@@ -361,7 +360,7 @@ function QueryHistoryDetails({entry}) {
           <Box className='QuerySources-fontSourceCode' fontSize="13px" whiteSpace="pre-wrap">{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
         </Box>
       </Box>
-    </Root>
+    </>
   );
 }
 
@@ -491,11 +490,11 @@ export function QueryHistory() {
     <Root>
       <Loader message={loaderText} />
       {React.useMemo(()=>(
-        <Box display="flex" height="100%">
+        <>
           {qhu.current.size() == 0 ?
             <EmptyPanelMessage text={gettext('No history found')} />:
             <>
-              <Box flexBasis="50%" maxWidth="50%" className='QuerySources-leftRoot'>
+              <Box className='QuerySources-leftRoot'>
                 <Box className='QuerySources-header'>
                   <Box marginRight="auto">
                     {gettext('Show queries generated internally by pgAdmin?')}
@@ -531,7 +530,7 @@ export function QueryHistory() {
                 <QueryHistoryDetails entry={selectedEntry}/>
               </Box>
             </>}
-        </Box>
+        </>
       ), [selectedItemKey, showInternal, qhu.current.size()])}
     </Root>
   );

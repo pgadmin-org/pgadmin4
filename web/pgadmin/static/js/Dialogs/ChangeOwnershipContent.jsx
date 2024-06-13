@@ -1,17 +1,9 @@
-import { styled } from '@mui/material/styles';
 import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import BaseUISchema from '../SchemaView/base_schema.ui';
 import SchemaView from '../SchemaView';
 import { isEmptyString } from 'sources/validators';
-
-
-const StyledSchemaView = styled(SchemaView)(({theme}) => ({
-  '& .ChangeOwnershipContent-root': {
-    ...theme.mixins.tabPanel,
-  }
-}));
 
 class ChangeOwnershipSchema extends BaseUISchema {
   constructor(deletedUser, adminUserList, noOfSharedServers) {
@@ -52,7 +44,7 @@ export default function ChangeOwnershipContent({onSave, onClose, deletedUser, us
 
   const objChangeOwnership = new ChangeOwnershipSchema(deletedUser, userList, noOfSharedServers);
 
-  return <StyledSchemaView
+  return <SchemaView
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
     schema={objChangeOwnership}
@@ -66,7 +58,6 @@ export default function ChangeOwnershipContent({onSave, onClose, deletedUser, us
     disableSqlHelp={true}
     disableDialogHelp={true}
     isTabView={false}
-    formClassName='ChangeOwnershipContent-root'
   />;
 }
 ChangeOwnershipContent.propTypes = {

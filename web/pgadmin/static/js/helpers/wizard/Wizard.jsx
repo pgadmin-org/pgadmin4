@@ -174,24 +174,24 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
   return (
     <StyledBox>
-      <div className={'Wizard-root ' + (props?.rootClass ? props.rootClass : '') }>
-        <div className={'Wizard-body ' + className}>
+      <div className={['Wizard-root', (props?.rootClass ? props.rootClass : '')].join(' ') }>
+        <div className={['Wizard-body', className].join(' ') }>
           <Box className='Wizard-leftPanel'>
             {steps.map((label, index) => (
-              <Box key={label} className={'Wizard-stepLabel ' + (index === activeStep ? 'Wizard-active' : '')}>
-                <Box className={'Wizard-stepIndex ' + (index === activeStep ? 'Wizard-activeIndex' : '')}>{index + 1}</Box>
+              <Box key={label} className={['Wizard-stepLabel', (index === activeStep ? 'Wizard-active' : '')].join(' ') }>
+                <Box className={['Wizard-stepIndex', (index === activeStep ? 'Wizard-activeIndex' : '')].join(' ') }>{index + 1}</Box>
                 <Box className='Wizard-label'>{label} </Box>
                 <Box className='Wizard-labelArrow'>{index === activeStep ? <ChevronRightIcon /> : null}</Box>
                 <Box className='Wizard-labelDone'>{index < activeStep ? <DoneIcon />: null}</Box>
               </Box>
             ))}
           </Box>
-          <div className={'Wizard-rightPanel ' + props.stepPanelCss}>
+          <div className={['Wizard-rightPanel', props.stepPanelCss].join(' ') }>
             <Loader message={props?.loaderText} />
             {
               React.Children.map(props.children, (child) => {
                 return (
-                  <div className={'Wizard-stepDefaultStyle ' + child.props.className + ' ' +(child.props.stepId !== activeStep ? 'Wizard-hidden' : '')}>
+                  <div className={['Wizard-stepDefaultStyle', child.props.className, (child.props.stepId !== activeStep ? 'Wizard-hidden' : '')].join(' ') }>
                     {child}
                   </div>
                 );

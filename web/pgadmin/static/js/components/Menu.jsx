@@ -69,7 +69,7 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon  style={checked ? {} : {visibility: 'hidden', width: '1.3rem'}} data-label="CheckIcon"/>}
     {children}
-    <div>
+    <div style={{ marginLeft:'auto', fontSize:'0.8em', paddingLeft:'12px'}}>
       {keyVal ? `(${keyVal})` : ''}
     </div>
   </MenuItem>;

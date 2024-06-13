@@ -31,6 +31,10 @@ const StyledTable = styled(Table)(({theme}) => ({
     backgroundColor: theme.otherVars.explain.sev4.bg,
     color: theme.otherVars.explain.sev4.color,
   },
+  '& .Analysis-header': {
+    border: 'none',
+    background: 'none'
+  }
 }));
 
 function getRowClassname(data, collapseParent) {
@@ -161,29 +165,29 @@ export default function Analysis({explainTable}) {
       <thead>
         <tr>
           <th rowSpan="2" style={{width: '30px'}}></th>
-          <th rowSpan="2"><button disabled="">#</button></th>
-          <th rowSpan="2"><button disabled="">Node</button></th>
+          <th rowSpan="2"><button className='Analysis-header' disabled="">#</button></th>
+          <th rowSpan="2"><button className='Analysis-header'  disabled="">Node</button></th>
           <th colSpan="2" style={explainTable.show_timings ? {} : {display: 'none'}}>
-            <button disabled="">{gettext('Timings')}</button>
+            <button className='Analysis-header' disabled="">{gettext('Timings')}</button>
           </th>
           <th style={(explainTable.show_rowsx || explainTable.show_rows || explainTable.show_plan_rows) ? {} : {display: 'none'}}
             colSpan={(explainTable.show_rowsx) ? '3' : '1'}>
-            <button disabled="">{gettext('Rows')}</button>
+            <button className='Analysis-header' disabled="">{gettext('Rows')}</button>
           </th>
           <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} rowSpan="2">
-            <button disabled="">{gettext('Loops')}</button>
+            <button className='Analysis-header' disabled="">{gettext('Loops')}</button>
           </th>
         </tr>
         <tr>
           <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-            <button disabled="">{gettext('Exclusive')}</button>
+            <button className='Analysis-header' disabled="">{gettext('Exclusive')}</button>
           </th>
           <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-            <button disabled="">{gettext('Inclusive')}</button>
+            <button className='Analysis-header' disabled="">{gettext('Inclusive')}</button>
           </th>
-          <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button disabled="">{gettext('Rows X')}</button></th>
-          <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Actual')}</button></th>
-          <th style={(explainTable.show_rowsx || explainTable.show_plan_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Plan')}</button></th>
+          <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button className='Analysis-header' disabled="">{gettext('Rows X')}</button></th>
+          <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button className='Analysis-header' disabled="">{gettext('Actual')}</button></th>
+          <th style={(explainTable.show_rowsx || explainTable.show_plan_rows) ? {} : {display: 'none'}}><button className='Analysis-header' disabled="">{gettext('Plan')}</button></th>
         </tr>
       </thead>
       <tbody>
