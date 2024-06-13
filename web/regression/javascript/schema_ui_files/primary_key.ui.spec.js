@@ -122,7 +122,7 @@ describe('PrimaryKeySchema', ()=>{
 
     expect(getFieldDepChange(schemaObj, 'columns')(state, ['columns', 0], {
       columns: [
-        {name: 'id123'}
+        {name: 'id123', is_primary_key: true}
       ],
     }, {
       type: SCHEMA_STATE_ACTIONS.SET_VALUE,

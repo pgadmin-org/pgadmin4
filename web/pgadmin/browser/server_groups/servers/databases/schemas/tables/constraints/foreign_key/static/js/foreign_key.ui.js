@@ -66,7 +66,6 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
     let references_table_name = _.find(this.refTables, (t)=>t.value==data.references || t.value == this.origData.references)?.label;
     return {
       local_column: data.local_column,
-      local_column_cid: _.find(this.fieldOptions.local_column, (c)=>c.value == data.local_column)?.cid,
       referenced: data.referenced,
       references: data.references,
       references_table_name: references_table_name,
@@ -348,11 +347,11 @@ export default class ForeignKeySchema extends BaseUISchema {
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
             let column = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
-            currColumns = _.filter(currColumns, (cc)=>cc.local_column_cid != column.cid);
+            currColumns = _.filter(currColumns, (cc)=>cc.local_column != column.name);
           } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
             let tabColPath = _.slice(actionObj.path, 0, -1);
             let column = _.get(actionObj.oldState, tabColPath);
-            let idx = _.findIndex(currColumns, (cc)=>cc.local_column_cid == column.cid);
+            let idx = _.findIndex(currColumns, (cc)=>cc.local_column == column.name);
             if(idx > -1) {
               currColumns[idx].local_column = _.get(topState, tabColPath).name;
             }

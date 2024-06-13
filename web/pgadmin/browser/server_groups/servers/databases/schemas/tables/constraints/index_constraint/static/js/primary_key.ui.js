@@ -86,13 +86,14 @@ export default class PrimaryKeySchema extends BaseUISchema {
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
             let oldColumn = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
-            currColumns = _.filter(currColumns, (cc)=>cc.cid != oldColumn.cid);
+            currColumns = _.filter(currColumns, (cc)=>cc.column != oldColumn.name);
           } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
             let tabColPath = _.slice(actionObj.path, 0, -1);
             let oldCol = _.get(actionObj.oldState, tabColPath);
-            let idx = _.findIndex(currColumns, (cc)=>cc.cid == oldCol.cid);
-            if(idx > -1) {
-              currColumns[idx].column = _.get(topState, tabColPath).name;
+            let idx = _.findIndex(currColumns, (cc)=>cc.column == oldCol.name);
+            let updatedCol = _.get(topState, tabColPath);
+            if(idx > -1 && updatedCol.is_primary_key) {
+              currColumns[idx].column = updatedCol.name;
             }
           }
         }
