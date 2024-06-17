@@ -7,11 +7,12 @@ import { QueryToolContext, getRandomName } from '../QueryToolComponent';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { Box } from '@mui/material';
 
-const StyledSchemaView = styled(SchemaView)(({theme}) => ({
+const StyledBox = styled(Box)(() => ({
+  height: '100%',
   '& .MacrosDialog-root': {
-    ...theme.mixins.tabPanel,
-    padding: 0,
+    padding: 0 + ' !important',
   }
 }));
 
@@ -185,26 +186,28 @@ export default function MacrosDialog({onClose, onSave}) {
   }
 
   return (
-    <StyledSchemaView
-      formType={'dialog'}
-      getInitData={()=>{
-        if(macrosErr) {
-          return Promise.reject(new Error(macrosErr));
-        }
-        return Promise.resolve({macro: userMacrosData.filter((m)=>Boolean(m.name))});
-      }}
-      schema={new MacrosSchema(keyOptions)}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={onSaveClick}
-      onClose={onClose}
-      hasSQL={false}
-      disableSqlHelp={true}
-      disableDialogHelp={true}
-      isTabView={false}
-      formClassName='MacrosDialog-root'
-    />
+    <StyledBox>
+      <SchemaView
+        formType={'dialog'}
+        getInitData={()=>{
+          if(macrosErr) {
+            return Promise.reject(new Error(macrosErr));
+          }
+          return Promise.resolve({macro: userMacrosData.filter((m)=>Boolean(m.name))});
+        }}
+        schema={new MacrosSchema(keyOptions)}
+        viewHelperProps={{
+          mode: 'edit',
+        }}
+        onSave={onSaveClick}
+        onClose={onClose}
+        hasSQL={false}
+        disableSqlHelp={true}
+        disableDialogHelp={true}
+        isTabView={false}
+        formClassName='MacrosDialog-root'
+      />
+    </StyledBox>
   );
 }
 

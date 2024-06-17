@@ -1068,12 +1068,14 @@ const ColorButton = withColorPicker(PgIconButton);
 export function InputColor({ value, controlProps, disabled, onChange, currObj }) {
   let btnStyles = { backgroundColor: value };
   return (
-    <ColorButton title={gettext('Select the color')} className='Form-colorBtn' style={btnStyles} disabled={disabled}
-      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon data-label="CloseIcon" />} options={{
-        ...controlProps,
-        disabled: disabled
-      }} onChange={onChange} value={value} currObj={currObj}
-    />
+    <Root>
+      <ColorButton title={gettext('Select the color')} className='Form-colorBtn' style={btnStyles} disabled={disabled}
+        icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon data-label="CloseIcon" />} options={{
+          ...controlProps,
+          disabled: disabled
+        }} onChange={onChange} value={value} currObj={currObj}
+      />
+    </Root>
   );
 }
 InputColor.propTypes = {

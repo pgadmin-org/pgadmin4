@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import pgAdmin from 'sources/pgadmin';
 import { getNodeAjaxOptions, getNodeListById } from 'pgbrowser/node_ajax';
 import {CloudInstanceDetailsSchema, CloudDBCredSchema, DatabaseSchema} from './aws_schema.ui';
@@ -18,13 +17,6 @@ import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-
-const StyledSchemaView= styled(SchemaView)(() =>
-  ({
-    '& .aws-formClass': {
-      overflow: 'auto',
-    }
-  }));
 
 // AWS credentials
 export function AwsCredentials(props) {
@@ -113,7 +105,7 @@ export function AwsInstanceDetails(props) {
   }, [props.cloudProvider]);
 
 
-  return  <StyledSchemaView
+  return  <SchemaView
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
     viewHelperProps={{ mode: 'create' }}
@@ -123,7 +115,6 @@ export function AwsInstanceDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setCloudInstanceDetails(changedData);
     }}
-    formClassName='aws-formClass'
   />;
 }
 AwsInstanceDetails.propTypes = {
