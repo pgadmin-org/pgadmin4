@@ -1589,9 +1589,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/lang-sql@npm:^6.6.3":
-  version: 6.6.4
-  resolution: "@codemirror/lang-sql@npm:6.6.4"
+"@codemirror/lang-sql@npm:^6.6.5":
+  version: 6.6.5
+  resolution: "@codemirror/lang-sql@npm:6.6.5"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/language": ^6.0.0
@@ -1599,7 +1599,7 @@ __metadata:
     "@lezer/common": ^1.2.0
     "@lezer/highlight": ^1.0.0
     "@lezer/lr": ^1.0.0
-  checksum: ae7c498d08c118d8f1751c28d12c54f45cacd589f6adb56216d44eb14abc0e436dcefe675d50bd02a242426327384cbcafa8c35098aa63384570a33c4cf27038
+  checksum: 543f4010ba86c85be13eaf5baa6236d4446dc1d2045fb451fdd55545fd3349dda650b833d98da0c67123dbd9e18a5137564c026059537b4096f8a3582bcb7dac
   languageName: node
   linkType: hard
 
@@ -14222,7 +14222,7 @@ __metadata:
     "@babel/preset-env": ^7.10.2
     "@babel/preset-react": ^7.12.13
     "@babel/preset-typescript": ^7.24.7
-    "@codemirror/lang-sql": ^6.6.3
+    "@codemirror/lang-sql": ^6.6.5
     "@date-io/core": ^3.0.0
     "@date-io/date-fns": 3.x
     "@emotion/core": ^10.0.14

@@ -37,6 +37,6 @@ Bug fixes
   | `Issue #7414 <https://github.com/pgadmin-org/pgadmin4/issues/7414>`_ -  Add support for comments on RLS policy object.
   | `Issue #7481 <https://github.com/pgadmin-org/pgadmin4/issues/7481>`_ -  Fixed an issue where dark theme shows white background when all tabs are closed.
   | `Issue #7516 <https://github.com/pgadmin-org/pgadmin4/issues/7516>`_ -  Ensure preferences can be loaded using preferences.json.
-  | `Issue #7528 <https://github.com/pgadmin-org/pgadmin4/issues/7528>`_ -  Ensure preferences can be loaded using preferences.json.
+  | `Issue #7528 <https://github.com/pgadmin-org/pgadmin4/issues/7528>`_ -  Fixed an issue where backslash breaks syntax highlighting.
   | `Issue #7536 <https://github.com/pgadmin-org/pgadmin4/issues/7536>`_ -  Search Objects dialog should focus on search input on open.
   | `Issue #7555 <https://github.com/pgadmin-org/pgadmin4/issues/7555>`_ -  Fixed an issue where query tool shortcuts for find/replace are not working.
