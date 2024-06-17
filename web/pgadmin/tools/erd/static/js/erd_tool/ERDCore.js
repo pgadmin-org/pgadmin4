@@ -368,7 +368,7 @@ export default class ERDCore {
       fkTableNode.getData().foreign_key?.forEach((theFkRow)=>{
         for(let fkColumn of theFkRow.columns) {
           if(fkColumn.references == tableNode.getID()) {
-            let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced).attnum;
+            let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced)?.attnum;
             fkColumn.referenced = _.find(tableData.columns, (colm)=>colm.attnum==attnum).name;
             fkColumn.references_table_name = tableData.name;
           }
@@ -413,8 +413,8 @@ export default class ERDCore {
       let tableNodesDict = this.getModel().getNodesDict();
       let sourceNode = tableNodesDict[theFk.references];
 
-      let localAttnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
-      let refAttnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
+      let localAttnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column)?.attnum;
+      let refAttnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced)?.attnum;
       const fkLink = Object.values(tableNode.getLinks()).find((link)=>{
         const ldata = link.getData();
         return ldata.local_column_attnum == localAttnum

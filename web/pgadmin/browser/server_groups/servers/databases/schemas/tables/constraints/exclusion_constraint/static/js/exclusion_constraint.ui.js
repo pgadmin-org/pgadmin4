@@ -68,7 +68,6 @@ class ExclusionColHeaderSchema extends BaseUISchema {
     return this.exColumnSchema.getNewData({
       is_exp: data.is_exp,
       column: data.is_exp ? data.expression : data.column,
-      column_cid: data.is_exp ? null : column?.cid,
       col_type: data.is_exp ? null : column?.datatype,
     });
   }
@@ -379,13 +378,13 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
             let column = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
-            currColumns = _.filter(currColumns, (cc)=>cc.column_cid != column.cid);
+            currColumns = _.filter(currColumns, (cc)=>cc.column != column.name);
           } else if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE) {
-            let tabColPath = _.slice(actionObj.path, 0, -1);
-            let column = _.get(topState, tabColPath);
-            let idx = _.findIndex(currColumns, (cc)=>cc.column_cid == column.cid);
+            let tabColPath =_.slice(actionObj.path, 0, -1);
+            let column = _.get(actionObj.oldState, tabColPath);
+            let idx = _.findIndex(currColumns, (cc)=>cc.column == column.name);
             if(idx > -1) {
-              currColumns[idx].column = column.name;
+              currColumns[idx].column = _.get(topState, tabColPath).name;
             }
           }
         }
