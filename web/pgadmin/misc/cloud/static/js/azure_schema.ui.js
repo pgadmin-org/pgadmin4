@@ -122,7 +122,7 @@ class AzureCredSchema extends BaseUISchema {
                   }));
                 })
                 .catch((err)=>{
-                  reject(new Error(err));
+                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
                 });
             }
           });
@@ -152,7 +152,7 @@ class AzureCredSchema extends BaseUISchema {
                   });
                 })
                 .catch((err)=>{
-                  reject(new Error(err));
+                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
                 });
             }
           });

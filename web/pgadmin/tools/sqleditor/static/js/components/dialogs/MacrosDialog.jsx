@@ -169,7 +169,7 @@ export default function MacrosDialog({onClose, onSave}) {
           onSave(respData.filter((m) => Boolean(m.name)));
           onClose();
         } catch (error) {
-          reject(new Error(error));
+          reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
         }
       };
       setMacros();

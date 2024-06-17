@@ -721,7 +721,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             });
           } else {
             selectConn(currSelectedConn, currConnected, false);
-            reject(new Error(error));
+            reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
           }
         });
     });
@@ -763,7 +763,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           }
           updateQueryToolConnection(connectionData, true)
             .catch((err)=>{
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             }).then(()=>{
               resolve();
               onClose();

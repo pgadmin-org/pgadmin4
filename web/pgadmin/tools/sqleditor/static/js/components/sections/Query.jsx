@@ -50,7 +50,7 @@ async function registerAutocomplete(editor, api, transId) {
         })
         .catch((err) => {
           onAvailable();
-          reject(new Error(err));
+          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
         });
     });
   });

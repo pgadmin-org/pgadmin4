@@ -486,7 +486,7 @@ export default class ERDTool extends React.Component {
             })
             .catch((err)=>{
               console.error(err);
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
         });
         const {x, y} = this.diagram.getEngine().getRelativeMousePoint(e);

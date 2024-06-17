@@ -364,7 +364,7 @@ function UserManagementDialog({onClose}) {
             onClose();
           })
           .catch((err)=>{
-            reject(new Error(err));
+            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
       } catch (error) {
         reject(parseApiError(error));
@@ -402,7 +402,7 @@ function UserManagementDialog({onClose}) {
           resolve({userManagement:res.data});
         })
         .catch((err)=>{
-          reject(new Error(err));
+          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
         });
     }); }}
     schema={new UserManagementSchema(authSourcesOptions, roleOptions)}

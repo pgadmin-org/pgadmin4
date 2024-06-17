@@ -27,10 +27,10 @@ export function openSocket(namespace, options) {
       resolve(socketObj);
     });
     socketObj.on('connect_error', (err)=>{
-      reject(new Error(err));
+      reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
     });
     socketObj.on('disconnect', (err)=>{
-      reject(new Error(err));
+      reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
     });
   });
 }

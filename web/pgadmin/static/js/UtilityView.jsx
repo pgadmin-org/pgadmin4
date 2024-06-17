@@ -95,7 +95,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
       onSave?.(res.data);
       onClose();
     }).catch((err)=>{
-      reject(new Error(err));
+      reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
     });
   });
 
@@ -111,7 +111,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
         resolve(res.data.data);
       }).catch((err)=>{
         onError(err);
-        reject(new Error(err));
+        reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
       });
     });
   };
@@ -161,7 +161,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
           } else if(err.message){
             console.error('error msg', err.message);
           }
-          reject(new Error(err));
+          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
         });
     }
 

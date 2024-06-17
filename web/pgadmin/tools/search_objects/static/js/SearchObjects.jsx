@@ -388,11 +388,11 @@ export default function SearchObjects({nodeData}) {
           })
           .catch((err)=>{
             pgAdmin.Browser.notifier.error(parseApiError(err));
-            reject(new Error(err));
+            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
       } catch (error) {
         pgAdmin.Browser.notifier.error(parseApiError(error));
-        reject(new Error(error));
+        reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
       }
     });
   };

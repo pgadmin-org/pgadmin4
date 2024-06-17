@@ -210,7 +210,7 @@ export function showChangeServerPassword() {
                 onClose();
               })
               .catch((error)=>{
-                reject(new Error(error));
+                reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
               });
           });
         }}
@@ -237,7 +237,7 @@ export function showChangeUserPassword(url) {
                 resolve(res.data);
               })
               .catch((err)=>{
-                reject(new Error(err));
+                reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
               });
           });
         }}
@@ -263,7 +263,7 @@ export function showChangeUserPassword(url) {
               onClose();
               pgAdmin.Browser.notifier.success(res.data.info);
             }).catch((err)=>{
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
           });
         }}
@@ -336,7 +336,7 @@ export function showChangeOwnership() {
                 resolve(respData.data);
               })
               .catch((err)=>{
-                reject(new Error(err));
+                reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
               });
           }
         });

@@ -87,7 +87,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
             } else if (msg == 'CRYPTKEY_NOT_SET') {
               reject(new Error(gettext('The master password is not set.')));
             }
-            reject(new Error(err));
+            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
 
         })
@@ -116,7 +116,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
         } else if (msg == 'CRYPTKEY_NOT_SET') {
           reject(new Error(gettext('The master password is not set.')));
         }
-        reject(new Error(err));
+        reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
       });
     });
   });
@@ -133,7 +133,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
         resolve(res.data.data);
       }).catch((err)=>{
         onError(err);
-        reject(new Error(err));
+        reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
       });
     });
   };

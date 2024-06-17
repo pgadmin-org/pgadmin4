@@ -429,7 +429,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     try {
       resolve(debuggerArgsData.current);
     } catch (error) {
-      reject(new Error(error));
+      reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
     }
   });
 

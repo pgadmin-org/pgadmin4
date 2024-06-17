@@ -68,13 +68,13 @@ class GoogleCredSchema extends BaseUISchema{
                           resolve();
                         })
                         .catch((err)=>{
-                          reject(new Error(err));
+                          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
                         });
                     }
                   });
                 })
                 .catch((err)=>{
-                  reject(new Error(err));
+                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
                 });
             }
           });

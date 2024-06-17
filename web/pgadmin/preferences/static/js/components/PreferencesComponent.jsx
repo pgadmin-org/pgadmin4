@@ -114,7 +114,7 @@ function RightPanel({ schema, ...props }) {
     try {
       resolve(props.initValues);
     } catch (error) {
-      reject(new Error(error));
+      reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
     }
   });
 

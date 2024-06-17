@@ -100,7 +100,7 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
               data = res.data.data;
               resolve(data);
             }).catch((err)=>{
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
           } else {
             resolve(data);
@@ -127,7 +127,7 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
               data = res.data.data;
               resolve(data);
             }).catch((err)=>{
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
           } else {
             resolve(data);
@@ -155,7 +155,7 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
               data = res.data.data;
               resolve(data);
             }).catch((err)=>{
-              reject(new Error(err));
+              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
           } else {
             resolve(data);
