@@ -186,12 +186,12 @@ function getBarChartData(rows, colName, colPosition, color) {
 }
 
 // This function is used to get the dataset for Pie Chart.
-function getPieChartData(rows, colName, colPosition, queryToolCtx) {
+function getPieChartData(rows, colName, colPosition, theme) {
   return {
     label: colName,
     data: rows.map((r)=>r[colPosition]),
     backgroundColor: rows.map((_v, i)=> {
-      return getChartColor(i, queryToolCtx.preferences.misc.theme);
+      return getChartColor(i, theme);
     }),
   };
 }
@@ -226,7 +226,7 @@ function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx, t
       styleIndex = styleIndex + 1;
 
       if (graphType === 'P') {
-        return getPieChartData(rows, colName, colPosition, queryToolCtx);
+        return getPieChartData(rows, colName, colPosition, theme.name);
       } else if (graphType === 'B' || graphType === 'SB') {
         return getBarChartData(rows, colName, colPosition, color);
       } else if (graphType === 'L' || graphType === 'SL') {
@@ -363,7 +363,7 @@ export function GraphVisualiser({initColumns}) {
     // Set the Graph Data
     setGraphData(
       (prev)=> [
-        getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx, queryToolCtx.preferences.misc.theme),
+        getGraphDataSet(graphType, res.data.data.result, columns, xAxis, _.isArray(yAxis) ? yAxis : [yAxis] , queryToolCtx, theme.name),
         prev[1] + 1
       ]
     );

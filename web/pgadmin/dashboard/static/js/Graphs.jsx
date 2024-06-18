@@ -16,13 +16,13 @@ import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
-import { Grid } from '@mui/material';
+import { Grid, useTheme } from '@mui/material';
 import { getChartColor } from '../../../static/js/utils';
 
 export const X_AXIS_LENGTH = 75;
 
 /* Transform the labels data to suit ChartJS */
-export function transformData(labels, refreshRate, theme='standard') {
+export function transformData(labels, refreshRate, theme='light') {
   let datasets = Object.keys(labels).map((label, i)=>{
     return {
       label: label,
@@ -91,6 +91,7 @@ const chartsDefault = {
 export default function Graphs({preferences, sid, did, pageVisible, enablePoll=true, isTest}) {
   const refreshOn = useRef(null);
   const prevPrefernces = usePrevious(preferences);
+  const theme = useTheme();
 
   const [sessionStats, sessionStatsReduce] = useReducer(statsReducer, chartsDefault['session_stats']);
   const [tpsStats, tpsStatsReduce] = useReducer(statsReducer, chartsDefault['tps_stats']);
@@ -212,16 +213,16 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <GraphsWrapper
-          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'])}
-          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'])}
-          tiStats={transformData(tiStats, preferences['ti_stats_refresh'])}
-          toStats={transformData(toStats, preferences['to_stats_refresh'])}
-          bioStats={transformData(bioStats, preferences['bio_stats_refresh'])}
+          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'], theme.name)}
+          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'], theme.name)}
+          tiStats={transformData(tiStats, preferences['ti_stats_refresh'], theme.name)}
+          toStats={transformData(toStats, preferences['to_stats_refresh'], theme.name)}
+          bioStats={transformData(bioStats, preferences['bio_stats_refresh'], theme.name)}
           errorMsg={errorMsg}
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}
           lineBorderWidth={preferences['graph_line_border_width']}
-          theme={preferences['theme']}
+          theme={theme.name}
           isDatabase={did > 0}
           isTest={isTest}
         />

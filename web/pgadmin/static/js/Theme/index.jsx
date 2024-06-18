@@ -17,7 +17,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import CustomPropTypes from '../custom_prop_types';
-import getStandardTheme from './standard';
+import getLightTheme from './light';
 import getDarkTheme from './dark';
 import getHightContrastTheme from './high_contrast';
 import { CssBaseline } from '@mui/material';
@@ -773,11 +773,12 @@ function getFinalTheme(baseTheme) {
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
-  const [currentTheme, setCurrentTheme] = useState(prefStore.getPreferencesForModule('misc')?.theme);
+  const [theme, setTheme] = useState(prefStore.getPreferencesForModule('misc')?.theme);
+  const [selectedMode, setSelectedMode] = useState(prefStore.getPreferencesForModule('misc')?.theme || 'light');
 
   const themeObj = useMemo(()=>{
-    let baseTheme = getStandardTheme(basicSettings);
-    switch(currentTheme) {
+    let baseTheme = getLightTheme(basicSettings);
+    switch(theme) {
     case 'dark':
       baseTheme = getDarkTheme(baseTheme);
       break;
@@ -786,22 +787,31 @@ export default function Theme({children}) {
       break;
     }
     return getFinalTheme(baseTheme);
-  }, [currentTheme]);
+  }, [theme]);
 
   useEffect(() => usePreferences.subscribe(
     state => {
-      let selectdTheme = state.getPreferencesForModule('misc').theme;
-      if(selectdTheme === 'system'){
-        const themeQuery = window.matchMedia('(prefers-color-scheme: light)');
-        setCurrentTheme(themeQuery.matches ? 'light' : 'dark');
-        themeQuery.addEventListener('change', ({ matches }) => {
-          setCurrentTheme(matches ? 'light' : 'dark');
-        });
-      }else{
-        setCurrentTheme(selectdTheme);
-      }
+      setSelectedMode(state.getPreferencesForModule('misc').theme);
+      setTheme(state.getPreferencesForModule('misc').theme);
+    }),[theme]);
+
+  useEffect(() => {
+    if (selectedMode !== 'system') {
+      setTheme(selectedMode);
+      return;
     }
-  ), []);
+      
+    const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
+    setTheme(isSystemInDarkMode.matches ? 'dark' : 'light');
+
+    const listener = (event) => {
+      setTheme(event.matches ? 'dark' : 'light');
+    };
+    isSystemInDarkMode.addEventListener('change',listener);
+    return () => {
+      isSystemInDarkMode.removeEventListener('change',listener);
+    };
+  },[selectedMode]);
 
   return (
     <ThemeProvider theme={themeObj}>

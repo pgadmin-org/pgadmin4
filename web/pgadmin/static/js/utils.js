@@ -657,7 +657,7 @@ export function scrollbarWidth() {
 }
 
 const CHART_THEME_COLORS = {
-  'standard':['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B',
+  'light':['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B',
     '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF', '#3366CC', '#DC3912', '#FF9900',
     '#109618', '#990099', '#0099C6','#DD4477', '#66AA00', '#B82E2E', '#316395'],
   'dark': ['#4878D0', '#EE854A', '#6ACC64', '#D65F5F', '#956CB4', '#8C613C',
@@ -669,7 +669,7 @@ const CHART_THEME_COLORS = {
     '#52B788']
 };
 
-export function getChartColor(index, theme='standard', colorPalette=CHART_THEME_COLORS) {
+export function getChartColor(index, theme='light', colorPalette=CHART_THEME_COLORS) {
   const palette = colorPalette[theme];
   // loop back if out of index;
   return palette[index % palette.length];

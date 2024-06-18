@@ -73,7 +73,7 @@ const StyledBox = styled(Box)(({theme}) => ({
         overflow: 'hidden'
       },
       '& .SearchObjects-cellMuted': {
-        color: `${theme.otherVars.textMuted} !important`,
+        color: theme.otherVars.textMuted + ' !important',
         cursor: 'default !important',
       },
       '& .SearchObjects-gridCell': {
@@ -95,13 +95,13 @@ function ObjectNameFormatter({row}) {
 
   return (
     <div className='rdg-cell-value'>
-      <StyledBox className={row.show_node ? '' : 'SearchObjects-cellMuted'}>
-        <span className={('SearchObjects-gridCell ' + row.icon)}></span>
+      <Box className={row.show_node ? '' : 'SearchObjects-cellMuted'}>
+        <span className={['SearchObjects-gridCell', row.icon].join(' ')}></span>
         {row.name}
         {row.other_info != null && row.other_info != '' && (
           <span tabIndex="-1" className='SearchObjects-funcArgs' onClick={()=>{row.showArgs = true;}} onKeyDown={()=>{/* no need */}}> {row?.showArgs ? `(${row.other_info})` : '(...)'}</span>
         )}
-      </StyledBox>
+      </Box>
     </div>
   );
 }

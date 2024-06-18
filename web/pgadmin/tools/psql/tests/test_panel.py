@@ -14,7 +14,7 @@ class PSQLPanel(BaseTestGenerator):
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.did = utils.create_database(self.server, self.db_name)
         self.sgid = config_data["server_group"]
-        self.theme = 'standard'
+        self.theme = 'light'
 
     def runTest(self):
         if sys.platform == 'win32':

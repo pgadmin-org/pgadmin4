@@ -12,6 +12,7 @@ import { createTheme } from '@mui/material/styles';
 
 export default function(basicSettings) {
   return createTheme(basicSettings, {
+    name: 'high_contrast',
     palette: {
       default: {
         main: '#00000000',
