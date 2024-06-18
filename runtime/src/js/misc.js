@@ -26,6 +26,10 @@ const createDir = (dirName) => {
   }
 };
 
+export const insideFlatpak = () => {
+  return platform() === 'linux' && fs.existsSync('/.flatpak-info');
+}
+
 // This function is used to get the python executable path
 // based on the platform. Use this for deployment.
 const getPythonPath = () => {
@@ -37,8 +41,11 @@ const getPythonPath = () => {
   case 'darwin':
     pythonPath = '../../Frameworks/Python.framework/Versions/Current/bin/python3';
     break;
-  case 'linux':
-    pythonPath = '../venv/bin/python3';
+    case 'linux':
+      pythonPath = '../venv/bin/python3';
+      if (insideFlatpak()) {
+        pythonPath = '/usr/bin/python';
+      }
     break;
   default:
     if (platform().startsWith('win')) {
