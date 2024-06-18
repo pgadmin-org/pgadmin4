@@ -65,6 +65,7 @@ export default function jsonEditorOverride(theme) {
       backgroundColor: theme.palette.default.main + ' !important',
       color: theme.palette.text.primary + ' !important',
       fontWeight: 'normal !important',
+      cursor:'pointer',
 
       /* Over rides icons */
       '&.jsoneditor-format::before': {
@@ -134,6 +135,7 @@ export default function jsonEditorOverride(theme) {
       backgroundColor: theme.palette.default.main + ' !important',
       color: theme.palette.text.primary + ' !important',
       fontWeight: 'normal !important',
+      cursor:'pointer',
     },
 
     '.jsoneditor-contextmenu': {

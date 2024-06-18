@@ -141,16 +141,16 @@ export default function  PsqlComponent({ params, pgAdmin }) {
     });
     /* Addon for fitAddon, webLinkAddon, SearchAddon */
     const fitAddon = psql_Addon(term);
-  
+
     term.open(containerRef.current);
 
     /*  Socket */
     const socket = psql_socket();
-  
+
     psql_socket_io(socket, params.is_enable, params.sid, params.db, params.server_type, fitAddon, term, params.role);
-    
+
     psql_terminal_io(term, socket, params.platform, pgAdmin);
-  
+
     /*  Set terminal size */
     setTimeout(function(){
       socket.emit('resize', {'cols': term.cols, 'rows': term.rows});
@@ -160,10 +160,12 @@ export default function  PsqlComponent({ params, pgAdmin }) {
 
   useEffect(()=>{
     const [term, socket] = initializePsqlTool(params);
-    termRef.current = term;  
+    termRef.current = term;
 
     termRef.current?.setOption('theme',  {
       background: '#ff0000'});
+
+    termRef.current.focus();
 
     return () => {
       term.dispose();
@@ -192,7 +194,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
 
 PsqlComponent.propTypes = {
   params:PropTypes.shape({
-    is_enable: PropTypes.Boolean,
+    is_enable: PropTypes.bool,
     sid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     db: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     server_type: PropTypes.string,

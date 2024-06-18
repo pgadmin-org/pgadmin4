@@ -402,7 +402,7 @@ define('pgadmin.node.table', [
       handle_cache: function() {
         // Clear Table's cache as column's type is dependent on two node
         // 1) Type node 2) Domain node
-        this.clear_cache(...null);
+        this.clear_cache(null);
       },
     });
   }
