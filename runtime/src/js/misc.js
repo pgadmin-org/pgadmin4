@@ -26,7 +26,7 @@ const createDir = (dirName) => {
   }
 };
 
-export const insideFlatpak = () => {
+const insideFlatpak = () => {
   return platform() === 'linux' && fs.existsSync('/.flatpak-info');
 }
 
@@ -458,4 +458,5 @@ module.exports = {
   setZoomLevelForAllWindows: setZoomLevelForAllWindows,
   ConfigureStore: ConfigureStore,
   parseConsoleArgs: parseConsoleArgs,
+  insideFlatpak: insideFlatpak,
 };

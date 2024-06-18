@@ -29,7 +29,7 @@ let pythonPath = misc.getPythonPath();
 let pgadminFile = '../web/pgAdmin4.py';
 let configFile = '../web/config.py';
 
-if (insideFlatpak()) {
+if (misc.insideFlatpak()) {
   pgadminFile = '/app/pgAdmin4/web/pgAdmin4.py';
 }
 
