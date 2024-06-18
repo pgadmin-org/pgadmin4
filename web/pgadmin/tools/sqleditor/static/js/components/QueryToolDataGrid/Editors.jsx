@@ -94,7 +94,7 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
       ...theme.mixins.panelBorder.all,
       outline: 0,
       resize: 'both',
-      overflow: 'auto',
+      overflow: 'hidden',
     },
     '& .jsoneditor': {
       height: 'abc',
@@ -130,9 +130,9 @@ const ResizableDiv = ({columnIndex, children, ...otherProps}) => {
       }
       if (box.right > innerWidth) {
         editorRef.current.firstChild.style.width = `${currentWidth - widthDiff - 20}px`;
-      }      
+      }
     };
-    
+
     editorRef.current.addEventListener('mousedown', () => {
       document.addEventListener('mouseup', resizeEditor, {once: true});
     });

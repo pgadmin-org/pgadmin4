@@ -157,8 +157,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                 self.page.click_tab("Dependents")
                 source_code = \
                     self.page.find_by_css_selector(
-                        "#id-dependents div[role='row']:nth-child(1) "
-                        "div[role='cell']:nth-child(2)"
+                        "#id-dependents div.pgrt-row-content:nth-child(1) "
+                        "div.pgrd-row-cell:nth-child(2)"
                     ).get_attribute('innerHTML')
                 retry = 0
             except WebDriverException as e:
@@ -213,7 +213,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         # Check for history entry
         history_ele = self.page\
             .find_by_css_selector(
-                QueryToolLocators.query_history_specific_entry.format(1))
+                QueryToolLocators.query_history_specific_entry.format(2))
 
         source_code = history_ele.get_attribute('innerHTML')
 
