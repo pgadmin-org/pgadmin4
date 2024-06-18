@@ -41,11 +41,11 @@ const getPythonPath = () => {
   case 'darwin':
     pythonPath = '../../Frameworks/Python.framework/Versions/Current/bin/python3';
     break;
-    case 'linux':
-      pythonPath = '../venv/bin/python3';
-      if (insideFlatpak()) {
-        pythonPath = '/usr/bin/python';
-      }
+  case 'linux':
+    pythonPath = '../venv/bin/python3';
+    if (insideFlatpak()) {
+      pythonPath = '/usr/bin/python';
+    }
     break;
   default:
     if (platform().startsWith('win')) {
