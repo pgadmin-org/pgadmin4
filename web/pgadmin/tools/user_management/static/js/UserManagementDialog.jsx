@@ -167,7 +167,7 @@ class UserManagementCollection extends BaseUISchema {
 
     if (state.auth_source != AUTH_METHODS['INTERNAL']) {
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let user in obj.top._sessData.userManagement) {
+        for (let user of obj.top._sessData.userManagement) {
           if (user?.id &&
             user.username.toLowerCase() == state.username.toLowerCase() &&
             user.auth_source == state.auth_source) {
@@ -194,7 +194,7 @@ class UserManagementCollection extends BaseUISchema {
       }
 
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let user in obj.top._sessData.userManagement) {
+        for (let user of obj.top._sessData.userManagement) {
           if (user?.id &&
             user.email?.toLowerCase() == state.email?.toLowerCase()) {
             msg = gettext('Email address \'%s\' already exists', state.email);
