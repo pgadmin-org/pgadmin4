@@ -40,6 +40,7 @@ Bug fixes
   | `Issue #7516 <https://github.com/pgadmin-org/pgadmin4/issues/7516>`_ -  Ensure preferences can be loaded using preferences.json.
   | `Issue #7528 <https://github.com/pgadmin-org/pgadmin4/issues/7528>`_ -  Fixed an issue where backslash breaks syntax highlighting.
   | `Issue #7536 <https://github.com/pgadmin-org/pgadmin4/issues/7536>`_ -  Search Objects dialog should focus on search input on open.
+  | `Issue #7542 <https://github.com/pgadmin-org/pgadmin4/issues/7542>`_ -  Fixed incorrect sorting of size in statistics tab.
   | `Issue #7555 <https://github.com/pgadmin-org/pgadmin4/issues/7555>`_ -  Fixed an issue where query tool shortcuts for find/replace are not working.
   | `Issue #7556 <https://github.com/pgadmin-org/pgadmin4/issues/7556>`_ -  Fixed migration failure while using external database.
   | `Issue #7593 <https://github.com/pgadmin-org/pgadmin4/issues/7593>`_ -  Fixed an issue where query tool auto-complete stops working after connection change.

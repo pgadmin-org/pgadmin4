@@ -242,11 +242,12 @@ export function PgReactTableHeader({table}) {
                 flex: `var(--header-${header?.id.replace(/\W/g, '_')}-size) 0 auto`,
                 width: `calc(var(--header-${header?.id.replace(/\W/g, '_')}-size)*1px)`,
                 ...(header.column.columnDef.maxSize ? { maxWidth: `${header.column.columnDef.maxSize}px` } : {}),
-                cursor: header.column.getCanSort() ? 'pointer' : 'initial',
               }}
-              onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
             >
-              <div title={flexRender(header.column.columnDef.header, header.getContext())}>
+              <div title={flexRender(header.column.columnDef.header, header.getContext())}
+                style={{cursor: header.column.getCanSort() ? 'pointer' : 'initial'}}
+                onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+              >
                 {flexRender(header.column.columnDef.header, header.getContext())}
                 {header.column.getCanSort() && header.column.getIsSorted() &&
                   <span>

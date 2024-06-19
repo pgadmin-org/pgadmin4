@@ -45,6 +45,7 @@ function getColumn(data, singleLineStatistics, prettifyFields=[]) {
           enableSorting: true,
           enableResizing: true,
           enableFilters: true,
+          sortingFn: 'alphanumeric',
         });
       });
     }
