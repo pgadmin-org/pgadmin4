@@ -47,7 +47,7 @@ import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
 import activeLineExtn from '../extensions/activeLineMarker';
 import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
-import { indentNewLine } from '../extensions/extraStates';
+import { autoCompleteCompartment, indentNewLine } from '../extensions/extraStates';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{fontSize: '1.2em'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{fontSize: '1.2em'}} />);
@@ -145,6 +145,7 @@ const defaultExtensions = [
     }
     return 0;
   }),
+  autoCompleteCompartment.of([]),
 ];
 
 export default function Editor({

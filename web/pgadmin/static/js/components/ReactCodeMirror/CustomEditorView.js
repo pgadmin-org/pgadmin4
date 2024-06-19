@@ -1,7 +1,7 @@
 import {
   EditorView
 } from '@codemirror/view';
-import { StateEffect, EditorState, EditorSelection } from '@codemirror/state';
+import { EditorState, EditorSelection } from '@codemirror/state';
 import { syntaxTree } from '@codemirror/language';
 import { autocompletion } from '@codemirror/autocomplete';
 import {undo, indentMore, indentLess, toggleComment} from '@codemirror/commands';
@@ -9,6 +9,7 @@ import { errorMarkerEffect } from './extensions/errorMarker';
 import { currentQueryHighlighterEffect } from './extensions/currentQueryHighlighter';
 import { activeLineEffect, activeLineField } from './extensions/activeLineMarker';
 import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/breakpointGutter';
+import { autoCompleteCompartment } from './extensions/extraStates';
 
 
 function getAutocompLoading({ bottom, left }, dom) {
@@ -292,7 +293,7 @@ export default class CustomEditorView extends EditorView {
 
   registerAutocomplete(completionFunc) {
     this.dispatch({
-      effects: StateEffect.appendConfig.of(
+      effects: autoCompleteCompartment.reconfigure(
         autocompletion({
           override: [(context) => {
             this.loadingDiv?.remove();

@@ -698,7 +698,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 fgcolor: connectionData.fgcolor,
                 bgcolor: connectionData.bgcolor,
               },
-              connected: respData.data.trans_id,
+              connected: Boolean(respData.data.trans_id),
               obtaining_conn: false,
             };
           });

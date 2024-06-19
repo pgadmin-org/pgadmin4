@@ -7,8 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Facet } from '@codemirror/state';
+import { Facet, Compartment } from '@codemirror/state';
 
 export const indentNewLine = Facet.define({
   combine: values => values.length ? values[0] : true,
 });
+
+export const autoCompleteCompartment = new Compartment();
