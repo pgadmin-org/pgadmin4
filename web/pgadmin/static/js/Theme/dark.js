@@ -12,6 +12,7 @@ import {  darken, createTheme} from '@mui/material/styles';
 
 export default function(basicSettings) {
   return createTheme(basicSettings, {
+    name: 'dark',
     palette: {
       default: {
         main: '#6b6b6b',

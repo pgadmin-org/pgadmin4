@@ -163,7 +163,9 @@ export default function  PsqlComponent({ params, pgAdmin }) {
     termRef.current = term;
 
     termRef.current?.setOption('theme',  {
-      background: '#ff0000'});
+      background: theme?.palette.background.default});
+
+    termRef.current.focus();
 
     termRef.current.focus();
 

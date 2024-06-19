@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, useTheme } from '@mui/material';
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import gettext from 'sources/gettext';
@@ -273,6 +273,7 @@ const chartsDefault = {
 export default function PGDReplication({preferences, treeNodeInfo, pageVisible, enablePoll=true, ...props}) {
   const api = getApiInstance();
   const refreshOn = useRef(null);
+  const theme = useTheme();
   const prevPreferences = usePrevious(preferences);
   const [pollDelay, setPollDelay] = useState(5000);
 
@@ -399,8 +400,8 @@ export default function PGDReplication({preferences, treeNodeInfo, pageVisible, 
       });
   }, enablePoll ? pollDelay : -1);
 
-  const replicationLagTimeData = useMemo(()=>transformData(replicationLagTime, preferences['pgd_replication_lag_refresh'], preferences.theme), [replicationLagTime, preferences.theme]);
-  const replicationLagBytesData = useMemo(()=>transformData(replicationLagBytes, preferences['pgd_replication_lag_refresh'], preferences.theme), [replicationLagBytes, preferences.theme]);
+  const replicationLagTimeData = useMemo(()=>transformData(replicationLagTime, preferences['pgd_replication_lag_refresh'], theme.name), [replicationLagTime, theme.name]);
+  const replicationLagBytesData = useMemo(()=>transformData(replicationLagBytes, preferences['pgd_replication_lag_refresh'], theme.name), [replicationLagBytes, theme.name]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">

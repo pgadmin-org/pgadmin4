@@ -33,7 +33,8 @@ const StyledTable = styled(Table)(({theme}) => ({
   },
   '& .Analysis-header': {
     border: 'none',
-    background: 'none'
+    background: 'none',
+    color :theme.palette.text.primary
   }
 }));
 
