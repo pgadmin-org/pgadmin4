@@ -82,6 +82,7 @@ const StyledBox = styled(Box)(({theme}) => ({
         },
         '&[aria-selected=true][aria-colindex="1"]': {
           outlineWidth: 0,
+          backgroundColor: theme.palette.default.main + ' !important'
         },
         '& .ResultGridComponent-cellExpand': {
           display: 'table',

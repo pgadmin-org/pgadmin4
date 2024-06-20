@@ -20,7 +20,7 @@ const StyledTable = styled('table')(({theme})=>({
   '& tbody td, & thead th': {
     margin: 0,
     padding: theme.spacing(0.5),
-    border: '1px solid '+theme.otherVars.borderColor,
+    border: '1px solid '+ theme.otherVars.borderColor,
     borderBottom: 'none',
     position: 'relative',
     overflow: 'hidden',

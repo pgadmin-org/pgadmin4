@@ -200,7 +200,7 @@ export default function jsonEditorOverride(theme) {
 
     /* Set expand icon to none*/
     'div.jsoneditor-tree button.jsoneditor-button:focus': {
-      backgroundColor: theme.palette.text.primary + ' !important',
+      backgroundColor: theme.palette.background.default + ' !important',
       outline: 'none',
     },
 
@@ -252,7 +252,7 @@ export default function jsonEditorOverride(theme) {
       },
       '& .ace_marker-layer .ace_selected-word, & .ace_marker-layer .ace_selection': {
         border: `1px solid ${theme.palette.primary.light}`,
-
+        backgroundColor: theme.otherVars.editor.selectionBg,
       },
 
 
@@ -302,13 +302,17 @@ export default function jsonEditorOverride(theme) {
       fontFamily: theme.typography.fontFamily + ' !important',
       fontSize: '.875rem !important',
       fontWeight: 'bold',
-      backgroundColor: theme.palette.primary.main + ' !important',
-      color: theme.palette.text.primary,
+      backgroundColor: theme.palette.background.default + ' !important',
+      color: theme.palette.text.primary + ' !important',
+      borderBottom: `1px solid ${theme.otherVars.borderColor}`,
     },
 
     /* Body */
     '.pico-content': {
       backgroundColor: theme.palette.background.default + ' !important',
+      '& .pico-close':{
+        color: theme.palette.text.primary + ' !important',
+      }
     },
 
     /* Disable links */

@@ -45,6 +45,10 @@ const StyledBox = styled(Box)(({theme}) => ({
     flexDirection: 'column',
     height: '100%',
     minHeight: 0,
+    '& .DebuggerArgument-schema': {
+      padding: 0 + ' !important',
+      backgroundColor: theme.palette.background.default,
+    }
   },
   '& .DebuggerArgument-footer': {
     borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
@@ -810,6 +814,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               showFooter={false}
               isTabView={false}
               Notifier={pgAdmin.Browser.notifier}
+              formClassName='DebuggerArgument-schema'
               onDataChange={(isChanged, changedData) => {
                 let isValid = false;
                 let skipStep = false;
