@@ -80,7 +80,7 @@ fi
 cp -rfa %{pga_build_root}/server/* \${RPM_BUILD_ROOT}
 
 %files
-%defattr(755,root,root,755)
+%defattr(-,root,root,755)
 %dir /usr/pgadmin4
 /usr/pgadmin4/*
 EOF
@@ -123,7 +123,7 @@ cp -rfa %{pga_build_root}/desktop/* \${RPM_BUILD_ROOT}
 /bin/xdg-icon-resource forceupdate
 
 %files
-%defattr(755,root,root,755)
+%defattr(-,root,root,755)
 /usr/pgadmin4/bin/*
 /usr/share/icons/hicolor/128x128/apps/*
 /usr/share/icons/hicolor/64x64/apps/*
@@ -173,7 +173,7 @@ The web interface for pgAdmin, hosted under Apache HTTPD. pgAdmin is the most po
 cp -rfa %{pga_build_root}/web/* \${RPM_BUILD_ROOT}
 
 %files
-%defattr(755,root,root,755)
+%defattr(-,root,root,755)
 /usr/pgadmin4/bin/*
 %config(noreplace) /etc/httpd/conf.d/*
 /usr/pgadmin4/sbom-web.json
