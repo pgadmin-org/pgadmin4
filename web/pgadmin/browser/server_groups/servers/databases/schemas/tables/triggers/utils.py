@@ -89,14 +89,15 @@ def get_column_details(conn, tid, clist, template_path=None):
 
 
 @get_template_path
-def get_trigger_function_and_columns(conn, data, tid,
-                                     show_system_objects, template_path=None):
+def get_trigger_function_and_columns(conn, data, tid, show_system_objects,
+                                     without_schema=False, template_path=None):
     """
     This function will return trigger function with schema name.
     :param conn: Connection Object
     :param data: Data
     :param tid: Table ID
     :param show_system_objects: show system object
+    :param without_schema: without_schema
     :param template_path: Optional Template Path
     :return:
     """
@@ -106,7 +107,8 @@ def get_trigger_function_and_columns(conn, data, tid,
     SQL = render_template("/".join(
         [template_path, 'get_triggerfunctions.sql']),
         tgfoid=data['tgfoid'],
-        show_system_objects=show_system_objects
+        show_system_objects=show_system_objects,
+        without_schema=without_schema
     )
 
     status, result = conn.execute_dict(SQL)

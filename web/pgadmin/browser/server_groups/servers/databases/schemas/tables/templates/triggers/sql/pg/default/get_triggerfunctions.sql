@@ -1,4 +1,8 @@
+{% if without_schema %}
+SELECT pg_catalog.quote_ident(proname) AS tfunctions
+{% else %}
 SELECT pg_catalog.quote_ident(nspname) || '.' || pg_catalog.quote_ident(proname) AS tfunctions
+{% endif %}
 FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n, pg_catalog.pg_language l
     WHERE p.pronamespace = n.oid
     AND p.prolang = l.oid

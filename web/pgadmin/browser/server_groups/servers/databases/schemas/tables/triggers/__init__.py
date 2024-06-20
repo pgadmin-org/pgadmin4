@@ -527,7 +527,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _fetch_properties(self, tid, trid):
+    def _fetch_properties(self, tid, trid, without_schema=False):
         """
         This function is used to fetch the properties of the specified object
         :param tid:
@@ -550,7 +550,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         # Making copy of output for future use
         data = dict(res['rows'][0])
         data = trigger_utils.get_trigger_function_and_columns(
-            self.conn, data, tid, self.blueprint.show_system_objects)
+            self.conn, data, tid, self.blueprint.show_system_objects,
+            without_schema)
 
         data = trigger_definition(data)
 
@@ -1041,8 +1042,12 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 current_app.logger.error(triggers)
                 return False
 
+            without_schema = (
+                SchemaDiffRegistry.get_schema_diff_compare_mode() ==
+                'Schema Objects')
             for row in triggers['rows']:
-                status, data = self._fetch_properties(tid, row['oid'])
+                status, data = self._fetch_properties(tid, row['oid'],
+                                                      without_schema)
                 if status:
                     res[row['name']] = data
 
