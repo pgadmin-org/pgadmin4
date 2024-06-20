@@ -774,7 +774,6 @@ function getFinalTheme(baseTheme) {
 export default function Theme({children}) {
   const prefStore = usePreferences();
   const [theme, setTheme] = useState(prefStore.getPreferencesForModule('misc')?.theme);
-  const [selectedMode, setSelectedMode] = useState(prefStore.getPreferencesForModule('misc')?.theme || 'light');
 
   const themeObj = useMemo(()=>{
     let baseTheme = getLightTheme(basicSettings);
@@ -789,29 +788,26 @@ export default function Theme({children}) {
     return getFinalTheme(baseTheme);
   }, [theme]);
 
-  useEffect(() => usePreferences.subscribe(
-    state => {
-      setSelectedMode(state.getPreferencesForModule('misc').theme);
-      setTheme(state.getPreferencesForModule('misc').theme);
-    }),[theme]);
-
   useEffect(() => {
-    if (selectedMode !== 'system') {
-      setTheme(selectedMode);
+    const selectedTheme = prefStore.getPreferencesForModule('misc').theme;
+    if(theme && theme === selectedTheme) {
       return;
+    }else{
+      if (selectedTheme !== 'system') {
+        setTheme(selectedTheme);
+        return;
+      }
+      const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
+      setTheme(isSystemInDarkMode.matches ? 'dark' : 'light');
+      const listener = (event) => {
+        setTheme(event.matches ? 'dark' : 'light');
+      };
+      isSystemInDarkMode.addEventListener('change',listener);
+      return () => {
+        isSystemInDarkMode.removeEventListener('change',listener);
+      };
     }
-      
-    const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
-    setTheme(isSystemInDarkMode.matches ? 'dark' : 'light');
-
-    const listener = (event) => {
-      setTheme(event.matches ? 'dark' : 'light');
-    };
-    isSystemInDarkMode.addEventListener('change',listener);
-    return () => {
-      isSystemInDarkMode.removeEventListener('change',listener);
-    };
-  },[selectedMode]);
+  },[prefStore]);
 
   return (
     <ThemeProvider theme={themeObj}>
