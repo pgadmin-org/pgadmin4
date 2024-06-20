@@ -428,7 +428,7 @@ def register_browser_preferences(self):
         )
     )
 
-    ope_new_tab_options = [
+    open_new_tab_options = [
         {'label': gettext('Query Tool'), 'value': 'qt'},
         {'label': gettext('Debugger'), 'value': 'debugger'},
         {'label': gettext('Schema Diff'), 'value': 'schema_diff'},
@@ -436,14 +436,14 @@ def register_browser_preferences(self):
 
     # Allow psq tool to open in new browser tab if ENABLE_PSQL is set to True
     if config.ENABLE_PSQL:
-        ope_new_tab_options.append(
+        open_new_tab_options.append(
             {'label': gettext('PSQL Tool'), 'value': 'psql_tool'})
 
     self.open_in_new_tab = self.preference.register(
         'tab_settings', 'new_browser_tab_open',
         gettext("Open in new browser tab"), 'select', None,
         category_label=PREF_LABEL_OPTIONS,
-        options=ope_new_tab_options,
+        options=open_new_tab_options,
         help_str=gettext(
             'Select Query Tool, Debugger, Schema Diff, ERD Tool '
             'or PSQL Tool from the drop-down to set '
