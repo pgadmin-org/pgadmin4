@@ -70,8 +70,8 @@ describe('SchemaView', ()=>{
         await user.type(ctrl.container.querySelector('[name="field2"]'), '2');
         await user.type(ctrl.container.querySelector('[name="field5"]'), 'val5');
         /* Add a row */
-        await user.click(ctrl.container.querySelector('[data-test="add-row"]'));
-        await user.click(ctrl.container.querySelector('[data-test="add-row"]'));
+        await user.click(ctrl.container.querySelector('button[data-test="add-row"]'));
+        await user.click(ctrl.container.querySelector('button[data-test="add-row"]'));
         await user.type(ctrl.container.querySelectorAll('[name="field5"]')[0], 'rval51');
         await user.type(ctrl.container.querySelectorAll('[name="field5"]')[1], 'rval52');
       };

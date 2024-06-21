@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Tab, Tabs, Grid } from '@mui/material';
 import _ from 'lodash';
@@ -57,6 +57,15 @@ const StyledBox = styled(Box)(({theme}) => ({
       height: 'unset',
       '& .FormView-controlRow': {
         marginBottom: theme.spacing(1),
+      },
+    }
+  },
+  '& .FormView-singleCollectionPanel': {
+    ...theme.mixins.tabPanel,
+    '& .FormView-singleCollectionPanelContent': {
+      '& .FormView-controlRow': {
+        marginBottom: theme.spacing(1),
+        height: '100%',
       },
     }
   },
@@ -423,6 +432,17 @@ export default function FormView({
     onTabChange?.(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);
   }, [tabValue]);
 
+  const isSingleCollection = useMemo(()=>{
+    // we can check if it is a single-collection.
+    // in that case, we could force virtualization of the collection.
+    if(isTabView) return false;
+
+    const visibleEle = Object.values(finalTabs)[0].filter((c)=>c.props.visible);
+    return visibleEle.length == 1
+    && visibleEle[0]?.type == DataGridView;
+
+  }, [isTabView, finalTabs]);
+
   /* check whether form is kept hidden by visible prop */
   if(!_.isUndefined(visible) && !visible) {
     return <></>;
@@ -463,10 +483,10 @@ export default function FormView({
       </StyledBox>
     );
   } else {
-    let contentClassName = ['FormView-nonTabPanelContent', (stateUtils.formErr.message ? 'FormView-errorMargin' : null)];
+    let contentClassName = [isSingleCollection ? 'FormView-singleCollectionPanelContent' : 'FormView-nonTabPanelContent', (stateUtils.formErr.message ? 'FormView-errorMargin' : null)];
     return (
       <StyledBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
-        <TabPanel value={tabValue} index={0} classNameRoot={['FormView-nonTabPanel',className].join(' ')}
+        <TabPanel value={tabValue} index={0} classNameRoot={[isSingleCollection ? 'FormView-singleCollectionPanel' : 'FormView-nonTabPanel',className].join(' ')}
           className={contentClassName.join(' ')}>
           {Object.keys(finalTabs).map((tabName)=>{
             return (
