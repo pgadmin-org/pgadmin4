@@ -212,6 +212,11 @@ _build_docs() {
 _copy_code() {
     echo "Copying the server code..."
 
+    if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
+      echo "Setting file permission through umask..."
+      umask u+rwx,go+rx,go-w
+    fi
+
     # Remove any TCL-related files that may cause us problems
     find "${SERVERROOT}/usr/${APP_NAME}/venv/" -name "_tkinter*" -print0 | xargs -0 rm -rf
 
@@ -247,12 +252,6 @@ _copy_code() {
     rm python && ln -s python3 python
     rm "python${PYTHON_VERSION}" && ln -s python3 "python${PYTHON_VERSION}"
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
-
-    if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
-      chmod -R u+rwX,go+rX,go-w "${SERVERROOT}/usr/${APP_NAME}"
-      chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}/usr/${APP_NAME}"
-      chmod -R u+rwX,go+rX,go-w "${WEBROOT}/usr/${APP_NAME}"
-    fi
 }
 
 
