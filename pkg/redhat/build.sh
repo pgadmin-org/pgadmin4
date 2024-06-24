@@ -176,9 +176,6 @@ cp -rfa %{pga_build_root}/web/* \${RPM_BUILD_ROOT}
 %files
 %defattr(-,root,root,755)
 /usr/pgadmin4/bin/*
-%attr(755,root,root) /usr/pgadmin4/bin/setup-web.sh
-%attr(755,root,root) /usr/pgadmin4/web/pgacloud/pgacloud.py
-%attr(755,root,root) /usr/pgadmin4/web/pgadmin/misc/bgprocess/process_executor.py
 %config(noreplace) /etc/httpd/conf.d/*
 /usr/pgadmin4/sbom-web.json
 EOF
