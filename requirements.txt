@@ -55,7 +55,7 @@ azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.1.1; python_version > '3.7'
 azure-mgmt-resource==23.0.1; python_version <= '3.7'
 azure-mgmt-subscription==3.1.1
-azure-identity==1.16.1; python_version > '3.7'
+azure-identity==1.17.1; python_version > '3.7'
 azure-identity==1.15.0; python_version <= '3.7'
 google-api-python-client==2.*
 google-auth-oauthlib==1.2.0
