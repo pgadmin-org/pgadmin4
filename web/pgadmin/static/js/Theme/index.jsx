@@ -773,7 +773,7 @@ function getFinalTheme(baseTheme) {
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
-  const [theme, setTheme] = useState(prefStore.getPreferencesForModule('misc')?.theme);
+  const [theme, setTheme] = useState();
 
   const themeObj = useMemo(()=>{
     let baseTheme = getLightTheme(basicSettings);
