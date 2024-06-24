@@ -21,7 +21,7 @@ _setup_dirs
 _create_python_virtualenv "debian"
 _build_runtime
 _build_docs "debian"
-_copy_code
+_copy_code "debian"
 _generate_sbom
 
 #

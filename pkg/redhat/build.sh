@@ -25,7 +25,7 @@ _setup_dirs
 _create_python_virtualenv "redhat"
 _build_runtime
 _build_docs "redhat"
-_copy_code
+_copy_code "redhat"
 _generate_sbom
 
 # Get an RPM-compatible version number
@@ -124,6 +124,10 @@ cp -rfa %{pga_build_root}/desktop/* \${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root,755)
+%attr(755,root,root) /usr/pgadmin4/bin/setup-web.sh
+%attr(755,root,root) /usr/pgadmin4/bin/pgadmin4
+%attr(755,root,root) /usr/pgadmin4/web/pgacloud/pgacloud.py
+%attr(755,root,root) /usr/pgadmin4/web/pgadmin/misc/bgprocess/process_executor.py
 /usr/pgadmin4/bin/*
 /usr/share/icons/hicolor/128x128/apps/*
 /usr/share/icons/hicolor/64x64/apps/*

@@ -212,7 +212,8 @@ _build_docs() {
 _copy_code() {
     echo "Copying the server code..."
 
-    if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
+    OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
+    if [ "$1" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
       echo "Setting file permission through umask..."
       umask u+rwx,go+rx,go-w
     fi
