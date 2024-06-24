@@ -139,7 +139,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
    * If table data changes, then react-table re-renders the complete tables
    * We can avoid re-render by if row data is not changed
    */
-  let depsMap = _.values(row.original, Object.keys(row.original).filter((k)=>!k.startsWith('btn')));
+  let depsMap = [JSON.stringify(row.original)];
   const externalDeps = useMemo(()=>{
     let retVal = [];
     /* Calculate the fields which depends on the current field
@@ -241,7 +241,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
   drop(rowRef);
 
   return useMemo(()=>
-    <PgReactTableRowContent ref={rowRef} row={row} data-handler-id={handlerId} className={isHovered ? 'DataGridView-tableRowHovered' : null} data-test='data-table-row' style={{position: 'initial'}}>
+    <PgReactTableRowContent ref={rowRef} data-handler-id={handlerId} className={isHovered ? 'DataGridView-tableRowHovered' : null} data-test='data-table-row' style={{position: 'initial'}}>
       {row.getVisibleCells().map((cell) => {
         let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
 
@@ -347,7 +347,7 @@ export default function DataGridView({
           cell: ({row})=>{
             let canEditRow = true;
             if(props.canEditRow) {
-              canEditRow = evalFunc(schemaRef.current, props.canEditRow, row || {});
+              canEditRow = evalFunc(schemaRef.current, props.canEditRow, row.original || {});
             }
             return <PgIconButton data-test="expand-row" title={gettext('Edit row')} icon={<EditRoundedIcon fontSize="small" />} className='DataGridView-gridRowButton'
               onClick={()=>{
@@ -376,7 +376,7 @@ export default function DataGridView({
           cell: ({row}) => {
             let canDeleteRow = true;
             if(props.canDeleteRow) {
-              canDeleteRow = evalFunc(schemaRef.current, props.canDeleteRow, row || {});
+              canDeleteRow = evalFunc(schemaRef.current, props.canDeleteRow, row.original || {});
             }
 
             return (
@@ -392,7 +392,7 @@ export default function DataGridView({
                   };
 
                   if (props.onDelete){
-                    props.onDelete(row || {}, deleteRow);
+                    props.onDelete(row.original || {}, deleteRow);
                   } else {
                     pgAdmin.Browser.notifier.confirm(
                       props.customDeleteTitle || gettext('Delete Row'),
