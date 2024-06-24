@@ -247,6 +247,12 @@ _copy_code() {
     rm python && ln -s python3 python
     rm "python${PYTHON_VERSION}" && ln -s python3 "python${PYTHON_VERSION}"
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
+
+    if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
+      chmod -R u+rwX,go+rX,go-w "${SERVERROOT}/usr/${APP_NAME}"
+      chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}/usr/${APP_NAME}"
+      chmod -R u+rwX,go+rX,go-w "${WEBROOT}/usr/${APP_NAME}"
+    fi
 }
 
 
