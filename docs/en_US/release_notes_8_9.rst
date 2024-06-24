@@ -46,4 +46,5 @@ Bug fixes
   | `Issue #7555 <https://github.com/pgadmin-org/pgadmin4/issues/7555>`_ -  Fixed an issue where query tool shortcuts for find/replace are not working.
   | `Issue #7556 <https://github.com/pgadmin-org/pgadmin4/issues/7556>`_ -  Fixed migration failure while using external database.
   | `Issue #7593 <https://github.com/pgadmin-org/pgadmin4/issues/7593>`_ -  Fixed an issue where query tool auto-complete stops working after connection change.
+  | `Issue #7605 <https://github.com/pgadmin-org/pgadmin4/issues/7605>`_ -  Fix the permissions issue in the pgAdmin installation directory on Debian and RHEL-8 platforms (CVE-2024-6238).
   | `Issue #7616 <https://github.com/pgadmin-org/pgadmin4/issues/7616>`_ -  Fixed an issue where delete button in Users data was enabled for incorrect rows.
