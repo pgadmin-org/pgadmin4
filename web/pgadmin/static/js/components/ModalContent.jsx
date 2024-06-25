@@ -15,7 +15,7 @@ import { Box } from '@mui/material';
 const StyledBox = styled(Box)(({theme})=>({
   backgroundColor: theme.palette.background.default,
   display: 'flex',
-  flexDirection: 'column', 
+  flexDirection: 'column',
   '& .ModalContent-footer': {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -31,7 +31,7 @@ const StyledBox = styled(Box)(({theme})=>({
 
 export const ModalContent = forwardRef(({children, ...props }, ref) => {
   return (
-    <StyledBox ref={ref}  {...props}>{children}</StyledBox>
+    <StyledBox style={{height: '100%'}} ref={ref}  {...props}>{children}</StyledBox>
   );
 });
 ModalContent.displayName = 'ModalContent';
