@@ -25,6 +25,8 @@ Housekeeping
 ************
 
   | `Issue #7537 <https://github.com/pgadmin-org/pgadmin4/issues/7537>`_ -  Ensure that pgAdmin 4 is compatible with PostgreSQL v17.
+  | `Issue #7607 <https://github.com/pgadmin-org/pgadmin4/issues/7607>`_ -  Automatically apply virtualization in the DataGridView of SchemaView if the schema contains only one collection.
+  | `Issue #7623 <https://github.com/pgadmin-org/pgadmin4/issues/7623>`_ -  Add the git commit hash details to the About dialog.
 
 Bug fixes
 *********

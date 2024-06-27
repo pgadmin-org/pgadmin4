@@ -27,11 +27,11 @@
     "bootstrap": "^4.5.3"
   },
   "devDependencies": {
-    "eslint": "^9.4.0",
+    "eslint": "^9.5.0",
     "nw": "0.77.0"
   },
   "scripts": {
     "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js ."
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.8.2"
 }
