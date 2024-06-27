@@ -35,7 +35,7 @@ class TestSubSchema extends BaseUISchema {
       {
         id: 'field5', label: 'Field5', type: 'multiline', group: null,
         cell: 'text', mode: ['properties', 'edit', 'create'], disabled: false,
-        noEmpty: true, minWidth: '50%',
+        noEmpty: true, minWidth: 50,
       },
       {
         id: 'fieldskip', label: 'FieldSkip', type: 'text', group: null,

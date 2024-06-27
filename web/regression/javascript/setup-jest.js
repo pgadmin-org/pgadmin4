@@ -65,5 +65,33 @@ document.createRange = () => {
   return range;
 };
 
+// for virtual tables, height should exist.
+Element.prototype.getBoundingClientRect = jest.fn(function () {
+  if (this.classList?.contains('pgrt')) {
+    return {
+      width: 400,
+      height: 400,
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    };
+  }
+  return {
+    width: 0,
+    height: 0,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    x: 0,
+    y: 0,
+    toJSON: () => {},
+  };
+});
+
 
 jest.setTimeout(18000); // 1 second

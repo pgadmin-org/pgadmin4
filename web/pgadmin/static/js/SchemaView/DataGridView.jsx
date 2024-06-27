@@ -43,11 +43,16 @@ import { InputText } from '../components/FormComponents';
 import { usePgAdmin } from '../BrowserComponent';
 import { requestAnimationAndFocus } from '../utils';
 import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent } from '../components/PgReactTableStyled';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 const StyledBox = styled(Box)(({theme}) => ({
   '& .DataGridView-grid': {
     ...theme.mixins.panelBorder,
     backgroundColor: theme.palette.background.default,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 0,
+    height: '100%',
     '& .DataGridView-gridHeader': {
       display: 'flex',
       ...theme.mixins.panelBorder.bottom,
@@ -69,7 +74,6 @@ const StyledBox = styled(Box)(({theme}) => ({
       '&.pgrt-table': {
         '& .pgrt-body':{
           '& .pgrt-row': {
-            position: 'unset',
             backgroundColor: theme.otherVars.emptySpaceBg,
             '& .pgrt-row-content':{
               '& .pgrd-row-cell': {
@@ -173,9 +177,6 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
         }
       });
     });
-
-    // Try autofocus on newly added row.
-    requestAnimationAndFocus(rowRef.current?.querySelector('input'));
 
     return ()=>{
       /* Cleanup the listeners when unmounting */
@@ -494,28 +495,6 @@ export default function DataGridView({
     },[props.canEdit, props.canDelete, props.canReorder]
   );
 
-  const onAddClick = useCallback(()=>{
-    if(!props.canAddRow) {
-      return;
-    }
-    let newRow = schemaRef.current.getNewData();
-
-    const current_macros = schemaRef.current?._top?._sessData?.macro || null;
-    if (current_macros){
-      newRow = schemaRef.current.getNewData(current_macros);
-    }
-
-    if(props.expandEditOnAdd && props.canEdit) {
-      newRowIndex.current = rows.length;
-    }
-    dataDispatch({
-      type: SCHEMA_STATE_ACTIONS.ADD_ROW,
-      path: accessPath,
-      value: newRow,
-      addOnTop: props.addOnTop
-    });
-  }, [props.canAddRow, rows?.length]);
-
   const columnVisibility = useMemo(()=>{
     const ret = {};
 
@@ -544,6 +523,27 @@ export default function DataGridView({
 
   const rows = table.getRowModel().rows;
 
+  const onAddClick = useCallback(()=>{
+    if(!props.canAddRow) {
+      return;
+    }
+    let newRow = schemaRef.current.getNewData();
+
+    const current_macros = schemaRef.current?._top?._sessData?.macro || null;
+    if (current_macros){
+      newRow = schemaRef.current.getNewData(current_macros);
+    }
+
+    newRowIndex.current = props.addOnTop ? 0 : rows.length;
+
+    dataDispatch({
+      type: SCHEMA_STATE_ACTIONS.ADD_ROW,
+      path: accessPath,
+      value: newRow,
+      addOnTop: props.addOnTop
+    });
+  }, [props.canAddRow, rows?.length]);
+
   useEffect(()=>{
     let rowsPromise = fixedRows;
 
@@ -564,8 +564,17 @@ export default function DataGridView({
 
   useEffect(()=>{
     if(newRowIndex.current >= 0) {
-      rows[newRowIndex.current]?.toggleExpanded(true);
-      newRowIndex.current = null;
+      virtualizer.scrollToIndex(newRowIndex.current);
+
+      // Try autofocus on newly added row.
+      setTimeout(()=>{
+        const rowInput = tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`);
+        if(!rowInput) return;
+
+        requestAnimationAndFocus(tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`));
+        props.expandEditOnAdd && props.canEdit && rows[newRowIndex.current]?.toggleExpanded(true);
+        newRowIndex.current = undefined;
+      }, 50);
     }
   }, [rows?.length]);
 
@@ -581,6 +590,18 @@ export default function DataGridView({
   };
 
   const isResizing = _.flatMap(table.getHeaderGroups(), headerGroup => headerGroup.headers.map(header=>header.column.getIsResizing())).includes(true);
+
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => tableRef.current,
+    estimateSize: () => 42,
+    measureElement:
+      typeof window !== 'undefined' &&
+        navigator.userAgent.indexOf('Firefox') === -1
+        ? element => element?.getBoundingClientRect().height
+        : undefined,
+    overscan: viewHelperProps.virtualiseOverscan ?? 10,
+  });
 
   if(!props.visible) {
     return <></>;
@@ -598,12 +619,19 @@ export default function DataGridView({
         <DndProvider backend={HTML5Backend}>
           <PgReactTable ref={tableRef} table={table} data-test="data-grid-view" tableClassName='DataGridView-table'>
             <PgReactTableHeader table={table} />
-            <PgReactTableBody>
-              {rows.map((row, i) => {
-                return <PgReactTableRow key={row.index}>
-                  <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
+            <PgReactTableBody style={{ height: virtualizer.getTotalSize() + 'px'}}>
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const row = rows[virtualRow.index];
+
+                return <PgReactTableRow key={row.id} data-index={virtualRow.index}
+                  ref={node => virtualizer.measureElement(node)}
+                  style={{
+                    transform: `translateY(${virtualRow.start}px)`, // this should always be a `style` as it changes on scroll
+                  }}>
+                  <DataTableRow index={virtualRow.index} row={row} totalRows={rows.length} isResizing={isResizing}
                     schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
-                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}
+                    moveRow={moveRow} isHovered={virtualRow.index == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}
+                    measureElement={virtualizer.measureElement}
                   />
                   {props.canEdit &&
                     <PgReactTableRowExpandContent row={row}>

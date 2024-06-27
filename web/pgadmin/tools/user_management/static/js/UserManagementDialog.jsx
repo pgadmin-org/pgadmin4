@@ -261,7 +261,7 @@ class UserManagementSchema extends BaseUISchema {
     return [
       {
         id: 'userManagement', label: '', type: 'collection', schema: obj.userManagementCollObj,
-        canAdd: true, canDelete: true, isFullTab: true, group: 'temp_user',
+        canAdd: true, canDelete: true, isFullTab: true,
         addOnTop: true,
         canDeleteRow: (row)=>{
           return row['id'] != current_user['id'];
