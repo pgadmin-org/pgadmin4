@@ -118,6 +118,7 @@ debian:
 
 docker:
 	echo $(APP_NAME)
+	git checkout HEAD
 	docker build --pull -t ${APP_NAME} -t $(APP_NAME):latest -t $(APP_NAME):$(APP_RELEASE) -t $(APP_NAME):$(APP_RELEASE).$(APP_REVISION) .
 
 docs:

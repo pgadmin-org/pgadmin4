@@ -168,7 +168,7 @@
     "bundle:watch": "yarn run linter && yarn run webpacker:watch",
     "bundle:dev": "yarn run linter && yarn run webpacker",
     "bundle:analyze": "cross-env NODE_ENV=production ANALYZE=true yarn run bundle:dev",
-    "bundle": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=3072 yarn run bundle:dev && git log -1 --format='%H %as' > commit_hash",
+    "bundle": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=3072 yarn run bundle:dev && git log -1 --format=\"%H %as\" > commit_hash",
     "test:js-once": "yarn run linter && yarn run jest --maxWorkers=50%",
     "test:js": "yarn run test:js-once --watch",
     "test:js-file": "yarn run test:js-once -t",
@@ -181,5 +181,5 @@
     "auditpy": "safety check --full-report -i 51668 -i 52495yarn npm audit",
     "audit-all": "yarn run auditjs && yarn run auditpy"
   },
-  "packageManager": "yarn@3.8.2"
+  "packageManager": "yarn@3.8.3"
 }

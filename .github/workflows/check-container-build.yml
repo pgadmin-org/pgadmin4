@@ -20,7 +20,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - run: git checkout HEAD^
 
       - name: Build the container
-        run: docker build .
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: .
