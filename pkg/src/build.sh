@@ -32,6 +32,9 @@ fi
 TARBALL_NAME=$(echo "${APP_NAME}-${APP_LONG_VERSION}" | sed 's/ //g' | awk '{print tolower($0)}')
 DOC_TARBALL_NAME=$(echo "${APP_NAME}-${APP_LONG_VERSION}-docs" | sed 's/ //g' | awk '{print tolower($0)}')
 
+# Get the github timestamp
+git log -1 --format='%H %as' > web/commit_hash
+
 # Output basic details to show we're working
 echo "Building tarballs for ${APP_NAME} version ${APP_LONG_VERSION}..."
 
@@ -68,6 +71,8 @@ do
     # shellcheck disable=SC2164
     tar cf - "${FILE}" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 done
+
+tar cf - "web/commit_hash" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 
 # Create the tarball
 echo Creating tarball...

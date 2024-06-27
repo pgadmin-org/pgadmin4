@@ -70,6 +70,7 @@ def index():
     else:
         info['app_mode'] = gettext('Desktop')
 
+    info['commit_hash'] = getattr(config, 'COMMIT_HASH', None)
     info['browser_details'] = browser
     info['version'] = config.APP_VERSION
     info['admin'] = admin

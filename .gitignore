@@ -48,6 +48,7 @@ node_modules/
 web/pgAdmin/static/js/generated
 web/pgadmin/static/js/generated
 web/yarn-error.log
+web/commit_hash
 /web/cacert.pem
 auditjs.html
 auditpy.txt
