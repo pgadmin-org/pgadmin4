@@ -568,7 +568,7 @@ export default function DataGridView({
 
       // Try autofocus on newly added row.
       setTimeout(()=>{
-        const rowInput = tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`);
+        const rowInput = tableRef.current?.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`);
         if(!rowInput) return;
 
         requestAnimationAndFocus(tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`));

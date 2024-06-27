@@ -2098,7 +2098,21 @@ def start_query_download_tool(trans_id):
         )
 
     try:
-
+        sql = None
+        query_commited = data.get('query_commited', False)
+        # Iterate through CombinedMultiDict to find query.
+        for key, value in data.items():
+            if key == 'query':
+                sql = value
+            if key == 'query_commited':
+                query_commited = (
+                    eval(value) if isinstance(value, str) else value
+                )
+        if not sql:
+            sql = trans_obj.get_sql(sync_conn)
+        if query_commited:
+            # Re-execute the query to ensure the latest data is included
+            sync_conn.execute_async(sql)
         # This returns generator of records.
         status, gen, conn_obj = \
             sync_conn.execute_on_server_as_csv(records=10)
