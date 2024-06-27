@@ -4,4 +4,4 @@ FROM
   pg_attribute
 WHERE
   attrelid = '{{ tid }}' :: regclass
-  and attstattarget =-1;
+  and attnum > 0;

@@ -24,7 +24,7 @@ ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     {{ VARIABLE.SET(conn, 'COLUMN', data.name, data.attoptions) }}
 {% endif %}
 {###  Alter column statistics value ###}
-{% if data.attstattarget is defined and data.attstattarget > -1 %}
+{% if data.attstattarget is defined and data.attstattarget is not none and data.attstattarget > -1 %}
 
 ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {{conn|qtTypeIdent(data.name)}} SET STATISTICS {{data.attstattarget}};

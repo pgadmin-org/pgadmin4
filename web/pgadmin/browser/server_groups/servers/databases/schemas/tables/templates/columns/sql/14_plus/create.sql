@@ -33,7 +33,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Alter column statistics value ###}
-{% if data.attstattarget is defined and data.attstattarget > -1 %}
+{% if data.attstattarget is defined and data.attstattarget is not none and data.attstattarget > -1 %}
 ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
     ALTER COLUMN {{conn|qtTypeIdent(data.name)}} SET STATISTICS {{data.attstattarget}};
 
