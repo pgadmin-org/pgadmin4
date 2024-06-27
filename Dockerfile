@@ -31,6 +31,7 @@ RUN apk add --no-cache \
     yarn \
     zlib-dev
 
+COPY .git .git
 # Create the /pgadmin4 directory and copy the source into it. Explicitly
 # remove the node_modules directory as we'll recreate a clean version, as well
 # as various other files we don't want
@@ -60,7 +61,8 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
            webpack.* \
            jest.config.js \
            babel.* \
-           ./pgadmin/static/js/generated/.cache
+           ./pgadmin/static/js/generated/.cache \
+           /pgadmin4/.git
 
 #########################################################################
 # Next, create the base environment for Python

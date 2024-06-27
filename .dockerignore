@@ -1,4 +1,3 @@
-.git
 web/node_modules
 web/*.log
 web/regression
