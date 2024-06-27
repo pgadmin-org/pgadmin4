@@ -42,6 +42,7 @@ import {
 import syntaxHighlighting from '../extensions/highlighting';
 import PgSQL from '../extensions/dialect';
 import { sql } from '@codemirror/lang-sql';
+import { json } from '@codemirror/lang-json';
 import errorMarkerExtn from '../extensions/errorMarker';
 import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
@@ -129,6 +130,7 @@ const defaultExtensions = [
   sql({
     dialect: PgSQL,
   }),
+  json(),
   PgSQL.language.data.of({
     autocomplete: false,
   }),

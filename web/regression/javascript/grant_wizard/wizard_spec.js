@@ -9,8 +9,8 @@
 
 
 import React from 'react';
-
 import { render } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 import Theme from 'sources/Theme';
 import Wizard from '../../../pgadmin/static/js/helpers/wizard/Wizard';

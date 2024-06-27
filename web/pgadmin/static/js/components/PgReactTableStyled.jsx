@@ -287,7 +287,7 @@ PgReactTableBody.propTypes = {
   children: CustomPropTypes.children,
 };
 
-export const PgReactTable = forwardRef(({children, table, rootClassName, tableClassName, ...props}, ref)=>{
+export const PgReactTable = forwardRef(({children, table, rootClassName, tableClassName, onScrollFunc, ...props}, ref)=>{
   const columns = table.getAllColumns();
 
   useEffect(()=>{
@@ -314,7 +314,7 @@ export const PgReactTable = forwardRef(({children, table, rootClassName, tableCl
   }, [columns, table.getState().columnSizingInfo]);
 
   return (
-    <StyledDiv className={['pgrt', rootClassName].join(' ')} ref={ref} >
+    <StyledDiv className={['pgrt', rootClassName].join(' ')} ref={ref} onScroll={e => onScrollFunc?.(e.target)}>
       <div className={['pgrt-table', tableClassName].join(' ')} style={{ ...columnSizeVars }} {...props}>
         {children}
       </div>
@@ -327,6 +327,7 @@ PgReactTable.propTypes = {
   rootClassName: PropTypes.any,
   tableClassName: PropTypes.any,
   children: CustomPropTypes.children,
+  onScrollFunc: PropTypes.any,
 };
 
 export function getExpandCell({ onClick, ...props }) {

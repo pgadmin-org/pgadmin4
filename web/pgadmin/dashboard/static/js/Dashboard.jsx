@@ -6,13 +6,13 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, Fragment } from 'react';
 import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
 import PgTable from 'sources/components/PgTable';
-import { InputCheckbox } from '../../../static/js/components/FormComponents';
+import { InputCheckbox, FormInputSwitch, FormInputToggle } from '../../../static/js/components/FormComponents';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
 import { Box, Tab, Tabs } from '@mui/material';
@@ -21,6 +21,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import StopSharpIcon from '@mui/icons-material/StopSharp';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
+import ServerLog from './ServerLog.ui';
 import _ from 'lodash';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
@@ -36,8 +37,10 @@ import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 import { parseApiError } from '../../../static/js/api_instance';
 import SectionContainer from './components/SectionContainer';
 import Replication from './Replication';
-import RefreshButton from './components/RefreshButtons';
 import { getExpandCell } from '../../../static/js/components/PgReactTableStyled';
+import CodeMirror from '../../../static/js/components/ReactCodeMirror';
+import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
+import { getBrowser } from '../../../static/js/utils';
 
 function parseData(data) {
   let res = [];
@@ -47,7 +50,6 @@ function parseData(data) {
   });
   return res;
 }
-
 const Root = styled('div')(({theme}) => ({
   height: '100%',
   width: '100%',
@@ -71,6 +73,13 @@ const Root = styled('div')(({theme}) => ({
         '& .Dashboard-terminateButton': {
           color: theme.palette.error.main
         },
+        '& .Dashboard-download': {
+          alignSelf: 'end',
+          '& .Dashboard-downloadButton': {
+            width: '35px',
+            height:'30px'
+          },
+        }
       },
     },
   },
@@ -85,18 +94,13 @@ const Root = styled('div')(({theme}) => ({
 }));
 
 let activeQSchemaObj = new ActiveQuery();
+let serverLogSchemaObj = new ServerLog();
 
 function Dashboard({
   nodeItem, nodeData, node, treeNodeInfo,
   ...props
 }) {
-
-  let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
-  let mainTabs = [gettext('General'), gettext('System Statistics')];
-  if(treeNodeInfo?.server?.replication_type) {
-    mainTabs.push(gettext('Replication'));
-  }
-  let systemStatsTabs = [gettext('Summary'), gettext('CPU'), gettext('Memory'), gettext('Storage')];
+  const api = getApiInstance();
   const [dashData, setDashData] = useState([]);
   const [msg, setMsg] = useState('');
   const [ssMsg, setSsMsg] = useState('');
@@ -106,6 +110,14 @@ function Dashboard({
   const [activeOnly, setActiveOnly] = useState(false);
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
   const [ldid, setLdid] = useState(0);
+
+  const [logCol, setLogCol] = useState(false);
+  const [logFormat, setLogFormat] = useState('T');
+  const [logConfigFormat, setLogConfigFormat] = useState([]);
+  const [nextPage, setNextPage] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
 
   const systemStatsTabChanged = (e, tabVal) => {
     setSystemStatsTabVal(tabVal);
@@ -121,14 +133,13 @@ function Dashboard({
     usePreferences().getPreferencesForModule('graphs'),
     usePreferences().getPreferencesForModule('misc')
   );
+  let mainTabs = [gettext('Activity'), gettext('State')];
 
-  if (!did) {
-    tabs.push(gettext('Configuration'));
+  mainTabs.push(gettext('Configuration'), gettext('Logs'), gettext('System'));
+  if(treeNodeInfo?.server?.replication_type) {
+    mainTabs.push(gettext('Replication'));
   }
-
-  const tabChanged = (e, tabVal) => {
-    setTabVal(tabVal);
-  };
+  let systemStatsTabs = [gettext('Summary'), gettext('CPU'), gettext('Memory'), gettext('Storage')];
 
   const mainTabChanged = (e, tabVal) => {
     setMainTabVal(tabVal);
@@ -177,6 +188,97 @@ function Dashboard({
       enableSorting: true,
       enableResizing: true,
       enableFilters: true,
+    },
+  ];
+
+  const downloadServerLogs = async () => {
+    let extension = '.txt',
+      type = 'plain',
+      respData = '';
+
+    if(logCol === false) {
+      if (logFormat == 'C') {
+        extension = '.csv';
+        type = 'csv';
+      } else if (logFormat == 'J') {
+        extension = '.json';
+        type = 'json';
+      }
+      respData = dashData[0]['pg_read_file'];
+    } else if (logCol === true) {
+      extension = '.csv';
+      type = 'csv';
+      respData = dashData.map((d)=> {return Object.values(d).join(','); }).join('\n');
+    }
+
+    let fileName = 'data-' + new Date().getTime() + extension;
+
+    try {
+      let respBlob = new Blob([respData], {type : 'text/'+type}),
+        urlCreator = window.URL || window.webkitURL,
+        download_url = urlCreator.createObjectURL(respBlob),
+        link = document.createElement('a');
+
+      document.body.appendChild(link);
+
+      if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
+        // IE10: (has Blob, but not a[download] or URL)
+        window.navigator.msSaveBlob(respBlob, fileName);
+      } else {
+        link.setAttribute('href', download_url);
+        link.setAttribute('download', fileName);
+        link.click();
+      }
+      document.body.removeChild(link);
+    } catch (error) {
+      setSsMsg(gettext('Failed to download the logs.'));
+    }
+  };
+
+  const serverLogColumns = [
+    {
+      header: () => null,
+      enableSorting: false,
+      enableResizing: false,
+      enableFilters: false,
+      size: 35,
+      maxSize: 35,
+      minSize: 35,
+      id: 'btn-edit',
+      cell: getExpandCell({
+        title: gettext('View the log details')
+      }),
+    },
+    {
+      accessorKey: 'error_severity',
+      header: gettext('Error Severity'),
+      enableSorting: true,
+      enableResizing: true,
+      enableFilters: true,
+      size: 100,
+      minSize: 35,
+      filterFn: 'equalsString'
+    },
+    {
+      accessorKey: 'timestamp',
+      header: gettext('Log Prefix/Timestamp'),
+      sortable: true,
+      enableResizing: true,
+      enableSorting: false,
+      enableFilters: true,
+      size: 150,
+      minSize: 35,
+      filterFn: 'equalsString'
+    },
+    {
+      accessorKey: 'message',
+      header: gettext('Logs'),
+      enableResizing: true,
+      enableSorting: false,
+      enableFilters: false,
+      size: 35,
+      minSize: 200,
+      filterFn: 'equalsString'
     },
   ];
 
@@ -650,9 +752,38 @@ function Dashboard({
     nodeData?._type === 'database' && setTabVal(0);
   },[nodeData]);
 
+
   useEffect(() => {
+    if (mainTabVal == 3) {
+      setLogFormat('T');
+      let url = url_for('dashboard.log_formats') +  '/' + sid;
+      api({
+        url: url,
+        type: 'GET',
+      })
+        .then((res) => {
+          let _format = res.data;
+          let _frm = [
+            {'label': gettext('Text'), 'value': 'T', 'disabled': !_format.includes('stderr')},
+            {'label': gettext('JSON'), 'value': 'J', 'disabled': !_format.includes('jsonlog')},
+            {'label': gettext('CSV'), 'value': 'C', 'disabled': !_format.includes('csvlog')}
+          ];
+          setLogConfigFormat(_frm);
+        })
+        .catch((error) => {
+          pgAdmin.Browser.notifier.alert(
+            gettext('Failed to retrieve data from the server.'),
+            _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+          );
+        });
+    }
+  },[nodeData, mainTabVal]);
+
+  useEffect(() => {
+
+    if (mainTabVal == 0) return;
     // disable replication tab
-    if(!treeNodeInfo?.server?.replication_type && mainTabVal == 2) {
+    if(!treeNodeInfo?.server?.replication_type && mainTabVal == 5) {
       setMainTabVal(0);
     }
 
@@ -662,39 +793,48 @@ function Dashboard({
         'Please connect to the selected server to view the dashboard.'
       );
 
-    if(tabVal == 3 && did) {
+    if((tabVal == 2 || tabVal == 3) && did) {
       setTabVal(0);
     }
 
     if (sid && serverConnected) {
-      if (tabVal === 0) {
-        url = url_for('dashboard.activity');
-      } else if (tabVal === 1) {
-        url = url_for('dashboard.locks');
-      } else if (tabVal === 2) {
-        url = url_for('dashboard.prepared');
-      } else {
-        url = url_for('dashboard.config');
-      }
 
       message = gettext('Loading dashboard...');
       if (did && !dbConnected) return;
-      if (did) url += sid + '/' + did;
-      else url += sid;
 
-      if (did && !dbConnected) return;
+      if (mainTabVal === 1) {
+        url = url_for('dashboard.activity');
+        if (did) url += sid + '/' + did;
+        else url += '/' + sid;
+
+      } else if (mainTabVal === 2) {
+        url = url_for('dashboard.config', {'sid': sid});
+      } else if (mainTabVal === 3) {
+        if(logCol === false) {
+          url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'plain', 'sid': sid});
+        } else if (logCol === true) {
+          url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'table', 'sid': sid});
+          setNextPage(0);
+        }
+      }
+
       if (did && did > 0) ssExtensionCheckUrl += '/' + sid + '/' + did;
       else ssExtensionCheckUrl += '/' + sid;
 
-      const api = getApiInstance();
       if (node) {
-        if (mainTabVal == 0) {
+        setSsMsg(gettext('Loading logs...'));
+        setDashData([]);
+        if (mainTabVal != 4 && mainTabVal != 5) {
           api({
             url: url,
             type: 'GET',
           })
             .then((res) => {
-              setDashData(parseData(res.data));
+              if (res.data && res.data['logs_disabled']) {
+                setSsMsg(gettext('Please enable the logging to view the server logs.'));
+              } else {
+                setDashData(parseData(res.data));
+              }
             })
             .catch((error) => {
               pgAdmin.Browser.notifier.alert(
@@ -705,7 +845,7 @@ function Dashboard({
               setMsg(gettext('Failed to retrieve data from the server.'));
             });
         }
-        else if (mainTabVal == 1) {
+        else if (mainTabVal == 4) {
           api({
             url: ssExtensionCheckUrl,
             type: 'GET',
@@ -735,15 +875,15 @@ function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal]);
+  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal, logCol, logFormat]);
 
   const filteredDashData = useMemo(()=>{
-    if (tabVal == 0 && activeOnly) {
+    if (mainTabVal == 1 && activeOnly) {
       // we want to show 'idle in transaction', 'active', 'active in transaction', and future non-blank, non-"idle" status values
-      return dashData.filter((r)=>(r.state && r.state != '' && r.state != 'idle'));
+      return dashData[0]['activity'].filter((r)=>(r.state && r.state != '' && r.state != 'idle'));
     }
-    return dashData;
-  }, [dashData, activeOnly, tabVal]);
+    return dashData && dashData[0] && dashData[0]['activity'] || [];
+  }, [dashData, activeOnly, mainTabVal]);
 
   const showDefaultContents = () => {
     return (
@@ -785,6 +925,83 @@ function Dashboard({
       ></InputCheckbox>);
   };
 
+  const CustomLogHeaderLabel =
+    {
+      label: gettext('Table based logs'),
+    };
+  const CustomLogHeader = () => {
+    return ( <Box height="100%" className='Dashboard-cardHeader' display="flex" flexDirection="column">
+      <FormInputToggle
+        label={gettext('Log Format')}
+        className='Dashboard-searchInput'
+        value={logFormat}
+        onChange={(val) => {
+          setLogFormat(val);
+        }}
+        options={logConfigFormat}
+        controlProps={CustomLogHeaderLabel}
+        labelGridBasis={3}
+        controlGridBasis={6}
+      ></FormInputToggle>
+      <FormInputSwitch
+        label={gettext('Logs in tabular format ?')}
+        labelPlacement="end"
+        className='Dashboard-searchInput'
+        value={logCol}
+        onChange={(e) => {
+          setDashData([]);
+          setLogCol(e.target.checked);
+        }}
+        controlProps={CustomLogHeaderLabel}
+        labelGridBasis={3}
+        controlGridBasis={6}
+      ></FormInputSwitch>
+      <div className='Dashboard-download'><PgIconButton
+        size="xs"
+        className='Dashboard-downloadButton'
+        icon={<GetAppRoundedIcon />}
+        onClick={downloadServerLogs}
+        aria-label="Download"
+        title={gettext('Download logs ')}
+      ></PgIconButton></div>
+    </Box>);
+  };
+
+
+  const loadNextPage = () => {
+    setIsNextPageLoading(true);
+    setTimeout(() => {
+      setHasNextPage(true);
+      setIsNextPageLoading(false);
+
+      let _url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'table', 'sid': sid});
+      _url += '/' + (nextPage +1);
+
+      const api = getApiInstance();
+      api({
+        url: _url,
+        type: 'GET',
+      })
+        .then((res) => {
+          console.warn(res.data.length);
+          if (res.data && res.data.length > 0) {
+            let _d = dashData.concat(parseData(res.data));
+            setDashData(_d);
+            setNextPage(nextPage + 1);
+          }
+        })
+        .catch((error) => {
+          pgAdmin.Browser.notifier.alert(
+            gettext('Failed to retrieve data from the server.'),
+            _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+          );
+          // show failed message.
+          setMsg(gettext('Failed to retrieve data from the server.'));
+        });
+
+    }, 500);
+  };
+
   return (
     (<Root>
       {sid && serverConnected ? (
@@ -796,14 +1013,25 @@ function Dashboard({
                   value={mainTabVal}
                   onChange={mainTabChanged}
                 >
-                  {mainTabs.map((tabValue) => {
-                    return <Tab key={tabValue} label={tabValue} />;
+                  {mainTabs.map((tabValue, i) => {
+                    if (tabValue == 'Activity') {
+                      if (!_.isUndefined(preferences) && preferences.show_graphs) {
+                        return <Tab key={tabValue} label={tabValue} value={i}/>;
+                      }
+                    } else if (tabValue == 'State') {
+                      if (!_.isUndefined(preferences) && preferences.show_activity) {
+                        return <Tab key={tabValue} label={tabValue} value={i}/>;
+                      }
+                    }
+                    else {
+                      return <Tab key={tabValue} label={tabValue} value={i}/>;
+                    }
                   })}
                 </Tabs>
               </Box>
-              {/* General Statistics */}
-              <TabPanel value={mainTabVal} index={0}>
-                {!_.isUndefined(preferences) && preferences.show_graphs && (
+              {/* Server Activity */}
+              {!_.isUndefined(preferences) && preferences.show_graphs && (
+                <TabPanel value={mainTabVal} index={0}>
                   <Graphs
                     key={sid + did}
                     preferences={preferences}
@@ -811,62 +1039,82 @@ function Dashboard({
                     did={did}
                     pageVisible={props.isActive}
                   ></Graphs>
-                )}
+                </TabPanel>
+              )}
+              {/* Server Activity */}
+              <TabPanel value={mainTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
                 {!_.isUndefined(preferences) && preferences.show_activity && (
-                  <SectionContainer title={dbConnected ?  gettext('Database activity') : gettext('Server activity')}>
-                    <Box>
-                      <Tabs
-                        value={tabVal}
-                        onChange={tabChanged}
-                      >
-                        {tabs.map((tabValue) => {
-                          return <Tab key={tabValue} label={tabValue} />;
-                        })}
-                        <RefreshButton onClick={(e) => {
-                          e.preventDefault();
-                          setRefresh(!refresh);
-                        }}/>
-                      </Tabs>
-                    </Box>
-                    <TabPanel value={tabVal} index={0}>
+                  <Fragment>
+                    <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
                         CustomHeader={CustomActiveOnlyHeader}
                         columns={activityColumns}
-                        data={filteredDashData}
+                        data={(dashData !== undefined && dashData[0] && filteredDashData) || []}
                         schema={activeQSchemaObj}
                       ></PgTable>
-                    </TabPanel>
-                    <TabPanel value={tabVal} index={1}>
+                    </SectionContainer>
+                    <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databaseLocksColumns}
-                        data={dashData}
+                        data={(dashData !== undefined && dashData[0] && dashData[0]['locks']) || []}
                       ></PgTable>
-                    </TabPanel>
-                    <TabPanel value={tabVal} index={2}>
+                    </SectionContainer>
+                    <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databasePreparedColumns}
-                        data={dashData}
+                        data={(dashData !== undefined &&  dashData[0] && dashData[0]['prepared']) || []}
                       ></PgTable>
-                    </TabPanel>
-                    <TabPanel value={tabVal} index={3}>
-                      <PgTable
-                        caveTable={false}
-                        tableNoBorder={false}
-                        columns={serverConfigColumns}
-                        data={dashData}
-                      ></PgTable>
-                    </TabPanel>
-                  </SectionContainer>
+                    </SectionContainer>
+                  </Fragment>
                 )}
               </TabPanel>
+              {/* Server Configuration */}
+              <TabPanel value={mainTabVal} index={2} classNameRoot='Dashboard-tabPanel'>
+                <PgTable
+                  caveTable={false}
+                  tableNoBorder={false}
+                  columns={serverConfigColumns}
+                  data={dashData}
+                ></PgTable>
+              </TabPanel>
+              {/* Server Logs */}
+              <TabPanel value={mainTabVal} index={3} classNameRoot='Dashboard-tabPanel'>
+                {dashData &&  dashData.length != 0 &&
+                <Box>
+                  <CustomLogHeader/>
+                </Box>}
+                {dashData.length == 0 && <div className='Dashboard-emptyPanel'>
+                  <EmptyPanelMessage text={ssMsg}/>
+                </div>}
+                {dashData && logCol === false && dashData.length == 1 && <CodeMirror
+                  id='tests'
+                  className='Dashboard-textArea'
+                  value={dashData[0]['pg_read_file']}
+                  readonly={true}
+                  options={{
+                    lineNumbers: true,
+                    mode: 'text/plain',
+                  }}
+                />}
+                {dashData && logCol === true && <PgTable
+                  caveTable={false}
+                  tableNoBorder={false}
+                  columns={serverLogColumns}
+                  data={dashData}
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  loadNextPage={loadNextPage}
+                  schema={serverLogSchemaObj}
+                ></PgTable>}
+              </TabPanel>
               {/* System Statistics */}
-              <TabPanel value={mainTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
+              <TabPanel value={mainTabVal} index={4} classNameRoot='Dashboard-tabPanel'>
                 <Box height="100%" display="flex" flexDirection="column">
                   {ssMsg === 'installed' && did === ldid ?
                     <ErrorBoundary>
@@ -929,7 +1177,7 @@ function Dashboard({
                 </Box>
               </TabPanel>
               {/* Replication */}
-              <TabPanel value={mainTabVal} index={2} classNameRoot='Dashboard-tabPanel'>
+              <TabPanel value={mainTabVal} index={5} classNameRoot='Dashboard-tabPanel'>
                 <Replication key={sid} sid={sid} node={node}
                   preferences={preferences} treeNodeInfo={treeNodeInfo} nodeData={nodeData} pageVisible={props.isActive} />
               </TabPanel>
@@ -954,6 +1202,7 @@ Dashboard.propTypes = {
   serverConnected: PropTypes.bool,
   dbConnected: PropTypes.bool,
   isActive: PropTypes.bool,
+  column: PropTypes.object,
 };
 
 export default withStandardTabInfo(Dashboard, BROWSER_PANELS.DASHBOARD);

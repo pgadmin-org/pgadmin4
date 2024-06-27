@@ -570,7 +570,8 @@ export default class DebuggerModule {
     );
     await listenPreferenceBroadcast();
 
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -586,8 +587,7 @@ export default class DebuggerModule {
             />
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 

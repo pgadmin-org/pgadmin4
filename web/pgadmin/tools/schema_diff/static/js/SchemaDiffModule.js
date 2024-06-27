@@ -102,8 +102,8 @@ export default class SchemaDiff {
   async load(container, trans_id) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
-
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -111,8 +111,7 @@ export default class SchemaDiff {
             <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin }}></SchemaDiffComponent>
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 

@@ -9,14 +9,14 @@ display information about the object currently selected in the *pgAdmin* tree
 control in the left window.  Select a tab to access information about the
 highlighted object in the tree control.
 
-.. image:: images/main_dashboard_general.png
-    :alt: Dashboard panel
+.. image:: images/dashboard_activity.png
+    :alt: Dashboard Activity
     :align: center
 
 The graphs and tables on the *Dashboard* tab provides an active analysis of system statistics and the usage
 statistics for the selected server or database.
 
-Click the *General* tab to get the usage statistics for the selected server or database:
+Click the *Activity* tab to get the usage statistics for the selected server or database:
 
 * The *Server sessions* or *Database sessions* graph displays the interactions
   with the server or database.
@@ -30,8 +30,14 @@ Click the *General* tab to get the usage statistics for the selected server or d
   or fetched from the buffer cache (but not the operating system's file system
   cache) for the server or database.
 
-The *Server activity* panel displays information about sessions, locks, prepared
-transactions, and server configuration (if applicable). The information is
+.. image:: images/dashboard_stat.png
+    :alt: Dashboard Activity
+    :align: center
+
+Click the *Stat* tab to get the usage statistics for the selected server or database:
+
+The *Stat* panel displays information about sessions, locks, prepared
+transactions. The information is
 presented in context-sensitive tables.  Use controls located above the table to:
 
 * Click the *Refresh* button to update the information displayed in each table.
@@ -55,6 +61,22 @@ session:
   terminated.
 * Use the *Details* icon (located in the third column) to open the *Details*
   tab; the tab displays information about the selected session.
+
+.. image:: images/dashboard_config.png
+    :alt: Dashboard Activity
+    :align: center
+
+Click the *Configuration* tab to get the server configuration details.
+
+
+.. image:: images/dashboard_logs.png
+    :alt: Dashboard Activity
+    :align: center
+
+Click the *Logs* tab to get the server logs.
+
+* Use the Log Format switch to select the format you want. Text/Plain, JSON and CSV are supported.
+* Use the Logs in tabular format? switch if you want to see the logs in a tabular format.
 
 Click the *System Statistics* tab to get the statistics for the system:
 

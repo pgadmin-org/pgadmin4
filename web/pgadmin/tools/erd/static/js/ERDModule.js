@@ -144,7 +144,8 @@ export default class ERDModule {
   async loadComponent(container, params) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -158,8 +159,7 @@ export default class ERDModule {
             />
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 }

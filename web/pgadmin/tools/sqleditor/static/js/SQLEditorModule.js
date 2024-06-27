@@ -228,7 +228,8 @@ export default class SQLEditor {
     );
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -237,8 +238,7 @@ export default class SQLEditor {
               qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 }

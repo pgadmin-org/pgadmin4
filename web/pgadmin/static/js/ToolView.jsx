@@ -46,7 +46,8 @@ export default function ToolView() {
           const newWin = window.open('', '_blank');
           const div = newWin.document.createElement('div');
           newWin.document.body.appendChild(div);
-          ReactDOM.render(
+          const root = ReactDOM.createRoot(div);
+          root.render(
             <ToolForm actionUrl={window.location.origin+toolUrl} params={formParams}/>, div
           );
           // Send the signal to runtime, so that proper zoom level will be set.
