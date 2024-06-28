@@ -170,7 +170,7 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
         <PgReactTableBody style={{ height: virtualizer.getTotalSize() + 'px'}}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const row = rows[virtualRow.index];
-            return <TableRow index={row.index} key={row.index} row={row} schema={schema}
+            return <TableRow index={virtualRow.index} key={virtualRow.index} row={row} schema={schema}
               measureElement={virtualizer.measureElement}
               style={{
                 transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
