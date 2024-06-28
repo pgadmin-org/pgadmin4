@@ -93,7 +93,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
                 /* Set only if no tunnel password asked */
                 firstEleRef.current = ele;
               }
-            }} type="password" value={formData['password']} controlProps={{maxLength:null, autoComplete:'new-password'}}
+            }} type="password" value={formData['password']} controlProps={{maxLength:null}}
             onChange={(e)=>onTextChange(e, 'password')} onKeyDown={(e)=>onKeyDown(e)}/>
           </Box>
           <Box marginTop='12px'>
