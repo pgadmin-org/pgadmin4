@@ -62,7 +62,7 @@ export default function BasePage({pageImage, title,  children, messages}) {
   const snackbar = useSnackbar();
   useEffect(()=>{
     messages?.forEach((m)=>{
-      snackbar.enqueueSnackbar(null, {
+      snackbar.enqueueSnackbar({
         autoHideDuration: null,
         content: (key)=>{
           if(Array.isArray(m[0])) m[0] = m[0][0];
