@@ -18,10 +18,10 @@ from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.ajax import make_json_response
 import config
-import httpagentparser
 from pgadmin.model import User
 from user_agents import parse
 import platform
+import re
 
 MODULE_NAME = 'about'
 
@@ -59,11 +59,11 @@ def index():
     """Render the about box."""
     info = {}
     # Get OS , NW.js, Browser details
-    browser, os_details, nwjs_version = detect_browser(request)
+    browser, os_details, electron_version = detect_browser(request)
     admin = is_admin(current_user.email)
 
-    if nwjs_version:
-        info['nwjs'] = nwjs_version
+    if electron_version:
+        info['electron'] = electron_version
 
     if config.SERVER_MODE:
         info['app_mode'] = gettext('Server')
@@ -119,32 +119,19 @@ def is_admin(load_user):
 
 def detect_browser(request):
     """This function returns the browser and os details"""
-    nwjs_version = None
+    electron_version = None
     agent = request.environ.get('HTTP_USER_AGENT')
     os_details = parse(platform.platform()).ua_string
 
-    if 'Nwjs' in agent:
-        agent = agent.split('-')
-        nwjs_version = agent[0].split(':')[1]
-        browser = 'Chromium' + ' ' + agent[2]
+    if 'Electron' in agent:
+        electron_version = re.findall('Electron/([\\d.]+\\d+)', agent)[0]
 
+    browser = re.findall(
+        '(opera|chrome|safari|firefox|msie|trident(?=/))/?\\s*([\\d.]+\\d+)',
+        agent, re.IGNORECASE)
+    if not browser:
+        browser = agent.split('/')[0]
     else:
-        browser = httpagentparser.detect(agent)
-        if not browser:
-            browser = agent.split('/')[0]
-        else:
-            browser = browser['browser']['name'] + ' ' + browser['browser'][
-                'version']
+        browser = " ".join(browser[0])
 
-    return browser, os_details, nwjs_version
-
-
-@blueprint.route("/about.js")
-@pga_login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template("about/about.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
+    return browser, os_details, electron_version

@@ -65,13 +65,13 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.current_user}</InputLabel>
         </Grid>
       </Grid>
-      { aboutData.nwjs &&
+      { aboutData.electron &&
         <Grid container spacing={0} style={{marginBottom: '8px'}}>
           <Grid item lg={3} md={3} sm={3} xs={12}>
-            <InputLabel style={{fontWeight: 'bold'}}>{gettext('NW.js Version')}</InputLabel>
+            <InputLabel style={{fontWeight: 'bold'}}>{gettext('Electron Version')}</InputLabel>
           </Grid>
           <Grid item lg={9} md={9} sm={9} xs={12}>
-            <InputLabel>{aboutData.nwjs}</InputLabel>
+            <InputLabel>{aboutData.electron}</InputLabel>
           </Grid>
         </Grid>
       }

@@ -3,15 +3,27 @@
 {% block title %}{{ config.APP_NAME }}{% endblock %}
 
 {% block init_script %}
-window.hookConsole = function(callback) {
-  for (const method of ['log', 'error']) {
-    const nativeMethod = window.console[method];
-    window.console[method] = function () {
-      nativeMethod.apply(this, arguments);
-      setTimeout(()=>{
-        callback(method, arguments);
-      });
+function parseConsoleArgs(args) {
+  const retData = Array.from(args).map(arg => {
+    try {
+      if(arg.stack) return arg.stack;
+      return JSON.stringify(arg);
+    } catch (e) {
+      return arg
     }
+  });
+  return retData?.join(' ');
+}
+
+for (const method of ['log', 'error']) {
+  const nativeMethod = window.console[method];
+  window.console[method] = function () {
+    nativeMethod.apply(this, arguments);
+    setTimeout(()=>{
+      window.electronUI?.log(`--------------[UI ${method}]---------------
+      ${parseConsoleArgs(arguments)}
+      ------------[UI End]----------------`);
+    });
   }
 }
 try {

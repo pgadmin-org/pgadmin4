@@ -133,55 +133,47 @@ _create_python_virtualenv() {
 _build_runtime() {
     echo "Assembling the desktop runtime..."
 
-    # Get a fresh copy of nwjs.
-    # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
-    #       in a retry loop as Yarn/Npm don't seem to like that.
+    # Get a fresh copy of electron.
 
-    # YARN:
-    # yarn add --cwd "${BUILDROOT}" nw
-    # YARN END
+    ELECTRON_ARCH="x64"
+    if [ "$(uname -m)" == "arm64" ]; then
+      ELECTRON_ARCH="arm64"
+    fi
 
-    # WGET:
-    # Comment out the below line as the latest version having some
-    # problem https://github.com/nwjs/nw.js/issues/7964, so for the time being
-    # hardcoded the version to 0.77.0
-    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
-    NW_VERSION="0.77.0"
+    ELECTRON_VERSION=$(yarn info electron | grep latest | awk -F "'" '{ print $2}')
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
-            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-linux-x64.tar.gz" && break
-            rm "nwjs-v${NW_VERSION}-linux-x64.tar.gz"
+            wget "https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}.zip" && break
+            rm "electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}.zip"
         done
-        tar -zxvf "nwjs-v${NW_VERSION}-linux-x64.tar.gz"
+        unzip "electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}.zip" -d "electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}"
     popd > /dev/null || exit
-    # WGET END
 
-    # Copy nwjs into the staging directory
+    # Copy electron into the staging directory
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
 
     # The chmod command below is needed to fix the permission issue of
     # the NWjs binaries and files.
     # Change the permission for others and group the same as the owner
-    chmod -R og=u "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/*
+    chmod -R og=u "${BUILDROOT}/electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}"/*
     # Explicitly remove write permissions for others and group
-    chmod -R og-w "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/*
+    chmod -R og-w "${BUILDROOT}/electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}"/*
 
-    # YARN:
-    # cp -r "${BUILDROOT}/node_modules/nw/nwjs"/* "${DESKTOPROOT}/usr/${APP_NAME}/bin"
-    #  YARN END
+    BUNDLEDIR="${DESKTOPROOT}/usr/${APP_NAME}/bin"
 
     # WGET:
-    cp -r "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/* "${DESKTOPROOT}/usr/${APP_NAME}/bin"
+    cp -r "${BUILDROOT}/electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}"/* "${BUNDLEDIR}"
     # WGET END
 
-    mv "${DESKTOPROOT}/usr/${APP_NAME}/bin/nw" "${DESKTOPROOT}/usr/${APP_NAME}/bin/${APP_NAME}"
+    mv "${BUNDLEDIR}/electron" "${BUNDLEDIR}/${APP_NAME}"
 
-    cp -r "${SOURCEDIR}/runtime/assets" "${DESKTOPROOT}/usr/${APP_NAME}/bin/assets"
-    cp -r "${SOURCEDIR}/runtime/src" "${DESKTOPROOT}/usr/${APP_NAME}/bin/src"
+    mkdir -p "${BUNDLEDIR}/resources/app"
+    cp -r "${SOURCEDIR}/runtime/assets" "${BUNDLEDIR}/resources/app/assets"
+    cp -r "${SOURCEDIR}/runtime/src" "${BUNDLEDIR}/resources/app/src"
 
-    cp "${SOURCEDIR}/runtime/package.json" "${DESKTOPROOT}/usr/${APP_NAME}/bin/"
-    yarn --cwd "${DESKTOPROOT}/usr/${APP_NAME}/bin" install --production=true
+    cp "${SOURCEDIR}/runtime/package.json" "${BUNDLEDIR}/resources/app"
+    yarn --cwd "${BUNDLEDIR}/resources/app" install --production=true
 
     # Create the icon
     mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/128x128/apps/"

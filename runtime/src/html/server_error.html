@@ -31,6 +31,14 @@
       </div>
     </div>
   </div>
-  <script type="text/javascript" src="../js/server_error.js"></script>
+  <script>
+    window.onload = async function() {
+      document.getElementById('server_error_label').innerHTML = 'The pgAdmin 4 server could not be contacted:';
+      document.getElementById('server_error_log').innerHTML = await window.electronUI.readServerLog();
+      document.getElementById('btnConfigure').addEventListener('click', function() {
+        window.electronUI.openConfigure();
+      });
+    }
+  </script>
 </body>
 </html>

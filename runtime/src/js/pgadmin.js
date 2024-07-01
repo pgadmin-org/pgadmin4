@@ -6,42 +6,92 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const misc = require('../js/misc.js');
-const spawn = require('child_process').spawn;
-const {EOL} = require('os');
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
+import axios from 'axios';
+import Store from 'electron-store';
+import fs from 'fs';
+import path from 'path';
+import * as misc from './misc.js';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { setupMenu } from './menu.js';
 
+const configStore = new Store({
+  defaults: {
+    fixedPort: false,
+    portNo: 5050,
+    connectionTimeout: 180,
+    openDocsInBrowser: true,
+  },
+});
 let pgadminServerProcess = null;
 let startPageUrl = null;
 let serverCheckUrl = null;
-let addMenuCompleted = false;
 let pgAdminMainScreen = null;
 
 let serverPort = 5050;
 let appStartTime = (new Date()).getTime();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
-// Paths to the rest of the app
-let pythonPath = misc.getPythonPath();
-let pgadminFile = '../web/pgAdmin4.py';
-let configFile = '../web/config.py';
+process.env['ELECTRON_ENABLE_SECURITY_WARNINGS'] = false;
 
-if (misc.insideFlatpak()) {
-  pgadminFile = '/app/pgAdmin4/web/pgAdmin4.py';
-}
+// Paths to the rest of the app
+
+let [pythonPath, pgadminFile] = misc.getAppPaths(__dirname);
 
 // Override the paths above, if a developer needs to
 if (fs.existsSync('dev_config.json')) {
   try {
     let dev_config = JSON.parse(fs.readFileSync('dev_config.json'));
-    pythonPath = dev_config['pythonPath'];
-    pgadminFile = dev_config['pgadminFile'];
+    pythonPath = path.resolve(dev_config['pythonPath']);
+    pgadminFile = path.resolve(dev_config['pgadminFile']);
   } catch (error) {
-    // Meh.
+    console.error('Failed to load dev_config', error);
   }
+}
+
+Menu.setApplicationMenu(null);
+
+function openConfigure() {
+  const win = new BrowserWindow({
+    show: false,
+    width: 600,
+    height: 600,
+    position: 'center',
+    resizable: false,
+    icon: '../../assets/pgAdmin4.png',
+    webPreferences: {
+      preload: path.join(__dirname, 'other_preload.js'),
+    },
+  });
+  win.loadFile('./src/html/configure.html');
+  win.once('ready-to-show', ()=>{
+    win.show();
+  });
+}
+
+function showErrorDialog(intervalID) {
+  if(!splashWindow.isVisible()) {
+    return;
+  }
+  clearInterval(intervalID);
+  splashWindow.close();
+
+  new BrowserWindow({
+    'frame': true,
+    'width': 790,
+    'height': 430,
+    'position': 'center',
+    'resizable': false,
+    'focus': true,
+    'show': true,
+    icon: '../../assets/pgAdmin4.png',
+    webPreferences: {
+      preload: path.join(__dirname, 'other_preload.js'),
+    },
+  }).loadFile('./src/html/server_error.html');
 }
 
 // This functions is used to start the pgAdmin4 server by spawning a
@@ -52,6 +102,7 @@ function startDesktopMode() {
   if (pgadminServerProcess != null)
     return;
 
+  let pingIntervalID;
   let UUID = crypto.randomUUID();
   // Set the environment variables so that pgAdmin 4 server
   // starts listening on the appropriate port.
@@ -63,28 +114,25 @@ function startDesktopMode() {
   startPageUrl = 'http://127.0.0.1:' + serverPort + '/?key=' + UUID;
   serverCheckUrl = 'http://127.0.0.1:' + serverPort + '/misc/ping?key=' + UUID;
 
-  document.getElementById('loader-text-status').innerHTML = 'Starting pgAdmin 4...';
-
   // Write Python Path, pgAdmin file path and command in log file.
   misc.writeServerLog('pgAdmin Runtime Environment');
   misc.writeServerLog('--------------------------------------------------------');
-  let command = path.resolve(pythonPath) + ' -s ' + path.resolve(pgadminFile);
-  misc.writeServerLog('Python Path: "' + path.resolve(pythonPath) + '"');
-  misc.writeServerLog('Runtime Config File: "' + path.resolve(misc.getRunTimeConfigFile()) + '"');
-  misc.writeServerLog('pgAdmin Config File: "' + path.resolve(configFile) + '"');
-  misc.writeServerLog('Webapp Path: "' + path.resolve(pgadminFile) + '"');
+  let command = pythonPath + ' -s ' + pgadminFile;
+  misc.writeServerLog('Python Path: "' + pythonPath + '"');
+  misc.writeServerLog('Runtime Config File: "' + path.resolve(configStore.path) + '"');
+  misc.writeServerLog('Webapp Path: "' + pgadminFile + '"');
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
   misc.writeServerLog('Environment: ');
   Object.keys(process.env).forEach(function (key) {
     // Below code is included only for Mac OS as default path for azure CLI
     // installation path is not included in PATH variable while spawning
     // runtime environment.
-    if (platform() === 'darwin' && key === 'PATH') {
+    if (process.platform === 'darwin' && key === 'PATH') {
       let updated_path = process.env[key] + ':/usr/local/bin';
       process.env[key] = updated_path;
     }
 
-    if (platform() === 'win32' && key.toUpperCase() === 'PATH') {
+    if (process.platform === 'win32' && key.toUpperCase() === 'PATH') {
       let _libpq_path = path.join(path.dirname(path.dirname(path.resolve(pgadminFile))), 'runtime');
       process.env[key] = _libpq_path + ';' + process.env[key];
     }
@@ -95,12 +143,14 @@ function startDesktopMode() {
 
   // Spawn the process to start pgAdmin4 server.
   let spawnStartTime = (new Date).getTime();
-  pgadminServerProcess = spawn(path.resolve(pythonPath), ['-s', path.resolve(pgadminFile)]);
+  pgadminServerProcess = spawn(pythonPath, ['-s', pgadminFile]);
   pgadminServerProcess.on('error', function (err) {
     // Log the error into the log file if process failed to launch
     misc.writeServerLog('Failed to launch pgAdmin4. Error:');
     misc.writeServerLog(err);
+    showErrorDialog(pingIntervalID);
   });
+
   let spawnEndTime = (new Date).getTime();
   misc.writeServerLog('Total spawn time to start the pgAdmin4 server: ' + (spawnEndTime - spawnStartTime) / 1000 + ' Sec');
 
@@ -120,7 +170,7 @@ function startDesktopMode() {
     return axios.get(serverCheckUrl);
   }
 
-  let connectionTimeout = misc.ConfigureStore.get('connectionTimeout', 90) * 1000;
+  let connectionTimeout = configStore.get('connectionTimeout', 180) * 1000;
   let currentTime = (new Date).getTime();
   let endTime = currentTime + connectionTimeout;
   let midTime1 = currentTime + (connectionTimeout / 2);
@@ -129,7 +179,7 @@ function startDesktopMode() {
 
   // ping pgAdmin server every 1 second.
   let pingStartTime = (new Date).getTime();
-  let intervalID = setInterval(function () {
+  pingIntervalID = setInterval(function () {
     // If ping request is already send and response is not
     // received no need to send another request.
     if (pingInProgress)
@@ -137,11 +187,11 @@ function startDesktopMode() {
 
     pingServer().then(() => {
       pingInProgress = false;
-      document.getElementById('loader-text-status').innerHTML = 'pgAdmin 4 started';
+      splashWindow.webContents.executeJavaScript('document.getElementById(\'loader-text-status\').innerHTML = \'pgAdmin 4 started\';', true);
       // Set the pgAdmin process object to misc
       misc.setProcessObject(pgadminServerProcess);
 
-      clearInterval(intervalID);
+      clearInterval(pingIntervalID);
       let appEndTime = (new Date).getTime();
       misc.writeServerLog('------------------------------------------');
       misc.writeServerLog('Total time taken to ping pgAdmin4 server: ' + (appEndTime - pingStartTime) / 1000 + ' Sec');
@@ -155,33 +205,20 @@ function startDesktopMode() {
       // if the connection timeout has lapsed then throw an error
       // and stop pinging the server.
       if (curTime >= endTime) {
-        clearInterval(intervalID);
-        splashWindow.hide();
-
-        nw.Window.open('src/html/server_error.html', {
-          'frame': true,
-          'width': 790,
-          'height': 430,
-          'position': 'center',
-          'resizable': false,
-          'focus': true,
-          'show': true,
-        });
+        showErrorDialog(pingIntervalID);
       }
 
       if (curTime > midTime1) {
         if (curTime < midTime2) {
-          document.getElementById('loader-text-status').innerHTML = 'Taking longer than usual...';
+          splashWindow.webContents.executeJavaScript('document.getElementById(\'loader-text-status\').innerHTML = \'Taking longer than usual...\';', true);
         } else {
-          document.getElementById('loader-text-status').innerHTML = 'Almost there...';
+          splashWindow.webContents.executeJavaScript('document.getElementById(\'loader-text-status\').innerHTML = \'Almost there...\';', true);
         }
-      } else {
-        document.getElementById('loader-text-status').innerHTML = 'Waiting for pgAdmin 4 to start...';
       }
     });
 
     pingInProgress = true;
-  }, 250);
+  }, 1000);
 }
 
 // This function is used to hide the splash screen and create/launch
@@ -189,7 +226,7 @@ function startDesktopMode() {
 function launchPgAdminWindow() {
   // Create and launch new window and open pgAdmin url
   misc.writeServerLog('Application Server URL: ' + startPageUrl);
-  nw.Window.open(startPageUrl, {
+  pgAdminMainScreen = new BrowserWindow({
     'id': 'pgadmin-main',
     'icon': '../../assets/pgAdmin4.png',
     'frame': true,
@@ -201,503 +238,150 @@ function launchPgAdminWindow() {
     'height': 768,
     'focus': true,
     'show': false,
-  }, (pgadminWindow) => {
-    pgAdminMainScreen = pgadminWindow;
-    // Set pgAdmin4 Windows Object
-    misc.setPgAdminWindowObject(pgadminWindow);
-
-    // Set the zoom level stored in the config file.
-    pgadminWindow.zoomLevel = misc.ConfigureStore.get('zoomLevel', 0);
-
-    // Set zoom in and out events.
-    misc.setZoomEvents();
-
-    // Workaround to fix increasing window size.
-    // https://github.com/nwjs/nw.js/issues/7973
-    pgadminWindow.on('close', function () {
-      // Resize Window
-      let resizeHeightBy = pgadminWindow.window.outerHeight - pgadminWindow.window.innerHeight;
-      pgadminWindow.resizeBy(0, -resizeHeightBy);
-      // Remove 'close' event handler, and then close window
-      pgadminWindow.removeAllListeners('close');
-      pgadminWindow.close()
-    });
-
-    pgadminWindow.on('closed', function () {
-      misc.cleanupAndQuitApp();
-    });
-
-    // set up handler for new-win-policy event.
-    // Set the width and height for the new window.
-    pgadminWindow.on('new-win-policy', function (frame, url, policy) {
-      if (!frame) {
-        let openDocsInBrowser = misc.ConfigureStore.get('openDocsInBrowser', true);
-        let isDocURL = false;
-        docsURLSubStrings.forEach(function (key) {
-          if (url.indexOf(key) >= 0) {
-            isDocURL = true;
-          }
-
-        });
-
-
-        if (openDocsInBrowser && isDocURL) {
-          // Do not open the window
-          policy.ignore();
-          // Open URL in the external browser.
-          nw.Shell.openExternal(url);
-        } else {
-          policy.setNewWindowManifest({
-            'icon': '../../assets/pgAdmin4.png',
-            'frame': true,
-            'position': 'center',
-            'min_width': 640,
-            'min_height': 480,
-            'width': pgadminWindow.width,
-            'height': pgadminWindow.height,
-          });
-        }
-      }
-    });
-
-    pgadminWindow.on('loaded', function () {
-      /* Make the new window opener to null as it is
-       * nothing but a splash screen. We will have to make it null,
-       * so that open in new browser tab will work.
-       */
-      pgadminWindow.window.hookConsole((method, args)=>{
-        misc.writeServerLog(
-          `--------------[UI ${method}]---------------${EOL}${misc.parseConsoleArgs(method, args)}${EOL}------------[UI End]----------------`);
-      });
-      pgadminWindow.window.opener = null;
-
-      // Show new window
-      pgadminWindow.show();
-      pgadminWindow.focus();
-
-      nativeMenu = new gui.Menu({ type: 'menubar' });
-      // Create Mac Builtin Menu
-      if (platform() === 'darwin') {
-        nativeMenu.createMacBuiltin('pgAdmin 4');
-        // Remove 'About pgAdmin 4' submenu
-        nativeMenu?.items[0].submenu.removeAt(0);
-        // Remove 'Close Window' submenu
-        nativeMenu?.items[2].submenu.removeAt(1);
-        pgAdminMainScreen.menu = nativeMenu;
-      }
-
-      try {
-        pgAdminMainScreen.isCustomMenusAdded = false;
-        let addMenuInterval = setInterval(() => {
-          if (pgadminWindow?.window?.pgAdmin?.Browser?.Events && pgadminWindow?.window?.pgAdmin?.Browser?.MainMenus?.length > 0) {
-            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', enableDisableMenuItem);
-            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', refreshMenuItems);
-            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-update-checked-menu-item', updateCheckedMenuItem);
-            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-set-new-window-open-size', setNewWindowSize)
-            // Add Main Menus to native menu.
-            pgadminWindow.window.pgAdmin.Browser.MainMenus.forEach((menu)=> {
-              addMenu(menu)
-            })
-            clearInterval(addMenuInterval);
-          }
-        }, 250)
-      } catch (e) {
-        console.error('Error in add native menus');
-      }
-
-      // Hide the splash screen
-      splashWindow.hide();
-    });
-
-    pgadminWindow.on('blur', function () {
-      misc.unregisterZoomEvents();
-    });
-
-    pgadminWindow.on('focus', function () {
-      misc.registerZoomEvents();
-    });
-  });
-}
-
-// Get the gui object of NW.js
-let gui = require('nw.gui');
-let splashWindow = gui.Window.get();
-
-// Enable dragging on the splash screen.
-let isDragging = false;
-let dragOrigin = { x: 0, y: 0 };
-document.mouseleave = () => isDragging = false;
-document.onmouseup = () => isDragging = false;
-
-document.onmousedown = (e) => {
-  isDragging = true;
-  dragOrigin.x = e.x;
-  dragOrigin.y = e.y;
-};
-
-document.onmousemove = (e) => {
-  if (isDragging) {
-    splashWindow.moveTo(e.screenX - dragOrigin.x, e.screenY - dragOrigin.y);
-  }
-};
-
-// Always clear the cache before starting the application.
-nw.App.clearCache();
-
-let nativeMenu;
-
-splashWindow.on('loaded', function () {
-  // Initialize the ConfigureStore
-  misc.ConfigureStore.init();
-
-  let fixedPortCheck = misc.ConfigureStore.get('fixedPort', false);
-  if (fixedPortCheck) {
-    serverPort = misc.ConfigureStore.get('portNo');
-    //Start the pgAdmin in Desktop mode.
-    startDesktopMode();
-  } else {
-    // get the available TCP port by sending port no to 0.
-    misc.getAvailablePort(0)
-      .then((pythonApplicationPort) => {
-        serverPort = pythonApplicationPort;
-        //Start the pgAdmin in Desktop mode.
-        startDesktopMode();
-      })
-      .catch((errCode) => {
-        if (errCode === 'EADDRINUSE') {
-          alert('The port specified is already in use. Please enter a free port number.');
-        } else {
-          alert(errCode);
-        }
-      });
-  }
-});
-
-splashWindow.on('close', function () {
-  misc.cleanupAndQuitApp();
-});
-
-function setNewWindowSize(){
-  misc.setZoomLevelForAllWindows();
-}
-
-
-function addCommonMenus(menu) {
-  let _menu = new gui.Menu();
-
-  menu.menuItems.forEach((menuItem) => {
-    let submenu = getSubMenu(menuItem);
-
-    let _menuItem = new gui.MenuItem({
-      label: menuItem.label,
-      enabled: !menuItem.isDisabled,
-      type: menuItem.type || 'normal',
-      priority: menuItem.priority,
-      ...(submenu.items.length > 0) && {
-        submenu: submenu,
-      },
-      click: function () {
-        menuItem.callback();
-      },
-    });
-    _menu.append(_menuItem);
+    webPreferences: {
+      nodeIntegrationInSubFrames: true,
+      preload: path.join(__dirname, 'pgadmin_preload.js'),
+    },
   });
 
-  if (menu.name == 'file') {
-    let runtimeMenu = getRuntimeMenu();
-    _menu.append(runtimeMenu);
-  }
+  splashWindow.close();
+  pgAdminMainScreen.webContents.session.clearCache();
 
-  if (menu.menuItems.length == 0) {
-    let _menuItem = new gui.MenuItem({
-      label: 'No object selected',
-      enabled: false,
-      priority: 0,
-    });
-    _menu.append(_menuItem);
-  }
-
-  if (platform() == 'darwin') {
-    pgAdminMainScreen.menu.insert(new gui.MenuItem({
-      label: menu.label,
-      name: menu.name,
-      submenu: _menu,
-    }), menu.index);
-  } else {
-    nativeMenu.append(new gui.MenuItem({
-      label: menu.label,
-      name: menu.name,
-      submenu: _menu,
-    }));
-    pgAdminMainScreen.menu = nativeMenu;
-  }
-
-}
-
-function getRuntimeMenu() {
-  let subMenus = new gui.Menu();
-  let rtmenudt = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']
-  let runtimeSubMenus = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']['submenus']
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['configure'].label,
-    enabled: runtimeSubMenus['configure'].enable,
-    priority: runtimeSubMenus['configure'].priority,
-    type: 'normal',
-    checked: false,
-    click: function () {
-      // Create and launch new window and open pgAdmin url
-      nw.Window.open('src/html/configure.html', {
-        'frame': true,
-        'width': 600,
-        'height': 585,
-        'position': 'center',
-        'resizable': false,
-        'focus': true,
-        'show': true,
-      });
-    },
-  }));
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['view_log'].label,
-    enabled: runtimeSubMenus['view_log'].enable,
-    priority: runtimeSubMenus['view_log'].priority,
-    type: 'normal',
-    checked: false,
-    click: function () {
-      // Create and launch new window and open pgAdmin url
-      nw.Window.open('src/html/view_log.html', {
-        'frame': true,
-        'width': 790,
-        'height': 425,
-        'position': 'center',
-        'resizable': false,
-        'focus': true,
-        'show': true,
-      });
-    },
-  }));
-  subMenus.append(new nw.MenuItem({ type: 'separator' }));
-    subMenus.append(new gui.MenuItem({
-      label: pgAdminMainScreen?.isFullscreen ? runtimeSubMenus['exit_full_screen'].label : runtimeSubMenus['enter_full_screen'].label,
-      enabled: runtimeSubMenus['enter_full_screen'].enable,
-      priority: runtimeSubMenus['enter_full_screen'].priority,
-      type: 'normal',
-      checked: false,
-      key: runtimeSubMenus['enter_full_screen'].key,
-      modifiers: runtimeSubMenus['enter_full_screen'].modifiers,
-      click: function () {
-        this.label = !pgAdminMainScreen?.isFullscreen ? runtimeSubMenus['exit_full_screen'].label : runtimeSubMenus['enter_full_screen'].label;
-        misc.toggleFullScreen();
-      },
-    }));
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['actual_size'].label,
-    enabled: runtimeSubMenus['actual_size'].enable,
-    priority: runtimeSubMenus['actual_size'].priority,
-    type: 'normal',
-    checked: false,
-    key: runtimeSubMenus['actual_size'].key,
-    modifiers: runtimeSubMenus['actual_size'].modifiers,
-    click: function () {
-      misc.actualSize();
-    },
-  }));
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['zoom_in'].label,
-    enabled: runtimeSubMenus['zoom_in'].enable,
-    priority: runtimeSubMenus['zoom_in'].priority,
-    type: 'normal',
-    checked: false,
-    key: runtimeSubMenus['zoom_in'].key,
-    modifiers: runtimeSubMenus['zoom_in'].modifiers,
-    click: function () {
-      misc.zoomIn();
-    },
-  }));
-  subMenus.append(new gui.MenuItem({
-    label: runtimeSubMenus['zoom_out'].label,
-    enabled: runtimeSubMenus['zoom_out'].enable,
-    priority: runtimeSubMenus['zoom_out'].priority,
-    type: 'normal',
-    checked: false,
-    key: runtimeSubMenus['zoom_out'].key,
-    modifiers: runtimeSubMenus['zoom_out'].modifiers,
-    click: function () {
-      misc.zoomOut();
-    },
-  }));
-
-  let runtimeMenu = new gui.MenuItem({
-    label: rtmenudt.label,
-    enabled: true,
-    priority: rtmenudt.priority,
-    type: 'normal',
-    checked: false,
-    submenu: subMenus,
-})
-
-  return runtimeMenu;
-
-}
-
-function getSubMenu(menuItem) {
-  let submenu = new gui.Menu();
-  if (menuItem.menu_items) {
-    menuItem.menu_items.forEach((item) => {
-      let menuType = typeof item.checked == 'boolean' ? 'checkbox' : item.type;
-      submenu.append(new gui.MenuItem({
-        label: item.label,
-        enabled: !item.isDisabled,
-        priority: item.priority,
-        type: menuType,
-        checked: item.checked,
-        click: function () {
-          if (menuType == 'checkbox') {
-            pgAdminMainScreen.menu.items.forEach(el => {
-              el.submenu.items.forEach((sub) => {
-                if (sub.submenu?.items?.length) {
-                  sub.submenu.items.forEach((m) => {
-                    if (m.type == 'checkbox') {
-                      m.checked = m.label == item.label;
-                    }
-                  });
-                }
-              });
-            });
-          }
-          item.callback();
+  setupMenu(pgAdminMainScreen, {
+    'view_logs': ()=>{
+      const win = new BrowserWindow({
+        show: false,
+        width: 790,
+        height: 425,
+        position: 'center',
+        resizable: false,
+        icon: '../../assets/pgAdmin4.png',
+        webPreferences: {
+          preload: path.join(__dirname, 'other_preload.js'),
         },
-      }));
-    });
-  }
-  return submenu;
-}
-
-function addMacMenu(menu) {
-  if (menu.name == 'file' && platform() === 'darwin') {
-    let rootMenu = nativeMenu.items[0].submenu;
-    let indx = 0;
-    menu.menuItems.forEach((menuItem) => {
-      let submenu = getSubMenu(menuItem);
-
-      rootMenu.insert(
-        new gui.MenuItem({
-          label: menuItem.label,
-          type: menuItem.type || 'normal',
-          enabled: !menuItem.isDisabled,
-          priority: menuItem.priority,
-          ...(submenu.items.length > 0) && {
-            submenu: submenu,
-          },
-          click: function () {
-            // Callback functions for actions
-            menuItem.callback();
-          },
-        }), indx);
-      indx++;
-    });
-    let runtimeMenu = getRuntimeMenu();
-    rootMenu.insert(runtimeMenu, indx++);
-    let separator_menu = new nw.MenuItem({ type: 'separator' });
-    rootMenu.insert(separator_menu, indx);
-    indx++;
-
-    pgAdminMainScreen.menu = nativeMenu;
-  } else {
-    addCommonMenus(menu)
-  }
-}
-
-function addOtherOsMenu(menu) {
-  addCommonMenus(menu)
-}
-
-
-function addMenu(menu) {
-  pgAdminMainScreen.isCustomMenusAdded = true;
-  if (platform() === 'darwin') {
-    addMacMenu(menu);
-  } else {
-    addOtherOsMenu(menu);
-  }
-  addMenuCompleted = true;
-}
-
-function enableDisableMenuItem(menu, menuItem) {
-  if (addMenuCompleted) {
-    // Enable or Disabled specific menu item
-    pgAdminMainScreen.menu.items.forEach(el => {
-      if (el?.label == menu?.label) {
-        el.submenu.items.forEach((sub) => {
-          if (sub.label == menuItem.label) {
-            sub.enabled = !menuItem.isDisabled;
-          }
-        });
-      }
-    });
-  }
-}
-
-function updateCheckedMenuItem(menuItem) {
-  // check/ uncheck specific menu item
-  pgAdminMainScreen.menu.items.forEach(el => {
-    el.submenu.items.forEach((sub) => {
-      if(sub.label == menuItem.parentMenu.label) {
-        sub.submenu.items.forEach((sm)=> {
-          if (sm.label == menuItem.label && sm.type == 'checkbox') {
-            sm.checked = menuItem.checked
-          }
-        })
-      } else if (sub.label == menuItem.label && type == 'checkbox') {
-        sub.checked = menuItem.checked
-      }
-    });
-  });
-}
-
-function refreshMenuItems(menu) {
-  // Add menu item/option in specific menu.
-  pgAdminMainScreen.menu.items.forEach(el => {
-    if (el.label == menu.label) {
-      let totalSubItems = el.submenu.items.length;
-
-      // Remove exisitng menu options to add new options.
-      for (let i = 0; i < totalSubItems; i++) {
-        el.submenu.removeAt(0);
-      }
-      menu.menuItems.forEach((item) => {
-
-        let submenu = new gui.Menu();
-        if (item.menu_items) {
-          item.menu_items.forEach((subItem) => {
-            submenu.append(new gui.MenuItem({
-              label: subItem.label,
-              enabled: !subItem.isDisabled,
-              priority: subItem.priority,
-              type: [true, false].includes(subItem.checked) ? 'checkbox' : 'normal',
-              checked: subItem.checked,
-              click: function () {
-                subItem.callback();
-              },
-            }));
-          });
-        }
-        let _menuItem = new gui.MenuItem({
-          label: item.label,
-          enabled: !item.isDisabled,
-          priority: item.priority,
-          type: item.type,
-          ...(submenu.items.length > 0) && {
-            submenu: submenu,
-          },
-          click: function () {
-            item.callback();
-          },
-        });
-
-        el.submenu.append(_menuItem);
       });
+      win.loadFile('./src/html/view_log.html');
+      win.once('ready-to-show', ()=>{
+        win.show();
+      });
+    },
+    'configure': openConfigure,
+  });
+
+  pgAdminMainScreen.loadURL(startPageUrl);
+  pgAdminMainScreen.setBounds(configStore.get('bounds'));
+  pgAdminMainScreen.show();
+
+  pgAdminMainScreen.webContents.setWindowOpenHandler(({url})=>{
+    let openDocsInBrowser = configStore.get('openDocsInBrowser', true);
+    let isDocURL = false;
+    docsURLSubStrings.forEach(function (key) {
+      if (url.indexOf(key) >= 0) {
+        isDocURL = true;
+      }
+    });
+
+    if (openDocsInBrowser && isDocURL) {
+      // Do not open the window
+      shell.openExternal(url);
+      return { action: 'deny' };
+    } else {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          'position': 'center',
+          'min_width': 640,
+          'min_height': 480,
+          icon: '../../assets/pgAdmin4.png',
+          ...pgAdminMainScreen.getBounds(),
+          webPreferences: {
+            preload: path.join(__dirname, 'pgadmin_preload.js'),
+          },
+        },
+      };
     }
   });
 
+  pgAdminMainScreen.on('close', () => {
+    configStore.set('bounds', pgAdminMainScreen.getBounds());
+    misc.cleanupAndQuitApp(pgAdminMainScreen);
+    pgAdminMainScreen.removeAllListeners('close');
+    pgAdminMainScreen.close();
+  });
 }
+
+let splashWindow;
+
+// setup preload events.
+ipcMain.handle('showOpenDialog', (_e, options) => dialog.showOpenDialog(options));
+ipcMain.handle('showSaveDialog', (_e, options) => dialog.showSaveDialog(options));
+ipcMain.handle('showMessageBox', (_e, options) => dialog.showMessageBox(options));
+ipcMain.handle('getStoreData', (_e, key) => key ? configStore.get(key) : configStore.store);
+ipcMain.handle('setStoreData', (_e, newValues) => {
+  configStore.store = {
+    ...configStore.store,
+    ...newValues,
+  };
+});
+ipcMain.handle('getServerLogFile', () => misc.getServerLogFile());
+ipcMain.handle('readServerLog', () => misc.readServerLog());
+ipcMain.handle('restartApp', ()=>{
+  app.relaunch();
+  app.exit(0);
+});
+ipcMain.handle('log', (text) => ()=>{
+  misc.writeServerLog(text);
+});
+ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
+  try {
+    await misc.getAvailablePort(fixedPort);
+    return true;
+  } catch {
+    return false;
+  }
+});
+ipcMain.handle('openConfigure', openConfigure);
+
+app.whenReady().then(() => {
+  splashWindow = new BrowserWindow({
+    transparent: true,
+    width: 750,
+    height: 600,
+    frame: false,
+    movable: true,
+    focusable: true,
+    resizable: false,
+    show: false,
+    icon: '../../assets/pgAdmin4.png',
+  });
+
+  splashWindow.loadFile('./src/html/splash.html');
+  splashWindow.center();
+
+  splashWindow.on('show', function () {
+    let fixedPortCheck = configStore.get('fixedPort', false);
+    if (fixedPortCheck) {
+      serverPort = configStore.get('portNo');
+      //Start the pgAdmin in Desktop mode.
+      startDesktopMode();
+    } else {
+      // get the available TCP port by sending port no to 0.
+      misc.getAvailablePort(0)
+        .then((pythonApplicationPort) => {
+          serverPort = pythonApplicationPort;
+          //Start the pgAdmin in Desktop mode.
+          startDesktopMode();
+        })
+        .catch((errCode) => {
+          if (errCode === 'EADDRINUSE') {
+            dialog.showErrorBox('Error', 'The port specified is already in use. Please enter a free port number.');
+          } else {
+            dialog.showErrorBox('Error', errCode.toString());
+          }
+          splashWindow.close();
+        });
+    }
+  });
+
+  splashWindow.show();
+});

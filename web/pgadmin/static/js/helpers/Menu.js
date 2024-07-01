@@ -24,6 +24,16 @@ export default class Menu {
     return menuObj;
   }
 
+  serialize() {
+    return {
+      id: this.id,
+      label: this.label,
+      name: this.name,
+      index: this.index,
+      addSepratior: this.addSepratior,
+    };
+  }
+
   addMenuItem(menuItem, index=null) {
     if (menuItem instanceof MenuItem) {
       menuItem.parentMenu = this;
@@ -116,7 +126,6 @@ export class MenuItem {
       url: '#',
       target: '_self',
       enable: true,
-      type: 'normal'
     };
     _.extend(this, defaults, _.pick(options, menu_opts));
     if (!this.callback) {
@@ -134,6 +143,17 @@ export class MenuItem {
 
   static create(options) {
     return MenuItem(options);
+  }
+
+  serialize() {
+    return {
+      name: this.name,
+      label: this.label,
+      enabled: !this.isDisabled,
+      priority: this.priority,
+      type: [true, false].includes(this.checked) ? 'checkbox' : this.type,
+      checked: this.checked,
+    };
   }
 
   change_checked(isChecked) {

@@ -31,6 +31,19 @@
       </div>
     </div>
   </div>
-  <script type="text/javascript" src="../js/view_log.js"></script>
+  <script>
+    window.onload = async function() {
+      document.getElementById('status-text').innerHTML = '';
+      document.getElementById('server_log_label').innerHTML = 'Server Log: ' + '(' + await window.electronUI.getServerLogFile() + ')';
+      document.getElementById('server_log').innerHTML = await window.electronUI.readServerLog();
+      document.getElementById('btnReload').addEventListener('click', function() {
+        document.getElementById('server_log').innerHTML = 'Loading logs...';
+        setTimeout(async function() {
+          document.getElementById('server_log').innerHTML = await window.electronUI.readServerLog();
+        }, 500);
+        document.getElementById('status-text').innerHTML = 'Logs reloaded successfully';
+      });
+    }
+  </script>
 </body>
 </html>

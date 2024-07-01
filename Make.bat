@@ -260,45 +260,32 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\docs\en_US\html\_sources" 1> nul 2>&1
 
     ECHO Staging runtime components...
-    XCOPY /S /I /E /H /Y "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul || EXIT /B 1
+    MKDIR "%BUILDROOT%\runtime\resources\app"
+    XCOPY /S /I /E /H /Y "%WD%\runtime\assets" "%BUILDROOT%\runtime\resources\app\assets" > nul || EXIT /B 1
+    XCOPY /S /I /E /H /Y "%WD%\runtime\src" "%BUILDROOT%\runtime\resources\app\src" > nul || EXIT /B 1
 
-    COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\" > nul || EXIT /B 1
-    CD "%BUILDROOT%\runtime\"
+    COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\resources\app\" > nul || EXIT /B 1
+    CD "%BUILDROOT%\runtime\resources\app\"
     CALL yarn install --production=true || EXIT /B 1
 
-    ECHO Downloading NWjs to %TMPDIR%...
-    REM Get a fresh copy of nwjs.
-    REM NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget which retries
-
-    REM YARN
-    REM CALL yarn --cwd "%TMPDIR%" add nw || EXIT /B
-    REM YARN END
+    ECHO Downloading Electron to %TMPDIR%...
+    REM Get a fresh copy of electron.
 
     REM WGET
-    REM Comment out the below line as the latest version having some
-    REM problem https://github.com/nwjs/nw.js/issues/7964, so for the time being
-    REM hardcoded the version to 0.77.0
-    REM FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
-    REM :GET_NW
-    REM    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-    REM    IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
+    FOR /f "tokens=2 delims='" %%i IN ('yarn info electron ^| findstr "latest: "') DO SET "ELECTRON_VERSION=%%i"
+    :GET_NW
+        wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
+        IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
 
-    SET "NW_VERSION=0.77.0"
-    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-
-    tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
+    MKDIR "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64" || EXIT /B 1
+    tar -C "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64" -xvf "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip" || EXIT /B 1
     REM WGET END
 
-    REM YARN
-    REM XCOPY /S /I /E /H /Y "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    REM YARN END
+    REM XCOPY
+    XCOPY /S /I /E /H /Y "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM XCOPY END
 
-    REM WGET
-    XCOPY /S /I /E /H /Y "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
-    REM WGET END
-
-    MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
+    MOVE "%BUILDROOT%\runtime\electron.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
     ECHO Attempting to sign the pgAdmin4.exe...
     CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
     IF %ERRORLEVEL% NEQ 0 (
@@ -310,8 +297,13 @@ REM Main build sequence Ends
     )
 
     ECHO Replacing executable icon...
-    CALL yarn --cwd "%TMPDIR%" add winresourcer || EXIT /B
-    "%TMPDIR%\node_modules\winresourcer\bin\Resourcer.exe" -op:upd -src:"%BUILDROOT%\runtime\pgAdmin4.exe" -type:Icongroup -name:IDR_MAINFRAME -file:"%WD%\pkg\win32\Resources\pgAdmin4.ico"
+
+    ECHO Downloading rcedit.exe...
+    wget https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe -O "%TMPDIR%\rcedit-x64.exe"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-icon "%WD%\pkg\win32\Resources\pgAdmin4.ico"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "FileDescription" "%APP_NAME%"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
 
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
