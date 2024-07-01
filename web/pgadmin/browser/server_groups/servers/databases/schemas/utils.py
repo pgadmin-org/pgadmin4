@@ -720,3 +720,20 @@ def get_schemas(conn, show_system_objects=False):
 
     status, rset = conn.execute_2darray(SQL)
     return status, rset
+
+
+def check_pgstattuple(conn, oid):
+    """
+    This function is used to check pgstattuple extension is already created,
+    and current_user have permission to access that object.
+    """
+    status, is_pgstattuple = conn.execute_scalar("""
+        SELECT CASE WHEN (SELECT(count(extname) > 0) AS is_pgstattuple
+            FROM pg_catalog.pg_extension WHERE extname = 'pgstattuple')
+        THEN (SELECT pg_catalog.has_table_privilege(current_user, {0},
+            'SELECT')) ELSE FALSE END""".format(oid))
+
+    if not status:
+        return status, internal_server_error(errormsg=is_pgstattuple)
+
+    return status, is_pgstattuple

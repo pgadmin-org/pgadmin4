@@ -21,7 +21,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas\
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     gone, make_response as ajax_response
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
-    import DataTypeReader, parse_rule_definition
+    import DataTypeReader, parse_rule_definition, check_pgstattuple
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
 from pgadmin.browser.utils import PGChildNodeView
@@ -49,7 +49,6 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import VacuumSettings
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from pgadmin.dashboard import locks
 
 
 class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
@@ -446,14 +445,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             )
         else:
             # For Individual table stats
-
-            # Check if pgstattuple extension is already created?
-            # if created then only add extended stats
-            status, is_pgstattuple = self.conn.execute_scalar("""
-            SELECT (count(extname) > 0) AS is_pgstattuple
-            FROM pg_catalog.pg_extension
-            WHERE extname='pgstattuple'
-            """)
+            status, is_pgstattuple = check_pgstattuple(self.conn, tid)
             if not status:
                 return internal_server_error(errormsg=is_pgstattuple)
 

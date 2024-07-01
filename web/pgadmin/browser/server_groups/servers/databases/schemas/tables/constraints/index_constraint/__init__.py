@@ -24,6 +24,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.index_constraint import utils as idxcons_utils
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.browser.server_groups.servers.databases.schemas.utils \
+    import check_pgstattuple
 
 
 class IndexConstraintModule(ConstraintTypeModule):
@@ -926,13 +928,7 @@ class IndexConstraintView(PGChildNodeView):
         Returns the statistics for a particular object if cid is specified
         """
 
-        # Check if pgstattuple extension is already created?
-        # if created then only add extended stats
-        status, is_pgstattuple = self.conn.execute_scalar("""
-        SELECT (pg_catalog.count(extname) > 0) AS is_pgstattuple
-        FROM pg_catalog.pg_extension
-        WHERE extname='pgstattuple'
-        """)
+        status, is_pgstattuple = check_pgstattuple(self.conn, tid)
         if not status:
             return internal_server_error(errormsg=is_pgstattuple)
 
