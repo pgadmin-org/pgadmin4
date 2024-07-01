@@ -520,13 +520,9 @@ def create_app(app_name=None):
 
     security.init_app(app, user_datastore)
 
-    # register custom unauthorised handler.
-    if sys.version_info < (3, 8):
-        app.login_manager.unauthorized_handler(pga_unauthorised)
-    else:
-        # Flask-Security-Too > 5.4.* requires custom unauth handeler
-        # to be registeres with it.
-        security.unauthn_handler(pga_unauthorised)
+    # Flask-Security-Too > 5.4.* requires custom unauth handeler
+    # to be registeres with it.
+    security.unauthn_handler(pga_unauthorised)
 
     # Set the permanent session lifetime to the specified value in config file.
     app.permanent_session_lifetime = timedelta(
