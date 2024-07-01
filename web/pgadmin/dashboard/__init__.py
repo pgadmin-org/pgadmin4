@@ -567,7 +567,7 @@ def logs(frm=None, disp_format=None, sid=None, page=0):
 
     if _start < file_stat:
         if disp_format == 'plain':
-            ed = file_stat
+            _end = file_stat
         sql = render_template(
             "/".join([g.template_path, 'logs.sql']), st=_start, ed=_end,
             log_format=log_format, conn=g.conn

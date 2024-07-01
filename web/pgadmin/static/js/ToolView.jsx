@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { usePgAdmin } from './BrowserComponent';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';

@@ -27,7 +27,7 @@ import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
 
 export default class Psql {

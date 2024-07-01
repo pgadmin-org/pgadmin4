@@ -127,10 +127,6 @@ const defaultExtensions = [
     preventDefault: true,
     run: deleteCharBackwardStrict,
   }]),
-  sql({
-    dialect: PgSQL,
-  }),
-  json(),
   PgSQL.language.data.of({
     autocomplete: false,
   }),
@@ -153,7 +149,7 @@ const defaultExtensions = [
 export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly, disabled, autocomplete = false,
   breakpoint = false, onBreakPointChange, showActiveLine=false,
-  keepHistory = true, cid, helpid, labelledBy, customKeyMap}) {
+  keepHistory = true, cid, helpid, labelledBy, customKeyMap, language='pgsql'}) {
 
   const editorContainerRef = useRef();
   const editor = useRef();
@@ -172,6 +168,7 @@ export default function Editor({
   useEffect(() => {
     const finalOptions = { ...defaultOptions, ...options };
     const finalExtns = [
+      (language == 'json') ? json() : sql({dialect: PgSQL}),
       ...defaultExtensions,
     ];
     if (finalOptions.lineNumbers) {
@@ -401,4 +398,5 @@ Editor.propTypes = {
   helpid: PropTypes.string,
   labelledBy: PropTypes.string,
   customKeyMap: PropTypes.array,
+  language: PropTypes.string,
 };

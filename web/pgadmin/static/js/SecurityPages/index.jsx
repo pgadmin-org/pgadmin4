@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import Theme from '../Theme/index';

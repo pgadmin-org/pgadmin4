@@ -132,10 +132,10 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
 
   // Render the UI for your table
   const tableRef = useRef();
-  var flatData = [];
-  var fetchMoreOnBottomReached = undefined;
-  var totalFetched = 0;
-  var totalDBRowCount = 0;
+  let flatData = [];
+  let fetchMoreOnBottomReached = undefined;
+  let totalFetched = 0;
+  let totalDBRowCount = 0;
 
   if (loadNextPage) {
     //Infinite scrolling

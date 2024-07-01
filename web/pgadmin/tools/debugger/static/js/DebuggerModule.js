@@ -9,7 +9,7 @@
 
 import _ from 'lodash';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
 import gettext from 'sources/gettext';
 import { sprintf } from 'sources/utils';

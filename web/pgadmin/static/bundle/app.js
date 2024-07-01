@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import BrowserComponent from '../js/BrowserComponent';
 import MainMenuFactory from '../../browser/static/js/MainMenuFactory';
 import Theme from '../js/Theme';

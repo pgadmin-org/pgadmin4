@@ -41,6 +41,7 @@ import { getExpandCell } from '../../../static/js/components/PgReactTableStyled'
 import CodeMirror from '../../../static/js/components/ReactCodeMirror';
 import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
 import { getBrowser } from '../../../static/js/utils';
+import RefreshButton from './components/RefreshButtons';
 
 function parseData(data) {
   let res = [];
@@ -100,12 +101,22 @@ function Dashboard({
   nodeItem, nodeData, node, treeNodeInfo,
   ...props
 }) {
+  const preferences = _.merge(
+    usePreferences().getPreferencesForModule('dashboards'),
+    usePreferences().getPreferencesForModule('graphs'),
+    usePreferences().getPreferencesForModule('misc')
+  );
+
+  // Set Active tab depending on preferences setting
+  let activeTab = 0;
+  if (!_.isUndefined(preferences) && !preferences.show_graphs && preferences.show_activity) activeTab = 1;
+  else if (!_.isUndefined(preferences) && !preferences.show_graphs && !preferences.show_activity) activeTab = 2;
+
   const api = getApiInstance();
   const [dashData, setDashData] = useState([]);
   const [msg, setMsg] = useState('');
   const [ssMsg, setSsMsg] = useState('');
-  const [tabVal, setTabVal] = useState(0);
-  const [mainTabVal, setMainTabVal] = useState(0);
+  const [mainTabVal, setMainTabVal] = useState(activeTab);
   const [refresh, setRefresh] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
@@ -128,11 +139,6 @@ function Dashboard({
   const dbConnected = treeNodeInfo?.database?.connected ?? false;
   const serverConnected = treeNodeInfo?.server?.connected ?? false;
   const prefStore = usePreferences();
-  const preferences = _.merge(
-    usePreferences().getPreferencesForModule('dashboards'),
-    usePreferences().getPreferencesForModule('graphs'),
-    usePreferences().getPreferencesForModule('misc')
-  );
   let mainTabs = [gettext('Activity'), gettext('State')];
 
   mainTabs.push(gettext('Configuration'), gettext('Logs'), gettext('System'));
@@ -747,10 +753,6 @@ function Dashboard({
       return true;
     }
   };
-  useEffect(() => {
-    // Reset Tab values to 0, so that it will select "Sessions" on node changed.
-    nodeData?._type === 'database' && setTabVal(0);
-  },[nodeData]);
 
 
   useEffect(() => {
@@ -792,10 +794,6 @@ function Dashboard({
       message = gettext(
         'Please connect to the selected server to view the dashboard.'
       );
-
-    if((tabVal == 2 || tabVal == 3) && did) {
-      setTabVal(0);
-    }
 
     if (sid && serverConnected) {
 
@@ -875,7 +873,7 @@ function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal, logCol, logFormat]);
+  }, [nodeData, treeNodeInfo, prefStore, refresh, mainTabVal, logCol, logFormat]);
 
   const filteredDashData = useMemo(()=>{
     if (mainTabVal == 1 && activeOnly) {
@@ -906,12 +904,25 @@ function Dashboard({
     );
   };
 
+  const CustomRefresh = () => {
+    return (
+      <RefreshButton onClick={(e) => {
+        e.preventDefault();
+        setRefresh(!refresh);
+      }}/>
+    );
+  };
+
   const CustomActiveOnlyHeaderLabel =
     {
       label: gettext('Active sessions only'),
     };
   const CustomActiveOnlyHeader = () => {
-    return (
+    return (<Fragment>
+       <RefreshButton onClick={(e) => {
+        e.preventDefault();
+        setRefresh(!refresh);
+      }}/>
       <InputCheckbox
         label={gettext('Active sessions only')}
         labelPlacement="end"
@@ -922,7 +933,9 @@ function Dashboard({
         }}
         value={activeOnly}
         controlProps={CustomActiveOnlyHeaderLabel}
-      ></InputCheckbox>);
+      ></InputCheckbox>
+    </Fragment>
+    );
   };
 
   const CustomLogHeaderLabel =
@@ -1045,7 +1058,8 @@ function Dashboard({
               <TabPanel value={mainTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
                 {!_.isUndefined(preferences) && preferences.show_activity && (
                   <Fragment>
-                    <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
+                    <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}
+                    >
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -1057,6 +1071,7 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
+                        CustomHeader={CustomRefresh}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databaseLocksColumns}
@@ -1065,6 +1080,7 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
+                        CustomHeader={CustomRefresh}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databasePreparedColumns}
@@ -1094,6 +1110,7 @@ function Dashboard({
                 </div>}
                 {dashData && logCol === false && dashData.length == 1 && <CodeMirror
                   id='tests'
+                  language={logFormat== 'J' ? 'json':'pgsql'}
                   className='Dashboard-textArea'
                   value={dashData[0]['pg_read_file']}
                   readonly={true}

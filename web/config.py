@@ -933,7 +933,7 @@ ENABLE_SERVER_PASS_EXEC_CMD = False
 # Number of records to fetch in one batch for server logs.
 ##############################################################################
 
-ON_DEMAND_LOG_COUNT = 2000
+ON_DEMAND_LOG_COUNT = 10000
 
 #############################################################################
 # Patch the default config with custom config and other manipulations
