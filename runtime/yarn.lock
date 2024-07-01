@@ -70,10 +70,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.5.0, @eslint/js@npm:^9.5.0":
+"@eslint/js@npm:9.5.0":
   version: 9.5.0
   resolution: "@eslint/js@npm:9.5.0"
   checksum: e79639f7d9fd754e432dd33d1908d31c48bcf93aadc9e88b987c51b0208b5b3120f0c0038108ff2517c35b8c3d4bcd74f4e506a93b676b8bb311d29cce111c09
+  languageName: node
+  linkType: hard
+
+"@eslint/js@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "@eslint/js@npm:9.6.0"
+  checksum: 8d0c1cc81ae9182139a38555a56bd6387b663b45efa5ca642e1e50584926f749a68d497c8a5ca02d55661341a5b689fc7977c65b10191e2a315888ca403b8bcd
   languageName: node
   linkType: hard
 
@@ -1338,7 +1345,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "pgadmin4@workspace:."
   dependencies:
-    "@eslint/js": ^9.5.0
+    "@eslint/js": ^9.6.0
     axios: ^1.7.2
     bootstrap: ^4.5.3
     electron: ^30.0.5
