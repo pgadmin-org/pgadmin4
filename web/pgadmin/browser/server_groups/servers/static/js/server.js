@@ -230,7 +230,7 @@ define('pgadmin.node.server', [
                 obj.generate_url(i, 'connect', d, true),
               ).then(({data: res})=> {
                 if (res.success == 1) {
-                  pgAdmin.Browser.notifier.success(res.info, null);
+                  pgAdmin.Browser.notifier.success(res.info);
                   d = t.itemData(i);
                   t.removeIcon(i);
                   d.connected = false;

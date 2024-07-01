@@ -77,11 +77,11 @@ class SnackbarNotifier {
 
   notify(content, autoHideDuration) {
     if (content) {
-      let  options = {autoHideDuration, content:(key) => (
+      let options = {autoHideDuration, content:(key) => (
         <FinalNotifyContent>{React.cloneElement(content, {onClose:()=>{this.snackbarObj.closeSnackbar(key);}})}</FinalNotifyContent>
       )};
       options.content.displayName = 'content';
-      this.snackbarObj.enqueueSnackbar(null, options);
+      this.snackbarObj.enqueueSnackbar(options);
     }
   }
 
