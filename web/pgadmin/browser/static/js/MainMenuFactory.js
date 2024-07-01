@@ -107,7 +107,7 @@ export default class MainMenuFactory {
   static refreshMainMenuItems(menu, menuItems) {
     menu.setMenuItems(menuItems);
     window.electronUI?.setMenus(MainMenuFactory.toElectron());
-    pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', pgAdmin.Browser.MainMenus);
+    pgAdmin.Browser.Events.trigger('pgadmin:refresh-menu-item', pgAdmin.Browser.MainMenus);
   }
 
   static createMenuItem(options) {
@@ -130,10 +130,8 @@ export default class MainMenuFactory {
         });
       }
     }}, (menu, item)=> {
-      pgAdmin.Browser.Events.trigger('pgadmin:nw-enable-disable-menu-items', menu, item);
+      pgAdmin.Browser.Events.trigger('pgadmin:enable-disable-menu-items', menu, item);
       window.electronUI?.enableDisableMenuItems(menu?.serialize(), item?.serialize());
-    }, (item) => {
-      pgAdmin.Browser.Events.trigger('pgadmin:nw-update-checked-menu-item', item);
     });
   }
 

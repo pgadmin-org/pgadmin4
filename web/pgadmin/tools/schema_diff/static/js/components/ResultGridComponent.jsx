@@ -432,6 +432,124 @@ function reducer(rows, { type, id, filterParams, gridData }) {
   }
 }
 
+function selectHeaderRenderer({selectedRows, setSelectedRows, rootSelection, setRootSelection, allRowIds, selectedRowIds}) {
+  const Cell = ()=>(
+    <InputCheckbox
+      cid={_.uniqueId('rgc')}
+      className='ResultGridComponent-headerSelectCell'
+      value={selectedRows.length == allRowIds.length ? rootSelection : false}
+      size='small'
+      onChange={(e) => {
+        if (e.target.checked) {
+          setRootSelection(true);
+          setSelectedRows([...allRowIds]);
+          selectedRowIds([...allRowIds]);
+        } else {
+          setRootSelection(false);
+          setSelectedRows([]);
+          selectedRowIds([]);
+        }
+      }
+      }
+    ></InputCheckbox>
+  );
+  Cell.displayName = 'Cell';
+  return Cell;
+}
+function selectFormatter({selectedRows, setSelectedRows, setRootSelection, activeRow, setActiveRow, allRowIds, selectedRowIds, selectedResultRows, deselectResultRows, getStyleClassName}) {
+  const Cell = ({ row, isCellSelected }) => {
+    isCellSelected && setActiveRow(row.id);
+    return (
+      <Box className={!row?.children && getStyleClassName(row, selectedRows, isCellSelected, activeRow, true) +  ' ResultGridComponent-selChBox'}>
+        <InputCheckbox
+          className='ResultGridComponent-selectCell'
+          cid={`${row.id}`}
+          value={selectedRows.includes(`${row.id}`)}
+          size='small'
+          onChange={(e) => {
+            setSelectedRows((prev) => {
+              let tempSelectedRows = [...prev];
+              if (!prev.includes(e.target.id)) {
+                selectedResultRows(row, tempSelectedRows);
+                tempSelectedRows.length === allRowIds.length && setRootSelection(true);
+              } else {
+                deselectResultRows(row, tempSelectedRows);
+              }
+              tempSelectedRows = new Set(tempSelectedRows);
+              selectedRowIds([...tempSelectedRows]);
+              return [...tempSelectedRows];
+            });
+          }
+          }
+        ></InputCheckbox>
+      </Box>
+    );
+  };
+
+  Cell.displayName = 'Cell';
+  Cell.propTypes = {
+    row: PropTypes.object,
+    isCellSelected: PropTypes.bool,
+  };
+  return Cell;
+}
+
+function expandFormatter({activeRow, setActiveRow, filterParams, gridData, selectedRows, dispatch, getStyleClassName}) {
+  const Cell = ({ row, isCellSelected })=>{
+    const hasChildren = row.children !== undefined;
+    isCellSelected && setActiveRow(row.id);
+    return (
+      <>
+        {hasChildren && (
+
+          <CellExpanderFormatter
+            row={row}
+            isCellSelected={isCellSelected}
+            expanded={row.isExpanded === true}
+            filterParams={filterParams}
+            onCellExpand={() => dispatch({ id: row.id, type: 'toggleSubRow', filterParams: filterParams, gridData: gridData, selectedRows: selectedRows })}
+          />
+        )}
+        <div className="rdg-cell-value">
+
+          {!hasChildren && (
+            <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
+              <span className={'ResultGridComponent-recordRow ' + row.icon}></span>
+              {row.label}
+            </Box>
+          )}
+        </div>
+      </>
+    );
+  };
+
+  Cell.displayName = 'Cell';
+  Cell.propTypes = {
+    row: PropTypes.object,
+    isCellSelected: PropTypes.bool,
+  };
+  return Cell;
+}
+
+function resultFormatter({selectedRows, activeRow, setActiveRow, getStyleClassName}) {
+  const Cell = ({ row, isCellSelected })=>{
+    isCellSelected && setActiveRow(row.id);
+
+    return (
+      <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
+        {row.status}
+      </Box>
+    );
+  };
+
+  Cell.displayName = 'Cell';
+  Cell.propTypes = {
+    row: PropTypes.object,
+    isCellSelected: PropTypes.bool,
+  };
+  return Cell;
+}
+
 export function ResultGridComponent({ gridData, allRowIds, filterParams, selectedRowIds, transId, sourceData, targetData }) {
 
   const [rows, dispatch] = useReducer(reducer, [...gridData]);
@@ -553,56 +671,15 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
       ...SelectColumn,
       minWidth: 30,
       width: 30,
-      headerRenderer() {
-        return (
-          <InputCheckbox
-            cid={_.uniqueId('rgc')}
-            className='ResultGridComponent-headerSelectCell'
-            value={selectedRows.length == allRowIds.length ? rootSelection : false}
-            size='small'
-            onChange={(e) => {
-              if (e.target.checked) {
-                setRootSelection(true);
-                setSelectedRows([...allRowIds]);
-                selectedRowIds([...allRowIds]);
-              } else {
-                setRootSelection(false);
-                setSelectedRows([]);
-                selectedRowIds([]);
-              }
-            }
-            }
-          ></InputCheckbox>
-        );
-      },
-      formatter({ row, isCellSelected }) {
-        isCellSelected && setActiveRow(row.id);
-        return (
-          <Box className={!row?.children && getStyleClassName(row, selectedRows, isCellSelected, activeRow, true) +  ' ResultGridComponent-selChBox'}>
-            <InputCheckbox
-              className='ResultGridComponent-selectCell'
-              cid={`${row.id}`}
-              value={selectedRows.includes(`${row.id}`)}
-              size='small'
-              onChange={(e) => {
-                setSelectedRows((prev) => {
-                  let tempSelectedRows = [...prev];
-                  if (!prev.includes(e.target.id)) {
-                    selectedResultRows(row, tempSelectedRows);
-                    tempSelectedRows.length === allRowIds.length && setRootSelection(true);
-                  } else {
-                    deselectResultRows(row, tempSelectedRows);
-                  }
-                  tempSelectedRows = new Set(tempSelectedRows);
-                  selectedRowIds([...tempSelectedRows]);
-                  return [...tempSelectedRows];
-                });
-              }
-              }
-            ></InputCheckbox>
-          </Box>
-        );
-      }
+      headerRenderer: selectHeaderRenderer({
+        selectedRows, setSelectedRows, rootSelection,
+        setRootSelection, allRowIds, selectedRowIds
+      }),
+      formatter: selectFormatter({
+        selectedRows, setSelectedRows, setRootSelection,
+        activeRow, setActiveRow, allRowIds, selectedRowIds,
+        selectedResultRows, deselectResultRows, getStyleClassName
+      }),
     },
     {
       key: 'label',
@@ -615,46 +692,15 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
 
         return 1;
       },
-      formatter({ row, isCellSelected }) {
-        const hasChildren = row.children !== undefined;
-        isCellSelected && setActiveRow(row.id);
-        return (
-          <>
-            {hasChildren && (
-
-              <CellExpanderFormatter
-                row={row}
-                isCellSelected={isCellSelected}
-                expanded={row.isExpanded === true}
-                filterParams={filterParams}
-                onCellExpand={() => dispatch({ id: row.id, type: 'toggleSubRow', filterParams: filterParams, gridData: gridData, selectedRows: selectedRows })}
-              />
-            )}
-            <div className="rdg-cell-value">
-
-              {!hasChildren && (
-                <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
-                  <span className={'ResultGridComponent-recordRow ' + row.icon}></span>
-                  {row.label}
-                </Box>
-              )}
-            </div>
-          </>
-        );
-      }
+      formatter: expandFormatter({
+        activeRow, setActiveRow, filterParams, gridData,
+        selectedRows, dispatch, getStyleClassName
+      }),
     },
     {
       key: 'status',
       name: 'Comparison Result',
-      formatter({ row, isCellSelected }) {
-        isCellSelected && setActiveRow(row.id);
-
-        return (
-          <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
-            {row.status}
-          </Box>
-        );
-      }
+      formatter: resultFormatter({selectedRows, activeRow, setActiveRow, getStyleClassName}),
     },
   ];
 

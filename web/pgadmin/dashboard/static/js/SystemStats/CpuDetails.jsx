@@ -12,14 +12,14 @@ import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import {getGCD, getEpoch} from 'sources/utils';
-import ChartContainer from '../components/ChartContainer';
+import ChartContainer from '../components/ChartContainer.jsx';
 import { Box, Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
-import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
+import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart.jsx';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import axios from 'axios';
 import { getStatsUrl, transformData, statsReducer, X_AXIS_LENGTH } from './utility.js';
-import { toPrettySize } from '../../../../static/js/utils';
+import { toPrettySize } from '../../../../static/js/utils.js';
 import SectionContainer from '../components/SectionContainer.jsx';
 
 const chartsDefault = {
@@ -28,7 +28,7 @@ const chartsDefault = {
   'pcpu_stats': {},
 };
 
-export default function CPU({preferences, sid, did, pageVisible, enablePoll=true}) {
+export default function CpuDetails({preferences, sid, did, pageVisible, enablePoll=true}) {
   const refreshOn = useRef(null);
   const prevPrefernces = usePrevious(preferences);
 
@@ -202,7 +202,7 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
   );
 }
 
-CPU.propTypes = {
+CpuDetails.propTypes = {
   preferences: PropTypes.object.isRequired,
   sid: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number.isRequired]),
   did: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number.isRequired]),

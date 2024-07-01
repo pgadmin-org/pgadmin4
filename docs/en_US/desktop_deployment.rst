@@ -36,7 +36,7 @@ See :ref:`config_py` for more information on configuration settings.
 Desktop Runtime Standalone Application
 ======================================
 
-The Desktop Runtime is based on `NWjs <https://nwjs.io/>`_ which integrates a
+The Desktop Runtime is based on `Electron <https://www.electronjs.org/>`_ which integrates a
 browser and the Python server creating a standalone application.
 
 .. image:: images/runtime_standalone.png

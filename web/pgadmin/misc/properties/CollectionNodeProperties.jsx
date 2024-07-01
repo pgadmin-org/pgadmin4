@@ -36,6 +36,66 @@ const StyledBox = styled(Box)(({theme}) => ({
   }
 }));
 
+function CustomHeader({node, nodeData, nodeItem, treeNodeInfo, selectedObject, onDrop}) {
+  const canDrop = evalFunc(node, node.canDrop, nodeData, nodeItem, treeNodeInfo);
+  const canDropCascade = evalFunc(node, node.canDropCascade, nodeData, nodeItem, treeNodeInfo);
+  const canDropForce = evalFunc(node, node.canDropForce, nodeData, nodeItem, treeNodeInfo);
+  return (
+    <Box >
+      <PgButtonGroup size="small">
+        <PgIconButton
+          icon={<DeleteIcon style={{height: '1.35rem'}}/>}
+          aria-label="Delete"
+          title={gettext('Delete')}
+          onClick={() => {
+            onDrop('drop');
+          }}
+          disabled={
+            (Object.keys(selectedObject).length > 0)
+              ? !canDrop
+              : true
+          }
+        ></PgIconButton>
+        {node.type !== 'coll-database' ? <PgIconButton
+          icon={<DeleteSweepIcon style={{height: '1.5rem'}} />}
+          aria-label="Delete Cascade"
+          title={gettext('Delete (Cascade)')}
+          onClick={() => {
+            onDrop('dropCascade');
+          }}
+          disabled={
+            (Object.keys(selectedObject).length > 0)
+              ? !canDropCascade
+              : true
+          }
+        ></PgIconButton> :
+          <PgIconButton
+            icon={<DeleteForeverIcon style={{height: '1.4rem'}} />}
+            aria-label="Delete Force"
+            title={gettext('Delete (Force)')}
+            onClick={() => {
+              onDrop('dropForce');
+            }}
+            disabled={
+              (Object.keys(selectedObject).length > 0)
+                ? !canDropForce
+                : true
+            }
+          ></PgIconButton>}
+      </PgButtonGroup>
+    </Box>
+  );
+}
+
+CustomHeader.propTypes = {
+  node: PropTypes.func,
+  nodeData: PropTypes.object,
+  treeNodeInfo: PropTypes.object,
+  nodeItem: PropTypes.object,
+  selectedObject: PropTypes.object,
+  onDrop: PropTypes.func,
+};
+
 export default function CollectionNodeProperties({
   node,
   treeNodeInfo,
@@ -221,56 +281,6 @@ export default function CollectionNodeProperties({
     }
   }, [nodeData, node, nodeItem, isStale, isActive]);
 
-  const CustomHeader = () => {
-    const canDrop = evalFunc(node, node.canDrop, nodeData, nodeItem, treeNodeInfo);
-    const canDropCascade = evalFunc(node, node.canDropCascade, nodeData, nodeItem, treeNodeInfo);
-    const canDropForce = evalFunc(node, node.canDropForce, nodeData, nodeItem, treeNodeInfo);
-    return (
-      <Box >
-        <PgButtonGroup size="small">
-          <PgIconButton
-            icon={<DeleteIcon style={{height: '1.35rem'}}/>}
-            aria-label="Delete"
-            title={gettext('Delete')}
-            onClick={() => {
-              onDrop('drop');
-            }}
-            disabled={
-              (Object.keys(selectedObject).length > 0)
-                ? !canDrop
-                : true
-            }
-          ></PgIconButton>
-          {node.type !== 'coll-database' ? <PgIconButton
-            icon={<DeleteSweepIcon style={{height: '1.5rem'}} />}
-            aria-label="Delete Cascade"
-            title={gettext('Delete (Cascade)')}
-            onClick={() => {
-              onDrop('dropCascade');
-            }}
-            disabled={
-              (Object.keys(selectedObject).length > 0)
-                ? !canDropCascade
-                : true
-            }
-          ></PgIconButton> :
-            <PgIconButton
-              icon={<DeleteForeverIcon style={{height: '1.4rem'}} />}
-              aria-label="Delete Force"
-              title={gettext('Delete (Force)')}
-              onClick={() => {
-                onDrop('dropForce');
-              }}
-              disabled={
-                (Object.keys(selectedObject).length > 0)
-                  ? !canDropForce
-                  : true
-              }
-            ></PgIconButton>}
-        </PgButtonGroup>
-      </Box>);
-  };
-
   return (
     <>
       <Loader message={loaderText}/>
@@ -279,7 +289,7 @@ export default function CollectionNodeProperties({
           (
             <PgTable
               hasSelectRow={!('catalog' in treeNodeInfo) && (nodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
-              CustomHeader={CustomHeader}
+              customHeader={<CustomHeader node={node} nodeData={nodeData} nodeItem={nodeItem} treeNodeInfo={treeNodeInfo} selectedObject={selectedObject} onDrop={onDrop} />}
               columns={pgTableColumns}
               data={data}
               type={'panel'}

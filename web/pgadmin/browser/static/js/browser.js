@@ -920,7 +920,7 @@ define('pgadmin.browser', [
 
                     this.success = function() {
                       addItemNode();
-                    }.bind(this);
+                    };
                     // We can refresh the collection node, but - let's not bother about
                     // it right now.
                     this.notFound = errorOut;
@@ -961,7 +961,7 @@ define('pgadmin.browser', [
 
                     this.success = function() {
                       addItemNode();
-                    }.bind(this);
+                    };
                     // We can refresh the collection node, but - let's not bother about
                     // it right now.
                     this.notFound = errorOut;
@@ -1021,7 +1021,7 @@ define('pgadmin.browser', [
             this.load = true;
             this.success = function() {
               addItemNode();
-            }.bind(this);
+            };
 
             if (_d._type == this.old._type) {
               // We were already searching the old object under the parent.
@@ -1423,7 +1423,7 @@ define('pgadmin.browser', [
             });
           }
         });
-      }.bind(this);
+      };
 
       if (n?.collection_node) {
         let p = ctx.i = this.tree.parent(_i),

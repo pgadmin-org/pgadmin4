@@ -14,7 +14,7 @@ and ReactJS, HTML5 with CSS for the client side processing and UI.
 
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
-subdirectory contains an NWjs based runtime application intended to allow this,
+subdirectory contains an Electron based runtime application intended to allow this,
 which will execute the Python server and display the UI.
 
 ## Building the Runtime
@@ -35,13 +35,7 @@ paths it would expect to find in the standard package for your platform.
 You can then execute the runtime by running something like:
 
 ```bash
-node_modules/nw/nwjs/nw .
-```
-
-or on macOS:
-
-```bash
-node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
+yarn run start
 ```
 
 # Configuring the Python Environment

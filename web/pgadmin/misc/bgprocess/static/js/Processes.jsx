@@ -64,6 +64,95 @@ const ProcessStateTextAndColor = {
   [BgProcessManagerProcessState.PROCESS_TERMINATING]: [gettext('Terminating...'), 'bgTerm'],
   [BgProcessManagerProcessState.PROCESS_FAILED]: [gettext('Failed'), 'bgFailed'],
 };
+
+const cellPropTypes = {
+  row: PropTypes.any,
+};
+
+function CancelCell({row}) {
+  const pgAdmin = usePgAdmin();
+
+  return (
+    <PgIconButton
+      size="xs"
+      noBorder
+      icon={<CancelIcon />}
+      className='Processes-stopButton'
+      disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
+        || row.original.server_id != null}
+      onClick={(e) => {
+        e.preventDefault();
+        pgAdmin.Browser.BgProcessManager.stopProcess(row.original.id);
+      }}
+      aria-label="Stop Process"
+      title={gettext('Stop Process')}
+    ></PgIconButton>
+  );
+}
+CancelCell.propTypes = cellPropTypes;
+
+function getLogsCell(pgAdmin, onViewDetailsClick) {
+  function LogsCell({ row }) {
+    return (
+      <PgIconButton
+        size="xs"
+        icon={<DescriptionOutlinedIcon />}
+        noBorder
+        onClick={(e) => {
+          e.preventDefault();
+          onViewDetailsClick(row.original);
+        }}
+        aria-label="View details"
+        title={gettext('View details')}
+      />
+    );
+  }
+  LogsCell.propTypes = cellPropTypes;
+
+  return LogsCell;
+}
+
+function StatusCell({row}) {
+  const [text, bgcolor] = ProcessStateTextAndColor[row.original.process_state];
+  return <Box className={'Processes-'+bgcolor}>{text}</Box>;
+}
+StatusCell.propTypes = cellPropTypes;
+
+function CustomHeader({selectedRowIDs, setSelectedRows}) {
+  const pgAdmin = usePgAdmin();
+
+  return (
+    <Box>
+      <PgButtonGroup>
+        <PgIconButton
+          icon={<DeleteIcon style={{height: '1.4rem'}}/>}
+          aria-label="Acknowledge and Remove"
+          title={gettext('Acknowledge and Remove')}
+          onClick={() => {
+            pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+              pgAdmin.Browser.BgProcessManager.acknowledge(selectedRowIDs);
+              setSelectedRows({});
+            });
+          }}
+          disabled={selectedRowIDs.length <= 0}
+        ></PgIconButton>
+        <PgIconButton
+          icon={<HelpIcon style={{height: '1.4rem'}}/>}
+          aria-label="Help"
+          title={gettext('Help')}
+          onClick={() => {
+            window.open(url_for('help.static', {'filename': 'processes.html'}));
+          }}
+        ></PgIconButton>
+      </PgButtonGroup>
+    </Box>
+  );
+}
+CustomHeader.propTypes = {
+  selectedRowIDs: PropTypes.array,
+  setSelectedRows: PropTypes.func,
+};
+
 export default function Processes() {
 
   const pgAdmin = usePgAdmin();
@@ -89,56 +178,6 @@ export default function Processes() {
 
 
   const columns = useMemo(()=>{
-    const cellPropTypes = {
-      row: PropTypes.any,
-    };
-
-    const CancelCell = ({row}) => {
-      return (
-        <PgIconButton
-          size="xs"
-          noBorder
-          icon={<CancelIcon />}
-          className='Processes-stopButton'
-          disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
-            || row.original.server_id != null}
-          onClick={(e) => {
-            e.preventDefault();
-            pgAdmin.Browser.BgProcessManager.stopProcess(row.original.id);
-          }}
-          aria-label="Stop Process"
-          title={gettext('Stop Process')}
-        ></PgIconButton>
-      );
-    };
-    CancelCell.displayName = 'CancelCell';
-    CancelCell.propTypes = cellPropTypes;
-
-    const LogsCell = ({ row }) => {
-      return (
-        <PgIconButton
-          size="xs"
-          icon={<DescriptionOutlinedIcon />}
-          noBorder
-          onClick={(e) => {
-            e.preventDefault();
-            onViewDetailsClick(row.original);
-          }}
-          aria-label="View details"
-          title={gettext('View details')}
-        />
-      );
-    };
-    LogsCell.displayName = 'LogsCell';
-    LogsCell.propTypes = cellPropTypes;
-
-    const StatusCell = ({row})=>{
-      const [text, bgcolor] = ProcessStateTextAndColor[row.original.process_state];
-      return <Box className={'Processes-'+bgcolor}>{text}</Box>;
-    };
-    StatusCell.displayName = 'StatusCell';
-    StatusCell.propTypes = cellPropTypes;
-
     return [{
       header: () => null,
       enableSorting: false,
@@ -159,7 +198,7 @@ export default function Processes() {
       maxSize: 35,
       minSize: 35,
       id: 'btn-logs',
-      cell: LogsCell,
+      cell: getLogsCell(pgAdmin, onViewDetailsClick),
     },
     {
       header: gettext('PID'),
@@ -257,34 +296,7 @@ export default function Processes() {
             return row.id;
           }
         }}
-        CustomHeader={()=>{
-          return (
-            <Box>
-              <PgButtonGroup>
-                <PgIconButton
-                  icon={<DeleteIcon style={{height: '1.4rem'}}/>}
-                  aria-label="Acknowledge and Remove"
-                  title={gettext('Acknowledge and Remove')}
-                  onClick={() => {
-                    pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                      pgAdmin.Browser.BgProcessManager.acknowledge(selectedRowIDs);
-                      setSelectedRows({});
-                    });
-                  }}
-                  disabled={selectedRowIDs.length <= 0}
-                ></PgIconButton>
-                <PgIconButton
-                  icon={<HelpIcon style={{height: '1.4rem'}}/>}
-                  aria-label="Help"
-                  title={gettext('Help')}
-                  onClick={() => {
-                    window.open(url_for('help.static', {'filename': 'processes.html'}));
-                  }}
-                ></PgIconButton>
-              </PgButtonGroup>
-            </Box>
-          );
-        }}
+        customHeader={<CustomHeader selectedRowIDs={selectedRowIDs} setSelectedRows={setSelectedRows} />}
       ></PgTable></Root>
   );
 }

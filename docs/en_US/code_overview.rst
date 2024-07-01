@@ -7,12 +7,12 @@
 The bulk of pgAdmin is a Python web application written using the Flask framework
 on the backend, and HTML5 with CSS3,ReactJS on the front end. A
 desktop runtime is also included for users that prefer a desktop application to
-a web application, which is written using NWjs (Node Webkit).
+a web application, which is written using Electron.
 
 Runtime
 *******
 
-The runtime is based on NWjs which integrates a browser and the Python server
+The runtime is based on Electron which integrates a browser and the Python server
 creating a standalone application. The source code can be found in the
 **/runtime** directory in the source tree.
 
