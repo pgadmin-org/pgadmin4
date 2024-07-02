@@ -142,6 +142,7 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
     });
   }, []);
 
+
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (isDirty)=>{
       setDisableButton('save-data', !isDirty);

@@ -194,6 +194,8 @@ Data Editing Options
    |                      |                                                                                                   |                |
    |                      |  * Click the *Paste with SERIAL/IDENTITY values?* if you want to paste the copied column values   |                |
    |                      |    in the serial/identity columns.                                                                |                |
+   |                      |                                                                                                   |                |
+   |                      | Note that copied row having *Bytea* datatype cell will be pasted as *Null*.                       |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     | Option/Alt +   |
    |                      |                                                                                                   | Shift + D      |
