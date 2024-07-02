@@ -80,6 +80,9 @@ const Root = styled('div')(({theme}) => ({
             width: '35px',
             height:'30px'
           },
+        },
+        '& .Dashboard-textArea': {
+          height: '88%',
         }
       },
     },
@@ -901,9 +904,9 @@ function Dashboard({
         url = url_for('dashboard.config', {'sid': sid});
       } else if (mainTabVal === 3) {
         if(logCol === false) {
-          url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'plain', 'sid': sid});
+          url = url_for('dashboard.logs', {'log_format': logFormat, 'disp_format': 'plain', 'sid': sid});
         } else if (logCol === true) {
-          url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'table', 'sid': sid});
+          url = url_for('dashboard.logs', {'log_format': logFormat, 'disp_format': 'table', 'sid': sid});
           setNextPage(0);
         }
       }
@@ -1011,7 +1014,7 @@ function Dashboard({
     };
   const CustomActiveOnlyHeader = () => {
     return (<Fragment>
-       <RefreshButton onClick={(e) => {
+      <RefreshButton onClick={(e) => {
         e.preventDefault();
         setRefresh(!refresh);
       }}/>
@@ -1035,7 +1038,7 @@ function Dashboard({
       label: gettext('Table based logs'),
     };
   const CustomLogHeader = () => {
-    return ( <Box height="100%" className='Dashboard-cardHeader' display="flex" flexDirection="column">
+    return ( <Box className='Dashboard-cardHeader' display="flex" flexDirection="column">
       <FormInputToggle
         label={gettext('Log Format')}
         className='Dashboard-searchInput'
@@ -1079,7 +1082,7 @@ function Dashboard({
       setHasNextPage(true);
       setIsNextPageLoading(false);
 
-      let _url = url_for('dashboard.logs', {'frm': logFormat, 'disp_format': 'table', 'sid': sid});
+      let _url = url_for('dashboard.logs', {'log_format': logFormat, 'disp_format': 'table', 'sid': sid});
       _url += '/' + (nextPage +1);
 
       const api = getApiInstance();
@@ -1194,9 +1197,7 @@ function Dashboard({
               {/* Server Logs */}
               <TabPanel value={mainTabVal} index={3} classNameRoot='Dashboard-tabPanel'>
                 {dashData &&  dashData.length != 0 &&
-                <Box>
-                  <CustomLogHeader/>
-                </Box>}
+                  <CustomLogHeader/>}
                 {dashData.length == 0 && <div className='Dashboard-emptyPanel'>
                   <EmptyPanelMessage text={ssMsg}/>
                 </div>}

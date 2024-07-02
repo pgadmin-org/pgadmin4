@@ -514,12 +514,12 @@ def log_formats(sid=None):
     )
 
 
-@blueprint.route('/logs/<frm>/<disp_format>/<int:sid>', endpoint='logs')
-@blueprint.route('/logs/<frm>/<disp_format>/<int:sid>/<int:page>',
+@blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>', endpoint='logs')
+@blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>/<int:page>',
                  endpoint='get_logs_by_server_id')
 @pga_login_required
 @check_precondition
-def logs(frm=None, disp_format=None, sid=None, page=0):
+def logs(log_format=None, disp_format=None, sid=None, page=0):
     """
     This function returns server logs details
     """
@@ -537,9 +537,9 @@ def logs(frm=None, disp_format=None, sid=None, page=0):
 
     # Check the requested format is available or not
     log_format = ''
-    if frm == 'C' and 'csvlog' in _format:
+    if log_format == 'C' and 'csvlog' in _format:
         log_format = 'csvlog'
-    elif frm == 'J' and 'jsonlog' in _format:
+    elif log_format == 'J' and 'jsonlog' in _format:
         log_format = 'jsonlog'
 
     sql = render_template(
@@ -579,7 +579,7 @@ def logs(frm=None, disp_format=None, sid=None, page=0):
 
         final_res = res['rows'][0]['pg_read_file'].split('\n')
         # Json format
-        if frm == 'J':
+        if log_format == 'J':
             for f in final_res:
                 try:
                     _tmp_log = json.loads(f)
@@ -591,7 +591,7 @@ def logs(frm=None, disp_format=None, sid=None, page=0):
                     pass
 
         # CSV format
-        elif frm == 'C':
+        elif log_format == 'C':
             for f in final_res:
                 try:
                     _tmp_log = f.split(',')
