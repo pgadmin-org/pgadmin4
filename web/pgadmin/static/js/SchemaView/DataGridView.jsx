@@ -232,7 +232,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
         let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
 
         const content = flexRender(cell.column.columnDef.cell, {
-          key: cell.column.columnDef.cell.type,
+          key: cell.column.columnDef.cell?.type ?? cell.column.columnDef.id,
           ...cell.getContext(),
           reRenderRow: ()=>{setKey((currKey)=>!currKey);}
         });

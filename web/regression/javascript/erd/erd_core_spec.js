@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
-import * as createEngineLib from '@projectstorm/react-diagrams';
 import TEST_TABLES_DATA from './test_tables';
 import { FakeLink, FakeNode } from './fake_item';
 import { PortModelAlignment } from '@projectstorm/react-diagrams';
@@ -50,7 +49,7 @@ describe('ERDCore', ()=>{
   };
 
   beforeAll(()=>{
-    jest.spyOn(createEngineLib, 'default').mockReturnValue(erdEngine);
+    jest.spyOn(ERDCore.prototype, 'createEngine').mockReturnValue(erdEngine);
   });
 
   it('initialization', ()=>{
