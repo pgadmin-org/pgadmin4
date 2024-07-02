@@ -64,10 +64,10 @@ export default function AppMenuBar() {
   const pgAdmin = usePgAdmin();
 
   useEffect(()=>{
-    pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(()=>{
+    pgAdmin.Browser.Events.on('pgadmin:enable-disable-menu-items', _.debounce(()=>{
       forceUpdate();
     }, 100));
-    pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', _.debounce(()=>{
+    pgAdmin.Browser.Events.on('pgadmin:refresh-menu-item', _.debounce(()=>{
       forceUpdate();
     }, 100));
   }, []);

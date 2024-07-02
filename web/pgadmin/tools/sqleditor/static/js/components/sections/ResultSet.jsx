@@ -47,6 +47,7 @@ export class ResultSetUtils {
     this.isQueryTool = isQueryTool;
     this.clientPKLastIndex = 0;
     this.historyQuerySource = null;
+    this.hasQueryCommitted = false;
   }
 
   static generateURLReconnectionFlag(baseUrl, transId, shouldReconnect) {
@@ -385,7 +386,17 @@ export class ResultSetUtils {
         'trans_id': this.transId
       }),
       JSON.stringify(reqData)
-    );
+    ).then(response => {
+      if (response.data?.data?.status) {
+        // Set the commit flag to true if the save was successful
+        this.hasQueryCommitted = true;
+      }
+      return response;
+    }).catch((error) => {
+      // Set the commit flag to false if there was an error
+      this.hasQueryCommitted = false;
+      throw error;
+    });
   }
 
   async saveResultsToFile(fileName) {
@@ -394,7 +405,7 @@ export class ResultSetUtils {
         url_for('sqleditor.query_tool_download', {
           'trans_id': this.transId,
         }),
-        {filename: fileName}
+        {filename: fileName, query_commited: this.hasQueryCommitted}
       );
 
       if(!_.isUndefined(respData.data)) {
@@ -402,6 +413,7 @@ export class ResultSetUtils {
           this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
         }
       } else {
+        this.hasQueryCommitted = false;
         let respBlob = new Blob([respData], {type : 'text/csv'}),
           urlCreator = window.URL || window.webkitURL,
           download_url = urlCreator.createObjectURL(respBlob),

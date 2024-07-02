@@ -4,7 +4,7 @@
 <dict>
     <!--
         Disable Sandboxing. This must be enabled for the app store, but it will
-        cause NWjs to fail to start with an error like:
+        cause Electron to fail to start with an error like:
 
             [1004/170922.238911:ERROR:directory_reader_posix.cc(42)] opendir /dev/fd: Operation not permitted (1)
 
@@ -22,7 +22,7 @@
     <string>%TEAMID%.org.pgadmin.pgadmin4</string>
 
     <!--
-        We have no need for JIT on x86_64, but NWJS won't start without it
+        We have no need for JIT on x86_64, but Electron won't start without it
         on Apple Silicon.
     -->
     <key>com.apple.security.cs.allow-jit</key>
@@ -50,7 +50,7 @@
 
     <!--
         We need to enable this, even though we don't modify our own executables.
-        Otherwise, NWjs just bombs out.
+        Otherwise, Electron just bombs out.
     -->
     <key>com.apple.security.cs.disable-executable-page-protection</key>
     <true/>

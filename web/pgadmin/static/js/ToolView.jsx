@@ -50,10 +50,6 @@ export default function ToolView() {
           root.render(
             <ToolForm actionUrl={window.location.origin+toolUrl} params={formParams}/>, div
           );
-          // Send the signal to runtime, so that proper zoom level will be set.
-          setTimeout(function () {
-            pgAdmin.Browser.Events.trigger('pgadmin:nw-set-new-window-open-size');
-          }, 500);
         } else {
           window.open(toolUrl);
         }

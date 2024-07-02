@@ -52,7 +52,7 @@ export default function ObjectExplorerToolbar() {
   };
 
   useEffect(()=>{
-    const deregister = pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(checkMenuState, 100));
+    const deregister = pgAdmin.Browser.Events.on('pgadmin:enable-disable-menu-items', _.debounce(checkMenuState, 100));
     checkMenuState();
     return ()=>{
       deregister();

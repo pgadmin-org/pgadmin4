@@ -153,8 +153,6 @@ _build_runtime() {
     # Copy electron into the staging directory
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
 
-    # The chmod command below is needed to fix the permission issue of
-    # the NWjs binaries and files.
     # Change the permission for others and group the same as the owner
     chmod -R og=u "${BUILDROOT}/electron-v${ELECTRON_VERSION}-linux-${ELECTRON_ARCH}"/*
     # Explicitly remove write permissions for others and group

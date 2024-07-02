@@ -51,6 +51,31 @@ const StyledEditor = styled('div')(({theme})=>({
   }
 }));
 
+function ShowDataOutputQueryPopup({query}) {
+  function suppressEnterKey(e) {
+    if(e.keyCode == 13) {
+      e.stopPropagation();
+    }
+  }
+
+  return (
+    <Portal container={document.body}>
+      <StyledEditor ref={(ele)=>{
+        setEditorPosition(document.getElementById('sql-query'), ele, '.MuiBox-root', 29);
+      }} onKeyDown={suppressEnterKey}>
+        <CodeMirror
+          value={query || ''}
+          className={'textarea'}
+          readonly={true}
+        />
+      </StyledEditor>
+    </Portal>
+  );
+}
+ShowDataOutputQueryPopup.propTypes = {
+  query: PropTypes.string,
+};
+
 export function ResultSetToolbar({query,canEdit, totalRowCount}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -182,28 +207,6 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
     },
   ], queryToolCtx.mainContainerRef);
 
-  function suppressEnterKey(e) {
-    if(e.keyCode == 13) {
-      e.stopPropagation();
-    }
-  }
-
-  const ShowDataOutputQueryPopup =()=> {
-    return (
-      <Portal container={document.body}>
-        <StyledEditor ref={(ele)=>{
-          setEditorPosition(document.getElementById('sql-query'), ele, '.MuiBox-root', 29);
-        }} onKeyDown={suppressEnterKey}>
-          <CodeMirror
-            value={query || ''}
-            className={'textarea'}
-            readonly={true}
-          />
-        </StyledEditor>
-      </Portal>
-    );
-  };
-  
   return (
     <>
       <StyledDiv>
@@ -234,13 +237,13 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
           <PgIconButton title={gettext('Graph Visualiser')} icon={<TimelineRoundedIcon />}
             onClick={showGraphVisualiser} disabled={buttonsDisabled['save-result']} />
         </PgButtonGroup>
-        {query && 
+        {query &&
         <>
           <PgButtonGroup size="small">
             <PgIconButton title={gettext('SQL query of data')} icon={<SQLQueryIcon />}
               onClick={()=>{setDataOutputQueryBtn(prev=>!prev);}} onBlur={()=>{setDataOutputQueryBtn(false);}} disabled={!query} id='sql-query'/>
           </PgButtonGroup>
-          { dataOutputQueryBtn && <ShowDataOutputQueryPopup />}
+          { dataOutputQueryBtn && <ShowDataOutputQueryPopup query={query} />}
         </>
         }
       </StyledDiv>

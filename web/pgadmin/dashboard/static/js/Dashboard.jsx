@@ -26,7 +26,7 @@ import _ from 'lodash';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
 import Summary from './SystemStats/Summary';
-import CPU from './SystemStats/CPU';
+import CpuDetails from './SystemStats/CpuDetails';
 import Memory from './SystemStats/Memory';
 import Storage from './SystemStats/Storage';
 import withStandardTabInfo from '../../../static/js/helpers/withStandardTabInfo';
@@ -97,6 +97,160 @@ const Root = styled('div')(({theme}) => ({
 let activeQSchemaObj = new ActiveQuery();
 let serverLogSchemaObj = new ServerLog();
 
+const cellPropTypes = {
+  row: PropTypes.any,
+};
+
+function getTerminateCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
+  function TerminateCell({row}) {
+    let terminate_session_url =
+      url_for('dashboard.index') + 'terminate_session' + '/' + sid,
+      title = gettext('Terminate Session?'),
+      txtConfirm = gettext(
+        'Are you sure you wish to terminate the session?'
+      ),
+      txtSuccess = gettext('Session terminated successfully.'),
+      txtError = gettext(
+        'An error occurred whilst terminating the active query.'
+      );
+    const action_url = did
+      ? terminate_session_url + '/' + did
+      : terminate_session_url;
+
+    const api = getApiInstance();
+
+    return (
+      <PgIconButton
+        size="xs"
+        noBorder
+        icon={<CancelIcon />}
+        className='Dashboard-terminateButton'
+        onClick={() => {
+          if (
+            !canTakeAction(row, 'terminate')
+          )
+            return;
+          let url = action_url + '/' + row.original.pid;
+          pgAdmin.Browser.notifier.confirm(
+            title,
+            txtConfirm,
+            function () {
+              api
+                .delete(url)
+                .then(function (res) {
+                  if (res.data == gettext('Success')) {
+                    pgAdmin.Browser.notifier.success(txtSuccess);
+                    onSuccess?.();
+                  } else {
+                    pgAdmin.Browser.notifier.error(txtError);
+                  }
+                })
+                .catch(function (error) {
+                  pgAdmin.Browser.notifier.alert(
+                    gettext('Failed to perform the operation.'),
+                    parseApiError(error)
+                  );
+                });
+            },
+            function () {
+              return true;
+            }
+          );
+        }}
+        aria-label="Terminate Session?"
+        title={gettext('Terminate Session?')}
+      ></PgIconButton>
+    );
+  }
+
+  TerminateCell.propTypes = cellPropTypes;
+  return TerminateCell;
+}
+
+function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
+  function CancelCell({ row }) {
+    let cancel_query_url =
+      url_for('dashboard.index') + 'cancel_query' + '/' + sid,
+      title = gettext('Cancel Active Query?'),
+      txtConfirm = gettext(
+        'Are you sure you wish to cancel the active query?'
+      ),
+      txtSuccess = gettext('Active query cancelled successfully.'),
+      txtError = gettext(
+        'An error occurred whilst cancelling the active query.'
+      );
+
+    const action_url = did ? cancel_query_url + '/' + did : cancel_query_url;
+
+    const api = getApiInstance();
+
+    return (
+      <PgIconButton
+        size="xs"
+        noBorder
+        icon={<StopSharpIcon/>}
+        onClick={() => {
+          if (!canTakeAction(row, 'cancel'))
+            return;
+          let url = action_url + '/' + row.original.pid;
+          pgAdmin.Browser.notifier.confirm(
+            title,
+            txtConfirm,
+            function () {
+              api
+                .delete(url)
+                .then(function (res) {
+                  if (res.data == gettext('Success')) {
+                    pgAdmin.Browser.notifier.success(txtSuccess);
+                    onSuccess?.();
+                  } else {
+                    pgAdmin.Browser.notifier.error(txtError);
+                    onSuccess?.();
+                  }
+                })
+                .catch(function (error) {
+                  pgAdmin.Browser.notifier.alert(
+                    gettext('Failed to perform the operation.'),
+                    parseApiError(error)
+                  );
+                });
+            },
+            function () {
+              return true;
+            }
+          );
+        }}
+        aria-label="Cancel the query"
+        title={gettext('Cancel the active query')}
+      ></PgIconButton>
+    );
+  }
+  CancelCell.propTypes = cellPropTypes;
+  return CancelCell;
+}
+
+function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
+  return (
+    <InputCheckbox
+      label={gettext('Active sessions only')}
+      labelPlacement="end"
+      className='Dashboard-searchInput'
+      onChange={(e) => {
+        e.preventDefault();
+        setActiveOnly(e.target.checked);
+      }}
+      value={activeOnly}
+      controlProps={{
+        label: gettext('Active sessions only'),
+      }}
+    />
+  );
+}
+ActiveOnlyHeader.propTypes = {
+  activeOnly: PropTypes.bool,
+  setActiveOnly: PropTypes.func,
+};
+
 function Dashboard({
   nodeItem, nodeData, node, treeNodeInfo,
   ...props
@@ -149,6 +303,62 @@ function Dashboard({
 
   const mainTabChanged = (e, tabVal) => {
     setMainTabVal(tabVal);
+  };
+
+  const canTakeAction = (row, cellAction) => {
+    // We will validate if user is allowed to cancel the active query
+    // If there is only one active session means it probably our main
+    // connection session
+    cellAction = cellAction || null;
+    let pg_version = treeNodeInfo.server.version || null,
+      is_cancel_session = cellAction === 'cancel',
+      txtMessage,
+      maintenance_database = treeNodeInfo.server.db;
+
+    let maintenanceActiveSessions = dashData.filter((data) => data.state === 'active'&&
+      maintenance_database === data.datname);
+
+    // With PG10, We have background process showing on dashboard
+    // We will not allow user to cancel them as they will fail with error
+    // anyway, so better usability we will throw our on notification
+
+    // Background processes do not have database field populated
+    if (pg_version && pg_version >= 100000 && !row.original.datname) {
+      if (is_cancel_session) {
+        txtMessage = gettext('You cannot cancel background worker processes.');
+      } else {
+        txtMessage = gettext(
+          'You cannot terminate background worker processes.'
+        );
+      }
+      pgAdmin.Browser.notifier.info(txtMessage);
+      return false;
+      // If it is the last active connection on maintenance db then error out
+    } else if (
+      maintenance_database == row.original.datname &&
+      row.original.state == 'active' &&
+      maintenanceActiveSessions.length === 1
+    ) {
+      if (is_cancel_session) {
+        txtMessage = gettext(
+          'You are not allowed to cancel the main active session.'
+        );
+      } else {
+        txtMessage = gettext(
+          'You are not allowed to terminate the main active session.'
+        );
+      }
+      pgAdmin.Browser.notifier.error(txtMessage);
+      return false;
+    } else if (is_cancel_session && row.original.state == 'idle') {
+      // If this session is already idle then do nothing
+      pgAdmin.Browser.notifier.info(gettext('The session is already in idle state.'));
+      return false;
+    } else {
+      // Will return true and let the backend handle all the cases.
+      // Added as fix of #7217
+      return true;
+    }
   };
 
   const serverConfigColumns = [
@@ -298,67 +508,7 @@ function Dashboard({
       maxSize: 35,
       minSize: 35,
       id: 'btn-terminate',
-      // eslint-disable-next-line react/display-name
-      cell: ({ row }) => {
-        let terminate_session_url =
-          url_for('dashboard.index') + 'terminate_session' + '/' + sid,
-          title = gettext('Terminate Session?'),
-          txtConfirm = gettext(
-            'Are you sure you wish to terminate the session?'
-          ),
-          txtSuccess = gettext('Session terminated successfully.'),
-          txtError = gettext(
-            'An error occurred whilst terminating the active query.'
-          );
-        const action_url = did
-          ? terminate_session_url + '/' + did
-          : terminate_session_url;
-
-        const api = getApiInstance();
-
-        return (
-          <PgIconButton
-            size="xs"
-            noBorder
-            icon={<CancelIcon />}
-            className='Dashboard-terminateButton'
-            onClick={() => {
-              if (
-                !canTakeAction(row, 'terminate')
-              )
-                return;
-              let url = action_url + '/' + row.original.pid;
-              pgAdmin.Browser.notifier.confirm(
-                title,
-                txtConfirm,
-                function () {
-                  api
-                    .delete(url)
-                    .then(function (res) {
-                      if (res.data == gettext('Success')) {
-                        pgAdmin.Browser.notifier.success(txtSuccess);
-                        setRefresh(!refresh);
-                      } else {
-                        pgAdmin.Browser.notifier.error(txtError);
-                      }
-                    })
-                    .catch(function (error) {
-                      pgAdmin.Browser.notifier.alert(
-                        gettext('Failed to perform the operation.'),
-                        parseApiError(error)
-                      );
-                    });
-                },
-                function () {
-                  return true;
-                }
-              );
-            }}
-            aria-label="Terminate Session?"
-            title={gettext('Terminate Session?')}
-          ></PgIconButton>
-        );
-      },
+      cell: getTerminateCell(pgAdmin, sid, did, canTakeAction, setRefresh, ()=>setRefresh(!refresh)),
     },
     {
       header: () => null,
@@ -369,64 +519,7 @@ function Dashboard({
       maxSize: 35,
       minSize: 35,
       id: 'btn-cancel',
-      cell: ({ row }) => {
-        let cancel_query_url =
-          url_for('dashboard.index') + 'cancel_query' + '/' + sid,
-          title = gettext('Cancel Active Query?'),
-          txtConfirm = gettext(
-            'Are you sure you wish to cancel the active query?'
-          ),
-          txtSuccess = gettext('Active query cancelled successfully.'),
-          txtError = gettext(
-            'An error occurred whilst cancelling the active query.'
-          );
-
-        const action_url = did ? cancel_query_url + '/' + did : cancel_query_url;
-
-        const api = getApiInstance();
-
-        return (
-          <PgIconButton
-            size="xs"
-            noBorder
-            icon={<StopSharpIcon/>}
-            onClick={() => {
-              if (!canTakeAction(row, 'cancel'))
-                return;
-              let url = action_url + '/' + row.original.pid;
-              pgAdmin.Browser.notifier.confirm(
-                title,
-                txtConfirm,
-                function () {
-                  api
-                    .delete(url)
-                    .then(function (res) {
-                      if (res.data == gettext('Success')) {
-                        pgAdmin.Browser.notifier.success(txtSuccess);
-                        setRefresh(!refresh);
-                      } else {
-                        pgAdmin.Browser.notifier.error(txtError);
-                        setRefresh(!refresh);
-
-                      }
-                    })
-                    .catch(function (error) {
-                      pgAdmin.Browser.notifier.alert(
-                        gettext('Failed to perform the operation.'),
-                        parseApiError(error)
-                      );
-                    });
-                },
-                function () {
-                  return true;
-                }
-              );
-            }}
-            aria-label="Cancel the query"
-            title={gettext('Cancel the active query')}
-          ></PgIconButton>
-        );
-      },
+      cell: getCancelCell(pgAdmin, sid, did, canTakeAction, setRefresh, ()=>setRefresh(!refresh)),
     },
     {
       header: () => null,
@@ -754,7 +847,6 @@ function Dashboard({
     }
   };
 
-
   useEffect(() => {
     if (mainTabVal == 3) {
       setLogFormat('T');
@@ -1063,7 +1155,7 @@ function Dashboard({
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
-                        CustomHeader={CustomActiveOnlyHeader}
+                        customHeader={<ActiveOnlyHeader activeOnly={activeOnly} setActiveOnly={setActiveOnly} />}
                         columns={activityColumns}
                         data={(dashData !== undefined && dashData[0] && filteredDashData) || []}
                         schema={activeQSchemaObj}
@@ -1156,7 +1248,7 @@ function Dashboard({
                         />
                       </TabPanel>
                       <TabPanel value={systemStatsTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
-                        <CPU
+                        <CpuDetails
                           key={sid + did}
                           preferences={preferences}
                           sid={sid}
