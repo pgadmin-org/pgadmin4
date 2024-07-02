@@ -616,7 +616,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
                     _tmp = re.split(LOG_STATEMENTS, f)
 
                     final_cols.append({
-                        "error_severity": tmp.group(0)[:len(tmp.group(0))-1],
+                        "error_severity": tmp.group(0)[:len(tmp.group(0)) - 1],
                         "timestamp": _tmp[0],
                         "message": _tmp[1] if len(_tmp) > 1 else ''})
 
