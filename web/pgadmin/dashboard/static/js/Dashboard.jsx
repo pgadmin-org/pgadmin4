@@ -232,8 +232,25 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
   return CancelCell;
 }
 
-function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
+function CustomRefresh({refresh, setRefresh}) {
   return (
+    <RefreshButton onClick={(e) => {
+      e.preventDefault();
+      setRefresh(!refresh);
+    }}/>
+  );
+}
+CustomRefresh.propTypes = {
+  refresh: PropTypes.bool,
+  setRefresh: PropTypes.func,
+};
+
+function ActiveOnlyHeader({activeOnly, setActiveOnly, refresh, setRefresh}) {
+  return (<Fragment>
+    <RefreshButton onClick={(e) => {
+      e.preventDefault();
+      setRefresh(!refresh);
+    }}/>
     <InputCheckbox
       label={gettext('Active sessions only')}
       labelPlacement="end"
@@ -246,12 +263,14 @@ function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
       controlProps={{
         label: gettext('Active sessions only'),
       }}
-    />
+    /></Fragment>
   );
 }
 ActiveOnlyHeader.propTypes = {
   activeOnly: PropTypes.bool,
   setActiveOnly: PropTypes.func,
+  refresh: PropTypes.bool,
+  setRefresh: PropTypes.func,
 };
 
 function Dashboard({
@@ -793,63 +812,6 @@ function Dashboard({
       enableFilters: true,
     },
   ];
-
-  const canTakeAction = (row, cellAction) => {
-    // We will validate if user is allowed to cancel the active query
-    // If there is only one active session means it probably our main
-    // connection session
-    cellAction = cellAction || null;
-    let pg_version = treeNodeInfo.server.version || null,
-      is_cancel_session = cellAction === 'cancel',
-      txtMessage,
-      maintenance_database = treeNodeInfo.server.db;
-
-    let maintenanceActiveSessions = dashData.filter((data) => data.state === 'active'&&
-      maintenance_database === data.datname);
-
-    // With PG10, We have background process showing on dashboard
-    // We will not allow user to cancel them as they will fail with error
-    // anyway, so better usability we will throw our on notification
-
-    // Background processes do not have database field populated
-    if (pg_version && pg_version >= 100000 && !row.original.datname) {
-      if (is_cancel_session) {
-        txtMessage = gettext('You cannot cancel background worker processes.');
-      } else {
-        txtMessage = gettext(
-          'You cannot terminate background worker processes.'
-        );
-      }
-      pgAdmin.Browser.notifier.info(txtMessage);
-      return false;
-      // If it is the last active connection on maintenance db then error out
-    } else if (
-      maintenance_database == row.original.datname &&
-      row.original.state == 'active' &&
-      maintenanceActiveSessions.length === 1
-    ) {
-      if (is_cancel_session) {
-        txtMessage = gettext(
-          'You are not allowed to cancel the main active session.'
-        );
-      } else {
-        txtMessage = gettext(
-          'You are not allowed to terminate the main active session.'
-        );
-      }
-      pgAdmin.Browser.notifier.error(txtMessage);
-      return false;
-    } else if (is_cancel_session && row.original.state == 'idle') {
-      // If this session is already idle then do nothing
-      pgAdmin.Browser.notifier.info(gettext('The session is already in idle state.'));
-      return false;
-    } else {
-      // Will return true and let the backend handle all the cases.
-      // Added as fix of #7217
-      return true;
-    }
-  };
-
   useEffect(() => {
     if (mainTabVal == 3) {
       setLogFormat('T');
@@ -999,40 +961,6 @@ function Dashboard({
     );
   };
 
-  const CustomRefresh = () => {
-    return (
-      <RefreshButton onClick={(e) => {
-        e.preventDefault();
-        setRefresh(!refresh);
-      }}/>
-    );
-  };
-
-  const CustomActiveOnlyHeaderLabel =
-    {
-      label: gettext('Active sessions only'),
-    };
-  const CustomActiveOnlyHeader = () => {
-    return (<Fragment>
-      <RefreshButton onClick={(e) => {
-        e.preventDefault();
-        setRefresh(!refresh);
-      }}/>
-      <InputCheckbox
-        label={gettext('Active sessions only')}
-        labelPlacement="end"
-        className='Dashboard-searchInput'
-        onChange={(e) => {
-          e.preventDefault();
-          setActiveOnly(e.target.checked);
-        }}
-        value={activeOnly}
-        controlProps={CustomActiveOnlyHeaderLabel}
-      ></InputCheckbox>
-    </Fragment>
-    );
-  };
-
   const CustomLogHeaderLabel =
     {
       label: gettext('Table based logs'),
@@ -1158,7 +1086,7 @@ function Dashboard({
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
-                        customHeader={<ActiveOnlyHeader activeOnly={activeOnly} setActiveOnly={setActiveOnly} />}
+                        customHeader={<ActiveOnlyHeader activeOnly={activeOnly} setActiveOnly={setActiveOnly} refresh={refresh} setRefresh={setRefresh}/>}
                         columns={activityColumns}
                         data={(dashData !== undefined && dashData[0] && filteredDashData) || []}
                         schema={activeQSchemaObj}
@@ -1166,7 +1094,7 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
-                        CustomHeader={CustomRefresh}
+                        customHeader={<CustomRefresh refresh={refresh} setRefresh={setRefresh}/>}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databaseLocksColumns}
@@ -1175,7 +1103,7 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
-                        CustomHeader={CustomRefresh}
+                        customHeader={<CustomRefresh refresh={refresh} setRefresh={setRefresh}/>}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databasePreparedColumns}

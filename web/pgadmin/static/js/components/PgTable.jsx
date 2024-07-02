@@ -276,7 +276,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, ...pro
     <QueryClientProvider client={queryClient}>
       <StyledPgTableRoot className={[tableNoBorder ? '' : 'pgtable-pgrt-border', caveTable ? 'pgtable-pgrt-cave' : ''].join(' ')} data-test={props['data-test']}>
         <Box className='pgtable-header'>
-          {props.CustomHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}> <props.CustomHeader /></Box>)}
+          {props.customHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}> {props.customHeader }</Box>)}
           <Box marginLeft="auto">
             <InputText
               placeholder={gettext('Search')}
