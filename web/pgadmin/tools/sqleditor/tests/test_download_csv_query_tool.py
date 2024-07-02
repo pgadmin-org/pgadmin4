@@ -37,7 +37,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 is_valid_tx=True,
                 is_valid=True,
                 download_as_txt=False,
-                filename='test.csv'
+                filename='test.csv',
+                query_commited=True
             )
         ),
         (
@@ -51,7 +52,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 is_valid_tx=False,
                 is_valid=False,
                 download_as_txt=False,
-                filename='test.csv'
+                filename='test.csv',
+                query_commited=False
             )
         ),
         (
@@ -65,7 +67,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 is_valid_tx=True,
                 is_valid=False,
                 download_as_txt=False,
-                filename='test.csv'
+                filename='test.csv',
+                query_commited=False
             )
         ),
         (
@@ -79,7 +82,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 is_valid_tx=True,
                 is_valid=True,
                 download_as_txt=True,
-                filename=None
+                filename=None,
+                query_commited=False
             )
         ),
         (
@@ -93,7 +97,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 is_valid_tx=True,
                 is_valid=True,
                 download_as_txt=False,
-                filename=None
+                filename=None,
+                query_commited=False
             )
         ),
     ]
@@ -184,9 +189,14 @@ class TestDownloadCSV(BaseTestGenerator):
                                   headers['Content-Disposition'])
 
         else:
+            data = {
+                "query": self.sql,
+                "filename": self.filename,
+                "query_commited": self.query_commited
+            }
             response = self.tester.post(
                 url,
-                data={"query": self.sql, "filename": self.filename}
+                data=data
             )
             headers = dict(response.headers)
             # Enable the console logging from Flask logger
