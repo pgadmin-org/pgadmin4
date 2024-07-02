@@ -61,17 +61,19 @@ export function SecurityButton({...props}) {
 export default function BasePage({pageImage, title,  children, messages}) {
   const snackbar = useSnackbar();
   useEffect(()=>{
-    messages?.forEach((m)=>{
-      snackbar.enqueueSnackbar({
+    messages?.forEach((message)=>{
+      let options = {
         autoHideDuration: null,
-        content: (key)=>{
-          if(Array.isArray(m[0])) m[0] = m[0][0];
-          const type = Object.values(MESSAGE_TYPE).includes(m[0]) ? m[0] : MESSAGE_TYPE.INFO;
+        content:(key)=>{
+          if(Array.isArray(message[0])) message[0] = message[0][0];
+          const type = Object.values(MESSAGE_TYPE).includes(message[0]) ? message[0] : MESSAGE_TYPE.INFO;
           return <FinalNotifyContent>
-            <NotifierMessage type={type} message={m[1]} closable={true} onClose={()=>{snackbar.closeSnackbar(key);}} style={{maxWidth: '400px'}} />
+            <NotifierMessage type={type} message={message[1]} closable={true} onClose={()=>{snackbar.closeSnackbar(key);}} style={{maxWidth: '400px'}} />
           </FinalNotifyContent>;
         }
-      });
+      };
+      options.content.displayName = 'content';
+      snackbar.enqueueSnackbar(options);
     });
   }, [messages]);
   return (

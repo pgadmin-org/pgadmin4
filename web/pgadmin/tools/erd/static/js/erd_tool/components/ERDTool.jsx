@@ -758,7 +758,7 @@ export default class ERDTool extends React.Component {
         height = 32766;
         isCut = true;
       }
-      toPng(this.canvasEle)
+      toPng(this.canvasEle, {width, height})
         .then((dataUrl)=>{
           let link = document.createElement('a');
           link.setAttribute('href', dataUrl);

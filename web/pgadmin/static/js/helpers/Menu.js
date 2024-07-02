@@ -116,7 +116,7 @@ export default class Menu {
 
 
 export class MenuItem {
-  constructor(options, onDisableChange, onChangeChecked) {
+  constructor(options, onDisableChange) {
     let menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
       'category', 'target', 'url', 'node',
@@ -136,7 +136,6 @@ export class MenuItem {
       };
     }
     this.onDisableChange = onDisableChange;
-    this.changeChecked = onChangeChecked;
     this._isDisabled = true;
     this.checkAndSetDisabled();
   }
@@ -158,7 +157,6 @@ export class MenuItem {
 
   change_checked(isChecked) {
     this.checked = isChecked;
-    this.changeChecked?.(this);
   }
 
   getMenuItems() {

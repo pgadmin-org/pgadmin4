@@ -19,13 +19,13 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { Checkbox, Box } from '@mui/material';
 import { InputText } from './FormComponents';
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import SchemaView from '../SchemaView';
 import EmptyPanelMessage from './EmptyPanelMessage';
-import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent } from './PgReactTableStyled';
+import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent, getCheckboxCell, getCheckboxHeaderCell } from './PgReactTableStyled';
+import { Box } from '@mui/material';
 
 const ROW_HEIGHT = 30;
 function TableRow({ index, style, schema, row, measureElement}) {
@@ -86,31 +86,12 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
 
   const finalColumns = useMemo(() => (hasSelectRow ? [{
     id: 'selection',
-    header: ({ table }) => {
-      return (
-        <div style={{textAlign: 'center', minWidth: 20}}>
-          <Checkbox
-            color="primary"
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-            inputProps={{ 'aria-label': gettext('Select All Rows') }}
-          />
-        </div>
-      );
-    },
-    cell: ({ row }) => (
-      <div style={{textAlign: 'center', minWidth: 20}}>
-        <Checkbox
-          color="primary"
-          checked={row.getIsSelected()}
-          indeterminate={row.getIsSomeSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
-          inputProps={{ 'aria-label': gettext('Select Row') }}
-        />
-      </div>
-    ),
+    header: getCheckboxCell({
+      title: gettext('Select All Rows'),
+    }),
+    cell: getCheckboxHeaderCell({
+      title: gettext('Select Row'),
+    }),
     enableSorting: false,
     enableResizing: false,
     maxSize: 35,
@@ -239,7 +220,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, ...pro
   return (
     <StyledPgTableRoot className={[tableNoBorder ? '' : 'pgtable-pgrt-border', caveTable ? 'pgtable-pgrt-cave' : ''].join(' ')} data-test={props['data-test']}>
       <Box className='pgtable-header'>
-        {props.CustomHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}> <props.CustomHeader /></Box>)}
+        {props.customHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}>{props.customHeader}</Box>)}
         <Box marginLeft="auto">
           <InputText
             placeholder={gettext('Search')}
@@ -260,7 +241,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, ...pro
 }
 
 PgTable.propTypes = {
-  CustomHeader: PropTypes.func,
+  customHeader: PropTypes.element,
   caveTable: PropTypes.bool,
   tableNoBorder: PropTypes.bool,
   'data-test': PropTypes.string,
