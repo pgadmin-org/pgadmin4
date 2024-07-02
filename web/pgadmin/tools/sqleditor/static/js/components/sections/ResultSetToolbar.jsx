@@ -84,6 +84,7 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
     'save-data': true,
     'delete-rows': true,
     'copy-rows': true,
+    'paste-rows': !canEdit,
     'save-result': true,
   });
   const [menuOpenId, setMenuOpenId] = React.useState(null);
@@ -142,13 +143,30 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
     });
   }, []);
 
+  const byteaDataTypeCellSelected = (rows, cols, range, cell, columns) =>{
+    let rowLength = rows.size, colLength = cols.size, cellLength = cell?.length;
+    let byteaColSelection = columns.filter(o=>Array.from(cols).find(x=>o.pos==x-1 && o.type=='bytea'));
+    let rangeSelectedWithBytea= range && columns.filter(o=>o.pos==range['endColumnIdx']-1 && o.type=='bytea');
+    let byteaRowSelection = columns.filter(o=>o.type=='bytea');
+
+    /* This will check bytea cell selected or bytea column selected or complete row selected including bytea cell or a range having bytea cell */
+    if((cellLength > 0 && cell[1].type == 'bytea') || (colLength>0 && byteaColSelection.length>0) || (range && rangeSelectedWithBytea.length>0) || (rowLength >0 && byteaRowSelection.length>0)) {
+      setDisableButton('copy-rows', true);
+      setDisableButton('paste-rows', true);
+    } else {
+      setDisableButton('paste-rows', !canEdit);
+    }
+  };
+
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (isDirty)=>{
       setDisableButton('save-data', !isDirty);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows, cols, range, cell)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows, cols, range, cell, columns)=>{
+      let rowLength = rows.size, colLength = cols.size, cellLength = cell?.length;
       setDisableButton('delete-rows', !rows);
-      setDisableButton('copy-rows', (!rows && !cols && !cell && !range));
+      setDisableButton('copy-rows', (!rowLength && !colLength && !cellLength && !range));
+      byteaDataTypeCellSelected(rows, cols, range, cell, columns);
     });
   }, []);
 
@@ -218,7 +236,7 @@ export function ResultSetToolbar({query,canEdit, totalRowCount}) {
           <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
-            shortcut={queryToolPref.btn_paste_row} disabled={!canEdit} onClick={pasteRows} />
+            shortcut={queryToolPref.btn_paste_row} disabled={buttonsDisabled['paste-rows']} onClick={pasteRows} />
           <PgIconButton title={gettext('Paste options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-pasteoptions" ref={pasetMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Delete')} icon={<DeleteRoundedIcon />}

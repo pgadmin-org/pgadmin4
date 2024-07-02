@@ -553,7 +553,7 @@ export class ResultSetUtils {
       'column_type_internal': columnTypeInternal,
       'pos': c.pos,
       'cell': cellType,
-      'can_edit': (c.name == 'oid') ? false : isEditable,
+      'can_edit': (c.name == 'oid' || columnTypeInternal == 'bytea') ? false : isEditable,
       'not_null': c.not_null,
       'has_default_val': c.has_default_val,
       'is_array': arrayBracketIdx > -1 && arrayBracketIdx + 2 == columnTypeInternal.length,
@@ -799,7 +799,7 @@ export function ResultSet() {
   };
 
   const fireRowsColsCellChanged = ()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows, selectedColumns, selectedRange.current, selectedCell.current, columns);
   };
 
   const executionStartCallback = async (query, explainObject, external=false, reconnect=false, executeCursor=false)=>{
