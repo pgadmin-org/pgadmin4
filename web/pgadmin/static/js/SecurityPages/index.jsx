@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
 import Theme from '../Theme/index';
@@ -18,20 +18,18 @@ window.renderSecurityPage = function(pageName, pageProps, otherProps) {
   };
 
   const Page = ComponentPageMap[pageName];
+  const root = ReactDOM.createRoot(document.querySelector('#root'));
 
   if(Page) {
-    ReactDOM.render(
-      <Theme>
-        <SnackbarProvider
-          maxSnack={5}
-          anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
-          <Page {...pageProps} {...otherProps} />
-        </SnackbarProvider>
-      </Theme>
-      , document.querySelector('#root'));
+    root.render(<Theme>
+      <SnackbarProvider
+        maxSnack={5}
+        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
+        <Page {...pageProps} {...otherProps} />
+      </SnackbarProvider>
+    </Theme>);
   } else {
-    ReactDOM.render(
-      <h1>Invalid Page</h1>
-      , document.querySelector('#root'));
+    root.render(
+      <h1>Invalid Page</h1>);
   }
 };

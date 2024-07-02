@@ -382,7 +382,7 @@ define('pgadmin.browser.node', [
 
           treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
           const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
-          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
@@ -412,7 +412,7 @@ define('pgadmin.browser.node', [
           // browser tree upon the 'Save' button click.
           treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
           const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
-          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
@@ -438,7 +438,7 @@ define('pgadmin.browser.node', [
           });
         } else {
           const panelId = BROWSER_PANELS.EDIT_PROPERTIES+nodeData.id;
-          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
           const onSave = (newNodeData)=>{
             let _old = nodeData,
               _new = newNodeData.node,

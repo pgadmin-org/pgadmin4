@@ -42,6 +42,7 @@ import {
 import syntaxHighlighting from '../extensions/highlighting';
 import PgSQL from '../extensions/dialect';
 import { sql } from '@codemirror/lang-sql';
+import { json } from '@codemirror/lang-json';
 import errorMarkerExtn from '../extensions/errorMarker';
 import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
@@ -126,9 +127,6 @@ const defaultExtensions = [
     preventDefault: true,
     run: deleteCharBackwardStrict,
   }]),
-  sql({
-    dialect: PgSQL,
-  }),
   PgSQL.language.data.of({
     autocomplete: false,
   }),
@@ -151,7 +149,7 @@ const defaultExtensions = [
 export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly, disabled, autocomplete = false,
   breakpoint = false, onBreakPointChange, showActiveLine=false,
-  keepHistory = true, cid, helpid, labelledBy, customKeyMap}) {
+  keepHistory = true, cid, helpid, labelledBy, customKeyMap, language='pgsql'}) {
 
   const editorContainerRef = useRef();
   const editor = useRef();
@@ -170,6 +168,7 @@ export default function Editor({
   useEffect(() => {
     const finalOptions = { ...defaultOptions, ...options };
     const finalExtns = [
+      (language == 'json') ? json() : sql({dialect: PgSQL}),
       ...defaultExtensions,
     ];
     if (finalOptions.lineNumbers) {
@@ -399,4 +398,5 @@ Editor.propTypes = {
   helpid: PropTypes.string,
   labelledBy: PropTypes.string,
   customKeyMap: PropTypes.array,
+  language: PropTypes.string,
 };

@@ -9,6 +9,7 @@
 
 """A blueprint module implementing the dashboard frame."""
 import math
+import re
 
 from flask import render_template, Response, g, request
 from flask_babel import gettext
@@ -16,8 +17,7 @@ from pgadmin.user_login_check import pga_login_required
 import json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
-    internal_server_error
-
+    internal_server_error, make_json_response, precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
@@ -25,7 +25,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
 
 from .precondition import check_precondition
 from .pgd_replication import blueprint as pgd_replication
-from config import PG_DEFAULT_DRIVER
+from config import PG_DEFAULT_DRIVER, ON_DEMAND_LOG_COUNT
 
 MODULE_NAME = 'dashboard'
 
@@ -157,17 +157,17 @@ class DashboardModule(PgAdminModule):
 
         self.display_graphs = self.dashboard_preference.register(
             'display', 'show_graphs',
-            gettext("Show graphs?"), 'boolean', True,
+            gettext("Show activity?"), 'boolean', True,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, graphs '
+            help_str=gettext('If set to True, activity '
                              'will be displayed on dashboards.')
         )
 
         self.display_server_activity = self.dashboard_preference.register(
             'display', 'show_activity',
-            gettext("Show activity?"), 'boolean', True,
+            gettext("Show state?"), 'boolean', True,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, activity tables '
+            help_str=gettext('If set to True, state tables '
                              'will be displayed on dashboards.')
         )
 
@@ -241,7 +241,9 @@ class DashboardModule(PgAdminModule):
             'dashboard.get_prepared_by_server_id',
             'dashboard.get_prepared_by_database_id',
             'dashboard.config',
-            'dashboard.get_config_by_server_id',
+            'dashboard.log_formats',
+            'dashboard.logs',
+            'dashboard.get_logs_by_server_id',
             'dashboard.check_system_statistics',
             'dashboard.check_system_statistics_sid',
             'dashboard.check_system_statistics_did',
@@ -318,7 +320,8 @@ def index(sid=None, did=None):
         )
 
 
-def get_data(sid, did, template, check_long_running_query=False):
+def get_data(sid, did, template, check_long_running_query=False,
+             only_data=False):
     """
     Generic function to get server stats based on an SQL template
     Args:
@@ -346,6 +349,9 @@ def get_data(sid, did, template, check_long_running_query=False):
     # Check the long running query status and set the row type.
     if check_long_running_query:
         get_long_running_query_status(res['rows'])
+
+    if only_data:
+        return res['rows']
 
     return ajax_response(
         response=res['rows'],
@@ -431,7 +437,15 @@ def activity(sid=None, did=None):
     :param sid: server id
     :return:
     """
-    return get_data(sid, did, 'activity.sql', True)
+    data = [{
+        'activity': get_data(sid, did, 'activity.sql', True, True),
+        'locks': get_data(sid, did, 'locks.sql', only_data=True),
+        'prepared': get_data(sid, did, 'prepared.sql', only_data=True)
+    }]
+    return ajax_response(
+        response=data,
+        status=200
+    )
 
 
 @blueprint.route('/locks/', endpoint='locks')
@@ -466,8 +480,7 @@ def prepared(sid=None, did=None):
     return get_data(sid, did, 'prepared.sql')
 
 
-@blueprint.route('/config/', endpoint='config')
-@blueprint.route('/config/<int:sid>', endpoint='get_config_by_server_id')
+@blueprint.route('/config/<int:sid>', endpoint='config')
 @pga_login_required
 @check_precondition
 def config(sid=None):
@@ -477,6 +490,145 @@ def config(sid=None):
     :return:
     """
     return get_data(sid, None, 'config.sql')
+
+
+@blueprint.route('/log_formats', endpoint='log_formats')
+@blueprint.route('/log_formats/<int:sid>', endpoint='log_formats')
+@pga_login_required
+@check_precondition
+def log_formats(sid=None):
+    if not sid:
+        return internal_server_error(errormsg='Server ID not specified.')
+
+    sql = render_template(
+        "/".join([g.template_path, 'log_format.sql'])
+    )
+    status, _format = g.conn.execute_scalar(sql)
+
+    if not status:
+        return internal_server_error(errormsg=_format)
+
+    return ajax_response(
+        response=_format,
+        status=200
+    )
+
+
+@blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>', endpoint='logs')
+@blueprint.route('/logs/<log_format>/<disp_format>/<int:sid>/<int:page>',
+                 endpoint='get_logs_by_server_id')
+@pga_login_required
+@check_precondition
+def logs(log_format=None, disp_format=None, sid=None, page=0):
+    """
+    This function returns server logs details
+    """
+
+    LOG_STATEMENTS = 'DEBUG:|STATEMENT:|LOG:|WARNING:|NOTICE:|INFO:' \
+                     '|ERROR:|FATAL:|PANIC:'
+    if not sid:
+        return internal_server_error(
+            errormsg=gettext('Server ID not specified.'))
+
+    sql = render_template(
+        "/".join([g.template_path, 'log_format.sql'])
+    )
+    status, _format = g.conn.execute_scalar(sql)
+
+    # Check the requested format is available or not
+    log_format = ''
+    if log_format == 'C' and 'csvlog' in _format:
+        log_format = 'csvlog'
+    elif log_format == 'J' and 'jsonlog' in _format:
+        log_format = 'jsonlog'
+
+    sql = render_template(
+        "/".join([g.template_path, 'log_stat.sql']),
+        log_format=log_format, conn=g.conn
+    )
+    status, res = g.conn.execute_scalar(sql)
+    if not status:
+        return internal_server_error(errormsg=res)
+    if not res or len(res) < 0:
+        return ajax_response(
+            response={'logs_disabled': True},
+            status=200
+        )
+
+    file_stat = json.loads(res[0])
+
+    _start = 0
+    _end = ON_DEMAND_LOG_COUNT
+    page = int(page)
+    final_cols = []
+    if page > 0:
+        _start = page * int(ON_DEMAND_LOG_COUNT)
+        _end = _start + int(ON_DEMAND_LOG_COUNT)
+
+    if _start < file_stat:
+        if disp_format == 'plain':
+            _end = file_stat
+        sql = render_template(
+            "/".join([g.template_path, 'logs.sql']), st=_start, ed=_end,
+            log_format=log_format, conn=g.conn
+        )
+        status, res = g.conn.execute_dict(sql)
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        final_res = res['rows'][0]['pg_read_file'].split('\n')
+        # Json format
+        if log_format == 'J':
+            for f in final_res:
+                try:
+                    _tmp_log = json.loads(f)
+                    final_cols.append(
+                        {"error_severity": _tmp_log['error_severity'],
+                         "timestamp": _tmp_log['timestamp'],
+                         "message": _tmp_log['message']})
+                except Exception as e:
+                    pass
+
+        # CSV format
+        elif log_format == 'C':
+            for f in final_res:
+                try:
+                    _tmp_log = f.split(',')
+                    final_cols.append({"error_severity": _tmp_log[11],
+                                       "timestamp": _tmp_log[0],
+                                       "message": _tmp_log[13]})
+                except Exception as e:
+                    pass
+
+        else:
+            col1 = []
+            col2 = []
+            _pattern = re.compile(LOG_STATEMENTS)
+            for f in final_res:
+                tmp = re.search(LOG_STATEMENTS, f)
+                if not tmp or tmp.group((0)) == 'STATEMENT:':
+                    last_val = final_cols.pop() if len(final_cols) > 0\
+                        else {'message': ''}
+                    last_val['message'] += f
+                    final_cols.append(last_val)
+                else:
+                    _tmp = re.split(LOG_STATEMENTS, f)
+
+                    final_cols.append({
+                        "error_severity": tmp.group(0)[:len(tmp.group(0)) - 1],
+                        "timestamp": _tmp[0],
+                        "message": _tmp[1] if len(_tmp) > 1 else ''})
+
+    if disp_format == 'plain':
+        final_response = res['rows']
+    else:
+        final_response = final_cols
+
+    return ajax_response(
+        response=final_response,
+        status=200
+    )
 
 
 @blueprint.route(

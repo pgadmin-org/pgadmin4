@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { usePgAdmin } from './BrowserComponent';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
@@ -46,7 +46,8 @@ export default function ToolView() {
           const newWin = window.open('', '_blank');
           const div = newWin.document.createElement('div');
           newWin.document.body.appendChild(div);
-          ReactDOM.render(
+          const root = ReactDOM.createRoot(div);
+          root.render(
             <ToolForm actionUrl={window.location.origin+toolUrl} params={formParams}/>, div
           );
         } else {

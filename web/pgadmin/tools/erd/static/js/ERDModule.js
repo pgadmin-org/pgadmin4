@@ -12,7 +12,7 @@ import {getRandomInt} from 'sources/utils';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import ERDTool from './erd_tool/components/ERDTool';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
@@ -144,7 +144,8 @@ export default class ERDModule {
   async loadComponent(container, params) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -158,8 +159,7 @@ export default class ERDModule {
             />
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 }

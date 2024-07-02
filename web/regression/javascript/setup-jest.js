@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+const { TextEncoder, TextDecoder } = require('util');
 
 class BroadcastChannelMock {
   onmessage() {/* mock */}
@@ -93,5 +94,7 @@ Element.prototype.getBoundingClientRect = jest.fn(function () {
   };
 });
 
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 jest.setTimeout(18000); // 1 second

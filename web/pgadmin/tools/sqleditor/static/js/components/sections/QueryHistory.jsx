@@ -388,7 +388,7 @@ export function QueryHistory() {
     });
   }, []);
 
-  React.useEffect(async ()=>{
+  const fetchQueryHistory = async() =>{
     if(!queryToolConnCtx.connected) {
       return;
     }
@@ -430,7 +430,11 @@ export function QueryHistory() {
     listRef.current?.focus();
     eventBus.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
-  }, [queryToolConnCtx.connected]);
+  };
+
+  React.useEffect(() =>{
+    fetchQueryHistory();
+  },[queryToolConnCtx.connected]);
 
   const onRemove = async ()=>{
     setLoaderText(gettext('Removing history entry...'));

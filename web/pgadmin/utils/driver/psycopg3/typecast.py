@@ -128,9 +128,6 @@ PSYCOPG_SUPPORTED_MULTIRANGE_ARRAY_TYPES = (6155, 6150, 6157, 6151, 6152, 6153)
 
 
 def register_global_typecasters():
-    # This registers a unicode type caster for datatype 'RECORD'.
-    psycopg.adapters.register_loader(
-        2249, TextLoaderpgAdmin)
     # This registers a unicode type caster for datatype 'RECORD_ARRAY'.
     psycopg.adapters.register_loader(
         2287, TextLoaderpgAdmin)

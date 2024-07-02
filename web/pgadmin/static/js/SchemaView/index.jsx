@@ -627,7 +627,6 @@ function SchemaDialogView({
       type: SCHEMA_STATE_ACTIONS.INIT,
       payload: schema.origData,
     });
-    return true;
   }, [props.resetKey]);
 
   const onResetClick = ()=>{

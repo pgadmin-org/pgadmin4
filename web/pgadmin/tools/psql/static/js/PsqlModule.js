@@ -27,7 +27,7 @@ import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
 
 export default class Psql {
@@ -184,7 +184,8 @@ export default class Psql {
   async loadComponent(container, params) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(container);
+    root.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>
           <ModalProvider>
@@ -192,8 +193,7 @@ export default class Psql {
             <PsqlComponent params={params} pgAdmin={pgAdmin} />
           </ModalProvider>
         </PgAdminContext.Provider>
-      </Theme>,
-      container
+      </Theme>
     );
   }
 

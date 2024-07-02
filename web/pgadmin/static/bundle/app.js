@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import BrowserComponent from '../js/BrowserComponent';
 import MainMenuFactory from '../../browser/static/js/MainMenuFactory';
 import Theme from '../js/Theme';
@@ -50,10 +50,10 @@ define('app', [
   // Create menus after all modules are initialized.
   MainMenuFactory.createMainMenus();
 
-  ReactDOM.render(
+  const root = ReactDOM.createRoot(document.querySelector('#root'));
+  root.render(
     <Theme>
       <BrowserComponent pgAdmin={pgAdmin} />
-    </Theme>,
-    document.querySelector('#root')
+    </Theme>
   );
 });

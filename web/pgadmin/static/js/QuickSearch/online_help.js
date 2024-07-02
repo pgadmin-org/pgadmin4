@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import HiddenIframe from './HiddenIframe';
 import url_for from 'sources/url_for';
 
@@ -39,6 +39,8 @@ export function onlineHelpSearch(param, props) {
   if(document.getElementById('hidden-quick-search-iframe')){
     document.getElementById('hidden-quick-search-iframe').contentDocument.location.reload(true);
   }
+  const root = ReactDOM.createRoot(document.getElementById('quick-search-iframe-container'));
+
 
   // Below function will be called when the page will be loaded in Iframe
   const _iframeLoaded = () => {
@@ -69,7 +71,7 @@ export function onlineHelpSearch(param, props) {
               data: res,
             }));
             isIFrameLoaded = false;
-            ReactDOM.unmountComponentAtNode(document.getElementById('quick-search-iframe-container'));
+            root.unmount();
           } else {
             setState(state => ({
               ...state,
@@ -87,7 +89,7 @@ export function onlineHelpSearch(param, props) {
             url: srcURL,
             data: {},
           }));
-          ReactDOM.unmountComponentAtNode(document.getElementById('quick-search-iframe-container'));
+          root.unmount();
           isIFrameLoaded = false;
           window.clearInterval(pooling);
         }
@@ -98,8 +100,7 @@ export function onlineHelpSearch(param, props) {
   };
 
   // Render IFrame
-  ReactDOM.render(
-    <HiddenIframe id='hidden-quick-search-iframe' srcURL={srcURL} onLoad={_iframeLoaded}/>,
-    document.getElementById('quick-search-iframe-container'),
+  root.render(
+    <HiddenIframe id='hidden-quick-search-iframe' srcURL={srcURL} onLoad={_iframeLoaded}/>
   );
 }
