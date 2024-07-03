@@ -468,7 +468,7 @@ function Dashboard({
         link.click();
       }
       document.body.removeChild(link);
-    } catch (error) {
+    } catch {
       setSsMsg(gettext('Failed to download the logs.'));
     }
   };

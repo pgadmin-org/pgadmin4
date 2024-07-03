@@ -14,7 +14,7 @@ import { usePgAdmin } from '../../../static/js/BrowserComponent';
 import ErrorBoundary from './ErrorBoundary';
 
 export default function withStandardTabInfo(Component, tabId) {
-  // eslint-disable-next-line react/display-name
+   
   const HOCComponent = (props)=>{
     const [[isStale, nodeItem, nodeData], setNodeInfo] = useState([true, undefined, undefined]);
     const pgAdmin = usePgAdmin();

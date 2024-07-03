@@ -87,7 +87,7 @@ function parseEwkbData(rows, column) {
       }
       supportedGeometries.push(geometry);
       geometryItemMap.set(geometry, item);
-    } catch (e) {
+    } catch {
       unsupportedRows.push(item);
     }
     return true;

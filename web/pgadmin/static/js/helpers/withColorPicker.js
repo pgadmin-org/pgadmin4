@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { fullHexColor } from '../utils';
 
 export function withColorPicker(Component) {
-  // eslint-disable-next-line react/display-name
+   
   const HOCComponent = ({value, currObj, onChange, onSave, options, ...props})=>{
     const pickrOptions = {
       showPalette: true,

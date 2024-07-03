@@ -65,15 +65,23 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         function_node.click()
 
     def _debug_function(self):
+        wait = WebDriverWait(self.page.driver, 2)
         self.page.driver.find_element(By.CSS_SELECTOR,
                                       NavMenuLocators.object_menu_css).click()
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "div[data-label='Debugging']")))
+
         ActionChains(
             self.page.driver
         ).move_to_element(
             self.page.driver.find_element(
                 By.CSS_SELECTOR, "div[data-label='Debugging']")
         ).perform()
-        time.sleep(2)
+
+        # time.sleep(2)
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "li[data-label='Debug']")))
+
         self.page.driver.find_element(
             By.CSS_SELECTOR, "li[data-label='Debug']").click()
 

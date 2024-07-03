@@ -141,7 +141,7 @@ export default function ObjectExplorer() {
     try {
       const _node_path = parentPath + '/' + _data.id;
       return mtree.addNode(parentPath, _node_path, _data);
-    } catch (error) {
+    } catch {
       return null; // or throw error as you see fit
     }
   };
@@ -151,7 +151,7 @@ export default function ObjectExplorer() {
     try {
       await mtree.removeNode(path, _removeOnlyChild);
       return true;
-    } catch (error) {
+    } catch {
       return false; // or throw error as you see fit
     }
   };
@@ -161,7 +161,7 @@ export default function ObjectExplorer() {
     try {
       await mtree.updateNode(path, data);
       return true;
-    } catch (error) {
+    } catch {
       return false; // or throw error as you see fit
     }
   };
