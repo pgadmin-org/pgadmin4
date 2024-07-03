@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #3981 <https://github.com/pgadmin-org/pgadmin4/issues/3981>`_ -  Add support for Postgres Server Logs for Text, CSV and JSON format in plain and tabular formats. Upgrade React to version 18.
 
 Housekeeping
 ************
