@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import React from 'react';
+import React, { act} from 'react';
 
 import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
@@ -18,7 +18,6 @@ import axios from 'axios';
 import getApiInstance from '../../../pgadmin/static/js/api_instance';
 import * as pgUtils from '../../../pgadmin/static/js/utils';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 
 const files = [
   {

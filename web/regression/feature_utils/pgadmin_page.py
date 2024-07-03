@@ -282,6 +282,7 @@ class PgadminPage:
                 option_set_as_required = True
                 break
             else:
+                self.driver.implicitly_wait(2)
                 menu_option.click()
                 time.sleep(0.2)
                 if menu_option.get_attribute('data-checked') == is_selected:
