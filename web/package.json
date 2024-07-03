@@ -22,7 +22,7 @@
     "@emotion/utils": "^1.0.0",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^6.1.2",
-    "@testing-library/react": "12",
+    "@testing-library/react": "16",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.5.4",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
