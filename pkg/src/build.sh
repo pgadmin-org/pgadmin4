@@ -72,6 +72,7 @@ do
     tar cf - "${FILE}" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 done
 
+# Copy the commit_hash file, it doesn't show up in git ls-files
 tar cf - "web/commit_hash" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 
 # Create the tarball

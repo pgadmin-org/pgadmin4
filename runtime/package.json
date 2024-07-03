@@ -13,12 +13,12 @@
   "packageManager": "yarn@3.8.2",
   "devDependencies": {
     "@eslint/js": "^9.6.0",
-    "electron": "^30.0.5",
+    "electron": "^31.1.0",
     "eslint": "^9.5.0"
   },
   "dependencies": {
     "axios": "^1.7.2",
     "bootstrap": "^4.5.3",
-    "electron-store": "^9.0.0"
+    "electron-store": "^10.0.0"
   }
 }

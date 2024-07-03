@@ -3328,15 +3328,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/classnames@npm:^2.2.6":
-  version: 2.3.0
-  resolution: "@types/classnames@npm:2.3.0"
-  dependencies:
-    classnames: "*"
-  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
-  languageName: node
-  linkType: hard
-
 "@types/eslint-scope@npm:^3.7.3":
   version: 3.7.7
   resolution: "@types/eslint-scope@npm:3.7.7"
@@ -5484,7 +5475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:*, classnames@npm:2.x, classnames@npm:^2.2.1, classnames@npm:^2.2.5, classnames@npm:^2.2.6, classnames@npm:^2.5.1":
+"classnames@npm:2.x, classnames@npm:^2.2.1, classnames@npm:^2.2.5, classnames@npm:^2.2.6, classnames@npm:^2.5.1":
   version: 2.5.1
   resolution: "classnames@npm:2.5.1"
   checksum: da424a8a6f3a96a2e87d01a432ba19315503294ac7e025f9fece656db6b6a0f7b5003bb1fbb51cbb0d9624d964f1b9bb35a51c73af9b2434c7b292c42231c1e5
@@ -9205,15 +9196,6 @@ __metadata:
   dependencies:
     has-tostringtag: ^1.0.0
   checksum: baa9077cdf15eb7b58c79398604ca57379b2fc4cf9aa7a9b9e295278648f628c9b201400c01c5e0f7afae56507d741185730307cbe7cad3b9f90a77e5ee342fc
-  languageName: node
-  linkType: hard
-
-"is-docker@npm:^2.1.1":
-  version: 2.2.1
-  resolution: "is-docker@npm:2.2.1"
-  bin:
-    is-docker: cli.js
-  checksum: 3fef7ddbf0be25958e8991ad941901bf5922ab2753c46980b60b05c1bf9c9c2402d35e6dc32e4380b980ef5e1970a5d9d5e5aa2e02d77727c3b6b5e918474c56
   languageName: node
   linkType: hard
 
@@ -14271,7 +14253,6 @@ __metadata:
     "@testing-library/jest-dom": ^6.1.2
     "@testing-library/react": 12
     "@testing-library/user-event": ^14.4.3
-    "@types/classnames": ^2.2.6
     "@types/jest": ^29.5.4
     "@types/react": ^17.0.80
     "@types/react-dom": ^17.0.25
@@ -14292,7 +14273,6 @@ __metadata:
     buffer: ^6.0.3
     chart.js: ^3.0.0
     chartjs-plugin-zoom: ^2.0.1
-    classnames: ^2.2.6
     closest: ^0.0.1
     codemirror: ^6.0.1
     convert-units: ^2.3.4
@@ -14320,7 +14300,6 @@ __metadata:
     imports-loader: ^4.0.1
     insert-if: ^1.1.0
     ip-address: ^7.1.0
-    is-docker: ^2.1.1
     jest: ^29.6.4
     jest-environment-jsdom: ^29.6.4
     json-bignumber: ^1.0.1
