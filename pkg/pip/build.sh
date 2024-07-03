@@ -56,6 +56,9 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+# Copy the commit_hash file, it doesn't show up in git ls-files
+tar cf - "commit_hash" | (cd ../pip-build/pgadmin4; tar xf -)
+
 yarn install
 yarn run bundle
 
