@@ -711,11 +711,11 @@ export default class ERDTool extends React.Component {
       x: nodesRect.getTopLeft().x,
       y: nodesRect.getTopLeft().y
     };
-    if(topLeftXY.x > linksRect.getTopLeft().x) {
-      topLeftXY.x = linksRect.getTopLeft().x;
+    if(topLeftXY.x > linksRect.TL.x) {
+      topLeftXY.x = linksRect.TL.x;
     }
-    if(topLeftXY.y > linksRect.getTopLeft().y) {
-      topLeftXY.y = linksRect.getTopLeft().y;
+    if(topLeftXY.y > linksRect.TL.y) {
+      topLeftXY.y = linksRect.TL.y;
     }
     topLeftXY.x -= margin;
     topLeftXY.y -= margin;
@@ -740,8 +740,8 @@ export default class ERDTool extends React.Component {
     });
 
     // Capture the links beyond the nodes as well.
-    const linkOutsideWidth = linksRect.getBottomRight().x - nodesRect.getBottomRight().x;
-    const linkOutsideHeight = linksRect.getBottomRight().y - nodesRect.getBottomRight().y;
+    const linkOutsideWidth = linksRect.BR.x - nodesRect.getBottomRight().x;
+    const linkOutsideHeight = linksRect.BR.y - nodesRect.getBottomRight().y;
     this.canvasEle.style.width = this.canvasEle.scrollWidth + (linkOutsideWidth > 0 ? linkOutsideWidth : 0) + margin + 'px';
     this.canvasEle.style.height = this.canvasEle.scrollHeight + (linkOutsideHeight > 0 ? linkOutsideHeight : 0) + margin + 'px';
 

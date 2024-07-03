@@ -413,6 +413,8 @@ export function getCheckboxCell({title}) {
   Cell.propTypes = {
     table: PropTypes.object,
   };
+
+  return Cell;
 }
 
 export function getCheckboxHeaderCell({title}) {
@@ -435,6 +437,8 @@ export function getCheckboxHeaderCell({title}) {
   Cell.propTypes = {
     row: PropTypes.object,
   };
+
+  return Cell;
 }
 
 export function getReorderCell() {
@@ -445,6 +449,8 @@ export function getReorderCell() {
   };
 
   Cell.displayName = 'ReorderCell';
+
+  return Cell;
 }
 
 export function getEditCell({isDisabled, title}) {

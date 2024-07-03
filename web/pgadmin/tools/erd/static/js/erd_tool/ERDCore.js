@@ -22,7 +22,7 @@ import ForeignKeySchema from '../../../../../browser/server_groups/servers/datab
 import diffArray from 'diff-arrays-of-objects';
 import TableSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import ColumnSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
-import { Polygon } from '@projectstorm/geometry';
+import { boundingBoxFromPolygons } from '@projectstorm/geometry';
 
 export default class ERDCore {
   constructor() {
@@ -35,8 +35,12 @@ export default class ERDCore {
     this.computeTableCounter();
   }
 
+  createEngine(options) {
+    return createEngine(options);
+  }
+
   initializeEngine() {
-    this.engine = createEngine({
+    this.engine = this.createEngine({
       registerDefaultDeleteItemsAction: false,
       registerDefaultZoomCanvasAction: false,
     });
@@ -177,7 +181,7 @@ export default class ERDCore {
   getModel() {return this.getEngine().getModel();}
 
   getBoundingLinksRect() {
-    return Polygon.boundingBoxFromPolygons(
+    return boundingBoxFromPolygons(
       this.getEngine().getModel().getLinks().map((l)=>l.getBoundingBox()));
   }
 
