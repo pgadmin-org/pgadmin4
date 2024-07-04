@@ -51,7 +51,7 @@
     "jest-environment-jsdom": "^29.6.4",
     "loader-utils": "^3.2.1",
     "mini-css-extract-plugin": "^2.7.6",
-    "postcss-loader": "^7.1.0",
+    "postcss-loader": "^8.1.1",
     "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "resize-observer-polyfill": "^1.5.1",
