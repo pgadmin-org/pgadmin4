@@ -24,7 +24,7 @@ const pgWindow = function() {
     } else {
       localPgWindow = window;
     }
-  } catch (error) {
+  } catch {
     localPgWindow = window;
   }
   return localPgWindow;

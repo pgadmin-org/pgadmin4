@@ -66,7 +66,7 @@ function handleDrop(e, editor) {
     if (e.stopPropagation) {
       e.stopPropagation();
     }
-  } catch (error) {
+  } catch {
     /* if parsing fails, it must be the drag internal of codemirror text */
     return false;
   }

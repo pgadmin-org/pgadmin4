@@ -84,7 +84,7 @@ export default function toPx(value, prop, force, el) {
     // set the style on the target element
     try {
       style[prop] = value;
-    } catch (e) {
+    } catch {
       // IE 8 and below throw an exception when setting unsupported units
       return 0;
     }

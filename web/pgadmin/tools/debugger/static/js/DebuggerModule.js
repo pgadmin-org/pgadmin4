@@ -367,7 +367,7 @@ export default class DebuggerModule {
 
             let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
             let open_new_tab = browser_preferences.new_browser_tab_open;
-            const db_label = self.checkDbNameChange(data, dbNode, newTreeInfo, db_label);
+            const db_label = self.checkDbNameChange(data, dbNode, newTreeInfo);
             let label = getAppropriateLabel(newTreeInfo);
             pgAdmin.Browser.Events.trigger(
               'pgadmin:tool:show',

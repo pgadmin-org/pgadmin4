@@ -147,7 +147,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           }
         });
       }
-    } catch (e) {
+    } catch {
       alert(xhr);
       pgAdmin.Browser.notifier.alert(
         gettext('Debugger Error'),
