@@ -8866,16 +8866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-address@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "ip-address@npm:7.1.0"
-  dependencies:
-    jsbn: 1.1.0
-    sprintf-js: 1.1.2
-  checksum: b514b93b76639b204e52a16b1cebdc23c69fa71464665583278cbd0adf402d0b0e15f606049010b7230d35f6e9fa4d0a4ffd61d63fbc00f71adf08f00bc7614b
-  languageName: node
-  linkType: hard
-
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -14016,7 +14006,7 @@ __metadata:
     immutability-helper: ^3.0.0
     imports-loader: ^4.0.1
     insert-if: ^1.1.0
-    ip-address: ^7.1.0
+    ip-address: ^9.0.5
     jest: ^29.6.4
     jest-environment-jsdom: ^29.6.4
     json-bignumber: ^1.0.1
@@ -14646,13 +14636,6 @@ __metadata:
   version: 1.6.5
   resolution: "split.js@npm:1.6.5"
   checksum: a3e77d8e0628de06c58e2d8e6ab41872132586c417b4f40ac3d3dbf76c2b31f40745dd86c133609dacd5599ada5d4bee157f6290403223b86bd79fe700a77983
-  languageName: node
-  linkType: hard
-
-"sprintf-js@npm:1.1.2":
-  version: 1.1.2
-  resolution: "sprintf-js@npm:1.1.2"
-  checksum: d4bb46464632b335e5faed381bd331157e0af64915a98ede833452663bc672823db49d7531c32d58798e85236581fb7342fd0270531ffc8f914e186187bf1c90
   languageName: node
   linkType: hard
 
