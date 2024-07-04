@@ -135,7 +135,7 @@
     "react-frame-component": "^5.2.6",
     "react-leaflet": "^3.2.2",
     "react-new-window": "^1.0.1",
-    "react-resize-detector": "^9.1.0",
+    "react-resize-detector": "^11.0.1",
     "react-rnd": "^10.3.5",
     "react-select": "^5.7.2",
     "react-timer-hook": "^3.0.5",
