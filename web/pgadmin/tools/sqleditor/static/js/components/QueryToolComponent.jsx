@@ -19,12 +19,12 @@ import { Messages } from './sections/Messages';
 import getApiInstance, {callFetch, parseApiError} from '../../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS, MAX_QUERY_LENGTH } from './QueryToolConstants';
-import { useInterval } from '../../../../../static/js/custom_hooks';
+import { useBeforeUnload, useInterval } from '../../../../../static/js/custom_hooks';
 import { Box } from '@mui/material';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
 import gettext from 'sources/gettext';
 import NewConnectionDialog from './dialogs/NewConnectionDialog';
-import { evalFunc, getBrowser } from '../../../../../static/js/utils';
+import { evalFunc } from '../../../../../static/js/utils';
 import { Notifications } from './sections/Notifications';
 import MacrosDialog from './dialogs/MacrosDialog';
 import FilterDialog from './dialogs/FilterDialog';
@@ -88,11 +88,6 @@ function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
     });
     setQueryToolDockerTitle(docker, panelId, true, title, qtState.current_file);
   }
-}
-
-function onBeforeUnload(e) {
-  e.preventDefault();
-  e.returnValue = 'prevent';
 }
 
 const FIXED_PREF = {
@@ -405,11 +400,16 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
   };
 
-  const onBeforeUnloadElectron = (e)=>{
-    e.preventDefault();
-    e.returnValue = 'prevent';
-    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
-  };
+  const {forceClose} = useBeforeUnload({
+    enabled: qtState.preferences.browser.confirm_on_refresh_close,
+    isNewTab: qtState.is_new_tab,
+    beforeClose: ()=>{
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
+    },
+    closePanel: ()=>{
+      qtPanelDocker.close(qtPanelId, true);
+    }
+  });
 
   useEffect(()=>{
     getSQLScript();
@@ -424,19 +424,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL, ()=>{
-      if(getBrowser().name == 'Electron' && qtState.is_new_tab) {
-        window.removeEventListener('beforeunload', onBeforeUnloadElectron);
-        // somehow window.close was not working may becuase the removeEventListener
-        // was not completely executed. Add timeout.
-        setTimeout(()=>window.close(), 50);
-      } else {
-        qtPanelDocker.close(qtPanelId, true);
-      }
+      forceClose();
     });
 
     qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
       if(qtPanelId == id) {
-        window.removeEventListener('beforeunload', onBeforeUnload);
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
       }
     });
@@ -642,24 +634,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       onClose: cancelCallback,
     });
   };
-
-  useEffect(()=> {
-    // Add beforeunload event if "Confirm on close or refresh" option is enabled in the preferences.
-    if(getBrowser().name == 'Electron') {
-      window.addEventListener('beforeunload', onBeforeUnloadElectron);
-    } else {
-      if(qtState.preferences.browser.confirm_on_refresh_close){
-        window.addEventListener('beforeunload', onBeforeUnload);
-      } else {
-        window.removeEventListener('beforeunload', onBeforeUnload);
-      }
-    }
-
-    return () => {
-      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
-      window.removeEventListener('beforeunload', onBeforeUnload);
-    };
-  }, [qtState.preferences.browser]);
 
   const updateQueryToolConnection = (connectionData, isNew=false)=>{
     let currSelectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);

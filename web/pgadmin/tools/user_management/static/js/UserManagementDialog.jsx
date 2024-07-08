@@ -317,7 +317,7 @@ function UserManagementDialog({onClose}) {
   const [roles, setRoles] = React.useState([]);
   const api = getApiInstance();
 
-  React.useEffect(async ()=>{
+  const fetchData = async ()=>{
     try {
       api.get(url_for('user_management.auth_sources'))
         .then(res=>{
@@ -337,6 +337,10 @@ function UserManagementDialog({onClose}) {
     } catch (error) {
       pgAdmin.Browser.notifier.error(parseApiError(error));
     }
+  };
+
+  React.useEffect(()=>{
+    fetchData();
   }, []);
 
   const onSaveClick = (_isNew, changeData)=>{

@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import net from 'net';
 import {platform} from 'os';
-import { app } from 'electron';
+import { app, session } from 'electron';
 
 let pgadminServerProcess = null;
 
@@ -141,7 +141,7 @@ export const getServerLogFile = () => {
 
 // This function is used to kill the server process, remove the log files
 // and quit the application.
-export const cleanupAndQuitApp = (pgAdminWindowObject) => {
+export const cleanupAndQuitApp = () => {
   // Remove the server log file on exit
   removeLogFile();
 
@@ -155,10 +155,7 @@ export const cleanupAndQuitApp = (pgAdminWindowObject) => {
     }
   }
 
-  if (pgAdminWindowObject != null) {
-    const ses = pgAdminWindowObject.webContents.session;
-    ses.clearStorageData({
-      storages: ['cookies'],
-    });
-  }
+  session.defaultSession.clearStorageData({
+    storages: ['cookies', 'localstorage'],
+  });
 };

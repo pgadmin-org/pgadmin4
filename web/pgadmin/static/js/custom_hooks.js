@@ -9,6 +9,7 @@
 import React, {useRef, useEffect, useState, useCallback, useLayoutEffect} from 'react';
 import moment from 'moment';
 import { isMac } from './keyboard_shortcuts';
+import { getBrowser } from './utils';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {
@@ -208,4 +209,48 @@ export function useWindowSize() {
 
 export function useForceUpdate() {
   return React.useReducer(() => ({}), {})[1];
+}
+
+export function useBeforeUnload({enabled, isNewTab, beforeClose, closePanel }) {
+  const onBeforeUnload = useCallback((e)=>{
+    e.preventDefault();
+    e.returnValue = 'prevent';
+  }, []);
+
+  const onBeforeUnloadElectron = useCallback((e)=>{
+    e.preventDefault();
+    e.returnValue = 'prevent';
+    beforeClose?.();
+  }, []);
+
+  useEffect(()=>{
+    if(getBrowser().name == 'Electron') {
+      window.addEventListener('beforeunload', onBeforeUnloadElectron);
+    } else {
+      if(enabled){
+        window.addEventListener('beforeunload', onBeforeUnload);
+      } else {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [enabled]);
+
+
+  function forceClose() {
+    if(getBrowser().name == 'Electron' && isNewTab) {
+      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
+      // somehow window.close was not working may becuase the removeEventListener
+      // was not completely executed. Add timeout.
+      setTimeout(()=>window.close(), 50);
+    } else {
+      closePanel?.();
+    }
+  }
+
+  return {forceClose};
 }

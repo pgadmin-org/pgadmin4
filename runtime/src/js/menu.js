@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { app, Menu, ipcMain } from 'electron';
+import { app, Menu, ipcMain, BrowserWindow } from 'electron';
 
 const isMac = process.platform == 'darwin';
 let mainMenu;
@@ -72,8 +72,8 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
     {
       label: 'View',
       submenu: [
-        { label: 'Reload', click: ()=>pgAdminMainScreen.webContents.reload()},
-        { label: 'Toggle Developer Tools', click: ()=>pgAdminMainScreen.webContents.openDevTools({ mode: 'bottom' })},
+        { label: 'Reload', click: ()=>BrowserWindow.getFocusedWindow().webContents.reload()},
+        { label: 'Toggle Developer Tools', click: ()=>BrowserWindow.getFocusedWindow().webContents.openDevTools({ mode: 'bottom' })},
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },

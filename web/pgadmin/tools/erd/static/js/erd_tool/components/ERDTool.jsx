@@ -35,6 +35,7 @@ import { LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { styled } from '@mui/material/styles';
+import BeforeUnload from './BeforeUnload';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -144,12 +145,13 @@ export default class ERDTool extends React.Component {
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onChangeColors', 'onDropNode', 'onBeforeUnload', 'onNotationChange',
+      'onChangeColors', 'onDropNode', 'onNotationChange', 'closePanel'
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
     this.diagram.zoomIn = this.diagram.zoomIn.bind(this.diagram);
     this.diagram.zoomOut = this.diagram.zoomOut.bind(this.diagram);
+    this.forceClose = this.closePanel;
   }
 
   registerModelEvents() {
@@ -315,14 +317,7 @@ export default class ERDTool extends React.Component {
 
     this.props.panelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
       if(this.props.panelId == id) {
-        window.removeEventListener('beforeunload', this.onBeforeUnload);
-        if(this.state.dirty) {
-          this.closeOnSave = false;
-          this.confirmBeforeClose();
-          return false;
-        }
-        this.closePanel();
-        return true;
+        this.confirmBeforeClose();
       }
     });
 
@@ -354,45 +349,34 @@ export default class ERDTool extends React.Component {
     if(this.props.params.gen) {
       await this.loadTablesData();
     }
-
-    if(this.state.is_close_tab_warning) {
-      window.addEventListener('beforeunload', this.onBeforeUnload);
-    } else {
-      window.removeEventListener('beforeunload', this.onBeforeUnload);
-    }
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.onBeforeUnload);
   }
 
   componentDidUpdate() {
     if(this.state.dirty) {
       this.setTitle(this.state.current_file, true);
     }
-    // Add beforeunload event if "Confirm on close or refresh" option is enabled in the preferences.
-    if(this.state.is_close_tab_warning){
-      window.addEventListener('beforeunload', this.onBeforeUnload);
-    } else {
-      window.removeEventListener('beforeunload', this.onBeforeUnload);
-    }
   }
 
   confirmBeforeClose() {
     let bodyObj = this;
-    this.context.showModal(gettext('Save changes?'), (closeModal)=>(
-      <ConfirmSaveContent
-        closeModal={closeModal}
-        text={gettext('The diagram has changed. Do you want to save changes?')}
-        onDontSave={()=>{
-          bodyObj.closePanel();
-        }}
-        onSave={()=>{
-          bodyObj.onSaveDiagram(false, true);
-        }}
-      />
-    ));
-    return false;
+    if(this.state.dirty) {
+      this.closeOnSave = false;
+      this.context.showModal(gettext('Save changes?'), (closeModal)=>(
+        <ConfirmSaveContent
+          closeModal={closeModal}
+          text={gettext('The diagram has changed. Do you want to save changes?')}
+          onDontSave={()=>{
+            bodyObj.forceClose();
+          }}
+          onSave={()=>{
+            bodyObj.onSaveDiagram(false, true);
+          }}
+        />
+      ));
+      return false;
+    } else {
+      this.forceClose();
+    }
   }
 
   closePanel() {
@@ -460,15 +444,6 @@ export default class ERDTool extends React.Component {
         this.diagram.syncTableLinks(newNode);
         newNode.setSelected(true);
       });
-    }
-  }
-
-  onBeforeUnload(e) {
-    if(this.state.dirty) {
-      e.preventDefault();
-      e.returnValue = 'prevent';
-    } else {
-      delete e['returnValue'];
     }
   }
 
@@ -627,7 +602,7 @@ export default class ERDTool extends React.Component {
       this.setTitle(fileName);
       this.setLoading(null);
       if(this.closeOnSave) {
-        this.closePanel();
+        this.forceClose();
       }
     }).catch((err)=>{
       this.setLoading(null);
@@ -910,6 +885,15 @@ export default class ERDTool extends React.Component {
 
     return (
       <StyledBox ref={this.containerRef} height="100%" display="flex" flexDirection="column">
+        <BeforeUnload
+          enabled={this.state.is_close_tab_warning}
+          isNewTab={this.state.is_new_tab}
+          beforeClose={()=>{
+            this.confirmBeforeClose();
+          }}
+          closePanel={this.closePanel}
+          getForceClose={(fn)=>this.forceClose = fn}
+        />
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}

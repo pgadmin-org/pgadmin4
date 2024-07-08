@@ -107,7 +107,7 @@ export default class FileManagerModule {
     if(res.canceled) {
       onCancel?.();
     } else {
-      onOK?.(res.filePaths[0]);
+      onOK?.(res.filePath ? res.filePath : res.filePaths[0]);
     }
   }
 

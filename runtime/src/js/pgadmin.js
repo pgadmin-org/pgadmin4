@@ -58,7 +58,7 @@ function openConfigure() {
   const win = new BrowserWindow({
     show: false,
     width: 600,
-    height: 600,
+    height: 620,
     position: 'center',
     resizable: false,
     icon: '../../assets/pgAdmin4.png',
@@ -81,8 +81,8 @@ function showErrorDialog(intervalID) {
 
   new BrowserWindow({
     'frame': true,
-    'width': 790,
-    'height': 430,
+    'width': 800,
+    'height': 450,
     'position': 'center',
     'resizable': false,
     'focus': true,
@@ -251,8 +251,8 @@ function launchPgAdminWindow() {
     'view_logs': ()=>{
       const win = new BrowserWindow({
         show: false,
-        width: 790,
-        height: 425,
+        width: 800,
+        height: 460,
         position: 'center',
         resizable: false,
         icon: '../../assets/pgAdmin4.png',
@@ -302,9 +302,12 @@ function launchPgAdminWindow() {
     }
   });
 
+  pgAdminMainScreen.on('closed', ()=>{
+    misc.cleanupAndQuitApp();
+  });
+
   pgAdminMainScreen.on('close', () => {
     configStore.set('bounds', pgAdminMainScreen.getBounds());
-    misc.cleanupAndQuitApp(pgAdminMainScreen);
     pgAdminMainScreen.removeAllListeners('close');
     pgAdminMainScreen.close();
   });

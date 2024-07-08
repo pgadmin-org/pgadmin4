@@ -61,7 +61,7 @@ export default class MainMenuFactory {
           return {
             ...sm.serialize(),
             submenu: sm.getMenuItems()?.map((smsm)=>{
-              MainMenuFactory.electronCallbacks[`${smName}_${smsm.name}`] = sm.callback;
+              MainMenuFactory.electronCallbacks[`${smName}_${smsm.name}`] = smsm.callback;
               return {
                 ...smsm.serialize(),
               };
