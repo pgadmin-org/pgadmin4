@@ -122,7 +122,10 @@ class Notifier {
 
   pgRespErrorNotify(error, prefixMsg='') {
     if (error.response?.status === 410) {
-      this.alert(gettext('Error: Object not found - %s.', error.response.statusText), parseApiError(error));
+      this.alert(
+        gettext('Error: Object not found - %s.', error.response.statusText),
+        parseApiError(error)
+      );
     } else {
       this.error(prefixMsg + ' ' + parseApiError(error));
     }
@@ -163,7 +166,7 @@ class Notifier {
       return onJSONResult();
     }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
-    onJSONResult('ALERT_CALLED');
+    onJSONResult?.('ALERT_CALLED');
   }
 
   alert(title, text, onOkClick, okLabel=gettext('OK')) {

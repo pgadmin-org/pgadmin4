@@ -12,10 +12,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { PgIconButton } from '../components/Buttons';
 import AddIcon from '@mui/icons-material/AddOutlined';
-import { MappedCellControl } from './MappedControl';
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,25 +21,33 @@ import {
   getExpandedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
-import gettext from 'sources/gettext';
-import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
-import FormView, { getFieldMetaData } from './FormView';
-import CustomPropTypes from 'sources/custom_prop_types';
-import { evalFunc } from 'sources/utils';
-import { DepListenerContext } from './DepListener';
-import { useIsMounted } from '../custom_hooks';
-import { InputText } from '../components/FormComponents';
-import { usePgAdmin } from '../BrowserComponent';
-import { requestAnimationAndFocus } from '../utils';
-import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader,
+import { usePgAdmin } from 'sources/BrowserComponent';
+import { PgIconButton } from 'sources/components/Buttons';
+import {
+  PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader,
   PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent,
-  getDeleteCell, getEditCell, getReorderCell } from '../components/PgReactTableStyled';
-import { useVirtualizer } from '@tanstack/react-virtual';
+  getDeleteCell, getEditCell, getReorderCell
+} from 'sources/components/PgReactTableStyled';
+import CustomPropTypes from 'sources/custom_prop_types';
+import { useIsMounted } from 'sources/custom_hooks';
+import { InputText } from 'sources/components/FormComponents';
+import gettext from 'sources/gettext';
+import { evalFunc, requestAnimationAndFocus  } from 'sources/utils';
+
+import { DepListenerContext } from './DepListener';
+import FormView from './FormView';
+import { MappedCellControl } from './MappedControl';
+import {
+  SCHEMA_STATE_ACTIONS, StateUtilsContext, getFieldMetaData,
+  isModeSupportedByField
+} from './utils';
+
 
 const StyledBox = styled(Box)(({theme}) => ({
   '& .DataGridView-grid': {
@@ -227,9 +232,14 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
   drop(rowRef);
 
   return useMemo(()=>
-    <PgReactTableRowContent ref={rowRef} data-handler-id={handlerId} className={isHovered ? 'DataGridView-tableRowHovered' : null} data-test='data-table-row' style={{position: 'initial'}}>
+    <PgReactTableRowContent ref={rowRef} data-handler-id={handlerId}
+      className={isHovered ? 'DataGridView-tableRowHovered' : null}
+      data-test='data-table-row' style={{position: 'initial'}}>
       {row.getVisibleCells().map((cell) => {
-        let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+        // Let's not render the cell, which are not supported in this mode.
+        if (cell.column.field && !isModeSupportedByField(
+          cell.column.field, viewHelperProps
+        )) return;
 
         const content = flexRender(cell.column.columnDef.cell, {
           key: cell.column.columnDef.cell?.type ?? cell.column.columnDef.id,
@@ -237,8 +247,9 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
           reRenderRow: ()=>{setKey((currKey)=>!currKey);}
         });
 
-        return (modeSupported &&
-          <PgReactTableCell cell={cell} row={row} key={cell.id} ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null}>
+        return (
+          <PgReactTableCell cell={cell} row={row} key={cell.id}
+            ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null}>
             {content}
           </PgReactTableCell>
         );
@@ -337,7 +348,8 @@ function getMappedCell({
 
 export default function DataGridView({
   value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
-  fixedRows, ...props}) {
+  fixedRows, ...props
+}) {
 
   const stateUtils = useContext(StateUtilsContext);
   const checkIsMounted = useIsMounted();
@@ -439,14 +451,14 @@ export default function DataGridView({
       }
 
       cols = cols.concat(
-        schemaRef.current.fields.filter((f)=>{
-          return _.isArray(props.columns) ? props.columns.indexOf(f.id) > -1 : true;
-        }).sort((firstF, secondF)=>{
-          if(_.isArray(props.columns)) {
-            return props.columns.indexOf(firstF.id) < props.columns.indexOf(secondF.id) ? -1 : 1;
-          }
-          return 0;
-        }).map((field)=>{
+        schemaRef.current.fields.filter((f) => (
+          _.isArray(props.columns) ? props.columns.indexOf(f.id) > -1 : true
+        )).sort((firstF, secondF) => (
+          _.isArray(props.columns) ? ((
+            props.columns.indexOf(firstF.id) <
+            props.columns.indexOf(secondF.id)
+          ) ? -1 : 1) : 0
+        )).map((field) => {
           let widthParms = {};
           if(field.width) {
             widthParms.size = field.width;
@@ -461,7 +473,10 @@ export default function DataGridView({
           if(field.maxWidth) {
             widthParms.maxSize = field.maxWidth;
           }
-          widthParms.enableResizing = _.isUndefined(field.enableResizing) ? true : Boolean(field.enableResizing);
+          widthParms.enableResizing =
+            _.isUndefined(field.enableResizing) ? true : Boolean(
+              field.enableResizing
+            );
 
           let colInfo = {
             header: field.label||<>&nbsp;</>,
@@ -490,8 +505,7 @@ export default function DataGridView({
     const ret = {};
 
     columns.forEach(column => {
-      let {modeSupported} = column.field ? getFieldMetaData(column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
-      ret[column.id] = modeSupported;
+      ret[column.id] = isModeSupportedByField(column.field, viewHelperProps);
     });
 
     return ret;
@@ -538,7 +552,7 @@ export default function DataGridView({
   useEffect(()=>{
     let rowsPromise = fixedRows;
 
-    /* If fixedRows is defined, fetch the details */
+    // If fixedRows is defined, fetch the details.
     if(typeof rowsPromise === 'function') {
       rowsPromise = rowsPromise();
     }
@@ -558,12 +572,17 @@ export default function DataGridView({
       virtualizer.scrollToIndex(newRowIndex.current);
 
       // Try autofocus on newly added row.
-      setTimeout(()=>{
-        const rowInput = tableRef.current?.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`);
+      setTimeout(() => {
+        const rowInput = tableRef.current?.querySelector(
+          `.pgrt-row[data-index="${newRowIndex.current}"] input`
+        );
         if(!rowInput) return;
 
-        requestAnimationAndFocus(tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`));
-        props.expandEditOnAdd && props.canEdit && rows[newRowIndex.current]?.toggleExpanded(true);
+        requestAnimationAndFocus(tableRef.current.querySelector(
+          `.pgrt-row[data-index="${newRowIndex.current}"] input`
+        ));
+        props.expandEditOnAdd && props.canEdit &&
+          rows[newRowIndex.current]?.toggleExpanded(true);
         newRowIndex.current = undefined;
       }, 50);
     }
