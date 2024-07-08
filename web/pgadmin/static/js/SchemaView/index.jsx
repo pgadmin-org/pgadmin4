@@ -387,7 +387,7 @@ function SchemaPropertiesView({
 
   useEffect(() => {
     if (schemaState.errors?.response)
-      Notifier.pgRespErrorNotify(response);
+      Notifier.pgRespErrorNotify(schemaState.errors.response);
   }, [schemaState.errors]);
 
   /* A simple loop to get all the controls for the fields */
