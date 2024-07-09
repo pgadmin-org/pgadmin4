@@ -42,4 +42,5 @@ Bug fixes
   | `Issue #7035 <https://github.com/pgadmin-org/pgadmin4/issues/7035>`_ -  Fixed the permission denied issue for functions of the pgstattuple extension when accessing statistics with a non-admin user.
   | `Issue #7511 <https://github.com/pgadmin-org/pgadmin4/issues/7511>`_ -  Fixed an issue where users could not insert characters at the desired location, as it was added to the end of the line.
   | `Issue #7554 <https://github.com/pgadmin-org/pgadmin4/issues/7554>`_ -  Fixed an issue where sorting the database activity table on the dashboard by any column caused the details to expand in the wrong position.
+  | `Issue #7618 <https://github.com/pgadmin-org/pgadmin4/issues/7618>`_ -  Fix an issue where the preferences JSON file has no effect when an external database is used.
   | `Issue #7627 <https://github.com/pgadmin-org/pgadmin4/issues/7627>`_ -  Fixed an issue where users could not autofill their saved passwords in the connect server dialog in the browser.
