@@ -62,7 +62,7 @@ const Root = styled('div')(({theme}) => ({
   },
 }));
 
-export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowIds, rows, compareParams, filterParams = [FILTER_NAME.DIFFERENT, FILTER_NAME.SOURCE_ONLY, FILTER_NAME.TARGET_ONLY] }) {
+export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowIds, onServerSchemaChange, rows, compareParams, filterParams = [FILTER_NAME.DIFFERENT, FILTER_NAME.SOURCE_ONLY, FILTER_NAME.TARGET_ONLY] }) {
   const filterRef = useRef(null);
   const compareRef = useRef(null);
 
@@ -149,6 +149,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
       targetSQL: null,
       SQLdiff: null,
     });
+    onServerSchemaChange();
   };
 
   const generateScript = () => {
@@ -218,6 +219,7 @@ SchemaDiffButtonComponent.propTypes = {
   sourceData: PropTypes.object,
   targetData: PropTypes.object,
   selectedRowIds: PropTypes.array,
+  onServerSchemaChange:PropTypes.func,
   rows: PropTypes.array,
   compareParams: PropTypes.object,
   filterParams: PropTypes.array

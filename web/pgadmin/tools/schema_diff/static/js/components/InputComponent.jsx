@@ -17,7 +17,7 @@ import { SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 
 
-export function InputComponent({ label, serverList, databaseList, schemaList, diff_type, selectedSid = null, selectedDid=null, selectedScid=null }) {
+export function InputComponent({ label, serverList, databaseList, schemaList, diff_type, selectedSid = null, selectedDid=null, selectedScid=null, onServerSchemaChange }) {
 
   const [selectedServer, setSelectedServer] = useState(selectedSid);
   const [selectedDatabase, setSelectedDatabase] = useState(selectedDid);
@@ -35,7 +35,6 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
       setSelectedSchema(null);
       setDisableSchemaSelection(true);
     }
-
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_SELECT_SERVER, { selectedOption, diff_type, serverList });
   };
 
@@ -48,11 +47,13 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
       setDisableSchemaSelection(true);
     }
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_SELECT_DATABASE, {selectedServer, selectedDB, diff_type, databaseList});
+    onServerSchemaChange();
   };
 
   const changeSchema = (selectedSC) => {
     setSelectedSchema(selectedSC);
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_SELECT_SCHEMA, { selectedSC, diff_type });
+    onServerSchemaChange();
   };
 
   return (
@@ -125,4 +126,5 @@ InputComponent.propTypes = {
   selectedSid: PropTypes.number,
   selectedDid: PropTypes.number,
   selectedScid:PropTypes.number,
+  onServerSchemaChange:PropTypes.func
 };

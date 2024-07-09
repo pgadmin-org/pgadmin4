@@ -177,6 +177,10 @@ export function SchemaDiffCompare({ params }) {
 
   }
 
+  const handleServerSchemaChange = () => {
+    setSelectedRowIds([]);
+  };
+
   function setSourceTargetSid(diff_type, selectedOption) {
     if (diff_type == TYPE.SOURCE) {
       setSelectedSourceSid(selectedOption);
@@ -699,6 +703,7 @@ export function SchemaDiffCompare({ params }) {
               selectedDid={selectedSourceDid}
               selectedScid={selectedSourceScid}
               diff_type={TYPE.SOURCE}
+              onServerSchemaChange={handleServerSchemaChange}
             ></InputComponent>
           </Grid>
           <Grid item lg={5} md={5} sm={2} xs={2} sx={{  display: 'flex',flexDirection: 'row-reverse',paddingRight: '0.3rem'}}>
@@ -722,6 +727,7 @@ export function SchemaDiffCompare({ params }) {
               selectedDid={selectedTargetDid}
               selectedScid={selectedTargetScid}
               diff_type={TYPE.TARGET}
+              onServerSchemaChange={handleServerSchemaChange}
             ></InputComponent>
           </Grid>
 
@@ -733,6 +739,7 @@ export function SchemaDiffCompare({ params }) {
                 'scid': selectedSourceScid,
               }}
               selectedRowIds={selectedRowIds}
+              onServerSchemaChange={handleServerSchemaChange}
               rows={apiResult}
               targetData={{
                 'sid': selectedTargetSid,
