@@ -549,9 +549,9 @@ class ManagePreferences:
                 if f in prefs:
                     ids = prefs[f].split(":")
                     _row = {
-                        'mid': ids[0],
-                        'category_id': ids[1],
-                        'id': ids[2],
+                        'mid': int(ids[0]),
+                        'category_id': int(ids[1]),
+                        'id': int(ids[2]),
                         'name': final_opt[2],
                         'user_id': user_id,
                         'value': val}
