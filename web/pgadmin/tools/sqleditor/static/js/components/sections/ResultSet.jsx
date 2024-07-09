@@ -1257,6 +1257,16 @@ export function ResultSet() {
         selectedRowsSorted.sort();
         insPosn = _.findIndex(rows, (r)=>rowKeyGetter(r)==selectedRowsSorted[selectedRowsSorted.length-1])+1;
       }
+      let byteaCellSelection = columns.filter(o=>o.type=='bytea'); 
+      if (byteaCellSelection.length>0) {
+        _rows = _rows.map(x=>{
+          byteaCellSelection.forEach(r=>{
+            x[r.pos]=null;
+            return x;
+          });
+          return x;
+        });
+      }
       let newRows = rsu.current.processRows(_rows, columns, fromClipboard, pasteSerials);
       setRows((prev)=>[
         ...prev.slice(0, insPosn),
