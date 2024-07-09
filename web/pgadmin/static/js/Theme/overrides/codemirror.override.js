@@ -80,6 +80,9 @@ export default function cmOverride(theme) {
         '& .cm-foldGutter': {
           padding: '0px',
           color: editor.fg,
+          '& .cm-gutterElement': {
+            width: '18px',
+          }
         },
 
         '& .cm-breakpoint-gutter': {

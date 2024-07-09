@@ -207,6 +207,7 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onR
             getInstance?.(pgAdmin.Browser.notifier);
             onReady?.();
           }}
+          disableWindowBlurListener={true}
         >
           {children}
         </SnackbarProvider>
