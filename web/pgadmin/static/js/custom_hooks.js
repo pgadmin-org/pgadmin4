@@ -220,13 +220,24 @@ export function useBeforeUnload({enabled, isNewTab, beforeClose, closePanel }) {
   const onBeforeUnloadElectron = useCallback((e)=>{
     e.preventDefault();
     e.returnValue = 'prevent';
-    beforeClose?.();
+    beforeClose?.(forceClose);
   }, []);
 
-  useEffect(()=>{
-    if(getBrowser().name == 'Electron') {
-      window.addEventListener('beforeunload', onBeforeUnloadElectron);
+  function forceClose() {
+    if(getBrowser().name == 'Electron' && isNewTab) {
+      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
+      // somehow window.close was not working may becuase the removeEventListener
+      // was not completely executed. Add timeout.
+      setTimeout(()=>window.close(), 50);
     } else {
+      closePanel?.();
+    }
+  }
+
+  useEffect(()=>{
+    if(getBrowser().name == 'Electron'  && isNewTab) {
+      window.addEventListener('beforeunload', onBeforeUnloadElectron);
+    } else if(getBrowser().name != 'Electron') {
       if(enabled){
         window.addEventListener('beforeunload', onBeforeUnload);
       } else {
@@ -239,18 +250,6 @@ export function useBeforeUnload({enabled, isNewTab, beforeClose, closePanel }) {
       window.removeEventListener('beforeunload', onBeforeUnload);
     };
   }, [enabled]);
-
-
-  function forceClose() {
-    if(getBrowser().name == 'Electron' && isNewTab) {
-      window.removeEventListener('beforeunload', onBeforeUnloadElectron);
-      // somehow window.close was not working may becuase the removeEventListener
-      // was not completely executed. Add timeout.
-      setTimeout(()=>window.close(), 50);
-    } else {
-      closePanel?.();
-    }
-  }
 
   return {forceClose};
 }

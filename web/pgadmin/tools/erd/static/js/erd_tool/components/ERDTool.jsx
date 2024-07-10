@@ -357,7 +357,7 @@ export default class ERDTool extends React.Component {
     }
   }
 
-  confirmBeforeClose() {
+  confirmBeforeClose(forceClose) {
     let bodyObj = this;
     if(this.state.dirty) {
       this.closeOnSave = false;
@@ -366,7 +366,7 @@ export default class ERDTool extends React.Component {
           closeModal={closeModal}
           text={gettext('The diagram has changed. Do you want to save changes?')}
           onDontSave={()=>{
-            bodyObj.forceClose();
+            forceClose();
           }}
           onSave={()=>{
             bodyObj.onSaveDiagram(false, true);
@@ -375,7 +375,7 @@ export default class ERDTool extends React.Component {
       ));
       return false;
     } else {
-      this.forceClose();
+      forceClose();
     }
   }
 
@@ -888,11 +888,10 @@ export default class ERDTool extends React.Component {
         <BeforeUnload
           enabled={this.state.is_close_tab_warning}
           isNewTab={this.state.is_new_tab}
-          beforeClose={()=>{
-            this.confirmBeforeClose();
+          beforeClose={(forceClose)=>{
+            this.confirmBeforeClose(forceClose);
           }}
           closePanel={this.closePanel}
-          getForceClose={(fn)=>this.forceClose = fn}
         />
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>

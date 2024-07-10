@@ -21,6 +21,7 @@ import usePreferences from '../../preferences/static/js/store';
 import { getBrowser } from './utils';
 import PropTypes from 'prop-types';
 import Processes from '../../misc/bgprocess/static/js/Processes';
+import { useBeforeUnload } from './custom_hooks';
 
 
 const objectExplorerGroup  = {
@@ -90,9 +91,23 @@ export default function BrowserComponent({pgAdmin}) {
       ]
     },
   };
-  const {isLoading, failed} = usePreferences();
+  const {isLoading, failed, getPreferencesForModule} = usePreferences();
   let { name: browser } = useMemo(()=>getBrowser(), []);
   const [uiReady, setUiReady] = useState(false);
+  const confirmOnClose = getPreferencesForModule('browser').confirm_on_refresh_close;
+
+  useBeforeUnload({
+    enabled: confirmOnClose,
+    beforeClose: (forceClose)=>{
+      pgAdmin.Browser.notifier.confirm(
+        gettext('Quit pgAdmin 4'),
+        gettext('Are you sure you want to quit the application?'),
+        function() { forceClose(); },
+        function() { return true;},
+      );
+    },
+    isNewTab: true,
+  });
 
   useEffect(()=>{
     if(uiReady) {

@@ -34,13 +34,15 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #3199 <https://github.com/pgadmin-org/pgadmin4/issues/3199>`_ -  Fixed an issue where paste operation in query tool data grid should skip bytea columns and put the value as NULL instead.
   | `Issue #4165 <https://github.com/pgadmin-org/pgadmin4/issues/4165>`_ -  Fixed an issue where the taskbar icon appeared as a red square for the query tool and schema diff when opened in a new window.
   | `Issue #5345 <https://github.com/pgadmin-org/pgadmin4/issues/5345>`_ -  Fix issue with missing new added records in download file.
   | `Issue #5610 <https://github.com/pgadmin-org/pgadmin4/issues/5610>`_ -  Fixed an issue where the File Open dialog did not show files without a dot extension.
   | `Issue #6548 <https://github.com/pgadmin-org/pgadmin4/issues/6548>`_ -  Ensure pgAdmin never makes network requests to Google etc.
-  | `Issue #6571 <https://github.com/pgadmin-org/pgadmin4/issues/6571>`_ -  Fixed an issue where pop-up notifications from Object Explorer wouldn't get dismissed automatically if the Query Tool was open.
+  | `Issue #6571 <https://github.com/pgadmin-org/pgadmin4/issues/6571>`_ -  Fixed an issue where pop-up notifications from Object Explorer wouldn't get dismissed automatically if the Query Tool was opened.
   | `Issue #7035 <https://github.com/pgadmin-org/pgadmin4/issues/7035>`_ -  Fixed the permission denied issue for functions of the pgstattuple extension when accessing statistics with a non-admin user.
   | `Issue #7511 <https://github.com/pgadmin-org/pgadmin4/issues/7511>`_ -  Fixed an issue where users could not insert characters at the desired location, as it was added to the end of the line.
   | `Issue #7554 <https://github.com/pgadmin-org/pgadmin4/issues/7554>`_ -  Fixed an issue where sorting the database activity table on the dashboard by any column caused the details to expand in the wrong position.
   | `Issue #7618 <https://github.com/pgadmin-org/pgadmin4/issues/7618>`_ -  Fix an issue where the preferences JSON file has no effect when an external database is used.
   | `Issue #7627 <https://github.com/pgadmin-org/pgadmin4/issues/7627>`_ -  Fixed an issue where users could not autofill their saved passwords in the connect server dialog in the browser.
+  | `Issue #7638 <https://github.com/pgadmin-org/pgadmin4/issues/7638>`_ -  Fixed an issue where Generate Script button should be disabled if no objects are selected in the schema diff result.
