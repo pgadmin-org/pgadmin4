@@ -228,7 +228,6 @@ def validate_binary_path():
     running the utilities with their versions.
     """
     data = None
-    return precondition_required(gettext('Invalid binary path.'))
     if hasattr(request.data, 'decode'):
         data = request.data.decode('utf-8')
 

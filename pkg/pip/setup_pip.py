@@ -10,6 +10,7 @@
 import builtins
 import os
 import sys
+import platform
 from codecs import open
 from importlib.machinery import SourceFileLoader
 
@@ -40,7 +41,13 @@ kerberos_extras = []
 # gssapi in it's own list
 for index, req in enumerate(all_requires):
     if 'psycopg[c]' in req:
-        req = req.replace('psycopg[c]', 'psycopg[binary]')
+        # Starting from Psycopg 3.1.20, ARM64 macOS binary packages are no
+        # longer available for macOS versions before 14.0.
+        if platform.system() == 'Darwin' and 'arm' in platform.processor()\
+                and platform.mac_ver()[0] < '14.0':
+            req = 'psycopg[binary]==3.1.19'
+        else:
+            req.replace('psycopg[c]', 'psycopg[binary]')
 
     if 'gssapi' in req:
         kerberos_extras.append(req)
