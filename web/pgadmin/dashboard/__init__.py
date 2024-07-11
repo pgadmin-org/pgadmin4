@@ -536,16 +536,18 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
     status, _format = g.conn.execute_scalar(sql)
 
     # Check the requested format is available or not
-    log_format = ''
     if log_format == 'C' and 'csvlog' in _format:
         log_format = 'csvlog'
     elif log_format == 'J' and 'jsonlog' in _format:
         log_format = 'jsonlog'
+    else:
+        log_format = ''
 
     sql = render_template(
         "/".join([g.template_path, 'log_stat.sql']),
         log_format=log_format, conn=g.conn
     )
+
     status, res = g.conn.execute_scalar(sql)
     if not status:
         return internal_server_error(errormsg=res)
@@ -556,6 +558,12 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
         )
 
     file_stat = json.loads(res[0])
+
+    if file_stat <= 0:
+        return ajax_response(
+            response={'logs_disabled': True},
+            status=200
+        )
 
     _start = 0
     _end = ON_DEMAND_LOG_COUNT
@@ -573,13 +581,12 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
             log_format=log_format, conn=g.conn
         )
         status, res = g.conn.execute_dict(sql)
-
         if not status:
             return internal_server_error(errormsg=res)
 
         final_res = res['rows'][0]['pg_read_file'].split('\n')
         # Json format
-        if log_format == 'J':
+        if log_format == 'jsonlog':
             for f in final_res:
                 try:
                     _tmp_log = json.loads(f)
@@ -591,7 +598,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
                     pass
 
         # CSV format
-        elif log_format == 'C':
+        elif log_format == 'csvlog':
             for f in final_res:
                 try:
                     _tmp_log = f.split(',')

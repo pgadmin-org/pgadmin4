@@ -23,11 +23,11 @@ const StyledPgIconButton = styled(PgIconButton)(({theme}) => ({
   }
 }));
 
-export default function RefreshButton({onClick}) {
+export default function RefreshButton({onClick, noBorder=true}) {
   return (
     <StyledPgIconButton
       size="xs"
-      noBorder
+      noBorder={noBorder}
       className='RefreshButtons'
       icon={<CachedOutlinedIcon />}
       onClick={onClick}
@@ -39,5 +39,6 @@ export default function RefreshButton({onClick}) {
 }
 
 RefreshButton.propTypes = {
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  noBorder: PropTypes.bool
 };

@@ -83,15 +83,19 @@ const Root = styled('div')(({theme}) => ({
         },
         '& .Dashboard-textArea': {
           height: '88%',
-        }
+        },
+        '& .RefreshButtons': {
+          display: 'flex',
+        },
+        '& .Mui-disabled': {
+          pointerEvents: 'auto',
+        },
       },
     },
   },
   '& .Dashboard-emptyPanel': {
     width: '100%',
-    height: '100%',
     background: theme.otherVars.emptySpaceBg,
-    overflow: 'auto',
     padding: '8px',
     display: 'flex',
   },
@@ -234,7 +238,7 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
 
 function CustomRefresh({refresh, setRefresh}) {
   return (
-    <RefreshButton onClick={(e) => {
+    <RefreshButton noBorder={false} onClick={(e) => {
       e.preventDefault();
       setRefresh(!refresh);
     }}/>
@@ -245,12 +249,8 @@ CustomRefresh.propTypes = {
   setRefresh: PropTypes.func,
 };
 
-function ActiveOnlyHeader({activeOnly, setActiveOnly, refresh, setRefresh}) {
-  return (<Fragment>
-    <RefreshButton onClick={(e) => {
-      e.preventDefault();
-      setRefresh(!refresh);
-    }}/>
+function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
+  return (
     <InputCheckbox
       label={gettext('Active sessions only')}
       labelPlacement="end"
@@ -263,7 +263,7 @@ function ActiveOnlyHeader({activeOnly, setActiveOnly, refresh, setRefresh}) {
       controlProps={{
         label: gettext('Active sessions only'),
       }}
-    /></Fragment>
+    />
   );
 }
 ActiveOnlyHeader.propTypes = {
@@ -768,7 +768,6 @@ function Dashboard({
       enableFilters: true,
       minSize: 50,
       size: 80,
-      cell: ({ value }) => String(value)
     },
   ];
 
@@ -824,8 +823,10 @@ function Dashboard({
           let _format = res.data;
           let _frm = [
             {'label': gettext('Text'), 'value': 'T', 'disabled': !_format.includes('stderr')},
-            {'label': gettext('JSON'), 'value': 'J', 'disabled': !_format.includes('jsonlog')},
-            {'label': gettext('CSV'), 'value': 'C', 'disabled': !_format.includes('csvlog')}
+            {'label': gettext('JSON'), 'value': 'J', 'disabled': !_format.includes('jsonlog'),
+              tooltip: gettext('Enable JSON logging from postgresql.conf.')},
+            {'label': gettext('CSV'), 'value': 'C', 'disabled': !_format.includes('csvlog'),
+              tooltip: gettext('Enable CSV logging from postgres.conf.')}
           ];
           setLogConfigFormat(_frm);
         })
@@ -840,7 +841,6 @@ function Dashboard({
 
   useEffect(() => {
 
-    if (mainTabVal == 0) return;
     // disable replication tab
     if(!treeNodeInfo?.server?.replication_type && mainTabVal == 5) {
       setMainTabVal(0);
@@ -879,7 +879,7 @@ function Dashboard({
       if (node) {
         setSsMsg(gettext('Loading logs...'));
         setDashData([]);
-        if (mainTabVal != 4 && mainTabVal != 5) {
+        if (mainTabVal == 1 || mainTabVal == 2 || mainTabVal == 3) {
           api({
             url: url,
             type: 'GET',
@@ -1081,6 +1081,7 @@ function Dashboard({
               <TabPanel value={mainTabVal} index={1} classNameRoot='Dashboard-tabPanel'>
                 {!_.isUndefined(preferences) && preferences.show_activity && (
                   <Fragment>
+                    <CustomRefresh refresh={refresh} setRefresh={setRefresh}/>
                     <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}
                     >
                       <PgTable
@@ -1094,7 +1095,6 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
-                        customHeader={<CustomRefresh refresh={refresh} setRefresh={setRefresh}/>}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databaseLocksColumns}
@@ -1103,7 +1103,6 @@ function Dashboard({
                     </SectionContainer>
                     <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
                       <PgTable
-                        customHeader={<CustomRefresh refresh={refresh} setRefresh={setRefresh}/>}
                         caveTable={false}
                         tableNoBorder={false}
                         columns={databasePreparedColumns}

@@ -676,7 +676,7 @@ export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled
             const isDisabled = disabled || option.disabled || (readonly && !isSelected);
 
             return <ToggleCheckButton ref={i == 0 ? ref : null} key={option.label} label={option.label}
-              selected={isSelected} value={option.value} disabled={isDisabled}
+              selected={isSelected} value={option.value} disabled={isDisabled} title={option.tooltip}
             />;
           })
         }

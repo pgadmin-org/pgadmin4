@@ -118,46 +118,44 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
   let totalFetched = 0;
   let totalDBRowCount = 0;
 
-  if (loadNextPage) {
-    //Infinite scrolling
-    const { _data, fetchNextPage, isFetching } =
-      useInfiniteQuery({
-        queryKey: ['logs'],
-        queryFn: async () => {
-          const fetchedData = await loadNextPage();
-          return fetchedData;
-        },
-        initialPageParam: 0,
-        getNextPageParam: (_lastGroup, groups) => groups.length,
-        refetchOnWindowFocus: false,
-        placeholderData: keepPreviousData,
-      });
-
-    flatData = _data || [];
-    totalFetched = flatData.length;
-
-    //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
-    fetchMoreOnBottomReached = React.useCallback(
-      (containerRefElement = HTMLDivElement | null) => {
-        if (containerRefElement) {
-          const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-          //once the user has scrolled within 500px of the bottom of the table, fetch more data if we can
-          if (
-            scrollHeight - scrollTop - clientHeight < 500 &&
-            !isFetching
-          ) {
-            fetchNextPage();
-          }
-        }
+  //Infinite scrolling
+  const { _data, fetchNextPage, isFetching } =
+    useInfiniteQuery({
+      queryKey: ['logs'],
+      queryFn: async () => {
+        const fetchedData = await loadNextPage();
+        return fetchedData;
       },
-      [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
-    );
+      initialPageParam: 0,
+      getNextPageParam: (_lastGroup, groups) => groups.length,
+      refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
+    });
 
-    //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-    React.useEffect(() => {
-      fetchMoreOnBottomReached(tableRef.current);
-    }, [fetchMoreOnBottomReached]);
-  }
+  flatData = _data || [];
+  totalFetched = flatData.length;
+
+  //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
+  fetchMoreOnBottomReached = React.useCallback(
+    (containerRefElement = HTMLDivElement | null) => {
+      if (containerRefElement) {
+        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+        //once the user has scrolled within 500px of the bottom of the table, fetch more data if we can
+        if (
+          scrollHeight - scrollTop - clientHeight < 500 &&
+          !isFetching
+        ) {
+          fetchNextPage();
+        }
+      }
+    },
+    [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+  );
+
+  //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
+  React.useEffect(() => {
+    fetchMoreOnBottomReached(tableRef.current);
+  }, [fetchMoreOnBottomReached]);
 
   const table = useReactTable({
     columns: finalColumns,
