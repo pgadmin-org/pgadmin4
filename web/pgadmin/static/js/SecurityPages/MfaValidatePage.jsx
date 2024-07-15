@@ -62,7 +62,7 @@ function EmailValidateView({mfaView, sendEmailUrl, csrfHeader, csrfToken}) {
       {showResend && <div>
         <span>{gettext('Haven\'t received an email?')} <a style={{color:'inherit', fontWeight: 'bold'}} href="#" onClick={sendCodeToEmail}>{gettext('Send again')}</a></span>
       </div>}
-      <InputText value={inputValue} type="password" name="code" placeholder={mfaView.otp_placeholder}
+      <InputText value={inputValue} name="code" placeholder={mfaView.otp_placeholder}
         onChange={setInputValue} autoFocus
       />
       <SecurityButton value='Validate'>{gettext('Validate')}</SecurityButton>
@@ -87,7 +87,7 @@ function AuthenticatorValidateView({mfaView}) {
 
   return <>
     <div data-test="auth-validate-view">{mfaView.auth_description}</div>
-    <InputText value={inputValue} type="password" name="code" placeholder={mfaView.otp_placeholder}
+    <InputText value={inputValue} name="code" placeholder={mfaView.otp_placeholder}
       onChange={setInputValue} autoFocus
     />
     <SecurityButton value='Validate'>{gettext('Validate')}</SecurityButton>
