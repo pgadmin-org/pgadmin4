@@ -70,10 +70,8 @@ class MiscModule(PgAdminModule):
                 .replace('-', ' ')
                 .title(),
                 'value': theme,
-                'preview_src': url_for(
-                    'static', filename='js/generated/img/' +
-                                       theme_data['preview_img']
-                ) if 'preview_img' in theme_data else None
+                'preview_src': 'js/generated/img/' + theme_data['preview_img']
+                if 'preview_img' in theme_data else None
             })
 
         self.preference.register(
