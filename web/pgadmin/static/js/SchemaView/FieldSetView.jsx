@@ -8,18 +8,19 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useContext, useEffect } from 'react';
+
+import Grid from '@mui/material/Grid';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
+import FieldSet from 'sources/components/FieldSet';
+import CustomPropTypes from 'sources/custom_prop_types';
+import { evalFunc } from 'sources/utils';
+
 import { MappedFormControl } from './MappedControl';
 import {
-  SCHEMA_STATE_ACTIONS, evalFunc, StateUtilsContext
-} from 'sources/utils';
-import CustomPropTypes from '../custom_prop_types';
-import { DepListenerContext } from './DepListener';
-import { getFieldMetaData } from './utils';
-import FieldSet from '../components/FieldSet';
-import { Grid } from '@mui/material';
+  getFieldMetaData, SCHEMA_STATE_ACTIONS, SchemaStateContext
+} from './utils';
 
 
 const INLINE_COMPONENT_ROWGAP = '8px';
@@ -28,16 +29,15 @@ export default function FieldSetView({
   value, schema={}, viewHelperProps, accessPath, dataDispatch,
   controlClassName, isDataGridForm=false, label, visible
 }) {
-  const depListener = useContext(DepListenerContext);
-  const stateUtils = useContext(StateUtilsContext);
+  const schemaState = useContext(SchemaStateContext);
 
   useEffect(() => {
     // Calculate the fields which depends on the current field.
-    if(!isDataGridForm && depListener) {
+    if(!isDataGridForm && schemaState) {
       schema.fields.forEach((field) => {
         /* Self change is also dep change */
         if(field.depChange || field.deferredDepChange) {
-          depListener.addDepListener(
+          schemaState?.addDepListener(
             accessPath.concat(field.id), accessPath.concat(field.id),
             field.depChange, field.deferredDepChange
           );
@@ -48,7 +48,7 @@ export default function FieldSetView({
             source = dep;
           }
           if(field.depChange) {
-            depListener.addDepListener(
+            schemaState?.addDepListener(
               source, accessPath.concat(field.id), field.depChange
             );
           }
@@ -73,7 +73,7 @@ export default function FieldSetView({
     if(!modeSupported) continue;
 
     // Its a form control.
-    const hasError = (field.id === stateUtils?.errors.name);
+    const hasError = (field.id === schemaState?.errors.name);
 
     /*
      * When there is a change, the dependent values can also change.

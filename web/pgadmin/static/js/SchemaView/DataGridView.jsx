@@ -10,7 +10,6 @@
 /* The DataGridView component is based on react-table component */
 
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/AddOutlined';
 import {
@@ -40,92 +39,22 @@ import { InputText } from 'sources/components/FormComponents';
 import gettext from 'sources/gettext';
 import { evalFunc, requestAnimationAndFocus  } from 'sources/utils';
 
-import { DepListenerContext } from './DepListener';
 import FormView from './FormView';
 import { MappedCellControl } from './MappedControl';
 import {
-  SCHEMA_STATE_ACTIONS, StateUtilsContext, getFieldMetaData,
+  SCHEMA_STATE_ACTIONS, SchemaStateContext, getFieldMetaData,
   isModeSupportedByField
 } from './utils';
+import { StyleDataGridBox } from './styled';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
-  '& .DataGridView-grid': {
-    ...theme.mixins.panelBorder,
-    backgroundColor: theme.palette.background.default,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: 0,
-    height: '100%',
-    '& .DataGridView-gridHeader': {
-      display: 'flex',
-      ...theme.mixins.panelBorder.bottom,
-      backgroundColor: theme.otherVars.headerBg,
-      '& .DataGridView-gridHeaderText': {
-        padding: theme.spacing(0.5, 1),
-        fontWeight: theme.typography.fontWeightBold,
-      },
-      '& .DataGridView-gridControls': {
-        marginLeft: 'auto',
-        '& .DataGridView-gridControlsButton': {
-          border: 0,
-          borderRadius: 0,
-          ...theme.mixins.panelBorder.left,
-        },
-      },
-    },
-    '& .DataGridView-table': {
-      '&.pgrt-table': {
-        '& .pgrt-body':{
-          '& .pgrt-row': {
-            backgroundColor: theme.otherVars.emptySpaceBg,
-            '& .pgrt-row-content':{
-              '& .pgrd-row-cell': {
-                height: 'auto',
-                padding: theme.spacing(0.5),
-                '&.btn-cell, &.expanded-icon-cell': {
-                  padding: '2px 0px'
-                },
-              }
-            },
-          }
-        }
-      }
-    },
-  },
-  '& .DataGridView-tableRowHovered': {
-    position: 'relative',
-    '& .hover-overlay': {
-      backgroundColor: theme.palette.primary.light,
-      position: 'absolute',
-      inset: 0,
-      opacity: 0.75,
-    }
-  },
-  '& .DataGridView-resizer': {
-    display: 'inline-block',
-    width: '5px',
-    height: '100%',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    transform: 'translateX(50%)',
-    zIndex: 1,
-    touchAction: 'none',
-  },
-  '& .DataGridView-expandedForm': {
-    border: '1px solid '+theme.palette.grey[400],
-  },
-  '& .DataGridView-expandedIconCell': {
-    backgroundColor: theme.palette.grey[400],
-    borderBottom: 'none',
-  }
-}));
-
-function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex, viewHelperProps}) {
+function DataTableRow({
+  index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath,
+  moveRow, setHoverIndex, viewHelperProps
+}) {
 
   const [key, setKey] = useState(false);
-  const depListener = useContext(DepListenerContext);
+  const schemaState = useContext(SchemaStateContext);
   const rowRef = useRef(null);
   const dragHandleRef = useRef(null);
 
@@ -155,7 +84,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
     schemaRef.current.fields.forEach((field)=>{
       /* Self change is also dep change */
       if(field.depChange || field.deferredDepChange) {
-        depListener?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+        schemaState?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
       }
       (evalFunc(null, field.deps) || []).forEach((dep)=>{
         let source = accessPath.concat(dep);
@@ -163,14 +92,14 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
           source = dep;
         }
         if(field.depChange) {
-          depListener?.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          schemaState?.addDepListener(source, accessPath.concat(field.id), field.depChange);
         }
       });
     });
 
     return ()=>{
       /* Cleanup the listeners when unmounting */
-      depListener?.removeDepListener(accessPath);
+      schemaState?.removeDepListener(accessPath);
     };
   }, []);
 
@@ -351,7 +280,7 @@ export default function DataGridView({
   fixedRows, ...props
 }) {
 
-  const stateUtils = useContext(StateUtilsContext);
+  const schemaState = useContext(SchemaStateContext);
   const checkIsMounted = useIsMounted();
   const [hoverIndex, setHoverIndex] = useState();
   const newRowIndex = useRef();
@@ -549,19 +478,20 @@ export default function DataGridView({
     });
   }, [props.canAddRow, rows?.length]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let rowsPromise = fixedRows;
 
     // If fixedRows is defined, fetch the details.
     if(typeof rowsPromise === 'function') {
       rowsPromise = rowsPromise();
     }
+
     if(rowsPromise) {
       Promise.resolve(rowsPromise)
-        .then((res)=>{
+        .then((res) => {
           /* If component unmounted, dont update state */
           if(checkIsMounted()) {
-            stateUtils.initOrigData(accessPath, res);
+            schemaState.setUnpreparedData(accessPath, res);
           }
         });
     }
@@ -618,7 +548,7 @@ export default function DataGridView({
   }
 
   return (
-    <StyledBox className={containerClassName}>
+    <StyleDataGridBox className={containerClassName}>
       <Box className='DataGridView-grid'>
         {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick}
           canSearch={props.canSearch}
@@ -658,7 +588,7 @@ export default function DataGridView({
           </PgReactTable>
         </DndProvider>
       </Box>
-    </StyledBox>
+    </StyleDataGridBox>
   );
 }
 

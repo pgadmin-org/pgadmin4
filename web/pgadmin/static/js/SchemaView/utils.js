@@ -23,7 +23,7 @@ export const SCHEMA_STATE_ACTIONS = {
   BULK_UPDATE: 'bulk_update',
 };
 
-export const StateUtilsContext = React.createContext();
+export const SchemaStateContext = React.createContext();
 
 export function generateTimeBasedRandomNumberString() {
   return new Date().getTime() + '' +  Math.floor(Math.random() * 1000001);
@@ -153,4 +153,15 @@ export function isObjectEqual(val1, val2) {
   return !allKeys.some((k) => {
     return !isValueEqual(val1[k], val2[k]);
   });
+}
+
+export function getForQueryParams(data) {
+  let retData = {...data};
+  Object.keys(retData).forEach((key)=>{
+    let value = retData[key];
+    if(_.isObject(value) || _.isNull(value)) {
+      retData[key] = JSON.stringify(value);
+    }
+  });
+  return retData;
 }

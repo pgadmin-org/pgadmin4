@@ -110,8 +110,8 @@ describe('SchemaView', ()=>{
       });
 
       it('onReset after change', async ()=>{
-        onDataChange.mockClear();
         await simulateChanges();
+        onDataChange.mockClear();
         let confirmSpy = jest.spyOn(pgAdmin.Browser.notifier, 'confirm');
         await user.click(ctrl.container.querySelector('[data-test="Reset"]'));
         /* Press OK */

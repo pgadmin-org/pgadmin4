@@ -42,7 +42,18 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   let warnOnCloseFlag = true;
   const confirmOnCloseReset = usePreferences().getPreferencesForModule('browser').confirm_on_properties_close;
   let updatedData =  ['table', 'partition'].includes(nodeType) && !_.isEmpty(nodeData.rows_cnt) ? {rows_cnt: nodeData.rows_cnt} : undefined;
-  let schema = node.getSchema(treeNodeInfo, nodeData);
+
+  const objToString = (obj) => (
+    (obj && typeof obj === 'object') ? Object.keys(obj).sort().reduce(
+      (acc, key) => (acc + `${key}=` + objToString(obj[key])), ''
+    ) : String(obj)
+  );
+
+  const treeNodeId = objToString(treeNodeInfo);
+
+  let schema = useMemo(
+    () => node.getSchema(treeNodeInfo, nodeData), [treeNodeId]
+  );
 
   // We only have two actionTypes, 'create' and 'edit' to initiate the dialog,
   // so if isActionTypeCopy is true, we should revert back to "create" since

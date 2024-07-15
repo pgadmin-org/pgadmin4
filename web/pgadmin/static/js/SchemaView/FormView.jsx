@@ -10,7 +10,6 @@
 import React, {
   useContext, useEffect, useMemo, useRef, useState
 } from 'react';
-import { styled } from '@mui/material/styles';
 import { Box, Tab, Tabs, Grid } from '@mui/material';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -24,58 +23,13 @@ import { evalFunc } from 'sources/utils';
 
 import DataGridView from './DataGridView';
 import { MappedFormControl } from './MappedControl';
-import { DepListenerContext } from './DepListener';
 import FieldSetView from './FieldSetView';
 import {
-  SCHEMA_STATE_ACTIONS, StateUtilsContext, getFieldMetaData
+  SCHEMA_STATE_ACTIONS, SchemaStateContext, getFieldMetaData
 } from './utils';
 
+import { FormContentBox } from './styled';
 
-const StyledBox = styled(Box)(({theme}) => ({
-  '& .FormView-nestedControl': {
-    height: 'unset !important',
-    '& .FormView-controlRow': {
-      marginBottom: theme.spacing(1),
-    },
-    '& .FormView-nestedTabPanel': {
-      backgroundColor: theme.otherVars.headerBg,
-    }
-  },
-  '& .FormView-errorMargin': {
-    /* Error footer space */
-    paddingBottom: '36px !important',
-  },
-  '& .FormView-fullSpace': {
-    padding: '0 !important',
-    height: '100%',
-    overflow: 'hidden',
-    '& .FormView-fullControl': {
-      display: 'flex',
-      flexDirection: 'column',
-      '& .FormView-sqlTabInput': {
-        border: 0,
-      },
-    }
-  },
-  '& .FormView-nonTabPanel': {
-    ...theme.mixins.tabPanel,
-    '& .FormView-nonTabPanelContent': {
-      height: 'unset',
-      '& .FormView-controlRow': {
-        marginBottom: theme.spacing(1),
-      },
-    }
-  },
-  '& .FormView-singleCollectionPanel': {
-    ...theme.mixins.tabPanel,
-    '& .FormView-singleCollectionPanelContent': {
-      '& .FormView-controlRow': {
-        marginBottom: theme.spacing(1),
-        height: '100%',
-      },
-    }
-  },
-}));
 
 /* Optional SQL tab */
 function SQLTab({active, getSQLValue}) {
@@ -121,10 +75,9 @@ export default function FormView({
   const firstEleID = useRef();
   const formRef = useRef();
   const onScreenTracker = useRef(false);
-  const depListener = useContext(DepListenerContext);
   let groupLabels = {};
   const schemaRef = useRef(schema);
-  const stateUtils = useContext(StateUtilsContext);
+  const schemaState = useContext(SchemaStateContext);
 
   let isOnScreen = useOnScreen(formRef);
 
@@ -147,7 +100,7 @@ export default function FormView({
       schemaRef.current.fields.forEach((field)=>{
         /* Self change is also dep change */
         if(field.depChange || field.deferredDepChange) {
-          depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+          schemaState?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
         }
         (evalFunc(null, field.deps) || []).forEach((dep)=>{
           // when dep is a string then prepend the complete accessPath
@@ -158,24 +111,25 @@ export default function FormView({
             source = dep;
           }
           if(field.depChange || field.deferredDepChange) {
-            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+            schemaState?.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
           }
           if(field.depChange || field.deferredDepChange) {
-            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+            schemaState?.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
           }
         });
       });
       return ()=>{
         /* Cleanup the listeners when unmounting */
-        depListener.removeDepListener(accessPath);
+        schemaState?.removeDepListener(accessPath);
       };
     }
   }, []);
 
   /* Upon reset, set the tab to first */
   useEffect(()=>{
-    setTabValue(0);
-  }, [stateUtils.formResetKey]);
+    if (schemaState?.isReady)
+      setTabValue(0);
+  }, [schemaState?.isReady]);
 
   let fullTabs = [];
   let inlineComponents = [];
@@ -266,7 +220,7 @@ export default function FormView({
     } else {
       /* Its a form control */
       const hasError = _.isEqual(
-        accessPath.concat(field.id), stateUtils.errors.name
+        accessPath.concat(field.id), schemaState.errors?.name
       );
       /* When there is a change, the dependent values can change
        * lets pass the new changes to dependent and get the new values
@@ -403,7 +357,7 @@ export default function FormView({
 
   if(isTabView) {
     return (
-      <StyledBox height="100%" display="flex" flexDirection="column"
+      <FormContentBox height="100%" display="flex" flexDirection="column"
         className={className} ref={formRef} data-test="form-view">
         <Box>
           <Tabs
@@ -420,7 +374,7 @@ export default function FormView({
         </Box>
         {Object.keys(finalTabs).map((tabName, i)=>{
           let contentClassName = [(
-            stateUtils.errors.message ? 'FormView-errorMargin': null
+            schemaState.errors?.message ? 'FormView-errorMargin': null
           )];
 
           if(fullTabs.indexOf(tabName) == -1) {
@@ -440,16 +394,16 @@ export default function FormView({
             </TabPanel>
           );
         })}
-      </StyledBox>
+      </FormContentBox>
     );
   } else {
     let contentClassName = [
       isSingleCollection ? 'FormView-singleCollectionPanelContent' :
         'FormView-nonTabPanelContent',
-      (stateUtils.erros.message ? 'FormView-errorMargin' : null)
+      (schemaState.errors?.message ? 'FormView-errorMargin' : null)
     ];
     return (
-      <StyledBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
+      <FormContentBox height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
         <TabPanel value={tabValue} index={0} classNameRoot={[isSingleCollection ? 'FormView-singleCollectionPanel' : 'FormView-nonTabPanel',className].join(' ')}
           className={contentClassName.join(' ')}>
           {Object.keys(finalTabs).map((tabName) => {
@@ -460,7 +414,7 @@ export default function FormView({
             );
           })}
         </TabPanel>
-      </StyledBox>
+      </FormContentBox>
     );
   }
 }
