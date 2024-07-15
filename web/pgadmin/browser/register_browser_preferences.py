@@ -158,6 +158,21 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
+        'close_tab_panel',
+        gettext('Close tab panel'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': True,
+            'control': True,
+            'key': {'key_code': 87, 'char': 'w'}
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
         'tabbed_panel_forward',
         gettext('Tabbed panel forward'),
         'keyboardshortcut',

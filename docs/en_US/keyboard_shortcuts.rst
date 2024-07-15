@@ -48,6 +48,8 @@ When using main browser window, the following keyboard shortcuts are available:
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + ]            | Shift + Option + ] | Tabbed panel forward               |
    +----------------------------+--------------------+------------------------------------+
+   | Shift + Alt + w            | Shift + Ctrl + w   | Close tab panel                    |
+   +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + l            | Shift + Option + l | Tools main menu                    |
    +----------------------------+--------------------+------------------------------------+
    | Shift + Alt + v            | Shift + Option + v | View data                          |
