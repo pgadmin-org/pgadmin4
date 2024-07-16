@@ -295,6 +295,7 @@ export default function PreferencesComponent({ ...props }) {
         } else {
           opt.selected = false;
         }
+        opt.preview_src = opt.preview_src && url_for('static', { filename: opt.preview_src });
       });
     }
   }
