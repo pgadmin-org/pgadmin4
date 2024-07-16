@@ -43,8 +43,10 @@ export default function UtilityView() {
                     gettext('Error'),
                     gettext(data.errormsg)
                   );
-                } else {
+                } else if(data.data) {
                   pgAdmin.Browser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
+                } else if(data.info) {
+                  pgAdmin.Browser.notifier.success(data.info);
                 }
                 pgAdmin.Browser.docker.close(panelId);
               })}
@@ -77,7 +79,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
   /* button icons */
   const saveBtnIcon = extraData.save_btn_icon;
 
-  /* Node type & Noen obj*/
+  /* Node type & Node obj*/
   let nodeObj = extraData.nodeType? pgAdmin.Browser.Nodes[extraData.nodeType]: undefined;
   let itemNodeData = extraData?.itemNodeData ? itemNodeData: undefined;
 
