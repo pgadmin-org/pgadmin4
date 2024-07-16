@@ -187,8 +187,9 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onR
   const modal = useModal();
 
   useEffect(()=>{
-    // if open in an iframe then use top pgAdmin
-    if(window.self != window.top) {
+    // if opened in an iframe then use top pgAdmin
+    // pgAdmin itself can open in iframe, skip this in that case.
+    if(window.self != window.top && pgWindow != window ) {
       pgAdmin.Browser.notifier = new Notifier(modal, pgWindow.pgAdmin.Browser.notifier.snackbar);
       onReady?.();
       getInstance?.(pgAdmin.Browser.notifier);
@@ -196,7 +197,8 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onR
   }, []);
 
   // if open in a window, then create your own Snackbar
-  if(window.self == window.top) {
+  // if pgAdmin is opened inside an iframe then it also same as new window.
+  if(window.self == window.top || (window.self != window.top && pgWindow != window )) {
     return (
       <Root>
         <SnackbarProvider

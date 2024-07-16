@@ -22,6 +22,7 @@ import { getBrowser } from './utils';
 import PropTypes from 'prop-types';
 import Processes from '../../misc/bgprocess/static/js/Processes';
 import { useBeforeUnload } from './custom_hooks';
+import pgWindow from 'sources/window';
 
 
 const objectExplorerGroup  = {
@@ -125,7 +126,7 @@ export default function BrowserComponent({pgAdmin}) {
   return (
     <PgAdminContext.Provider value={pgAdmin}>
       <ModalProvider>
-        <NotifierProvider pgAdmin={pgAdmin} onReady={()=>setUiReady(true)}/>
+        <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} onReady={()=>setUiReady(true)}/>
         {browser != 'Electron' && <AppMenuBar />}
         <div style={{height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
           <Layout
