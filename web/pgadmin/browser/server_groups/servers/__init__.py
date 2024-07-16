@@ -1616,6 +1616,7 @@ class ServerNode(PGChildNodeView):
                         KEY_RING_SERVICE_NAME,
                         KEY_RING_USERNAME_FORMAT.format(server.name,
                                                         server.id))
+                prompt_password = True if password is None else False
         else:
             password = data['password'] if 'password' in data else None
             save_password = data['save_password']\
