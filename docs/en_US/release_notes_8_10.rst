@@ -8,7 +8,7 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 12, 13, 14, 15, and 16
+**PostgreSQL**: 12, 13, 14, 15, 16 and 17
 
 **EDB Advanced Server**: 12, 13, 14, 15, and 16
 
@@ -44,5 +44,9 @@ Bug fixes
   | `Issue #7511 <https://github.com/pgadmin-org/pgadmin4/issues/7511>`_ -  Fixed an issue where users could not insert characters at the desired location, as it was added to the end of the line.
   | `Issue #7554 <https://github.com/pgadmin-org/pgadmin4/issues/7554>`_ -  Fixed an issue where sorting the database activity table on the dashboard by any column caused the details to expand in the wrong position.
   | `Issue #7618 <https://github.com/pgadmin-org/pgadmin4/issues/7618>`_ -  Fix an issue where the preferences JSON file has no effect when an external database is used.
+  | `Issue #7626 <https://github.com/pgadmin-org/pgadmin4/issues/7626>`_ -  Fixed an issue where theme preview under theme options was broken in pgAdmin server mode.
   | `Issue #7627 <https://github.com/pgadmin-org/pgadmin4/issues/7627>`_ -  Fixed an issue where users could not autofill their saved passwords in the connect server dialog in the browser.
   | `Issue #7638 <https://github.com/pgadmin-org/pgadmin4/issues/7638>`_ -  Fixed an issue where Generate Script button should be disabled if no objects are selected in the schema diff result.
+  | `Issue #7663 <https://github.com/pgadmin-org/pgadmin4/issues/7663>`_ -  Fixed an issue where Reassign/Drop Owned dialog not opening for Role.
+  | `Issue #7679 <https://github.com/pgadmin-org/pgadmin4/issues/7679>`_ -  Ensure pgadmin does not try to connect to the server if saved password is not available.
+  | `Issue #7681 <https://github.com/pgadmin-org/pgadmin4/issues/7681>`_ -  Ensure that pgAdmin works when opened in an iframe.
