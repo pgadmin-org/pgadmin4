@@ -38,7 +38,7 @@ import {
   foldKeymap,
   indentService
 } from '@codemirror/language';
-
+import { highlightSelectionMatches } from '@codemirror/search';
 import syntaxHighlighting from '../extensions/highlighting';
 import PgSQL from '../extensions/dialect';
 import { sql } from '@codemirror/lang-sql';
@@ -343,6 +343,11 @@ export default function Editor({
     if (pref.insert_pair_brackets) {
       newConfigExtn.push(closeBrackets());
     }
+
+    if (pref.highlight_selection_matches){
+      newConfigExtn.push(highlightSelectionMatches());
+    }
+
     if (pref.brace_matching) {
       newConfigExtn.push(bracketMatching());
     }

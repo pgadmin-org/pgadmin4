@@ -208,6 +208,16 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.highlight_selection_matches = self.preference.register(
+        'Editor', 'highlight_selection_matches',
+        gettext("Highlight selection matches?"), 'boolean', True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'Specifies whether or not to highlight matched selected text '
+            'in the editor.'
+        )
+    )
+
     self.brace_matching = self.preference.register(
         'Editor', 'brace_matching',
         gettext("Brace matching?"), 'boolean', True,
