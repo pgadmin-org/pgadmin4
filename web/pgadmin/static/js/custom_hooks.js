@@ -211,7 +211,7 @@ export function useForceUpdate() {
   return React.useReducer(() => ({}), {})[1];
 }
 
-export function useBeforeUnload({enabled, isNewTab, beforeClose, closePanel }) {
+export function useBeforeUnload({ enabled, isNewTab, beforeClose, closePanel }) {
   const onBeforeUnload = useCallback((e)=>{
     e.preventDefault();
     e.returnValue = 'prevent';
