@@ -214,6 +214,8 @@ class SchemaState extends DepListener {
 
     // Initial data after the ready state
     this.initData = {};
+    // Current state of the data
+    this.data = {};
     // Immutable data
     this.immutableData = immutableData;
     // Current error
@@ -335,6 +337,8 @@ class SchemaState extends DepListener {
 
     state.changes = hasDataChanged ? dataDiff : null;
 
+    state.data = sessData;
+
     state.onDataChange(hasDataChanged, dataDiff);
   }
 
@@ -368,7 +372,7 @@ export const useSchemaState = ({
   }
 
   const [sessData, sessDispatch] = useReducer(
-    sessDataReducer, {__changeId: 0}
+    sessDataReducer, {...(_.cloneDeep(schemaState.data)), __changeId: 0}
   );
 
   const sessDispatchWithListener = (action) => {
