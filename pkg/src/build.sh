@@ -73,6 +73,7 @@ do
 done
 
 # Copy the commit_hash file, it doesn't show up in git ls-files
+echo Adding "web/commit_hash"
 tar cf - "web/commit_hash" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 
 # Create the tarball

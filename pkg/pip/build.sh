@@ -48,7 +48,7 @@ mkdir pip-build/pgadmin4/docs
 
 # Build the clean tree
 cd web || exit
-for FILE in $(git ls-files)
+for FILE in $(git ls-files|grep -v regression)
 do
     echo Adding "${FILE}"
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
@@ -56,11 +56,12 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
-# Copy the commit_hash file, it doesn't show up in git ls-files
-tar cf - "commit_hash" | (cd ../pip-build/pgadmin4; tar xf -)
-
 yarn install
 yarn run bundle
+
+# Copy the commit_hash file, it doesn't show up in git ls-files
+echo Adding "commit_hash"
+tar cf - "commit_hash" | (cd ../pip-build/pgadmin4; tar xf -)
 
 for FILE in pgadmin/static/js/generated/*
 do
