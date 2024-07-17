@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #3981 <https://github.com/pgadmin-org/pgadmin4/issues/3981>`_ -  Add support for Postgres Server Logs for Text, CSV and JSON format in plain and tabular formats. Upgrade React to version 18.
+  | `Issue #6572 <https://github.com/pgadmin-org/pgadmin4/issues/6572>`_ -  Add a keyboard shortcut to close active tab panel.
 
 Housekeeping
 ************
@@ -41,6 +42,7 @@ Bug fixes
   | `Issue #6548 <https://github.com/pgadmin-org/pgadmin4/issues/6548>`_ -  Ensure pgAdmin never makes network requests to Google etc.
   | `Issue #6571 <https://github.com/pgadmin-org/pgadmin4/issues/6571>`_ -  Fixed an issue where pop-up notifications from Object Explorer wouldn't get dismissed automatically if the Query Tool was opened.
   | `Issue #7035 <https://github.com/pgadmin-org/pgadmin4/issues/7035>`_ -  Fixed the permission denied issue for functions of the pgstattuple extension when accessing statistics with a non-admin user.
+  | `Issue #7219 <https://github.com/pgadmin-org/pgadmin4/issues/7219>`_ -  Ensure processes related notifiers disappears.
   | `Issue #7511 <https://github.com/pgadmin-org/pgadmin4/issues/7511>`_ -  Fixed an issue where users could not insert characters at the desired location, as it was added to the end of the line.
   | `Issue #7554 <https://github.com/pgadmin-org/pgadmin4/issues/7554>`_ -  Fixed an issue where sorting the database activity table on the dashboard by any column caused the details to expand in the wrong position.
   | `Issue #7618 <https://github.com/pgadmin-org/pgadmin4/issues/7618>`_ -  Fix an issue where the preferences JSON file has no effect when an external database is used.
