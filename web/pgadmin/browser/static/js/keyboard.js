@@ -15,6 +15,7 @@ import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
 import usePreferences from '../../../preferences/static/js/store';
 
+
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
 pgBrowser.keyboardNavigation = pgBrowser.keyboardNavigation || {};
@@ -51,6 +52,7 @@ _.extend(pgBrowser.keyboardNavigation, {
           'direct_debugging': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'direct_debugging')?.value),
           'add_grid_row': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'add_grid_row')?.value),
           'open_quick_search': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'open_quick_search')?.value),
+          'close_tab_panel': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'close_tab_panel')?.value),
 
         };
         this.shortcutMethods = {
@@ -59,7 +61,7 @@ _.extend(pgBrowser.keyboardNavigation, {
               this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
               this.keyboardShortcut.help_shortcut],
           }}, // Main menu
-          'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
+          'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward, this.keyboardShortcut.close_tab_panel]}, // Main window panels
           'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
           'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
           'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
@@ -189,6 +191,13 @@ _.extend(pgBrowser.keyboardNavigation, {
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
     if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
     else if (combo.key === shortcut_obj.tabbed_panel_forward) activeTabIdx = (activeTabIdx + 1) % dockLayoutTabs.length;
+    else if (combo.key === shortcut_obj.close_tab_panel) {
+      const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
+      if (panelId) {
+        pgAdmin.Browser.docker.close(panelId);
+        activeTabIdx = activeTabIdx % dockLayoutTabs.length;
+      }
+    }
     dockLayoutTabs[activeTabIdx]?.click();
     dockLayoutTabs[activeTabIdx]?.focus();
   },
