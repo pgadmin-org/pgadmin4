@@ -413,6 +413,10 @@ export const useSchemaState = ({
     });
   };
 
+  const reload = () => {
+    schemaState.initialise(sessDispatch, force);
+  };
+
   useEffect(() => {
     schemaState.initialise(sessDispatch);
   }, [schemaState.loadingState]);
@@ -458,6 +462,9 @@ export const useSchemaState = ({
       });
     });
   }, [schemaState.__deferred__?.length]);
+
+  schemaState.reload = reload;
+  schemaState.reset = resetData;
 
   return {
     schemaState,
