@@ -414,7 +414,7 @@ export const useSchemaState = ({
   };
 
   const reload = () => {
-    schemaState.initialise(sessDispatch, force);
+    schemaState.initialise(sessDispatch, true);
   };
 
   useEffect(() => {
