@@ -43,6 +43,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
+const AUTO_HIDE_DURATION = 10000;  // In milliseconds
 function ProcessNotifyMessage({title, desc, onClose, onViewProcess, success=true, dataTestSuffix=''}) {
   return (
     <StyledBox className={(success ? 'BgProcessNotify-containerSuccess' : 'BgProcessNotify-containerError')} data-test={'process-popup-' + dataTestSuffix}>
@@ -75,7 +76,7 @@ ProcessNotifyMessage.propTypes = {
 export function processStarted(desc, onViewProcess) {
   pgAdmin.Browser.notifier.notify(
     <ProcessNotifyMessage title={gettext('Process started')} desc={desc} onViewProcess={onViewProcess} dataTestSuffix="start"/>,
-    null
+    AUTO_HIDE_DURATION
   );
 }
 
@@ -92,6 +93,6 @@ export function processCompleted(desc, process_state, onViewProcess) {
 
   pgAdmin.Browser.notifier.notify(
     <ProcessNotifyMessage title={title} desc={desc} onViewProcess={onViewProcess} success={success} dataTestSuffix="end"/>,
-    null
+    AUTO_HIDE_DURATION
   );
 }
