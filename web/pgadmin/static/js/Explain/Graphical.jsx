@@ -238,7 +238,7 @@ function NodeDetails({plan, download=false}) {
       } else {
         return (<tr key={key}>
           <td>{key}</td>
-          <td>{value}</td>
+          <td>{`${value !== undefined ? value : ''}`}</td>
         </tr>);
       }
     })}
