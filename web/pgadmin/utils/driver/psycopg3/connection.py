@@ -35,7 +35,7 @@ from .typecast import register_global_typecasters,\
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
-from pgadmin.utils import csv
+from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker

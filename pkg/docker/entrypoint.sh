@@ -43,10 +43,19 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
         exit 1
     fi
 
-    if ! echo "${PGADMIN_DEFAULT_EMAIL}" | grep -E "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" > /dev/null; then
+    # Validate PGADMIN_DEFAULT_EMAIL
+    CHECK_EMAIL_DELIVERABILITY="False"
+    if [ -n "${PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY}" ]; then
+        CHECK_EMAIL_DELIVERABILITY=${PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY}
+    fi
+    
+    is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${CHECK_EMAIL_DELIVERABILITY}); print(val)")
+    if echo "${is_valid_email}" | grep "False" > /dev/null; then 
         echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
         exit 1
     fi
+    # Switch back to root directory for further process
+    cd /pgadmin4
 
     # Read secret contents
     if [ -n "${PGADMIN_DEFAULT_PASSWORD_FILE}" ]; then
