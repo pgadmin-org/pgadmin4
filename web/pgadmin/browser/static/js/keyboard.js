@@ -195,7 +195,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
         pgAdmin.Browser.docker.close(panelId);
-        activeTabIdx = activeTabIdx % dockLayoutTabs.length;
+        activeTabIdx = activeTabIdx === dockLayoutTabs.length - 1 || activeTabIdx === 0 ? 1 : activeTabIdx + 1;
       }
     }
     dockLayoutTabs[activeTabIdx]?.click();
