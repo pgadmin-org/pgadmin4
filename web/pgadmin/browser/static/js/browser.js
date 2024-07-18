@@ -1728,6 +1728,7 @@ define('pgadmin.browser', [
       insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
       brace_matching: pgBrowser.utils.braceMatching,
       indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
+      highlightSelectionMatches:pgBrowser.utils.highlightSelectionMatches
     },
   });
 

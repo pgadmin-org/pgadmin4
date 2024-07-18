@@ -66,6 +66,9 @@ const Root = styled('div')(({theme}) => ({
       width: '100%',
       minHeight: '400px',
       padding: '4px',
+      '& .Dashboard-cardHeader': {
+        padding: '8px',
+      },
       '& .Dashboard-mainTabs': {
         ...theme.mixins.panelBorder.all,
         height: '100%',
@@ -75,10 +78,9 @@ const Root = styled('div')(({theme}) => ({
           color: theme.palette.error.main
         },
         '& .Dashboard-download': {
-          alignSelf: 'end',
           '& .Dashboard-downloadButton': {
-            width: '35px',
-            height:'30px'
+            width: '40px',
+            height:'30px !important',
           },
         },
         '& .Dashboard-textArea': {
@@ -86,9 +88,6 @@ const Root = styled('div')(({theme}) => ({
         },
         '& .RefreshButtons': {
           display: 'flex',
-        },
-        '& .Mui-disabled': {
-          pointerEvents: 'auto',
         },
       },
     },
@@ -823,10 +822,8 @@ function Dashboard({
           let _format = res.data;
           let _frm = [
             {'label': gettext('Text'), 'value': 'T', 'disabled': !_format.includes('stderr')},
-            {'label': gettext('JSON'), 'value': 'J', 'disabled': !_format.includes('jsonlog'),
-              tooltip: gettext('Enable JSON logging from postgresql.conf.')},
-            {'label': gettext('CSV'), 'value': 'C', 'disabled': !_format.includes('csvlog'),
-              tooltip: gettext('Enable CSV logging from postgres.conf.')}
+            {'label': gettext('JSON'), 'value': 'J', 'disabled': !_format.includes('jsonlog')},
+            {'label': gettext('CSV'), 'value': 'C', 'disabled': !_format.includes('csvlog')}
           ];
           setLogConfigFormat(_frm);
         })
@@ -886,7 +883,7 @@ function Dashboard({
           })
             .then((res) => {
               if (res.data && res.data['logs_disabled']) {
-                setSsMsg(gettext('Please enable the logging to view the server logs.'));
+                setSsMsg(gettext('Please enable the logging to view the server logs or check the log file is in place or not.'));
               } else {
                 setDashData(parseData(res.data));
               }
@@ -966,7 +963,7 @@ function Dashboard({
       label: gettext('Table based logs'),
     };
   const CustomLogHeader = () => {
-    return ( <Box className='Dashboard-cardHeader' display="flex" flexDirection="column">
+    return ( <Box className='Dashboard-cardHeader' display="flex" flexDirection="row">
       <FormInputToggle
         label={gettext('Log Format')}
         className='Dashboard-searchInput'
@@ -977,10 +974,10 @@ function Dashboard({
         options={logConfigFormat}
         controlProps={CustomLogHeaderLabel}
         labelGridBasis={3}
-        controlGridBasis={6}
+        controlGridBasis={3}
       ></FormInputToggle>
       <FormInputSwitch
-        label={gettext('Logs in tabular format ?')}
+        label={gettext('Tabular format?')}
         labelPlacement="end"
         className='Dashboard-searchInput'
         value={logCol}
@@ -990,7 +987,7 @@ function Dashboard({
         }}
         controlProps={CustomLogHeaderLabel}
         labelGridBasis={3}
-        controlGridBasis={6}
+        controlGridBasis={3}
       ></FormInputSwitch>
       <div className='Dashboard-download'><PgIconButton
         size="xs"

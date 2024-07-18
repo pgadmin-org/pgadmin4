@@ -341,7 +341,7 @@ ipcMain.handle('setStoreData', (_e, newValues) => {
 });
 ipcMain.handle('getServerLogFile', () => misc.getServerLogFile());
 ipcMain.handle('readServerLog', () => misc.readServerLog());
-ipcMain.handle('restartApp', ()=>{
+ipcMain.on('restartApp', ()=>{
   app.relaunch();
   app.exit(0);
 });

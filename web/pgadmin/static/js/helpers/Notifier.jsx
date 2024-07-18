@@ -198,7 +198,7 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onR
 
   // if open in a window, then create your own Snackbar
   // if pgAdmin is opened inside an iframe then it also same as new window.
-  if(window.self == window.top || (window.self != window.top && pgWindow != window )) {
+  if(window.self == window.top || (window.self != window.top && pgWindow == window )) {
     return (
       <Root>
         <SnackbarProvider
