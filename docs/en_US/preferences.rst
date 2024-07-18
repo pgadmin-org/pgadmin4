@@ -400,6 +400,9 @@ Use the fields on the *Editor* panel to change settings of the query editor.
   changed to text/plain. Keyword highlighting and code folding will be disabled.
   This will improve editor performance with large files.
 
+* When the *Highlight selection matches?* switch is set to *True*, the editor will 
+  highlight matched selected text.
+
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences dialog sqleditor explain options
     :align: center

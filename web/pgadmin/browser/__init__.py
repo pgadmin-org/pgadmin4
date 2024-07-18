@@ -490,6 +490,11 @@ def utils():
     brace_matching_pref = prefs.preference('brace_matching')
     brace_matching = brace_matching_pref.get()
 
+    highlight_selection_matches_pref = prefs.preference(
+        'highlight_selection_matches'
+    )
+    highlight_selection_matches = highlight_selection_matches_pref.get()
+
     insert_pair_brackets_perf = prefs.preference('insert_pair_brackets')
     insert_pair_brackets = insert_pair_brackets_perf.get()
 
@@ -542,6 +547,7 @@ def utils():
             editor_use_spaces=editor_use_spaces,
             editor_wrap_code=editor_wrap_code,
             editor_brace_matching=brace_matching,
+            editor_highlight_selection_matches=highlight_selection_matches,
             editor_insert_pair_brackets=insert_pair_brackets,
             editor_indent_with_tabs=editor_indent_with_tabs,
             app_name=config.APP_NAME,
