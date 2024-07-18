@@ -76,6 +76,7 @@ Click the *Configuration* tab to get the server configuration details.
 Click the *Logs* tab to get the server logs.
 
 * Use the Log Format switch to select the format you want. Text/Plain, JSON and CSV are supported.
+  The enable/disable state of the log format depends on the Postgresql.conf setting.
 * Use the Logs in tabular format? switch if you want to see the logs in a tabular format.
 
 Click the *System Statistics* tab to get the statistics for the system:
