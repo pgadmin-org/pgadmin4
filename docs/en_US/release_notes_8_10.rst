@@ -22,6 +22,7 @@ New features
 
   | `Issue #3981 <https://github.com/pgadmin-org/pgadmin4/issues/3981>`_ -  Add support for Postgres Server Logs for Text, CSV and JSON format in plain and tabular formats. Upgrade React to version 18.
   | `Issue #6572 <https://github.com/pgadmin-org/pgadmin4/issues/6572>`_ -  Add a keyboard shortcut to close active tab panel.
+  | `Issue #7530 <https://github.com/pgadmin-org/pgadmin4/issues/7530>`_ -  Add support for highlighting selection matches in the query editor.
 
 Housekeeping
 ************
@@ -51,6 +52,7 @@ Bug fixes
   | `Issue #7627 <https://github.com/pgadmin-org/pgadmin4/issues/7627>`_ -  Fixed an issue where users could not autofill their saved passwords in the connect server dialog in the browser.
   | `Issue #7638 <https://github.com/pgadmin-org/pgadmin4/issues/7638>`_ -  Fixed an issue where Generate Script button should be disabled if no objects are selected in the schema diff result.
   | `Issue #7660 <https://github.com/pgadmin-org/pgadmin4/issues/7660>`_ -  Add a precautionary check for the query tool connection cursor to fix the error 'NoneType' object has no attribute '_query'.
+  | `Issue #7662 <https://github.com/pgadmin-org/pgadmin4/issues/7662>`_ -  Fixed an issue where boolean values in node details of graphical explain plan were not interpreted correctly.
   | `Issue #7663 <https://github.com/pgadmin-org/pgadmin4/issues/7663>`_ -  Fixed an issue where Reassign/Drop Owned dialog not opening for Role.
   | `Issue #7679 <https://github.com/pgadmin-org/pgadmin4/issues/7679>`_ -  Ensure pgadmin does not try to connect to the server if saved password is not available.
   | `Issue #7681 <https://github.com/pgadmin-org/pgadmin4/issues/7681>`_ -  Ensure that pgAdmin works when opened in an iframe.
