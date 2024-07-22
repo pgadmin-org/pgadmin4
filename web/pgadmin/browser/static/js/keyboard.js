@@ -148,44 +148,43 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   bindRightPanel: function(event, combo) {
     const self = this;
-    let dockLayoutTabs = document.activeElement?.closest('.dock-layout')?.querySelectorAll('.dock-tab-btn');
-    let shortcut_obj = this.keyboardShortcut;
-    //if the focus is on the tab button
-    if (document.activeElement.closest('.dock-tab-btn')) {
-      let currDockTab = document.activeElement?.closest('.dock-tab-btn');
-      if(dockLayoutTabs?.length > 1 && currDockTab) {
-        for(let i=0; i<dockLayoutTabs.length; i++) {
-          if(dockLayoutTabs[i] == currDockTab) {
-            let activeTabIdx = i;
-            self._focusTab(dockLayoutTabs, activeTabIdx, shortcut_obj, combo);
-            break;
-          }
-        }
+    const shortcutObj = this.keyboardShortcut;
+    const activeElement = document.activeElement;
+  
+    if (activeElement.closest('.dock-tab-btn')) {
+      const currDockTab = activeElement.closest('.dock-tab-btn');
+      const dockLayout = currDockTab.closest('.dock-layout');
+      const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
+  
+      if (dockLayoutTabs && dockLayoutTabs.length > 1) {
+        const activeTabIndex = dockLayoutTabs.indexOf(currDockTab);
+        self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
       }
-      //if the tab is a iframe or the focus is within the content of tab
-    } else if (document.activeElement.nodeName === 'IFRAME' || document.activeElement.closest('.dock-tabpane.dock-tabpane-active')?.id) {
+    }
+    else if (activeElement.nodeName === 'IFRAME' || activeElement.closest('.dock-tabpane.dock-tabpane-active')) {
       let activeTabId = '';
-      //if the tab is a iframe
-      if (document.activeElement.nodeName === 'IFRAME'){
-        dockLayoutTabs = document.activeElement?.closest('#root')?.querySelectorAll('.dock-tab-btn');
-        activeTabId = document.activeElement?.id;
-        //if the focus is within the content of tab
-      } else if (document.activeElement.closest('.dock-tabpane.dock-tabpane-active')?.id){
-        activeTabId = document.activeElement.closest('.dock-tabpane.dock-tabpane-active')?.id;
+      activeTabId = (activeElement.nodeName === 'IFRAME') ? activeElement.id : activeElement.closest('.dock-tabpane.dock-tabpane-active').id;
+      const dockLayout = document.getElementById('root');
+      const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
+  
+      if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
+        const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
+        self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
       }
-      if(dockLayoutTabs?.length > 1 && activeTabId) {
-        for(let i=0; i<dockLayoutTabs.length; i++) {
-          let tabIdx = i;
-          let tabId = dockLayoutTabs[tabIdx].id?.slice(14);
-          if (tabId == activeTabId) {
-            self._focusTab(dockLayoutTabs, tabIdx, shortcut_obj, combo);
-            break;
-          }
+    }
+    else if (activeElement === document.body || document.querySelector('div[data-test="app-menu-bar"]')) {
+      const activeTabs = document.getElementsByClassName('dock-tabpane dock-tabpane-active');
+  
+      if (activeTabs.length > 1) {
+        const activeTabId = activeTabs[1].id;
+        const dockLayout = document.getElementById('root');
+        const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
+  
+        if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
+          const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
+          self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
         }
       }
-      //if the focus is on the body or on the menu bar
-    } else if (document.activeElement === document.body || document.querySelector('div[data-test="app-menu-bar"]')) {
-      pgAdmin.Browser.docker.navigatePanel();
     }
   },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
@@ -195,7 +194,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
         pgAdmin.Browser.docker.close(panelId);
-        activeTabIdx = activeTabIdx % dockLayoutTabs.length;
+        activeTabIdx = activeTabIdx === dockLayoutTabs.length - 1 || activeTabIdx === 0 ? 1 : activeTabIdx + 1;
       }
     }
     dockLayoutTabs[activeTabIdx]?.click();
