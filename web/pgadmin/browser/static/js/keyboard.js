@@ -264,8 +264,7 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   bindSubMenuDelete: function() {
     const tree = this.getTreeDetails();
-
-    if (!tree.d || pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type].collection_node === true)
+    if (!tree.d || pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type].collection_node === true || document.activeElement.className !== 'file-tree')
       return;
 
     // Call delete object callback
