@@ -123,7 +123,7 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
     useInfiniteQuery({
       queryKey: ['logs'],
       queryFn: async () => {
-        const fetchedData = await loadNextPage();
+        const fetchedData = loadNextPage ? await loadNextPage() : [];
         return fetchedData;
       },
       initialPageParam: 0,
