@@ -188,15 +188,14 @@ _.extend(pgBrowser.keyboardNavigation, {
     }
   },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
-    if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
-    else if (combo.key === shortcut_obj.tabbed_panel_forward) activeTabIdx = (activeTabIdx + 1) % dockLayoutTabs.length;
-    else if (combo.key === shortcut_obj.close_tab_panel) {
+    if (combo.key === shortcut_obj.close_tab_panel) {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
         pgAdmin.Browser.docker.close(panelId);
-        activeTabIdx = activeTabIdx === dockLayoutTabs.length - 1 || activeTabIdx === 0 ? 1 : activeTabIdx + 1;
       }
     }
+    else if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
+    else if (combo.key === shortcut_obj.tabbed_panel_forward) activeTabIdx = (activeTabIdx + 1) % dockLayoutTabs.length;
     dockLayoutTabs[activeTabIdx]?.click();
     dockLayoutTabs[activeTabIdx]?.focus();
   },
