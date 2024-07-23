@@ -150,12 +150,12 @@ _.extend(pgBrowser.keyboardNavigation, {
     const self = this;
     const shortcutObj = this.keyboardShortcut;
     const activeElement = document.activeElement;
-  
+
     if (activeElement.closest('.dock-tab-btn')) {
       const currDockTab = activeElement.closest('.dock-tab-btn');
       const dockLayout = currDockTab.closest('.dock-layout');
       const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
-  
+
       if (dockLayoutTabs && dockLayoutTabs.length > 1) {
         const activeTabIndex = dockLayoutTabs.indexOf(currDockTab);
         self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
@@ -166,7 +166,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       activeTabId = (activeElement.nodeName === 'IFRAME') ? activeElement.id : activeElement.closest('.dock-tabpane.dock-tabpane-active').id;
       const dockLayout = document.getElementById('root');
       const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
-  
+
       if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
         const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
         self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
@@ -174,12 +174,12 @@ _.extend(pgBrowser.keyboardNavigation, {
     }
     else if (activeElement === document.body || document.querySelector('div[data-test="app-menu-bar"]')) {
       const activeTabs = document.getElementsByClassName('dock-tabpane dock-tabpane-active');
-  
+
       if (activeTabs.length > 1) {
         const activeTabId = activeTabs[1].id;
         const dockLayout = document.getElementById('root');
         const dockLayoutTabs = dockLayout ? Array.from(dockLayout.querySelectorAll('.dock-tab-btn')) : null;
-  
+
         if (dockLayoutTabs && dockLayoutTabs.length > 1 && activeTabId) {
           const activeTabIndex = dockLayoutTabs.findIndex(tab => tab.id.slice(14) === activeTabId);
           self._focusTab(dockLayoutTabs, activeTabIndex, shortcutObj, combo);
@@ -188,17 +188,17 @@ _.extend(pgBrowser.keyboardNavigation, {
     }
   },
   _focusTab: function(dockLayoutTabs, activeTabIdx, shortcut_obj, combo){
-    if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
-    else if (combo.key === shortcut_obj.tabbed_panel_forward) activeTabIdx = (activeTabIdx + 1) % dockLayoutTabs.length;
-    else if (combo.key === shortcut_obj.close_tab_panel) {
+    if(combo.key === shortcut_obj.close_tab_panel) {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
         pgAdmin.Browser.docker.close(panelId);
-        activeTabIdx = activeTabIdx === dockLayoutTabs.length - 1 || activeTabIdx === 0 ? 1 : activeTabIdx + 1;
       }
+    } else {
+      if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
+      else if (combo.key === shortcut_obj.tabbed_panel_forward) activeTabIdx = (activeTabIdx + 1) % dockLayoutTabs.length;
+      dockLayoutTabs[activeTabIdx]?.click();
+      dockLayoutTabs[activeTabIdx]?.focus();
     }
-    dockLayoutTabs[activeTabIdx]?.click();
-    dockLayoutTabs[activeTabIdx]?.focus();
   },
   bindLeftTree: function() {
     const tree = this.getTreeDetails();
