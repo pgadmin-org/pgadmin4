@@ -10,6 +10,7 @@
 import { app, Menu, ipcMain, BrowserWindow } from 'electron';
 
 const isMac = process.platform == 'darwin';
+const isLinux = process.platform == 'linux';
 let mainMenu;
 
 function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
@@ -79,8 +80,7 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
         { role: 'zoomIn' },
         { role: 'zoomOut' },
         { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
+      ].concat(isLinux ? [] : [{ role: 'togglefullscreen' }]),
     },
     { role: 'windowMenu' },
   );
