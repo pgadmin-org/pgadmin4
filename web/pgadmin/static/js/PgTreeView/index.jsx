@@ -39,10 +39,10 @@ const Root = styled('div')(({ theme }) => ({
 export const PgTreeSelectionContext = React.createContext();
 
 export default function PgTreeView({ data = [], hasCheckbox = false,
-  selectionChange = null, handleOnToggle = null, TreeNode = null }) {
+  selectionChange = null, NodeComponent = null, ...props }) {
 
   let treeData = data;
-  TreeNode = TreeNode || Node;
+  NodeComponent = NodeComponent || DefaultNode;
   const treeObj = useRef();
   const treeContainerRef = useRef();
   const [selectedCheckBoxNodes, setSelectedCheckBoxNodes] = React.useState([]);
@@ -85,10 +85,10 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
                 disableDrag={true}
                 disableDrop={true}
                 dndRootElement={treeContainerRef.current}
-                onToggle={handleOnToggle}
+                {...props}
               >
                 {
-                  (props) => <TreeNode onNodeSelectionChange={onSelectionChange} hasCheckbox={hasCheckbox} {...props} />
+                  (props) => <NodeComponent onNodeSelectionChange={onSelectionChange} hasCheckbox={hasCheckbox} {...props} />
                 }
               </Tree>
             )}
@@ -106,11 +106,10 @@ PgTreeView.propTypes = {
   data: PropTypes.array,
   selectionChange: PropTypes.func,
   hasCheckbox: PropTypes.bool,
-  TreeNode: PropTypes.func,
-  handleOnToggle: PropTypes.func,
+  NodeComponent: PropTypes.func
 };
 
-function Node({ node, style, tree, hasCheckbox, onNodeSelectionChange }) {
+function DefaultNode({ node, style, tree, hasCheckbox, onNodeSelectionChange }) {
 
   const pgTreeSelCtx = React.useContext(PgTreeSelectionContext);
   const [isSelected, setIsSelected] = React.useState(pgTreeSelCtx.includes(node.id) || node.data?.isSelected);
@@ -190,7 +189,7 @@ function Node({ node, style, tree, hasCheckbox, onNodeSelectionChange }) {
   );
 }
 
-Node.propTypes = {
+DefaultNode.propTypes = {
   node: PropTypes.object,
   style: PropTypes.any,
   tree: PropTypes.object,
