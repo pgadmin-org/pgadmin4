@@ -51,6 +51,7 @@ Bug fixes
   | `Issue #7626 <https://github.com/pgadmin-org/pgadmin4/issues/7626>`_ -  Fixed an issue where theme preview under theme options was broken in pgAdmin server mode.
   | `Issue #7627 <https://github.com/pgadmin-org/pgadmin4/issues/7627>`_ -  Fixed an issue where users could not autofill their saved passwords in the connect server dialog in the browser.
   | `Issue #7638 <https://github.com/pgadmin-org/pgadmin4/issues/7638>`_ -  Fixed an issue where Generate Script button should be disabled if no objects are selected in the schema diff result.
+  | `Issue #7639 <https://github.com/pgadmin-org/pgadmin4/issues/7639>`_ -  Fixed an issue where ERD Open/Save shorcuts were not working on Windows/Linux.
   | `Issue #7660 <https://github.com/pgadmin-org/pgadmin4/issues/7660>`_ -  Add a precautionary check for the query tool connection cursor to fix the error 'NoneType' object has no attribute '_query'.
   | `Issue #7662 <https://github.com/pgadmin-org/pgadmin4/issues/7662>`_ -  Fixed an issue where boolean values in node details of graphical explain plan were not interpreted correctly.
   | `Issue #7663 <https://github.com/pgadmin-org/pgadmin4/issues/7663>`_ -  Fixed an issue where Reassign/Drop Owned dialog not opening for Role.

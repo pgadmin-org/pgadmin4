@@ -11,12 +11,12 @@ import secrets
 import string
 import urllib3
 import ipaddress
-from pgadmin.utils.constants import IP_ADDRESS_STRING
 
 
 def get_my_ip():
     """ Return the public IP of this host """
     http = urllib3.PoolManager()
+    IP_ADDRESS_STRING = '{}/{}'
     try:
         external_ip = http.request('GET', 'https://ident.me').data
     except Exception:
