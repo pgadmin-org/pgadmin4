@@ -26,7 +26,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
   const [disableSchemaSelection, setDisableSchemaSelection] = useState(selectedDid == null);
 
   useEffect(() => {
-    setSelectedDatabase(selectedDid)
+    setSelectedDatabase(selectedDid);
     if (selectedDid) setDisableSchemaSelection(false);
   }, [selectedSid, selectedDid, selectedScid]);
 
