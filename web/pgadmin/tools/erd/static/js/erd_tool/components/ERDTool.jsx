@@ -36,6 +36,7 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
+import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -52,7 +53,7 @@ export class KeyboardShortcutAction extends Action {
     for(let shortcut_val of shortcut_handlers){
       let [key, handler] = shortcut_val;
       if(key) {
-        this.shortcuts[this.shortcutKey(key.alt, key.ctrl_is_meta ? false : key.control, key.shift, Boolean(key.ctrl_is_meta), key.key.key_code)] = handler;
+        this.shortcuts[this.shortcutKey(key.alt, (isMac() && key.ctrl_is_meta) ? false : key.control, key.shift, isMac() && Boolean(key.ctrl_is_meta), key.key.key_code)] = handler;
       }
     }
   }

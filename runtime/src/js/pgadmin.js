@@ -15,6 +15,7 @@ import * as misc from './misc.js';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { setupMenu } from './menu.js';
+import contextMenu from 'electron-context-menu';
 
 const configStore = new Store({
   defaults: {
@@ -64,6 +65,13 @@ if (fs.existsSync('dev_config.json')) {
     console.error('Failed to load dev_config', error);
   }
 }
+
+contextMenu({
+  showInspectElement: false,
+  showSearchWithGoogle: false,
+  showLookUpSelection: false,
+  showSelectAll: true,
+});
 
 Menu.setApplicationMenu(null);
 
