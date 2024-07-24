@@ -2110,7 +2110,7 @@ def start_query_download_tool(trans_id):
                 )
         if not sql:
             sql = trans_obj.get_sql(sync_conn)
-        if query_commited:
+        if sql and query_commited:
             # Re-execute the query to ensure the latest data is included
             sync_conn.execute_async(sql)
         # This returns generator of records.

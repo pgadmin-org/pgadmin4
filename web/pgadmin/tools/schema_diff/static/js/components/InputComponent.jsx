@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import PropTypes from 'prop-types';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 
 import { Box, Grid, Typography } from '@mui/material';
 
@@ -18,13 +18,18 @@ import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 
 
 export function InputComponent({ label, serverList, databaseList, schemaList, diff_type, selectedSid = null, selectedDid=null, selectedScid=null, onServerSchemaChange }) {
-
   const [selectedServer, setSelectedServer] = useState(selectedSid);
   const [selectedDatabase, setSelectedDatabase] = useState(selectedDid);
   const [selectedSchema, setSelectedSchema] = useState(selectedScid);
   const eventBus = useContext(SchemaDiffEventsContext);
   const [disableDBSelection, setDisableDBSelection] = useState(selectedSid == null);
   const [disableSchemaSelection, setDisableSchemaSelection] = useState(selectedDid == null);
+
+  useEffect(() => {
+    setSelectedDatabase(selectedDid)
+    if (selectedDid) setDisableSchemaSelection(false);
+  }, [selectedSid, selectedDid, selectedScid]);
+
   const changeServer = (selectedOption) => {
     setDisableDBSelection(false);
     setSelectedServer(selectedOption);

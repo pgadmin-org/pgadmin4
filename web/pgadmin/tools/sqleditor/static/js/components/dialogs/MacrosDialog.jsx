@@ -139,7 +139,7 @@ export default function MacrosDialog({onClose, onSave}) {
   const [userMacrosData, setUserMacrosData] = React.useState([]);
   const [macrosErr, setMacrosErr] = React.useState(null);
 
-  React.useEffect(async ()=>{
+  const fetchMacrosData = async ()=>{
     try {
       // Fetch user macros data
       let { data: userMacroRespData } = await queryToolCtx.api.get(url_for('sqleditor.get_user_macros'));
@@ -155,6 +155,10 @@ export default function MacrosDialog({onClose, onSave}) {
     } catch (error) {
       setMacrosErr(error);
     }
+  };
+
+  React.useEffect(()=>{
+    fetchMacrosData();
   }, []);
 
   const onSaveClick = (_isNew, changeData)=>{
