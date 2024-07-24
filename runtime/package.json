@@ -14,7 +14,7 @@
   "devDependencies": {
     "@eslint/js": "^9.6.0",
     "electron": "^31.2.1",
-    "eslint": "^9.5.0"
+    "eslint": "^9.7.0"
   },
   "dependencies": {
     "axios": "^1.7.2",
