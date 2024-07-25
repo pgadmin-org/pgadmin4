@@ -121,7 +121,17 @@ def detect_browser(request):
     """This function returns the browser and os details"""
     electron_version = None
     agent = request.environ.get('HTTP_USER_AGENT')
-    os_details = parse(platform.platform()).ua_string
+
+    try:
+        # available only for python 3.10 and above
+        os_release = platform.freedesktop_os_release()
+        os_details = os_release.get('PRETTY_NAME', '')
+        if os_details:
+            os_details += ', '
+    except Exception as _:
+        os_details = ''
+
+    os_details += parse(platform.platform()).ua_string
 
     if 'Electron' in agent:
         electron_version = re.findall('Electron/([\\d.]+\\d+)', agent)[0]
