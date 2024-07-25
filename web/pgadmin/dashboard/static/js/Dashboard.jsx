@@ -66,6 +66,13 @@ const Root = styled('div')(({theme}) => ({
       width: '100%',
       minHeight: '400px',
       padding: '4px',
+      '& .serverLog .TabPanel-content': {
+        height: '94%',
+      },
+      '& .systemStorage .TabPanel-content': {
+        overflowY: 'auto',
+        overflowX: 'hidden',
+      },
       '& .Dashboard-cardHeader': {
         padding: '8px',
       },
@@ -82,9 +89,6 @@ const Root = styled('div')(({theme}) => ({
             width: '40px',
             height:'30px !important',
           },
-        },
-        '& .Dashboard-textArea': {
-          height: '88%',
         },
         '& .RefreshButtons': {
           display: 'flex',
@@ -255,7 +259,6 @@ function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
       labelPlacement="end"
       className='Dashboard-searchInput'
       onChange={(e) => {
-        e.preventDefault();
         setActiveOnly(e.target.checked);
       }}
       value={activeOnly}
@@ -1119,7 +1122,7 @@ function Dashboard({
                 ></PgTable>
               </TabPanel>
               {/* Server Logs */}
-              <TabPanel value={mainTabVal} index={3} classNameRoot='Dashboard-tabPanel'>
+              <TabPanel value={mainTabVal} index={3} classNameRoot='Dashboard-tabPanel serverLog'>
                 {dashData &&  dashData.length != 0 &&
                   <CustomLogHeader/>}
                 {dashData.length == 0 && <div className='Dashboard-emptyPanel'>
@@ -1148,7 +1151,7 @@ function Dashboard({
                 ></PgTable>}
               </TabPanel>
               {/* System Statistics */}
-              <TabPanel value={mainTabVal} index={4} classNameRoot='Dashboard-tabPanel'>
+              <TabPanel value={mainTabVal} index={4} classNameRoot='Dashboard-tabPanel systemStorage'>
                 <Box height="100%" display="flex" flexDirection="column">
                   {ssMsg === 'installed' && did === ldid ?
                     <ErrorBoundary>

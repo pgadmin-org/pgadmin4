@@ -197,7 +197,7 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
     <PgReactTable ref={tableRef} table={table} onScrollFunc={loadNextPage?fetchMoreOnBottomReached: null }>
       <PgReactTableHeader table={table} />
       {rows.length == 0 ?
-        <EmptyPanelMessage text={gettext('No rows found')} /> :
+        <EmptyPanelMessage text={gettext('No rows found')} style={{height:'auto'}} /> :
         <PgReactTableBody style={{ height: virtualizer.getTotalSize() + 'px'}}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const row = rows[virtualRow.index];
