@@ -68,6 +68,10 @@ fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_
 echo "Creating the desktop package..."
 mkdir "${DESKTOPROOT}/DEBIAN"
 
+cat << EOF > "${DESKTOPROOT}/DEBIAN/conffiles"
+/etc/apparmor.d/pgadmin4
+EOF
+
 cat << EOF > "${DESKTOPROOT}/DEBIAN/control"
 Package: ${APP_NAME}-desktop
 Version: ${APP_LONG_VERSION}
@@ -78,6 +82,17 @@ Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, pyth
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF
+
+cat << EOF > "${DESKTOPROOT}/DEBIAN/postinst"
+#!/bin/sh
+
+systemctl restart apparmor.service
+EOF
+
+chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
+
+mkdir -p "${DESKTOPROOT}/etc/apparmor.d"
+cp "${SOURCEDIR}/pkg/debian/pgadmin4-aa-profile" "${DESKTOPROOT}/etc/apparmor.d/pgadmin4"
 
 # Build the Debian package for the desktop
 chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}"
