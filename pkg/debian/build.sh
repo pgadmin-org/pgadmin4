@@ -68,9 +68,29 @@ fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_
 echo "Creating the desktop package..."
 mkdir "${DESKTOPROOT}/DEBIAN"
 
-cat << EOF > "${DESKTOPROOT}/DEBIAN/conffiles"
+# Ubuntu 24 requires apparmor profile to work.
+OS_ID=$(grep "^ID=" /etc/os-release | awk -F "=" '{ print $2 }')
+OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
+
+if [ "${OS_ID}" == 'ubuntu' ] && [ "${OS_VERSION}" -ge "24" ]; then
+  cat << EOF > "${DESKTOPROOT}/DEBIAN/conffiles"
 /etc/apparmor.d/pgadmin4
 EOF
+
+  mkdir -p "${DESKTOPROOT}/etc/apparmor.d"
+  cp "${SOURCEDIR}/pkg/debian/pgadmin4-aa-profile" "${DESKTOPROOT}/etc/apparmor.d/pgadmin4"
+
+  cat << EOF > "${DESKTOPROOT}/DEBIAN/postinst"
+#!/bin/sh
+
+STATUS="$(systemctl is-active apparmor.service)"
+if [ "${STATUS}" == "active" ]; then
+    echo "Load apparmor pgAdmin profile..."
+    apparmor_parser -r /etc/apparmor.d/pgadmin4
+fi
+EOF
+  chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
+fi
 
 cat << EOF > "${DESKTOPROOT}/DEBIAN/control"
 Package: ${APP_NAME}-desktop
@@ -82,17 +102,6 @@ Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils, pyth
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF
-
-cat << EOF > "${DESKTOPROOT}/DEBIAN/postinst"
-#!/bin/sh
-
-systemctl restart apparmor.service
-EOF
-
-chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
-
-mkdir -p "${DESKTOPROOT}/etc/apparmor.d"
-cp "${SOURCEDIR}/pkg/debian/pgadmin4-aa-profile" "${DESKTOPROOT}/etc/apparmor.d/pgadmin4"
 
 # Build the Debian package for the desktop
 chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}"
