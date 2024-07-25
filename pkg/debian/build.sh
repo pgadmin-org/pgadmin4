@@ -83,11 +83,8 @@ EOF
   cat << EOF > "${DESKTOPROOT}/DEBIAN/postinst"
 #!/bin/sh
 
-STATUS="$(systemctl is-active apparmor.service)"
-if [ "${STATUS}" == "active" ]; then
-    echo "Load apparmor pgAdmin profile..."
-    apparmor_parser -r /etc/apparmor.d/pgadmin4
-fi
+echo "Load apparmor pgAdmin profile..."
+apparmor_parser -r /etc/apparmor.d/pgadmin4
 EOF
   chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
 fi
