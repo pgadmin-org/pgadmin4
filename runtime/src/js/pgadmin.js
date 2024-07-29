@@ -337,9 +337,9 @@ function launchPgAdminWindow() {
 let splashWindow;
 
 // setup preload events.
-ipcMain.handle('showOpenDialog', (_e, options) => dialog.showOpenDialog(options));
-ipcMain.handle('showSaveDialog', (_e, options) => dialog.showSaveDialog(options));
-ipcMain.handle('showMessageBox', (_e, options) => dialog.showMessageBox(options));
+ipcMain.handle('showOpenDialog', (e, options) => dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), options));
+ipcMain.handle('showSaveDialog', (e, options) => dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), options));
+ipcMain.handle('showMessageBox', (e, options) => dialog.showMessageBox(BrowserWindow.fromWebContents(e.sender), options));
 ipcMain.handle('getStoreData', (_e, key) => key ? configStore.get(key) : configStore.store);
 ipcMain.handle('setStoreData', (_e, newValues) => {
   configStore.store = {
