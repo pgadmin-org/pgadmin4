@@ -47,7 +47,7 @@ for index, req in enumerate(all_requires):
                 and platform.mac_ver()[0] < '14.0':
             req = 'psycopg[binary]==3.1.19'
         else:
-            req.replace('psycopg[c]', 'psycopg[binary]')
+            req = req.replace('psycopg[c]', 'psycopg[binary]')
 
     if 'gssapi' in req:
         kerberos_extras.append(req)
