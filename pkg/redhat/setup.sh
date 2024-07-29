@@ -39,15 +39,15 @@ yum groupinstall -y "Development Tools"
 
 if [ "${OS_VERSION}" == "8" ]; then
     yum install -y expect fakeroot postgresql15-devel python3.9-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
-    pip3.9 install sphinx==6.1.3
+    pip3.9 install sphinx==7.4.7
     pip3.9 install sphinxcontrib-youtube
 elif [ "${OS_VERSION}" == "9" ]; then
     yum install -y expect libpq5-devel postgresql15-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
-    pip3 install sphinx==6.1.3
+    pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 else
     yum install -y expect fakeroot postgresql15-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
-    pip3 install sphinx==6.1.3
+    pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 fi
 

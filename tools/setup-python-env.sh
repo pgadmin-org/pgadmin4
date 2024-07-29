@@ -18,8 +18,8 @@ pip install --upgrade pip
 if [ ${TEST} -eq 1 ];
 then
   echo Installing requirements for running Python tests...
-  pip install --no-cache-dir wheel sphinx==6.1.3 sphinxcontrib-youtube -r web/regression/requirements.txt || { echo 'ERROR: Failed to install Python requirements.' ; exit 1; }
+  pip install --no-cache-dir wheel sphinx==7.4.7 sphinxcontrib-youtube -r web/regression/requirements.txt || { echo 'ERROR: Failed to install Python requirements.' ; exit 1; }
 else
   echo Installing requirements for executing and building only...
-  pip install --no-cache-dir wheel sphinx==6.1.3 sphinxcontrib-youtube -r requirements.txt || { echo 'ERROR: Failed to install Python requirements.' ; exit 1; }
+  pip install --no-cache-dir wheel sphinx==7.4.7 sphinxcontrib-youtube -r requirements.txt || { echo 'ERROR: Failed to install Python requirements.' ; exit 1; }
 fi

@@ -18,7 +18,7 @@ Flask-WTF==1.2.*
 Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==4.0.*
-Flask-Security-Too==5.4.*
+Flask-Security-Too==5.5.*
 Flask-SocketIO==5.3.*
 WTForms==3.1.*
 passlib==1.*
@@ -29,8 +29,8 @@ psutil==6.0.*
 psycopg[c]==3.2.1
 python-dateutil==2.*
 SQLAlchemy==2.*
-bcrypt==4.1.*
-cryptography==42.0.*
+bcrypt==4.2.*
+cryptography==43.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
@@ -47,10 +47,10 @@ azure-mgmt-resource==23.1.1
 azure-mgmt-subscription==3.1.1
 azure-identity==1.17.1
 google-api-python-client==2.*
-google-auth-oauthlib==1.2.0
+google-auth-oauthlib==1.2.1
 keyring==24.*
 Werkzeug==3.0.*
 typer[all]==0.12.*
-setuptools==70.*; python_version >= '3.12'
+setuptools==71.*; python_version >= '3.12'
 jsonformatter~=0.3.2
 libgravatar==1.0.*
