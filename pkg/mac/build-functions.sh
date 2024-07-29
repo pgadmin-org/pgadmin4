@@ -135,7 +135,7 @@ _build_docs() {
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
     pip3 install -r "${SOURCE_DIR}/requirements.txt"
-    pip3 install sphinx==6.1.3
+    pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 
     cd "${SOURCE_DIR}" || exit
