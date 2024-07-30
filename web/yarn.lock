@@ -10231,7 +10231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loader-utils@npm:^1.0.3, loader-utils@npm:^1.1.0":
+"loader-utils@npm:^1.1.0":
   version: 1.4.2
   resolution: "loader-utils@npm:1.4.2"
   dependencies:
@@ -14062,7 +14062,7 @@ __metadata:
     styled-components: ^5.2.1
     stylis: ^4.0.7
     svgo: ^2.7.0
-    svgo-loader: ^2.2.0
+    svgo-loader: ^4.0.0
     terser-webpack-plugin: ^5.1.1
     typescript: ^5.4.5
     typescript-eslint: ^7.15.0
@@ -15170,15 +15170,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svgo-loader@npm:^2.2.0":
-  version: 2.2.2
-  resolution: "svgo-loader@npm:2.2.2"
+"svgo-loader@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "svgo-loader@npm:4.0.0"
   dependencies:
-    js-yaml: ^3.13.1
-    loader-utils: ^1.0.3
-  peerDependencies:
-    svgo: ^1.0.0
-  checksum: 628e722549fe6b4dfe682418efe030092f560dfc6de3a497093cf1214fd2d08eb851f8cd80de74e6c5d7efa678a4cf912d52d82cdf5712e64a0f890af35ea5af
+    svgo: ^3.0.0
+  checksum: c5c86d7b8d302cbdce16a534576aee8c630c4a12323f46597a29b3e83befde30faadb63740273d873d32a805b0b1b0458c3ec5c3500344541e3677f7c51065c6
   languageName: node
   linkType: hard
 
@@ -15199,7 +15196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svgo@npm:^3.0.2, svgo@npm:^3.2.0":
+"svgo@npm:^3.0.0, svgo@npm:^3.0.2, svgo@npm:^3.2.0":
   version: 3.3.2
   resolution: "svgo@npm:3.3.2"
   dependencies:
