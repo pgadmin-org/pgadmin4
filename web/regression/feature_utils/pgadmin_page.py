@@ -126,7 +126,7 @@ class PgadminPage:
             PropertyDialogueLocators.server_connection_tab).click()
         # Wait for the 'Connection' tab to be rendered.
         WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(
-            (By.XPATH, "//input[@name='host']")))
+            (By.XPATH, "//input[not(@readonly) and @name='host']")))
         self.fill_input_by_field_name(
             "host", server_config['host'], input_keys=True)
         self.fill_input_by_field_name(
