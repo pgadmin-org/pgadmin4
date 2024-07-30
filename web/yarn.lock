@@ -14075,7 +14075,7 @@ __metadata:
     webpack-bundle-analyzer: ^4.8.0
     webpack-cli: ^5.1.4
     wkx: ^0.5.0
-    xterm: ^4.11.0
+    xterm: ^5.3.0
     xterm-addon-fit: ^0.5.0
     xterm-addon-search: ^0.8.0
     xterm-addon-web-links: ^0.4.0
@@ -16541,10 +16541,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xterm@npm:^4.11.0":
-  version: 4.19.0
-  resolution: "xterm@npm:4.19.0"
-  checksum: 4385e08d6f1e26d0db295ba55f0ed9c304686a72c2cfdd32502cf59de23ae9c93434d469fc3735f44375602f209f767a1ba643a86be6f8e0f1cf7e5bfdccde87
+"xterm@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "xterm@npm:5.3.0"
+  checksum: 1bdfdfe4cae4412128376180d85e476b43fb021cdd1114b18acad821c9ea44b5b600e0d88febf2b3572f38fad7741e5161ce0178a44369617cf937222cc6e011
   languageName: node
   linkType: hard
 
