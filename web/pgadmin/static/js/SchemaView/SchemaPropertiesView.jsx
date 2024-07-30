@@ -29,9 +29,9 @@ import DataGridView from './DataGridView';
 import FieldSetView from './FieldSetView';
 import { MappedFormControl } from './MappedControl';
 import { useSchemaState } from './useSchemaState';
-import { getFieldMetaData } from './utils';
+import { getFieldMetaData } from './common';
 
-import { StyledBox } from './styled';
+import { StyledBox } from './StyledComponents';
 
 
 /* If its the properties tab */

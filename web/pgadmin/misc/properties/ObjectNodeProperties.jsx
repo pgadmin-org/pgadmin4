@@ -52,7 +52,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   const treeNodeId = objToString(treeNodeInfo);
 
   let schema = useMemo(
-    () => node.getSchema(treeNodeInfo, nodeData), [treeNodeId]
+    () => node.getSchema(treeNodeInfo, nodeData), [treeNodeId, isActive]
   );
 
   // We only have two actionTypes, 'create' and 'edit' to initiate the dialog,

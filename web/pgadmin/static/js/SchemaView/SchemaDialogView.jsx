@@ -37,11 +37,11 @@ import CustomPropTypes from 'sources/custom_prop_types';
 import gettext from 'sources/gettext';
 
 import FormView from './FormView';
-import { StyledBox } from './styled';
+import { StyledBox } from './StyledComponents';
 import { useSchemaState } from './useSchemaState';
 import {
   getForQueryParams, SchemaStateContext
-} from './utils';
+} from './common';
 
 
 /* If its the dialog */

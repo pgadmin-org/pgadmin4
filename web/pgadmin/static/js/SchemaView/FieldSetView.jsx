@@ -20,7 +20,7 @@ import { evalFunc } from 'sources/utils';
 import { MappedFormControl } from './MappedControl';
 import {
   getFieldMetaData, SCHEMA_STATE_ACTIONS, SchemaStateContext
-} from './utils';
+} from './common';
 
 
 const INLINE_COMPONENT_ROWGAP = '8px';

@@ -17,7 +17,7 @@ import {
 } from 'sources/validators';
 
 import BaseUISchema from './base_schema.ui';
-import { isModeSupportedByField, isObjectEqual, isValueEqual } from './utils';
+import { isModeSupportedByField, isObjectEqual, isValueEqual } from './common';
 
 // Remove cid key added by prepareData
 const cleanCid = (coll, keepCid=false) => (

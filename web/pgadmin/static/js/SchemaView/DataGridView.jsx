@@ -44,8 +44,8 @@ import { MappedCellControl } from './MappedControl';
 import {
   SCHEMA_STATE_ACTIONS, SchemaStateContext, getFieldMetaData,
   isModeSupportedByField
-} from './utils';
-import { StyleDataGridBox } from './styled';
+} from './common';
+import { StyleDataGridBox } from './StyledComponents';
 
 
 function DataTableRow({

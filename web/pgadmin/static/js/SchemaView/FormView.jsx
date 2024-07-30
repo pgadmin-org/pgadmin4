@@ -26,9 +26,9 @@ import { MappedFormControl } from './MappedControl';
 import FieldSetView from './FieldSetView';
 import {
   SCHEMA_STATE_ACTIONS, SchemaStateContext, getFieldMetaData
-} from './utils';
+} from './common';
 
-import { FormContentBox } from './styled';
+import { FormContentBox } from './StyledComponents';
 
 
 /* Optional SQL tab */

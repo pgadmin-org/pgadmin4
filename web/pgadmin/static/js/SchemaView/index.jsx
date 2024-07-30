@@ -24,7 +24,7 @@ import {
   isValueEqual,
   isObjectEqual,
   getForQueryParams
-} from './utils';
+} from './common';
 
 
 export default SchemaView;
