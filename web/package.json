@@ -151,7 +151,7 @@
     "wkx": "^0.5.0",
     "xterm": "^4.11.0",
     "xterm-addon-fit": "^0.5.0",
-    "xterm-addon-search": "^0.8.0",
+    "xterm-addon-search": "^0.13.0",
     "xterm-addon-web-links": "^0.4.0",
     "zustand": "^4.4.1"
   },
