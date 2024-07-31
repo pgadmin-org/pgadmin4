@@ -49,7 +49,7 @@ azure-mgmt-subscription==3.1.1
 azure-identity==1.17.1
 google-api-python-client==2.*
 google-auth-oauthlib==1.2.1
-keyring==24.*
+keyring==25.*
 Werkzeug==3.0.*
 typer[all]==0.12.*
 setuptools==71.*; python_version >= '3.12'
