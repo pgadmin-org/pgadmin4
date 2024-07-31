@@ -134,17 +134,17 @@ const columns = [
     key: 'name',
     name: gettext('Object name'),
     width: 250,
-    formatter: ObjectNameFormatter,
+    renderCell: ObjectNameFormatter,
   },{
     key: 'type',
     name: gettext('Type'),
-    width: 30,
-    formatter: TypePathFormatter,
+    width: 70,
+    renderCell: TypePathFormatter,
   },{
     key: 'path',
     name: gettext('Object path'),
     enableSorting: false,
-    formatter: TypePathFormatter,
+    renderCell: TypePathFormatter,
   }
 ];
 
@@ -416,10 +416,10 @@ export default function SearchObjects({nodeData}) {
           columns={columns}
           rows={sortedItems}
           defaultColumnOptions={{
-            enableSorting: true,
-            enableResizing: true
+            sortable: true,
+            resizable: true
           }}
-          headerRowHeight={28}
+          headerRowHeight={35}
           rowHeight={28}
           mincolumnWidthBy={25}
           enableCellSelect={false}

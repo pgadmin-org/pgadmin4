@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import ReactDataGrid, { Row } from 'react-data-grid';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -23,6 +23,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
     backgroundColor: theme.otherVars.qtDatagridBg,
     fontSize: '12px',
     border: 'none',
+    userSelect: 'none',
     '--rdg-selection-color': theme.palette.primary.main,
     '& .rdg-cell': {
       ...theme.mixins.panelBorder.right,
@@ -35,10 +36,17 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
       '&[aria-selected=true]:not([role="columnheader"])': {
         outlineWidth: '0px',
         outlineOffset: '0px',
+      },
+      '& .rdg-cell-value': {
+        height: '100%',
       }
     },
     '& .rdg-header-row .rdg-cell': {
       padding: 0,
+
+      '& .rdg-header-sort-name': {
+        margin: 'auto 0',
+      }
     },
     '& .rdg-header-row': {
       backgroundColor: theme.palette.background.default,
@@ -61,20 +69,6 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
       }
     },
   },
-  '&.ReactGrid-hasSelectColumn': {
-    '& .rdg-cell': {
-      '&[aria-selected=true][aria-colindex="1"]': {
-        outlineWidth: '2px',
-        outlineOffset: '-2px',
-        backgroundColor: theme.otherVars.qtDatagridBg,
-        color: theme.palette.text.primary,
-      }
-    },
-    '& .rdg-row[aria-selected=true] .rdg-cell:nth-of-type(1)': {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.contrastText,
-    }
-  }
 }));
 
 export const GridContextUtils = React.createContext();
@@ -110,12 +104,18 @@ export function CustomRow({inTest=false, ...props}) {
   if(inTest) {
     return <div data-test='test-div' tabIndex={-1} onKeyDown={handleKeyDown}></div>;
   }
-  const onRowClick = (...args)=>{
-    gridUtils.onItemClick?.(props.rowIdx);
-    props.onRowClick?.(...args);
+
+  const onCellClick = (args) => {
+    gridUtils.onItemClick?.(args.row.rowIdx);
+    props.onRowClick?.(args.row);
   };
+
+  const onCellDoubleClick = (args) => {
+    gridUtils.onItemEnter?.(args.row);
+  };
+
   return (
-    <Row {...props} onKeyDown={handleKeyDown} onRowClick={onRowClick} onRowDoubleClick={(row)=>gridUtils.onItemEnter?.(row)}
+    <Row {...props} onKeyDown={handleKeyDown} onCellClick={onCellClick} onCellDoubleClick={onCellDoubleClick}
       selectCell={(row, column)=>props.selectCell(row, column)} aria-selected={isRowSelected}/>
   );
 }
@@ -136,14 +136,23 @@ export default function PgReactDataGrid({gridRef, className, hasSelectColumn=tru
   props.enableCellSelect && finalClassName.push('ReactGrid-cellSelection');
   finalClassName.push(className);
   const valObj = useMemo(() => ({onItemEnter, onItemSelect, onItemClick}), [onItemEnter, onItemSelect, onItemClick]);
+
+  const renderRow = useCallback((key, props) => {
+    return <CustomRow key={key} {...props} />;
+  }, []);
+
+  const renderSortStatus = useCallback((props) => {
+    return <CutomSortIcon {...props} />;
+  }, []);
+
   return (
     <GridContextUtils.Provider value={valObj}>
       <StyledReactDataGrid
         ref={gridRef}
         className={finalClassName.join(' ')}
-        components={{
-          sortIcon: CutomSortIcon,
-          rowRenderer: CustomRow,
+        renderers={{
+          renderRow,
+          renderSortStatus,
           noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>{noRowsIcon}{noRowsText || gettext('No rows found.')}</Box>,
         }}
         {...props}

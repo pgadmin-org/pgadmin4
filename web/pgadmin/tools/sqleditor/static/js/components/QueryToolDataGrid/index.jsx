@@ -9,7 +9,7 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
-import React, {useState, useEffect, useContext, useRef, useLayoutEffect, useMemo} from 'react';
+import React, {useState, useEffect, useContext, useRef, useLayoutEffect, useMemo, useCallback} from 'react';
 import {Row, useRowSelection} from 'react-data-grid';
 import LockIcon from '@mui/icons-material/Lock';
 import EditIcon from '@mui/icons-material/Edit';
@@ -74,7 +74,6 @@ function CustomRow(props) {
   const dataGridExtras = useContext(DataGridExtrasContext);
 
   const rowInfoValue = useMemo(()=>({
-    rowIdx: props.rowIdx,
     getCellElement: (colIdx)=>{
       return rowRef.current?.querySelector(`.rdg-cell[aria-colindex="${colIdx+1}"]`);
     }
@@ -114,15 +113,14 @@ function getCopyShortcutHandler(handleCopy) {
   };
 }
 
-function SelectAllHeaderRenderer({onAllRowsSelectionChange, isCellSelected}) {
-  const [checked, setChecked] = useState(false);
+function SelectAllHeaderRenderer({isCellSelected}) {
+  const [isRowSelected, onRowSelectionChange] = useRowSelection();
   const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
   const onClick = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, true, ()=>{
-      setChecked(!checked);
-      onAllRowsSelectionChange(!checked);
+      onRowSelectionChange({ type: 'HEADER', checked: !isRowSelected });
     });
   };
 
@@ -198,24 +196,24 @@ SelectableHeaderRenderer.propTypes = {
 function setEditorFormatter(col) {
   // If grid is editable then add editor else make it readonly
   if (col.cell == 'oid' && col.name == 'oid') {
-    col.editor = null;
-    col.formatter = Formatters.TextFormatter;
+    col.renderEditCell = null;
+    col.renderCell = Formatters.TextFormatter;
   } else if (col.cell == 'Json') {
-    col.editor = Editors.JsonTextEditor;
-    col.formatter = Formatters.TextFormatter;
+    col.renderEditCell = Editors.JsonTextEditor;
+    col.renderCell = Formatters.TextFormatter;
   } else if (['number', 'oid'].indexOf(col.cell) != -1 || ['xid', 'real'].indexOf(col.type) != -1) {
-    col.formatter = Formatters.NumberFormatter;
-    col.editor = Editors.NumberEditor;
+    col.renderCell = Formatters.NumberFormatter;
+    col.renderEditCell = Editors.NumberEditor;
   } else if (col.cell == 'boolean') {
-    col.editor = Editors.CheckboxEditor;
-    col.formatter = Formatters.TextFormatter;
+    col.renderEditCell = Editors.CheckboxEditor;
+    col.renderCell = Formatters.TextFormatter;
   } else if (col.cell == 'binary') {
     // We do not support editing binary data in SQL editor and data grid.
-    col.editor = null;
-    col.formatter = Formatters.BinaryFormatter;
+    col.renderEditCell = null;
+    col.renderCell = Formatters.BinaryFormatter;
   } else {
-    col.editor = Editors.TextEditor;
-    col.formatter = Formatters.TextFormatter;
+    col.renderEditCell = Editors.TextEditor;
+    col.renderCell = Formatters.TextFormatter;
   }
 }
 
@@ -251,7 +249,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   for(const col of retColumns) {
     col.width = getTextWidth(col, rows, canvasContext, columnWidthBy);
     col.resizable = true;
-    col.editorOptions = {
+    col.renderEditCellOptions = {
       commitOnOutsideClick: false,
       onCellKeyDown: (e)=>{
         // global keyboard shortcuts will work now and will open the the editor for the cell once pgAdmin reopens
@@ -276,11 +274,8 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   canvas.remove();
   return retColumns;
 }
-
-function RowNumColFormatter({row, rowKeyGetter, dataChangeStore, onSelectedColumnsChange}) {
-  const {rowIdx} = useContext(RowInfoContext);
+function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelectedColumnsChange}) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
-
 
   let rowKey = rowKeyGetter(row);
   let rownum = rowIdx+1;
@@ -291,7 +286,7 @@ function RowNumColFormatter({row, rowKeyGetter, dataChangeStore, onSelectedColum
   }
   return (<div className='QueryTool-rowNumCell' onClick={()=>{
     onSelectedColumnsChange(new Set());
-    onRowSelectionChange({ row: row, checked: !isRowSelected, isShiftClick: false});
+    onRowSelectionChange({ type: 'ROW', row: row, checked: !isRowSelected, isShiftClick: false});
   }} onKeyDown={()=>{/* already taken care by parent */}}>
     {rownum}
   </div>);
@@ -313,13 +308,13 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColu
   };
 
   for(const [idx, col] of retColumns.entries()) {
-    col.headerRenderer = HeaderRenderer;
+    col.renderHeaderCell = HeaderRenderer;
     col.cellClass = cellClassGetter(col, selectedColumns.has(idx), dataChangeStore, rowKeyGetter);
   }
 
   let rowNumCol = retColumns[0];
-  rowNumCol.headerRenderer = SelectAllHeaderRenderer;
-  rowNumCol.formatter = (props)=>{
+  rowNumCol.renderHeaderCell = SelectAllHeaderRenderer;
+  rowNumCol.renderCell = (props)=>{
     return <RowNumColFormatter {...props} rowKeyGetter={rowKeyGetter} dataChangeStore={dataChangeStore} onSelectedColumnsChange={onSelectedColumnsChange} />;
   };
 
@@ -372,6 +367,10 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
   }
 
+  const renderCustomRow = useCallback((key, props) => {
+    return <CustomRow key={key} {...props} />;
+  }, []);
+
   const dataGridExtras = useMemo(()=>({
     onSelectedCellChange, handleCopy
   }), [onSelectedCellChange]);
@@ -399,8 +398,8 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         enableCellSelect={true}
         onCopy={handleCopy}
         onMultiCopy={handleCopy}
-        components={{
-          rowRenderer: CustomRow,
+        renderers={{
+          renderRow: renderCustomRow,
         }}
         enableRangeSelection={true}
         rangeLeftBoundaryColIdx={0}
