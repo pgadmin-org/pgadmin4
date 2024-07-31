@@ -42,7 +42,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
   selectionChange = null, NodeComponent = null, ...props }) {
 
   let treeData = data;
-  NodeComponent = NodeComponent || DefaultNode;
+  const Node = NodeComponent ?? DefaultNode;
   const treeObj = useRef();
   const treeContainerRef = useRef();
   const [selectedCheckBoxNodes, setSelectedCheckBoxNodes] = React.useState([]);
@@ -88,7 +88,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
                 {...props}
               >
                 {
-                  (props) => <NodeComponent onNodeSelectionChange={onSelectionChange} hasCheckbox={hasCheckbox} {...props} />
+                  (props) => <Node onNodeSelectionChange={onSelectionChange} hasCheckbox={hasCheckbox} {...props} />
                 }
               </Tree>
             )}
