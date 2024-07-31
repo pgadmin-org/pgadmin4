@@ -37,6 +37,7 @@ and modify the values for the following parameters:
     The default value is REMOTE_USER and the possible values are REMOTE_USER,
     HTTP_X_FORWARDED_USER, X-Forwarded-User."
 
+.. note:: If REMOTE_USER does not work, try replacing it with either REMOTE-USER or Remote-user.
 
 Master Password
 ===============
