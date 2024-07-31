@@ -42,7 +42,7 @@ Authlib==1.3.*
 pyotp==2.*
 qrcode==7.*
 boto3==1.34.*
-urllib3==1.26.*
+urllib3==2.2.*
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.1.1
 azure-mgmt-subscription==3.1.1
