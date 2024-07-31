@@ -35,12 +35,9 @@ const StyledBox = styled(Box)(({theme}) => ({
   fontSize: '13px',
   '--rdg-background-color': theme.palette.default.main,
   '--rdg-selection-color': theme.palette.primary.main,
-  '& .ResultGridComponent-gridPanel': {
-    '--rdg-background-color': theme.palette.default.main + ' !important',
-    '&.ResultGridComponent-grid': {
-      fontSize: '13px',
-      '--rdg-selection-color': 'none'
-    },
+  '& .ResultGridComponent-grid.ReactGrid-root': {
+    fontSize: '13px',
+    '--rdg-selection-color': 'none',
     '& .rdg-header-row': {
       backgroundColor: theme.palette.background.default,
       '& .rdg-cell': {
@@ -57,13 +54,29 @@ const StyledBox = styled(Box)(({theme}) => ({
     },
     '& .rdg-row': {
       backgroundColor: theme.palette.background.default,
-      '&[aria-selected=true]': {
-        backgroundColor: theme.palette.primary.light,
-        color: theme.otherVars.qtDatagridSelectFg,
-        '& .rdg-cell:nth-of-type(1)': {
-          backgroundColor: 'transparent',
-          outlineColor: 'transparent',
-          color: theme.palette.primary.contrastText,
+      '&[aria-selected=false]': {
+        '&.ResultGridComponent-selectedRow': {
+          paddingLeft: '0.5rem',
+          backgroundColor: theme.palette.primary.light,
+        },
+        '&.ResultGridComponent-source': {
+          backgroundColor: theme.otherVars.schemaDiff.sourceRowColor,
+          color: theme.otherVars.schemaDiff.diffSelectFG,
+          paddingLeft: '0.5rem',
+        },
+        '&.ResultGridComponent-target': {
+          backgroundColor: theme.otherVars.schemaDiff.targetRowColor,
+          color: theme.otherVars.schemaDiff.diffSelectFG,
+          paddingLeft: '0.5rem',
+        },
+        '&.ResultGridComponent-different': {
+          backgroundColor: theme.otherVars.schemaDiff.diffRowColor,
+          color: theme.otherVars.schemaDiff.diffSelectFG,
+          paddingLeft: '0.5rem',
+        },
+        '&.ResultGridComponent-identical': {
+          paddingLeft: '0.5rem',
+          color: theme.otherVars.schemaDiff.diffColorFg,
         },
       },
       '& .rdg-cell': {
@@ -74,19 +87,15 @@ const StyledBox = styled(Box)(({theme}) => ({
         ...theme.mixins.panelBorder.bottom,
         '&[aria-colindex="1"]': {
           padding: 0,
+          textAlign: 'center',
         },
-        '&[aria-selected=true]:not([role="columnheader"]):not([aria-colindex="1"])': {
-          outlineWidth: '0',
-          outlineOffset: '-1px',
-          color: theme.otherVars.qtDatagridSelectFg,
-        },
-        '&[aria-selected=true][aria-colindex="1"]': {
-          outlineWidth: 0,
-          backgroundColor: theme.palette.default.main + ' !important'
+        '& .ResultGridComponent-rowIcon': {
+          display: 'inline-block !important',
+          height: '1.3rem',
+          width: '1.3rem'
         },
         '& .ResultGridComponent-cellExpand': {
-          display: 'table',
-          blockSize: '100%',
+          width: '100%',
           '& > span': {
             verticalAlign: 'middle',
             cursor: 'pointer',
@@ -97,11 +106,7 @@ const StyledBox = styled(Box)(({theme}) => ({
           },
           '& .ResultGridComponent-subRow': {
             paddingLeft: '1rem',
-            '& .ResultGridComponent-rowIcon': {
-              display: 'inline-block !important',
-              height: '1.3rem',
-              width: '1.3rem'
-            },
+
             '& .ResultGridComponent-count': {
               display: 'inline-block !important',
               '& .ResultGridComponent-countLabel': {
@@ -115,29 +120,6 @@ const StyledBox = styled(Box)(({theme}) => ({
             }
           }
         },
-        '& .ResultGridComponent-selectedRow': {
-          paddingLeft: '0.5rem',
-          backgroundColor: theme.palette.primary.light,
-        },
-        '& .ResultGridComponent-source': {
-          backgroundColor: theme.otherVars.schemaDiff.sourceRowColor,
-          color: theme.otherVars.schemaDiff.diffSelectFG,
-          paddingLeft: '0.5rem',
-        },
-        '& .ResultGridComponent-target': {
-          backgroundColor: theme.otherVars.schemaDiff.targetRowColor,
-          color: theme.otherVars.schemaDiff.diffSelectFG,
-          paddingLeft: '0.5rem',
-        },
-        '& .ResultGridComponent-different': {
-          backgroundColor: theme.otherVars.schemaDiff.diffRowColor,
-          color: theme.otherVars.schemaDiff.diffSelectFG,
-          paddingLeft: '0.5rem',
-        },
-        '& .ResultGridComponent-identical': {
-          paddingLeft: '0.5rem',
-          color: theme.otherVars.schemaDiff.diffColorFg,
-        },
         '& .ResultGridComponent-recordRow': {
           marginLeft: '2.7rem',
           height: '1.3rem',
@@ -146,15 +128,9 @@ const StyledBox = styled(Box)(({theme}) => ({
           marginRight: '0.3rem',
           paddingLeft: '0.5rem',
         },
-        '& .ResultGridComponent-selectCell': {
+        '&.ResultGridComponent-selectCell': {
           padding: '0 0.3rem'
         },
-        '& .ResultGridComponent-selectedRowCheckBox': {
-          backgroundColor: theme.otherVars.schemaDiff.diffSelCheckbox,
-        },
-        '& .ResultGridComponent-selChBox': {
-          paddingLeft: 0,
-        }
       }
     },
     '& .ResultGridComponent-noRowsIcon': {
@@ -456,33 +432,31 @@ function selectHeaderRenderer({selectedRows, setSelectedRows, rootSelection, set
   Cell.displayName = 'Cell';
   return Cell;
 }
-function selectFormatter({selectedRows, setSelectedRows, setRootSelection, activeRow, setActiveRow, allRowIds, selectedRowIds, selectedResultRows, deselectResultRows, getStyleClassName}) {
+function selectFormatter({selectedRows, setSelectedRows, setRootSelection, setActiveRow, allRowIds, selectedRowIds, selectedResultRows, deselectResultRows}) {
   const Cell = ({ row, isCellSelected }) => {
     isCellSelected && setActiveRow(row.id);
     return (
-      <Box className={!row?.children && getStyleClassName(row, selectedRows, isCellSelected, activeRow, true) +  ' ResultGridComponent-selChBox'}>
-        <InputCheckbox
-          className='ResultGridComponent-selectCell'
-          cid={`${row.id}`}
-          value={selectedRows.includes(`${row.id}`)}
-          size='small'
-          onChange={(e) => {
-            setSelectedRows((prev) => {
-              let tempSelectedRows = [...prev];
-              if (!prev.includes(e.target.id)) {
-                selectedResultRows(row, tempSelectedRows);
-                tempSelectedRows.length === allRowIds.length && setRootSelection(true);
-              } else {
-                deselectResultRows(row, tempSelectedRows);
-              }
-              tempSelectedRows = new Set(tempSelectedRows);
-              selectedRowIds([...tempSelectedRows]);
-              return [...tempSelectedRows];
-            });
-          }
-          }
-        ></InputCheckbox>
-      </Box>
+      <InputCheckbox
+        className='ResultGridComponent-selectCell'
+        cid={`${row.id}`}
+        value={selectedRows.includes(`${row.id}`)}
+        size='small'
+        onChange={(e) => {
+          setSelectedRows((prev) => {
+            let tempSelectedRows = [...prev];
+            if (!prev.includes(e.target.id)) {
+              selectedResultRows(row, tempSelectedRows);
+              tempSelectedRows.length === allRowIds.length && setRootSelection(true);
+            } else {
+              deselectResultRows(row, tempSelectedRows);
+            }
+            tempSelectedRows = new Set(tempSelectedRows);
+            selectedRowIds([...tempSelectedRows]);
+            return [...tempSelectedRows];
+          });
+        }
+        }
+      ></InputCheckbox>
     );
   };
 
@@ -494,7 +468,7 @@ function selectFormatter({selectedRows, setSelectedRows, setRootSelection, activ
   return Cell;
 }
 
-function expandFormatter({activeRow, setActiveRow, filterParams, gridData, selectedRows, dispatch, getStyleClassName}) {
+function expandFormatter({setActiveRow, filterParams, gridData, selectedRows, dispatch}) {
   const Cell = ({ row, isCellSelected })=>{
     const hasChildren = row.children !== undefined;
     isCellSelected && setActiveRow(row.id);
@@ -510,15 +484,12 @@ function expandFormatter({activeRow, setActiveRow, filterParams, gridData, selec
             onCellExpand={() => dispatch({ id: row.id, type: 'toggleSubRow', filterParams: filterParams, gridData: gridData, selectedRows: selectedRows })}
           />
         )}
-        <div className="rdg-cell-value">
-
-          {!hasChildren && (
-            <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
-              <span className={'ResultGridComponent-recordRow ' + row.icon}></span>
-              {row.label}
-            </Box>
-          )}
-        </div>
+        {!hasChildren && (
+          <Box>
+            <span className={'ResultGridComponent-recordRow ' + row.icon}></span>
+            {row.label}
+          </Box>
+        )}
       </>
     );
   };
@@ -531,12 +502,12 @@ function expandFormatter({activeRow, setActiveRow, filterParams, gridData, selec
   return Cell;
 }
 
-function resultFormatter({selectedRows, activeRow, setActiveRow, getStyleClassName}) {
+function resultFormatter({setActiveRow}) {
   const Cell = ({ row, isCellSelected })=>{
     isCellSelected && setActiveRow(row.id);
 
     return (
-      <Box className={getStyleClassName(row, selectedRows, isCellSelected, activeRow)}>
+      <Box>
         {row.status}
       </Box>
     );
@@ -648,10 +619,10 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
     }
   }
 
-  function getStyleClassName(row, selectedRowIds, isCellSelected, activeRowId, isCheckbox = false) {
+  function getStyleClassName(row, selectedRowIds, activeRowId) {
     let clsName = null;
-    if (selectedRowIds.includes(`${row.id}`) || isCellSelected || row.id == activeRowId) {
-      clsName = isCheckbox ? 'ResultGridComponent-selectedRowCheckBox' : 'ResultGridComponent-selectedRow';
+    if (selectedRowIds.includes(`${row.id}`) || row.id == activeRowId) {
+      clsName = 'ResultGridComponent-selectedRow';
     } else if (row.status == FILTER_NAME.DIFFERENT) {
       clsName = 'ResultGridComponent-different';
     } else if (row.status == FILTER_NAME.SOURCE_ONLY) {
@@ -671,14 +642,14 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
       ...SelectColumn,
       minWidth: 30,
       width: 30,
-      headerRenderer: selectHeaderRenderer({
+      renderHeaderCell: selectHeaderRenderer({
         selectedRows, setSelectedRows, rootSelection,
         setRootSelection, allRowIds, selectedRowIds
       }),
-      formatter: selectFormatter({
+      renderCell: selectFormatter({
         selectedRows, setSelectedRows, setRootSelection,
-        activeRow, setActiveRow, allRowIds, selectedRowIds,
-        selectedResultRows, deselectResultRows, getStyleClassName
+        setActiveRow, allRowIds, selectedRowIds,
+        selectedResultRows, deselectResultRows
       }),
     },
     {
@@ -692,15 +663,15 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
 
         return 1;
       },
-      formatter: expandFormatter({
-        activeRow, setActiveRow, filterParams, gridData,
-        selectedRows, dispatch, getStyleClassName
+      renderCell: expandFormatter({
+        setActiveRow, filterParams, gridData,
+        selectedRows, dispatch
       }),
     },
     {
       key: 'status',
       name: 'Comparison Result',
-      formatter: resultFormatter({selectedRows, activeRow, setActiveRow, getStyleClassName}),
+      renderCell: resultFormatter({setActiveRow}),
     },
   ];
 
@@ -768,7 +739,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
           <PgReactDataGrid
             id="schema-diff-result-grid"
             columns={columns} rows={rows}
-            className={'ResultGridComponent-gridPanel ResultGridComponent-grid'}
+            className='ResultGridComponent-grid'
             treeDepth={2}
             enableRowSelect={true}
             defaultColumnOptions={{
@@ -782,6 +753,9 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
             direction={'vertical-lr'}
             noRowsText={gettext('No difference found')}
             noRowsIcon={<InfoIcon className='ResultGridComponent-noRowsIcon' />}
+            rowClass={(row) =>
+              getStyleClassName(row, selectedRows, activeRow)
+            }
           />
           :
           <>
