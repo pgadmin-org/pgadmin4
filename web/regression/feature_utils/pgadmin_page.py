@@ -124,9 +124,6 @@ class PgadminPage:
             "name", server_config['name'], input_keys=True)
         self.find_by_xpath(
             PropertyDialogueLocators.server_connection_tab).click()
-        # Wait for the 'Connection' tab to be rendered.
-        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(
-            (By.XPATH, "//input[not(@readonly) and @name='host']")))
         self.fill_input_by_field_name(
             "host", server_config['host'], input_keys=True)
         self.fill_input_by_field_name(
@@ -854,23 +851,27 @@ class PgadminPage:
         self.driver.execute_script(
             "arguments[0].dispatchEvent(new Event('blur'));", field)
 
-    def fill_input(self, field, field_content, input_keys=False,
-                   key_after_input=Keys.ARROW_DOWN):
-        try:
-            attempt = 0
-            for attempt in range(0, 3):
+    def fill_input(
+        self, field, field_content, input_keys=False,
+        key_after_input=Keys.ARROW_DOWN
+    ):
+        for attempt in range(0, 3):
+            try:
                 field.click()
                 break
-        except Exception as e:
-            time.sleep(.2)
-            if attempt == 2:
-                raise e
+            except Exception as e:
+                time.sleep(.2)
+                if attempt == 2:
+                    raise e
+
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:
-            backspaces = [Keys.BACKSPACE] * len(field.get_attribute('value'))
-            field.send_keys(backspaces)
-            field.send_keys(str(field_content))
-            # self.wait_for_input_by_element(field, field_content)
+            # Clear the existing content first
+            field.sendKeys(Keys.CONTROL + "a")
+            field.sendKeys(Keys.DELETE)
+
+            # Send the keys one by one.
+            [field.send_keys(c) for c in str(field_content)]
         else:
             self.driver.execute_script("arguments[0].value = arguments[1]",
                                        field, field_content)
