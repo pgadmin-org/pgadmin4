@@ -262,9 +262,9 @@ _.extend(pgBrowser.keyboardNavigation, {
       node_obj, {action: 'create', item: tree.i}
     );
   },
-  bindSubMenuDelete: function() {
+  bindSubMenuDelete: function(event) {
     const tree = this.getTreeDetails();
-    if (!tree.d || pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type].collection_node === true || document.activeElement.className !== 'file-tree')
+    if (!tree.d || pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type].collection_node === true || !event?.target?.classList?.contains('file-tree'))
       return;
 
     // Call delete object callback
