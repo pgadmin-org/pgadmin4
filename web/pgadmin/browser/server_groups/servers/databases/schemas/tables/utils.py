@@ -701,10 +701,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
         if 'acl' in data:
+            driver = get_driver(PG_DEFAULT_DRIVER)
             data.update({'revoke_all': []})
             for acl in data['acl']:
                 if len(acl['privileges']) > 0 and len(acl['privileges']) < 7:
-                    data['revoke_all'].append(acl['grantee'])
+                    data['revoke_all'].append(
+                        driver.qtIdent(None, acl['grantee'])
+                        if acl['grantee'] != 'PUBLIC' else 'PUBLIC')
 
         # if table is partitions then
         if 'relispartition' in data and data['relispartition']:

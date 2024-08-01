@@ -5389,7 +5389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.1.0, clsx@npm:^2.1.1":
+"clsx@npm:^2.0.0, clsx@npm:^2.1.0, clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
@@ -13251,15 +13251,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#200d2f5e02de694e3e9ffbe177c279bc40240fb8":
-  version: 7.0.0-beta.14
-  resolution: "react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#commit=200d2f5e02de694e3e9ffbe177c279bc40240fb8"
+"react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#4e10a5a327ff58198ac83c7b0c62549b20b78ae5":
+  version: 7.0.0-beta.44
+  resolution: "react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#commit=4e10a5a327ff58198ac83c7b0c62549b20b78ae5"
   dependencies:
-    clsx: ^1.1.1
+    clsx: ^2.0.0
   peerDependencies:
-    react: ^16.14 || ^17.0 || ^18.0
-    react-dom: ^16.14 || ^17.0 || ^18.0
-  checksum: ee77fcd8b689e664824f24ed91c82263158e5fb77214f8b5e6bc88d13deb30bd8bd381e6901bc508f1152745dbb8b858f57d605f13bb936275137d01e81a0ae7
+    react: ^18.0 || ^19.0
+    react-dom: ^18.0 || ^19.0
+  checksum: 75e8910f9b69c60c28223e82647cb8323e08d13d1b56eec94e918e7feadc50f5f4257205a3cd628b9fba019577c3ffab62bdecda7d950e7647ba75988de28261
   languageName: node
   linkType: hard
 
@@ -14038,7 +14038,7 @@ __metadata:
     react-arborist: ^3.2.0
     react-aspen: ^1.1.0
     react-checkbox-tree: ^1.7.2
-    react-data-grid: "https://github.com/pgadmin-org/react-data-grid.git#200d2f5e02de694e3e9ffbe177c279bc40240fb8"
+    react-data-grid: "https://github.com/pgadmin-org/react-data-grid.git#4e10a5a327ff58198ac83c7b0c62549b20b78ae5"
     react-dnd: ^16.0.1
     react-dnd-html5-backend: ^16.0.1
     react-dom: ^18.2.0

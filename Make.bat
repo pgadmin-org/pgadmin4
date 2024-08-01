@@ -217,6 +217,8 @@ REM Main build sequence Ends
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
+    CALL yarn set version berry || EXIT /B 1
+    CALL yarn set version 3 || EXIT /B 1
     CALL yarn install || EXIT /B 1
     CALL npm rebuild || EXIT /B 1
 
@@ -266,13 +268,17 @@ REM Main build sequence Ends
 
     COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\resources\app\" > nul || EXIT /B 1
     CD "%BUILDROOT%\runtime\resources\app\"
-    CALL yarn install --production=true || EXIT /B 1
+
+    CALL yarn set version berry || EXIT /B 1
+    CALL yarn set version 3 || EXIT /B 1
+    CALL yarn plugin import workspace-tools || EXIT /B 1
+    CALL yarn workspaces focus --production || EXIT /B 1
 
     ECHO Downloading Electron to %TMPDIR%...
     REM Get a fresh copy of electron.
 
     REM WGET
-    FOR /f "tokens=2 delims='" %%i IN ('yarn info electron ^| findstr "latest: "') DO SET "ELECTRON_VERSION=%%i"
+    FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
@@ -286,6 +292,16 @@ REM Main build sequence Ends
     REM XCOPY END
 
     MOVE "%BUILDROOT%\runtime\electron.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
+
+    ECHO Downloading rcedit.exe...
+    wget https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe -O "%TMPDIR%\rcedit-x64.exe"
+
+    ECHO Replacing executable icon, description, version...
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-icon "%WD%\pkg\win32\Resources\pgAdmin4.ico"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "FileDescription" "%APP_NAME%"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
+    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
+
     ECHO Attempting to sign the pgAdmin4.exe...
     CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
     IF %ERRORLEVEL% NEQ 0 (
@@ -295,15 +311,6 @@ REM Main build sequence Ends
         ECHO ************************************************************
         PAUSE
     )
-
-    ECHO Replacing executable icon...
-
-    ECHO Downloading rcedit.exe...
-    wget https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe -O "%TMPDIR%\rcedit-x64.exe"
-    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-icon "%WD%\pkg\win32\Resources\pgAdmin4.ico"
-    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "FileDescription" "%APP_NAME%"
-    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
-    %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
 
     ECHO Staging PostgreSQL components...
     COPY "%PGADMIN_POSTGRES_DIR%\bin\libpq.dll" "%BUILDROOT%\runtime" > nul || EXIT /B 1
@@ -357,6 +364,8 @@ REM Main build sequence Ends
 :GENERATE_SBOM
     ECHO Generating SBOM...
     CALL syft "%BUILDROOT%" -o cyclonedx-json > "%BUILDROOT%\sbom.json"
+
+    EXIT /B 0
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...

@@ -140,7 +140,7 @@ _build_runtime() {
       ELECTRON_ARCH="arm64"
     fi
 
-    ELECTRON_VERSION=$(yarn info electron | grep latest | awk -F "'" '{ print $2}')
+    ELECTRON_VERSION="$(npm info electron version)"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
@@ -171,7 +171,15 @@ _build_runtime() {
     cp -r "${SOURCEDIR}/runtime/src" "${BUNDLEDIR}/resources/app/src"
 
     cp "${SOURCEDIR}/runtime/package.json" "${BUNDLEDIR}/resources/app"
-    yarn --cwd "${BUNDLEDIR}/resources/app" install --production=true
+
+    # Install the runtime node_modules
+    pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
+        yarn set version berry
+        yarn set version 3
+        yarn plugin import workspace-tools
+        yarn workspaces focus --production
+
+    popd > /dev/null || exit
 
     # Create the icon
     mkdir -p "${DESKTOPROOT}/usr/share/icons/hicolor/128x128/apps/"
@@ -212,6 +220,8 @@ _copy_code() {
     find "${SERVERROOT}/usr/${APP_NAME}/venv/" -name "_tkinter*" -print0 | xargs -0 rm -rf
 
     pushd "${SOURCEDIR}/web" > /dev/null || exit
+        yarn set version berry
+        yarn set version 3
         yarn install
         yarn run bundle
     popd > /dev/null || exit

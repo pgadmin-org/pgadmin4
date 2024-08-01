@@ -70,8 +70,9 @@ export function FileNameEditor({row, column, onRowChange, onClose}) {
   }, []);
 
   const onKeyDown = (e)=>{
-    if(e.code === 'Tab' || e.code === 'Enter') {
+    if(e.code === 'Tab' || e.code == 'Escape' || e.code == 'Enter') {
       e.preventDefault();
+      e.stopPropagation();
       onClose();
     }
   };
@@ -116,20 +117,16 @@ const columns = [
   {
     key: 'Filename',
     name: gettext('Name'),
-    formatter: FileNameFormatter,
-    editor: FileNameEditor,
-    editorOptions: {
-      editOnClick: false,
-      onCellKeyDown: (e)=>e.preventDefault(),
-    }
+    renderCell: FileNameFormatter,
+    renderEditCell: FileNameEditor,
   },{
     key: 'Properties.DateModified',
     name: gettext('Date Modified'),
-    formatter: ({row})=><>{row.Properties?.['Date Modified']}</>
+    renderCell: ({row})=><>{row.Properties?.['Date Modified']}</>
   },{
     key: 'Properties.Size',
     name: gettext('Size'),
-    formatter: ({row})=><>{row.file_type != 'dir' && row.Properties?.['Size']}</>
+    renderCell: ({row})=><>{row.file_type != 'dir' && row.Properties?.['Size']}</>
   }
 ];
 
@@ -161,7 +158,7 @@ export default function ListView({items, operation, ...props}) {
         sortable: true,
         resizable: true
       }}
-      headerRowHeight={28}
+      headerRowHeight={35}
       rowHeight={28}
       mincolumnWidthBy={25}
       enableCellSelect={false}

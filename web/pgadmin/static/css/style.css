@@ -13,4 +13,6 @@
 @import 'node_modules/rc-dock/dist/rc-dock.css';
 @import 'node_modules/@szhsin/react-menu/dist/index.css';
 
+@import 'node_modules/react-data-grid/lib/styles.css';
+
 @import './pgadmin.css';
