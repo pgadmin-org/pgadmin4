@@ -26,6 +26,7 @@ CALL :CLEAN || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
+CALL :SIGN_PGADMIN_EXE || EXIT /B 1
 CALL :GENERATE_SBOM || EXIT /B 1
 CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :SIGN_INSTALLER || EXIT /B 1
@@ -357,6 +358,21 @@ REM Main build sequence Ends
 :GENERATE_SBOM
     ECHO Generating SBOM...
     CALL syft "%BUILDROOT%" -o cyclonedx-json > "%BUILDROOT%\sbom.json"
+
+    EXIT /B 0
+
+:SIGN_PGADMIN_EXE
+    ECHO Attempting to sign the pgAdmin4 exe..
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
+    IF %ERRORLEVEL% NEQ 0 (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * Failed to sign the pgAdmin4 exe...
+        ECHO ************************************************************
+        PAUSE
+    )
+
+    EXIT /B 0
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
