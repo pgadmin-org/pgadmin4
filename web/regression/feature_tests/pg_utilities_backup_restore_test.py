@@ -304,7 +304,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                         existing_path = path_input.get_property("value")
                         if existing_path != default_binary_path[serv]:
                             path_already_set = False
-                            self.page.fill_input(path_input, default_binary_path[serv])
+                            self.page.fill_input(
+                                path_input, default_binary_path[serv]
+                            )
                     else:
                         print('Binary path Key is Incorrect')
                 else:
