@@ -867,9 +867,7 @@ class PgadminPage:
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:
             # Clear the existing content first
-            field.send_keys(Keys.CONTROL + "a")
-            field.send_keys(Keys.DELETE)
-
+            self.clear_edit_box(field)
             # Send the keys one by one.
             [field.send_keys(c) for c in str(field_content)]
         else:
