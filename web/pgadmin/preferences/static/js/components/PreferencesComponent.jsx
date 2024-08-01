@@ -534,9 +534,7 @@ export default function PreferencesComponent({ ...props }) {
         );
       });
       let requires_refresh = false;
-      for (const [key, value] of Object.entries(data.current)) {
-        // For the 'id' attribute, there won't be any data.
-        if (!value) continue;
+      for (const [key] of Object.entries(data.current)) {
         let pref = preferencesStore.getPreferenceForId(Number(key));
         requires_refresh = checkRefreshRequired(pref, requires_refresh);
       }

@@ -330,12 +330,18 @@ class SchemaState extends DepListener {
 
       // Remove internal '__changeId' attribute.
       delete dataDiff.__changeId;
+      // In case of 'non-edit' mode, changes are always there.
+      state.changes = dataDiff;
     } else if (hasDataChanged) {
       const idAttr = schema.idAttribute;
-      dataDiff[idAttr] = state.initData[idAttr];
+      const idVal = state.initData[idAttr];
+      // Append 'idAttr' only if it actually exists
+      if (idVal) dataDiff[idAttr] = idVal;
+      state.changes = dataDiff;
+    } else {
+      state.changes = null;
     }
 
-    state.changes = hasDataChanged ? dataDiff : null;
 
     state.data = sessData;
 

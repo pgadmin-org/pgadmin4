@@ -299,4 +299,3 @@ SchemaDialogView.propTypes = {
   Notifier: PropTypes.object,
   checkDirtyOnEnableSave: PropTypes.bool,
 };
-
