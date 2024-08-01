@@ -278,7 +278,7 @@ REM Main build sequence Ends
     REM Get a fresh copy of electron.
 
     REM WGET
-    FOR /f "tokens=2 delims='" %%i IN ('yarn info electron ^| findstr "latest: "') DO SET "ELECTRON_VERSION=%%i"
+    FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW

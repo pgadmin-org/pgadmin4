@@ -140,7 +140,7 @@ _build_runtime() {
       ELECTRON_ARCH="arm64"
     fi
 
-    ELECTRON_VERSION=$(yarn info electron | grep latest | awk -F "'" '{ print $2}')
+    ELECTRON_VERSION="$(npm info electron version)"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
