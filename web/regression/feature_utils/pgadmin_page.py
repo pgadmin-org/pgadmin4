@@ -851,23 +851,25 @@ class PgadminPage:
         self.driver.execute_script(
             "arguments[0].dispatchEvent(new Event('blur'));", field)
 
-    def fill_input(self, field, field_content, input_keys=False,
-                   key_after_input=Keys.ARROW_DOWN):
-        try:
-            attempt = 0
-            for attempt in range(0, 3):
+    def fill_input(
+        self, field, field_content, input_keys=False,
+        key_after_input=Keys.ARROW_DOWN
+    ):
+        for attempt in range(0, 3):
+            try:
                 field.click()
                 break
-        except Exception as e:
-            time.sleep(.2)
-            if attempt == 2:
-                raise e
+            except Exception as e:
+                time.sleep(.2)
+                if attempt == 2:
+                    raise e
+
         # Use send keys if input_keys true, else use javascript to set content
         if input_keys:
-            backspaces = [Keys.BACKSPACE] * len(field.get_attribute('value'))
-            field.send_keys(backspaces)
-            field.send_keys(str(field_content))
-            # self.wait_for_input_by_element(field, field_content)
+            # Clear the existing content first
+            self.clear_edit_box(field)
+            # Send the keys one by one.
+            [field.send_keys(c) for c in str(field_content)]
         else:
             self.driver.execute_script("arguments[0].value = arguments[1]",
                                        field, field_content)

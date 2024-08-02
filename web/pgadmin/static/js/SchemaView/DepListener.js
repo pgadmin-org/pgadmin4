@@ -7,11 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 import _ from 'lodash';
-import React from 'react';
 
-export const DepListenerContext = React.createContext();
 
-export default class DepListener {
+export class DepListener {
   constructor() {
     this._depListeners = [];
   }

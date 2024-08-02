@@ -491,7 +491,9 @@ export default function PreferencesComponent({ ...props }) {
   function savePreferences(data, initVal) {
     let _data = [];
     for (const [key, value] of Object.entries(data.current)) {
-      let _metadata = prefSchema.current.schemaFields.filter((el) => { return el.id == key; });
+      let _metadata = prefSchema.current.schemaFields.filter(
+        (el) => { return el.id == key; }
+      );
       if (_metadata.length > 0) {
         let val = getCollectionValue(_metadata, value, initVal);
         _data.push({
@@ -525,7 +527,11 @@ export default function PreferencesComponent({ ...props }) {
       data: save_data,
     }).then(() => {
       let requiresTreeRefresh = save_data.some((s)=>{
-        return s.name=='show_system_objects'||s.name=='show_empty_coll_nodes'||s.name.startsWith('show_node_')||s.name=='hide_shared_server'||s.name=='show_user_defined_templates';
+        return (
+          s.name=='show_system_objects' || s.name=='show_empty_coll_nodes' ||
+          s.name.startsWith('show_node_') || s.name=='hide_shared_server' ||
+          s.name=='show_user_defined_templates'
+        );
       });
       let requires_refresh = false;
       for (const [key] of Object.entries(data.current)) {
@@ -536,11 +542,15 @@ export default function PreferencesComponent({ ...props }) {
       if (requiresTreeRefresh) {
         pgAdmin.Browser.notifier.confirm(
           gettext('Object explorer refresh required'),
-          gettext('An object explorer refresh is required. Do you wish to refresh it now?'),
+          gettext(
+            'An object explorer refresh is required. Do you wish to refresh it now?'
+          ),
           function () {
             pgAdmin.Browser.tree.destroy().then(
               () => {
-                pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:destroyed', undefined, undefined);
+                pgAdmin.Browser.Events.trigger(
+                  'pgadmin-browser:tree:destroyed', undefined, undefined
+                );
                 return true;
               }
             );

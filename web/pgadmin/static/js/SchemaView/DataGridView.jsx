@@ -10,12 +10,8 @@
 /* The DataGridView component is based on react-table component */
 
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { PgIconButton } from '../components/Buttons';
 import AddIcon from '@mui/icons-material/AddOutlined';
-import { MappedCellControl } from './MappedControl';
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,103 +20,41 @@ import {
   getExpandedRowModel,
   flexRender,
 } from '@tanstack/react-table';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
-import gettext from 'sources/gettext';
-import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
-import FormView, { getFieldMetaData } from './FormView';
-import CustomPropTypes from 'sources/custom_prop_types';
-import { evalFunc } from 'sources/utils';
-import { DepListenerContext } from './DepListener';
-import { useIsMounted } from '../custom_hooks';
-import { InputText } from '../components/FormComponents';
-import { usePgAdmin } from '../BrowserComponent';
-import { requestAnimationAndFocus } from '../utils';
-import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader,
+import { usePgAdmin } from 'sources/BrowserComponent';
+import { PgIconButton } from 'sources/components/Buttons';
+import {
+  PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader,
   PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent,
-  getDeleteCell, getEditCell, getReorderCell } from '../components/PgReactTableStyled';
-import { useVirtualizer } from '@tanstack/react-virtual';
+  getDeleteCell, getEditCell, getReorderCell
+} from 'sources/components/PgReactTableStyled';
+import CustomPropTypes from 'sources/custom_prop_types';
+import { useIsMounted } from 'sources/custom_hooks';
+import { InputText } from 'sources/components/FormComponents';
+import gettext from 'sources/gettext';
+import { evalFunc, requestAnimationAndFocus  } from 'sources/utils';
 
-const StyledBox = styled(Box)(({theme}) => ({
-  '& .DataGridView-grid': {
-    ...theme.mixins.panelBorder,
-    backgroundColor: theme.palette.background.default,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: 0,
-    height: '100%',
-    '& .DataGridView-gridHeader': {
-      display: 'flex',
-      ...theme.mixins.panelBorder.bottom,
-      backgroundColor: theme.otherVars.headerBg,
-      '& .DataGridView-gridHeaderText': {
-        padding: theme.spacing(0.5, 1),
-        fontWeight: theme.typography.fontWeightBold,
-      },
-      '& .DataGridView-gridControls': {
-        marginLeft: 'auto',
-        '& .DataGridView-gridControlsButton': {
-          border: 0,
-          borderRadius: 0,
-          ...theme.mixins.panelBorder.left,
-        },
-      },
-    },
-    '& .DataGridView-table': {
-      '&.pgrt-table': {
-        '& .pgrt-body':{
-          '& .pgrt-row': {
-            backgroundColor: theme.otherVars.emptySpaceBg,
-            '& .pgrt-row-content':{
-              '& .pgrd-row-cell': {
-                height: 'auto',
-                padding: theme.spacing(0.5),
-                '&.btn-cell, &.expanded-icon-cell': {
-                  padding: '2px 0px'
-                },
-              }
-            },
-          }
-        }
-      }
-    },
-  },
-  '& .DataGridView-tableRowHovered': {
-    position: 'relative',
-    '& .hover-overlay': {
-      backgroundColor: theme.palette.primary.light,
-      position: 'absolute',
-      inset: 0,
-      opacity: 0.75,
-    }
-  },
-  '& .DataGridView-resizer': {
-    display: 'inline-block',
-    width: '5px',
-    height: '100%',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    transform: 'translateX(50%)',
-    zIndex: 1,
-    touchAction: 'none',
-  },
-  '& .DataGridView-expandedForm': {
-    border: '1px solid '+theme.palette.grey[400],
-  },
-  '& .DataGridView-expandedIconCell': {
-    backgroundColor: theme.palette.grey[400],
-    borderBottom: 'none',
-  }
-}));
+import FormView from './FormView';
+import { MappedCellControl } from './MappedControl';
+import {
+  SCHEMA_STATE_ACTIONS, SchemaStateContext, getFieldMetaData,
+  isModeSupportedByField
+} from './common';
+import { StyleDataGridBox } from './StyledComponents';
 
-function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex, viewHelperProps}) {
+
+function DataTableRow({
+  index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath,
+  moveRow, setHoverIndex, viewHelperProps
+}) {
 
   const [key, setKey] = useState(false);
-  const depListener = useContext(DepListenerContext);
+  const schemaState = useContext(SchemaStateContext);
   const rowRef = useRef(null);
   const dragHandleRef = useRef(null);
 
@@ -150,7 +84,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
     schemaRef.current.fields.forEach((field)=>{
       /* Self change is also dep change */
       if(field.depChange || field.deferredDepChange) {
-        depListener?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+        schemaState?.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
       }
       (evalFunc(null, field.deps) || []).forEach((dep)=>{
         let source = accessPath.concat(dep);
@@ -158,14 +92,14 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
           source = dep;
         }
         if(field.depChange) {
-          depListener?.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          schemaState?.addDepListener(source, accessPath.concat(field.id), field.depChange);
         }
       });
     });
 
     return ()=>{
       /* Cleanup the listeners when unmounting */
-      depListener?.removeDepListener(accessPath);
+      schemaState?.removeDepListener(accessPath);
     };
   }, []);
 
@@ -227,9 +161,14 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
   drop(rowRef);
 
   return useMemo(()=>
-    <PgReactTableRowContent ref={rowRef} data-handler-id={handlerId} className={isHovered ? 'DataGridView-tableRowHovered' : null} data-test='data-table-row' style={{position: 'initial'}}>
+    <PgReactTableRowContent ref={rowRef} data-handler-id={handlerId}
+      className={isHovered ? 'DataGridView-tableRowHovered' : null}
+      data-test='data-table-row' style={{position: 'initial'}}>
       {row.getVisibleCells().map((cell) => {
-        let {modeSupported} = cell.column.field ? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+        // Let's not render the cell, which are not supported in this mode.
+        if (cell.column.field && !isModeSupportedByField(
+          cell.column.field, viewHelperProps
+        )) return;
 
         const content = flexRender(cell.column.columnDef.cell, {
           key: cell.column.columnDef.cell?.type ?? cell.column.columnDef.id,
@@ -237,8 +176,9 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
           reRenderRow: ()=>{setKey((currKey)=>!currKey);}
         });
 
-        return (modeSupported &&
-          <PgReactTableCell cell={cell} row={row} key={cell.id} ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null}>
+        return (
+          <PgReactTableCell cell={cell} row={row} key={cell.id}
+            ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null}>
             {content}
           </PgReactTableCell>
         );
@@ -337,9 +277,10 @@ function getMappedCell({
 
 export default function DataGridView({
   value, viewHelperProps, schema, accessPath, dataDispatch, containerClassName,
-  fixedRows, ...props}) {
+  fixedRows, ...props
+}) {
 
-  const stateUtils = useContext(StateUtilsContext);
+  const schemaState = useContext(SchemaStateContext);
   const checkIsMounted = useIsMounted();
   const [hoverIndex, setHoverIndex] = useState();
   const newRowIndex = useRef();
@@ -439,14 +380,14 @@ export default function DataGridView({
       }
 
       cols = cols.concat(
-        schemaRef.current.fields.filter((f)=>{
-          return _.isArray(props.columns) ? props.columns.indexOf(f.id) > -1 : true;
-        }).sort((firstF, secondF)=>{
-          if(_.isArray(props.columns)) {
-            return props.columns.indexOf(firstF.id) < props.columns.indexOf(secondF.id) ? -1 : 1;
-          }
-          return 0;
-        }).map((field)=>{
+        schemaRef.current.fields.filter((f) => (
+          _.isArray(props.columns) ? props.columns.indexOf(f.id) > -1 : true
+        )).sort((firstF, secondF) => (
+          _.isArray(props.columns) ? ((
+            props.columns.indexOf(firstF.id) <
+            props.columns.indexOf(secondF.id)
+          ) ? -1 : 1) : 0
+        )).map((field) => {
           let widthParms = {};
           if(field.width) {
             widthParms.size = field.width;
@@ -461,7 +402,10 @@ export default function DataGridView({
           if(field.maxWidth) {
             widthParms.maxSize = field.maxWidth;
           }
-          widthParms.enableResizing = _.isUndefined(field.enableResizing) ? true : Boolean(field.enableResizing);
+          widthParms.enableResizing =
+            _.isUndefined(field.enableResizing) ? true : Boolean(
+              field.enableResizing
+            );
 
           let colInfo = {
             header: field.label||<>&nbsp;</>,
@@ -490,8 +434,7 @@ export default function DataGridView({
     const ret = {};
 
     columns.forEach(column => {
-      let {modeSupported} = column.field ? getFieldMetaData(column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
-      ret[column.id] = modeSupported;
+      ret[column.id] = isModeSupportedByField(column.field, viewHelperProps);
     });
 
     return ret;
@@ -535,19 +478,20 @@ export default function DataGridView({
     });
   }, [props.canAddRow, rows?.length]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let rowsPromise = fixedRows;
 
-    /* If fixedRows is defined, fetch the details */
+    // If fixedRows is defined, fetch the details.
     if(typeof rowsPromise === 'function') {
       rowsPromise = rowsPromise();
     }
+
     if(rowsPromise) {
       Promise.resolve(rowsPromise)
-        .then((res)=>{
+        .then((res) => {
           /* If component unmounted, dont update state */
           if(checkIsMounted()) {
-            stateUtils.initOrigData(accessPath, res);
+            schemaState.setUnpreparedData(accessPath, res);
           }
         });
     }
@@ -558,12 +502,17 @@ export default function DataGridView({
       virtualizer.scrollToIndex(newRowIndex.current);
 
       // Try autofocus on newly added row.
-      setTimeout(()=>{
-        const rowInput = tableRef.current?.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`);
+      setTimeout(() => {
+        const rowInput = tableRef.current?.querySelector(
+          `.pgrt-row[data-index="${newRowIndex.current}"] input`
+        );
         if(!rowInput) return;
 
-        requestAnimationAndFocus(tableRef.current.querySelector(`.pgrt-row[data-index="${newRowIndex.current}"] input`));
-        props.expandEditOnAdd && props.canEdit && rows[newRowIndex.current]?.toggleExpanded(true);
+        requestAnimationAndFocus(tableRef.current.querySelector(
+          `.pgrt-row[data-index="${newRowIndex.current}"] input`
+        ));
+        props.expandEditOnAdd && props.canEdit &&
+          rows[newRowIndex.current]?.toggleExpanded(true);
         newRowIndex.current = undefined;
       }, 50);
     }
@@ -599,7 +548,7 @@ export default function DataGridView({
   }
 
   return (
-    <StyledBox className={containerClassName}>
+    <StyleDataGridBox className={containerClassName}>
       <Box className='DataGridView-grid'>
         {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick}
           canSearch={props.canSearch}
@@ -639,7 +588,7 @@ export default function DataGridView({
           </PgReactTable>
         </DndProvider>
       </Box>
-    </StyledBox>
+    </StyleDataGridBox>
   );
 }
 

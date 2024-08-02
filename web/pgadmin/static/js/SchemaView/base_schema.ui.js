@@ -22,6 +22,9 @@ export default class BaseUISchema {
     this.filterGroups = []; // If set, these groups will be filtered out
     this.informText = null; // Inform text to show after save, this only saves it
     this._top = null;
+
+    this._state = null;
+    this._id = Date.now();
   }
 
   /* Top schema is helpful if this is used as child */
@@ -42,8 +45,19 @@ export default class BaseUISchema {
     return this._origData || {};
   }
 
-  /* The session data, can be useful but setting this will not affect UI
-  this._sessData is set by SchemaView directly. set sessData should not be allowed anywhere */
+  set state(state) {
+    this._state = state;
+  }
+
+  get state() {
+    return this._state;
+  }
+
+  /*
+   * The session data, can be useful but setting this will not affect UI.
+   * this._sessData is set by SchemaView directly. set sessData should not be
+   * allowed anywhere.
+   */
   get sessData() {
     return this._sessData || {};
   }
