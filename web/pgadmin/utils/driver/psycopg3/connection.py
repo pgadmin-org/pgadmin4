@@ -268,18 +268,11 @@ class Connection(BaseConnection):
 
         manager = self.manager
 
-        if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-            crypt_key_present, crypt_key = get_crypt_key()
-
-            if not crypt_key_present:
-                raise CryptKeyMissing()
-
-            password, encpass, is_update_password = self._check_user_password(
-                kwargs)
-        else:
-            password = None
-            encpass = kwargs['password'] if 'password' in kwargs else None
-            is_update_password = True
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing()
+        password, encpass, is_update_password = \
+            self._check_user_password(kwargs)
 
         passfile = kwargs['passfile'] if 'passfile' in kwargs else None
         tunnel_password = kwargs['tunnel_password'] if 'tunnel_password' in \
@@ -305,15 +298,13 @@ class Connection(BaseConnection):
         if self.reconnecting is not False:
             self.password = None
 
-        if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-            is_error, errmsg, password = self._decode_password(encpass,
-                                                               manager,
-                                                               password,
-                                                               crypt_key)
-            if is_error:
-                return False, errmsg
-        else:
-            password = encpass
+        if not crypt_key_present:
+            raise CryptKeyMissing()
+
+        is_error, errmsg, password = self._decode_password(
+            encpass, manager, password, crypt_key)
+        if is_error:
+            return False, errmsg
 
         # If no password credential is found then connect request might
         # come from Query tool, ViewData grid, debugger etc tools.
@@ -1580,13 +1571,11 @@ Failed to reset the connection to the server due to following error:
                 user = User.query.filter_by(id=current_user.id).first()
                 if user is None:
                     return False, self.UNAUTHORIZED_REQUEST
-                if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-                    crypt_key_present, crypt_key = get_crypt_key()
-                    if not crypt_key_present:
-                        return False, crypt_key
 
-                    password = decrypt(password, crypt_key)\
-                        .decode()
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    return False, crypt_key
+                password = decrypt(password, crypt_key).decode()
 
             try:
                 with ConnectionLocker(self.manager.kerberos_conn):

@@ -12,7 +12,7 @@
 import secrets
 import string
 import config
-from flask import request, current_app, session, Response, render_template, \
+from flask import request, current_app, Response, render_template, \
     url_for
 from flask_babel import gettext
 from flask_security import login_user
@@ -23,6 +23,7 @@ from pgadmin.utils.constants import WEBSERVER
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from flask_security.utils import logout_user
+from pgadmin.utils.master_password import set_crypt_key
 
 
 class WebserverModule(PgAdminModule):
@@ -89,8 +90,9 @@ class WebserverAuthentication(BaseAuthentication):
             return False, gettext(
                 "Webserver authenticate failed.")
 
-        session['pass_enc_key'] = ''.join(
+        pass_enc_key = ''.join(
             (secrets.choice(string.ascii_lowercase) for _ in range(10)))
+        set_crypt_key(pass_enc_key)
         useremail = request.environ.get('mail')
         if not useremail:
             useremail = ''
