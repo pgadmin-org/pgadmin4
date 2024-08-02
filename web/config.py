@@ -583,7 +583,7 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 # Applicable for desktop mode only
 ##########################################################################
 MASTER_PASSWORD_REQUIRED = True
-
+USE_OS_SECRET_STORAGE = True
 ##########################################################################
 
 # pgAdmin encrypts the database connection and ssh tunnel password using a
