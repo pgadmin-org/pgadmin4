@@ -144,8 +144,8 @@ export default function SchemaDialogView({
   };
 
   const onSaveClick = () => {
-    // Do nothing when there is no change.
-    if (!isDirty) return;
+    // Do nothing when there is no change or there is an error
+    if (!schemaState.changes || errors.name) return;
 
     setSaving(true);
     setLoaderText('Saving...');

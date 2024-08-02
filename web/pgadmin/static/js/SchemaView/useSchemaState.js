@@ -209,6 +209,7 @@ class SchemaState extends DepListener {
     this.message = null;
     // Current Loading state
     this.loadingState = LOADING_STATE.INIT;
+    this.hasChanges = false;
 
     ////// Schema instance data
 
@@ -321,7 +322,7 @@ class SchemaState extends DepListener {
       schema, state.initData, sessData,
       state.mode, state.keepCid, false, false
     );
-    const hasDataChanged = Object.keys(dataDiff).length > 0;
+    const hasDataChanged = state.hasChanges = Object.keys(dataDiff).length > 0;
 
     // Inform the callbacks about change in the data.
     if(state.mode !== 'edit') {
@@ -342,7 +343,6 @@ class SchemaState extends DepListener {
       state.changes = null;
     }
 
-
     state.data = sessData;
 
     state.onDataChange(hasDataChanged, dataDiff);
@@ -357,7 +357,7 @@ class SchemaState extends DepListener {
   }
 
   get isDirty() {
-    return this.changes !== null;
+    return this.hasChanges;
   }
 
   set isDirty(val) {
