@@ -28,7 +28,7 @@ export function send_heartbeat(_server_id, _item) {
       .catch((error) => {
         if (error && error.message == 'Network Error') {
           pgAdmin.Browser.notifier.error(gettext(`pgAdmin server not responding, try to login again: ${error.message || error.response.data.errormsg}`));
-        } else {
+        } else if (!error.response?.data?.data?.includes('Manager not found')) {
           pgAdmin.Browser.notifier.error(gettext(`Server heartbeat logging error: ${error.message || error.response.data.errormsg}`));
         }
         stop_heartbeat(_item);

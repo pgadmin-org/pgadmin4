@@ -25,22 +25,28 @@ def log_server_heartbeat(data):
                                                                )
 
     _server_heartbeat = getattr(current_app, '_pgadmin_server_heartbeat', {})
+    session_id = session.sid
 
-    if session.sid not in _server_heartbeat:
-        _server_heartbeat[session.sid] = {}
+    if session_id not in _server_heartbeat:
+        _server_heartbeat[session_id] = {}
 
     if not manager:
         stop_server_heartbeat(data)
-        return False, gettext("Manager not found. Stopped Heartbeat logging.")
+        msg = gettext("Manager not found. Stopped Heartbeat logging.")
+        current_app.logger.error(
+            f"Manager not found. Stopped Heartbeat logging for the "
+            f"session id: {session_id} and server id: {data['sid']}"
+        )
+        return False, msg
     else:
-        _server_heartbeat[session.sid][data['sid']] = {
+        _server_heartbeat[session_id][data['sid']] = {
             'timestamp': datetime.datetime.now(),
             'conn': manager.connections
         }
         current_app.logger.debug(
-            "Heartbeat logged for the session id##server id: {0}##{1}".format(
-                session.sid, data['sid']))
-
+            f"Heartbeat logged for the session id: {session_id} and "
+            f"server id: {data['sid']}"
+        )
         setattr(current_app, '_pgadmin_server_heartbeat', _server_heartbeat)
         return True, gettext("Heartbeat logged successfully.")
 
