@@ -61,21 +61,19 @@ CopyButton.propTypes = {
 
 export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, ...props}) {
   const editor = useRef();
-  const [[showFind, isReplace], setShowFind] = useState([false, false]);
+  const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
 
   const finalCustomKeyMap = useMemo(()=>[{
     key: 'Mod-f', run: () => {
-      setShowFind([false, false]);
-      setShowFind([true, false]);
+      setShowFind(prevVal => [true, false, !prevVal[2]]);
     },
     preventDefault: true,
     stopPropagation: true,
   }, {
     key: 'Mod-Alt-f', run: () => {
-      setShowFind([false, false]);
-      setShowFind([true, true]);
+      setShowFind(prevVal => [true, true, !prevVal[2]]);
     },
     preventDefault: true,
     stopPropagation: true,
@@ -89,7 +87,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   ...customKeyMap], [customKeyMap]);
 
   const closeFind = () => {
-    setShowFind([false, false]);
+    setShowFind([false, false, false]);
     editor.current?.focus();
   };
 
@@ -139,7 +137,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     <Root className={[className].join(' ')} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
       <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
-      <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
+      <FindDialog key={findKey} editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
       <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
     </Root>
   );
