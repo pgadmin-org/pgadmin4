@@ -191,21 +191,17 @@ def update_session_diff_transaction(trans_id, session_obj, diff_model_obj):
 
 
 @blueprint.route(
-    '/initialize',
+    '/initialize/<int:trans_id>',
     methods=["GET"],
     endpoint="initialize"
 )
 @pga_login_required
-def initialize():
+def initialize(trans_id):
     """
     This function will initialize the schema diff and return the list
     of all the server's.
     """
-    trans_id = None
     try:
-        # Create a unique id for the transaction
-        trans_id = str(secrets.choice(range(1, 9999999)))
-
         if 'schemaDiff' not in session:
             schema_diff_data = dict()
         else:
@@ -213,7 +209,7 @@ def initialize():
 
         # Use pickle to store the Schema Diff Model which will be used
         # later by the diff module.
-        schema_diff_data[trans_id] = {
+        schema_diff_data[str(trans_id)] = {
             'diff_model_obj': pickle.dumps(SchemaDiffModel(), -1)
         }
 
@@ -223,8 +219,7 @@ def initialize():
     except Exception as e:
         app.logger.exception(e)
 
-    return make_json_response(
-        data={'schemaDiffTransId': trans_id})
+    return make_json_response()
 
 
 @blueprint.route('/close/<int:trans_id>',

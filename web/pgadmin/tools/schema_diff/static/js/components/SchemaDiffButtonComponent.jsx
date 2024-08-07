@@ -153,7 +153,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
   };
 
   const generateScript = () => {
-    eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_GENERATE_SCRIPT, { sid: targetData.sid, did: targetData.did, selectedIds: selectedRowIds, rows: rows });
+    eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_GENERATE_SCRIPT, { sid: targetData.sid, did: targetData.did, selectedIds: selectedRowIds, rows: rows, selectedFilters: selectedFilters });
   };
 
   return (

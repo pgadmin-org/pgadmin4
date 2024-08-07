@@ -132,10 +132,10 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
     def runTest(self):
         """ This function will test the schema diff."""
         self.assertEqual(True, self.restored_backup)
-        response = self.tester.get("schema_diff/initialize")
+        self.trans_id = str(secrets.choice(range(1, 99999)))
+        init_url = 'schema_diff/initialize/{}'.format(self.trans_id)
+        response = self.tester.get(init_url)
         self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.data.decode('utf-8'))
-        self.trans_id = response_data['data']['schemaDiffTransId']
 
         received = self.socket_client.get_received(self.SOCKET_NAMESPACE)
         assert received[0]['name'] == 'connected'
