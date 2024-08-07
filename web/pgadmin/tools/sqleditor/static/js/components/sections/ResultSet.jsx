@@ -30,6 +30,7 @@ import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanel
 import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 import pgAdmin from 'sources/pgadmin';
+import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -39,7 +40,7 @@ const StyledBox = styled(Box)(({theme}) => ({
 }));
 
 export class ResultSetUtils {
-  constructor(api, transId, isQueryTool=true) {
+  constructor(api, queryToolCtx, transId, isQueryTool=true) {
     this.api = api;
     this.transId = transId;
     this.startTime = new Date();
@@ -48,6 +49,7 @@ export class ResultSetUtils {
     this.clientPKLastIndex = 0;
     this.historyQuerySource = null;
     this.hasQueryCommitted = false;
+    this.queryToolCtx = queryToolCtx;
   }
 
   static generateURLReconnectionFlag(baseUrl, transId, shouldReconnect) {
@@ -187,8 +189,49 @@ export class ResultSetUtils {
       );
     }
   }
+  connectServerModal (modalData, connectCallback, cancelCallback) {
+    this.queryToolCtx.modal.showModal(gettext('Connect to server'), (closeModal)=>{
+      return (
+        <ConnectServerContent
+          closeModal={()=>{
+            cancelCallback?.();
+            closeModal();
+          }}
+          data={modalData}
+          onOK={(formData)=>{
+            connectCallback(Object.fromEntries(formData));
+            closeModal();
+          }}
+        />
+      );
+    }, {
+      onClose: cancelCallback,
+    });
+  };
+  async connectServer (sid, user, formData, connectCallback) {
+    try {
+      let {data: respData} = await this.api({
+        method: 'POST',
+        url: url_for('sqleditor.connect_server', {
+          'sid': sid,
+          ...(user ? {
+            'usr': user,
+          }:{}),
+        }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        data: formData
+      });
+      connectCallback?.(respData.data);
+    } catch (error) {
+      this.connectServerModal(error.response?.data?.result, async (data)=>{
+        this.connectServer(sid, user, data, connectCallback);
+      }, ()=>{
+        /*This is intentional (SonarQube)*/
+      });
+    }
+  };
 
-  async startExecution(query, explainObject, onIncorrectSQL, flags={
+  async startExecution(query, explainObject, macroSQL, onIncorrectSQL, flags={
     isQueryTool: true, external: false, reconnect: false, executeCursor: false
   }) {
     let startTime = new Date();
@@ -244,16 +287,26 @@ export class ResultSetUtils {
         }
       }
     } catch(e) {
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR,
-        e,
-        {
-          connectionLostCallback: ()=>{
-            this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, flags.external, true, flags.executeCursor);
-          },
-          checkTransaction: true,
-        }
-      );
+      if(e?.response?.status == 428){
+        this.connectServerModal(e.response?.data?.result, async (passwordData)=>{
+          await this.connectServer(this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
+            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor);
+          });
+        }, ()=>{
+          /*This is intentional (SonarQube)*/
+        });
+      } else {
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR,
+          e,
+          {
+            connectionLostCallback: ()=>{
+              this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, '', flags.external, true, flags.executeCursor);
+            },
+            checkTransaction: true,
+          }
+        );
+      }
     }
     return false;
   }
@@ -304,7 +357,7 @@ export class ResultSetUtils {
     });
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
       connectionLostCallback: ()=>{
-        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, flags.external, true, flags.executeCursor);
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, '', flags.external, true, flags.executeCursor);
       },
       checkTransaction: true,
     });
@@ -767,7 +820,7 @@ export function ResultSet() {
   const [columns, setColumns] = useState([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const api = getApiInstance();
-  const rsu = React.useRef(new ResultSetUtils(api, queryToolCtx.params.trans_id, queryToolCtx.params.is_query_tool));
+  const rsu = React.useRef(new ResultSetUtils(api, queryToolCtx, queryToolCtx.params.trans_id, queryToolCtx.params.is_query_tool));
   const [dataChangeStore, dispatchDataChange] = React.useReducer(dataChangeReducer, {});
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectedColumns, setSelectedColumns] = useState(new Set());
@@ -802,7 +855,7 @@ export function ResultSet() {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
   };
 
-  const executionStartCallback = async (query, explainObject, external=false, reconnect=false, executeCursor=false)=>{
+  const executionStartCallback = async (query, explainObject, macroSQL, external=false, reconnect=false, executeCursor=false)=>{
     const yesCallback = async ()=>{
       /* Reset */
       eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, null);
@@ -813,7 +866,7 @@ export function ResultSet() {
       setLoaderText(gettext('Waiting for the query to complete...'));
       setDataOutputQuery(query);
       return await rsu.current.startExecution(
-        query, explainObject,
+        query, explainObject, macroSQL,
         ()=>{
           setColumns([]);
           setRows([]);
@@ -852,8 +905,15 @@ export function ResultSet() {
     };
 
     const executeAndPoll = async ()=>{
-      await yesCallback();
-      pollCallback();
+      await yesCallback().then((res)=>{
+        if(res){
+          pollCallback();
+        } else {
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
+        }
+      }).catch((err)=>{
+        console.error(err);
+      });
     };
 
     if(isDataChanged()) {
@@ -989,7 +1049,7 @@ export function ResultSet() {
           e,
           {
             connectionLostCallback: ()=>{
-              eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, null, false, true);
+              eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, null, '', false, true);
             },
             checkTransaction: true,
           }

@@ -333,7 +333,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
   };
 
-  const initializeQueryTool = (password)=>{
+  const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
     if(qtState.params.is_query_tool) {
@@ -364,9 +364,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           obtaining_conn: false,
         });
 
-        if(!qtState.params.is_query_tool) {
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
-        }
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
+        let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
+        pgAdmin.Browser.notifier.success(_.escape(msg));
       }).catch((error)=>{
         if(error.response?.request?.responseText?.search('Ticket expired') !== -1) {
           Kerberos.fetch_ticket()
@@ -414,6 +414,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   useEffect(()=>{
     getSQLScript();
     initializeQueryTool();
+
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, initializeQueryTool);
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FOCUS_PANEL, (qtPanelId)=>{
       docker.current.focus(qtPanelId);
@@ -684,6 +686,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               params: {
                 ...prev.params,
                 trans_id: respData.data.trans_id,
+                server_name: connectionData.server_name,
+                database_name: connectionData.database_name,
+                dbname: connectionData.database_name,
+                user: connectionData.user,
                 sid: connectionData.sid,
                 did: connectionData.did,
                 title: connectionData.title,
