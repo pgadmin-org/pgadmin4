@@ -28,6 +28,8 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7540 <https://github.com/pgadmin-org/pgadmin4/issues/7540>`_ -  Fix server heartbeat logging error after deleting the server.
   | `Issue #7683 <https://github.com/pgadmin-org/pgadmin4/issues/7683>`_ -  Fixed an issue where delete object(shortcut key) affecting both text and Object Explorer items.
   | `Issue #7728 <https://github.com/pgadmin-org/pgadmin4/issues/7728>`_ -  Updated the documentation for web server authentication.
   | `Issue #7737 <https://github.com/pgadmin-org/pgadmin4/issues/7737>`_ -  Fixed an issue where the REVOKE statement in the create script was throwing an error if the role contained special characters.
+
