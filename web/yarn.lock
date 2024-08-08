@@ -14077,7 +14077,7 @@ __metadata:
     wkx: ^0.5.0
     xterm: ^5.3.0
     xterm-addon-fit: ^0.5.0
-    xterm-addon-search: ^0.8.0
+    xterm-addon-search: ^0.13.0
     xterm-addon-web-links: ^0.4.0
     yarn-audit-html: 4.0.0
     zustand: ^4.4.1
@@ -16523,12 +16523,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xterm-addon-search@npm:^0.8.0":
-  version: 0.8.2
-  resolution: "xterm-addon-search@npm:0.8.2"
+"xterm-addon-search@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "xterm-addon-search@npm:0.13.0"
   peerDependencies:
-    xterm: ^4.0.0
-  checksum: cb5fa8a551354d98d81c3f4792a43150670be119a0bf10fdff6727ee80ba2524682371f828bb175bd71075ca45989805560754bb22a30ed87d59725b7910cf1c
+    xterm: ^5.0.0
+  checksum: aea339667bf2ff8a3392bc01eb98948e2c7ab7fec8525232cf6332270a03fe3ff751303c829f3c53d4c4f3d546d7b42be30d028a2dfeb61f61aad45a68ccdb8c
   languageName: node
   linkType: hard
 
