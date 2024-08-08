@@ -58,7 +58,7 @@
     "style-loader": "^3.3.2",
     "stylis": "^4.0.7",
     "svgo": "^2.7.0",
-    "svgo-loader": "^2.2.0",
+    "svgo-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.15.0",
