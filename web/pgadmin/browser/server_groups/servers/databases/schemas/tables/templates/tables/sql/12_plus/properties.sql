@@ -32,7 +32,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
       JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
 		WHERE i.inhrelid = rel.oid) AS inherited_tables_cnt,
 	(CASE WHEN rel.relpersistence = 'u' THEN true ELSE false END) AS relpersistence,
-	(SELECT st.setting from pg_catalog.pg_settings st WHERE st.name = 'default_table_access_method') as default_amname,
+	(SELECT st.setting from pg_catalog.pg_show_all_settings() st WHERE st.name = 'default_table_access_method') as default_amname,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'fillfactor=([0-9]*)') AS fillfactor,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'parallel_workers=([0-9]*)') AS parallel_workers,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'toast_tuple_target=([0-9]*)') AS toast_tuple_target,

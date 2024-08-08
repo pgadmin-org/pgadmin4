@@ -1261,7 +1261,7 @@ SELECT
     name, vartype, min_val::numeric AS min_val, max_val::numeric AS max_val,
     enumvals
 FROM
-    pg_settings
+    pg_show_all_settings()
 WHERE
     context in ('user', 'superuser')
 ) a""")
