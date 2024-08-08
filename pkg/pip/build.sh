@@ -56,6 +56,8 @@ do
     tar cf - "${FILE}" | (cd ../pip-build/pgadmin4; tar xf -)
 done
 
+yarn set version berry
+yarn set version 3
 yarn install
 yarn run bundle
 
