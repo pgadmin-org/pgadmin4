@@ -8,15 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 
-import React, { createContext, useMemo, useRef } from 'react';
+import React, { createContext, useMemo, useRef, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {DividerBox} from 'rc-dock';
 
 import url_for from 'sources/url_for';
+import pgAdmin from 'sources/pgadmin';
+import gettext from 'sources/gettext';
 
 import { Box } from '@mui/material';
-
 import { Results } from './Results';
 import { SchemaDiffCompare } from './SchemaDiffCompare';
 import EventBus from '../../../../../static/js/helpers/EventBus';
@@ -64,6 +65,15 @@ export default function SchemaDiffComponent({params}) {
 
   registerUnload();
 
+  const initializeSchemaDiff = ()=>{
+    api.get(url_for('schema_diff.initialize', {
+      'trans_id': params.transId})
+    )
+      .catch((err) => {
+        pgAdmin.Browser.notifier.error(gettext(`Error in schema diff initialize ${err.response.data}`));
+      });
+  };
+
   function registerUnload() {
     window.addEventListener('unload', ()=>{
       /* Using fetch with keepalive as the browser may
@@ -81,6 +91,10 @@ export default function SchemaDiffComponent({params}) {
         .catch((err)=>console.error(err));
     });
   }
+
+  useEffect(()=>{
+    initializeSchemaDiff();
+  }, []);
 
   return (
     <SchemaDiffContext.Provider value={schemaDiffContextValue}>

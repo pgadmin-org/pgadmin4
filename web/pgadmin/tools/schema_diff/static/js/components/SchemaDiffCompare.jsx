@@ -56,11 +56,11 @@ function checkAndGetSchemaQuery(data, script_array) {
   }
 }
 
-function getGenerateScriptData(rows, selectedIds, script_array) {
+function getGenerateScriptData(rows, selectedIds, script_array, selectedFilters) {
   for (let selRowVal of rows) {
     if (selectedIds.includes(`${selRowVal.id}`)) {
       let data = selRowVal;
-      if (!_.isUndefined(data.diff_ddl)) {
+      if (!_.isUndefined(data.diff_ddl) && selectedFilters.indexOf(data.status) > -1) {
         if (!(data.dependLevel in script_array)) script_array[data.dependLevel] = [];
         checkAndGetSchemaQuery(data, script_array);
         script_array[data.dependLevel].push(data.diff_ddl);
@@ -314,7 +314,7 @@ export function SchemaDiffCompare({ params }) {
     setFilterOptions(filterParams);
   };
 
-  const triggerGenerateScript = ({ sid, did, selectedIds, rows }) => {
+  const triggerGenerateScript = ({ sid, did, selectedIds, rows, selectedFilters }) => {
     setLoaderText(gettext('Generating script...'));
     let generatedScript, scriptHeader;
 
@@ -326,7 +326,7 @@ export function SchemaDiffCompare({ params }) {
     if (selectedIds.length > 0) {
       let script_array = { 1: [], 2: [], 3: [], 4: [], 5: [] },
         script_body = '';
-      getGenerateScriptData(rows, selectedIds, script_array);
+      getGenerateScriptData(rows, selectedIds, script_array, selectedFilters);
 
       generatedScript = generateFinalScript(script_array, scriptHeader, script_body);
       openQueryTool({ sid: sid, did: did, generatedScript: generatedScript, scriptHeader: scriptHeader });

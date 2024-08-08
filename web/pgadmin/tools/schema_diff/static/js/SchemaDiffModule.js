@@ -13,6 +13,7 @@ import ReactDOM from 'react-dom/client';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import pgWindow from 'sources/window';
+import * as commonUtils from 'sources/utils';
 
 import getApiInstance from '../../../../static/js/api_instance';
 import Theme from '../../../../static/js/Theme';
@@ -50,7 +51,7 @@ export default class SchemaDiff {
       name: 'schema_diff',
       module: self,
       applies: ['tools'],
-      callback: 'showSchemaDiffTool',
+      callback: 'launchSchemaDiff',
       priority: 1,
       label: gettext('Schema Diff'),
       enable: true,
@@ -58,26 +59,9 @@ export default class SchemaDiff {
     }]);
   }
 
-  showSchemaDiffTool() {
-    let self = this;
-
-    self.api({
-      url: url_for('schema_diff.initialize', null),
-      method: 'GET',
-    })
-      .then(function (res) {
-        self.trans_id = res.data.data.schemaDiffTransId;
-        res.data.data.panel_title = gettext('Schema Diff');
-        self.launchSchemaDiff(res.data.data);
-      })
-      .catch(function (error) {
-        pgAdmin.Browser.notifier.error(gettext(`Error in schema diff initialize ${error.response.data}`));
-      });
-  }
-
-  launchSchemaDiff(data) {
-    let panelTitle = data.panel_title,
-      trans_id = data.schemaDiffTransId;
+  launchSchemaDiff() {
+    let panelTitle = gettext('Schema Diff');
+    const trans_id = commonUtils.getRandomInt(1, 9999999);
 
     let url_params = {
         'trans_id': trans_id,
@@ -114,5 +98,4 @@ export default class SchemaDiff {
       </Theme>
     );
   }
-
 }
