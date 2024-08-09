@@ -14061,7 +14061,7 @@ __metadata:
     style-loader: ^3.3.2
     styled-components: ^5.2.1
     stylis: ^4.0.7
-    svgo: ^2.7.0
+    svgo: ^3.3.2
     svgo-loader: ^4.0.0
     terser-webpack-plugin: ^5.1.1
     typescript: ^5.4.5
@@ -15196,7 +15196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svgo@npm:^3.0.0, svgo@npm:^3.0.2, svgo@npm:^3.2.0":
+"svgo@npm:^3.0.0, svgo@npm:^3.0.2, svgo@npm:^3.2.0, svgo@npm:^3.3.2":
   version: 3.3.2
   resolution: "svgo@npm:3.3.2"
   dependencies:
