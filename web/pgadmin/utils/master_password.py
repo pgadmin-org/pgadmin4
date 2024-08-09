@@ -1,9 +1,11 @@
+import keyring
+
 import config
-from flask import current_app, session, current_app
+from flask import session, current_app
 from flask_login import current_user
 from pgadmin.model import db, User, Server
+from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, KEY_RING_USER_NAME
 from pgadmin.utils.crypto import encrypt, decrypt
-
 
 MASTERPASS_CHECK_TEXT = 'ideas are bulletproof'
 
@@ -23,27 +25,45 @@ def get_crypt_key():
     :return: the key
     """
     enc_key = current_app.keyManager.get()
-
-    # if desktop mode and master pass disabled then use the password hash
-    if not config.MASTER_PASSWORD_REQUIRED \
-            and not config.SERVER_MODE:
-        return True, current_user.password
-    # if desktop mode and master pass enabled
-    elif config.MASTER_PASSWORD_REQUIRED and \
-        config.MASTER_PASSWORD_HOOK is None\
-            and enc_key is None:
-        return False, None
-    elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
-            'pass_enc_key' in session:
-        return True, session['pass_enc_key']
-    elif config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
-            config.MASTER_PASSWORD_HOOK and current_user.password is None:
-        cmd = config.MASTER_PASSWORD_HOOK
-        command = cmd.replace('%u', current_user.username) \
-            if '%u' in cmd else cmd
-        return get_master_password_from_master_hook(command)
+    # server mode
+    if config.SERVER_MODE:
+        # master pass disabled
+        if config.MASTER_PASSWORD_REQUIRED:
+            if config.MASTER_PASSWORD_HOOK:
+                cmd = config.MASTER_PASSWORD_HOOK
+                command = cmd.replace('%u', current_user.username) \
+                    if '%u' in cmd else cmd
+                return get_master_password_from_master_hook(command)
+            elif config.MASTER_PASSWORD_HOOK is None and enc_key is None:
+                return False, None
+            else:
+                return True, enc_key
+        elif 'pass_enc_key' in session:
+            return True, session['pass_enc_key']
+        elif current_user.password is not None:
+            return True, current_user.password
+        elif enc_key is not None:
+            return True, enc_key
+        else:
+            return False, None
+    # desktop mode
     else:
-        return True, enc_key
+        if config.USE_OS_SECRET_STORAGE:
+            # Retrieve from os secret storage
+            try:
+                master_key = keyring.get_password(
+                    KEY_RING_SERVICE_NAME, KEY_RING_USER_NAME)
+                if master_key:
+                    return True, master_key
+            except Exception as e:
+                return False, None
+        # master pass disabled then use the password hash
+        if not config.MASTER_PASSWORD_REQUIRED:
+            return True, current_user.password
+        elif enc_key is not None:
+            return True, enc_key
+        else:
+            return False, None
 
 
 def validate_master_password(password):
@@ -112,6 +132,37 @@ def cleanup_master_password():
     for server in Server.query.filter_by(user_id=current_user.id).all():
         manager = driver.connection_manager(server.id)
         manager.update(server)
+
+
+def delete_local_storage_master_key():
+    """
+    Deletes the auto generated master key stored in keyring
+    """
+    if not config.SERVER_MODE and not config.USE_OS_SECRET_STORAGE:
+        # Retrieve from os secret storage
+        try:
+            # try to get key
+            master_key = keyring.get_password(KEY_RING_SERVICE_NAME,
+                                              KEY_RING_USER_NAME)
+            if master_key:
+                keyring.delete_password(KEY_RING_SERVICE_NAME,
+                                        KEY_RING_USER_NAME)
+                from pgadmin.browser.server_groups.servers.utils \
+                    import remove_saved_passwords
+                remove_saved_passwords(current_user.id)
+
+                from pgadmin.utils.driver import get_driver
+                driver = get_driver(config.PG_DEFAULT_DRIVER)
+                for server in Server.query.filter_by(
+                        user_id=current_user.id).all():
+                    manager = driver.connection_manager(server.id)
+                    manager.update(server)
+                current_app.logger.warning(
+                    'Deleted master key stored in OS password manager.')
+        except Exception as e:
+            current_app.logger.warning(
+                'Failed to delete master key stored in OS password manager.')
+            pass
 
 
 def process_masterpass_disabled():

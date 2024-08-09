@@ -45,6 +45,7 @@ class MasterPasswordTestCase(BaseTestGenerator):
     def setUp(self):
         config.MASTER_PASSWORD_REQUIRED = True
         config.AUTHENTICATION_SOURCES = [INTERNAL]
+        config.USE_OS_SECRET_STORAGE = False
 
     def runTest(self):
         """This function will check change password functionality."""

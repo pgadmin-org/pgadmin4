@@ -113,7 +113,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
 
       if(isKeyring) {
         pgAdmin.Browser.notifier.alert(gettext('Migration successful'),
-          gettext(`Passwords previously saved by pgAdmin have been successfully migrated to ${res.data.data.keyring_name} and removed from the pgAdmin store.`));
+          gettext(`Passwords previously saved by pgadmin have been successfully encrypted using ${res.data.data.keyring_name}.`));
       }
     }
   }).catch(function(error) {
