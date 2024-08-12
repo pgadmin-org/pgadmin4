@@ -144,7 +144,7 @@
     "socket.io-client": "^4.5.0",
     "split.js": "^1.5.10",
     "sql-formatter": "^15.1.2",
-    "styled-components": "^5.2.1",
+    "styled-components": "^6.1.12",
     "uplot": "^1.6.24",
     "uplot-react": "^1.1.4",
     "valid-filename": "^2.0.1",
