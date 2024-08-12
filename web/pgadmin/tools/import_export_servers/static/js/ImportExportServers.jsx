@@ -65,10 +65,10 @@ export default function ImportExportServers({onClose}) {
   const [selectionSchemaInstance, setSelectionSchemaInstance] = React.useState();
   const api = getApiInstance();
 
-   React.useEffect(() => {
-      const impExpSchema = new ImportExportSelectionSchema();
-      setSelectionSchemaInstance(impExpSchema);
-   }, []);
+  React.useEffect(() => {
+    const impExpSchema = new ImportExportSelectionSchema();
+    setSelectionSchemaInstance(impExpSchema);
+  }, []);
 
   const onSave = () => {
     let post_data = {'filename': selectionFormData.filename},
