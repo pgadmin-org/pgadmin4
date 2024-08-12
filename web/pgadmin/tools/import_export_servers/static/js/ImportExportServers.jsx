@@ -62,7 +62,13 @@ export default function ImportExportServers({onClose}) {
   const [summaryData, setSummaryData] = React.useState([]);
   const [summaryText, setSummaryText] = React.useState('');
   const [noteText, setNoteText] = React.useState('');
+  const [selectionSchemaInstance, setSelectionSchemaInstance] = React.useState();
   const api = getApiInstance();
+
+  React.useEffect(() => {
+    const impExpSchema = new ImportExportSelectionSchema();
+    setSelectionSchemaInstance(impExpSchema);
+  }, []);
 
   const onSave = () => {
     let post_data = {'filename': selectionFormData.filename},
@@ -211,18 +217,20 @@ export default function ImportExportServers({onClose}) {
         beforeNext={onBeforeNext}
       >
         <WizardStep stepId={0}>
-          <SchemaView
-            formType={'dialog'}
-            getInitData={() => {/*This is intentional (SonarQube)*/}}
-            viewHelperProps={{ mode: 'create' }}
-            schema={new ImportExportSelectionSchema()}
-            showFooter={false}
-            isTabView={false}
-            formClassName='ImportExportServers-Background'
-            onDataChange={(isChanged, changedData) => {
-              setSelectionFormData(changedData);
-            }}
-          />
+          {selectionSchemaInstance &&
+            <SchemaView
+              formType={'dialog'}
+              getInitData={() => {/*This is intentional (SonarQube)*/}}
+              viewHelperProps={{ mode: 'create' }}
+              schema={selectionSchemaInstance}
+              showFooter={false}
+              isTabView={false}
+              formClassName='ImportExportServers-Background'
+              onDataChange={(isChanged, changedData) => {
+                setSelectionFormData(changedData);
+              }}
+            />
+          }
           <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errMsg} onClose={onErrClose} />
         </WizardStep>
         <WizardStep stepId={1} className='ImportExportServers-noOverflow'>
