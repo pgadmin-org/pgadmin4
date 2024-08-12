@@ -46,6 +46,7 @@ export const getAppPaths = (basePath) => {
     if (insideFlatpak()) {
       pythonPath = '/usr/bin/python';
       pgadminFile = '/app/pgAdmin4/web/pgAdmin4.py';
+      return [pythonPath, pgadminFile];
     }
     break;
   default:
