@@ -298,7 +298,7 @@ export default class ERDTool extends React.Component {
   async componentDidMount() {
     this.setLoading(gettext('Preparing...'));
     this.registerEvents();
-
+    this.diagramContainerRef.current?.focus();
     const erdPref = this.preferencesStore.getPreferencesForModule('erd');
     this.setState({
       preferences: erdPref,
@@ -510,6 +510,10 @@ export default class ERDTool extends React.Component {
         this.diagram.getSelectedLinks().forEach((link)=>{
           this.diagram.removeOneToManyLink(link);
         });
+        if (this.diagram.getNodesData().length === 0){
+          this.setState({dirty: false});
+          this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);  
+        }
         this.diagram.repaint();
       },
       () => {/*This is intentional (SonarQube)*/}
@@ -577,7 +581,7 @@ export default class ERDTool extends React.Component {
     this.closeOnSave = closeOnSave;
     if(this.state.current_file && !isSaveAs) {
       this.saveFile(this.state.current_file);
-    } else {
+    } else if (this.diagram.getNodesData().length > 0){ {
       let params = {
         'supported_types': ['*','pgerd'],
         'dialog_type': 'create_file',
@@ -585,6 +589,7 @@ export default class ERDTool extends React.Component {
         'btn_primary': 'Save',
       };
       this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
+    }
     }
   }
 
@@ -901,7 +906,7 @@ export default class ERDTool extends React.Component {
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
-        <div className='ERDTool-diagramContainer' data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
+        <div className='ERDTool-diagramContainer' data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}} tabIndex={0}>
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
           <ERDCanvasSettings.Provider value={{
             cardinality_notation: this.state.cardinality_notation
