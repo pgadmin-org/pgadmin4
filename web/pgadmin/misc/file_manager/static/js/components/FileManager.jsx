@@ -82,7 +82,7 @@ const StyledBox = styled(Box)(({theme}) => ({
         paddingBottom: '4px',
       }
     },
-  }, 
+  },
   '& .FileManager-footerSaveAs': {
     justifyContent: 'initial',
     padding: '4px 8px',
@@ -633,7 +633,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
   }, [filteredItems]);
   const onItemClick = useCallback((idx)=>{
     let row = filteredItems[selectedRowIdx.current];
-    if(params.dialog_type == 'create_file' && row?.file_type != 'dir' && row.file_type != 'drive') {
+    if(params.dialog_type == 'create_file' && row?.file_type != 'dir' && row?.file_type != 'drive') {
       setSaveAs(filteredItems[idx]?.Filename);
     }
   }, [filteredItems]);
@@ -641,7 +641,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     let disabled = true;
     let row = filteredItems[selectedRowIdx.current];
     if(params.dialog_type == 'create_file') {
-      disabled = !saveAs.trim();
+      disabled = !saveAs?.trim();
     } else if(selectedRowIdx.current >= 0 && row) {
       let selectedfileType = row?.file_type;
       if(((selectedfileType == 'dir' || selectedfileType == 'drive') && fmUtilsObj.hasCapability('select_folder'))
