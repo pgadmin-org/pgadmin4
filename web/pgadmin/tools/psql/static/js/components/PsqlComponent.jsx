@@ -12,10 +12,10 @@ import { Box, useTheme } from '@mui/material';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { SearchAddon } from 'xterm-addon-search';
+import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { SearchAddon } from '@xterm/addon-search';
 import { io } from 'socketio';
 import { copyToClipboard } from '../../../../../static/js/clipboard';
 import 'pgadmin.browser.keyboard';
@@ -109,11 +109,9 @@ function psql_Addon(term) {
   const fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
 
-  const webLinksAddon = new WebLinksAddon();
-  term.loadAddon(webLinksAddon);
+  term.loadAddon(new WebLinksAddon());
 
-  const searchAddon = new SearchAddon();
-  term.loadAddon(searchAddon);
+  term.loadAddon(new SearchAddon());
 
   fitAddon.fit();
   term.resize(15, 50);
@@ -158,12 +156,23 @@ export default function  PsqlComponent({ params, pgAdmin }) {
     return [term, socket];
   };
 
+  const setTheme = ()=>{
+    if(termRef.current) {
+      termRef.current.options.theme = {
+        background: theme.palette.background.default,
+        foreground: theme.palette.text.primary,
+        cursor: theme.palette.text.primary,
+        cursorAccent: theme.palette.text.primary,
+        selection: theme.palette.primary.main
+      };
+    }
+  };
+
   useEffect(()=>{
     const [term, socket] = initializePsqlTool(params);
     termRef.current = term;
 
-    termRef.current?.setOption('theme',  {
-      background: theme?.palette.background.default});
+    setTheme();
 
     termRef.current.focus();
 
@@ -177,14 +186,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
   }, []);
 
   useEffect(()=>{
-    let psqlTheme = {
-      background: theme.palette.background.default,
-      foreground: theme.palette.text.primary,
-      cursor: theme.palette.text.primary,
-      cursorAccent: theme.palette.text.primary,
-      selection: theme.palette.primary.main
-    };
-    termRef.current?.setOption('theme', psqlTheme );
+    setTheme();
   },[theme]);
 
 

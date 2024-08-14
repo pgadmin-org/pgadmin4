@@ -91,6 +91,10 @@
     "@types/classnames": "^2.2.6",
     "@types/react": "^18.0.2",
     "@types/react-dom": "^18.0.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-search": "^0.15.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0",
     "ajv": "^8.8.2",
     "anti-trojan-source": "^1.4.0",
     "aspen-decorations": "^1.0.2",
@@ -149,10 +153,6 @@
     "uplot-react": "^1.1.4",
     "valid-filename": "^2.0.1",
     "wkx": "^0.5.0",
-    "xterm": "^5.3.0",
-    "xterm-addon-fit": "^0.5.0",
-    "xterm-addon-search": "^0.13.0",
-    "xterm-addon-web-links": "^0.4.0",
     "zustand": "^4.4.1"
   },
   "scripts": {

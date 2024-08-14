@@ -3871,6 +3871,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xterm/addon-fit@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "@xterm/addon-fit@npm:0.10.0"
+  peerDependencies:
+    "@xterm/xterm": ^5.0.0
+  checksum: 8edfad561c0d0316c5883cbe2ce56109f105a2b2bf53b71d5f8c788e656a3205c1093a659dddcf4025a459e4b7ff8e07b6c6a19815c8711deeded560de5f1893
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-search@npm:^0.15.0":
+  version: 0.15.0
+  resolution: "@xterm/addon-search@npm:0.15.0"
+  peerDependencies:
+    "@xterm/xterm": ^5.0.0
+  checksum: d4f77e3637f915e86c9208da70f615f5e6150810943931a4bba8a3422d5c2b791b84d2136de65603dbc4437328f4c584c8faa1f53e71524dd667bee631ca3f1e
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-web-links@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@xterm/addon-web-links@npm:0.11.0"
+  peerDependencies:
+    "@xterm/xterm": ^5.0.0
+  checksum: c1b36b649b8cddc613213eb9e835daf3106a8be359a19ccacca1f1d9ff883b59d478f166109ee017fa3994d224dcdd82976ad5d5a1221271ab8d3d5684eb141d
+  languageName: node
+  linkType: hard
+
+"@xterm/xterm@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@xterm/xterm@npm:5.5.0"
+  checksum: 393c1891b95fdd50d05e7a063abdc95a6643d2c45a4231637c23db90511426a95b1b56a5c4c91831121d2710aee9de97cf5e426016c589ca87dea8fff9a41b33
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -13975,6 +14009,10 @@ __metadata:
     "@types/jest": ^29.5.4
     "@types/react": ^18.0.2
     "@types/react-dom": ^18.0.0
+    "@xterm/addon-fit": ^0.10.0
+    "@xterm/addon-search": ^0.15.0
+    "@xterm/addon-web-links": ^0.11.0
+    "@xterm/xterm": ^5.5.0
     ajv: ^8.8.2
     anti-trojan-source: ^1.4.0
     aspen-decorations: ^1.0.2
@@ -14075,10 +14113,6 @@ __metadata:
     webpack-bundle-analyzer: ^4.8.0
     webpack-cli: ^5.1.4
     wkx: ^0.5.0
-    xterm: ^5.3.0
-    xterm-addon-fit: ^0.5.0
-    xterm-addon-search: ^0.13.0
-    xterm-addon-web-links: ^0.4.0
     yarn-audit-html: 4.0.0
     zustand: ^4.4.1
   languageName: unknown
@@ -16508,40 +16542,6 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
-  languageName: node
-  linkType: hard
-
-"xterm-addon-fit@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "xterm-addon-fit@npm:0.5.0"
-  peerDependencies:
-    xterm: ^4.0.0
-  checksum: 884d9f360893335c87e4514beeda2af6dbebf38a89b8518f1126d9c4611aefc1598b750bb43a953b79fdf1179c40d70c77a9169ae10f07e0abbbdb39b919b33f
-  languageName: node
-  linkType: hard
-
-"xterm-addon-search@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "xterm-addon-search@npm:0.13.0"
-  peerDependencies:
-    xterm: ^5.0.0
-  checksum: aea339667bf2ff8a3392bc01eb98948e2c7ab7fec8525232cf6332270a03fe3ff751303c829f3c53d4c4f3d546d7b42be30d028a2dfeb61f61aad45a68ccdb8c
-  languageName: node
-  linkType: hard
-
-"xterm-addon-web-links@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "xterm-addon-web-links@npm:0.4.0"
-  peerDependencies:
-    xterm: ^4.0.0
-  checksum: 7bcb489b2b406602a3aa4bde4394379e24820a9a25503e24e78fa5b9301b8aea64c7851c91d5b9d27784f7a5bd6da5d81588f149f5379641bf97857e65e1f2d0
-  languageName: node
-  linkType: hard
-
-"xterm@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "xterm@npm:5.3.0"
-  checksum: 1bdfdfe4cae4412128376180d85e476b43fb021cdd1114b18acad821c9ea44b5b600e0d88febf2b3572f38fad7741e5161ce0178a44369617cf937222cc6e011
   languageName: node
   linkType: hard
 
