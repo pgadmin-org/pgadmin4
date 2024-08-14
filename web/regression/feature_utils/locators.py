@@ -228,7 +228,7 @@ class QueryToolLocators:
         "//span[text()='File Format']/following-sibling::div"
 
     select_file_content_css = \
-        "div [role='grid'] div[aria-selected='true'] span"
+        "div [role='grid'] div[role='gridcell'] span"
 
     query_output_canvas_css = "#id-dataoutput .rdg"
 

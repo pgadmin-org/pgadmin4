@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #2046 <https://github.com/pgadmin-org/pgadmin4/issues/2046>`_ -  Add a home button to the geometry viewer to set original zoom level when the viewer was opened.
 
 Housekeeping
 ************
@@ -33,6 +34,7 @@ Bug fixes
   | `Issue #7540 <https://github.com/pgadmin-org/pgadmin4/issues/7540>`_ -  Fix server heartbeat logging error after deleting the server.
   | `Issue #7682 <https://github.com/pgadmin-org/pgadmin4/issues/7682>`_ -  Fixed an issue where the Generate Script ignored filter conditions when a parent node was selected.
   | `Issue #7683 <https://github.com/pgadmin-org/pgadmin4/issues/7683>`_ -  Fixed an issue where delete object(shortcut key) affecting both text and Object Explorer items.
+  | `Issue #7688 <https://github.com/pgadmin-org/pgadmin4/issues/7688>`_ -  Fix an issue where ERD tool should to be able to open saved pgerd file when using keyboard shortcuts.
   | `Issue #7728 <https://github.com/pgadmin-org/pgadmin4/issues/7728>`_ -  Updated the documentation for web server authentication.
   | `Issue #7737 <https://github.com/pgadmin-org/pgadmin4/issues/7737>`_ -  Fixed an issue where the REVOKE statement in the create script was throwing an error if the role contained special characters.
   | `Issue #7754 <https://github.com/pgadmin-org/pgadmin4/issues/7754>`_ -  Fix an issue where the wheel package is not getting installed on the arm64-based macOS version < 14.
