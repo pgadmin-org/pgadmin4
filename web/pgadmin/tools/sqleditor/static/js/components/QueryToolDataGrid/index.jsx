@@ -63,6 +63,11 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     outlineColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
+  },
+  '& .rdg-row': {
+    '&:nth-of-type(even)': {
+      backgroundColor: '#f8f8f8',
+    },
   }
 }));
 
