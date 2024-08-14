@@ -153,6 +153,7 @@ export default function(basicSettings) {
         comment: '#a50',
         punctuation: '#737373',
         operator: '#222',
+        name: '#05a',
         ////
         foldmarker: '#0000FF',
         activeline: '#EDF9FF',

@@ -37,5 +37,6 @@ Bug fixes
   | `Issue #7688 <https://github.com/pgadmin-org/pgadmin4/issues/7688>`_ -  Fix an issue where ERD tool should to be able to open saved pgerd file when using keyboard shortcuts.
   | `Issue #7728 <https://github.com/pgadmin-org/pgadmin4/issues/7728>`_ -  Updated the documentation for web server authentication.
   | `Issue #7737 <https://github.com/pgadmin-org/pgadmin4/issues/7737>`_ -  Fixed an issue where the REVOKE statement in the create script was throwing an error if the role contained special characters.
+  | `Issue #7748 <https://github.com/pgadmin-org/pgadmin4/issues/7748>`_ -  Improve code highlighting in query editor.
   | `Issue #7754 <https://github.com/pgadmin-org/pgadmin4/issues/7754>`_ -  Fix an issue where the wheel package is not getting installed on the arm64-based macOS version < 14.
   | `Issue #7775 <https://github.com/pgadmin-org/pgadmin4/issues/7775>`_ -  Fixed an issue where the value in the find box is not updating with selected text in editor if find is already open and re-triggered.
