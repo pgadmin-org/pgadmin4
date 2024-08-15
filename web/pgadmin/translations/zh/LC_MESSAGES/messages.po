@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-07-19 15:19+0530\n"
+"POT-Creation-Date: 2024-08-15 21:34+0530\n"
 "PO-Revision-Date: 2023-08-11 22:06+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language: zh\n"
@@ -702,8 +702,8 @@ msgstr "调试器"
 
 #: pgadmin/browser/register_browser_preferences.py:449
 #: pgadmin/tools/schema_diff/__init__.py:48
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:55
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:70
+#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:56
+#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:63
 msgid "Schema Diff"
 msgstr "架构差异"
 
@@ -832,7 +832,7 @@ msgid "Server deleted"
 msgstr "服务器已经被删除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:801
-#: pgadmin/browser/server_groups/servers/__init__.py:2226
+#: pgadmin/browser/server_groups/servers/__init__.py:2230
 msgid "Could not find the required server."
 msgstr "找不到所需的服务器。"
 
@@ -963,42 +963,42 @@ msgstr "服务器没有用于生成统计信息的活动连接。"
 msgid "Please enter the server details to connect"
 msgstr "请输入要连接的服务器详细信息"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1738
-#: pgadmin/tools/schema_diff/__init__.py:368
+#: pgadmin/browser/server_groups/servers/__init__.py:1742
+#: pgadmin/tools/schema_diff/__init__.py:363
 #: pgadmin/tools/sqleditor/__init__.py:2575
 msgid "Server connected."
 msgstr "服务器已连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1778
+#: pgadmin/browser/server_groups/servers/__init__.py:1782
 msgid "Server could not be disconnected."
 msgstr "无法断开连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1782
+#: pgadmin/browser/server_groups/servers/__init__.py:1786
 msgid "Server disconnected."
 msgstr "服务器已断开连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1802
+#: pgadmin/browser/server_groups/servers/__init__.py:1806
 msgid "Could not reload the server configuration."
 msgstr "无法重新加载服务器配置。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1807
+#: pgadmin/browser/server_groups/servers/__init__.py:1811
 msgid "Server configuration reloaded."
 msgstr "服务器配置已重新加载。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1852
+#: pgadmin/browser/server_groups/servers/__init__.py:1856
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1858
+#: pgadmin/browser/server_groups/servers/__init__.py:1862
 msgid "Named restore point creation failed ({0})"
 msgstr "命名还原点创建失败 （{0}）"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1927
-#: pgadmin/browser/server_groups/servers/__init__.py:1939
+#: pgadmin/browser/server_groups/servers/__init__.py:1931
+#: pgadmin/browser/server_groups/servers/__init__.py:1943
 msgid "Could not find the required parameter(s)."
 msgstr "未找到所需参数。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1948
+#: pgadmin/browser/server_groups/servers/__init__.py:1952
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:133
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:446
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:381
@@ -1008,29 +1008,29 @@ msgstr "未找到所需参数。"
 msgid "Passwords do not match."
 msgstr "密码不匹配。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1970
+#: pgadmin/browser/server_groups/servers/__init__.py:1974
 msgid "Incorrect password."
 msgstr "密码错误。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2020
+#: pgadmin/browser/server_groups/servers/__init__.py:2024
 msgid "Password changed successfully."
 msgstr "密码已成功更改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2058
+#: pgadmin/browser/server_groups/servers/__init__.py:2062
 msgid "WAL replay paused"
 msgstr "WAL 回放已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2069
+#: pgadmin/browser/server_groups/servers/__init__.py:2073
 msgid "WAL replay resumed"
 msgstr "WAL回放已恢复"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2075
-#: pgadmin/browser/server_groups/servers/__init__.py:2133
+#: pgadmin/browser/server_groups/servers/__init__.py:2079
+#: pgadmin/browser/server_groups/servers/__init__.py:2137
 msgid "Please connect the server."
 msgstr "请连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2268
-#: pgadmin/browser/server_groups/servers/__init__.py:2311
+#: pgadmin/browser/server_groups/servers/__init__.py:2272
+#: pgadmin/browser/server_groups/servers/__init__.py:2315
 msgid "The saved password cleared successfully."
 msgstr "已成功清除保存的密码。"
 
@@ -1194,7 +1194,7 @@ msgstr "在服务器上找不到指定的强制转换。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/utils.py:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:207
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:208
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1534
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1537
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1336
 msgid "-- definition incomplete"
 msgstr "-- 定义不完整"
@@ -1240,14 +1240,14 @@ msgstr "转换..."
 #: pgadmin/static/js/socket_instance.js:33
 #: pgadmin/tools/backup/static/js/backup.js:268
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:436
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:464
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:465
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:391
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:395
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:716
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:758
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:91
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:112
-#: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:172
+#: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:176
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:78
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:100
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:53
@@ -1333,12 +1333,12 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:44
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.ui.js:28
-#: pgadmin/dashboard/static/js/Dashboard.jsx:388
-#: pgadmin/dashboard/static/js/Dashboard.jsx:776
+#: pgadmin/dashboard/static/js/Dashboard.jsx:391
+#: pgadmin/dashboard/static/js/Dashboard.jsx:779
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:53
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:52
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:134
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:118
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:119
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:32
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:103
 #: pgadmin/tools/debugger/static/js/components/Stack.jsx:54
@@ -2193,7 +2193,7 @@ msgstr "默认值"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:24
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:166
 #: pgadmin/browser/templates/browser/js/messages.js:33
-#: pgadmin/dashboard/static/js/Dashboard.jsx:406
+#: pgadmin/dashboard/static/js/Dashboard.jsx:409
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:63
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:105
 #: pgadmin/tools/debugger/static/js/components/Stack.jsx:55
@@ -2213,8 +2213,8 @@ msgstr "状态"
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_jobscheduler.ui.js:36
 #: pgadmin/misc/sql/static/js/SQL.jsx:77 pgadmin/static/js/UtilityView.jsx:43
 #: pgadmin/tools/backup/static/js/backup.js:156
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:294
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:749
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:295
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:755
 #: pgadmin/tools/import_export/static/js/import_export.js:80
 #: pgadmin/tools/maintenance/static/js/maintenance.js:95
 #: pgadmin/tools/restore/static/js/restore.js:93
@@ -2302,7 +2302,7 @@ msgstr "事件触发器..."
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:108
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:117
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:51
-#: pgadmin/dashboard/static/js/Dashboard.jsx:793
+#: pgadmin/dashboard/static/js/Dashboard.jsx:796
 #: pgadmin/tools/backup/static/js/backup.ui.js:199
 #: pgadmin/tools/restore/static/js/restore.ui.js:159
 msgid "Owner"
@@ -2751,7 +2751,7 @@ msgstr "用户映射..."
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.ui.js:36
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
-#: pgadmin/dashboard/static/js/Dashboard.jsx:579
+#: pgadmin/dashboard/static/js/Dashboard.jsx:582
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:25
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:24
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:158
@@ -3056,7 +3056,7 @@ msgid "Schema dropped"
 msgstr "架构已被删除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:914
-#: pgadmin/static/js/SchemaView/index.jsx:736
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:184
 msgid "Definition incomplete."
 msgstr "定义不完整。"
 
@@ -3556,7 +3556,7 @@ msgstr "统计信息"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:498
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:386
-#: pgadmin/dashboard/static/js/Dashboard.jsx:323
+#: pgadmin/dashboard/static/js/Dashboard.jsx:326
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:51
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:491
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:491
@@ -3899,7 +3899,7 @@ msgid "Function..."
 msgstr "函数..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:48
-#: pgadmin/dashboard/static/js/Dashboard.jsx:754
+#: pgadmin/dashboard/static/js/Dashboard.jsx:757
 msgid "Mode"
 msgstr "模式"
 
@@ -4489,19 +4489,19 @@ msgstr "表被删除"
 msgid "Table rows counted: {}"
 msgstr "已统计表行数： {}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1112
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1115
 msgid "Table statistics have been reset"
 msgstr "表统计信息已重置"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1438
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1441
 msgid "-- definition incomplete for {0}"
 msgstr "--{0} 的定义不完整"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1996
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1999
 msgid "Table truncated"
 msgstr "表被截断"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2062
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2065
 msgid ""
 "The table is currently locked and the operation cannot be completed. "
 "Please try again later. \r\n"
@@ -5212,7 +5212,7 @@ msgstr "在表中找不到索引."
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:6
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:309
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:131
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:128
 msgid "Size"
 msgstr "大小"
 
@@ -5293,9 +5293,9 @@ msgid "Access Method"
 msgstr "访问方法"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:480
-#: pgadmin/static/js/SchemaView/index.jsx:646
-#: pgadmin/static/js/SchemaView/index.jsx:673
-#: pgadmin/static/js/SchemaView/index.jsx:694
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:118
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:129
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:159
 #: pgadmin/static/js/components/QueryThresholds.jsx:44
 msgid "Warning"
 msgstr "警告"
@@ -6506,7 +6506,7 @@ msgid "Transition"
 msgstr "转换"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:426
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:436
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:437
 msgid "New table"
 msgstr "新建表"
 
@@ -6990,7 +6990,7 @@ msgstr "检查选项"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:128
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:399
 #: pgadmin/static/js/helpers/ModalProvider.jsx:79
-#: pgadmin/static/js/helpers/Notifier.jsx:175
+#: pgadmin/static/js/helpers/Notifier.jsx:178
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/CloseRunningDialog.jsx:18
 msgid "No"
 msgstr "否"
@@ -7029,9 +7029,9 @@ msgstr "临时文件的大小"
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:186
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
-#: pgadmin/dashboard/static/js/Dashboard.jsx:569
-#: pgadmin/dashboard/static/js/Dashboard.jsx:665
-#: pgadmin/dashboard/static/js/Dashboard.jsx:783
+#: pgadmin/dashboard/static/js/Dashboard.jsx:572
+#: pgadmin/dashboard/static/js/Dashboard.jsx:668
+#: pgadmin/dashboard/static/js/Dashboard.jsx:786
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:143
 msgid "Database"
 msgstr "数据库"
@@ -7095,7 +7095,7 @@ msgid "Database already connected."
 msgstr "数据库已连接。"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:498
-#: pgadmin/static/js/helpers/Notifier.jsx:125
+#: pgadmin/static/js/helpers/Notifier.jsx:126
 #, python-format
 msgid "Error: Object not found - %s."
 msgstr "错误：未找到对象 - %s。"
@@ -7797,7 +7797,7 @@ msgstr "任务步骤..."
 #: pgadmin/browser/templates/browser/js/messages.js:24
 #: pgadmin/dashboard/static/js/ActiveQuery.ui.js:52
 #: pgadmin/static/js/BrowserComponent.jsx:51
-#: pgadmin/static/js/SchemaView/FormView.jsx:420
+#: pgadmin/static/js/SchemaView/FormView.jsx:326
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:63
 msgid "SQL"
 msgstr "SQL"
@@ -7859,8 +7859,8 @@ msgstr "失败"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:143
 #: pgadmin/dashboard/__init__.py:663 pgadmin/dashboard/__init__.py:690
-#: pgadmin/dashboard/static/js/Dashboard.jsx:147
-#: pgadmin/dashboard/static/js/Dashboard.jsx:209
+#: pgadmin/dashboard/static/js/Dashboard.jsx:151
+#: pgadmin/dashboard/static/js/Dashboard.jsx:213
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:37
 msgid "Success"
 msgstr "成功"
@@ -7980,8 +7980,8 @@ msgid "Replica Nodes"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:21
-#: pgadmin/dashboard/static/js/Dashboard.jsx:560
-#: pgadmin/dashboard/static/js/Dashboard.jsx:656
+#: pgadmin/dashboard/static/js/Dashboard.jsx:563
+#: pgadmin/dashboard/static/js/Dashboard.jsx:659
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:41
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:23
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:46
@@ -8011,8 +8011,8 @@ msgid "Client Port"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:39
-#: pgadmin/dashboard/static/js/Dashboard.jsx:317
-#: pgadmin/dashboard/static/js/Dashboard.jsx:621
+#: pgadmin/dashboard/static/js/Dashboard.jsx:320
+#: pgadmin/dashboard/static/js/Dashboard.jsx:624
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:57
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:55
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:219
@@ -8642,6 +8642,7 @@ msgstr "带有复选标记的角色具有 \" WITH ADMIN OPTION\" 集。"
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:128
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:136
 #: pgadmin/browser/templates/browser/js/messages.js:23
+#: pgadmin/static/js/SchemaView/FormView.jsx:70
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:52
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:62
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:85
@@ -9177,7 +9178,7 @@ msgid "TTY"
 msgstr "TTY"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:504
-#: pgadmin/dashboard/static/js/Dashboard.jsx:321
+#: pgadmin/dashboard/static/js/Dashboard.jsx:324
 msgid "Replication"
 msgstr "复制"
 
@@ -9312,7 +9313,7 @@ msgstr "未设置"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:127
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:401
 #: pgadmin/static/js/helpers/ModalProvider.jsx:79
-#: pgadmin/static/js/helpers/Notifier.jsx:175
+#: pgadmin/static/js/helpers/Notifier.jsx:178
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/CloseRunningDialog.jsx:22
 msgid "Yes"
 msgstr "是"
@@ -9383,19 +9384,19 @@ msgstr "'位置'不能为空。"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:31
-#: pgadmin/dashboard/static/js/Dashboard.jsx:605
+#: pgadmin/dashboard/static/js/Dashboard.jsx:608
 msgid "Backend start"
 msgstr "后台启动"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
-#: pgadmin/dashboard/static/js/Dashboard.jsx:596
+#: pgadmin/dashboard/static/js/Dashboard.jsx:599
 msgid "Client"
 msgstr "客户端"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
-#: pgadmin/dashboard/static/js/Dashboard.jsx:588
+#: pgadmin/dashboard/static/js/Dashboard.jsx:591
 msgid "Application"
 msgstr "应用程序"
 
@@ -9537,8 +9538,8 @@ msgstr "检索节点的详细信息时出错。"
 #: pgadmin/browser/static/js/collection.js:46
 #: pgadmin/dashboard/static/js/components/RefreshButtons.jsx:36
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:729
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:551
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:566
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:561
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:576
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:360
 msgid "Refresh"
 msgstr "刷新"
@@ -10196,7 +10197,7 @@ msgstr "已成功注销。"
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:170
 #: pgadmin/static/js/Dialogs/UrlDialogContent.jsx:42
 #: pgadmin/static/js/Explain/Graphical.jsx:437
-#: pgadmin/static/js/SchemaView/index.jsx:812
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:249
 #: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:181
 #: pgadmin/static/js/components/ReactCodeMirror/components/GotoDialog.jsx:83
 #: pgadmin/static/js/helpers/Layout/index.jsx:54
@@ -10291,11 +10292,11 @@ msgid "Retrieving data from the server..."
 msgstr "正在从服务器检索数据..."
 
 #: pgadmin/browser/templates/browser/js/messages.js:44
-#: pgadmin/dashboard/static/js/Dashboard.jsx:832
-#: pgadmin/dashboard/static/js/Dashboard.jsx:893
-#: pgadmin/dashboard/static/js/Dashboard.jsx:897
-#: pgadmin/dashboard/static/js/Dashboard.jsx:1028
-#: pgadmin/dashboard/static/js/Dashboard.jsx:1032
+#: pgadmin/dashboard/static/js/Dashboard.jsx:835
+#: pgadmin/dashboard/static/js/Dashboard.jsx:896
+#: pgadmin/dashboard/static/js/Dashboard.jsx:900
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1031
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1035
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:131
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:135
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:130
@@ -10526,268 +10527,268 @@ msgstr "查询开始于"
 msgid "Last state changed at"
 msgstr "上次状态更改于"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:114
-#: pgadmin/dashboard/static/js/Dashboard.jsx:167
+#: pgadmin/dashboard/static/js/Dashboard.jsx:118
+#: pgadmin/dashboard/static/js/Dashboard.jsx:171
 msgid "Terminate Session?"
 msgstr "终止会话？"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:115
+#: pgadmin/dashboard/static/js/Dashboard.jsx:119
 msgid "Are you sure you wish to terminate the session?"
 msgstr "确实要终止会话吗？"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:118
+#: pgadmin/dashboard/static/js/Dashboard.jsx:122
 msgid "Session terminated successfully."
 msgstr "会话已成功终止。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:119
+#: pgadmin/dashboard/static/js/Dashboard.jsx:123
 msgid "An error occurred whilst terminating the active query."
 msgstr "终止活动查询时出错。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:156
-#: pgadmin/dashboard/static/js/Dashboard.jsx:219
+#: pgadmin/dashboard/static/js/Dashboard.jsx:160
+#: pgadmin/dashboard/static/js/Dashboard.jsx:223
 msgid "Failed to perform the operation."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:180
+#: pgadmin/dashboard/static/js/Dashboard.jsx:184
 msgid "Cancel Active Query?"
 msgstr "取消活动查询？"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:181
+#: pgadmin/dashboard/static/js/Dashboard.jsx:185
 msgid "Are you sure you wish to cancel the active query?"
 msgstr "确实要取消活动查询吗？"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:184
+#: pgadmin/dashboard/static/js/Dashboard.jsx:188
 msgid "Active query cancelled successfully."
 msgstr "活动查询已成功取消。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:185
+#: pgadmin/dashboard/static/js/Dashboard.jsx:189
 msgid "An error occurred whilst cancelling the active query."
 msgstr "取消活动查询时出错。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:230
+#: pgadmin/dashboard/static/js/Dashboard.jsx:234
 msgid "Cancel the active query"
 msgstr "取消活动查询"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:254
-#: pgadmin/dashboard/static/js/Dashboard.jsx:263
+#: pgadmin/dashboard/static/js/Dashboard.jsx:258
+#: pgadmin/dashboard/static/js/Dashboard.jsx:266
 msgid "Active sessions only"
 msgstr "仅活动会话"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:317
+#: pgadmin/dashboard/static/js/Dashboard.jsx:320
 msgid "Activity"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:319
+#: pgadmin/dashboard/static/js/Dashboard.jsx:322
 msgid "Configuration"
 msgstr "配置"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:319
-#: pgadmin/dashboard/static/js/Dashboard.jsx:512
+#: pgadmin/dashboard/static/js/Dashboard.jsx:322
+#: pgadmin/dashboard/static/js/Dashboard.jsx:515
 msgid "Logs"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:319
+#: pgadmin/dashboard/static/js/Dashboard.jsx:322
 msgid "System"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:323
+#: pgadmin/dashboard/static/js/Dashboard.jsx:326
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:56
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:635
 msgid "Summary"
 msgstr "概要"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:323
+#: pgadmin/dashboard/static/js/Dashboard.jsx:326
 msgid "CPU"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:323
+#: pgadmin/dashboard/static/js/Dashboard.jsx:326
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:229
 msgid "Memory"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:349
+#: pgadmin/dashboard/static/js/Dashboard.jsx:352
 msgid "You cannot cancel background worker processes."
 msgstr "你不能取消后台工作进程。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:351
+#: pgadmin/dashboard/static/js/Dashboard.jsx:354
 msgid "You cannot terminate background worker processes."
 msgstr "你不能终止后台工作进程。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:364
+#: pgadmin/dashboard/static/js/Dashboard.jsx:367
 msgid "You are not allowed to cancel the main active session."
 msgstr "你不能取消主活动会话。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:368
+#: pgadmin/dashboard/static/js/Dashboard.jsx:371
 msgid "You are not allowed to terminate the main active session."
 msgstr "不允许终止主活动会话。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:376
+#: pgadmin/dashboard/static/js/Dashboard.jsx:379
 msgid "The session is already in idle state."
 msgstr "会话已处于空闲状态。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:397
+#: pgadmin/dashboard/static/js/Dashboard.jsx:400
 msgid "Category"
 msgstr "类别"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:415
+#: pgadmin/dashboard/static/js/Dashboard.jsx:418
 msgid "Unit"
 msgstr "单元"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:424
+#: pgadmin/dashboard/static/js/Dashboard.jsx:427
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:146
 msgid "Description"
 msgstr "描述"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:471
+#: pgadmin/dashboard/static/js/Dashboard.jsx:474
 msgid "Failed to download the logs."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:486
+#: pgadmin/dashboard/static/js/Dashboard.jsx:489
 msgid "View the log details"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:491
+#: pgadmin/dashboard/static/js/Dashboard.jsx:494
 msgid "Error Severity"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:501
+#: pgadmin/dashboard/static/js/Dashboard.jsx:504
 msgid "Log Prefix/Timestamp"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:555
+#: pgadmin/dashboard/static/js/Dashboard.jsx:558
 msgid "View the active session details"
 msgstr "查看活动会话详细信息"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:613
+#: pgadmin/dashboard/static/js/Dashboard.jsx:616
 msgid "Transaction start"
 msgstr "事务开始"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:631
+#: pgadmin/dashboard/static/js/Dashboard.jsx:634
 msgid "Waiting"
 msgstr "等待中"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:639
+#: pgadmin/dashboard/static/js/Dashboard.jsx:642
 msgid "Wait event"
 msgstr "等待事件"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:646
+#: pgadmin/dashboard/static/js/Dashboard.jsx:649
 msgid "Blocking PIDs"
 msgstr "数据块PID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:675
+#: pgadmin/dashboard/static/js/Dashboard.jsx:678
 msgid "Lock type"
 msgstr "锁类型"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:684
+#: pgadmin/dashboard/static/js/Dashboard.jsx:687
 msgid "Target relation"
 msgstr "目标关系"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:691
+#: pgadmin/dashboard/static/js/Dashboard.jsx:694
 msgid "Page"
 msgstr "页"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:700
+#: pgadmin/dashboard/static/js/Dashboard.jsx:703
 msgid "Tuple"
 msgstr "元组"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:709
+#: pgadmin/dashboard/static/js/Dashboard.jsx:712
 msgid "vXID (target)"
 msgstr "vXID (目标)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:718
+#: pgadmin/dashboard/static/js/Dashboard.jsx:721
 msgid "XID (target)"
 msgstr "XID (目标)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:727
+#: pgadmin/dashboard/static/js/Dashboard.jsx:730
 msgid "Class"
 msgstr "类"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:736
+#: pgadmin/dashboard/static/js/Dashboard.jsx:739
 msgid "Object ID"
 msgstr "对象 ID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:745
+#: pgadmin/dashboard/static/js/Dashboard.jsx:748
 msgid "vXID (owner)"
 msgstr "vXID (所有者)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:764
+#: pgadmin/dashboard/static/js/Dashboard.jsx:767
 msgid "Granted?"
 msgstr "授予？"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:800
+#: pgadmin/dashboard/static/js/Dashboard.jsx:803
 msgid "XID"
 msgstr "XID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:807
+#: pgadmin/dashboard/static/js/Dashboard.jsx:810
 msgid "Prepared at"
 msgstr "已准备于"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:824
+#: pgadmin/dashboard/static/js/Dashboard.jsx:827
 msgid "Text"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:825
+#: pgadmin/dashboard/static/js/Dashboard.jsx:828
 msgid "JSON"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:826
+#: pgadmin/dashboard/static/js/Dashboard.jsx:829
 msgid "CSV"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:848
+#: pgadmin/dashboard/static/js/Dashboard.jsx:851
 msgid "Please connect to the selected server to view the dashboard."
 msgstr "请连接到选定的服务器以查看仪表盘。"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:854
+#: pgadmin/dashboard/static/js/Dashboard.jsx:857
 msgid "Loading dashboard..."
 msgstr "正在加载仪表盘..."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:877
+#: pgadmin/dashboard/static/js/Dashboard.jsx:880
 msgid "Loading logs..."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:886
+#: pgadmin/dashboard/static/js/Dashboard.jsx:889
 msgid ""
 "Please enable the logging to view the server logs or check the log file "
 "is in place or not."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:908
+#: pgadmin/dashboard/static/js/Dashboard.jsx:911
 msgid ""
 "The system_stats extension is not installed. You can install the "
 "extension in a database using the \"CREATE EXTENSION system_stats;\" SQL "
 "command. Reload pgAdmin once it is installed."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:916
+#: pgadmin/dashboard/static/js/Dashboard.jsx:919
 msgid "Failed to verify the presence of system stats extension."
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:963
+#: pgadmin/dashboard/static/js/Dashboard.jsx:966
 msgid "Table based logs"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:968
+#: pgadmin/dashboard/static/js/Dashboard.jsx:971
 msgid "Log Format"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:980
+#: pgadmin/dashboard/static/js/Dashboard.jsx:983
 msgid "Tabular format?"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:998
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1001
 msgid "Download logs "
 msgstr ""
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:1082
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1085
 msgid "Sessions"
 msgstr "会话"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:1093
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1096
 msgid "Locks"
 msgstr "锁"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:1101
+#: pgadmin/dashboard/static/js/Dashboard.jsx:1104
 msgid "Prepared Transactions"
 msgstr "准备事务"
 
@@ -11668,6 +11669,7 @@ msgstr "EDB BigAnimal认证过程进行中……"
 #: pgadmin/misc/cloud/static/js/azure.js:34
 #: pgadmin/misc/cloud/static/js/google.js:35
 #: pgadmin/preferences/static/js/components/PreferencesTree.jsx:76
+#: pgadmin/static/js/SchemaView/useSchemaState.js:258
 msgid "Loading..."
 msgstr "加载中..."
 
@@ -12499,7 +12501,7 @@ msgid "Go Back"
 msgstr "返回"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:733
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:264
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:204
 #: pgadmin/static/js/components/PgTable.jsx:280
 #: pgadmin/static/js/components/PgTable.jsx:281
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:409
@@ -12546,7 +12548,7 @@ msgid "All Files"
 msgstr "所有文件"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:848
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:609
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:619
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:19
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:111
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:117
@@ -12566,11 +12568,11 @@ msgid "Cancel"
 msgstr "取消"
 
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:146
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:168
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:171
 msgid "No files/folders found"
 msgstr "没有找到文件或目录"
 
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:127
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:124
 msgid "Date Modified"
 msgstr "修改日期"
 
@@ -12623,38 +12625,39 @@ msgstr "结果网格"
 msgid "This settings is to Show/Hide nodes in the object explorer."
 msgstr "这里设置节点列表在对象浏览器中的显示与隐藏"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:538
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:544
 msgid "Object explorer refresh required"
 msgstr "需要刷新对象资源管理器"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:539
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:545
 msgid "An object explorer refresh is required. Do you wish to refresh it now?"
 msgstr "需要刷新对象资源管理器。是否要立即刷新它？"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:552
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:567
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:562
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:577
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:361
 msgid "Later"
 msgstr "稍后"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:558
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:568
 msgid "Refresh required"
 msgstr "需要刷新"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:559
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:569
 msgid ""
 "A page refresh is required to apply the theme. Do you wish to refresh the"
 " page now?"
 msgstr "应用主题需要页面刷新。是否要立即刷新页面？"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:605
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:615
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:242
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:436
 msgid "Help for this dialog."
 msgstr "此对话框的帮助。"
 
-#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:612
+#: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:622
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:27
-#: pgadmin/static/js/SchemaView/index.jsx:818
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:260
 msgid "Save"
 msgstr "保存"
 
@@ -12805,7 +12808,7 @@ msgstr "请输入用户的密码以连接服务器 %s"
 #: pgadmin/static/js/helpers/ModalProvider.jsx:44
 #: pgadmin/static/js/helpers/ModalProvider.jsx:66
 #: pgadmin/static/js/helpers/Notifier.jsx:49
-#: pgadmin/static/js/helpers/Notifier.jsx:169
+#: pgadmin/static/js/helpers/Notifier.jsx:172
 #: pgadmin/tools/erd/static/js/erd_tool/components/FloatingNote.jsx:93
 #: pgadmin/tools/import_export/static/js/import_export.js:163
 #: pgadmin/tools/maintenance/static/js/maintenance.js:204
@@ -13057,7 +13060,7 @@ msgid ""
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 msgstr "使用解释/解释分析按钮生成查询计划。或者，您也可以执行\"解释（格式化JSON） [查询]\"。"
 
-#: pgadmin/static/js/PgTreeView/index.jsx:96
+#: pgadmin/static/js/PgTreeView/index.jsx:99
 msgid "No objects are found to display"
 msgstr ""
 
@@ -13086,58 +13089,62 @@ msgstr "帮助文章集"
 msgid "Show all"
 msgstr "显示全部"
 
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:269
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:209
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:215
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:622
 msgid "Add row"
 msgstr "添加行"
 
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:388
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:329
 msgid "Edit row"
 msgstr "编辑行"
 
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:405
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:346
 msgid "Delete row"
 msgstr "删除行"
 
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:427
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:368
 msgid "Delete Row"
 msgstr "删除行"
 
-#: pgadmin/static/js/SchemaView/DataGridView.jsx:428
+#: pgadmin/static/js/SchemaView/DataGridView.jsx:369
 msgid "Are you sure you wish to delete this row?"
 msgstr "确实要删除此行吗？"
 
-#: pgadmin/static/js/SchemaView/index.jsx:289
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:119
+msgid "Changes will be lost. Are you sure you want to reset?"
+msgstr "更改将丢失。您确认要重置吗？"
+
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:180
+msgid "No updates."
+msgstr "无更新。"
+
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:237
+msgid "SQL help for this object type."
+msgstr ""
+
+#: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:255
+msgid "Reset"
+msgstr "重置"
+
+#: pgadmin/static/js/SchemaView/SchemaPropertiesView.jsx:165
+msgid "Edit object..."
+msgstr "编辑对象……"
+
+#: pgadmin/static/js/SchemaView/schemaUtils.js:247
 #, python-format
 msgid "%s must be unique."
 msgstr "%s 必须唯一。"
 
-#: pgadmin/static/js/SchemaView/index.jsx:291
+#: pgadmin/static/js/SchemaView/schemaUtils.js:251
 #, python-format
 msgid "%s in %s must be unique."
 msgstr "%s 于 %s 必须唯一。"
 
-#: pgadmin/static/js/SchemaView/index.jsx:312
+#: pgadmin/static/js/SchemaView/schemaUtils.js:307
 #, python-format
 msgid "%s in %s"
 msgstr "%s 于 %s"
-
-#: pgadmin/static/js/SchemaView/index.jsx:647
-msgid "Changes will be lost. Are you sure you want to reset?"
-msgstr "更改将丢失。您确认要重置吗？"
-
-#: pgadmin/static/js/SchemaView/index.jsx:739
-msgid "No updates."
-msgstr "无更新。"
-
-#: pgadmin/static/js/SchemaView/index.jsx:815
-msgid "Reset"
-msgstr "重置"
-
-#: pgadmin/static/js/SchemaView/index.jsx:988
-msgid "Edit object..."
-msgstr "编辑对象……"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:16
 msgid "Forget Password"
@@ -13250,7 +13257,7 @@ msgstr ""
 msgid "Cmd"
 msgstr ""
 
-#: pgadmin/static/js/components/PgReactDataGrid.jsx:147
+#: pgadmin/static/js/components/PgReactDataGrid.jsx:156
 msgid "No rows found."
 msgstr "未找到行。"
 
@@ -13332,7 +13339,7 @@ msgstr "最大化"
 msgid "Minimize"
 msgstr "最小化"
 
-#: pgadmin/static/js/helpers/Notifier.jsx:136
+#: pgadmin/static/js/helpers/Notifier.jsx:139
 msgid "Connection Lost"
 msgstr "连接中断"
 
@@ -14318,107 +14325,107 @@ msgstr "（建立连接……）"
 msgid "(Connection failed)"
 msgstr "（连接失败）"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:298
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:299
 msgid "Preparing..."
 msgstr "正在准备..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:364
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:365
 msgid "Save changes?"
 msgstr "保存更改吗？"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:367
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:368
 msgid "The diagram has changed. Do you want to save changes?"
 msgstr "图表已更改。是否要保存更改？"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:427
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:428
 #, python-format
 msgid "Table: %s (%s)"
 msgstr "数据表：%s （%s）"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:429
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:438
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:430
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:439
 msgid "Table name already exists"
 msgstr "数据表已存在"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:455
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:456
 msgid "Cannot drop table from outside of the current database."
 msgstr "无法删除当前数据库之外的数据表"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:502
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:503
 msgid "Delete ?"
 msgstr "删除吗？"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:503
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:504
 #, python-format
 msgid "You have selected %s tables and %s links."
 msgstr "你已经选择%s 数据表和 %s 连接"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:504
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:505
 msgid "Are you sure you want to delete ?"
 msgstr "你确定要删除吗？"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:555
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:560
 msgid "Loading project..."
 msgstr "正在加载项目..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:591
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:597
 msgid "Saving..."
 msgstr "正在保存..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:596
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:602
 msgid "Project saved successfully."
 msgstr "项目保存成功。"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:631
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:637
 msgid "-- This script was generated by the ERD tool in pgAdmin 4.\n"
 msgstr "-- 此脚本由pgAdmin4的ERD工具生成\n"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:632
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:638
 msgid ""
 "-- Please log an issue at https://github.com/pgadmin-"
 "org/pgadmin4/issues/new/choose if you find any bugs, including "
 "reproduction steps.\n"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:645
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:651
 msgid "Preparing the SQL..."
 msgstr "准备SQL中……"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:672
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:678
 msgid "Preparing the image..."
 msgstr "正在准备镜像..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:745
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:751
 msgid "Unknown error. Check console logs"
 msgstr "未知错误，检查控制台日志"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:760
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:766
 msgid "Maximum image size limit"
 msgstr "最大图片尺寸限制"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:761
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:767
 msgid ""
 "The downloaded image has exceeded the maximum size of 32767 x 32767 "
 "pixels, and has been cropped to that size."
 msgstr "下载的图片触及最大尺寸限制32767*32767像素，已被裁剪。"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:770
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:776
 msgid "One to many relation"
 msgstr "一对多关系"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:778
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:784
 msgid "Many to many relation"
 msgstr "多对多关系"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:804
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:810
 msgid "Initializing connection..."
 msgstr "初始化连接……"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:835
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:841
 msgid "Fetching required data..."
 msgstr "获取需要的数据……"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:858
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:864
 msgid "Fetching schema data..."
 msgstr "获取模式数据……"
 
@@ -14753,7 +14760,7 @@ msgstr ""
 "即使它们没有被引用。此选项仅允许在导入中使用, 并且仅在使用 CSV 格式时允许。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:42
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:205
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:211
 #: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:47
 msgid "Import/Export Servers"
 msgstr "导入/导出 服务器"
@@ -14774,59 +14781,59 @@ msgstr "指定文件不存在。"
 msgid "Database Servers"
 msgstr "数据库服务器"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:76
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:82
 msgid "Export Servers"
 msgstr "导出服务器"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:76
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:82
 msgid "The selected servers were exported successfully."
 msgstr "选中的服务器导出成功。"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:79
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:85
 msgid "Export Error"
 msgstr "导出错误"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:96
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:102
 msgid "The selected servers were imported successfully."
 msgstr "选中的服务器导入成功。"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:98
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:104
 msgid ""
 "The existing server groups and servers were removed, and the selected "
 "servers were imported successfully."
 msgstr "存在的服务器组合服务器组已移除，且选中的服务器导入成功"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:101
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:107
 msgid "Import Servers"
 msgstr "导入服务器"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:104
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:110
 msgid "Import error"
 msgstr "导入错误"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:149
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:155
 msgid ""
 "The following servers will be imported. Click the Finish button to "
 "complete the import process."
 msgstr "以下服务器将被导入，点击完成按钮结束导入过程"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:151
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:157
 msgid ""
 "All existing server groups and servers will be removed before the servers"
 " above are imported. On a successful import process, the object explorer "
 "will be refreshed."
 msgstr "以上将被导入的服务器组合服务器如果存在将被删除，导入成功后对象浏览器将被刷新"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:153
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:159
 msgid "On a successful import process, the object explorer will be refreshed."
 msgstr "导入成功后对象浏览器将被刷新"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:174
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:175
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:180
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:181
 msgid "Error while fetching Server Groups and Servers."
 msgstr "获取服务器组合服务器出错"
 
-#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:229
+#: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:237
 msgid "Select the Server Groups/Servers to import/export:"
 msgstr "选择服务器组/服务器来导入/导出"
 
@@ -15175,39 +15182,39 @@ msgid ""
 "the Compare button in the Schema Diff tab."
 msgstr ""
 
-#: pgadmin/tools/schema_diff/__init__.py:704
+#: pgadmin/tools/schema_diff/__init__.py:699
 msgid "Selected object is not supported for DDL comparison."
 msgstr "DDL 比较不支持选定对象。"
 
-#: pgadmin/tools/schema_diff/__init__.py:728
+#: pgadmin/tools/schema_diff/__init__.py:723
 msgid "Server(s) disconnected."
 msgstr "服务器已断开连接。"
 
-#: pgadmin/tools/schema_diff/__init__.py:731
+#: pgadmin/tools/schema_diff/__init__.py:726
 msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
 msgstr "模式差异不支持 Postgres 服务器和 EDB Postgres 高级服务器之间的比较。"
 
-#: pgadmin/tools/schema_diff/__init__.py:745
+#: pgadmin/tools/schema_diff/__init__.py:740
 msgid "Source and Target database server must be of the same major version."
 msgstr "源数据库服务器和目标数据库服务器必须具有相同的主版本。"
 
-#: pgadmin/tools/schema_diff/__init__.py:794
+#: pgadmin/tools/schema_diff/__init__.py:789
 msgid "Comparing {0}"
 msgstr "正在比较{0}"
 
-#: pgadmin/tools/schema_diff/__init__.py:808
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:366
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:370
+#: pgadmin/tools/schema_diff/__init__.py:803
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:342
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:346
 msgid "Database Objects"
 msgstr "数据库对象"
 
-#: pgadmin/tools/schema_diff/__init__.py:858
+#: pgadmin/tools/schema_diff/__init__.py:853
 msgid "Comparing {0} "
 msgstr "正在比较 {0} "
 
-#: pgadmin/tools/schema_diff/__init__.py:861
+#: pgadmin/tools/schema_diff/__init__.py:856
 msgid "Comparing {0} of schema '{1}'"
 msgstr "正在比较{0}的架构\"{1}\""
 
@@ -15235,15 +15242,11 @@ msgstr "差异"
 msgid "Ignore Grant/Revoke"
 msgstr ""
 
-#: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:74
-msgid "Error in schema diff initialize ${error.response.data}"
-msgstr "模式比对初始化出错 ${error.response.data}"
-
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:783
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:754
 msgid "No difference found"
 msgstr "未发现差异"
 
-#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:788
+#: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:762
 msgid "Loading result grid..."
 msgstr "加载结果表格..."
 
@@ -15369,6 +15372,10 @@ msgstr "记录："
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:784
 msgid "The dependencies will not be resolved in the Schema comparison."
 msgstr "模式比对中依赖将不会被解析"
+
+#: pgadmin/tools/schema_diff/static/js/components/SchemaDiffComponent.jsx:73
+msgid "Error in schema diff initialize ${err.response.data}"
+msgstr ""
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:135
 msgid "Object name"
@@ -15649,7 +15656,7 @@ msgstr "请输入一个有效的数字"
 msgid "Invalid JSON input"
 msgstr "无效JSON输入"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:175
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:173
 msgid "View all geometries in this column"
 msgstr "显示此列中所有几何对象"
 
@@ -15730,27 +15737,27 @@ msgstr "空行。"
 msgid "Geometries with non-SRID %s not rendered."
 msgstr "未渲染具有非 SRID %s几何。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:301
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:357
 msgid "Empty"
 msgstr "空"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:306
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:362
 msgid "Street"
 msgstr "街"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:313
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:369
 msgid "Topography"
 msgstr "地势"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:324
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:380
 msgid "Gray Style"
 msgstr "灰度样式"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:335
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:391
 msgid "Light Color"
 msgstr "浅色"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:346
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:402
 msgid "Dark Matter"
 msgstr "深度关系"
 
@@ -17164,15 +17171,15 @@ msgid ""
 "the database server."
 msgstr "与主机 \"{0}\" 的 SSH 隧道的连接已丢失。重新连接到数据库服务器。"
 
-#: pgadmin/utils/heartbeat.py:34
+#: pgadmin/utils/heartbeat.py:35
 msgid "Manager not found. Stopped Heartbeat logging."
 msgstr "没有找到管理器，停止心跳日志。"
 
-#: pgadmin/utils/heartbeat.py:45
+#: pgadmin/utils/heartbeat.py:51
 msgid "Heartbeat logged successfully."
 msgstr "心跳记录成功。"
 
-#: pgadmin/utils/heartbeat.py:62
+#: pgadmin/utils/heartbeat.py:68
 msgid "Stopped Heartbeat logging."
 msgstr "停止心跳记录。"
 
@@ -17777,4 +17784,7 @@ msgstr ""
 
 #~ msgid "Server activity"
 #~ msgstr "服务器活动"
+
+#~ msgid "Error in schema diff initialize ${error.response.data}"
+#~ msgstr "模式比对初始化出错 ${error.response.data}"
 
