@@ -309,7 +309,7 @@ class SchemaState extends DepListener {
 
     // If schema does not have the data or does not have any 'onDataChange'
     // callback, there is no need to validate the current data.
-    if(!state.isReady || !state.onDataChange) return;
+    if(!state.isReady) return;
 
     if(
       !validateSchema(schema, sessData, (path, message) => {
@@ -345,7 +345,7 @@ class SchemaState extends DepListener {
 
     state.data = sessData;
 
-    state.onDataChange(hasDataChanged, dataDiff);
+    state.onDataChange && state.onDataChange(hasDataChanged, dataDiff);
   }
 
   get isNew() {
@@ -467,7 +467,7 @@ export const useSchemaState = ({
         });
       });
     });
-  }, [schemaState.__deferred__?.length]);
+  }, [sessData.__deferred__?.length]);
 
   schemaState.reload = reload;
   schemaState.reset = resetData;

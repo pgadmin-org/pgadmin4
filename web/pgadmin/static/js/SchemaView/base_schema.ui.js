@@ -53,6 +53,14 @@ export default class BaseUISchema {
     return this._state;
   }
 
+  get _sessData() {
+    return this._state?.changes;
+  }
+
+  set _sessData(val) {
+    throw new Error('Property _sessData is readonly.', val);
+  }
+
   /*
    * The session data, can be useful but setting this will not affect UI.
    * this._sessData is set by SchemaView directly. set sessData should not be
