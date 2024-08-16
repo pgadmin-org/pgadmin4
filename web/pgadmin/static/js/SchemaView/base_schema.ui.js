@@ -54,7 +54,7 @@ export default class BaseUISchema {
   }
 
   get _sessData() {
-    return this._state?.changes;
+    return this._state?.data;
   }
 
   set _sessData(val) {

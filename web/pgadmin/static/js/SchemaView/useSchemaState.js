@@ -179,7 +179,7 @@ const LOADING_STATE = {
   ERROR: 'Error'
 };
 
-class SchemaState extends DepListener {
+export class SchemaState extends DepListener {
 
   constructor(
     schema, getInitData, immutableData, mode, keepCid, onDataChange
