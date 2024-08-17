@@ -102,6 +102,12 @@ export default function SchemaDialogView({
     updateSchemaState(schemaState);
   }, [sessData.__changeId]);
 
+  useEffect(()=>{
+    if (!props.resetKey) return;
+    reset();
+  }, [props.resetKey]);
+
+
   const onResetClick = () => {
     const resetIt = () => {
       firstEleRef.current?.focus();
