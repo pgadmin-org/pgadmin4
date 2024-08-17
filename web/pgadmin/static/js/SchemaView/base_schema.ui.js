@@ -38,11 +38,11 @@ export default class BaseUISchema {
 
   /* The original data before any changes */
   set origData(val) {
-    this._origData = val;
+    throw new Error('Property \'origData\' is readonly.');
   }
 
   get origData() {
-    return this._origData || {};
+    return this.state?.initData || {};
   }
 
   set state(state) {

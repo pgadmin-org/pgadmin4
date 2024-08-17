@@ -51,7 +51,7 @@ export default class DomainConstraintSchema extends BaseUISchema {
         cell:'boolean', group: gettext('Definition'), min_version: 90200,
         mode: ['properties', 'create', 'edit'],
         readonly: function(state) {
-          return !obj.isNew(state) && obj._origData.convalidated;
+          return !obj.isNew(state) && obj.origData.convalidated;
         }
       }
     ];

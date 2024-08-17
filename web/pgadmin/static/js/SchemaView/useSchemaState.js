@@ -317,12 +317,22 @@ export class SchemaState extends DepListener {
       })
     ) state.setError({});
 
+    state.data = sessData;
+    state.changes = state.Changes();
+    state.onDataChange && state.onDataChange(state.hasChanges, state.changes);
+  }
+
+  Changes(includeSkipChange=false) {
+    const state = this;
+    const sessData = this.data;
+    const schema = state.schema;
+
     // Check if anything changed.
     let dataDiff = getSchemaDataDiff(
       schema, state.initData, sessData,
-      state.mode, state.keepCid, false, false
+      state.mode, state.keepCid, false, includeSkipChange
     );
-    const hasDataChanged = state.hasChanges = Object.keys(dataDiff).length > 0;
+    state.hasChanges = Object.keys(dataDiff).length > 0;
 
     // Inform the callbacks about change in the data.
     if(state.mode !== 'edit') {
@@ -331,21 +341,19 @@ export class SchemaState extends DepListener {
 
       // Remove internal '__changeId' attribute.
       delete dataDiff.__changeId;
+
       // In case of 'non-edit' mode, changes are always there.
-      state.changes = dataDiff;
-    } else if (hasDataChanged) {
+      return dataDiff;
+    } else if (state.hasChanges) {
       const idAttr = schema.idAttribute;
       const idVal = state.initData[idAttr];
       // Append 'idAttr' only if it actually exists
       if (idVal) dataDiff[idAttr] = idVal;
-      state.changes = dataDiff;
-    } else {
-      state.changes = null;
+
+      return dataDiff;
     }
 
-    state.data = sessData;
-
-    state.onDataChange && state.onDataChange(hasDataChanged, dataDiff);
+    return null;
   }
 
   get isNew() {

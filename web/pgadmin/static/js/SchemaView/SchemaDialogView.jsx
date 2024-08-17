@@ -151,14 +151,14 @@ export default function SchemaDialogView({
     setLoaderText('Saving...');
 
     if (!schema.warningText) {
-      save(schemaState.changes);
+      save(schemaState.Changes(true));
       return;
     }
 
     Notifier.confirm(
       gettext('Warning'),
       schema.warningText,
-      ()=> { save(schemaState.changes); },
+      ()=> { save(schemaState.Changes(true)); },
       () => {
         setSaving(false);
         setLoaderText('');
