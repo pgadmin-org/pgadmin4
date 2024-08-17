@@ -13,6 +13,7 @@ export function initializeSchemaWithData(schema, data) {
   const state = schema.state = new SchemaState(
     schema, null, null, 'create', false, null
   );
+  state.initData = data;
   state.data = data;
 }
 

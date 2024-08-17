@@ -353,7 +353,7 @@ export class SchemaState extends DepListener {
       return dataDiff;
     }
 
-    return null;
+    return {};
   }
 
   get isNew() {

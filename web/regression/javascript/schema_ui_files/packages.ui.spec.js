@@ -11,6 +11,7 @@
 import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
 import PackageSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { initializeSchemaWithData } from './utils';
 
 describe('PackageSchema', ()=>{
 
@@ -49,9 +50,9 @@ describe('PackageSchema', ()=>{
       pkgheadsrc: 'changed text'
     };
     packageSchemaObj.warningText = null;
-    packageSchemaObj._origData = {
-      oid: '123'
-    };
+
+    initializeSchemaWithData(packageSchemaObj, { oid: '123' });
+
     let actionObj = {
       oldState: {
         pkgheadsrc: 'original text'
@@ -69,9 +70,7 @@ describe('PackageSchema', ()=>{
       pkgheadsrc: 'changed text'
     };
     packageSchemaObj.warningText = null;
-    packageSchemaObj._origData = {
-      oid: '123'
-    };
+    initializeSchemaWithData(packageSchemaObj, { oid: '123' });
     let actionObj = {
       oldState: {
         pkgbodysrc: 'original text'
