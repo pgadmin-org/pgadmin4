@@ -13,6 +13,7 @@ import _ from 'lodash';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import { PartitionKeysSchema, PartitionsSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui';
 import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { initializeSchemaWithData } from './utils';
 
 function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
@@ -160,9 +161,8 @@ describe('PartitionsSchema', ()=>{
 
     state.is_sub_partitioned = false;
     state.is_default = false;
-    schemaObj.top._sessData = {
-      partition_type: 'range',
-    };
+    initializeSchemaWithData(schemaObj.top, {partition_type: 'range'});
+
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('values_from', 'For range partition From field cannot be empty.');
 
@@ -170,11 +170,11 @@ describe('PartitionsSchema', ()=>{
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('values_to', 'For range partition To field cannot be empty.');
 
-    schemaObj.top._sessData.partition_type = 'list';
+    initializeSchemaWithData(schemaObj.top, {partition_type: 'list'});
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('values_in', 'For list partition In field cannot be empty.');
 
-    schemaObj.top._sessData.partition_type = 'hash';
+    initializeSchemaWithData(schemaObj.top, {partition_type: 'hash'});
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('values_modulus', 'For hash partition Modulus field cannot be empty.');
 

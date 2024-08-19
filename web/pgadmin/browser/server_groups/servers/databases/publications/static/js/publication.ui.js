@@ -207,7 +207,10 @@ export default class PublicationSchema extends BaseUISchema {
       state.only_table = false;
       return true;
     }
-    if (!_.isUndefined(table) && table.length > 0 && !_.isEqual(this._origData.pubtable, state.pubtable)){
+    if (
+      !_.isUndefined(table) && table.length > 0 &&
+      !_.isEqual(this.origData.pubtable, state.pubtable)
+    ){
       return false;
     }
     state.only_table = false;
