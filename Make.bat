@@ -267,12 +267,17 @@ REM Main build sequence Ends
     XCOPY /S /I /E /H /Y "%WD%\runtime\src" "%BUILDROOT%\runtime\resources\app\src" > nul || EXIT /B 1
 
     COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\resources\app\" > nul || EXIT /B 1
+    COPY "%WD%\runtime\.yarnrc.yml" "%BUILDROOT%\runtime\resources\app\" > nul || EXIT /B 1
+
     CD "%BUILDROOT%\runtime\resources\app\"
 
     CALL yarn set version berry || EXIT /B 1
     CALL yarn set version 3 || EXIT /B 1
     CALL yarn plugin import workspace-tools || EXIT /B 1
     CALL yarn workspaces focus --production || EXIT /B 1
+
+    ECHO Removing yarn cache...
+    RD /Q /S "%BUILDROOT%\runtime\resources\app\.yarn" 1> nul 2>&1
 
     ECHO Downloading Electron to %TMPDIR%...
     REM Get a fresh copy of electron.

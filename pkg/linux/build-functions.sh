@@ -171,6 +171,7 @@ _build_runtime() {
     cp -r "${SOURCEDIR}/runtime/src" "${BUNDLEDIR}/resources/app/src"
 
     cp "${SOURCEDIR}/runtime/package.json" "${BUNDLEDIR}/resources/app"
+    cp "${SOURCEDIR}/runtime/.yarnrc.yml" "${BUNDLEDIR}/resources/app"
 
     # Install the runtime node_modules
     pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
