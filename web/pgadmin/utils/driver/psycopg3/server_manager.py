@@ -242,8 +242,7 @@ WHERE db.oid = {0}""".format(did))
                                 "Could not find the specified database."
                             ))
 
-        if not get_crypt_key()[0] and (
-                config.SERVER_MODE or config.DISABLED_LOCAL_PASSWORD_STORAGE):
+        if not get_crypt_key()[0]:
             # the reason its not connected might be missing key
             raise CryptKeyMissing()
 
@@ -537,16 +536,10 @@ WHERE db.oid = {0}""".format(did))
 
     def export_password_env(self, env):
         if self.password:
-            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-                crypt_key_present, crypt_key = get_crypt_key()
-                if not crypt_key_present:
-                    return False, crypt_key
-                password = decrypt(self.password, crypt_key).decode()
-            elif hasattr(self.password, 'decode'):
-                password = self.password.decode('utf-8')
-            else:
-                password = self.password
-
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                return False, crypt_key
+            password = decrypt(self.password, crypt_key).decode()
             os.environ[str(env)] = password
         elif self.passexec:
             password = self.passexec.get()
@@ -565,18 +558,15 @@ WHERE db.oid = {0}""".format(did))
             return False, gettext("Unauthorized request.")
 
         if tunnel_password is not None and tunnel_password != '':
-            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-                crypt_key_present, crypt_key = get_crypt_key()
-                if not crypt_key_present:
-                    raise CryptKeyMissing()
+            crypt_key_present, crypt_key = get_crypt_key()
+            if not crypt_key_present:
+                raise CryptKeyMissing()
 
             try:
-                if config.DISABLED_LOCAL_PASSWORD_STORAGE:
-                    tunnel_password = decrypt(tunnel_password, crypt_key)
-                    # password is in bytes, for python3 we need it in string
-                    if isinstance(tunnel_password, bytes):
-                        tunnel_password = tunnel_password.decode()
-
+                tunnel_password = decrypt(tunnel_password, crypt_key)
+                # password is in bytes, for python3 we need it in string
+                if isinstance(tunnel_password, bytes):
+                    tunnel_password = tunnel_password.decode()
             except Exception as e:
                 current_app.logger.exception(e)
                 return False, gettext("Failed to decrypt the SSH tunnel "

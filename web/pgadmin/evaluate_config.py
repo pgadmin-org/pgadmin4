@@ -116,15 +116,15 @@ def evaluate_and_patch_config(config: dict) -> dict:
         config['ENABLE_PSQL'] = True
 
     if config.get('SERVER_MODE'):
-        config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
+        config.setdefault('USE_OS_SECRET_STORAGE', False)
         config.setdefault('KEYRING_NAME', '')
     else:
         k_name = keyring.get_keyring().name
+        # Setup USE_OS_SECRET_STORAGE false as no keyring backend available
         if k_name == 'fail Keyring':
-            config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
-            config.setdefault('KEYRING_NAME', '')
+            config['USE_OS_SECRET_STORAGE'] = False
+            config['KEYRING_NAME'] = ''
         else:
-            config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', False)
             config.setdefault('KEYRING_NAME', k_name)
 
     config.setdefault('SESSION_COOKIE_PATH', config.get('COOKIE_DEFAULT_PATH'))

@@ -30,7 +30,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.authenticate.internal import BaseAuthentication
 from pgadmin.authenticate import get_auth_sources
 from pgadmin.utils.csrf import pgCSRFProtect
-
+from pgadmin.utils.master_password import set_crypt_key
 
 try:
     import gssapi
@@ -193,7 +193,8 @@ class KerberosAuthentication(BaseAuthentication):
                     if status:
                         # Saving the first 15 characters of the kerberos key
                         # to encrypt/decrypt database password
-                        session['pass_enc_key'] = auth_header[1][0:15]
+                        pass_enc_key = auth_header[1][0:15]
+                        set_crypt_key(pass_enc_key)
                         # Create user
                         retval = self.__auto_create_user(
                             str(negotiate.initiator_name))
