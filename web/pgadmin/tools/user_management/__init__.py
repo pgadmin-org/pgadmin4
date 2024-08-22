@@ -116,11 +116,12 @@ def current_user_info():
                 else 'postgres'
             ),
             allow_save_password='true' if
-            config.ALLOW_SAVE_PASSWORD and session['allow_save_password']
+            config.ALLOW_SAVE_PASSWORD and
+            session.get('allow_save_password', None)
             else 'false',
             allow_save_tunnel_password='true' if
-            config.ALLOW_SAVE_TUNNEL_PASSWORD and session[
-                'allow_save_password'] else 'false',
+            config.ALLOW_SAVE_TUNNEL_PASSWORD and
+            session.get('allow_save_password', None) else 'false',
             auth_sources=config.AUTHENTICATION_SOURCES,
             current_auth_source=session['auth_source_manager'][
                 'current_source'] if config.SERVER_MODE is True else INTERNAL
