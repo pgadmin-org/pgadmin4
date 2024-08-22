@@ -38,11 +38,11 @@ export default class BaseUISchema {
 
   /* The original data before any changes */
   set origData(val) {
-    this._origData = val;
+    throw new Error('Property \'origData\' is readonly.');
   }
 
   get origData() {
-    return this._origData || {};
+    return this.state?.initData || {};
   }
 
   set state(state) {
@@ -51,6 +51,14 @@ export default class BaseUISchema {
 
   get state() {
     return this._state;
+  }
+
+  get _sessData() {
+    return this._state?.data;
+  }
+
+  set _sessData(val) {
+    throw new Error('Property _sessData is readonly.', val);
   }
 
   /*

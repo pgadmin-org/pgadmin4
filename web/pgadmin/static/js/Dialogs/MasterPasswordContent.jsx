@@ -64,7 +64,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             </span>
             <br />
             <span style={{ fontWeight: 'bold' }}>
-              <FormNote text={gettext(`pgAdmin now stores any saved passwords in ${keyringName}. Enter the master password for your existing pgAdmin saved passwords and they will be migrated to the operating system store when you click OK.`)}></FormNote>
+              <FormNote text={gettext(`Saved passwords are encrypted using encryption key stored in ${keyringName}. Enter the master password for your existing pgAdmin saved passwords and they will be re-encrypted and saved when you click OK.`)}></FormNote>
             </span>
           </Box>
           <Box marginTop='12px'>

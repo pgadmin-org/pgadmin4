@@ -60,6 +60,7 @@ if config.SERVER_MODE is True:
 
 # disable master password for test cases
 config.MASTER_PASSWORD_REQUIRED = False
+config.USE_OS_SECRET_STORAGE = False
 
 from regression import test_setup
 from regression.feature_utils.app_starter import AppStarter

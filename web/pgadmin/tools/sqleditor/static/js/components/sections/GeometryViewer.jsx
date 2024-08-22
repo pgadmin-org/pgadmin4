@@ -212,7 +212,7 @@ PopupTable.propTypes = {
   })),
 };
 
-function GeoJsonLayer({data}) {
+function GeoJsonLayer({data, setHomeCoordinates}) {
   const vectorLayerRef = useRef(null);
   const mapObj = useMap();
   useEffect(() => {
@@ -234,6 +234,7 @@ function GeoJsonLayer({data}) {
     } else {
       mapObj.setView(bounds.getCenter(), mapObj.getZoom());
     }
+    setHomeCoordinates({bounds,maxLength});
   }, [data]);
 
   return (
@@ -281,6 +282,8 @@ function TheMap({data}) {
   const mapObj = useMap();
   const infoControl = useRef(null);
   const resetLayersKey = useRef(0);
+  const zoomControlWithHome = useRef(null);
+  const homeCoordinates = useRef(null);
   useEffect(()=>{
     infoControl.current = Leaflet.control({position: 'topright'});
     infoControl.current.onAdd = function () {
@@ -292,8 +295,61 @@ function TheMap({data}) {
       infoControl.current.addTo(mapObj);
     }
     resetLayersKey.current++;
-    return ()=>{infoControl.current?.remove();};
+
+    zoomControlWithHome.current = Leaflet.control.zoom({
+      zoomHomeIcon: 'home',
+      zoomHomeTitle: 'Home',
+      homeCoordinates: null,
+      homeZoom: null,
+      maxLength: null,
+    });
+
+    zoomControlWithHome.current._zoomHome = function () {
+      if (this.options.maxLength > 0) {
+        this._map.fitBounds(this.options.homeCoordinates);
+      } else {
+        this._map.setView(this.options.homeCoordinates.getCenter(), this.options.homeZoom);
+      }
+    };
+    
+    zoomControlWithHome.current.onAdd = function (map) {
+      let controlName = 'leaflet-control-zoom',
+        container = Leaflet.DomUtil.create('div', controlName + ' leaflet-bar'),
+        options = this.options;
+
+      if (options.homeCoordinates === null) {
+        options.homeCoordinates = homeCoordinates.current?.bounds;
+      }
+      if (options.homeZoom === null) {
+        options.homeZoom = map.getBoundsZoom(homeCoordinates.current?.bounds);
+      }
+      if(options.maxLength === null) {
+        options.maxLength = homeCoordinates.current?.maxLength;
+      }
+
+      let zoomHomeText = `<i class="fa fa-${options.zoomHomeIcon}"></i>`;
+
+      this._zoomInButton = this._createButton(options.zoomInText, options.zoomInTitle, controlName + '-in', container, this._zoomIn.bind(this));
+      this._createButton(zoomHomeText, options.zoomHomeTitle, controlName + '-home', container, this._zoomHome.bind(this));
+      this._zoomOutButton = this._createButton(options.zoomOutText, options.zoomOutTitle, controlName + '-out', container, this._zoomOut.bind(this));
+
+      this._updateDisabled();
+      map.on('zoomend zoomlevelschange', this._updateDisabled, this);
+
+      return container;
+    };
+    zoomControlWithHome.current.addTo(mapObj);
+
+    return ()=>{
+      infoControl.current?.remove();
+      zoomControlWithHome.current?.remove();
+    };
   }, [data]);
+
+  const setHomeCoordinates = (data) => {
+    homeCoordinates.current = data;
+  };
+
   return (
     <>
       {data.selectedSRID === 4326 &&
@@ -355,7 +411,7 @@ function TheMap({data}) {
           />
         </LayersControl.BaseLayer>
       </LayersControl>}
-      <GeoJsonLayer key={resetLayersKey.current} data={data} />
+      <GeoJsonLayer key={resetLayersKey.current} data={data} setHomeCoordinates={setHomeCoordinates} />
     </>
   );
 }
@@ -395,6 +451,7 @@ export function GeometryViewer({rows, columns, column}) {
       <MapContainer
         crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
+        zoomControl={false}
         preferCanvas={true}
         className='GeometryViewer-mapContainer'
         whenCreated={(map)=>{

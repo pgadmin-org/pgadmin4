@@ -102,6 +102,12 @@ export default function SchemaDialogView({
     updateSchemaState(schemaState);
   }, [sessData.__changeId]);
 
+  useEffect(()=>{
+    if (!props.resetKey) return;
+    reset();
+  }, [props.resetKey]);
+
+
   const onResetClick = () => {
     const resetIt = () => {
       firstEleRef.current?.focus();
@@ -151,14 +157,14 @@ export default function SchemaDialogView({
     setLoaderText('Saving...');
 
     if (!schema.warningText) {
-      save(schemaState.changes);
+      save(schemaState.Changes(true));
       return;
     }
 
     Notifier.confirm(
       gettext('Warning'),
       schema.warningText,
-      ()=> { save(schemaState.changes); },
+      ()=> { save(schemaState.Changes(true)); },
       () => {
         setSaving(false);
         setLoaderText('');

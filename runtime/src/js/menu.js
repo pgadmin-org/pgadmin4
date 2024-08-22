@@ -53,10 +53,12 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
         label: 'Configure runtime...', click: callbacks['configure'],
       },
       { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideOthers' },
-      { role: 'unhide' },
-      { type: 'separator' },
+      ...(isMac ? [
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+      ] : []),
       { role: 'quit' },
     ],
   });

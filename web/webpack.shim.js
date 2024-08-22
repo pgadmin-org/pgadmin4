@@ -48,12 +48,6 @@ let webpackShimConfig = {
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
 
-    //xterm
-    'xterm': path.join(__dirname, './node_modules/xterm/lib/xterm.js'),
-    'xterm-addon-fit': path.join(__dirname, './node_modules/xterm-addon-fit/lib/xterm-addon-fit.js'),
-    'xterm-addon-web-links': path.join(__dirname, './node_modules/xterm-addon-web-links/lib/xterm-addon-web-links.js'),
-    'xterm-addon-search': path.join(__dirname, './node_modules/xterm-addon-search/lib/xterm-addon-search.js'),
-
     //socket
     'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
 

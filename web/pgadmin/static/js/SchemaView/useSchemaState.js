@@ -179,7 +179,7 @@ const LOADING_STATE = {
   ERROR: 'Error'
 };
 
-class SchemaState extends DepListener {
+export class SchemaState extends DepListener {
 
   constructor(
     schema, getInitData, immutableData, mode, keepCid, onDataChange
@@ -309,7 +309,7 @@ class SchemaState extends DepListener {
 
     // If schema does not have the data or does not have any 'onDataChange'
     // callback, there is no need to validate the current data.
-    if(!state.isReady || !state.onDataChange) return;
+    if(!state.isReady) return;
 
     if(
       !validateSchema(schema, sessData, (path, message) => {
@@ -317,12 +317,22 @@ class SchemaState extends DepListener {
       })
     ) state.setError({});
 
+    state.data = sessData;
+    state.changes = state.Changes();
+    state.onDataChange && state.onDataChange(state.hasChanges, state.changes);
+  }
+
+  Changes(includeSkipChange=false) {
+    const state = this;
+    const sessData = this.data;
+    const schema = state.schema;
+
     // Check if anything changed.
     let dataDiff = getSchemaDataDiff(
       schema, state.initData, sessData,
-      state.mode, state.keepCid, false, false
+      state.mode, state.keepCid, false, includeSkipChange
     );
-    const hasDataChanged = state.hasChanges = Object.keys(dataDiff).length > 0;
+    state.hasChanges = Object.keys(dataDiff).length > 0;
 
     // Inform the callbacks about change in the data.
     if(state.mode !== 'edit') {
@@ -331,21 +341,19 @@ class SchemaState extends DepListener {
 
       // Remove internal '__changeId' attribute.
       delete dataDiff.__changeId;
+
       // In case of 'non-edit' mode, changes are always there.
-      state.changes = dataDiff;
-    } else if (hasDataChanged) {
+      return dataDiff;
+    } else if (state.hasChanges) {
       const idAttr = schema.idAttribute;
       const idVal = state.initData[idAttr];
       // Append 'idAttr' only if it actually exists
       if (idVal) dataDiff[idAttr] = idVal;
-      state.changes = dataDiff;
-    } else {
-      state.changes = null;
+
+      return dataDiff;
     }
 
-    state.data = sessData;
-
-    state.onDataChange(hasDataChanged, dataDiff);
+    return {};
   }
 
   get isNew() {
@@ -467,7 +475,7 @@ export const useSchemaState = ({
         });
       });
     });
-  }, [schemaState.__deferred__?.length]);
+  }, [sessData.__deferred__?.length]);
 
   schemaState.reload = reload;
   schemaState.reset = resetData;

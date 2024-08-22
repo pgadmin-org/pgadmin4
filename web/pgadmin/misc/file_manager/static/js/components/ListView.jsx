@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid';
 import FolderIcon from '@mui/icons-material/Folder';
 import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
@@ -132,19 +132,25 @@ const columns = [
 
 
 export default function ListView({items, operation, ...props}) {
-
   const gridRef = useRef();
 
   useEffect(()=>{
     if(operation.type) {
-      operation.type == 'add' && gridRef.current.scrollToRow(operation.idx);
+      operation.type == 'add' && gridRef.current.scrollToCell({rowIdx: operation.idx});
       gridRef.current.selectCell({idx: 0, rowIdx: operation.idx}, true);
     }
   }, [operation]);
 
-  useEffect(()=>{
-    gridRef.current?.selectCell({idx: 0, rowIdx: 0});
-  }, [gridRef.current?.element]);
+  const onRowsChange = useCallback((rows)=>{
+    operation?.onComplete?.(rows[operation.idx], operation.idx);
+  }, [operation]);
+
+  const onCellKeyDown = useCallback(({mode}, e)=>{
+    /* Typing should not open the editor */
+    if(mode == 'SELECT' && e.code != 'ArrowDown' && e.code != 'ArrowUp') {
+      e.preventGridDefault();
+    }
+  }, []);
 
   return (
     <StyledPgReactDataGrid
@@ -163,9 +169,8 @@ export default function ListView({items, operation, ...props}) {
       mincolumnWidthBy={25}
       enableCellSelect={false}
       noRowsText={gettext('No files/folders found')}
-      onRowsChange={(rows)=>{
-        operation?.onComplete?.(rows[operation.idx], operation.idx);
-      }}
+      onRowsChange={onRowsChange}
+      onCellKeyDown={onCellKeyDown}
       {...props}
     />
   );

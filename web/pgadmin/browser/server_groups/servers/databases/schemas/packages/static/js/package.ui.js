@@ -100,7 +100,10 @@ export default class PackageSchema extends BaseUISchema {
         group: gettext('Header'),
         depChange: (state, source, topState, actionObj) => {
 
-          if(packageSchemaObj._origData.oid && state.pkgheadsrc != actionObj.oldState.pkgheadsrc) {
+          if(
+            packageSchemaObj.origData.oid &&
+            state.pkgheadsrc != actionObj.oldState.pkgheadsrc
+          ) {
             packageSchemaObj.warningText = gettext(
               'Updating the package header definition may remove its existing body.'
             ) + '<br><br><b>' + gettext('Do you want to continue?') +
@@ -116,7 +119,10 @@ export default class PackageSchema extends BaseUISchema {
         mode: ['properties', 'create', 'edit'], group: gettext('Body'),
         depChange: (state, source, topState, actionObj) => {
 
-          if(packageSchemaObj._origData.oid && state.pkgbodysrc != actionObj.oldState.pkgbodysrc) {
+          if(
+            packageSchemaObj.origData.oid &&
+            state.pkgbodysrc != actionObj.oldState.pkgbodysrc
+          ) {
             packageSchemaObj.warningText = gettext(
               'Updating the package header definition may remove its existing body.'
             ) + '<br><br><b>' + gettext('Do you want to continue?') +

@@ -52,11 +52,12 @@ export default function cmOverride(theme) {
             fontWeight: 600
           },
           '& .tok-string': {color: editor.string},
-          '& .tok-variable': {color: editor.variable },
+          '& .tok-variableName': {color: editor.variable },
           '& .tok-comment': {color: editor.comment},
           '& .tok-operator': { color: editor.operator },
           '& .tok-punctuation': {color: editor.punctuation},
           '& .tok-typeName': {color: editor.type},
+          '& .tok-name': {color: editor.name},
         },
 
         '& .cm-selectionLayer': {

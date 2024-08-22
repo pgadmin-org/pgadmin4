@@ -403,6 +403,19 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         }}
         enableRangeSelection={true}
         rangeLeftBoundaryColIdx={0}
+        onCellKeyDown={({column, rowIdx, selectCell, mode}, e)=>{
+          /* Enter should not be propagated to editor and should
+          only be used to open the editor */
+          if(mode == 'SELECT' && e.code == 'Enter') {
+            e.preventGridDefault();
+            e.preventDefault();
+            e.stopPropagation();
+            selectCell({
+              idx: column.idx,
+              rowIdx
+            }, true);
+          }
+        }}
         {...props}
       />
     </DataGridExtrasContext.Provider>
