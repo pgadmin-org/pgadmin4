@@ -1725,13 +1725,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/memoize@npm:^0.7.5":
-  version: 0.7.5
-  resolution: "@emotion/memoize@npm:0.7.5"
-  checksum: 83da8d4a7649a92c72f960817692bc6be13cc13e107b9f7e878d63766525ed4402881bfeb3cda61145c050281e7e260f114a0a2870515527346f2ef896b915b3
-  languageName: node
-  linkType: hard
-
 "@emotion/memoize@npm:^0.9.0":
   version: 0.9.0
   resolution: "@emotion/memoize@npm:0.9.0"
@@ -13899,7 +13892,7 @@ __metadata:
     "@codemirror/lang-sql": ^6.6.5
     "@date-io/core": ^3.0.0
     "@date-io/date-fns": 3.x
-    "@emotion/memoize": ^0.7.5
+    "@emotion/memoize": ^0.9.0
     "@emotion/react": ^11.11.3
     "@emotion/sheet": ^1.0.1
     "@emotion/styled": ^11.11.0
