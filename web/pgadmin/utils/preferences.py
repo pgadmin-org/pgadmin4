@@ -694,3 +694,20 @@ class Preferences():
             pref.value = converter_func(pref.value)
 
         db.session.commit()
+
+    @classmethod
+    def reset(cls):
+        """
+        reset
+        Reset the preferences for the current user in the configuration table.
+        """
+        try:
+            db.session.query(UserPrefTable).filter(
+                UserPrefTable.uid == current_user.id).delete()
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.exception(e)
+            return False, str(e)
+
+        return True, None

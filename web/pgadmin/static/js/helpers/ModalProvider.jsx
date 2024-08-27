@@ -41,7 +41,18 @@ export function useModal() {
   return React.useContext(ModalContext);
 }
 
-function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick }) {
+function renderExtraButtons(button) {
+  switch(button.type) {
+  case 'primary':
+    return <PrimaryButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</PrimaryButton>;
+  case 'default':
+    return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</DefaultButton>;
+  default:
+    return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</DefaultButton>;
+  };
+}
+
+function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, extraButtons }) {
   return (
     <StyledBox display="flex" flexDirection="column" height="100%">
       <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
@@ -49,7 +60,12 @@ function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = ge
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
         }
-        <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+        {
+          extraButtons?.length ?
+            extraButtons.map(button=>renderExtraButtons(button))
+            :
+            <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+        }
       </Box>
     </StyledBox>
   );
@@ -61,6 +77,7 @@ AlertContent.propTypes = {
   onCancelClick: PropTypes.func,
   okLabel: PropTypes.string,
   cancelLabel: PropTypes.string,
+  extraButtons: PropTypes.array
 };
 
 function alert(title, text, onOkClick, okLabel = gettext('OK')) {
@@ -76,7 +93,7 @@ function alert(title, text, onOkClick, okLabel = gettext('OK')) {
   });
 }
 
-function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes'), cancelLabel = gettext('No')) {
+function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes'), cancelLabel = gettext('No'), extras = null) {
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
     const onCancelClickClose = () => {
@@ -87,8 +104,9 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
       onOkClick?.();
       closeModal();
     };
+    const extraButtons =  extras?.(closeModal);
     return (
-      <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} />
+      <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} extraButtons={extraButtons} />
     );
   });
 }

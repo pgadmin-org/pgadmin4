@@ -11,9 +11,7 @@ The left pane of the *Preferences* dialog displays a tree control; each node of
 the tree control provides access to options that are related to the node under
 which they are displayed.
 
-* Use the plus sign (+) to the left of a node name to expand a segment of the
-  tree control.
-* Use the minus sign (-) to the left of a node name to close that node.
+* Click the *Reset all preferences* button to restore all preferences to their default values.
 
 The Browser Node
 ****************
