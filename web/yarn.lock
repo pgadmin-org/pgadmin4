@@ -14012,7 +14012,7 @@ __metadata:
     split.js: ^1.5.10
     sql-formatter: ^15.4.0
     style-loader: ^3.3.2
-    stylis: ^4.0.7
+    stylis: ^4.3.4
     svgo: ^3.3.2
     svgo-loader: ^4.0.0
     terser-webpack-plugin: ^5.1.1
@@ -14999,10 +14999,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylis@npm:^4.0.7":
-  version: 4.3.3
-  resolution: "stylis@npm:4.3.3"
-  checksum: 092b678b9a4a01e9d81dd7915f6d1741982e85f55eda67e0c297374f047a196fc709e39debfb028c68b02f1934159340defa7d28156e66b2c1dac916a6cc2d8f
+"stylis@npm:^4.3.4":
+  version: 4.3.4
+  resolution: "stylis@npm:4.3.4"
+  checksum: 7e3a482c7bba6e0e9e3187972e958acf800b1abe99f23e081fcb5dea8e4a05eca44286c1381ce2bc7179245ddbd7bf1f74237ed413fce7491320a543bcfebda9
   languageName: node
   linkType: hard
 
