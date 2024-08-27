@@ -1,10 +1,10 @@
 import secrets
 
 import keyring
-from keyring.errors import KeyringError, KeyringLocked, NoKeyringError
+from keyring.errors import KeyringLocked, NoKeyringError
 
 import config
-from flask import current_app
+from flask import current_app, session
 from flask_login import current_user
 from pgadmin.model import db, User, Server
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, KEY_RING_USER_NAME
@@ -36,6 +36,9 @@ def get_crypt_key():
     elif config.MASTER_PASSWORD_REQUIRED and \
             enc_key is None:
         return False, None
+    elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
+            'pass_enc_key' in session:
+        return True, session['pass_enc_key']
     else:
         return True, enc_key
 

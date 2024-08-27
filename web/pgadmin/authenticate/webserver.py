@@ -12,7 +12,7 @@
 import secrets
 import string
 import config
-from flask import request, current_app, Response, render_template, \
+from flask import request, current_app, session, Response, render_template, \
     url_for
 from flask_babel import gettext
 from flask_security import login_user
@@ -90,9 +90,9 @@ class WebserverAuthentication(BaseAuthentication):
             return False, gettext(
                 "Webserver authenticate failed.")
 
-        pass_enc_key = ''.join(
+        session['pass_enc_key'] = ''.join(
             (secrets.choice(string.ascii_lowercase) for _ in range(10)))
-        set_crypt_key(pass_enc_key)
+
         useremail = request.environ.get('mail')
         if not useremail:
             useremail = ''

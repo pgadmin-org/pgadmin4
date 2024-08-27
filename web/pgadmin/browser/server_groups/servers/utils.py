@@ -267,9 +267,8 @@ def migrate_passwords_from_os_secret_storage(servers, enc_key):
                 tunnel_password = keyring.get_password(
                     KEY_RING_SERVICE_NAME, tunnel_name)
                 if tunnel_password:
+                    tunnel_password = encrypt(tunnel_password, enc_key)
                     setattr(server, 'tunnel_password', tunnel_password)
-                    keyring.delete_password(
-                        KEY_RING_SERVICE_NAME, tunnel_name)
                 else:
                     setattr(server, 'tunnel_password', None)
             passwords_migrated = True
@@ -355,6 +354,11 @@ def migrate_saved_passwords(master_key, master_password):
                 return passwords_migrated, error
             elif master_password:
                 old_key = master_password
+            else:
+                current_app.logger.warning(
+                    'Saved password were already migrated once. '
+                    'Hence not migrating again. '
+                    'May be the old master key was deleted.')
         else:
             old_key = current_user.password
 

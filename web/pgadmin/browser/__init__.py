@@ -735,6 +735,10 @@ def set_master_password():
                             keyring_name=keyring_name)
                     else:
                         if not error:
+                            # Update keyring
+                            keyring.set_password(KEY_RING_SERVICE_NAME,
+                                                 KEY_RING_USER_NAME,
+                                                 master_key)
                             set_crypt_key(master_key)
                             return form_master_password_response(
                                 present=True)
