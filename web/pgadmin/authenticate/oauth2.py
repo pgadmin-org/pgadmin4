@@ -26,7 +26,6 @@ from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
     get_safe_post_logout_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.model import db
-from pgadmin.utils.master_password import set_crypt_key
 
 OAUTH2_LOGOUT = 'oauth2.logout'
 OAUTH2_AUTHORIZE = 'oauth2.authorize'
@@ -211,8 +210,7 @@ class OAuth2Authentication(BaseAuthentication):
         session['oauth2_token'] = self.oauth2_clients[
             self.oauth2_current_client].authorize_access_token()
 
-        pass_enc_key = session['oauth2_token']['access_token']
-        set_crypt_key(pass_enc_key)
+        session['pass_enc_key'] = session['oauth2_token']['access_token']
 
         if 'OAUTH2_LOGOUT_URL' in self.oauth2_config[
                 self.oauth2_current_client]:
