@@ -209,7 +209,7 @@ export default class PublicationSchema extends BaseUISchema {
     }
     if (
       !_.isUndefined(table) && table.length > 0 &&
-      !_.isEqual(this.origData.pubtable, state.pubtable)
+      !_.isEqual(this.sessData.pubtable, state.pubtable)
     ){
       return false;
     }

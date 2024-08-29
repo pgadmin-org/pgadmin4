@@ -14,7 +14,7 @@ import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPro
 
 describe('DomainSchema', ()=>{
 
-  let schemaObj = new DomainSchema(
+  const createSchemaObj = () => new DomainSchema(
     {
       role: ()=>[],
       schema: ()=>[],
@@ -31,23 +31,20 @@ describe('DomainSchema', ()=>{
   let getInitData = ()=>Promise.resolve({});
 
 
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
+
 export default class ServerGroupSchema extends BaseUISchema {
   constructor() {
     super({
@@ -28,7 +29,7 @@ export default class ServerGroupSchema extends BaseUISchema {
         id: 'name', label: gettext('Name'), type: 'text', group: null,
         mode: ['properties', 'edit', 'create'], noEmpty: true,
         disabled: false,
-      }
+      },
     ];
   }
 }

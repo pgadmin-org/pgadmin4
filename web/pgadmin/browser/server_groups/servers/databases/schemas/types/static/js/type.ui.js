@@ -1024,7 +1024,7 @@ class DataTypeSchema extends BaseUISchema {
     return [{
       id: 'type',
       label: gettext('Data Type'),
-      group: gettext('Definition'),
+      group: gettext('Data Type'),
       mode: ['edit', 'create'],
       disabled: false,
       readonly: function (state) {
@@ -1056,7 +1056,7 @@ class DataTypeSchema extends BaseUISchema {
       }
     },{
       id: 'maxsize',
-      group: gettext('Definition'),
+      group: gettext('Data Type'),
       label: gettext('Size'),
       type: 'int',
       deps: ['typtype'],

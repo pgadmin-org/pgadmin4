@@ -11,6 +11,7 @@
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import ViewSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { initializeSchemaWithData } from './utils';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -20,25 +21,22 @@ class MockSchema extends BaseUISchema {
 
 describe('ViewSchema', ()=>{
 
-  let schemaObj = new ViewSchema(
-    ()=>new MockSchema(),
-    {server: {server_type: 'pg'}},
-    {
-      role: ()=>[],
-      schema: ()=>[],
-    },
-    {
-      owner: 'postgres',
-      schema: 'public'
-    }
-  );
+  let schemaObj; 
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
+    schemaObj = new ViewSchema(
+      ()=>new MockSchema(),
+      {server: {server_type: 'pg'}},
+      {
+        role: ()=>[],
+        schema: ()=>[],
+      },
+      {
+        owner: 'postgres',
+        schema: 'public'
+      }
+    );
     genericBeforeEach();
   });
 
@@ -57,6 +55,7 @@ describe('ViewSchema', ()=>{
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();
+    initializeSchemaWithData(schemaObj, {});
 
     state.definition = null;
     schemaObj.validate(state, setError);
@@ -77,4 +76,3 @@ describe('ViewSchema', ()=>{
 
   });
 });
-

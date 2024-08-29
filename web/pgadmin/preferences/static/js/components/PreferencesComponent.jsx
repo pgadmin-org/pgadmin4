@@ -86,6 +86,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
+
 class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
     super({
@@ -99,8 +100,8 @@ class PreferencesSchema extends BaseUISchema {
     return 'id';
   }
 
-  setSelectedCategory(category) {
-    this.category = category;
+  categoryUpdated() {
+    this.state?.validate(this.sessData);
   }
 
   get baseFields() {
@@ -109,7 +110,8 @@ class PreferencesSchema extends BaseUISchema {
 }
 
 
-function RightPanel({ schema, ...props }) {
+function RightPanel({ schema, refreshKey, ...props }) {
+  const schemaViewRef = React.useRef(null);
   let initData = () => new Promise((resolve, reject) => {
     try {
       resolve(props.initValues);
@@ -117,20 +119,31 @@ function RightPanel({ schema, ...props }) {
       reject(error instanceof Error ? error : Error(gettext('Something went wrong')));
     }
   });
+  useEffect(() => {
+    const timeID = setTimeout(() => {
+      const focusableElement = schemaViewRef.current?.querySelector(
+        'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElement) focusableElement.focus();
+    }, 50);
+    return () => clearTimeout(timeID);
+  }, [refreshKey]);
 
   return (
-    <SchemaView
-      formType={'dialog'}
-      getInitData={initData}
-      viewHelperProps={{ mode: 'edit' }}
-      schema={schema}
-      showFooter={false}
-      isTabView={false}
-      formClassName='PreferencesComponent-preferencesContainerBackground'
-      onDataChange={(isChanged, changedData) => {
-        props.onDataChange(changedData);
-      }}
-    />
+    <div ref={schemaViewRef}>
+      <SchemaView
+        formType={'dialog'}
+        getInitData={initData}
+        viewHelperProps={{ mode: 'edit' }}
+        schema={schema}
+        showFooter={false}
+        isTabView={false}
+        formClassName='PreferencesComponent-preferencesContainerBackground'
+        onDataChange={(isChanged, changedData) => {
+          props.onDataChange(changedData);
+        }}
+      />
+    </div>
   );
 }
 
@@ -143,6 +156,7 @@ RightPanel.propTypes = {
 
 export default function PreferencesComponent({ ...props }) {
 
+  const [refreshKey, setRefreshKey] = React.useState(0);
   const [disableSave, setDisableSave] = React.useState(true);
   const prefSchema = React.useRef(new PreferencesSchema({}, []));
   const prefChangedData = React.useRef({});
@@ -213,12 +227,17 @@ export default function PreferencesComponent({ ...props }) {
       setPrefTreeData(preferencesTreeData);
       setInitValues(preferencesValues);
       // set Preferences schema
-      prefSchema.current = new PreferencesSchema(preferencesValues, preferencesData);
+      prefSchema.current = new PreferencesSchema(
+        preferencesValues, preferencesData,
+      );
     }).catch((err) => {
       pgAdmin.Browser.notifier.alert(err);
     });
   }, []);
-  function setPreferences(node, subNode, nodeData, preferencesValues, preferencesData) {
+
+  function setPreferences(
+    node, subNode, nodeData, preferencesValues, preferencesData
+  ) {
     let addBinaryPathNote = false;
     subNode.preferences.forEach((element) => {
       let note = '';
@@ -334,9 +353,10 @@ export default function PreferencesComponent({ ...props }) {
       preferencesData.push(
         {
           id: _.uniqueId('note') + subNode.id,
-          type: 'note', text: note,
+          type: 'note',
+          text: note,
+          'parentId': nodeData['id'],
           visible: false,
-          'parentId': nodeData['id']
         },
       );
     }
@@ -350,28 +370,25 @@ export default function PreferencesComponent({ ...props }) {
   }
 
   useEffect(() => {
-    let initTreeTimeout = null;
     let firstElement = null;
     // Listen selected preferences tree node event and show the appropriate components in right panel.
     pgAdmin.Browser.Events.on('preferences:tree:selected', (event, item) => {
       if (item.type == FileType.File) {
-        prefSchema.current.setSelectedCategory(item._metadata.data.name);
         prefSchema.current.schemaFields.forEach((field) => {
-          field.visible = field.parentId === item._metadata.data.id && !field?.hidden ;
+          field.visible = field.parentId === item._metadata.data.id &&
+            !field?.hidden ;
+
           if(field.visible && _.isNull(firstElement)) {
             firstElement = field;
           }
-          field.labelTooltip = item._parent._metadata.data.name.toLowerCase() + ':' + item._metadata.data.name + ':' + field.name;
+
+          field.labelTooltip =
+            item._parent._metadata.data.name.toLowerCase() + ':' +
+            item._metadata.data.name + ':' + field.name;
         });
-        setLoadTree(crypto.getRandomValues(new Uint16Array(1)));
-        initTreeTimeout = setTimeout(() => {
-          prefTreeInit.current = true;
-          if(firstElement) {
-            //set focus on first element on right side panel.
-            document.getElementsByName(firstElement.id.toString())[0].focus();
-            firstElement = '';
-          }
-        }, 10);
+        prefSchema.current.categoryUpdated(item._metadata.data.id);
+        setLoadTree(Date.now());
+        setRefreshKey(Date.now());
       }
       else {
         selectChildNode(item, prefTreeInit);
@@ -385,10 +402,6 @@ export default function PreferencesComponent({ ...props }) {
 
     // Listen added preferences tree node event to expand the newly added node on tree load.
     pgAdmin.Browser.Events.on('preferences:tree:added', addPrefTreeNode);
-    /* Clear the initTreeTimeout timeout if unmounted */
-    return () => {
-      clearTimeout(initTreeTimeout);
-    };
   }, []);
 
   function addPrefTreeNode(event, item) {
@@ -596,29 +609,50 @@ export default function PreferencesComponent({ ...props }) {
           <Box className='PreferencesComponent-treeContainer' >
             <Box className='PreferencesComponent-tree' id={'treeContainer'} tabIndex={0}>
               {
-                useMemo(() => (prefTreeData && props.renderTree(prefTreeData)), [prefTreeData])
+                useMemo(
+                  () => (prefTreeData && props.renderTree(prefTreeData)),
+                  [prefTreeData]
+                )
               }
             </Box>
           </Box>
           <Box className='PreferencesComponent-preferencesContainer'>
             {
               prefSchema.current && loadTree > 0 &&
-                <RightPanel schema={prefSchema.current} initValues={initValues} onDataChange={(changedData) => {
-                  Object.keys(changedData).length > 0 ? setDisableSave(false) : setDisableSave(true);
-                  prefChangedData.current = changedData;
-                }}></RightPanel>
+                <RightPanel
+                  schema={prefSchema.current} initValues={initValues}
+                  refreshKey={refreshKey}
+                  onDataChange={(changedData) => {
+                    Object.keys(changedData).length > 0 ?
+                      setDisableSave(false) : setDisableSave(true);
+                    prefChangedData.current = changedData;
+                  }}
+                ></RightPanel>
             }
           </Box>
         </Box>
         <Box className='PreferencesComponent-footer'>
           <Box>
-            <PgIconButton data-test="dialog-help" onClick={onDialogHelp} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
+            <PgIconButton
+              data-test="dialog-help" onClick={onDialogHelp}
+              icon={<HelpIcon />} title={gettext('Help for this dialog.')}
+            />
           </Box>
           <Box className='PreferencesComponent-actionBtn' marginLeft="auto">
-            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
+            <DefaultButton className='PreferencesComponent-buttonMargin'
+              onClick={() => { props.closeModal();}}
+              startIcon={
+                <CloseSharpIcon onClick={() => { props.closeModal();}} />
+              }>
               {gettext('Cancel')}
             </DefaultButton>
-            <PrimaryButton className='PreferencesComponent-buttonMargin' startIcon={<SaveSharpIcon />} disabled={disableSave} onClick={() => { savePreferences(prefChangedData, initValues); }}>
+            <PrimaryButton
+              className='PreferencesComponent-buttonMargin'
+              startIcon={<SaveSharpIcon />}
+              disabled={disableSave}
+              onClick={() => {
+                savePreferences(prefChangedData, initValues);
+              }}>
               {gettext('Save')}
             </PrimaryButton>
           </Box>

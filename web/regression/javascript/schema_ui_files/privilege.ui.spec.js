@@ -15,20 +15,17 @@ import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPro
 
 describe('PrivilegeSchema', ()=>{
 
-  let schemaObj = new PrivilegeRoleSchema(
-    ()=>[],
-    ()=>[],
-    null,
-    {server: {user: {name: 'postgres'}}},
-    ['X']
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
+    schemaObj = new PrivilegeRoleSchema(
+      ()=>[],
+      ()=>[],
+      null,
+      {server: {user: {name: 'postgres'}}},
+      ['X']
+    );
     genericBeforeEach();
   });
 

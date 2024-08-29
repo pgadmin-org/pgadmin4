@@ -11,45 +11,42 @@
 import SynonymSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
-describe('SynonymSchema', ()=>{
+describe('SynonymSchema', () => {
 
-  let schemaObj = new SynonymSchema(
-    {
-      role: ()=>[],
-      schema: ()=>[],
-      synobjschema: ()=>[],
-      getTargetObjectOptions: ()=>[],
-    },
-    [],
-    {
-      owner: 'postgres',
-      schema: 'public',
-      synobjschema: 'public',
-    }
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
-  beforeEach(()=>{
+  beforeEach(() => {
+    schemaObj = new SynonymSchema(
+      {
+        role: ()=>[],
+        schema: ()=>[],
+        synobjschema: ()=>[],
+        getTargetObjectOptions: ()=>[],
+      },
+      [],
+      {
+        owner: 'postgres',
+        schema: 'public',
+        synobjschema: 'public',
+      }
+    );
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
+  it('create', async () => {
     await getCreateView(schemaObj);
   });
 
-  it('edit', async ()=>{
+  it('edit', async () => {
     await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', async ()=>{
+  it('properties', async () => {
     await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
     let state = {};
     let setError = jest.fn();
 

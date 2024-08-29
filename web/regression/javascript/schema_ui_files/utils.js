@@ -7,7 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { SchemaState } from '../../../pgadmin/static/js/SchemaView/useSchemaState';
+import {
+  SchemaState,
+} from '../../../pgadmin/static/js/SchemaView/SchemaState';
 
 export function initializeSchemaWithData(schema, data) {
   const state = schema.state = new SchemaState(

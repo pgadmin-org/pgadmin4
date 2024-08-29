@@ -34,32 +34,29 @@ class MockSchema extends BaseUISchema {
 
 describe('VariableSchema', ()=>{
 
-  let schemaObj = new VariableSchema(
+  const createSchemaObject = () => new VariableSchema(
     ()=>[],
     ()=>[],
     ()=>[],
     null
   );
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('getValueFieldProps', ()=>{

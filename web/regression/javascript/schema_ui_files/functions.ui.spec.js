@@ -21,7 +21,7 @@ class MockSchema extends BaseUISchema {
 describe('FunctionSchema', ()=>{
 
   //Procedure schema
-  let procedureSchemaObj = new FunctionSchema(
+  const procedureSchemaObj = new FunctionSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
     {
@@ -61,7 +61,7 @@ describe('FunctionSchema', ()=>{
   );
 
 
-  let schemaObj = new FunctionSchema(
+  const createSchemaObj = () => new FunctionSchema(
     () => new MockSchema(),
     () => new MockSchema(),
     {
@@ -105,7 +105,8 @@ describe('FunctionSchema', ()=>{
       funcowner: 'postgres',
       pronamespace: 'public',
     }
-  );
+  ); 
+  let schemaObj = createSchemaObj();
   let getInitData = ()=>Promise.resolve({});
 
 
@@ -117,19 +118,19 @@ describe('FunctionSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
-  it('create', async ()=>{
+  it('create procedure', async ()=>{
     await getCreateView(procedureSchemaObj);
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('proiswindow visible', async ()=>{

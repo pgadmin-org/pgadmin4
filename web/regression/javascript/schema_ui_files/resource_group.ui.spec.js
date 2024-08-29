@@ -13,14 +13,12 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('ResourceGroupSchema', ()=>{
 
-  let schemaObj = new ResourceGroupSchema();
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
 
-
-
-
-  beforeEach(()=>{
+  beforeEach(() => {
+    schemaObj = new ResourceGroupSchema();
     genericBeforeEach();
   });
 

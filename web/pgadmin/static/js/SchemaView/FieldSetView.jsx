@@ -7,156 +7,70 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect } from 'react';
-
-import Grid from '@mui/material/Grid';
-import _ from 'lodash';
+import React, { useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import FieldSet from 'sources/components/FieldSet';
 import CustomPropTypes from 'sources/custom_prop_types';
-import { evalFunc } from 'sources/utils';
 
-import { MappedFormControl } from './MappedControl';
-import {
-  getFieldMetaData, SCHEMA_STATE_ACTIONS, SchemaStateContext
-} from './common';
+import { FieldControl } from './FieldControl';
+import { SchemaStateContext } from './SchemaState';
+import { useFieldOptions } from './hooks';
+import { registerView } from './registry';
+import { createFieldControls, listenDepChanges  } from './utils';
 
-
-const INLINE_COMPONENT_ROWGAP = '8px';
 
 export default function FieldSetView({
-  value, schema={}, viewHelperProps, accessPath, dataDispatch,
-  controlClassName, isDataGridForm=false, label, visible
+  field, accessPath, dataDispatch, viewHelperProps, controlClassName,
 }) {
+  const schema = field.schema;
   const schemaState = useContext(SchemaStateContext);
+  const options = useFieldOptions(accessPath, schemaState);
+  const label = field.label;
 
-  useEffect(() => {
-    // Calculate the fields which depends on the current field.
-    if(!isDataGridForm && schemaState) {
-      schema.fields.forEach((field) => {
-        /* Self change is also dep change */
-        if(field.depChange || field.deferredDepChange) {
-          schemaState?.addDepListener(
-            accessPath.concat(field.id), accessPath.concat(field.id),
-            field.depChange, field.deferredDepChange
-          );
-        }
-        (evalFunc(null, field.deps) || []).forEach((dep) => {
-          let source = accessPath.concat(dep);
-          if(_.isArray(dep)) {
-            source = dep;
-          }
-          if(field.depChange) {
-            schemaState?.addDepListener(
-              source, accessPath.concat(field.id), field.depChange
-            );
-          }
-        });
-      });
-    }
-  }, []);
+  listenDepChanges(accessPath, field, options.visible, schemaState);
 
-  let viewFields = [];
-  let inlineComponents = [];
+  const fieldGroups = useMemo(
+    () => createFieldControls({
+      schema, schemaState, accessPath, viewHelperProps, dataDispatch
+    }),
+    [schema, schemaState, accessPath, viewHelperProps, dataDispatch]
+  );
 
-  if(!visible) {
+  // We won't show empty feldset too.
+  if(!options.visible || !fieldGroups.length) {
     return <></>;
   }
 
-  // Prepare the array of components based on the types.
-  for(const field of schema.fields) {
-    const {
-      visible, disabled, readonly, modeSupported
-    } = getFieldMetaData(field, schema, value, viewHelperProps);
-
-    if(!modeSupported) continue;
-
-    // Its a form control.
-    const hasError = (field.id === schemaState?.errors.name);
-
-    /*
-     * When there is a change, the dependent values can also change.
-     * Let's pass these changes to dependent for take them into effect to
-     * generate new values.
-     */
-    const currentControl = <MappedFormControl
-      state={value}
-      key={field.id}
-      viewHelperProps={viewHelperProps}
-      name={field.id}
-      value={value[field.id]}
-      {...field}
-      readonly={readonly}
-      disabled={disabled}
-      visible={visible}
-      onChange={(changeValue)=>{
-        /* Get the changes on dependent fields as well */
-        dataDispatch({
-          type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-          path: accessPath.concat(field.id),
-          value: changeValue,
-        });
-      }}
-      hasError={hasError}
-      className={controlClassName}
-      memoDeps={[
-        value[field.id],
-        readonly,
-        disabled,
-        visible,
-        hasError,
-        controlClassName,
-        ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-      ]}
-    />;
-
-    if(field.inlineNext) {
-      inlineComponents.push(React.cloneElement(currentControl, {
-        withContainer: false, controlGridBasis: 3
-      }));
-    } else if(inlineComponents?.length > 0) {
-      inlineComponents.push(React.cloneElement(currentControl, {
-        withContainer: false, controlGridBasis: 3
-      }));
-      viewFields.push(
-        <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`}
-          className={controlClassName} rowGap={INLINE_COMPONENT_ROWGAP}>
-          {inlineComponents}
-        </Grid>
-      );
-      inlineComponents = [];
-    } else {
-      viewFields.push(currentControl);
-    }
-  }
-
-  if(inlineComponents?.length > 0) {
-    viewFields.push(
-      <Grid container spacing={0} key={`ic-${inlineComponents[0].key}`}
-        className={controlClassName} rowGap={INLINE_COMPONENT_ROWGAP}>
-        {inlineComponents}
-      </Grid>
+  if (fieldGroups.length > 1) {
+    throw new Error(
+      'Developers: Avoid using multiple groups within a fieldSet.' +
+      JSON.stringify(field?.id) + JSON.stringify(fieldGroups)
     );
   }
 
   return (
     <FieldSet title={label} className={controlClassName}>
-      {viewFields}
+      {fieldGroups.map(
+        (fieldGroup, gidx) => (
+          <React.Fragment key={gidx}>
+            {fieldGroup.controls.map(
+              (item, idx) => <FieldControl
+                item={item} key={idx} schemaId={schema._id} />
+            )}
+          </React.Fragment>
+        )
+      )}
     </FieldSet>
   );
 }
 
 FieldSetView.propTypes = {
-  value: PropTypes.any,
-  schema: CustomPropTypes.schemaUI.isRequired,
   viewHelperProps: PropTypes.object,
-  isDataGridForm: PropTypes.bool,
   accessPath: PropTypes.array.isRequired,
   dataDispatch: PropTypes.func,
   controlClassName: CustomPropTypes.className,
-  label: PropTypes.string,
-  visible: PropTypes.oneOfType([
-    PropTypes.bool, PropTypes.func,
-  ]),
+  field: PropTypes.object,
 };
+
+registerView(FieldSetView);

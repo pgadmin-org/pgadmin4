@@ -11,10 +11,11 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
-import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
-import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
+import { SCHEMA_STATE_ACTIONS } from 'sources/SchemaView';
+import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
 import TableSchema from '../../../../static/js/table.ui';
+
 
 export function getNodeForeignKeySchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false, initData={}) {
   return new ForeignKeySchema({
@@ -58,12 +59,12 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
   }
 
   addDisabled(state) {
-    return !(state.local_column && (state.references || this.origData.references) && state.referenced);
+    return !(state.local_column && (state.references || this.sessData.references) && state.referenced);
   }
 
   /* Data to ForeignKeyColumnSchema will added using the header form */
   getNewData(data) {
-    let references_table_name = _.find(this.refTables, (t)=>t.value==data.references || t.value == this.origData.references)?.label;
+    let references_table_name = _.find(this.refTables, (t)=>t.value==data.references || t.value == this.sessData.references)?.label;
     return {
       local_column: data.local_column,
       referenced: data.referenced,
@@ -227,13 +228,16 @@ export default class ForeignKeySchema extends BaseUISchema {
       type: 'switch', group: gettext('Definition'),
       readonly: (state)=>{
         if(!obj.isNew(state)) {
-          let origData = {};
+          let sessData = {};
           if(obj.inTable && obj.top) {
-            origData = _.find(obj.top.origData['foreign_key'], (r)=>r.cid == state.cid);
+            sessData = _.find(
+              obj.top.sessData['foreign_key'],
+              (r) => r.cid == state.cid
+            );
           } else {
-            origData = obj.origData;
+            sessData = obj.sessData;
           }
-          return origData.convalidated;
+          return sessData.convalidated;
         }
         return false;
       },
@@ -304,14 +308,14 @@ export default class ForeignKeySchema extends BaseUISchema {
       group: gettext('Columns'), type: 'collection',
       mode: ['create', 'edit', 'properties'],
       editable: false, schema: this.fkColumnSchema,
-      headerSchema: this.fkHeaderSchema, headerVisible: (state)=>obj.isNew(state),
-      CustomControl: DataGridViewWithHeaderForm,
+      headerSchema: this.fkHeaderSchema,
+      headerFormVisible: (state)=>obj.isNew(state),
+      GridHeader: DataGridFormHeader,
       uniqueCol: ['local_column', 'references', 'referenced'],
-      canAdd: false, canDelete: function(state) {
-        // We can't update columns of existing foreign key.
-        return obj.isNew(state);
-      },
-      readonly: obj.isReadonly, cell: ()=>({
+      canAdd: (state)=>obj.isNew(state),
+      canDelete: (state)=>obj.isNew(state),
+      readonly: obj.isReadonly,
+      cell: () => ({
         cell: '',
         controlProps: {
           formatter: {
@@ -358,10 +362,9 @@ export default class ForeignKeySchema extends BaseUISchema {
           }
         }
         if(actionObj.type == SCHEMA_STATE_ACTIONS.ADD_ROW) {
-          obj.fkHeaderSchema.origData.references = null;
           // Set references value.
-          obj.fkHeaderSchema.origData.references = obj.fkHeaderSchema.sessData.references;
-          obj.fkHeaderSchema.origData._disable_references = true;
+          obj.fkHeaderSchema.sessData.references = null;
+          obj.fkHeaderSchema.sessData._disable_references = true;
         }
         return {columns: currColumns};
       },

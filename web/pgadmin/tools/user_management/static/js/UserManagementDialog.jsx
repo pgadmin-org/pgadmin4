@@ -166,8 +166,8 @@ class UserManagementCollection extends BaseUISchema {
     }
 
     if (state.auth_source != AUTH_METHODS['INTERNAL']) {
-      if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let user of obj.top._sessData.userManagement) {
+      if (obj.isNew(state) && obj.top?.sessData?.userManagement) {
+        for (let user of obj.top.sessData.userManagement) {
           if (user?.id &&
             user.username.toLowerCase() == state.username.toLowerCase() &&
             user.auth_source == state.auth_source) {
@@ -193,8 +193,8 @@ class UserManagementCollection extends BaseUISchema {
         setError('email', null);
       }
 
-      if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
-        for (let user of obj.top._sessData.userManagement) {
+      if (obj.isNew(state) && obj.top?.sessData?.userManagement) {
+        for (let user of obj.top.sessData.userManagement) {
           if (user?.id &&
             user.email?.toLowerCase() == state.email?.toLowerCase()) {
             msg = gettext('Email address \'%s\' already exists', state.email);
@@ -303,6 +303,7 @@ class UserManagementSchema extends BaseUISchema {
       },
       {
         id: 'refreshBrowserTree', visible: false, type: 'switch',
+        mode: ['non_supported'],
         deps: ['userManagement'], depChange: ()=> {
           return { refreshBrowserTree: this.changeOwnership };
         }

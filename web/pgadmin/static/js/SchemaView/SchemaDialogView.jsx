@@ -7,9 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
@@ -25,23 +23,21 @@ import PropTypes from 'prop-types';
 
 import { parseApiError } from 'sources/api_instance';
 import { usePgAdmin } from 'sources/BrowserComponent';
-import Loader from 'sources/components/Loader';
 import { useIsMounted } from 'sources/custom_hooks';
 import {
-  PrimaryButton, DefaultButton, PgIconButton
+  DefaultButton, PgIconButton
 } from 'sources/components/Buttons';
-import {
-  FormFooterMessage, MESSAGE_TYPE
-} from 'sources/components/FormComponents';
 import CustomPropTypes from 'sources/custom_prop_types';
 import gettext from 'sources/gettext';
 
+import { FormLoader } from './FormLoader';
 import FormView from './FormView';
+import { ResetButton } from './ResetButton';
+import { SaveButton } from './SaveButton';
+import { SchemaStateContext } from './SchemaState';
 import { StyledBox } from './StyledComponents';
-import { useSchemaState } from './useSchemaState';
-import {
-  getForQueryParams, SchemaStateContext
-} from './common';
+import { useSchemaState } from './hooks';
+import { getForQueryParams } from './common';
 
 
 /* If its the dialog */
@@ -50,30 +46,23 @@ export default function SchemaDialogView({
   isTabView=true, checkDirtyOnEnableSave=false, ...props
 }) {
   // View helper properties
-  const { mode, keepCid } = viewHelperProps;
   const onDataChange  = props.onDataChange;
-
-  // Message to the user on long running operations.
-  const [loaderText, setLoaderText] = useState('');
 
   // Schema data state manager
   const {schemaState, dataDispatch, sessData, reset} = useSchemaState({
     schema: schema, getInitData: getInitData, immutableData: {},
-    mode: mode, keepCid: keepCid, onDataChange: onDataChange,
-  });
-
-  const [{isNew, isDirty, isReady, errors}, updateSchemaState] = useState({
-    isNew: true, isDirty: false, isReady: false, errors: {}
+    viewHelperProps: viewHelperProps, onDataChange: onDataChange,
+    loadingText,
   });
 
   // Is saving operation in progress?
-  const [saving, setSaving] = useState(false);
+  const setSaving = (val) => schemaState.isSaving = val;
+  const setLoaderText = (val) => schemaState.setMessage(val);
 
   // First element to be set by the FormView to set the focus after loading
   // the data.
   const firstEleRef = useRef();
   const checkIsMounted = useIsMounted();
-  const [data, setData] = useState({});
 
   // Notifier object.
   const pgAdmin = usePgAdmin();
@@ -93,20 +82,10 @@ export default function SchemaDialogView({
     };
   }, []);
 
-  useEffect(() => {
-    setLoaderText(schemaState.message);
-  }, [schemaState.message]);
-
-  useEffect(() => {
-    setData(sessData);
-    updateSchemaState(schemaState);
-  }, [sessData.__changeId]);
-
   useEffect(()=>{
     if (!props.resetKey) return;
     reset();
   }, [props.resetKey]);
-
 
   const onResetClick = () => {
     const resetIt = () => {
@@ -128,7 +107,7 @@ export default function SchemaDialogView({
   };
 
   const save = (changeData) => {
-    props.onSave(isNew, changeData)
+    props.onSave(schemaState.isNew, changeData)
       .then(()=>{
         if(schema.informText) {
           Notifier.alert(
@@ -151,7 +130,10 @@ export default function SchemaDialogView({
 
   const onSaveClick = () => {
     // Do nothing when there is no change or there is an error
-    if (!schemaState.changes || errors.name) return;
+    if (
+      !schemaState.changes || Object.keys(schemaState.changes) === 0 ||
+      schemaState.errors.name
+    ) return;
 
     setSaving(true);
     setLoaderText('Saving...');
@@ -164,7 +146,7 @@ export default function SchemaDialogView({
     Notifier.confirm(
       gettext('Warning'),
       schema.warningText,
-      ()=> { save(schemaState.Changes(true)); },
+      () => { save(schemaState.Changes(true)); },
       () => {
         setSaving(false);
         setLoaderText('');
@@ -173,20 +155,13 @@ export default function SchemaDialogView({
     );
   };
 
-  const onErrClose = useCallback(() => {
-    const err = { ...errors, message: '' };
-    // Unset the error message, but not the name.
-    schemaState.setError(err);
-    updateSchemaState({isNew, isDirty, isReady, errors: err});
-  });
-
   const getSQLValue = () => {
     // Called when SQL tab is active.
-    if(!isDirty) {
+    if(!schemaState.isDirty) {
       return Promise.resolve('-- ' + gettext('No updates.'));
     }
 
-    if(errors.name) {
+    if(schemaState.errors.name) {
       return Promise.resolve('-- ' + gettext('Definition incomplete.'));
     }
 
@@ -195,7 +170,7 @@ export default function SchemaDialogView({
      * Call the passed incoming getSQLValue func to get the SQL
      * return of getSQLValue should be a promise.
      */
-    return props.getSQLValue(isNew, getForQueryParams(changeData));
+    return props.getSQLValue(schemaState.isNew, getForQueryParams(changeData));
   };
 
   const getButtonIcon = () => {
@@ -207,29 +182,23 @@ export default function SchemaDialogView({
     return <SaveIcon />;
   };
 
-  const disableSaveBtn = saving ||
-    !isReady ||
-    !(mode === 'edit' || checkDirtyOnEnableSave ? isDirty : true) ||
-    Boolean(errors.name && errors.name !== 'apierror');
-
   let ButtonIcon = getButtonIcon();
 
   /* I am Groot */
-  return (
+  return useMemo(() =>
     <StyledBox>
       <SchemaStateContext.Provider value={schemaState}>
         <Box className='Dialog-form'>
-          <Loader message={loaderText || loadingText}/>
-          <FormView value={data}
+          <FormLoader/>
+          <FormView value={sessData}
             viewHelperProps={viewHelperProps}
             schema={schema} accessPath={[]}
             dataDispatch={dataDispatch}
             hasSQLTab={props.hasSQL} getSQLValue={getSQLValue}
             firstEleRef={firstEleRef} isTabView={isTabView}
-            className={props.formClassName} />
-          <FormFooterMessage
-            type={MESSAGE_TYPE.ERROR} message={errors?.message}
-            onClose={onErrClose} />
+            className={props.formClassName}
+            showError={true}
+          />
         </Box>
         {showFooter &&
           <Box className='Dialog-footer'>
@@ -237,13 +206,13 @@ export default function SchemaDialogView({
               (!props.disableSqlHelp || !props.disableDialogHelp) &&
                 <Box>
                   <PgIconButton data-test='sql-help'
-                    onClick={()=>props.onHelp(true, isNew)}
+                    onClick={()=>props.onHelp(true, schemaState.isNew)}
                     icon={<InfoIcon />} disabled={props.disableSqlHelp}
                     className='Dialog-buttonMargin'
                     title={ gettext('SQL help for this object type.') }
                   />
                   <PgIconButton data-test='dialog-help'
-                    onClick={()=>props.onHelp(false, isNew)}
+                    onClick={()=>props.onHelp(false, schemaState.isNew)}
                     icon={<HelpIcon />} disabled={props.disableDialogHelp}
                     title={ gettext('Help for this dialog.') }
                   />
@@ -254,23 +223,21 @@ export default function SchemaDialogView({
                 startIcon={<CloseIcon />} className='Dialog-buttonMargin'>
                 { gettext('Close') }
               </DefaultButton>
-              <DefaultButton data-test='Reset' onClick={onResetClick}
-                startIcon={<SettingsBackupRestoreIcon />}
-                disabled={(!isDirty) || saving }
-                className='Dialog-buttonMargin'>
-                { gettext('Reset') }
-              </DefaultButton>
-              <PrimaryButton data-test='Save' onClick={onSaveClick}
-                startIcon={ButtonIcon}
-                disabled={disableSaveBtn}>{
-                  props.customSaveBtnName || gettext('Save')
-                }
-              </PrimaryButton>
+              <ResetButton
+                onClick={onResetClick}
+                icon={<SettingsBackupRestoreIcon />}
+                label={ gettext('Reset') }/>
+              <SaveButton
+                onClick={onSaveClick} Icon={ButtonIcon}
+                label={props.customSaveBtnName || gettext('Save')}
+                checkDirtyOnEnableSave={checkDirtyOnEnableSave}
+                mode={viewHelperProps.mode}
+              />
             </Box>
           </Box>
         }
       </SchemaStateContext.Provider>
-    </StyledBox>
+    </StyledBox>, [schema._id, viewHelperProps.mode]
   );
 }
 

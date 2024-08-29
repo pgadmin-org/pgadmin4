@@ -13,39 +13,35 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('FTSParserSchema', ()=>{
 
-  let schemaObj = new FTSParserSchema(
+  const createSchemaObj = () => new FTSParserSchema(
     {
-      prsstartList: ()=> [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
-      prstokenList: ()=> [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
-      prsendList: ()=> [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
-      prslextypeList: ()=> [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
-      prsheadlineList: ()=> [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
-      schemaList: ()=> [],
+      prsstartList: () => [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
+      prstokenList: () => [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
+      prsendList: () => [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
+      prslextypeList: () => [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
+      prsheadlineList: () => [{ label: '', value: ''}, { label: 'lb1', value: 'val1'}],
+      schemaList: () => [],
     },
     {
       schema: 123
     }
   );
-  let getInitData = ()=>Promise.resolve({});
-
-
-
-
+  let getInitData = () => Promise.resolve({});
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
-    await getCreateView(schemaObj);
+  it('create', async () => {
+    await getCreateView(createSchemaObj());
   });
 
-  it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+  it('edit', async () => {
+    await getEditView(createSchemaObj(), getInitData);
   });
 
-  it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+  it('properties', async () => {
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

@@ -11,6 +11,7 @@
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import MViewSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { initializeSchemaWithData } from './utils';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -20,7 +21,7 @@ class MockSchema extends BaseUISchema {
 
 describe('MaterializedViewSchema', ()=>{
 
-  let schemaObj = new MViewSchema(
+  const createSchemaObject = () => new MViewSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
     {
@@ -32,7 +33,8 @@ describe('MaterializedViewSchema', ()=>{
       owner: 'postgres',
       schema: 'public'
     }
-  );
+  ); 
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
 
   beforeEach(()=>{
@@ -40,18 +42,19 @@ describe('MaterializedViewSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('validate', ()=>{
+    initializeSchemaWithData(schemaObj, {});
     let state = {};
     let setError = jest.fn();
 

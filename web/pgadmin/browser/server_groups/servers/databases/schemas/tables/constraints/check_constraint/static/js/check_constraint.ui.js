@@ -90,7 +90,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
         if(obj.inTable && obj.top && !obj.top.isNew()) {
           return !(_.isUndefined(state.oid) || state.convalidated);
         }
-        return !obj.isNew(state) && !obj.origData.convalidated;
+        return !obj.isNew(state) && !obj.sessData.convalidated;
       },
       mode: ['properties', 'create', 'edit'],
     }];

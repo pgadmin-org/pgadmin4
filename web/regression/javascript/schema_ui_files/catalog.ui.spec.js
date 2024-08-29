@@ -13,7 +13,7 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('CatalogSchema', ()=>{
 
-  let catalogObj = new CatalogSchema(
+  let createCatalogObj = () => new CatalogSchema(
     {
       namespaceowner: '',
     }
@@ -29,15 +29,15 @@ describe('CatalogSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(catalogObj);
+    await getCreateView(createCatalogObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(catalogObj, getInitData);
+    await getEditView(createCatalogObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(catalogObj, getInitData);
+    await getPropertiesView(createCatalogObj(), getInitData);
   });
 });
 

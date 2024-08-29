@@ -13,22 +13,13 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('PgaJobStepSchema', ()=>{
 
-  let schemaObj = new PgaJobStepSchema(
-    {
-      databases: ()=>[],
-    },
-    [],
-    {
-      jstdbname: 'postgres',
-    }
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
+    schemaObj = new PgaJobStepSchema(
+      { databases: ()=>[] }, [], { jstdbname: 'postgres' }
+    );
     genericBeforeEach();
   });
 

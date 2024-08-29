@@ -20,7 +20,7 @@ class MockSchema extends BaseUISchema {
 
 describe('RoleSchema', ()=>{
 
-  let schemaObj = new RoleSchema(
+  const createSchemaObject = () => new RoleSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
     {
@@ -30,24 +30,20 @@ describe('RoleSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 });
 

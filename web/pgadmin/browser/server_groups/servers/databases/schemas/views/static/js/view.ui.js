@@ -137,15 +137,15 @@ export default class ViewSchema extends BaseUISchema {
       if (state.definition) {
         if (!(obj.nodeInfo.server.server_type == 'pg' &&
           // No need to check this when creating a view
-          obj.origData.oid !== undefined
+          obj.sessData.oid !== undefined
         ) || (
-          state.definition === obj.origData.definition
+          state.definition === obj.sessData.definition
         )) {
           obj.warningText = null;
           return false;
         }
 
-        let old_def = obj.origData.definition?.replace(
+        let old_def = obj.sessData.definition?.replace(
             /\s/gi, ''
           ).split('FROM'),
           new_def = [];

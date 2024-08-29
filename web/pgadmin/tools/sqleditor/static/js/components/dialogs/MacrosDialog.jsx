@@ -27,7 +27,9 @@ class MacrosCollection extends BaseUISchema {
   }
 
   /* Returns the new data row for the schema based on defaults and input */
-  getNewData(current_macros, data={}) {
+  getNewData(data={}) {
+    const current_macros = this?.top?.sessData.macro;
+
     let newRow = {};
     this.fields.forEach((field)=>{
       newRow[field.id] = this.defaults[field.id];
@@ -36,7 +38,8 @@ class MacrosCollection extends BaseUISchema {
       ...newRow,
       ...data,
     };
-    if (current_macros){
+
+    if (current_macros) {
       // Extract an array of existing names from the 'macro' collection
       const existingNames = current_macros.map(macro => macro.name);
       const newName = getRandomName(existingNames);

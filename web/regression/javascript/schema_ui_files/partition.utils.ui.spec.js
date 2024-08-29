@@ -15,6 +15,7 @@ import { PartitionKeysSchema, PartitionsSchema } from '../../../pgadmin/browser/
 import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 import { initializeSchemaWithData } from './utils';
 
+
 function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
 }
@@ -41,24 +42,24 @@ class SchemaInColl extends BaseUISchema {
 
 describe('PartitionKeysSchema', ()=>{
 
-  let schemaObj;
+  const createSchemaObject = () => {
+    let partitionObj =  new PartitionKeysSchema();
+    return new SchemaInColl(partitionObj);
+  };
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
 
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    let partitionObj =  new PartitionKeysSchema();
-    schemaObj = new SchemaInColl(partitionObj);
   });
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    const {ctrl, user} = await getCreateView(schemaObj);
+    const {ctrl, user} = await getCreateView(createSchemaObject());
 
     /* Make sure you hit every corner */
 
@@ -67,11 +68,11 @@ describe('PartitionKeysSchema', ()=>{
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('depChange', ()=>{
@@ -104,14 +105,17 @@ describe('PartitionKeysSchema', ()=>{
 
 describe('PartitionsSchema', ()=>{
 
-  let schemaObj;
+  const createSchemaObject = () => {
+    let schemaObj = new PartitionsSchema();
+    schemaObj.top = schemaObj;
+    return schemaObj;
+  };
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
 
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = new PartitionsSchema();
-    schemaObj.top = schemaObj;
   });
 
 
@@ -121,15 +125,15 @@ describe('PartitionsSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('create collection', async ()=>{

@@ -13,7 +13,7 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('RowSecurityPolicySchema', ()=>{
 
-  let schemaObj = new RowSecurityPolicySchema(
+  const createSchemaObject = () => new RowSecurityPolicySchema(
     {
       role: ()=>[],
       nodeInfo: {server: {version: 90400}},
@@ -21,24 +21,20 @@ describe('RowSecurityPolicySchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 });
 

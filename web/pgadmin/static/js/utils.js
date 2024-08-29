@@ -677,3 +677,62 @@ export function getChartColor(index, theme='light', colorPalette=CHART_THEME_COL
   // loop back if out of index;
   return palette[index % palette.length];
 }
+
+// Using this function instead of 'btoa' directly.
+// https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
+function stringToBase64(str) {
+  return btoa(
+    Array.from(
+      new TextEncoder().encode(str),
+      (byte) => String.fromCodePoint(byte),
+    ).join('')
+  );
+}
+
+/************************************
+ *
+ * Memoization of a function.
+ *
+ * NOTE: Please don't use the function, when:
+ * - One of the parameter in the arguments could have a 'circular' dependency.
+ *   NOTE: We use `JSON.stringify(...)` for all the arguments.`You could
+ *         introduce 'Object.prototype.toJSON(...)' function for the object
+ *         with circular dependency, which should return a JSON object without
+ *         it.
+ * - It returns a Promise object (asynchronous functions).
+ *
+ *   Consider to use 'https://github.com/sindresorhus/p-memoize' for an
+ *   asychronous functions.
+ *
+ **/
+export const memoizeFn = fn => new Proxy(fn, {
+  cache: new Map(),
+  apply (target, thisArg, argsList) {
+    let cacheKey = stringToBase64(JSON.stringify(argsList));
+    if(!this.cache.has(cacheKey)) {
+      this.cache.set(cacheKey, target.apply(thisArg, argsList));
+    }
+    return this.cache.get(cacheKey);
+  }
+});
+
+export const memoizeTimeout = (fn, time) => new Proxy(fn, {
+  cache: new Map(),
+  apply (target, thisArg, argsList) {
+    const cacheKey = stringToBase64(JSON.stringify(argsList));
+    const cached = this.cache.get(cacheKey);
+    const timeoutId = setTimeout(() => (this.cache.delete(cacheKey)), time);
+
+    if (cached) {
+      clearInterval(cached.timeoutId);
+      cached.timeoutId = timeoutId;
+
+      return cached.result;
+    }
+
+    const result = target.apply(thisArg, argsList);
+    this.cache.set(cacheKey, {result, timeoutId});
+
+    return result;
+  }
+});

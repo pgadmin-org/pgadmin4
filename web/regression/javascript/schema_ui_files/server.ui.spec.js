@@ -14,11 +14,12 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('ServerSchema', ()=>{
 
-  let schemaObj = new ServerSchema([{
+  const createSchemaObject = () => new ServerSchema([{
     label: 'Servers', value: 1,
   }], 0, {
     user_id: 'jasmine',
   });
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
 
   beforeEach(()=>{
@@ -27,15 +28,15 @@ describe('ServerSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('validate', ()=>{

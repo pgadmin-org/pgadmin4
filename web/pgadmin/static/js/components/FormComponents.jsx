@@ -80,6 +80,9 @@ const Root = styled('div')(({theme}) => ({
     backgroundColor: theme.otherVars.borderColor,
     padding: theme.spacing(1),
   },
+  '& .Form-plainstring': {
+    padding: theme.spacing(0.5),
+  }
 }));
 
 
@@ -626,7 +629,6 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, la
           inputProps={{ 'aria-label': value, 'aria-describedby': helpid }}
           style={{ padding: 0 }}
           disableRipple
-          {...props}
         />
       }
       label={controlProps.label}
@@ -1110,7 +1112,9 @@ export function PlainString({ controlProps, value }) {
   if (controlProps?.formatter) {
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
-  return <span>{finalValue}</span>;
+  return  <Root>
+    <div className="Form-plainstring">{finalValue}</div>
+  </Root>;
 }
 PlainString.propTypes = {
   controlProps: PropTypes.object,

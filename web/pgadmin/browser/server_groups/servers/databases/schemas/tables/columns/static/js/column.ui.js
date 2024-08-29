@@ -622,7 +622,7 @@ export default class ColumnSchema extends BaseUISchema {
     }
 
     if (!this.isNew(state) && state.colconstype == 'i'
-      && (this.origData.attidentity == 'a' || this.origData.attidentity == 'd')
+      && (this.sessData.attidentity == 'a' || this.sessData.attidentity == 'd')
         && (state.attidentity == 'a' || state.attidentity == 'd')) {
       if(isEmptyString(state.seqincrement)) {
         msg = gettext('Increment value cannot be empty.');

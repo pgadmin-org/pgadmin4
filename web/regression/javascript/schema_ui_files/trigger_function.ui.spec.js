@@ -20,7 +20,7 @@ class MockSchema extends BaseUISchema {
 
 describe('TriggerFunctionSchema', ()=>{
 
-  let schemaObj = new TriggerFunctionSchema(
+  const createSchemaObject = () => new TriggerFunctionSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
     {
@@ -33,32 +33,29 @@ describe('TriggerFunctionSchema', ()=>{
       funcowner: 'postgres',
       pronamespace: 'public'
     }
-  );
+  ); 
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();
+    let schemaObj = createSchemaObject();
 
     state.prosrc = null;
     schemaObj.validate(state, setError);

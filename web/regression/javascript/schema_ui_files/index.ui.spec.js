@@ -30,23 +30,23 @@ class SchemaInColl extends BaseUISchema {
 }
 
 function getFieldDepChange(schema, id) {
-  return _.find(schema.fields, (f)=>f.id==id)?.depChange;
+  return _.find(schema.fields, (f) => f.id==id)?.depChange;
 }
 
-describe('IndexSchema', ()=>{
+describe('IndexSchema', () => {
   let indexSchemaObj;
-  let getInitData = ()=>Promise.resolve({});
+  let getInitData = () => Promise.resolve({});
 
-  beforeAll(()=>{
+  beforeAll(() => {
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
     indexSchemaObj = new IndexSchema(
       {
-        tablespaceList: ()=>[],
-        amnameList : ()=>[{label:'abc', value:'abc'}],
-        columnList: ()=>[{label:'abc', value:'abc'}],
-        collationList: ()=>[{label:'abc', value:'abc'}],
-        opClassList: ()=>[{label:'abc', value:'abc'}]
+        tablespaceList: () => [],
+        amnameList : () => [{label:'abc', value:'abc'}],
+        columnList: () => [{label:'abc', value:'abc'}],
+        collationList: () => [{label:'abc', value:'abc'}],
+        opClassList: () => [{label:'abc', value:'abc'}]
       },
       {
         node_info: {'server': { 'version': 110000} }
@@ -57,23 +57,23 @@ describe('IndexSchema', ()=>{
     );
   });
 
-  beforeEach(()=>{
+  beforeEach(() => {
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
+  it('create', async () => {
     await getCreateView(indexSchemaObj);
   });
 
-  it('edit', async ()=>{
+  it('edit', async () => {
     await getEditView(indexSchemaObj, getInitData);
   });
 
-  it('properties', async ()=>{
+  it('properties', async () => {
     await getPropertiesView(indexSchemaObj, getInitData);
   });
 
-  it('create collection', async ()=>{
+  it('create collection', async () => {
     let schemaCollObj = new SchemaInColl(indexSchemaObj);
     let {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */
@@ -82,15 +82,15 @@ describe('IndexSchema', ()=>{
     await addNewDatagridRow(user, ctrl);
   });
 
-  it('changeColumnOptions', ()=>{
+  it('changeColumnOptions', () => {
     jest.spyOn(indexSchemaObj.indexHeaderSchema, 'changeColumnOptions');
     let columns = [{label: 'label', value: 'value'}];
     indexSchemaObj.changeColumnOptions(columns);
     expect(indexSchemaObj.indexHeaderSchema.changeColumnOptions).toHaveBeenCalledWith(columns);
   });
 
-  describe('IndexColHeaderSchema', ()=>{
-    it('getNewData', ()=>{
+  describe('IndexColHeaderSchema', () => {
+    it('getNewData', () => {
       indexSchemaObj.indexHeaderSchema.columnOptions = [
         {label: 'id', value: 'id'},
         {label: 'name', value: 'name'}
@@ -118,18 +118,18 @@ describe('IndexSchema', ()=>{
     });
   });
 
-  describe('IndexColumnSchema', ()=>{
-    it('column schema colname editable', ()=>{
-      indexSchemaObj.indexColumnSchema._top = {
-        _sessData: { amname: 'btree' }
+  describe('IndexColumnSchema', () => {
+    it('column schema colname editable', () => {
+      indexSchemaObj.indexColumnSchema.top = {
+        sessData: { amname: 'btree' }
       };
-      let cell = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='op_class').cell;
+      let cell = _.find(indexSchemaObj.indexColumnSchema.fields, (f) => f.id=='op_class').cell;
       cell();
     });
 
-    it('column schema sort_order depChange', ()=>{
+    it('column schema sort_order depChange', () => {
       let topState = { amname: 'btree' };
-      let depChange = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='sort_order').depChange;
+      let depChange = _.find(indexSchemaObj.indexColumnSchema.fields, (f) => f.id=='sort_order').depChange;
 
       let state = { sort_order: true };
       depChange(state, {}, topState, { oldState: { sort_order: false } });
@@ -140,13 +140,13 @@ describe('IndexSchema', ()=>{
       expect(state.is_sort_nulls_applicable).toBe(false);
     });
 
-    it('column schema sort_order editable', ()=>{
-      indexSchemaObj.indexColumnSchema._top = {
-        _sessData: { amname: 'btree' }
+    it('column schema sort_order editable', () => {
+      indexSchemaObj.indexColumnSchema.top = {
+        sessData: { amname: 'btree' }
       };
       let state = {};
       jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(true);
-      let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='sort_order').editable;
+      let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f) => f.id=='sort_order').editable;
       let status = editable(state);
       expect(status).toBe(false);
 
@@ -154,18 +154,18 @@ describe('IndexSchema', ()=>{
       status = editable(state);
       expect(status).toBe(true);
 
-      indexSchemaObj.indexColumnSchema._top._sessData.amname = 'abc';
+      indexSchemaObj.indexColumnSchema.top.sessData.amname = 'abc';
       status = editable(state);
       expect(status).toBe(false);
     });
 
-    it('column schema nulls editable', ()=>{
-      indexSchemaObj.indexColumnSchema._top = {
-        _sessData: { amname: 'btree' }
+    it('column schema nulls editable', () => {
+      indexSchemaObj.indexColumnSchema.top = {
+        sessData: { amname: 'btree' }
       };
       let state = {};
       jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(true);
-      let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='nulls').editable;
+      let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f) => f.id=='nulls').editable;
       let status = editable(state);
       expect(status).toBe(false);
 
@@ -173,14 +173,14 @@ describe('IndexSchema', ()=>{
       status = editable(state);
       expect(status).toBe(true);
 
-      indexSchemaObj.indexColumnSchema._top._sessData.amname = 'abc';
+      indexSchemaObj.indexColumnSchema.top.sessData.amname = 'abc';
       status = editable(state);
       expect(status).toBe(false);
     });
 
-    it('column schema setOpClassTypes', ()=>{
-      indexSchemaObj.indexColumnSchema._top = {
-        _sessData: { amname: 'btree' }
+    it('column schema setOpClassTypes', () => {
+      indexSchemaObj.indexColumnSchema.top = {
+        sessData: { amname: 'btree' }
       };
       let options = [];
       indexSchemaObj.indexColumnSchema.op_class_types = [];
@@ -195,15 +195,15 @@ describe('IndexSchema', ()=>{
 
   });
 
-  it('depChange', ()=>{
+  it('depChange', () => {
     let state = {};
     expect(getFieldDepChange(indexSchemaObj, 'description')(state)).toEqual({
       comment: '',
     });
   });
 
-  it('columns formatter', ()=>{
-    let formatter = _.find(indexSchemaObj.fields, (f)=>f.id=='columns').cell().controlProps.formatter;
+  it('columns formatter', () => {
+    let formatter = _.find(indexSchemaObj.fields, (f) => f.id=='columns').cell().controlProps.formatter;
     expect(formatter.fromRaw([{
       colname: 'lid',
     },{
@@ -213,7 +213,7 @@ describe('IndexSchema', ()=>{
     expect(formatter.fromRaw([])).toBe('');
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
     let state = { columns: [] };
     let setError = jest.fn();
 

@@ -13,7 +13,8 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('EDBFuncSchema', ()=>{
 
-  let edbFuncSchemaObj = new EDBFuncSchema(
+
+  let edbFuncSchemaObj = () => new EDBFuncSchema(
     {}, {
       name: 'sysfunc'
     }
@@ -21,23 +22,20 @@ describe('EDBFuncSchema', ()=>{
   let getInitData = ()=>Promise.resolve({});
 
 
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(edbFuncSchemaObj);
+    await getCreateView(edbFuncSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(edbFuncSchemaObj, getInitData);
+    await getEditView(edbFuncSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(edbFuncSchemaObj, getInitData);
+    await getPropertiesView(edbFuncSchemaObj(), getInitData);
   });
 });
 

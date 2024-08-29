@@ -48,8 +48,6 @@ describe('ForeignKeySchema', ()=>{
     schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
   });
 
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });

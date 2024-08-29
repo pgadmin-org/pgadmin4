@@ -13,6 +13,68 @@ import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_grou
 import TypeSchema, { EnumerationSchema, getCompositeSchema, getExternalSchema, getRangeSchema, getDataTypeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
+const types = [{
+  label: '', value: ''
+}, {
+  label: 'lb1', value: 'numeric[]', length: true,
+  min_val: 10, max_val: 100, precision: true, is_collatable: true,
+}];
+
+const createCompositeSchemaObject = () => {
+  let compositeCollObj = getCompositeSchema(
+    {}, {server: {user: {name: 'postgres'}}}, {}
+  );
+  let collations = [
+    { label: '', value: ''}, { label: 'lb1', value: 'numeric[]'}
+  ];
+
+  jest.spyOn(compositeCollObj.fieldOptions, 'types').mockReturnValue(types);
+  jest.spyOn(compositeCollObj.fieldOptions, 'collations')
+    .mockReturnValue(collations);
+
+  return compositeCollObj;
+};
+
+const createExternalSchemaObject = () => {
+
+  let externalCollObj = getExternalSchema({}, {server: {user: {name: 'postgres'}}}, {});
+
+  jest.spyOn(externalCollObj.fieldOptions, 'externalFunctionsList')
+    .mockReturnValue([
+      { label: '', value: ''},
+      { label: 'lb1', cbtype: 'typmodin', value: 'val1'},
+      { label: 'lb2', cbtype: 'all', value: 'val2'}
+    ]);
+  jest.spyOn(externalCollObj.fieldOptions, 'types')
+    .mockReturnValue([{ label: '', value: ''}]);
+
+  return externalCollObj;
+};
+
+const createRangeSchemaObject = () => {
+  let rangeCollObj = getRangeSchema({}, {server: {user: {name: 'postgres'}}}, {});
+
+  jest.spyOn(rangeCollObj.fieldOptions, 'getSubOpClass').mockReturnValue([
+    { label: '', value: ''}, { label: 'lb1', value: 'val1'}
+  ]);
+  jest.spyOn(rangeCollObj.fieldOptions, 'getCanonicalFunctions')
+    .mockReturnValue([
+      { label: '', value: ''}, { label: 'lb1', value: 'val1'}
+    ]);
+  jest.spyOn(rangeCollObj.fieldOptions, 'getSubDiffFunctions')
+    .mockReturnValue([
+      { label: '', value: ''}, { label: 'lb1', value: 'val1'}
+    ]);
+  jest.spyOn(rangeCollObj.fieldOptions, 'typnameList').mockReturnValue([
+    { label: '', value: ''}, { label: 'lb1', value: 'val1'}
+  ]);
+  jest.spyOn(rangeCollObj.fieldOptions, 'collationsList').mockReturnValue([
+    { label: '', value: ''}, { label: 'lb1', value: 'val1'}
+  ]);
+
+  return rangeCollObj;
+};
+
 describe('TypeSchema', ()=>{
   let getInitData = ()=>Promise.resolve({});
 
@@ -21,15 +83,10 @@ describe('TypeSchema', ()=>{
   });
 
   describe('composite schema describe', () => {
+    let compositeCollObj = createCompositeSchemaObject();
 
-    let compositeCollObj = getCompositeSchema({}, {server: {user: {name: 'postgres'}}}, {});
-    let types = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric[]', length: true, min_val: 10, max_val: 100, precision: true, is_collatable: true}];
-    let collations = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric[]'}];
-
-    it('composite collection', async ()=>{
+    it('composite collection', async () => {
       jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
-      jest.spyOn(compositeCollObj.fieldOptions, 'types').mockReturnValue(types);
-      jest.spyOn(compositeCollObj.fieldOptions, 'collations').mockReturnValue(collations);
       await getCreateView(compositeCollObj);
       await getEditView(compositeCollObj, getInitData);
     });
@@ -91,13 +148,10 @@ describe('TypeSchema', ()=>{
 
   describe('external schema describe', () => {
 
-    let externalCollObj = getExternalSchema({}, {server: {user: {name: 'postgres'}}}, {});
+    let externalCollObj = createExternalSchemaObject();
 
     it('external collection', async ()=>{
-
       jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
-      jest.spyOn(externalCollObj.fieldOptions, 'externalFunctionsList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', cbtype: 'typmodin', value: 'val1'}, { label: 'lb2', cbtype: 'all', value: 'val2'}]);
-      jest.spyOn(externalCollObj.fieldOptions, 'types').mockReturnValue([{ label: '', value: ''}]);
 
       await getCreateView(externalCollObj);
       await getEditView(externalCollObj, getInitData);
@@ -118,16 +172,11 @@ describe('TypeSchema', ()=>{
 
   describe('range schema describe', () => {
 
-    let rangeCollObj = getRangeSchema({}, {server: {user: {name: 'postgres'}}}, {});
+    let rangeCollObj = createRangeSchemaObject();
 
-    it('range collection', async ()=>{
+    it('range collection', async () => {
 
       jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
-      jest.spyOn(rangeCollObj.fieldOptions, 'getSubOpClass').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      jest.spyOn(rangeCollObj.fieldOptions, 'getCanonicalFunctions').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      jest.spyOn(rangeCollObj.fieldOptions, 'getSubDiffFunctions').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      jest.spyOn(rangeCollObj.fieldOptions, 'typnameList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      jest.spyOn(rangeCollObj.fieldOptions, 'collationsList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
 
       await getCreateView(rangeCollObj);
       await getEditView(rangeCollObj, getInitData);
@@ -145,7 +194,13 @@ describe('TypeSchema', ()=>{
   describe('data type schema describe', () => {
 
     let dataTypeObj = getDataTypeSchema({}, {server: {user: {name: 'postgres'}}}, {});
-    let types = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric', length: true, min_val: 10, max_val: 100, precision: true}];
+    const types = [
+      { label: '', value: ''},
+      {
+        label: 'lb1', value: 'numeric', length: true,
+        min_val: 10, max_val: 100, precision: true,
+      }
+    ];
 
     it('data type collection', async ()=>{
 
@@ -183,34 +238,40 @@ describe('TypeSchema', ()=>{
     });
   });
 
-  let typeSchemaObj = new TypeSchema(
-    (privileges)=>getNodePrivilegeRoleSchema({}, {server: {user: {name: 'postgres'}}}, {}, privileges),
-    ()=>getCompositeSchema({}, {server: {user: {name: 'postgres'}}}, {}),
-    ()=>getRangeSchema({}, {server: {user: {name: 'postgres'}}}, {}),
-    ()=>getExternalSchema({}, {server: {user: {name: 'postgres'}}}, {}),
-    ()=>getDataTypeSchema({}, {server: {user: {name: 'postgres'}}}, {}),
-    {
-      roles: ()=>[],
-      schemas: ()=>[{ label: 'pg_demo', value: 'pg_demo'}],
-      server_info: [],
-      node_info: {'schema': []}
-    },
-    {
-      typowner: 'postgres',
-      schema: 'public',
-      typtype: 'c'
-    }
-  );
+  const createTypeSchemaObject = () => {
+    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+
+    return new TypeSchema(
+      (privileges)=>getNodePrivilegeRoleSchema(
+        {}, {server: {user: {name: 'postgres'}}}, {}, privileges
+      ),
+      ()=>createCompositeSchemaObject(),
+      ()=>createRangeSchemaObject(),
+      ()=>createExternalSchemaObject(),
+      ()=>getDataTypeSchema({}, {server: {user: {name: 'postgres'}}}, {}),
+      {
+        roles: ()=>[],
+        schemas: ()=>[{ label: 'pg_demo', value: 'pg_demo'}],
+        server_info: [],
+        node_info: {'schema': []}
+      },
+      {
+        typowner: 'postgres',
+        schema: 'public',
+        typtype: 'c'
+      }
+    );
+  };
 
   it('create', async ()=>{
-    await getCreateView(typeSchemaObj);
+    await getCreateView(createTypeSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(typeSchemaObj, getInitData);
+    await getEditView(createTypeSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(typeSchemaObj, getInitData);
+    await getPropertiesView(createTypeSchemaObject(), getInitData);
   });
 });

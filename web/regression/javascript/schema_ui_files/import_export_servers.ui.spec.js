@@ -13,19 +13,20 @@ import {genericBeforeEach, getCreateView} from '../genericFunctions';
 
 describe('ImportExportServers', () => {
 
-  let schemaObj = new ImportExportSelectionSchema();
 
   beforeEach(() => {
     genericBeforeEach();
   });
 
   it('import', async () => {
+    const schemaObj = new ImportExportSelectionSchema();
     await getCreateView(schemaObj);
   });
 
   it('export', async () => {
-    schemaObj = new ImportExportSelectionSchema(
-      {imp_exp: 'e', filename: 'test.json'});
+    const schemaObj = new ImportExportSelectionSchema({
+      imp_exp: 'e', filename: 'test.json'
+    });
 
     await getCreateView(schemaObj);
   });

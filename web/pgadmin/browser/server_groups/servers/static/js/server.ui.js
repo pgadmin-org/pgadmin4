@@ -136,14 +136,14 @@ export default class ServerSchema extends BaseUISchema {
         id: 'shared_username', label: gettext('Shared Username'), type: 'text',
         controlProps: { maxLength: 64},
         mode: ['properties', 'create', 'edit'], deps: ['shared', 'username'],
-        readonly: (s)=>{
-          return !(!this.origData.shared && s.shared);
+        readonly: (s) => {
+          return !(!this.sessData.shared && s.shared);
         }, visible: ()=>{
           return current_user.is_admin && pgAdmin.server_mode == 'True';
         },
         depChange: (state, source, _topState, actionObj)=>{
           let ret = {};
-          if(this.origData.shared) {
+          if(this.sessData.shared) {
             return ret;
           }
           if(source == 'username' && actionObj.oldState.username == state.shared_username) {
@@ -169,7 +169,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'], disabled: obj.isShared,
         depChange: (state)=>{
-          if(obj.origData.host != state.host && !obj.isNew(state) && state.connected){
+          if(obj.sessData.host != state.host && !obj.isNew(state) && state.connected){
             obj.informText = gettext(
               'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
             );
@@ -182,7 +182,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'port', label: gettext('Port'), type: 'int', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'], min: 1, max: 65535, disabled: obj.isShared,
         depChange: (state)=>{
-          if(obj.origData.port != state.port && !obj.isNew(state) && state.connected){
+          if(obj.sessData.port != state.port && !obj.isNew(state) && state.connected){
             obj.informText = gettext(
               'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
             );
@@ -198,7 +198,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'],
         depChange: (state)=>{
-          if(obj.origData.username != state.username && !obj.isNew(state) && state.connected){
+          if(obj.sessData.username != state.username && !obj.isNew(state) && state.connected){
             obj.informText = gettext(
               'To apply changes to the connection configuration, please disconnect from the server and then reconnect.'
             );

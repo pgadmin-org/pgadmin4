@@ -15,6 +15,7 @@ import ErrorBoundary from 'sources/helpers/ErrorBoundary';
 
 import SchemaDialogView from './SchemaDialogView';
 import SchemaPropertiesView from './SchemaPropertiesView';
+import { registerView } from './registry';
 
 
 export default function SchemaView({formType, ...props}) {
@@ -32,3 +33,5 @@ export default function SchemaView({formType, ...props}) {
 SchemaView.propTypes = {
   formType: PropTypes.oneOf(['tab', 'dialog']),
 };
+
+registerView(SchemaView);

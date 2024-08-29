@@ -818,9 +818,9 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               onDataChange={(isChanged, changedData) => {
                 let isValid = false;
                 let skipStep = false;
-                if ('_sessData' in debuggerArgsSchema.current) {
+                if ('sessData' in debuggerArgsSchema.current) {
                   isValid = true;
-                  debuggerArgsSchema.current._sessData.aregsCollection.forEach((data) => {
+                  debuggerArgsSchema.current.sessData.aregsCollection.forEach((data) => {
 
                     if (skipStep) { return; }
 

@@ -13,11 +13,8 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('DomainConstraintSchema', ()=>{
 
-  let schemaObj = new DomainConstraintSchema();
+  let createSchemaObj = () => new DomainConstraintSchema();
   let getInitData = ()=>Promise.resolve({});
-
-
-
 
 
   beforeEach(()=>{
@@ -25,15 +22,15 @@ describe('DomainConstraintSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

@@ -154,7 +154,7 @@ export default class MViewSchema extends BaseUISchema {
 
       if (state.definition) {
         obj.warningText = null;
-        if (obj.origData.oid !== undefined && state.definition !== obj.origData.definition) {
+        if (obj.sessData.oid !== undefined && state.definition !== obj.sessData.definition) {
           obj.warningText = gettext(
             'Updating the definition will drop and re-create the materialized view. It may result in loss of information about its dependent objects.'
           ) + '<br><br><b>' + gettext('Do you want to continue?') + '</b>';

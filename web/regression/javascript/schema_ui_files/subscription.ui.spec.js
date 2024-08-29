@@ -11,63 +11,60 @@
 import SubscriptionSchema from '../../../pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
-describe('SubscriptionSchema', ()=>{
+describe('SubscriptionSchema', () => {
 
-  let schemaObj = new SubscriptionSchema(
-    {
-      getPublication: ()=>[],
-      role: ()=>[],
-    },
-    {
-      node_info: {
-        connected: true,
-        user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
-        user_id: 1,
-        username: 'postgres',
-        version: 130005,
-        server: {host: '127.0.0.1', port: 5432},
-      },
-    },
-    {
-      subowner : 'postgres'
-    }
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
-  beforeEach(()=>{
+  beforeEach(() => {
+    schemaObj = new SubscriptionSchema(
+      {
+        getPublication: ()=>[],
+        role: ()=>[],
+      },
+      {
+        node_info: {
+          connected: true,
+          user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
+          user_id: 1,
+          username: 'postgres',
+          version: 130005,
+          server: {host: '127.0.0.1', port: 5432},
+        },
+      },
+      {
+        subowner : 'postgres'
+      }
+    );
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
+  it('create', async () => {
     await getCreateView(schemaObj);
   });
 
-  it('edit', async ()=>{
+  it('edit', async () => {
     await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', async ()=>{
+  it('properties', async () => {
     await getPropertiesView(schemaObj, getInitData);
   });
 
 
-  it('copy_data_after_refresh readonly', ()=>{
+  it('copy_data_after_refresh readonly', () => {
     let isReadonly = _.find(schemaObj.fields, (f)=>f.id=='copy_data_after_refresh').readonly;
     let status = isReadonly({host: '127.0.0.1', port : 5432});
     expect(status).toBe(true);
   });
 
-  it('copy_data_after_refresh readonly', ()=>{
+  it('copy_data_after_refresh readonly', () => {
     let isReadonly = _.find(schemaObj.fields, (f)=>f.id=='copy_data_after_refresh').readonly;
     let status = isReadonly({refresh_pub : true});
     expect(status).toBe(false);
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
     let state = {};
     let setError = jest.fn();
 
@@ -88,4 +85,3 @@ describe('SubscriptionSchema', ()=>{
     expect(setError).toHaveBeenCalledWith('pub', 'Publication must be specified.');
   });
 });
-

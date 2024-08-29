@@ -10,7 +10,10 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
-import { checkTrojanSource } from '../../../utils';
+
+import { useIsMounted } from 'sources/custom_hooks';
+
+import { checkTrojanSource } from 'sources/utils';
 import usePreferences from '../../../../../preferences/static/js/store';
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
@@ -147,9 +150,12 @@ const defaultExtensions = [
 ];
 
 export default function Editor({
-  currEditor, name, value, options, onCursorActivity, onChange, readonly, disabled, autocomplete = false,
-  breakpoint = false, onBreakPointChange, showActiveLine=false,
-  keepHistory = true, cid, helpid, labelledBy, customKeyMap, language='pgsql'}) {
+  currEditor, name, value, options, onCursorActivity, onChange, readonly,
+  disabled, autocomplete = false, breakpoint = false, onBreakPointChange,
+  showActiveLine=false, keepHistory = true, cid, helpid, labelledBy,
+  customKeyMap, language='pgsql'
+}) {
+  const checkIsMounted = useIsMounted();
 
   const editorContainerRef = useRef();
   const editor = useRef();
@@ -166,6 +172,7 @@ export default function Editor({
   const editableConfig = useRef(new Compartment());
 
   useEffect(() => {
+    if (!checkIsMounted()) return;
     const finalOptions = { ...defaultOptions, ...options };
     const finalExtns = [
       (language == 'json') ? json() : sql({dialect: PgSQL}),
@@ -248,6 +255,7 @@ export default function Editor({
   }, []);
 
   useMemo(() => {
+    if (!checkIsMounted()) return;
     if(editor.current) {
       if(value != editor.current.getValue()) {
         if(!_.isEmpty(value)) {
@@ -259,14 +267,19 @@ export default function Editor({
     }
   }, [value]);
 
-  useEffect(()=>{
-    const keys = keymap.of([customKeyMap??[], defaultKeymap, closeBracketsKeymap, historyKeymap, foldKeymap, completionKeymap].flat());
+  useEffect(() => {
+    if (!checkIsMounted()) return;
+    const keys = keymap.of([
+      customKeyMap??[], defaultKeymap, closeBracketsKeymap, historyKeymap,
+      foldKeymap, completionKeymap
+    ].flat());
     editor.current?.dispatch({
       effects: shortcuts.current.reconfigure(keys)
     });
   }, [customKeyMap]);
 
   useEffect(() => {
+    if (!checkIsMounted()) return;
     let pref = preferencesStore.getPreferencesForModule('sqleditor');
     let newConfigExtn = [];
 
@@ -361,6 +374,7 @@ export default function Editor({
   }, [preferencesStore]);
 
   useMemo(() => {
+    if (!checkIsMounted()) return;
     if (editor.current) {
       if (value != editor.current.getValue()) {
         editor.current.dispatch({
@@ -371,6 +385,7 @@ export default function Editor({
   }, [value]);
 
   useEffect(() => {
+    if (!checkIsMounted()) return;
     editor.current?.dispatch({
       effects: editableConfig.current.reconfigure([
         EditorView.editable.of(editable),
@@ -379,7 +394,7 @@ export default function Editor({
     });
   }, [readonly, disabled, keepHistory]);
 
-  return useMemo(()=>(
+  return useMemo(() => (
     <div style={{ height: '100%' }} ref={editorContainerRef} name={name}></div>
   ), []);
 }

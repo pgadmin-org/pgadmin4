@@ -7,32 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import { evalFunc } from 'sources/utils';
 
-
-export const SCHEMA_STATE_ACTIONS = {
-  INIT: 'init',
-  SET_VALUE: 'set_value',
-  ADD_ROW: 'add_row',
-  DELETE_ROW: 'delete_row',
-  MOVE_ROW: 'move_row',
-  RERENDER: 'rerender',
-  CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
-  DEFERRED_DEPCHANGE: 'deferred_depchange',
-  BULK_UPDATE: 'bulk_update',
-};
-
-export const SchemaStateContext = React.createContext();
 
 export function generateTimeBasedRandomNumberString() {
   return new Date().getTime() + '' +  Math.floor(Math.random() * 1000001);
 }
 
-export function isModeSupportedByField(field, helperProps) {
-  if (!field || !field.mode) return true;
-  return (field.mode.indexOf(helperProps.mode) > -1);
-}
+export const isModeSupportedByField = (field, helperProps) => (
+  !field.mode || field.mode.indexOf(helperProps.mode) > -1
+);
 
 export function getFieldMetaData(
   field, schema, value, viewHelperProps
@@ -81,13 +65,14 @@ export function getFieldMetaData(
   retData.editable = !(
     viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties')
   );
+
   if(retData.editable) {
     retData.editable = evalFunc(
       schema, (_.isUndefined(editable) ? true : editable), value
     );
   }
 
-  let {canAdd, canEdit, canDelete, canReorder, canAddRow } = field;
+  let {canAdd, canEdit, canDelete, canAddRow } = field;
   retData.canAdd =
     _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
   retData.canAdd = !retData.disabled && retData.canAdd;
@@ -99,10 +84,6 @@ export function getFieldMetaData(
     schema, canDelete, value
   );
   retData.canDelete = !retData.disabled && retData.canDelete;
-  retData.canReorder =
-    _.isUndefined(canReorder) ? retData.canReorder : evalFunc(
-      schema, canReorder, value
-    );
   retData.canAddRow =
     _.isUndefined(canAddRow) ? retData.canAddRow : evalFunc(
       schema, canAddRow, value
@@ -165,3 +146,38 @@ export function getForQueryParams(data) {
   });
   return retData;
 }
+
+export function prepareData(val, createMode=false) {
+  if(_.isPlainObject(val)) {
+    _.forIn(val, function (el) {
+      if (_.isObject(el)) {
+        prepareData(el, createMode);
+      }
+    });
+  } else if(_.isArray(val)) {
+    val.forEach(function(el) {
+      if (_.isPlainObject(el)) {
+        /* The each row in collection need to have an id to identify them uniquely
+        This helps in easily getting what has changed */
+        /* Nested collection rows may or may not have idAttribute.
+        So to decide whether row is new or not set, the cid starts with
+        nn (not new) for existing rows. Newly added will start with 'c' (created)
+        */
+        el['cid'] = createMode ? _.uniqueId('c') : _.uniqueId('nn');
+        prepareData(el, createMode);
+      }
+    });
+  }
+  return val;
+}
+
+export const flatternObject = (obj, base=[]) => Object.keys(obj).sort().reduce(
+  (r, k) => {
+    r = r.concat(k);
+    const value = obj[k];
+    if (_.isFunction(value)) return r;
+    if (_.isArray(value)) return r.concat(...value);
+    if (_.isPlainObject(value)) return flatternObject(value, r);
+    return r.concat(value);
+  }, base
+);
