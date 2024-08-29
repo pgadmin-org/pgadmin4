@@ -3073,9 +3073,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:10.2.0":
-  version: 10.2.0
-  resolution: "@testing-library/dom@npm:10.2.0"
+"@testing-library/dom@npm:10.4.0":
+  version: 10.4.0
+  resolution: "@testing-library/dom@npm:10.4.0"
   dependencies:
     "@babel/code-frame": ^7.10.4
     "@babel/runtime": ^7.12.5
@@ -3085,7 +3085,7 @@ __metadata:
     dom-accessibility-api: ^0.5.9
     lz-string: ^1.5.0
     pretty-format: ^27.0.2
-  checksum: ea2ce77f5777a6d00803bba938528d785c80aed8ca3f3d2c703b4ef6a697ef65b57773bb1f4363d893dde4e7e88f40ffb963f2a0fa1d9af7f49bee62034b24a7
+  checksum: bb128b90be0c8cd78c5f5e67aa45f53de614cc048a2b50b230e736ec710805ac6c73375af354b83c74d710b3928d52b83a273a4cb89de4eb3efe49e91e706837
   languageName: node
   linkType: hard
 
@@ -13795,7 +13795,7 @@ __metadata:
     "@tanstack/react-query": 5.37.1
     "@tanstack/react-table": ^8.16.0
     "@tanstack/react-virtual": ^3.8.4
-    "@testing-library/dom": 10.2.0
+    "@testing-library/dom": 10.4.0
     "@testing-library/jest-dom": ^6.4.6
     "@testing-library/react": 16.0.0
     "@testing-library/user-event": ^14.5.2
