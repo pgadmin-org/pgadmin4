@@ -276,4 +276,4 @@ FormView.propTypes = {
   showError: PropTypes.bool,
 };
 
-registerView(FormView);
+registerView(FormView, 'FormView');

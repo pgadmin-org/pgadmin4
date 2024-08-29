@@ -73,4 +73,4 @@ FieldSetView.propTypes = {
   field: PropTypes.object,
 };
 
-registerView(FieldSetView);
+registerView(FieldSetView, 'FieldSetView');

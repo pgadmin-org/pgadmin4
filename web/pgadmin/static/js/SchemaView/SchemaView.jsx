@@ -34,4 +34,4 @@ SchemaView.propTypes = {
   formType: PropTypes.oneOf(['tab', 'dialog']),
 };
 
-registerView(SchemaView);
+registerView(SchemaView, 'SchemaView');

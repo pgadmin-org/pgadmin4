@@ -53,4 +53,4 @@ InlineView.propTypes = {
   ])
 };
 
-registerView(InlineView);
+registerView(InlineView, 'InlineView');

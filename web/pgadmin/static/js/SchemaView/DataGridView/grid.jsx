@@ -195,4 +195,4 @@ DataGridView.propTypes = {
   field: PropTypes.object,
 };
 
-registerView(DataGridView);
+registerView(DataGridView, 'DataGridView');

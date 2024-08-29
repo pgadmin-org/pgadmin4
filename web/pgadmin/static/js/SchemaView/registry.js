@@ -34,7 +34,7 @@ export function View(name) {
   const view = _views[name];
 
   if (view) return view;
-  throw new Error('View is not found in the registry.');
+  throw new Error(`View ${name} is not found in the registry.`);
 }
 
 export function hasView(name) {
