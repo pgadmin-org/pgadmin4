@@ -197,7 +197,7 @@ export default class CustomEditorView extends EditorView {
   }
 
   getSelection() {
-    return this.state.sliceDoc(this.state.selection.main.from, this.state.selection.main.to) ?? '';
+    return this.state.selection.ranges.map((range)=>this.state.sliceDoc(range.from, range.to)).join('') ?? '';
   }
 
   replaceSelection(newValue) {
