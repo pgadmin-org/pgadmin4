@@ -1177,7 +1177,9 @@ class PgadminPage:
                     if (tree_height - top_el_location) == tree_height:
                         r_scroll = 0
                     else:
-                        self.js_executor_scrollintoview_arg, top_el)
+                        self.driver.execute_script(
+                            self.js_executor_scrollintoview_arg, top_el
+                        )
                         r_scroll -= 1
                 else:
                     break
