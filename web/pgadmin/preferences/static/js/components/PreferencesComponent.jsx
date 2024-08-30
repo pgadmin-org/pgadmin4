@@ -698,10 +698,10 @@ export default function PreferencesComponent({ ...props }) {
             />
           </Box>
           <Box className='PreferencesComponent-actionBtn' marginLeft="auto">
-            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={reset} startIcon={<SettingsBackupRestoreIcon />}>
+            <DefaultButton className='PreferencesComponent-buttonMargin'
+              onClick={reset} startIcon={<SettingsBackupRestoreIcon />}>
               {gettext('Reset all preferences')}
             </DefaultButton>
-            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
             <DefaultButton className='PreferencesComponent-buttonMargin'
               onClick={() => { props.closeModal();}}
               startIcon={
