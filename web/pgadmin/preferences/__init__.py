@@ -320,3 +320,17 @@ def update():
         data={'data': 'Success'},
         status=200
     )
+
+
+@blueprint.route("/", methods=['DELETE'], endpoint="reset_prefs")
+@pga_login_required
+def reset():
+    """
+    Reset preferences to default
+    """
+    res, msg = Preferences.reset()
+
+    if not res:
+        return internal_server_error(errormsg=msg)
+
+    return success_return()
