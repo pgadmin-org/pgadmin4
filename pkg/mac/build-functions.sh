@@ -62,6 +62,8 @@ _build_runtime() {
         yarn plugin import workspace-tools
         yarn workspaces focus --production
 
+        # remove the yarn cache
+        rm -rf .yarn .yarn*
     popd > /dev/null || exit
 }
 
