@@ -1147,29 +1147,37 @@ class PgadminPage:
                     bottom_ele = self.driver.find_element(
                         By.XPATH,
                         "//div[@id='id-object-explorer']"
-                        "/div/div/div/div/div[last()]")
-                    bottom_ele_location = int(
-                        bottom_ele.value_of_css_property('top').split("px")[0])
+                        "/div/div/div/div/div/div[last()]")
+                    bottom_ele_top = bottom_ele.value_of_css_property('top')
+                    bottom_ele_location = 1
+
+                    if (bottom_ele_top != 'auto'):
+                        bottom_ele_location = int(
+                            bottom_ele_top.split("px")[0]
+                        )
 
                     if tree_height - bottom_ele_location < 25:
-                        f_scroll = 0
+                        f_scroll = bottom_ele_location - 25
                     else:
                         self.driver.execute_script(
-                            self.js_executor_scrollintoview_arg, bottom_ele)
+                            self.js_executor_scrollintoview_arg, bottom_ele
+                        )
                         f_scroll -= 1
                 elif r_scroll > 0:
                     top_el = self.driver.find_element(
                         By.XPATH,
                         "//div[@id='id-object-explorer']"
                         "/div/div/div/div/div[1]")
-                    top_el_location = int(
-                        top_el.value_of_css_property('top').split("px")[0])
+                    top_el_top = top_el.value_of_css_property('top')
+                    top_el_location = 0
+
+                    if (top_el_top != 'auto'):
+                        top_el_location = int(top_el_top.split("px")[0])
 
                     if (tree_height - top_el_location) == tree_height:
                         r_scroll = 0
                     else:
-                        webdriver.ActionChains(self.driver).move_to_element(
-                            top_el).perform()
+                        self.js_executor_scrollintoview_arg, top_el)
                         r_scroll -= 1
                 else:
                     break

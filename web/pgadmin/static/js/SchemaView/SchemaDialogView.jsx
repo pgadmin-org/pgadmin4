@@ -197,7 +197,7 @@ export default function SchemaDialogView({
             hasSQLTab={props.hasSQL} getSQLValue={getSQLValue}
             firstEleRef={firstEleRef} isTabView={isTabView}
             className={props.formClassName}
-            showError={true}
+            showError={true} resetKey={props.resetKey}
           />
         </Box>
         {showFooter &&

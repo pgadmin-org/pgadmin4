@@ -142,7 +142,7 @@ Python Tests:
   'pgadmin4/web/pgadmin/utils/test.py' file.
 
 - To run Feature Tests in parallel using selenoid(grid + docker), selenoid
-  need to be installed nad should be run only with SERVER_MODE=True.
+  need to be installed and should be run only with SERVER_MODE=True.
   Steps to install selenoid -
 
   - Install & Start docker

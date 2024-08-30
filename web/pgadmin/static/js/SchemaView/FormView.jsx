@@ -59,7 +59,7 @@ const ErrorMessageBox = () => {
 export default function FormView({
   accessPath, schema=null, isNested=false, dataDispatch, className, 
   hasSQLTab, getSQLValue, isTabView=true, viewHelperProps, field,
-  showError=false
+  showError=false, resetKey
 }) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
@@ -104,10 +104,11 @@ export default function FormView({
 
   // Upon reset, set the tab to first.
   useEffect(() => {
-    if (!visible) return;
-    if (schemaState?.isReady)
+    if (!visible || !resetKey) return;
+    if (resetKey) {
       setTabValue(0);
-  }, [schemaState?.isReady]);
+    }
+  }, [resetKey]);
 
   const finalGroups = useMemo(
     () => createFieldControls({

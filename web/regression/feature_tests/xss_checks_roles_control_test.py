@@ -73,15 +73,10 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         edit_object = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.edit_obj_css)))
         edit_object.click()
-        membership_tab = WebDriverWait(self.page.driver, 4).until(
+        membership_tab = WebDriverWait(self.page.driver, 2).until(
             EC.presence_of_element_located((
                 By.XPATH, "//button[normalize-space(text())='Membership']")))
         membership_tab.click()
-
-        WebDriverWait(self.page.driver, 2).until(
-            EC.presence_of_element_located((
-                By.XPATH, "//div[contains(@class, 'pgrd-row-cell')]"))
-        )
 
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(
