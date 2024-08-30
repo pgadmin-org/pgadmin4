@@ -11,7 +11,7 @@ SELECT
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
         WHERE dtb.oid = {{ did }}::oid)
     END as spcname,
-    (SELECT st.setting from pg_catalog.pg_settings st
+    (SELECT st.setting from pg_catalog.pg_show_all_settings() st
     WHERE st.name = 'default_table_access_method') as default_amname,
     c.relacl,
     nsp.nspname as schema,

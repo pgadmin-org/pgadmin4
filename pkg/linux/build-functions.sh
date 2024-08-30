@@ -180,6 +180,8 @@ _build_runtime() {
         yarn plugin import workspace-tools
         yarn workspaces focus --production
 
+        # remove the yarn cache
+        rm -rf .yarn .yarn*
     popd > /dev/null || exit
 
     # Create the icon
@@ -232,7 +234,7 @@ _copy_code() {
     cp "${SOURCEDIR}/pkg/linux/config_distro.py" "${SERVERROOT}/usr/${APP_NAME}/web/"
     cd "${SERVERROOT}/usr/${APP_NAME}/web/" || exit
     rm -f pgadmin4.db config_local.*
-    rm -rf jest.config.js babel.* package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
+    rm -rf jest.config.js babel.* package.json .yarn* yarn* .editorconfig .eslint* node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
     find . -name "tests" -type d -print0 | xargs -0 rm -rf
     find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
     find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf

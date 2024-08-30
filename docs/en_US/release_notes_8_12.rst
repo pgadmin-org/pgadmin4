@@ -20,7 +20,8 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
-  | `Issue #7293 <https://github.com/pgadmin-org/pgadmin4/issues/7293>`_ - Allow running non-continuous selected SQL code blocks in the query tool.
+  | `Issue #1900 <https://github.com/pgadmin-org/pgadmin4/issues/1900>`_ -  Added feature to restore preferences to their default values.
+  | `Issue #7293 <https://github.com/pgadmin-org/pgadmin4/issues/7293>`_ -  Allow running non-continuous selected SQL code blocks in the query tool.
 
 Housekeeping
 ************
@@ -29,4 +30,5 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #7076 <https://github.com/pgadmin-org/pgadmin4/issues/7076>`_ - Revamp the current password saving implementation to a keyring and reduce repeated OS user password prompts.
+  | `Issue #7076 <https://github.com/pgadmin-org/pgadmin4/issues/7076>`_ -  Revamp the current password saving implementation to a keyring and reduce repeated OS user password prompts.
+  | `Issue #7571 <https://github.com/pgadmin-org/pgadmin4/issues/7571>`_ -  Fixed an issue where users could not use pgAdmin if they did not have access to the management database.

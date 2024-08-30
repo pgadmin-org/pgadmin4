@@ -20,6 +20,7 @@ import getApiInstance from '../../../../static/js/api_instance';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
+import SettingsBackupRestoreIcon from'@mui/icons-material/SettingsBackupRestore';
 import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
@@ -602,6 +603,64 @@ export default function PreferencesComponent({ ...props }) {
     window.open(url_for('help.static', { 'filename': 'preferences.html' }), 'pgadmin_help');
   };
 
+  const reset = () => {
+    pgAdmin.Browser.notifier.confirm(
+      gettext('Reset all preferences'),
+      `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
+       ${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
+       <li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`,
+      function () {},
+      function () {},
+      '',
+      'Cancel',
+      function (closeModal) {
+        return [
+          {
+            type: 'default',
+            icon: <SaveSharpIcon />,
+            label: gettext('Save & Reload'),
+            onclick: () => {
+              resetPrefsToDefault(true);
+              closeModal();
+            }
+          }, {
+            type: 'primary',
+            icon: <SaveSharpIcon />,
+            label: gettext('Save & Reload Later'),
+            onclick: () => {
+              resetPrefsToDefault(false);
+              closeModal();
+            }            
+          }
+        ];
+      }
+    );
+  };
+
+  const resetPrefsToDefault = (refresh = false) => {
+    api({
+      url: url_for('preferences.index'),
+      method: 'DELETE'
+    }).then(()=>{
+      if (refresh){
+        location.reload();
+        return true;
+      }
+      preferencesStore.cache();
+      pgAdmin.Browser.tree.destroy().then(
+        () => {
+          pgAdmin.Browser.Events.trigger(
+            'pgadmin-browser:tree:destroyed', undefined, undefined
+          );
+          return true;
+        }
+      );
+      props.closeModal();
+    }).catch((err) => {
+      pgAdmin.Browser.notifier.alert(err.response.data);
+    });
+  };
+
   return (
     <StyledBox height={'100%'}>
       <Box className='PreferencesComponent-root'>
@@ -639,6 +698,10 @@ export default function PreferencesComponent({ ...props }) {
             />
           </Box>
           <Box className='PreferencesComponent-actionBtn' marginLeft="auto">
+            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={reset} startIcon={<SettingsBackupRestoreIcon />}>
+              {gettext('Reset all preferences')}
+            </DefaultButton>
+            <DefaultButton className='PreferencesComponent-buttonMargin' onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
             <DefaultButton className='PreferencesComponent-buttonMargin'
               onClick={() => { props.closeModal();}}
               startIcon={
