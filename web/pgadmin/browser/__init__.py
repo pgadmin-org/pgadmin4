@@ -19,7 +19,7 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 
 import keyring
-from keyring.errors import KeyringLocked
+from keyring.errors import KeyringLocked, NoKeyringError
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
     KEY_RING_USER_NAME,MessageType
 
@@ -632,7 +632,7 @@ def get_nodes():
 
 
 def form_master_password_response(existing=True, present=False, errmsg=None,
-                                  keyring_name='', master_password_hook=''):
+                                  keyring_name='', master_password_hook=False):
     return make_json_response(data={
         'present': present,
         'reset': existing,
@@ -680,7 +680,7 @@ def reset_master_password():
 
     # Set masterpass_check if MASTER_PASSWORD_HOOK is set which provides
     # encryption key
-    if config.MASTER_PASSWORD_REQUIRED and config.MASTER_PASSWORD_HOOK:
+    if config.SERVER_MODE and config.MASTER_PASSWORD_HOOK:
         set_masterpass_check_text(crypt_key)
     return make_json_response(data=status)
 
@@ -705,6 +705,7 @@ def set_master_password():
 
     keyring_name = ''
     errmsg = ''
+    master_password_hook = False
     if not config.SERVER_MODE:
         if config.USE_OS_SECRET_STORAGE:
             try:
@@ -715,7 +716,8 @@ def set_master_password():
                 if not master_key:
                     # Generate new one and migration required
                     master_key = secrets.token_urlsafe(12)
-
+                    keyring.delete_password(KEY_RING_SERVICE_NAME,
+                                            'entry_to_check_keychain_access')
                     # migrate existing server passwords
                     from pgadmin.browser.server_groups.servers.utils \
                         import migrate_saved_passwords
@@ -751,40 +753,39 @@ def set_master_password():
                                 errmsg=errmsg,
                                 keyring_name=keyring_name)
                 else:
-                    current_app.logger.warning(
-                        ' Master key was already present in the keyring,'
-                        ' hence not doing any migration')
+                    current_app.logger.debug(
+                        'Master key was already present in the keyring,'
+                        'hence not doing any migration')
                     # Key is already generated and set, no migration required
                     # set crypt key
                     set_crypt_key(master_key)
                     return form_master_password_response(
                         present=True)
-            except KeyringLocked as e:
-                current_app.logger.warning(
-                    'Failed to set because Access Denied.'
-                    ' Error: {0}'.format(e))
-                config.USE_OS_SECRET_STORAGE = False
             except Exception as e:
-                current_app.logger.warning(
-                    'Failed to set encryption key using OS password manager'
-                    ', fallback to master password. Error: {0}'.format(e))
-                # Also if masterpass_check is none it means previously
-                # passwords were migrated using keyring crypt key.
-                # Reset all passwords because we are going to master password
-                # again and while setting master password, all server
-                # passwords are decrypted using old key before re-encryption
-                if current_user.masterpass_check is None:
+                error = 'Failed to get/set encryption key using OS password ' \
+                        'manager because of exception.' \
+                        ' Error: {0}'.format(e)
+                current_app.logger.warning(error)
+                # Disable local os storage if any exception other than
+                # access denied
+                if not isinstance(e, KeyringLocked):
+                    config.USE_OS_SECRET_STORAGE = False
+                    # delete key if exception other than no keyring backend
+                    # error
+                    if not isinstance(e, NoKeyringError):
+                        delete_local_storage_master_key()
+
+                    # Delete saved password encrypted with kecyhain master key
                     from pgadmin.browser.server_groups.servers.utils \
                         import remove_saved_passwords, update_session_manager
                     remove_saved_passwords(current_user.id)
                     update_session_manager(current_user.id)
-                # Disable local os storage if any exception while creation
-                config.USE_OS_SECRET_STORAGE = False
-                delete_local_storage_master_key()
-        else:
-            # if os secret storage disabled now, but was used once then
-            # remove all the saved passwords
-            delete_local_storage_master_key()
+
+                return form_master_password_response(
+                    existing=False,
+                    present=True,
+                    errmsg=errmsg,
+                    keyring_name=keyring_name)
     else:
         # If the master password is required and the master password hook
         # is specified then try to retrieve the encryption key and update data.
@@ -817,11 +818,16 @@ def set_master_password():
         if current_user.masterpass_check is not None and \
             data.get('submit_password', False) and \
                 not validate_master_password(data.get('password')):
+
+            if config.SERVER_MODE and config.MASTER_PASSWORD_HOOK:
+                master_password_hook = True
+            else:
+                errmsg = gettext("Incorrect master password")
             return form_master_password_response(
                 existing=True,
                 present=False,
                 errmsg=errmsg,
-                master_password_hook=config.MASTER_PASSWORD_HOOK,
+                master_password_hook=master_password_hook,
                 keyring_name=keyring_name
             )
 

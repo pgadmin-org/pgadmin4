@@ -355,9 +355,9 @@ def migrate_saved_passwords(master_key, master_password):
             elif master_password:
                 old_key = master_password
             else:
-                current_app.logger.warning(
-                    'Saved password were already migrated once. '
-                    'Hence not migrating again. '
+                current_app.logger.info(
+                    'Passwords saved with Master password were already'
+                    ' migrated once. Hence not migrating again. '
                     'May be the old master key was deleted.')
         else:
             old_key = current_user.password
@@ -432,7 +432,6 @@ def remove_saved_passwords(user_id):
     """
     This function will remove all the saved passwords for the server
     """
-
     try:
         db.session.query(Server) \
             .filter(Server.user_id == user_id) \

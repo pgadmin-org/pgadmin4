@@ -583,6 +583,15 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 # Applicable for desktop mode only
 ##########################################################################
 MASTER_PASSWORD_REQUIRED = True
+##########################################################################
+
+##########################################################################
+# Allow to save master password which is used to encrypt/decrypt saved
+# passwords in the os level secret like Keychain, password store etc.
+# Disabling this will require user to enter master password
+# if MASTER_PASSWORD_REQUIRED is set to True. Note: this is applicable only
+# in case of Desktop mode.
+##########################################################################
 USE_OS_SECRET_STORAGE = True
 ##########################################################################
 

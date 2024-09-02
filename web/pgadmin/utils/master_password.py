@@ -44,21 +44,15 @@ def get_crypt_key():
 
 
 def get_master_password_key_from_os_secret():
-    master_key = None
-    try:
-        # Try to get master key is from local os storage
-        master_key = keyring.get_password(
-            KEY_RING_SERVICE_NAME, KEY_RING_USER_NAME)
-    except KeyringLocked as e:
-        current_app.logger.warning(
-            'Failed to retrieve master key because Access Denied.'
-            ' Error: {0}'.format(e))
-        config.USE_OS_SECRET_STORAGE = False
-    except Exception as e:
-        current_app.logger.warning(
-            'Failed to set encryption key using OS password manager'
-            ', fallback to master password. Error: {0}'.format(e))
-        config.USE_OS_SECRET_STORAGE = False
+    # Try to get master key is from local os storage
+    master_key = keyring.get_password(KEY_RING_SERVICE_NAME,
+                                      KEY_RING_USER_NAME)
+    if not master_key:
+        # If master password does not exist, keychain does not ask for
+        # permission. This will forces to ask for permission
+        keyring.set_password(KEY_RING_SERVICE_NAME,
+                             'entry_to_check_keychain_access',
+                             'dummy_password')
     return master_key
 
 
@@ -147,32 +141,17 @@ def delete_local_storage_master_key():
             if master_key:
                 keyring.delete_password(KEY_RING_SERVICE_NAME,
                                         KEY_RING_USER_NAME)
-                from pgadmin.browser.server_groups.servers.utils \
-                    import remove_saved_passwords
-                remove_saved_passwords(current_user.id)
-
-                from pgadmin.utils.driver import get_driver
-                driver = get_driver(config.PG_DEFAULT_DRIVER)
-                for server in Server.query.filter_by(
-                        user_id=current_user.id).all():
-                    manager = driver.connection_manager(server.id)
-                    manager.update(server)
                 current_app.logger.warning(
                     'Deleted master key stored in OS password manager.')
-        except NoKeyringError as e:
-            current_app.logger.warning(
-                ' Failed to delete master key stored in OS password manager'
-                ' because Keyring backend not found. Error: {0}'.format(e))
-            config.USE_OS_SECRET_STORAGE = False
-        except KeyringLocked as e:
-            current_app.logger.warning(
-                ' Failed to delete master key stored in OS password manager'
-                ' because of Access Denied. Error: {0}'.format(e))
-            config.USE_OS_SECRET_STORAGE = False
+        except (NoKeyringError, KeyringLocked) as e:
+            error = 'Failed to delete master key stored in OS password ' \
+                    'manager because Keyring backend not found or ' \
+                    'access denied. Error: {0}'.format(e)
+            current_app.logger.warning(error)
         except Exception as e:
-            current_app.logger.warning(
-                'Failed to delete master key stored in OS password manager.')
-            config.USE_OS_SECRET_STORAGE = False
+            error = 'Failed to delete master key stored in OS password ' \
+                    'manager. Error: {0}'.format(e)
+            current_app.logger.warning(error)
 
 
 def process_masterpass_disabled():
