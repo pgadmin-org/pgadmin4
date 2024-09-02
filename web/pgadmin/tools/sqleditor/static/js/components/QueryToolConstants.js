@@ -75,6 +75,7 @@ export const QUERY_TOOL_EVENTS = {
   RESET_GRAPH_VISUALISER: 'RESET_GRAPH_VISUALISER',
 
   GOTO_LAST_SCROLL: 'GOTO_LAST_SCROLL',
+  CHANGE_EOL: 'CHANGE_EOL'
 };
 
 export const CONNECTION_STATUS = {
@@ -106,3 +107,5 @@ export const PANELS = {
 };
 
 export const MAX_QUERY_LENGTH = 1000000;
+
+export const OS_EOL = navigator.platform === 'win32' ? 'crlf' : 'lf';

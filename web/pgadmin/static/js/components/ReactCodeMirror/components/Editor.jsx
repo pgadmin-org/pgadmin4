@@ -48,7 +48,8 @@ import CustomEditorView from '../CustomEditorView';
 import breakpointGutter, { breakpointEffect } from '../extensions/breakpointGutter';
 import activeLineExtn from '../extensions/activeLineMarker';
 import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
-import { autoCompleteCompartment, indentNewLine } from '../extensions/extraStates';
+import { autoCompleteCompartment, eolCompartment, indentNewLine, eol } from '../extensions/extraStates';
+import { OS_EOL } from '../../../../../tools/sqleditor/static/js/components/QueryToolConstants';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px'}} />);
@@ -144,6 +145,10 @@ const defaultExtensions = [
     return 0;
   }),
   autoCompleteCompartment.of([]),
+  EditorView.clipboardOutputFilter.of((text, state)=>{
+    const lineSep = state.facet(eol);
+    return state.doc.sliceString(0, text.length, lineSep);
+  })
 ];
 
 export default function Editor({
@@ -167,6 +172,7 @@ export default function Editor({
 
   useEffect(() => {
     const finalOptions = { ...defaultOptions, ...options };
+    const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n'; 
     const finalExtns = [
       (language == 'json') ? json() : sql({dialect: PgSQL}),
       ...defaultExtensions,
@@ -191,6 +197,7 @@ export default function Editor({
       const state = EditorState.create({
         extensions: [
           ...finalExtns,
+          eolCompartment.of([eol.of(osEOL)]),
           shortcuts.current.of([]),
           configurables.current.of([]),
           editableConfig.current.of([

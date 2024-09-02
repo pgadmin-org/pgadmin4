@@ -18,7 +18,7 @@ import { MainToolBar } from './sections/MainToolBar';
 import { Messages } from './sections/Messages';
 import getApiInstance, {callFetch, parseApiError} from '../../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
-import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS, MAX_QUERY_LENGTH } from './QueryToolConstants';
+import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS, MAX_QUERY_LENGTH, OS_EOL } from './QueryToolConstants';
 import { useBeforeUnload, useInterval } from '../../../../../static/js/custom_hooks';
 import { Box } from '@mui/material';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
@@ -202,7 +202,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
     }],
-    editor_disabled:true
+    editor_disabled:true,
+    eol:OS_EOL
   });
   const [selectedText, setSelectedText] = useState('');
 
@@ -224,6 +225,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       || !qtState.is_visible) {
     pollTime = -1;
   }
+
+  const handleEndOfLineChange = useCallback((e)=>{
+    const val = e.value || e;
+    const lineSep = val === 'crlf' ? '\r\n' : '\n';
+    setQtStatePartial({ eol: val });
+    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.CHANGE_EOL, lineSep);
+  }, []);
+
   useInterval(async ()=>{
     try {
       let {data: respData} = await fetchConnectionStatus(api, qtState.params.trans_id);
@@ -262,7 +271,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               maximizable: true,
               tabs: [
-                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)}/>}),
+                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} handleEndOfLineChange={handleEndOfLineChange}/>}),
                 LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
                   cached: undefined}),
               ],
@@ -869,6 +878,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     preferences: qtState.preferences,
     mainContainerRef: containerRef,
     editor_disabled: qtState.editor_disabled,
+    eol: qtState.eol,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
@@ -899,7 +909,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol]);
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,
@@ -940,7 +950,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               savedLayout={params.layout}
               resetToTabPanel={PANELS.MESSAGES}
             />
-            <StatusBar />
+            <StatusBar eol={qtState.eol} handleEndOfLineChange={handleEndOfLineChange}/>
           </Box>
         </QueryToolEventsContext.Provider>
       </QueryToolConnectionContext.Provider>

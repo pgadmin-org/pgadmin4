@@ -56,7 +56,7 @@ async function registerAutocomplete(editor, api, transId) {
   });
 }
 
-export default function Query({onTextSelect}) {
+export default function Query({onTextSelect, handleEndOfLineChange}) {
   const editor = React.useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -65,7 +65,6 @@ export default function Query({onTextSelect}) {
   const pgAdmin = usePgAdmin();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
-
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
       startMarker = 0,
@@ -175,7 +174,6 @@ export default function Query({onTextSelect}) {
       }
     });
 
-
     eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
         'file_name': decodeURI(fileName),
@@ -191,6 +189,8 @@ export default function Query({onTextSelect}) {
         checkTrojanSource(res.data);
         editor.current.markClean();
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
+        const lineSep = res.data.includes('\r\n') ? 'crlf' : 'lf';
+        handleEndOfLineChange(lineSep);
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
         pgAdmin.Browser.notifier.error(parseApiError(err));
@@ -200,7 +200,7 @@ export default function Query({onTextSelect}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName)=>{
       queryToolCtx.api.post(url_for('sqleditor.save_file'), {
         'file_name': decodeURI(fileName),
-        'file_content': editor.current.getValue(),
+        'file_content': editor.current.getValue(false, true),
       }).then(()=>{
         editor.current.markClean();
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true);
@@ -288,6 +288,12 @@ export default function Query({onTextSelect}) {
         editor.current.setValue(formattedSql);
       }
     });
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
+      editor.current?.setEOL(lineSep);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, true);
+    });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
       let selectedText = editor.current?.getSelection();
       if (!selectedText) return;
@@ -518,4 +524,5 @@ export default function Query({onTextSelect}) {
 
 Query.propTypes = {
   onTextSelect: PropTypes.func,
+  handleEndOfLineChange: PropTypes.func
 };
