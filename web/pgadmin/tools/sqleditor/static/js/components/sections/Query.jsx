@@ -152,10 +152,10 @@ export default function Query({onTextSelect}) {
         query = query || editor.current?.getValue() || '';
       }
       if(query) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, external, null, executeCursor);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, macroSQL, external, null, executeCursor);
       }
     } else {
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, null, null);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, null, null, '');
     }
   };
 

@@ -28,6 +28,7 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
+from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class StartRunningQuery:
@@ -81,6 +82,21 @@ class StartRunningQuery:
 
             # Connect to the Server if not connected.
             if connect and not conn.connected():
+                view = SchemaDiffRegistry.get_node_view('server')
+                response = view.connect(transaction_object.sgid,
+                                        transaction_object.sid, True)
+                if response.status_code == 428:
+                    return response
+                else:
+                    conn = manager.connection(
+                        did=transaction_object.did,
+                        conn_id=self.connection_id,
+                        auto_reconnect=False,
+                        use_binary_placeholder=True,
+                        array_to_string=True,
+                        **({"database": transaction_object.dbname} if hasattr(
+                            transaction_object, 'dbname') else {}))
+
                 status, msg = conn.connect()
                 if not status:
                     self.logger.error(msg)

@@ -1377,7 +1377,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid):
+    def connect(self, gid, sid, is_qt=False):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1443,7 +1443,9 @@ class ServerNode(PGChildNodeView):
 
         # Connect the Server
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-        if not manager.connection().connected():
+        # Update the manager with the server details if not connected and
+        # the API call is not made from SQL Editor or View/Edit Data tool
+        if not manager.connection().connected() and not is_qt:
             manager.update(server)
         conn = manager.connection()
 
