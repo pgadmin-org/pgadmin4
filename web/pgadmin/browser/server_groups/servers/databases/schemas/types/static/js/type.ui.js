@@ -1024,7 +1024,7 @@ class DataTypeSchema extends BaseUISchema {
     return [{
       id: 'type',
       label: gettext('Data Type'),
-      group: gettext('Data Type'),
+      group: gettext('Definition'),
       mode: ['edit', 'create'],
       disabled: false,
       readonly: function (state) {

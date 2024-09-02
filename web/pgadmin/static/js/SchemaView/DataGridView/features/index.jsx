@@ -10,7 +10,7 @@
 // The DataGridView component is feature support better extendability.
 
 import { Feature, FeatureSet, register } from './feature';
-import FixedRows from './fixedrows';
+import FixedRows from './fixedRows';
 import Reorder from './reorder';
 import ExpandedFormView from './expandabledFormView';
 import DeletableRow from './deletable';

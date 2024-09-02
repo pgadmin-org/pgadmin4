@@ -58,7 +58,8 @@ export class SchemaState extends DepListener {
     ////// State variables
 
     // Diff between the current snapshot and initial data.
-    this.changes = {};
+    // Internal state for keeping the changes
+    this._changes = {};
     // Current Loading state
     this.loadingState = LOADING_STATE.INIT;
     this.customLoadingText = loadingText;
@@ -220,12 +221,12 @@ export class SchemaState extends DepListener {
     ) state.setError({});
 
     state.data = sessData;
-    state.changes = state.Changes();
+    state._changes = state.changes();
     state.updateOptions();
-    state.onDataChange && state.onDataChange(state.isDirty, state.changes);
+    state.onDataChange && state.onDataChange(state.isDirty, state._changes);
   }
 
-  Changes(includeSkipChange=false) {
+  changes(includeSkipChange=false) {
     const state = this;
     const sessData = this.data;
     const schema = state.schema;

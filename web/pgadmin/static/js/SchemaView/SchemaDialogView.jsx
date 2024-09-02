@@ -131,7 +131,7 @@ export default function SchemaDialogView({
   const onSaveClick = () => {
     // Do nothing when there is no change or there is an error
     if (
-      !schemaState.changes || Object.keys(schemaState.changes) === 0 ||
+      !schemaState._changes || Object.keys(schemaState._changes) === 0 ||
       schemaState.errors.name
     ) return;
 
@@ -139,14 +139,14 @@ export default function SchemaDialogView({
     setLoaderText('Saving...');
 
     if (!schema.warningText) {
-      save(schemaState.Changes(true));
+      save(schemaState.changes(true));
       return;
     }
 
     Notifier.confirm(
       gettext('Warning'),
       schema.warningText,
-      () => { save(schemaState.Changes(true)); },
+      () => { save(schemaState.changes(true)); },
       () => {
         setSaving(false);
         setLoaderText('');
@@ -165,7 +165,7 @@ export default function SchemaDialogView({
       return Promise.resolve('-- ' + gettext('Definition incomplete.'));
     }
 
-    const changeData = schemaState.changes;
+    const changeData = schemaState._changes;
     /*
      * Call the passed incoming getSQLValue func to get the SQL
      * return of getSQLValue should be a promise.
