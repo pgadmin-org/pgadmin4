@@ -802,6 +802,14 @@ def start_view_data(trans_id):
 
     # Connect to the Server if not connected.
     if not default_conn.connected():
+        view = SchemaDiffRegistry.get_node_view('server')
+        response = view.connect(trans_obj.sgid,
+                                trans_obj.sid, True)
+        if response.status_code == 428:
+            return response
+        else:
+            conn = manager.connection(did=trans_obj.did)
+
         status, msg = default_conn.connect()
         if not status:
             return make_json_response(
