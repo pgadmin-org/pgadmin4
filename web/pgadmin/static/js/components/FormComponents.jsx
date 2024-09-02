@@ -368,6 +368,8 @@ export const InputText = forwardRef(({
   if (_.isNull(finalValue) || _.isUndefined(finalValue)) finalValue = '';
 
   const [val, setVal] = useState(finalValue);
+
+  useEffect(() => setVal(finalValue), [finalValue]);
   const onChangeFinal = (e) => {
     let changeVal = e.target.value;
 
