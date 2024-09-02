@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
@@ -154,7 +155,10 @@ export default class MViewSchema extends BaseUISchema {
 
       if (state.definition) {
         obj.warningText = null;
-        if (obj.sessData.oid !== undefined && state.definition !== obj.sessData.definition) {
+        if (
+          !_.isUndefined(obj.origData.oid) &&
+          state.definition !== obj.origData.definition
+        ) {
           obj.warningText = gettext(
             'Updating the definition will drop and re-create the materialized view. It may result in loss of information about its dependent objects.'
           ) + '<br><br><b>' + gettext('Do you want to continue?') + '</b>';

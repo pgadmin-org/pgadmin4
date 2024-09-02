@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
@@ -135,22 +136,23 @@ export default class ViewSchema extends BaseUISchema {
       }
 
       if (state.definition) {
-        if (!(obj.nodeInfo.server.server_type == 'pg' &&
+        if (!(
+          obj.nodeInfo.server.server_type == 'pg' &&
           // No need to check this when creating a view
-          obj.sessData.oid !== undefined
+          !_.isUndefined(obj.sessData.oid)
         ) || (
-          state.definition === obj.sessData.definition
+          state.definition === obj.origData.definition
         )) {
           obj.warningText = null;
           return false;
         }
 
-        let old_def = obj.sessData.definition?.replace(
+        let old_def = obj.origData.definition?.replace(
             /\s/gi, ''
           ).split('FROM'),
           new_def = [];
 
-        if (state.definition !== undefined) {
+        if (!_.isUndefined(state.definition)) {
           new_def = state.definition.replace(
             /\s/gi, ''
           ).split('FROM');

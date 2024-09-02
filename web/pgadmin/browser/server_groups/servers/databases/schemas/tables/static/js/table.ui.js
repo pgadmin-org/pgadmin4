@@ -635,7 +635,7 @@ export default class TableSchema extends BaseUISchema {
       type: 'switch', mode: ['properties','edit', 'create'],
       group: 'advanced', min_version: 90600,
       depChange: (state)=>{
-        if (state.rlspolicy && this.sessData.rlspolicy != state.rlspolicy) {
+        if (state.rlspolicy && this.origData.rlspolicy != state.rlspolicy) {
           pgAdmin.Browser.notifier.alert(
             gettext('Check Policy?'),
             gettext('Please check if any policy exists. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')

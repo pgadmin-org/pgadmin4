@@ -284,7 +284,7 @@ export default class DatabaseSchema extends BaseUISchema {
             obj.informText = undefined;
           }
 
-          if(!_.isEqual(obj.sessData.schema_res, state.schema_res)) {
+          if(!_.isEqual(obj.origData.schema_res, state.schema_res)) {
             obj.informText = gettext(
               'Please refresh the Schemas node to make changes to the schema restriction take effect.'
             );

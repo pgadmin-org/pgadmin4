@@ -156,7 +156,8 @@ class IndexColumnSchema extends BaseUISchema {
                   * to access method selected by user if not selected
                   * send btree related op_class options
                   */
-                let amname = obj.top?.sessData.amname;
+                let amname = obj.top?.sessData.amname ||
+                  obj.top?.origData.amname;
 
                 if(_.isUndefined(amname))
                   return options;

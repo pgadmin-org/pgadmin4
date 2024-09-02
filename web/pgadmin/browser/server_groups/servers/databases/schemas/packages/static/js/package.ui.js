@@ -101,7 +101,7 @@ export default class PackageSchema extends BaseUISchema {
         depChange: (state, source, topState, actionObj) => {
 
           if(
-            packageSchemaObj.sessData.oid &&
+            packageSchemaObj.origData.oid &&
             state.pkgheadsrc != actionObj.oldState.pkgheadsrc
           ) {
             packageSchemaObj.warningText = gettext(
@@ -120,7 +120,7 @@ export default class PackageSchema extends BaseUISchema {
         depChange: (state, source, topState, actionObj) => {
 
           if(
-            packageSchemaObj.sessData.oid &&
+            packageSchemaObj.origData.oid &&
             state.pkgbodysrc != actionObj.oldState.pkgbodysrc
           ) {
             packageSchemaObj.warningText = gettext(
