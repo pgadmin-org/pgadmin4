@@ -29,18 +29,10 @@ export function getMappedCell({field}) {
     const schemaState = useContext(SchemaStateContext);
     const { dataDispatch } = useContext(DataGridContext);
     const { rowAccessPath, row } = useContext(DataGridRowContext);
-
-    // When cell is dynamic, it should be rerendered on change of row value.
-    const refreshOnRowChange = (
-      (field.id && _.isFunction(field.cell)) ? [key, setKey] : []
-    );
-
     const colAccessPath = schemaState.accessPath(rowAccessPath, field.id);
+
     let colOptions = useFieldOptions(colAccessPath, schemaState, key, setKey);
     let value = useFieldValue(colAccessPath, schemaState, key, setKey);
-    let rowValue = useFieldValue(
-      rowAccessPath, schemaState, ...refreshOnRowChange
-    );
 
     listenDepChanges(colAccessPath, field, true, schemaState);
 

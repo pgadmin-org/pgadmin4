@@ -30,7 +30,7 @@ export function DataGridRow({rowId, isResizing}) {
   );
 
   const rowAccessPath = schemaState.accessPath(accessPath, rowId);
-  const rowOptions = useFieldOptions(rowAccessPath, schemaState, key, setKey);
+  const rowOptions = useFieldOptions(rowAccessPath, schemaState);
 
   const rowRef = useRef(null);
   const row = table.getRowModel().rows[rowId];
@@ -41,7 +41,6 @@ export function DataGridRow({rowId, isResizing}) {
    *
    * We can avoid re-render by if row data has not changed.
    */
-  let depsMap = [JSON.stringify(row?.original)];
   let classList = [];
   let attributes = {};
   let expandedRowContents = [];
@@ -51,9 +50,9 @@ export function DataGridRow({rowId, isResizing}) {
     rowOptions, tableOptions: options
   });
 
-  depsMap = depsMap.concat([
-    row?.getIsExpanded(), key, isResizing, expandedRowContents.length
-  ]);
+  let depsMap = [
+    rowId, row?.getIsExpanded(), key, isResizing, expandedRowContents.length
+  ];
 
   return useMemo(() => (
     !row ? <></> :
@@ -91,5 +90,5 @@ export function DataGridRow({rowId, isResizing}) {
             </PgReactTableRowExpandContent> : <></>
         }
       </DataGridRowContext.Provider>
-  ), depsMap);
+  ), [...depsMap]);
 }
