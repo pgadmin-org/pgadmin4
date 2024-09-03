@@ -81,12 +81,12 @@ export function DataGridHeader({tableEleRef}) {
 
   return (
     <Box className='DataGridView-gridHeader'>
-      {label && <Box className='DataGridView-gridHeader-heading'>{label}</Box>}
+      {label && <Box className='DataGridView-gridHeaderText'>{label}</Box>}
       <Box className='DataGridView-gridHeader-middle'
         style={{flex: 1, padding: 0}}>
         <SearchBox />
       </Box>
-      <Box className='DataGridView-grid-controls'>
+      <Box className='DataGridView-gridControls'>
         { canAdd &&
         <PgIconButton data-test="add-row" title={gettext('Add row')}
           onClick={onAddClick}
