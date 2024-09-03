@@ -17,7 +17,6 @@ import {
 
 import { SchemaStateContext } from '../SchemaState';
 import { useFieldOptions } from '../hooks';
-import { listenDepChanges } from '../utils';
 
 import { DataGridContext, DataGridRowContext } from './context';
 
@@ -35,8 +34,6 @@ export function DataGridRow({rowId, isResizing}) {
 
   const rowRef = useRef(null);
   const row = table.getRowModel().rows[rowId];
-
-  listenDepChanges(rowAccessPath, field, true, schemaState);
 
   /*
    * Memoize the row to avoid unnecessary re-render. If table data changes,
