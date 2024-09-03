@@ -27,7 +27,7 @@ import { FieldControl } from './FieldControl';
 import { SQLTab } from './SQLTab';
 import { FormContentBox } from './StyledComponents';
 import { SchemaStateContext } from './SchemaState';
-import { useFieldOptions } from './hooks';
+import { useFieldSchema, useFieldValue } from './hooks';
 import { registerView, View } from './registry';
 import { createFieldControls, listenDepChanges } from './utils';
 
@@ -63,7 +63,10 @@ export default function FormView({
 }) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
-  const { visible } = useFieldOptions(accessPath, schemaState);
+  const value = useFieldValue(accessPath, schemaState);
+  const { visible } = useFieldSchema(
+    field, accessPath, value, viewHelperProps, schemaState, key, setKey
+  );
 
   const [tabValue, setTabValue] = useState(0);
   const formRef = useRef();

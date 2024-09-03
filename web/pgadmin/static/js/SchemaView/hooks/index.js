@@ -11,11 +11,13 @@ import { useFieldError } from './useFieldError';
 import { useFieldOptions } from './useFieldOptions';
 import { useFieldValue } from './useFieldValue';
 import { useSchemaState } from './useSchemaState';
+import { useFieldSchema } from './useFieldSchema';
 
 
 export {
   useFieldError,
   useFieldOptions,
   useFieldValue,
+  useFieldSchema,
   useSchemaState,
 };

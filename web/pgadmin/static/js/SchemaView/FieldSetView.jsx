@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import FieldSet from 'sources/components/FieldSet';
@@ -15,7 +15,7 @@ import CustomPropTypes from 'sources/custom_prop_types';
 
 import { FieldControl } from './FieldControl';
 import { SchemaStateContext } from './SchemaState';
-import { useFieldOptions } from './hooks';
+import { useFieldSchema, useFieldValue } from './hooks';
 import { registerView } from './registry';
 import { createFieldControls, listenDepChanges  } from './utils';
 
@@ -23,9 +23,13 @@ import { createFieldControls, listenDepChanges  } from './utils';
 export default function FieldSetView({
   field, accessPath, dataDispatch, viewHelperProps, controlClassName,
 }) {
+  const [key, setRefreshKey] = useState(0);
   const schema = field.schema;
   const schemaState = useContext(SchemaStateContext);
-  const options = useFieldOptions(accessPath, schemaState);
+  const value = useFieldValue(accessPath, schemaState);
+  const options = useFieldSchema(
+    field, accessPath, value, viewHelperProps, schemaState, key, setRefreshKey
+  );
   const label = field.label;
 
   listenDepChanges(accessPath, field, options.visible, schemaState);
@@ -40,13 +44,6 @@ export default function FieldSetView({
   // We won't show empty feldset too.
   if(!options.visible || !fieldGroups.length) {
     return <></>;
-  }
-
-  if (fieldGroups.length > 1) {
-    throw new Error(
-      'Developers: Avoid using multiple groups within a fieldSet.' +
-      JSON.stringify(field?.id) + JSON.stringify(fieldGroups)
-    );
   }
 
   return (

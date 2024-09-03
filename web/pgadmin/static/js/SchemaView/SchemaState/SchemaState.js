@@ -295,6 +295,7 @@ export class SchemaState extends DepListener {
   }
 
   value(path) {
+    if (!path || !path.length) return this.data;
     return _.get(this.data, path);
   }
 
