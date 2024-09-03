@@ -25,7 +25,7 @@ export function DataGridRow({rowId, isResizing}) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
 
-  const { accessPath, field, options, table, features } = useContext(
+  const { accessPath, options, table, features } = useContext(
     DataGridContext
   );
 
