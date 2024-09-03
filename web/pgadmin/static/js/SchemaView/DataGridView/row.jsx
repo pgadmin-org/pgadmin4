@@ -22,7 +22,6 @@ import { DataGridContext, DataGridRowContext } from './context';
 
 
 export function DataGridRow({rowId, isResizing}) {
-  const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
 
   const { accessPath, options, table, features } = useContext(
@@ -51,7 +50,7 @@ export function DataGridRow({rowId, isResizing}) {
   });
 
   let depsMap = [
-    rowId, row?.getIsExpanded(), key, isResizing, expandedRowContents.length
+    rowId, row?.getIsExpanded(), isResizing, expandedRowContents.length
   ];
 
   return useMemo(() => (

@@ -33,6 +33,7 @@ export function getMappedCell({field}) {
 
     let colOptions = useFieldOptions(colAccessPath, schemaState, key, setKey);
     let value = useFieldValue(colAccessPath, schemaState, key, setKey);
+    let rowValue = useFieldValue(rowAccessPath, schemaState);
 
     listenDepChanges(colAccessPath, field, true, schemaState);
 
@@ -43,6 +44,7 @@ export function getMappedCell({field}) {
       colOptions = { disabled: true, readonly: true };
     } else {
       colOptions['readonly'] = !colOptions['editable'];
+      rowValue = value;
     }
 
     let cellProps = {};
