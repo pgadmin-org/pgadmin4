@@ -290,9 +290,10 @@ export function validateSchema(
     if(schema.idAttribute === field.id) {
       continue;
     }
-
     // If the field is has nested schema, then validate the child schema.
     if(field.schema && (field.schema instanceof BaseUISchema)) {
+      if (!field.schema.top) field.schema.top = schema;
+
       // A collection is an array.
       if(field.type === 'collection') {
         if (validateCollectionSchema(field, sessData, accessPath, setError))
