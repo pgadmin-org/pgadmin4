@@ -64,7 +64,9 @@ export const createStore = (initialState) => {
 
     pathListeners.add(data);
 
-    return () => pathListeners.delete(data);
+    return () => {
+      return pathListeners.delete(data);
+    };
   };
 
   return {

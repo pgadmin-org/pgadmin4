@@ -35,7 +35,6 @@ import { createFieldControls } from './utils';
 export default function SchemaPropertiesView({
   getInitData, viewHelperProps, schema={}, updatedData, ...props
 }) {
-
   const pgAdmin = usePgAdmin();
   const Notifier = pgAdmin.Browser.notifier;
 
@@ -59,8 +58,8 @@ export default function SchemaPropertiesView({
 
   if (!finalTabs) return <></>;
 
-  return (
-    <StyledBox>
+  return useMemo(
+    () => <StyledBox>
       <SchemaStateContext.Provider value={schemaState}>
         <FormLoader/>
         <Box className='Properties-toolbar'>
@@ -91,9 +90,9 @@ export default function SchemaPropertiesView({
                     <Box style={{width: '100%'}}>
                       {
                         group.controls.map(
-                          (item, idx) =>
-                            <FieldControl
-                              item={item} key={idx} schemaId={schema._id}/>
+                          (item, idx) => <FieldControl
+                            item={item} key={idx} schemaId={schema._id}
+                          />
                         )
                       }
                     </Box>
@@ -104,7 +103,8 @@ export default function SchemaPropertiesView({
           </Box>
         </Box>
       </SchemaStateContext.Provider>
-    </StyledBox>
+    </StyledBox>,
+    [schema._id]
   );
 }
 

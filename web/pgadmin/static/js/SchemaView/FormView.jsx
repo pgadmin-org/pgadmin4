@@ -249,7 +249,9 @@ export default function FormView({
               finalGroups.map((group, idx) =>
                 <React.Fragment key={idx}>{
                   group.controls.map(
-                    (item, idx) => <FieldControl item={item} key={idx}/>
+                    (item, idx) => <FieldControl
+                      item={item} key={idx} schemaId={schema._id}
+                    />
                   )
                 }</React.Fragment>
               )

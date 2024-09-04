@@ -39,7 +39,7 @@ export const useFieldSchema = (
     return () => {
       unsubscribers.forEach(unsubscribe => unsubscribe());
     };
-  });
+  }, [key, schemaState?._id]);
 
   if (!field) return { visible: true };
   if (field.id) return schemaState?.options(accessPath);

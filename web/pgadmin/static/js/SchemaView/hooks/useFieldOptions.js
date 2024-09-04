@@ -19,7 +19,7 @@ export const useFieldOptions = (
     return schemaState.subscribe(
       path, () => setRefreshKey?.({id: Date.now()}), 'options'
     );
-  }, [key]);
+  }, [key, schemaState?._id]);
 
   return schemaState?.options(path) || {visible: true};
 };

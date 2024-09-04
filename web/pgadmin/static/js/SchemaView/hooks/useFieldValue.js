@@ -19,7 +19,7 @@ export const useFieldValue = (
     return schemaState.subscribe(
       path, () => setRefreshKey({id: Date.now()}), 'value'
     );
-  }, [key]);
+  }, [key, schemaState?._id]);
 
   return schemaState?.value(path);
 };

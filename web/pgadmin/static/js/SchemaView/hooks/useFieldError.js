@@ -25,7 +25,7 @@ export const useFieldError = (
     };
 
     return schemaState.subscribe(['errors'], checkPathError, 'states');
-  }, [key]);
+  }, [key, schemaState?._id]);
 
   const errors = schemaState?.errors || {};
   const error = errors.name === path ? errors.message : null;
