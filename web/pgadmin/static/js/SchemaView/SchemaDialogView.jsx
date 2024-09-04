@@ -49,7 +49,7 @@ export default function SchemaDialogView({
   const onDataChange  = props.onDataChange;
 
   // Schema data state manager
-  const {schemaState, dataDispatch, sessData, reset} = useSchemaState({
+  const {schemaState, dataDispatch, reset} = useSchemaState({
     schema: schema, getInitData: getInitData, immutableData: {},
     viewHelperProps: viewHelperProps, onDataChange: onDataChange,
     loadingText,
@@ -190,7 +190,7 @@ export default function SchemaDialogView({
       <SchemaStateContext.Provider value={schemaState}>
         <Box className='Dialog-form'>
           <FormLoader/>
-          <FormView value={sessData}
+          <FormView
             viewHelperProps={viewHelperProps}
             schema={schema} accessPath={[]}
             dataDispatch={dataDispatch}
