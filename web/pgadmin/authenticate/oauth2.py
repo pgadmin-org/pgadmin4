@@ -134,6 +134,7 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
+        current_app.logger.warning(f"profile : {profile}")
         email_key = \
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
@@ -146,8 +147,13 @@ class OAuth2Authentication(BaseAuthentication):
                 self.oauth2_current_client
             ]['OAUTH2_USERNAME_CLAIM']
         if username_claim is not None:
+            id_token = session['oauth2_token'].get('userinfo', {})
             if username_claim in profile:
                 username = profile[username_claim]
+                current_app.logger.warning('Found username claim in profile')
+            elif username_claim in id_token:
+                username = id_token[username_claim]
+                current_app.logger.warning('Found username claim in id_token')
             else:
                 error_msg = "The claim '%s' is required to login into " \
                     "pgAdmin. Please update your OAuth2 profile." % (
