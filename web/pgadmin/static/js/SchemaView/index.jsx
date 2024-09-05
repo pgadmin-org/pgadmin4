@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+import BaseUISchema from './base_schema.ui';
 import DataGridView from './DataGridView';
 import FieldSetView from './FieldSetView';
 import FormView from './FormView';
@@ -14,13 +15,13 @@ import InlineView from './InlineView';
 import SchemaDialogView from './SchemaDialogView';
 import SchemaPropertiesView from './SchemaPropertiesView';
 import SchemaView from './SchemaView';
-import BaseUISchema from './base_schema.ui';
 import { useSchemaState, useFieldState } from './hooks';
 import {
   generateTimeBasedRandomNumberString,
   isValueEqual,
   isObjectEqual,
-  getForQueryParams
+  getForQueryParams,
+  prepareData,
 } from './common';
 import {
   SCHEMA_STATE_ACTIONS,
@@ -45,6 +46,7 @@ export {
   generateTimeBasedRandomNumberString,
   isValueEqual,
   isObjectEqual,
+  prepareData,
   useFieldState,
   useSchemaState,
 };

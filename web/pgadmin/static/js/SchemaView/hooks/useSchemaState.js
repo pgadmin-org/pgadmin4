@@ -22,6 +22,14 @@ export const useSchemaState = ({
   schema, getInitData, immutableData, onDataChange, viewHelperProps,
   loadingText,
 }) => {
+
+  if (!schema)
+    return {
+      schemaState: null,
+      dataDispatch: null,
+      reset: null,
+    };
+
   let state = schema.state;
 
   if (!state) {
@@ -130,7 +138,6 @@ export const useSchemaState = ({
   return {
     schemaState: state,
     dataDispatch: sessDispatchWithListener,
-    sessData,
     reset: resetData,
   };
 };

@@ -26,7 +26,7 @@ import { createStore } from './store';
 
 
 export const LOADING_STATE = {
-  INIT: 'initializing',
+  INIT: 'initialising',
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'Error'
@@ -228,7 +228,7 @@ export class SchemaState extends DepListener {
 
   changes(includeSkipChange=false) {
     const state = this;
-    const sessData = this.data;
+    const sessData = state.data;
     const schema = state.schema;
 
     // Check if anything changed.
