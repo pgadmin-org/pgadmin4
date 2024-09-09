@@ -13,7 +13,6 @@ import { getExpandedRowModel } from '@tanstack/react-table';
 import { getEditCell } from 'sources/components/PgReactTableStyled';
 import gettext from 'sources/gettext';
 import FormView from 'sources/SchemaView/FormView';
-import { requestAnimationAndFocus  } from 'sources/utils';
 
 import { SchemaStateContext } from '../../SchemaState';
 import { useFieldOptions } from '../../hooks';
@@ -81,9 +80,8 @@ export default class ExpandedFormView extends Feature {
           isNested={true}
           className='DataGridView-expandedForm'
           isDataGridForm={true}
-          firstEleRef={(ele) => {
-            requestAnimationAndFocus(ele);
-          }}/>
+          focusOnFirstInput={true}
+        />
       );
     }
   }

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
@@ -61,7 +61,6 @@ export default function SchemaDialogView({
 
   // First element to be set by the FormView to set the focus after loading
   // the data.
-  const firstEleRef = useRef();
   const checkIsMounted = useIsMounted();
 
   // Notifier object.
@@ -73,7 +72,6 @@ export default function SchemaDialogView({
      * Docker on load focusses itself, so our focus should execute later.
      */
     let focusTimeout = setTimeout(()=>{
-      firstEleRef.current?.focus();
     }, 250);
 
     // Clear the focus timeout if unmounted.
@@ -89,7 +87,6 @@ export default function SchemaDialogView({
 
   const onResetClick = () => {
     const resetIt = () => {
-      firstEleRef.current?.focus();
       reset();
       return true;
     };
@@ -195,9 +192,10 @@ export default function SchemaDialogView({
             schema={schema} accessPath={[]}
             dataDispatch={dataDispatch}
             hasSQLTab={props.hasSQL} getSQLValue={getSQLValue}
-            firstEleRef={firstEleRef} isTabView={isTabView}
+            isTabView={isTabView}
             className={props.formClassName}
             showError={true} resetKey={props.resetKey}
+            focusOnFirstInput={true}
           />
         </Box>
         {showFooter &&

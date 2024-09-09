@@ -59,7 +59,7 @@ const ErrorMessageBox = () => {
 export default function FormView({
   accessPath, schema=null, isNested=false, dataDispatch, className, 
   hasSQLTab, getSQLValue, isTabView=true, viewHelperProps, field,
-  showError=false, resetKey
+  showError=false, resetKey, focusOnFirstInput=false
 }) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
@@ -75,6 +75,35 @@ export default function FormView({
 
   if (!schema) schema = field.schema;
 
+  // Set focus on the first focusable element.
+  useEffect(() => {
+    if (!focusOnFirstInput) return;
+    setTimeout(() => {
+      const formEle = formRef.current;
+      if (!formEle) return;
+      const activeTabElement = formEle.querySelector(
+        '[data-test="tabpanel"]:not([hidden])'
+      );
+      if (!activeTabElement) return;
+
+      // Find the first focusable input, which is either:
+      // * An editable Input element.
+      // * A select element, which is not disabled.
+      // * An href element.
+      // * Any element with 'tabindex', but - tabindex is not set to '-1'.
+      const firstFocussableElement = activeTabElement.querySelector([
+        'button:not([role="tab"])',
+        '[href]',
+        'input:not(disabled)',
+        'select:not(disabled)',
+        'textarea',
+        '[tabindex]:not([tabindex="-1"]):not([data-test="tabpanel"])',
+      ].join(', '));
+
+      if (firstFocussableElement) firstFocussableElement.focus();
+    }, 200);
+  }, [tabValue]);
+
   useEffect(() => {
     // Refresh on message changes.
     return schemaState.subscribe(
@@ -86,7 +115,6 @@ export default function FormView({
       'states'
     );
   }, [key]);
-
 
   useEffect(() => {
     if (!visible) return;
