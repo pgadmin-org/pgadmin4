@@ -765,7 +765,7 @@ def set_master_password():
                 error = 'Failed to get/set encryption key using OS password ' \
                         'manager because of exception.' \
                         ' Error: {0}'.format(e)
-                current_app.logger.warning(error)
+                current_app.logger.exception(error)
                 # Disable local os storage if any exception other than
                 # access denied
                 if not isinstance(e, KeyringLocked):
