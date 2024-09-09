@@ -37,7 +37,13 @@ EOF
     done
 fi
 
-if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
+# Check whether the external configuration database exists if it is being used.
+external_config_db_exists="False"
+if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}" ]; then
+     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(${PGADMIN_CONFIG_CONFIG_DATABASE_URI}); print(val)")
+fi
+
+if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "False" ]; then
     if [ -z "${PGADMIN_DEFAULT_EMAIL}" ] || { [ -z "${PGADMIN_DEFAULT_PASSWORD}" ] && [ -z "${PGADMIN_DEFAULT_PASSWORD_FILE}" ]; }; then
         echo 'You need to define the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD or PGADMIN_DEFAULT_PASSWORD_FILE environment variables.'
         exit 1
