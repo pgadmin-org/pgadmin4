@@ -13,7 +13,7 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('AggregateSchema', ()=>{
 
-  let schemaObj = new AggregateSchema();
+  let createSchemaObj = () => new AggregateSchema();
   let getInitData = ()=>Promise.resolve({});
 
 
@@ -25,15 +25,15 @@ describe('AggregateSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

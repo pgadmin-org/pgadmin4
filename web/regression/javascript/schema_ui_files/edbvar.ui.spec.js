@@ -13,27 +13,23 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('EDBVarSchema', ()=>{
 
-  let edbVarSchemaObj = new EDBVarSchema();
+  let edbVarSchemaObj = () => new EDBVarSchema();
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(edbVarSchemaObj);
+    await getCreateView(edbVarSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(edbVarSchemaObj, getInitData);
+    await getEditView(edbVarSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(edbVarSchemaObj, getInitData);
+    await getPropertiesView(edbVarSchemaObj(), getInitData);
   });
 });
 

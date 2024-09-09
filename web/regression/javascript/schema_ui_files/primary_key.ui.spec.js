@@ -47,8 +47,6 @@ describe('PrimaryKeySchema', ()=>{
     }, {});
   });
 
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });

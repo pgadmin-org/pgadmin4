@@ -20,7 +20,7 @@ class MockSchema extends BaseUISchema {
 
 describe('ForeignServerSchema', ()=>{
 
-  let schemaObj = new ForeignServerSchema(
+  const createSchemaObj = () => new ForeignServerSchema(
     ()=>new MockSchema(),
     {
       role: ()=>[],
@@ -31,24 +31,20 @@ describe('ForeignServerSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

@@ -1056,7 +1056,7 @@ class DataTypeSchema extends BaseUISchema {
       }
     },{
       id: 'maxsize',
-      group: gettext('Definition'),
+      group: gettext('Data Type'),
       label: gettext('Size'),
       type: 'int',
       deps: ['typtype'],

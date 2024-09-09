@@ -42,7 +42,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       label: gettext('Pre-data'),
       type: 'switch',
       group: gettext('Sections'),
-      inlineNext: true,
+      inlineGroup: 'sections',
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
         return obj.isDisabled(state);
@@ -52,7 +52,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       label: gettext('Data'),
       type: 'switch',
       group: gettext('Sections'),
-      inlineNext: true,
+      inlineGroup: 'sections',
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
         return obj.isDisabled(state);
@@ -62,6 +62,7 @@ export class RestoreSectionSchema extends BaseUISchema {
       label: gettext('Post-data'),
       type: 'switch',
       group: gettext('Sections'),
+      inlineGroup: 'sections',
       deps: ['only_data', 'only_schema'],
       disabled: function(state) {
         return obj.isDisabled(state);
@@ -97,7 +98,7 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       label: gettext('Only data'),
       type: 'switch',
       group: gettext('Type of objects'),
-      inlineNext: true,
+      inlineGroup: 'types_of_data',
       deps: ['pre_data', 'data', 'post_data', 'only_schema'],
       disabled: function(state) {
         if(obj.selectedNodeType == 'table') {
@@ -115,6 +116,7 @@ export class RestoreTypeObjSchema extends BaseUISchema {
       label: gettext('Only schema'),
       type: 'switch',
       group: gettext('Type of objects'),
+      inlineGroup: 'types_of_data',
       deps: ['pre_data', 'data', 'post_data', 'only_data'],
       disabled: function(state) {
         if(obj.selectedNodeType == 'index' || obj.selectedNodeType == 'function') {
@@ -159,28 +161,28 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       label: gettext('Owner'),
       type: 'switch',
       disabled: false,
-      inlineNext: true,
+      inlineGroup: 'save_options',
       group: gettext('Do not save'),
     }, {
       id: 'dns_privilege',
       label: gettext('Privileges'),
       type: 'switch',
       disabled: false,
-      inlineNext: true,
+      inlineGroup: 'save_options',
       group: gettext('Do not save'),
     }, {
       id: 'dns_tablespace',
       label: gettext('Tablespaces'),
       type: 'switch',
       disabled: false,
-      inlineNext: true,
+      inlineGroup: 'save_options',
       group: gettext('Do not save'),
     }, {
       id: 'dns_comments',
       label: gettext('Comments'),
       type: 'switch',
       disabled: false,
-      inlineNext: true,
+      inlineGroup: 'save_options',
       group: gettext('Do not save'),
       min_version: 110000
     }, {
@@ -189,7 +191,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      inlineNext: true,
+      inlineGroup: 'save_options',
       min_version: 110000
     }, {
       id: 'dns_subscriptions',
@@ -197,7 +199,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      inlineNext: true,
+      inlineGroup: 'save_options',
       min_version: 110000
     }, {
       id: 'dns_security_labels',
@@ -205,7 +207,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      inlineNext: true,
+      inlineGroup: 'save_options',
       min_version: 110000
     }, {
       id: 'dns_table_access_method',
@@ -213,7 +215,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      inlineNext: true,
+      inlineGroup: 'save_options',
       min_version: 150000
     }];
   }
@@ -419,7 +421,7 @@ export default class RestoreSchema extends BaseUISchema {
       label: gettext('Clean before restore'),
       type: 'switch',
       group: gettext('Query Options'),
-      inlineNext: true,
+      inlineGroup: 'clean',
       disabled: function(state) {
         if(obj.selectedNodeType === 'function' || obj.selectedNodeType === 'trigger_function') {
           state.clean = true;
@@ -431,6 +433,7 @@ export default class RestoreSchema extends BaseUISchema {
       label: gettext('Include IF EXISTS clause'),
       type: 'switch',
       group: gettext('Query Options'),
+      inlineGroup: 'clean',
       deps: ['clean'],
       disabled: function(state) {
         if (state.clean) {

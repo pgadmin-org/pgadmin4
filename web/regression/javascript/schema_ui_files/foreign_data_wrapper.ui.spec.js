@@ -20,7 +20,7 @@ class MockSchema extends BaseUISchema {
 
 describe('ForeignDataWrapperSchema', ()=>{
 
-  let schemaObj = new ForeignDataWrapperSchema(
+  const createSchemaObj = () => new ForeignDataWrapperSchema(
     ()=>new MockSchema(),
     {
       role: ()=>[],
@@ -34,23 +34,20 @@ describe('ForeignDataWrapperSchema', ()=>{
   let getInitData = ()=>Promise.resolve({});
 
 
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

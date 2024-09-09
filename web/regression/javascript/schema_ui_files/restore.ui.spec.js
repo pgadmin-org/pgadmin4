@@ -14,10 +14,7 @@ import {getCreateView} from '../genericFunctions';
 
 describe('RestoreSchema', ()=>{
 
-
-
-
-  let restoreSchemaObj = new RestoreSchema(
+  const createSchemaObj = () => new RestoreSchema(
     ()=>getRestoreSectionSchema({selectedNodeType: 'table'}),
     ()=>getRestoreTypeObjSchema({selectedNodeType: 'table'}),
     ()=>getRestoreSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
@@ -32,10 +29,11 @@ describe('RestoreSchema', ()=>{
   );
 
   it('restore dialog', async ()=>{
-    await getCreateView(restoreSchemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('restore validate', () => {
+    let restoreSchemaObj = createSchemaObj();
     let state = { file: undefined }; //validating for empty file
     let setError = jest.fn();
 

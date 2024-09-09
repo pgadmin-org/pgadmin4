@@ -11,13 +11,27 @@ import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
 
 import gettext from 'sources/gettext';
+import { memoizeFn } from 'sources/utils';
 import {
   minMaxValidator, numberValidator, integerValidator, emptyValidator,
   checkUniqueCol, isEmptyString
 } from 'sources/validators';
 
-import BaseUISchema from './base_schema.ui';
-import { isModeSupportedByField, isObjectEqual, isValueEqual } from './common';
+import BaseUISchema from '../base_schema.ui';
+import { isModeSupportedByField, isObjectEqual, isValueEqual } from '../common';
+
+
+export const SCHEMA_STATE_ACTIONS = {
+  INIT: 'init',
+  SET_VALUE: 'set_value',
+  ADD_ROW: 'add_row',
+  DELETE_ROW: 'delete_row',
+  MOVE_ROW: 'move_row',
+  RERENDER: 'rerender',
+  CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
+  DEFERRED_DEPCHANGE: 'deferred_depchange',
+  BULK_UPDATE: 'bulk_update',
+};
 
 // Remove cid key added by prepareData
 const cleanCid = (coll, keepCid=false) => (
@@ -276,9 +290,10 @@ export function validateSchema(
     if(schema.idAttribute === field.id) {
       continue;
     }
-
     // If the field is has nested schema, then validate the child schema.
     if(field.schema && (field.schema instanceof BaseUISchema)) {
+      if (!field.schema.top) field.schema.top = schema;
+
       // A collection is an array.
       if(field.type === 'collection') {
         if (validateCollectionSchema(field, sessData, accessPath, setError))
@@ -331,3 +346,40 @@ export function validateSchema(
     sessData, (id, message) => setError(accessPath.concat(id), message)
   );
 }
+
+export const getDepChange = (currPath, newState, oldState, action) => {
+  if(action.depChange) {
+    newState = action.depChange(currPath, newState, {
+      type: action.type,
+      path: action.path,
+      value: action.value,
+      oldState: _.cloneDeep(oldState),
+      listener: action.listener,
+    });
+  }
+  return newState;
+};
+
+// It will help us generating the flat path, and it will return the same
+// object for the same path, which will help with the React componet rendering,
+// as it uses `Object.is(...)` for the comparison of the arguments.
+export const flatPathGenerator = (separator = '.' ) => {
+  const flatPathMap = new Map;
+
+  const setter = memoizeFn((path) => {
+    const flatPath = path.join(separator);
+    flatPathMap.set(flatPath, path);
+    return flatPath;
+  });
+
+  const getter = (flatPath) => {
+    return flatPathMap.get(flatPath);
+  };
+
+  return {
+    flatPath: setter,
+    path: getter,
+    // Get the same object every time.
+    cached: (path) => (getter(setter(path))),
+  };
+};

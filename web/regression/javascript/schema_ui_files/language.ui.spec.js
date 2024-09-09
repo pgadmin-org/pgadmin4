@@ -20,7 +20,7 @@ class MockSchema extends BaseUISchema {
 
 describe('LanguageSchema', ()=>{
 
-  let schemaObj = new LanguageSchema(
+  const createSchemaObj = () => new LanguageSchema(
     ()=>new MockSchema(),
     {
       lan_functions: ()=>[],
@@ -35,26 +35,23 @@ describe('LanguageSchema', ()=>{
       },
     },
   );
+  let schemaObj = createSchemaObj();
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('validate', ()=>{

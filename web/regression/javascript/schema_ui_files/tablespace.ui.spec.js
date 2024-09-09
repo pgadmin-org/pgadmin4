@@ -20,23 +20,20 @@ class MockSchema extends BaseUISchema {
 
 describe('TablespaceSchema', ()=>{
 
-  let schemaObj = new TablespaceSchema(
-    ()=>new MockSchema(),
-    ()=>new MockSchema(),
-    {
-      role: ()=>[],
-    },
-    {
-      spcuser: 'postgres'
-    }
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
+    schemaObj = new TablespaceSchema(
+      ()=>new MockSchema(),
+      ()=>new MockSchema(),
+      {
+        role: ()=>[],
+      },
+      {
+        spcuser: 'postgres'
+      }
+    );
     genericBeforeEach();
   });
 

@@ -80,6 +80,9 @@ const Root = styled('div')(({theme}) => ({
     backgroundColor: theme.otherVars.borderColor,
     padding: theme.spacing(1),
   },
+  '& .Form-plainstring': {
+    padding: theme.spacing(0.5),
+  }
 }));
 
 
@@ -351,12 +354,23 @@ export const InputText = forwardRef(({
   cid, helpid, readonly, disabled, value, onChange, controlProps, type, size, inputStyle, ...props }, ref) => {
 
   const maxlength = typeof(controlProps?.maxLength) != 'undefined' ? controlProps.maxLength : 255;
-
   const patterns = {
     'numeric': '^-?[0-9]\\d*\\.?\\d*$',
     'int': '^-?[0-9]\\d*$',
   };
-  let onChangeFinal = (e) => {
+
+  let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
+
+  if (controlProps?.formatter) {
+    finalValue = controlProps.formatter.fromRaw(finalValue);
+  }
+
+  if (_.isNull(finalValue) || _.isUndefined(finalValue)) finalValue = '';
+
+  const [val, setVal] = useState(finalValue);
+
+  useEffect(() => setVal(finalValue), [finalValue]);
+  const onChangeFinal = (e) => {
     let changeVal = e.target.value;
 
     /* For type number, we set type as tel with number regex to get validity.*/
@@ -368,14 +382,10 @@ export const InputText = forwardRef(({
     if (controlProps?.formatter) {
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
+    setVal(changeVal);
     onChange?.(changeVal);
   };
 
-  let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
-
-  if (controlProps?.formatter) {
-    finalValue = controlProps.formatter.fromRaw(finalValue);
-  }
 
   const filteredProps = _.pickBy(props, (_v, key)=>(
     /* When used in ButtonGroup, following props should be skipped */
@@ -403,7 +413,7 @@ export const InputText = forwardRef(({
       disabled={Boolean(disabled)}
       rows={4}
       notched={false}
-      value={(_.isNull(finalValue) || _.isUndefined(finalValue)) ? '' : finalValue}
+      value={val}
       onChange={onChangeFinal}
       {
         ...(controlProps?.onKeyDown && { onKeyDown: controlProps.onKeyDown })
@@ -626,7 +636,6 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, la
           inputProps={{ 'aria-label': value, 'aria-describedby': helpid }}
           style={{ padding: 0 }}
           disableRipple
-          {...props}
         />
       }
       label={controlProps.label}
@@ -1110,7 +1119,9 @@ export function PlainString({ controlProps, value }) {
   if (controlProps?.formatter) {
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
-  return <span>{finalValue}</span>;
+  return  <Root>
+    <div className="Form-plainstring">{finalValue}</div>
+  </Root>;
 }
 PlainString.propTypes = {
   controlProps: PropTypes.object,

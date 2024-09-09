@@ -14,17 +14,15 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('PGSchema', ()=>{
 
-  let schemaObj = new PGSchema(
+  const createSchemaObject = () => new PGSchema(
     ()=>getNodePrivilegeRoleSchema({}, {server: {user: {name: 'postgres'}}}, {}),
     {
       roles:() => [],
       namespaceowner: '',
     }
-  );
+  ); 
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
-
-
-
 
 
   beforeEach(()=>{
@@ -32,7 +30,7 @@ describe('PGSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('schema validate', () => {
@@ -48,11 +46,11 @@ describe('PGSchema', ()=>{
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 });
 

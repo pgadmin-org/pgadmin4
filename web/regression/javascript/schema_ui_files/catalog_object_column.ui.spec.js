@@ -13,23 +13,19 @@ import {genericBeforeEach, getCreateView, getPropertiesView} from '../genericFun
 
 describe('CatalogObjectColumn', ()=>{
 
-  let schemaObj = new CatalogObjectColumn();
+  let createSchemaObj = () => new CatalogObjectColumn();
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
 });

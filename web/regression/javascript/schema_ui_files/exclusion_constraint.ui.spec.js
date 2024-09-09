@@ -40,13 +40,14 @@ function getFieldDepChange(schema, id) {
 
 describe('ExclusionConstraintSchema', ()=>{
 
-  let schemaObj;
+  const createSchemaObject = () => getNodeExclusionConstraintSchema(
+    {}, {}, {Nodes: {table: {}}}
+  );
   let getInitData = ()=>Promise.resolve({});
 
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = getNodeExclusionConstraintSchema({}, {}, {Nodes: {table: {}}});
   });
 
   beforeEach(()=>{
@@ -54,18 +55,19 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('create collection', async ()=>{
+    let schemaObj = createSchemaObject();
     let schemaCollObj = new SchemaInColl(schemaObj);
     const {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */
@@ -73,6 +75,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('changeColumnOptions', ()=>{
+    let schemaObj = createSchemaObject();
     jest.spyOn(schemaObj.exHeaderSchema, 'changeColumnOptions');
     let columns = [{label: 'label', value: 'value'}];
     schemaObj.changeColumnOptions(columns);
@@ -80,6 +83,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   describe('ExclusionColHeaderSchema', ()=>{
+    let schemaObj = createSchemaObject();
     it('getNewData', ()=>{
       schemaObj.exHeaderSchema.columnOptions = [
         {label: 'id', value: 'id', datatype: 'numeric'},
@@ -111,6 +115,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   describe('ExclusionColumnSchema', ()=>{
+    let schemaObj = createSchemaObject();
     it('isEditable', ()=>{
       schemaObj.exColumnSchema.isNewExCons = false;
       expect(schemaObj.exColumnSchema.isEditable()).toBe(false);
@@ -125,6 +130,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('depChange', ()=>{
+    let schemaObj = createSchemaObject();
     let state = {columns: [{column: 'id'}]};
 
     schemaObj.top = new TableSchema({}, null);
@@ -169,6 +175,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('columns formatter', ()=>{
+    let schemaObj = createSchemaObject();
     let formatter = _.find(schemaObj.fields, (f)=>f.id=='columns').cell().controlProps.formatter;
     expect(formatter.fromRaw([{
       column: 'lid',
@@ -180,6 +187,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   describe('amname change', ()=>{
+    let schemaObj = createSchemaObject();
     let confirmSpy;
     let deferredDepChange;
     let operClassOptions = [
@@ -243,6 +251,7 @@ describe('ExclusionConstraintSchema', ()=>{
   });
 
   it('validate', ()=>{
+    let schemaObj = createSchemaObject();
     let state = {};
     let setError = jest.fn();
 
@@ -255,4 +264,3 @@ describe('ExclusionConstraintSchema', ()=>{
     expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });
-

@@ -9,6 +9,8 @@
 
 import _ from 'lodash';
 
+import { memoizeFn } from 'sources/utils';
+
 /* This is the base schema class for SchemaView.
  * A UI schema must inherit this to use SchemaView for UI.
  */
@@ -63,11 +65,11 @@ export default class BaseUISchema {
 
   /*
    * The session data, can be useful but setting this will not affect UI.
-   * this._sessData is set by SchemaView directly. set sessData should not be
+   * this.sessData is set by SchemaView directly. set sessData should not be
    * allowed anywhere.
    */
   get sessData() {
-    return this._sessData || {};
+    return this.state?.data;
   }
 
   set sessData(val) {
@@ -93,19 +95,28 @@ export default class BaseUISchema {
   concat base fields with extraFields.
   */
   get fields() {
-    return this.baseFields
-      .filter((field)=>{
-        let retval;
+    if (!this.__filteredFields) {
+      // Memoize the results
+      this.__filteredFields = memoizeFn(
+        (baseFields, keys, filterGroups) =>  baseFields.filter((field) => {
+          let retval;
 
-        /* If any groups are to be filtered */
-        retval = this.filterGroups.indexOf(field.group) == -1;
+          // If any groups are to be filtered.
+          retval = filterGroups.indexOf(field.group) == -1;
 
-        /* Select only keys, if specified */
-        if(this.keys) {
-          retval = retval && this.keys.indexOf(field.id) > -1;
-        }
-        return retval;
-      });
+          // Select only keys, if specified.
+          if(retval && keys) {
+            retval = keys.indexOf(field.id) > -1;
+          }
+
+          return retval;
+        })
+      );
+    }
+
+    return this.__filteredFields(
+      this.baseFields, this.keys, this.filterGroups
+    );
   }
 
   initialise() {
@@ -189,5 +200,9 @@ export default class BaseUISchema {
       res = options;
     }
     return res;
+  }
+
+  toJSON() {
+    return this._id;
   }
 }

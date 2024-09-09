@@ -47,8 +47,6 @@ describe('UniqueConstraintSchema', ()=>{
     }, {});
   });
 
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });

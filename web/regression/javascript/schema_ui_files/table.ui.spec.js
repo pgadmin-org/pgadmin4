@@ -19,52 +19,50 @@ function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
 }
 
-describe('TableSchema', ()=>{
+describe('TableSchema', () => {
 
-  let schemaObj;
-  let getInitData = ()=>Promise.resolve({});
-
-  beforeAll(()=>{
-    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
-    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = getNodeTableSchema({
-      server: {
-        _id: 1,
-      },
-      schema: {
-        _label: 'public',
-      }
-    }, {}, {
-      Nodes: {table: {}},
-      serverInfo: {
-        1: {
-          user: {
-            name: 'Postgres',
-          }
+  const createTableSchemaObject = () => getNodeTableSchema({
+    server: {
+      _id: 1,
+    },
+    schema: {
+      _label: 'public',
+    }
+  }, {}, {
+    Nodes: {table: {}},
+    serverInfo: {
+      1: {
+        user: {
+          name: 'Postgres',
         }
       }
-    });
+    }
+  });
+  let schemaObj = createTableSchemaObject();
+  let getInitData = ()=>Promise.resolve({});
+
+  beforeAll(() => {
+    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
+    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
   });
 
-
-
-  beforeEach(()=>{
+  beforeEach(() => {
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
-    await getCreateView(schemaObj);
+  it('create', async () => {
+    await getCreateView(createTableSchemaObject());
   });
 
-  it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+  it('edit', async () => {
+    await getEditView(createTableSchemaObject(), getInitData);
   });
 
-  it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+  it('properties', async () => {
+    await getPropertiesView(createTableSchemaObject(), getInitData);
   });
 
-  it('getTableOid', ()=>{
+  it('getTableOid', () => {
     schemaObj.inheritedTableList = [
       {label: 'tab1', tid: 140391},
       {label: 'tab2', tid: 180191}
@@ -72,12 +70,12 @@ describe('TableSchema', ()=>{
     expect(schemaObj.getTableOid('tab2')).toBe(180191);
   });
 
-  it('canEditDeleteRowColumns', ()=>{
+  it('canEditDeleteRowColumns', () => {
     expect(schemaObj.canEditDeleteRowColumns({inheritedfrom: 1234})).toBe(false);
     expect(schemaObj.canEditDeleteRowColumns({inheritedfrom: null})).toBe(true);
   });
 
-  it('LikeSchema typname change', ()=>{
+  it('LikeSchema typname change', () => {
     let likeSchemaObj = new LikeSchema([]);
     /* Dummy */
     likeSchemaObj.top = new LikeSchema([]);
@@ -96,13 +94,13 @@ describe('TableSchema', ()=>{
     });
   });
 
-  describe('typname change', ()=>{
+  describe('typname change', () => {
     let confirmSpy;
     let deferredDepChange;
     let oftypeColumns = [
       {name: 'id'}
     ];
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(schemaObj, 'changeColumnOptions');
       jest.spyOn(schemaObj, 'getTableOid').mockReturnValue(140391);
       confirmSpy = jest.spyOn(pgAdmin.Browser.notifier, 'confirm');
@@ -184,7 +182,7 @@ describe('TableSchema', ()=>{
     });
   });
 
-  describe('coll_inherits change', ()=>{
+  describe('coll_inherits change', () => {
     let deferredDepChange;
     let inheritCol = {name: 'id'};
     let onRemoveAction = (depChange, state, done)=> {
@@ -197,7 +195,7 @@ describe('TableSchema', ()=>{
       done();
     };
 
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(schemaObj, 'changeColumnOptions');
       jest.spyOn(schemaObj, 'getTableOid').mockReturnValue(140391);
       jest.spyOn(schemaObj, 'getColumns').mockReturnValue(Promise.resolve([inheritCol]));
@@ -271,7 +269,7 @@ describe('TableSchema', ()=>{
     });
   });
 
-  it('depChange', ()=>{
+  it('depChange', () => {
     jest.spyOn(schemaObj, 'getTableOid').mockReturnValue(140391);
     let state = {};
 
@@ -300,7 +298,7 @@ describe('TableSchema', ()=>{
     });
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
     let state = {is_partitioned: true};
     let setError = jest.fn();
 

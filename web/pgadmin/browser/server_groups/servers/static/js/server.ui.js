@@ -136,7 +136,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'shared_username', label: gettext('Shared Username'), type: 'text',
         controlProps: { maxLength: 64},
         mode: ['properties', 'create', 'edit'], deps: ['shared', 'username'],
-        readonly: (s)=>{
+        readonly: (s) => {
           return !(!this.origData.shared && s.shared);
         }, visible: ()=>{
           return current_user.is_admin && pgAdmin.server_mode == 'True';

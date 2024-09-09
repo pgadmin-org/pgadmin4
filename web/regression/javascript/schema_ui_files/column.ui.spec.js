@@ -46,13 +46,13 @@ function getFieldDepChange(schema, id) {
 }
 
 describe('ColumnSchema', ()=>{
-
-  let schemaObj = new ColumnSchema(
+  const createSchemaObj = () => new ColumnSchema(
     ()=>new MockSchema(),
     {},
     ()=>Promise.resolve([]),
     ()=>Promise.resolve([]),
   );
+  let schemaObj = createSchemaObj();
   let datatypes = [
     {value: 'numeric', length: true, precision: true, min_val: 1, max_val: 140391},
     {value: 'character varying', length: true, precision: false, min_val: 1, max_val: 140391},
@@ -64,15 +64,15 @@ describe('ColumnSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('create collection', async ()=>{

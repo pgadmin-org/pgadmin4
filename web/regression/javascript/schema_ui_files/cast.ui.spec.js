@@ -14,12 +14,13 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('CastSchema', ()=>{
 
-  let schemaObj = new CastSchema(
+  let createSchemaObj = () => new CastSchema(
     {
       getTypeOptions: ()=>[],
       getFuncOptions: ()=>[],
     },
   );
+  const schemaObj = createSchemaObj();
   let getInitData = ()=>Promise.resolve({});
 
 
@@ -29,15 +30,15 @@ describe('CastSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('srctyp depChange', ()=>{

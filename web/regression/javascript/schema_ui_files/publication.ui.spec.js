@@ -13,30 +13,28 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('PublicationSchema', ()=>{
 
-  let schemaObj = new PublicationSchema(
-    {
-      allTables: ()=>[],
-      allSchemas:()=>[],
-      getColumns: ()=>[],
-      role: ()=>[],
-    },
-    {
-      node_info: {
-        connected: true,
-        user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
-        user_id: 1,
-        username: 'postgres',
-        version: 130005,
-      },
-    },
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
+    schemaObj = new PublicationSchema(
+      {
+        allTables: ()=>[],
+        allSchemas:()=>[],
+        getColumns: ()=>[],
+        role: ()=>[],
+      },
+      {
+        node_info: {
+          connected: true,
+          user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
+          user_id: 1,
+          username: 'postgres',
+          version: 130005,
+        },
+      },
+    );
+
     genericBeforeEach();
   });
 

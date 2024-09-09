@@ -12,8 +12,7 @@ import FTSDictionarySchema from '../../../pgadmin/browser/server_groups/servers/
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('FTSDictionarySchema', ()=>{
-
-  let schemaObj = new FTSDictionarySchema(
+  const createSchemaObj = () => new FTSDictionarySchema(
     {
       role: ()=>[],
       schema: ()=>[],
@@ -28,23 +27,20 @@ describe('FTSDictionarySchema', ()=>{
   let getInitData = ()=>Promise.resolve({});
 
 
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 });
 

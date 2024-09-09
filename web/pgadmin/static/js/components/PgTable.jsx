@@ -8,7 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useMemo, useRef } from 'react';
+import _ from 'lodash';
 
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 import {
   useReactTable,
   getCoreRowModel,
@@ -24,29 +27,29 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { InputText } from './FormComponents';
-import _ from 'lodash';
+
+import {
+  BaseUISchema, FormView, SchemaStateContext, useSchemaState, prepareData,
+} from 'sources/SchemaView';
 import gettext from 'sources/gettext';
-import SchemaView from '../SchemaView';
+
 import EmptyPanelMessage from './EmptyPanelMessage';
+import { InputText } from './FormComponents';
 import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent, getCheckboxCell, getCheckboxHeaderCell } from './PgReactTableStyled';
-import { Box } from '@mui/material';
+
 
 const ROW_HEIGHT = 30;
-function TableRow({ index, style, schema, row, measureElement}) {
-  const [expandComplete, setExpandComplete] = React.useState(false);
+
+function TableRow({index, style, schema, row, measureElement}) {
   const rowRef = React.useRef();
 
   React.useEffect(() => {
     if (rowRef.current) {
-      if (!expandComplete && rowRef.current.style.height == `${ROW_HEIGHT}px`) {
-        return;
-      }
+      if (rowRef.current.style.height == `${ROW_HEIGHT}px`) return;
       measureElement(rowRef.current);
     }
-  }, [row.getIsExpanded(), expandComplete]);
+  }, [row.getIsExpanded()]);
 
   return (
     <PgReactTableRow data-index={index} ref={rowRef} style={style}>
@@ -62,12 +65,10 @@ function TableRow({ index, style, schema, row, measureElement}) {
         })}
       </PgReactTableRowContent>
       <PgReactTableRowExpandContent row={row}>
-        <SchemaView
-          getInitData={() => Promise.resolve(row.original)}
-          viewHelperProps={{ mode: 'properties' }}
+        <FormView
+          accessPath={['data', index]}
           schema={schema}
-          showFooter={false}
-          onDataChange={() => { setExpandComplete(true); }}
+          viewHelperProps={{ mode: 'properties' }}
         />
       </PgReactTableRowExpandContent>
     </PgReactTableRow>
@@ -81,7 +82,43 @@ TableRow.propTypes = {
   measureElement: PropTypes.func,
 };
 
-export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableProps, searchVal, loadNextPage, ...props }) {
+
+class TableUISchema extends BaseUISchema {
+  constructor(rowSchema) {
+    super();
+    this.rowSchema = rowSchema;
+  }
+
+  get baseFields() {
+    return [{
+      id: 'data', type: 'collection', mode: ['properties'],
+      schema: this.rowSchema,
+    }];
+  }
+}
+
+const getTableSchema = (schema) => {;
+  if (!schema) return null;
+  if (!schema.top) schema.top = new TableUISchema(schema);
+  return schema.top;
+};
+
+export function Table({
+  columns, data, hasSelectRow, schema, sortOptions, tableProps, searchVal,
+  loadNextPage, ...props
+}) {
+  const { schemaState } = useSchemaState({
+    schema: getTableSchema(schema),
+    getInitData: null,
+    viewHelperProps: {mode: 'properties'},
+  });
+
+  // We don't care about validation in static table, hence - initialising the
+  // data directly.
+  if (data.length && schemaState) {
+    schemaState.initData = schemaState.data = prepareData({'data': data});
+  }
+
   const defaultColumn = React.useMemo(
     () => ({
       size: 150,
@@ -103,11 +140,15 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
     enableResizing: false,
     maxSize: 35,
   }] : []).concat(
-    columns.filter((c)=>_.isUndefined(c.enableVisibility) ? true : c.enableVisibility).map((c)=>({
+    columns.filter(
+      (c) => _.isUndefined(c.enableVisibility) ? true : c.enableVisibility
+    ).map((c) => ({
       ...c,
       // if data is null then global search doesn't work
       // Use accessorFn to return empty string if data is null.
-      accessorFn: c.accessorFn ?? (c.accessorKey ? (row)=>row[c.accessorKey] ?? '' : undefined),
+      accessorFn: c.accessorFn ?? (
+        c.accessorKey ? (row) => row[c.accessorKey] ?? '' : undefined
+      ),
     }))
   ), [hasSelectRow, columns]);
 
@@ -118,24 +159,24 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
   let totalFetched = 0;
   let totalDBRowCount = 0;
 
-  //Infinite scrolling
-  const { _data, fetchNextPage, isFetching } =
-    useInfiniteQuery({
-      queryKey: ['logs'],
-      queryFn: async () => {
-        const fetchedData = loadNextPage ? await loadNextPage() : [];
-        return fetchedData;
-      },
-      initialPageParam: 0,
-      getNextPageParam: (_lastGroup, groups) => groups.length,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-    });
+  // Infinite scrolling
+  const { _data, fetchNextPage, isFetching } = useInfiniteQuery({
+    queryKey: ['logs'],
+    queryFn: async () => {
+      const fetchedData = loadNextPage ? await loadNextPage() : [];
+      return fetchedData;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (_lastGroup, groups) => groups.length,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
   flatData = _data || [];
   totalFetched = flatData.length;
 
-  //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
+  // Called on scroll and possibly on mount to fetch more data as the user
+  // scrolls and reaches bottom of table.
   fetchMoreOnBottomReached = React.useCallback(
     (containerRefElement = HTMLDivElement | null) => {
       if (containerRefElement) {
@@ -194,22 +235,31 @@ export function Table({ columns, data, hasSelectRow, schema, sortOptions, tableP
   });
 
   return (
-    <PgReactTable ref={tableRef} table={table} onScrollFunc={loadNextPage?fetchMoreOnBottomReached: null }>
-      <PgReactTableHeader table={table} />
-      {rows.length == 0 ?
-        <EmptyPanelMessage text={gettext('No rows found')} style={{height:'auto'}} /> :
-        <PgReactTableBody style={{ height: virtualizer.getTotalSize() + 'px'}}>
-          {virtualizer.getVirtualItems().map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            return <TableRow index={virtualRow.index} key={virtualRow.index} row={row} schema={schema}
-              measureElement={virtualizer.measureElement}
-              style={{
-                transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-              }}
-            />;
-          })}
-        </PgReactTableBody>}
-    </PgReactTable>
+    <SchemaStateContext.Provider value={schemaState}>
+      <PgReactTable
+        ref={tableRef} table={table}
+        onScrollFunc={loadNextPage?fetchMoreOnBottomReached: null }
+      >
+        <PgReactTableHeader table={table} />
+        {rows.length == 0 ? <EmptyPanelMessage
+          text={gettext('No rows found')} style={{height:'auto'}}/> :
+          <PgReactTableBody
+            style={{ height: virtualizer.getTotalSize() + 'px'}}>
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const row = rows[virtualRow.index];
+              return <TableRow
+                index={virtualRow.index} key={virtualRow.index}
+                row={row} schema={schema}
+                measureElement={virtualizer.measureElement}
+                style={{
+                  // This should always be a `style` as it changes on scroll.
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              />;
+            })}
+          </PgReactTableBody>}
+      </PgReactTable>
+    </SchemaStateContext.Provider>
   );
 }
 Table.propTypes = {

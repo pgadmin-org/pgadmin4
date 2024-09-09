@@ -13,7 +13,7 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('TriggerSchema', ()=>{
 
-  let schemaObj = new TriggerSchema(
+  let createSchemaObj = () => new TriggerSchema(
     {
       triggerFunction: [],
       columns: [],
@@ -26,27 +26,24 @@ describe('TriggerSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('validate', ()=>{
+    const schemaObj = createSchemaObj();
     let state = {};
     let setError = jest.fn();
 
@@ -148,7 +145,7 @@ describe('TriggerSchema', ()=>{
 
 describe('TriggerEventsSchema', ()=>{
 
-  let schemaObj = new EventSchema(
+  let createEventSchemaObj = () => new EventSchema(
     {
       nodeInfo: {
         server: {user: {name:'postgres', id:0}, server_type: 'pg', version: 90400},
@@ -167,18 +164,19 @@ describe('TriggerEventsSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createEventSchemaObj());
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createEventSchemaObj(), getInitData);
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createEventSchemaObj(), getInitData);
   });
 
   it('validate', ()=>{
+    const schemaObj = createEventSchemaObj();
     let state = {};
     let setError = jest.fn();
 

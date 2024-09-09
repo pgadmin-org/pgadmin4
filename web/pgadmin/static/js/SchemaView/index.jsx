@@ -7,43 +7,46 @@
 //
 //////////////////////////////////////////////////////////////
 
+import BaseUISchema from './base_schema.ui';
 import DataGridView from './DataGridView';
 import FieldSetView from './FieldSetView';
 import FormView from './FormView';
+import InlineView from './InlineView';
 import SchemaDialogView from './SchemaDialogView';
 import SchemaPropertiesView from './SchemaPropertiesView';
 import SchemaView from './SchemaView';
-import BaseUISchema from './base_schema.ui';
-import { useSchemaState } from './useSchemaState';
+import { useSchemaState, useFieldState } from './hooks';
+import {
+  generateTimeBasedRandomNumberString,
+  isValueEqual,
+  isObjectEqual,
+  getForQueryParams,
+  prepareData,
+} from './common';
 import {
   SCHEMA_STATE_ACTIONS,
   SchemaStateContext,
-  generateTimeBasedRandomNumberString,
-  isModeSupportedByField,
-  getFieldMetaData,
-  isValueEqual,
-  isObjectEqual,
-  getForQueryParams
-} from './common';
+} from './SchemaState';
 
 
 export default SchemaView;
 
 export {
+  SCHEMA_STATE_ACTIONS,
+  BaseUISchema,
   DataGridView,
   FieldSetView,
   FormView,
+  InlineView,
   SchemaDialogView,
   SchemaPropertiesView,
   SchemaView,
-  BaseUISchema,
-  useSchemaState,
-  SCHEMA_STATE_ACTIONS,
   SchemaStateContext,
+  getForQueryParams,
   generateTimeBasedRandomNumberString,
-  isModeSupportedByField,
-  getFieldMetaData,
   isValueEqual,
   isObjectEqual,
-  getForQueryParams
+  prepareData,
+  useFieldState,
+  useSchemaState,
 };

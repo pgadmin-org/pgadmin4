@@ -37,7 +37,10 @@ export class DepListener {
     if(dataPath.length > 0) {
       data = _.get(state, dataPath);
     }
-    _.assign(data, listener.callback?.(data, listener.source, state, actionObj) || {});
+    _.assign(
+      data,
+      listener.callback?.(data, listener.source, state, actionObj) || {}
+    );
     return state;
   }
 
@@ -70,7 +73,10 @@ export class DepListener {
 
   getDeferredDepChange(currPath, state, actionObj) {
     let deferredList = [];
-    let allListeners = _.filter(this._depListeners, (entry)=>_.join(currPath, '|').startsWith(_.join(entry.source, '|')));
+    let allListeners = _.filter(this._depListeners, (entry) => _.join(
+      currPath, '|'
+    ).startsWith(_.join(entry.source, '|')));
+
     if(allListeners) {
       for(const listener of allListeners) {
         if(listener.defCallback) {

@@ -14,7 +14,6 @@ import PropTypes from 'prop-types';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { PgIconButton } from './Buttons';
@@ -437,18 +436,6 @@ export function getCheckboxHeaderCell({title}) {
   Cell.propTypes = {
     row: PropTypes.object,
   };
-
-  return Cell;
-}
-
-export function getReorderCell() {
-  const Cell = () => {
-    return <div className='reorder-cell'>
-      <DragIndicatorRoundedIcon fontSize="small" />
-    </div>;
-  };
-
-  Cell.displayName = 'ReorderCell';
 
   return Cell;
 }

@@ -148,7 +148,7 @@ export default class VariableSchema extends BaseUISchema {
         editable: function(state) {
           return obj.isNew(state) || !obj.allReadOnly;
         },
-        cell: ()=>({
+        cell: () => ({
           cell: 'select',
           options: this.vnameOptions,
           optionsLoaded: (options)=>{obj.setVarTypes(options);},

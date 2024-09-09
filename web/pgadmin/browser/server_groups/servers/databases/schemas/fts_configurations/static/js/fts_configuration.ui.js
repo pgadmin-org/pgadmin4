@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import DataGridViewWithHeaderForm from 'sources/helpers/DataGridViewWithHeaderForm';
+import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import { isEmptyString } from '../../../../../../../../static/js/validators';
 
 class TokenHeaderSchema extends BaseUISchema {
@@ -155,8 +155,8 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         group: gettext('Tokens'), mode: ['create','edit'],
         editable: false, schema: this.tokColumnSchema,
         headerSchema: this.tokHeaderSchema,
-        headerVisible: function() { return true;},
-        CustomControl: DataGridViewWithHeaderForm,
+        headerFormVisible: true,
+        GridHeader: DataGridFormHeader,
         uniqueCol : ['token'],
         canAdd: true, canEdit: false, canDelete: true,
       }

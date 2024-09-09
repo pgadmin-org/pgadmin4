@@ -15,31 +15,30 @@ import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '
 
 describe('PartitionTableSchema', ()=>{
 
-  let schemaObj;
+  const createSchemaObject = () => getNodePartitionTableSchema({
+    server: {
+      _id: 1,
+    },
+    schema: {
+      _label: 'public',
+    }
+  }, {}, {
+    Nodes: {table: {}},
+    serverInfo: {
+      1: {
+        user: {
+          name: 'Postgres',
+        }
+      }
+    }
+  });
+  let schemaObj = createSchemaObject();
   let getInitData = ()=>Promise.resolve({});
 
   beforeAll(()=>{
     jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
     jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
-    schemaObj = getNodePartitionTableSchema({
-      server: {
-        _id: 1,
-      },
-      schema: {
-        _label: 'public',
-      }
-    }, {}, {
-      Nodes: {table: {}},
-      serverInfo: {
-        1: {
-          user: {
-            name: 'Postgres',
-          }
-        }
-      }
-    });
   });
-
 
 
   beforeEach(()=>{
@@ -47,15 +46,15 @@ describe('PartitionTableSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('depChange', ()=>{
@@ -96,4 +95,3 @@ describe('PartitionTableSchema', ()=>{
     expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });
-

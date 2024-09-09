@@ -19,8 +19,7 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('ForeignTableSchema', ()=>{
-
-  let schemaObj = new ForeignTableSchema(
+  const createSchemaObj = () => new ForeignTableSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
     ()=>new MockSchema(),
@@ -38,6 +37,7 @@ describe('ForeignTableSchema', ()=>{
       }
     }
   );
+  let schemaObj = createSchemaObj();
   let getInitData = ()=>Promise.resolve({});
 
   beforeEach(()=>{
@@ -45,15 +45,15 @@ describe('ForeignTableSchema', ()=>{
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObj());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('validate', ()=>{

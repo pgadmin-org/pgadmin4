@@ -10,8 +10,8 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
-import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
-import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
+import { SCHEMA_STATE_ACTIONS } from 'sources/SchemaView';
+import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
 import TableSchema from '../../../../static/js/table.ui';
 import pgAdmin from 'sources/pgadmin';
@@ -342,10 +342,12 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       group: gettext('Columns'), type: 'collection',
       mode: ['create', 'edit', 'properties'],
       editable: false, schema: this.exColumnSchema,
-      headerSchema: this.exHeaderSchema, headerVisible: (state)=>obj.isNew(state),
-      CustomControl: DataGridViewWithHeaderForm,
+      headerSchema: this.exHeaderSchema,
+      headerFormVisible: (state)=>obj.isNew(state),
+      GridHeader: DataGridFormHeader,
       uniqueCol: ['column'],
-      canAdd: false, canDelete: function(state) {
+      canAdd: (state)=>obj.isNew(state),
+      canDelete: function(state) {
         // We can't update columns of existing
         return obj.isNew(state);
       },

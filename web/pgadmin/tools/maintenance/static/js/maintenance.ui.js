@@ -37,7 +37,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('FULL'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -53,7 +53,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('FREEZE'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -69,7 +69,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('ANALYZE'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -85,7 +85,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op', 'vacuum_full'],
       type: 'switch',
       label: gettext('DISABLE PAGE SKIPPING'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       disabled: function(state) {
         if (!obj.isApplicableForVacuum(state) || state.vacuum_full) {
           state.vacuum_disable_page_skipping = false;
@@ -101,7 +101,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('SKIP LOCKED'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return state?.op ? (state.op == 'VACUUM' || state.op == 'ANALYZE') : false;
       },
@@ -118,7 +118,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op', 'vacuum_full'],
       type: 'switch',
       label: gettext('TRUNCATE'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       disabled: function(state) {
         if (!obj.isApplicableForVacuum(state) || state.vacuum_full) {
           state.vacuum_truncate = false;
@@ -135,7 +135,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('PROCESS TOAST'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -152,7 +152,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('PROCESS MAIN'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -169,7 +169,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('SKIP DATABASE STATS'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -186,7 +186,7 @@ export class VacuumSchema extends BaseUISchema {
       deps: ['op'],
       type: 'switch',
       label: gettext('ONLY DATABASE STATS'),
-      inlineNext: true,
+      inlineGroup: 'operations',
       visible: function(state) {
         return obj.isApplicableForVacuum(state);
       },
@@ -202,6 +202,7 @@ export class VacuumSchema extends BaseUISchema {
       id: 'vacuum_index_cleanup',
       deps: ['op', 'vacuum_full'],
       type: 'select',
+      inlineGroup: 'operations',
       label: gettext('INDEX CLEANUP'),
       controlProps: { allowClear: false, width: '100%' },
       options: function () {
@@ -277,7 +278,7 @@ export class VacuumSchema extends BaseUISchema {
         return obj.isApplicableForReindex(state);
       },
       disabled: function(state) {
-        if (!obj.isApplicableForReindex(state) || obj?._top?.nodeInfo?.schema) {
+        if (!obj.isApplicableForReindex(state) || obj?.top?.nodeInfo?.schema) {
           state.reindex_system = false;
           return true;
         }

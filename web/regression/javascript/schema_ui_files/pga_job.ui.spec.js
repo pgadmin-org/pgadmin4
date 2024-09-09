@@ -20,32 +20,28 @@ class MockSchema extends BaseUISchema {
 
 describe('PgaJobSchema', ()=>{
 
-  let schemaObj = new PgaJobSchema(
+  const createSchemaObject = () => new PgaJobSchema(
     {
       jobjclid:()=>[],
     },
     ()=>new MockSchema(),
-  );
+  ); 
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(schemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 });
 

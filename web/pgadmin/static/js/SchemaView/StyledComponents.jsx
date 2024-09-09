@@ -41,7 +41,7 @@ export const StyledBox = styled(Box)(({theme}) => ({
     padding: theme.spacing(1),
     overflow: 'auto',
     flexGrow: 1,
-    '& .Properties-controlRow': {
+    '& .Properties-controlRow:not(:last-child)': {
       marginBottom: theme.spacing(1),
     },
   },

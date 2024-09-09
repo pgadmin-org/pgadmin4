@@ -12,8 +12,7 @@ import CollationSchema from '../../../pgadmin/browser/server_groups/servers/data
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('CollationsSchema', () => {
-
-  let schemaObj = new CollationSchema(
+  const createSchemaObj = () => new CollationSchema(
     {
       rolesList: () => [],
       schemaList: () => [],
@@ -24,24 +23,23 @@ describe('CollationsSchema', () => {
       schema: ''
     }
   );
+  let schemaObj = createSchemaObj();
   let getInitData = () => Promise.resolve({});
-
-
 
   beforeEach(() => {
     genericBeforeEach();
   });
 
   it('create', () => {
-    getCreateView(schemaObj);
+    getCreateView(createSchemaObj());
   });
 
   it('edit', () => {
-    getEditView(schemaObj, getInitData);
+    getEditView(createSchemaObj(), getInitData);
   });
 
   it('properties', () => {
-    getPropertiesView(schemaObj, getInitData);
+    getPropertiesView(createSchemaObj(), getInitData);
   });
 
   it('validate', () => {

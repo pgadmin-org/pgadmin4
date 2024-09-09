@@ -10,34 +10,38 @@
 
 import PgaJobScheduleSchema, { ExceptionsSchema } from '../../../pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import { initializeSchemaWithData } from './utils';
 
 describe('PgaJobScheduleSchema', ()=>{
 
-  let schemaObj = new PgaJobScheduleSchema([], {
+  const createSchemaObject = () => new PgaJobScheduleSchema([], {
     jscweekdays:[true,true,true,true,false,false,true],
-    jscexceptions:[{'jexid':81,'jexdate':'2021-08-05','jextime':'12:55:00'},{'jexid':83,'jexdate':'2021-08-17','jextime':'20:00:00'}],
+    jscexceptions:[
+      {'jexid':81,'jexdate':'2021-08-05','jextime':'12:55:00'},
+      {'jexid':83,'jexdate':'2021-08-17','jextime':'20:00:00'}
+    ],
   });
-  let getInitData = ()=>Promise.resolve({});
-
-
+  let getInitData = () => Promise.resolve({});
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
-    await getCreateView(schemaObj);
+  it('create', async () => {
+    await getCreateView(createSchemaObject());
   });
 
-  it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+  it('edit', async () => {
+    await getEditView(createSchemaObject(), getInitData);
   });
 
-  it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+  it('properties', async () => {
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
+    let schemaObj = createSchemaObject();
+    initializeSchemaWithData(schemaObj, {});
     let state = {};
     let setError = jest.fn();
 
@@ -59,28 +63,30 @@ describe('PgaJobScheduleSchema', ()=>{
   });
 });
 
-describe('ExceptionsSchema', ()=>{
+describe('ExceptionsSchema', () => {
 
-  let schemaObj = new ExceptionsSchema();
+  const createSchemaObject = () => new ExceptionsSchema();
   let getInitData = ()=>Promise.resolve({});
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
-    await getCreateView(schemaObj);
+  it('create', async () => {
+    await getCreateView(createSchemaObject());
   });
 
-  it('edit', async ()=>{
-    await getEditView(schemaObj, getInitData);
+  it('edit', async () => {
+    await getEditView(createSchemaObject(), getInitData);
   });
 
-  it('properties', async ()=>{
-    await getPropertiesView(schemaObj, getInitData);
+  it('properties', async () => {
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
-  it('validate', ()=>{
+  it('validate', () => {
+    let schemaObj = createSchemaObject();
+    initializeSchemaWithData(schemaObj, {});
     let state = {};
     let setError = jest.fn();
 
@@ -95,4 +101,3 @@ describe('ExceptionsSchema', ()=>{
     expect(setError).toHaveBeenCalledWith('jscdate', null);
   });
 });
-

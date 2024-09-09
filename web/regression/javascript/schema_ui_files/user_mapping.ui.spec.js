@@ -18,36 +18,33 @@ class MockSchema extends BaseUISchema {
   }
 }
 
-describe('UserMappingSchema', ()=>{
+describe('UserMappingSchema', () => {
 
-  let schemaObj = new UserMappingSchema(
-    ()=>new MockSchema(),
-    {
-      role: ()=>[],
-    },
-    {
-      name: 'postgres'
-    }
-  );
+  let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
-  beforeEach(()=>{
+  beforeEach(() => {
+    schemaObj = new UserMappingSchema(
+      ()=>new MockSchema(),
+      {
+        role: ()=>[],
+      },
+      {
+        name: 'postgres'
+      }
+    );
     genericBeforeEach();
   });
 
-  it('create', async ()=>{
+  it('create', async () => {
     await getCreateView(schemaObj);
   });
 
-  it('edit', async ()=>{
+  it('edit', async () => {
     await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', async ()=>{
+  it('properties', async () => {
     await getPropertiesView(schemaObj, getInitData);
   });
 });

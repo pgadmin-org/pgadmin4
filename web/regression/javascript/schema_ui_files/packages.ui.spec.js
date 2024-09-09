@@ -15,33 +15,32 @@ import { initializeSchemaWithData } from './utils';
 
 describe('PackageSchema', ()=>{
 
-  let packageSchemaObj = new PackageSchema(
-    (privileges)=>getNodePrivilegeRoleSchema({}, {server: {user: {name: 'postgres'}}}, {}, privileges),
+  const createSchemaObject = () => new PackageSchema(
+    (privileges) => getNodePrivilegeRoleSchema(
+      {}, {server: {user: {name: 'postgres'}}}, {}, privileges
+    ),
     {
       schemas:() => [],
       node_info: {'schema': []}
     },
   );
+  let packageSchemaObj = createSchemaObject(); 
   let getInitData = ()=>Promise.resolve({});
-
-
-
-
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
   it('create', async ()=>{
-    await getCreateView(packageSchemaObj);
+    await getCreateView(createSchemaObject());
   });
 
   it('edit', async ()=>{
-    await getEditView(packageSchemaObj, getInitData);
+    await getEditView(createSchemaObject(), getInitData);
   });
 
   it('properties', async ()=>{
-    await getPropertiesView(packageSchemaObj, getInitData);
+    await getPropertiesView(createSchemaObject(), getInitData);
   });
 
   it('pkgheadsrc depChange', ()=>{
