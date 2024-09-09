@@ -251,22 +251,24 @@ def migrate_passwords_from_os_secret_storage(servers, enc_key):
     error = ''
     try:
         if len(servers) > 0:
-            for server in servers:
-                server_name = KEY_RING_USERNAME_FORMAT.format(server.name,
-                                                              server.id)
-                server_password = keyring.get_password(
-                    KEY_RING_SERVICE_NAME, server_name)
-                if server_password:
+            for ser in servers:
+                server, is_password_saved, is_tunnel_password_saved = ser
+                if is_password_saved:
+                    server_name = KEY_RING_USERNAME_FORMAT.format(server.name,
+                                                                  server.id)
+                    server_password = keyring.get_password(
+                        KEY_RING_SERVICE_NAME, server_name)
                     server_password = encrypt(server_password, enc_key)
                     setattr(server, 'password', server_password)
+                    setattr(server, 'save_password', 1)
                 else:
+                    setattr(server, 'password', None)
                     setattr(server, 'save_password', 0)
-
-                tunnel_name = KEY_RING_TUNNEL_FORMAT.format(server.name,
-                                                            server.id)
-                tunnel_password = keyring.get_password(
-                    KEY_RING_SERVICE_NAME, tunnel_name)
-                if tunnel_password:
+                if is_tunnel_password_saved:
+                    tunnel_name = KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                                server.id)
+                    tunnel_password = keyring.get_password(
+                        KEY_RING_SERVICE_NAME, tunnel_name)
                     tunnel_password = encrypt(tunnel_password, enc_key)
                     setattr(server, 'tunnel_password', tunnel_password)
                 else:
@@ -275,7 +277,7 @@ def migrate_passwords_from_os_secret_storage(servers, enc_key):
     except Exception as e:
         error = 'Failed to migrate passwords stored using OS' \
                 ' password manager.Error: {0}'.format(e)
-        current_app.logger.warning(error)
+        current_app.logger.exception(error)
     return passwords_migrated, error
 
 
@@ -291,15 +293,18 @@ def migrate_passwords_from_pgadmin_db(servers, old_key, enc_key):
     passwords_migrated = False
     try:
         for ser in servers:
-            if ser.password:
-                password = decrypt(ser.password, old_key).decode()
+            server, is_password_saved, is_tunnel_password_saved = ser
+            if is_password_saved:
+                password = decrypt(server.password, old_key).decode()
                 server_password = encrypt(password, enc_key)
-                setattr(ser, 'password', server_password)
+                setattr(server, 'password', server_password)
+                setattr(server, 'save_password', 1)
 
-            if ser.tunnel_password:
-                password = decrypt(ser.tunnel_password, old_key).decode()
+            if is_tunnel_password_saved:
+                password = decrypt(server.tunnel_password, old_key).decode()
                 tunnel_password = encrypt(password, enc_key)
-                setattr(ser, 'tunnel_password', tunnel_password)
+                setattr(server, 'tunnel_password', tunnel_password)
+
         passwords_migrated = True
     except Exception as e:
         error = 'Failed to migrate passwords stored using master password or' \
@@ -308,6 +313,40 @@ def migrate_passwords_from_pgadmin_db(servers, old_key, enc_key):
         config.USE_OS_SECRET_STORAGE = False
 
     return passwords_migrated, error
+
+
+def get_servers_with_saved_passwords():
+    all_server = Server.query.all()
+    servers_with_pwd_in_os_secret = []
+    servers_with_pwd_in_pgadmin_db = []
+    saved_password_servers = []
+    for server in all_server:
+        sname = KEY_RING_USERNAME_FORMAT.format(server.name, server.id)
+        spassword = keyring.get_password(
+            KEY_RING_SERVICE_NAME, sname)
+
+        is_password_saved = bool(spassword)
+        tunnel_name = KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                    server.id)
+        tunnel_password = keyring.get_password(KEY_RING_SERVICE_NAME,
+                                               tunnel_name)
+        is_tunnel_password_saved = bool(tunnel_password)
+
+        if spassword or is_tunnel_password_saved:
+            saved_password_servers.append(server)
+            servers_with_pwd_in_os_secret.append(
+                (server, is_password_saved, is_tunnel_password_saved))
+        else:
+            is_password_saved = bool(server.password)
+            is_tunnel_password_saved = bool(server.tunnel_password)
+            if is_password_saved or is_tunnel_password_saved:
+                saved_password_servers.append(server)
+                servers_with_pwd_in_pgadmin_db.append(
+                    (server, is_password_saved, is_tunnel_password_saved))
+
+    return (saved_password_servers,
+            servers_with_pwd_in_os_secret,
+            servers_with_pwd_in_pgadmin_db)
 
 
 def migrate_saved_passwords(master_key, master_password):
@@ -327,20 +366,13 @@ def migrate_saved_passwords(master_key, master_password):
     passwords_migrated = False
     if config.ALLOW_SAVE_PASSWORD or config.ALLOW_SAVE_TUNNEL_PASSWORD:
         # Get servers with saved password
-        all_server = Server.query.all()
-        saved_password_servers = [ser for ser in all_server
-                                  if ser.save_password or ser.tunnel_password]
-
-        servers_with_pwd_in_os_secret = []
-        servers_with_pwd_in_pgadmin_db = []
-        for ser in saved_password_servers:
-            if ser.password is None:
-                servers_with_pwd_in_os_secret.append(ser)
-            else:
-                servers_with_pwd_in_pgadmin_db.append(ser)
+        saved_password_servers, \
+            servers_with_pwd_in_os_secret,\
+            servers_with_pwd_in_pgadmin_db = get_servers_with_saved_passwords()
 
         # No server passwords are saved
-        if len(saved_password_servers) == 0:
+        if len(servers_with_pwd_in_os_secret) == 0 and \
+                len(servers_with_pwd_in_pgadmin_db) == 0:
             current_app.logger.warning(
                 'There are no saved passwords')
             return passwords_migrated, error
@@ -374,7 +406,8 @@ def migrate_saved_passwords(master_key, master_password):
             # if master_password present and masterpass_check is  present,
             # server passwords are encrypted with master password
             current_app.logger.warning(
-                'Re-encrypting passwords saved using master password')
+                'Re-encrypting passwords saved using master password '
+                'or user password.')
             passwords_migrated, error = migrate_passwords_from_pgadmin_db(
                 servers_with_pwd_in_pgadmin_db, old_key, master_key)
             # clear master_pass check once passwords are migrated
@@ -389,7 +422,11 @@ def migrate_saved_passwords(master_key, master_password):
                 delete_saved_passwords_from_os_secret_storage(
                     servers_with_pwd_in_os_secret)
             # Update driver manager with new passwords
-            update_session_manager(saved_password_servers)
+            try:
+                update_session_manager(saved_password_servers)
+            except Exception:
+                current_app.logger.warning(
+                    'Error while updating session manger')
             current_app.logger.warning('Password migration is successful')
 
         return passwords_migrated, error
@@ -457,7 +494,8 @@ def delete_saved_passwords_from_os_secret_storage(servers):
             keyring.delete_password(KEY_RING_SERVICE_NAME, desktop_user_pass)
 
         if len(servers) > 0:
-            for server in servers:
+            for ser in servers:
+                server, is_password_saved, is_tunnel_password_saved = ser
                 server_name = KEY_RING_USERNAME_FORMAT.format(server.name,
                                                               server.id)
                 server_password = keyring.get_password(
@@ -465,8 +503,6 @@ def delete_saved_passwords_from_os_secret_storage(servers):
                 if server_password:
                     keyring.delete_password(
                         KEY_RING_SERVICE_NAME, server_name)
-                else:
-                    setattr(server, 'save_password', 0)
 
                 tunnel_name = KEY_RING_TUNNEL_FORMAT.format(server.name,
                                                             server.id)
@@ -475,8 +511,6 @@ def delete_saved_passwords_from_os_secret_storage(servers):
                 if tunnel_password:
                     keyring.delete_password(
                         KEY_RING_SERVICE_NAME, tunnel_name)
-                else:
-                    setattr(server, 'tunnel_password', None)
             return True
         else:
             # This means no server password to migrate
