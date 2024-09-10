@@ -429,7 +429,7 @@ def migrate_saved_passwords(master_key, master_password):
                     'Error while updating session manger')
             current_app.logger.warning('Password migration is successful')
 
-        return passwords_migrated, error
+    return passwords_migrated, error
 
 
 def reencrpyt_server_passwords(user_id, old_key, new_key):

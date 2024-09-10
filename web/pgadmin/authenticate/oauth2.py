@@ -70,6 +70,7 @@ def init_app(app):
     @pgCSRFProtect.exempt
     def oauth_logout():
         logout_url = None
+        id_token = session['oauth2_token'].get('id_token')
         if 'oauth2_logout_url' in session:
             logout_url = session['oauth2_logout_url']
 
@@ -80,7 +81,6 @@ def init_app(app):
 
         logout_user()
         if logout_url:
-            id_token = session['oauth2_token'].get('id_token')
             return redirect(logout_url.format(
                 redirect_uri=request.url_root,
                 id_token=id_token))
@@ -134,7 +134,6 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
-        current_app.logger.warning(f"profile : {profile}")
         email_key = \
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
@@ -150,10 +149,10 @@ class OAuth2Authentication(BaseAuthentication):
             id_token = session['oauth2_token'].get('userinfo', {})
             if username_claim in profile:
                 username = profile[username_claim]
-                current_app.logger.warning('Found username claim in profile')
+                current_app.logger.debug('Found username claim in profile')
             elif username_claim in id_token:
                 username = id_token[username_claim]
-                current_app.logger.warning('Found username claim in id_token')
+                current_app.logger.debug('Found username claim in id_token')
             else:
                 error_msg = "The claim '%s' is required to login into " \
                     "pgAdmin. Please update your OAuth2 profile." % (
@@ -169,24 +168,24 @@ class OAuth2Authentication(BaseAuthentication):
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
-        additinal_claims = None
+        additional_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
                 self.oauth2_current_client]:
 
-            additinal_claims = self.oauth2_config[
+            additional_claims = self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
         # checking oauth provider userinfo response
         valid_profile, reason = self.__is_any_claim_valid(profile,
-                                                          additinal_claims)
+                                                          additional_claims)
         current_app.logger.debug(f"profile claims: {profile}")
         current_app.logger.debug(f"reason: {reason}")
 
         # checking oauth provider idtoken claims
         id_token_claims = session.get('oauth2_token', {}).get('userinfo',{})
         valid_idtoken, reason = self.__is_any_claim_valid(id_token_claims,
-                                                          additinal_claims)
+                                                          additional_claims)
         current_app.logger.debug(f"idtoken claims: {id_token_claims}")
         current_app.logger.debug(f"reason: {reason}")
 
@@ -196,7 +195,7 @@ class OAuth2Authentication(BaseAuthentication):
                 " Please contact your administrator."
             audit_msg = f"The authenticated user {username} is not" \
                 " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: additional claim required {additinal_claims}, " \
+                f"Reason: additional claim required {additional_claims}, " \
                 f"profile claims {profile}, idtoken cliams {id_token_claims}."
             current_app.logger.warning(audit_msg)
             return False, return_msg
