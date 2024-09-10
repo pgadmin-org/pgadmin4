@@ -18,7 +18,10 @@ class NewConnectionSchema extends BaseUISchema {
       role: null,
       server_name: null,
       database_name: null,
+      connected: false,
     });
+    // Regenerate the fields on every render.
+    this._dynamicFields = true;
     this.flatServers = [];
     this.groupedServers = [];
     this.dbs = [];
@@ -41,7 +44,7 @@ class NewConnectionSchema extends BaseUISchema {
   }
 
   isServerConnected(sid) {
-    return _.find(this.flatServers, (s)=>s.value==sid)?.connected;
+    return _.find(this.flatServers, (s) => s.value == sid)?.connected;
   }
 
   getServerList() {
@@ -106,16 +109,21 @@ class NewConnectionSchema extends BaseUISchema {
     let self = this;
     return [
       {
-        id: 'sid', label: gettext('Server'), type: 'select', noEmpty: true,
-        controlProps: {
-          allowClear: false,
-        }, options: ()=>this.getServerList(),
-        optionsLoaded: (res)=>this.flatServers=flattenSelectOptions(res),
-        optionsReloadBasis: this.flatServers.map((s)=>s.connected).join(''),
+        id: 'sid', label: gettext('Server'), deps: ['connected'],
+        noEmpty: true,
+        controlProps: { allowClear: false },
+        type: () => ({
+          type: 'select',
+          options: () => self.getServerList(),
+          optionsLoaded: (res) => self.flatServers = flattenSelectOptions(res),
+          optionsReloadBasis: self.flatServers.map((s) => s.connected).join(''),
+        }),
         depChange: (state)=>{
           /* Once the option is selected get the name */
           /* Force sid to null, and set only if connected */
-          let selectedServer = _.find(this.flatServers, (s)=>s.value==state.sid);
+          let selectedServer = _.find(
+            self.flatServers, (s) => s.value == state.sid
+          );
           return {
             server_name: selectedServer?.label,
             did: null,
@@ -124,62 +132,74 @@ class NewConnectionSchema extends BaseUISchema {
             sid: null,
             fgcolor: selectedServer?.fgcolor,
             bgcolor: selectedServer?.bgcolor,
+            connected: selectedServer?.connected,
           };
         },
-        deferredDepChange: (state, source, topState, actionObj)=>{
-          return new Promise((resolve)=>{
+        deferredDepChange: (state, source, topState, actionObj) => {
+          return new Promise((resolve) => {
             let sid = actionObj.value;
-            if(!_.find(this.flatServers, (s)=>s.value==sid)?.connected) {
-              this.connectServer(sid, state.user, null, (data)=>{
+            if(!_.find(self.flatServers, (s) => s.value == sid)?.connected) {
+              this.connectServer(sid, state.user, null, (data) => {
                 self.setServerConnected(sid, data.icon);
-                resolve(()=>({sid: sid}));
+                resolve(() => ({ sid: sid, connected: true }));
               });
             } else {
-              resolve(()=>({sid: sid}));
+              resolve(()=>({ sid: sid, connected: true }));
             }
           });
         },
       }, {
-        id: 'did', label: gettext('Database'), deps: ['sid'], noEmpty: true,
+        id: 'did', label: gettext('Database'), deps: ['sid', 'connected'],
+        noEmpty: true,
         controlProps: {
           allowClear: false,
         },
-        type: (state)=>({
-          type: 'select',
-          options: ()=>this.getOtherOptions(state.sid, 'get_new_connection_database'),
-          optionsReloadBasis: `${state.sid} ${this.isServerConnected(state.sid)}`,
-        }),
-        optionsLoaded: (res)=>this.dbs=res,
-        depChange: (state)=>{
+        type: (state) => {
+          return {
+            type: 'select',
+            options: () => this.getOtherOptions(
+              state.sid, 'get_new_connection_database'
+            ),
+            optionsReloadBasis: `${state.sid} ${this.isServerConnected(state.sid)}`,
+          };
+        },
+        optionsLoaded: (res) => this.dbs = res,
+        depChange: (state) => {
           /* Once the option is selected get the name */
-          return {database_name: _.find(this.dbs, (s)=>s.value==state.did)?.label};
+          return {
+            database_name: _.find(this.dbs, (s) => s.value == state.did)?.label
+          };
         }
-      },{
-        id: 'user', label: gettext('User'), deps: ['sid'], noEmpty: true,
-        controlProps: {
-          allowClear: false,
-        },
-        type: (state)=>({
+      }, {
+        id: 'user', label: gettext('User'), deps: ['sid', 'connected'],
+        noEmpty: true, controlProps: { allowClear: false },
+        type: (state) => ({
           type: 'select',
-          options: ()=>this.getOtherOptions(state.sid, 'get_new_connection_user'),
+          options: () => this.getOtherOptions(
+            state.sid, 'get_new_connection_user'
+          ),
           optionsReloadBasis: `${state.sid} ${this.isServerConnected(state.sid)}`,
         }),
-      },{
-        id: 'role', label: gettext('Role'), deps: ['sid'],
+      }, {
+        id: 'role', label: gettext('Role'), deps: ['sid', 'connected'],
         type: (state)=>({
           type: 'select',
-          options: ()=>this.getOtherOptions(state.sid, 'get_new_connection_role'),
+          options: () => this.getOtherOptions(
+            state.sid, 'get_new_connection_role'
+          ),
           optionsReloadBasis: `${state.sid} ${this.isServerConnected(state.sid)}`,
         }),
-      },{
+      }, {
         id: 'server_name', label: '', type: 'text', visible: false,
-      },{
+      }, {
         id: 'database_name', label: '', type: 'text', visible: false,
-      },{
+      }, {
         id: 'bgcolor', label: '', type: 'text', visible: false,
-      },{
+      }, {
         id: 'fgcolor', label: '', type: 'text', visible: false,
-      },
+      }, {
+        id: 'connected', label: '', type: 'text', visible: false,
+      }
     ];
   }
 }
@@ -189,7 +209,6 @@ export default function NewConnectionDialog({onClose, onSave}) {
 
   const [connecting, setConnecting] = useState(false);
   const queryToolCtx = React.useContext(QueryToolContext);
-
   const connectServer = async (sid, user, formData, connectCallback) => {
     setConnecting(true);
     try {
@@ -223,25 +242,34 @@ export default function NewConnectionDialog({onClose, onSave}) {
       });
     }
   };
+  const schema = React.useRef(null);
 
-  return <SchemaView
-    formType={'dialog'}
-    getInitData={()=>Promise.resolve({})}
-    schema={new NewConnectionSchema(queryToolCtx.api, {
+  if (!schema.current)
+    schema.current = new NewConnectionSchema(queryToolCtx.api, {
       sid: queryToolCtx.params.sid, sgid: 0,
-    }, connectServer)}
-    viewHelperProps={{
-      mode: 'create',
-    }}
-    loadingText={connecting ? 'Connecting...' : ''}
-    onSave={onSave}
-    onClose={onClose}
-    hasSQL={false}
-    disableSqlHelp={true}
-    disableDialogHelp={true}
-    isTabView={false}
-    Notifier={queryToolCtx.modal}
-  />;
+    }, connectServer);
+
+  return <>
+    {
+      schema.current &&
+        <SchemaView
+          formType={'dialog'}
+          getInitData={()=>Promise.resolve({})}
+          schema={schema.current}
+          viewHelperProps={{
+            mode: 'create',
+          }}
+          loadingText={connecting ? 'Connecting...' : ''}
+          onSave={onSave}
+          onClose={onClose}
+          hasSQL={false}
+          disableSqlHelp={true}
+          disableDialogHelp={true}
+          isTabView={false}
+          Notifier={queryToolCtx.modal}
+        />
+    }
+  </>;
 }
 
 NewConnectionDialog.propTypes = {

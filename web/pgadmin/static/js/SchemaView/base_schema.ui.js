@@ -27,6 +27,7 @@ export default class BaseUISchema {
 
     this._state = null;
     this._id = Date.now();
+    this._dynamicFields = false;
   }
 
   /* Top schema is helpful if this is used as child */
@@ -96,9 +97,8 @@ export default class BaseUISchema {
   */
   get fields() {
     if (!this.__filteredFields) {
-      // Memoize the results
-      this.__filteredFields = memoizeFn(
-        (baseFields, keys, filterGroups) =>  baseFields.filter((field) => {
+      const getFields = (baseFields, keys, filterGroups) => baseFields.filter(
+        (field) => {
           let retval;
 
           // If any groups are to be filtered.
@@ -110,8 +110,12 @@ export default class BaseUISchema {
           }
 
           return retval;
-        })
+        }
       );
+
+      // Memoize the results (if required)
+      this.__filteredFields =
+        this._dynamicFields ? getFields : memoizeFn(getFields);
     }
 
     return this.__filteredFields(
