@@ -44,7 +44,6 @@ export function getMappedCell({field}) {
       colOptions = { disabled: true, readonly: true };
     } else {
       colOptions['readonly'] = !colOptions['editable'];
-      rowValue = value;
     }
 
     let cellProps = {};
