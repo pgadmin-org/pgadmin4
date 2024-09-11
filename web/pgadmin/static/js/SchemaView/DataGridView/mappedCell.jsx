@@ -27,7 +27,7 @@ export function getMappedCell({field}) {
 
     const [key, setKey] = useState(0);
     const schemaState = useContext(SchemaStateContext);
-    const { dataDispatch } = useContext(DataGridContext);
+    const { dataDispatch, accessPath } = useContext(DataGridContext);
     const { rowAccessPath, row } = useContext(DataGridRowContext);
     const colAccessPath = schemaState.accessPath(rowAccessPath, field.id);
 
@@ -44,7 +44,6 @@ export function getMappedCell({field}) {
       colOptions = { disabled: true, readonly: true };
     } else {
       colOptions['readonly'] = !colOptions['editable'];
-      rowValue = value;
     }
 
     let cellProps = {};
@@ -70,7 +69,7 @@ export function getMappedCell({field}) {
         if(field.radioType) {
           dataDispatch({
             type: SCHEMA_STATE_ACTIONS.BULK_UPDATE,
-            path: rowAccessPath,
+            path: accessPath,
             value: changeValue,
             id: field.id
           });

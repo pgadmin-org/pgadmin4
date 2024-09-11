@@ -13,7 +13,7 @@ import { DefaultButton } from 'sources/components/Buttons';
 import { SchemaStateContext } from './SchemaState';
 
 
-export function ResetButton({label, Icon, onClick}) {
+export function ResetButton({label, icon, onClick}) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
   const checkDisabled = (state) => (state.isSaving || !state.isDirty);
@@ -33,7 +33,7 @@ export function ResetButton({label, Icon, onClick}) {
   return (
     <DefaultButton
       data-test='Reset' onClick={onClick}
-      startIcon={Icon}
+      startIcon={icon}
       disabled={isDisabled}
       className='Dialog-buttonMargin'>
       { label }
