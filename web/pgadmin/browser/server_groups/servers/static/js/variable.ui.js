@@ -59,6 +59,8 @@ export default class VariableSchema extends BaseUISchema {
     this.varTypes = {};
     this.keys = keys;
     this.allReadOnly = false;
+
+    this.setVarTypes(this.vnameOptions);
   }
 
   setAllReadOnly(isReadOnly) {
@@ -145,13 +147,10 @@ export default class VariableSchema extends BaseUISchema {
       },
       {
         id: 'name', label: gettext('Name'), type:'text',
-        editable: function(state) {
-          return obj.isNew(state) || !obj.allReadOnly;
-        },
+        editable: (state) => (obj.isNew(state) || !obj.allReadOnly),
         cell: () => ({
           cell: 'select',
-          options: this.vnameOptions,
-          optionsLoaded: (options)=>{obj.setVarTypes(options);},
+          options: obj.vnameOptions,
           controlProps: { allowClear: false },
         }),
       },
@@ -167,7 +166,7 @@ export default class VariableSchema extends BaseUISchema {
         deps: ['name'], editable: !obj.allReadOnly,
         depChange: (state, source)=>{
           if(source[source.length-1] == 'name') {
-            let variable = this.varTypes[state.name];
+            let variable = obj.varTypes[state.name];
             if(variable.vartype === 'bool'){
               return {
                 value: false,
@@ -178,16 +177,16 @@ export default class VariableSchema extends BaseUISchema {
             };
           }
         },
-        cell: (row)=>{
-          let variable = this.varTypes[row.name];
-          return this.getValueFieldProps(variable);
+        cell: (row) => {
+          let variable = obj.varTypes[row.name];
+          return obj.getValueFieldProps(variable);
         }
       },
       {id: 'database', label: gettext('Database'), type: 'text',
-        cell: ()=>({cell: 'select', options: this.databaseOptions }),
+        cell: ()=>({cell: 'select', options: obj.databaseOptions }),
       },
       {id: 'role', label: gettext('Role'), type: 'text',
-        cell: ()=>({cell: 'select', options: this.roleOptions,
+        cell: ()=>({cell: 'select', options: obj.roleOptions,
           controlProps: {
             allowClear: false,
           }
