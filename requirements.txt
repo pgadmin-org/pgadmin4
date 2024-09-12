@@ -35,7 +35,7 @@ cryptography==43.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
-eventlet==0.36.1
+eventlet==0.37.0
 user-agents==2.2.0
 pywinpty==2.0.*; sys_platform=="win32"
 Authlib==1.3.*
