@@ -172,9 +172,10 @@ class NewConnectionSchema extends BaseUISchema {
         }
       }, {
         id: 'user', label: gettext('User'), deps: ['sid', 'connected'],
-        noEmpty: true, controlProps: { allowClear: false },
+        noEmpty: true,
         type: (state) => ({
           type: 'select',
+          controlProps: { allowClear: false },
           options: () => this.getOtherOptions(
             state.sid, 'get_new_connection_user'
           ),
@@ -182,8 +183,10 @@ class NewConnectionSchema extends BaseUISchema {
         }),
       }, {
         id: 'role', label: gettext('Role'), deps: ['sid', 'connected'],
-        type: (state)=>({
+        reloadOnDepChanges: true,
+        type: (state) => ({
           type: 'select',
+          controlProps: { allowClear: false },
           options: () => this.getOtherOptions(
             state.sid, 'get_new_connection_role'
           ),

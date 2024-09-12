@@ -13,7 +13,16 @@ import _ from 'lodash';
 import { evalFunc } from 'sources/utils';
 
 
-export const listenDepChanges = (accessPath, field, visible, schemaState) => {
+export const listenDepChanges = (
+  accessPath, field, visible, schemaState, data, key, setRefreshKey
+) => {
+  const deps = field?.deps ? (evalFunc(null, field.deps) || []) : null;
+  const parentPath = accessPath ? [...accessPath] : [];
+
+  // Remove the last element.
+  if (field?.id && field.id === parentPath[parentPath.length - 1]) {
+    parentPath.pop();
+  }
 
   useEffect(() => {
     if (!visible || !schemaState || !field) return;
@@ -26,25 +35,23 @@ export const listenDepChanges = (accessPath, field, visible, schemaState) => {
     }
 
     if (field.deps) {
-      const parentPath = [...accessPath];
-
-      // Remove the last element.
-      if (field.id && field.id === parentPath[parentPath.length - 1]) {
-        parentPath.pop();
-      }
-
-      (evalFunc(null, field.deps) || []).forEach((dep) => {
-
+      deps.forEach((dep) => {
         // When dep is a string then prepend the complete accessPath,
         // but - when dep is an array, then the intention is to provide
         // the exact accesspath.
         let source = _.isArray(dep) ? dep : parentPath.concat(dep);
 
-        if(field.depChange || field.deferredDepChange) {
+        if (field.depChange || field.deferredDepChange) {
           schemaState.addDepListener(
             source, accessPath, field.depChange, field.deferredDepChange
           );
         }
+
+        if (!field.reloadOnDepChanges) return;
+
+        schemaState.subscribe(
+          source, () => setRefreshKey(Date.now()), 'value'
+        );
       });
     }
 
@@ -52,6 +59,9 @@ export const listenDepChanges = (accessPath, field, visible, schemaState) => {
       // Cleanup the listeners when unmounting.
       schemaState.removeDepListener(accessPath);
     };
-  }, []);
+  }, [key]);
 
+  return deps?.map((dep) => schemaState.value(
+    _.isArray(dep) ? dep : parentPath.concat(dep)
+  ));
 };

@@ -369,7 +369,10 @@ export const MappedFormControl = ({
     if (!isValueEqual(changedValue, currValue)) origOnChange(changedValue);
   };
 
-  listenDepChanges(accessPath, field, options.visible, schemaState);
+  const depVals = listenDepChanges(
+    accessPath, field, options.visible, schemaState, state,
+    key, avoidRenderingWhenNotMounted
+  );
 
   let newProps = {
     ...props,
@@ -394,14 +397,17 @@ export const MappedFormControl = ({
   newProps.onClick = ()=>{
     origOnClick?.();
   };
+
   // FIXME:: Get this list from the option registry.
   const memDeps = ['disabled', 'visible', 'readonly'].map(
     option => options[option]
   );
+
   memDeps.push(value);
   memDeps.push(hasError);
   memDeps.push(key);
   memDeps.push(JSON.stringify(accessPath));
+  memDeps.push(depVals);
 
   // Filter out garbage props if any using ALLOWED_PROPS_FIELD.
   return useMemo(
