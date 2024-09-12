@@ -56,7 +56,7 @@ export const createFieldControls = ({
     if (!isModeSupportedByField(field, viewHelperProps)) return;
 
     let inlineGroup = null;
-    const inlineGroupId = field[inlineGroup];
+    const inlineGroupId = field['inlineGroup'];
 
     if(field.type === 'group') {
 
