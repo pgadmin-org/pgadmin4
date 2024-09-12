@@ -47,8 +47,6 @@ export const listenDepChanges = (
           );
         }
 
-        if (!field.reloadOnDepChanges) return;
-
         schemaState.subscribe(
           source, () => setRefreshKey(Date.now()), 'value'
         );

@@ -183,7 +183,6 @@ class NewConnectionSchema extends BaseUISchema {
         }),
       }, {
         id: 'role', label: gettext('Role'), deps: ['sid', 'connected'],
-        reloadOnDepChanges: true,
         type: (state) => ({
           type: 'select',
           controlProps: { allowClear: false },

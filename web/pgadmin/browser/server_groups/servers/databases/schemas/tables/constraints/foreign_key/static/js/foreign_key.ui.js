@@ -96,7 +96,8 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
         return state._disable_references;
       }
     },{
-      id: 'referenced', label: gettext('Referencing'), editable: false, deps: ['references'],
+      id: 'referenced', label: gettext('Referencing'), editable: false,
+      deps: ['references'],
       type: (state)=>{
         return {
           type: 'select',
