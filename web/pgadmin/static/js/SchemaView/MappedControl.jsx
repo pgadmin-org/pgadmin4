@@ -28,7 +28,7 @@ import { evalFunc } from 'sources/utils';
 import { SchemaStateContext } from './SchemaState';
 import { isValueEqual } from './common';
 import {
-  useFieldOptions, useFieldValue, useFieldError
+  useFieldOptions, useFieldValue, useFieldError, useSchemaStateSubscriber,
 } from './hooks';
 import { listenDepChanges } from './utils';
 
@@ -339,22 +339,15 @@ export const MappedFormControl = ({
 }) => {
   const checkIsMounted = useIsMounted();
   const [key, setKey] = useState(0);
+  const subscriberManager = useSchemaStateSubscriber(setKey);
   const schemaState = useContext(SchemaStateContext);
   const state = schemaState.data;
-  const avoidRenderingWhenNotMounted = (newKey) => {
-    if (checkIsMounted()) {
-      setKey(newKey);
-    }
+  const value = useFieldValue(accessPath, schemaState, subscriberManager);
+  const options = useFieldOptions(accessPath, schemaState, subscriberManager);
+  const {hasError} = useFieldError(accessPath, schemaState, subscriberManager);
+  const avoidRenderingWhenNotMounted = (...args) => {
+    if (checkIsMounted()) subscriberManager.current?.signal(...args);
   };
-  const value = useFieldValue(
-    accessPath, schemaState, key, avoidRenderingWhenNotMounted
-  );
-  const options = useFieldOptions(
-    accessPath, schemaState, key, avoidRenderingWhenNotMounted
-  );
-  const { hasError } = useFieldError(
-    accessPath, schemaState, key, avoidRenderingWhenNotMounted
-  );
 
   const origOnChange = onChange;
 
@@ -371,7 +364,7 @@ export const MappedFormControl = ({
 
   const depVals = listenDepChanges(
     accessPath, field, options.visible, schemaState, state,
-    key, avoidRenderingWhenNotMounted
+    avoidRenderingWhenNotMounted
   );
 
   let newProps = {

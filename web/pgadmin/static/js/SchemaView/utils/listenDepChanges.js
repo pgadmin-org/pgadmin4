@@ -14,7 +14,7 @@ import { evalFunc } from 'sources/utils';
 
 
 export const listenDepChanges = (
-  accessPath, field, visible, schemaState, data, key, setRefreshKey
+  accessPath, field, visible, schemaState, data, setRefreshKey
 ) => {
   const deps = field?.deps ? (evalFunc(null, field.deps) || []) : null;
   const parentPath = accessPath ? [...accessPath] : [];
@@ -47,9 +47,10 @@ export const listenDepChanges = (
           );
         }
 
-        schemaState.subscribe(
-          source, () => setRefreshKey(Date.now()), 'value'
-        );
+        if (setRefreshKey)
+          schemaState.subscribe(
+            source, () => setRefreshKey(Date.now()), 'value'
+          );
       });
     }
 
@@ -57,7 +58,7 @@ export const listenDepChanges = (
       // Cleanup the listeners when unmounting.
       schemaState.removeDepListener(accessPath);
     };
-  }, [key]);
+  }, []);
 
   return deps?.map((dep) => schemaState.value(
     _.isArray(dep) ? dep : parentPath.concat(dep)

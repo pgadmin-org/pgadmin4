@@ -10,16 +10,13 @@
 import { useEffect } from 'react';
 
 
-export const useFieldValue = (
-  path, schemaState, key, setRefreshKey
-) => {
-  useEffect(() => {
-    if (!schemaState || !setRefreshKey) return;
+export const useFieldValue = (path, schemaState, subscriberManager) => {
 
-    return schemaState.subscribe(
-      path, () => setRefreshKey({id: Date.now()}), 'value'
-    );
-  }, [key, schemaState?._id]);
+  useEffect(() => {
+    if (!schemaState || !subscriberManager?.current) return;
+
+    return subscriberManager.current?.add(schemaState, path, 'value');
+  });
 
   return schemaState?.value(path);
 };
