@@ -276,10 +276,10 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   }, [queryToolConnCtx.connectionStatus]);
 
   const onCommitClick=()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'COMMIT;', null, '', true);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'COMMIT;', {external: true});
   };
   const onRollbackClick=()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', null, '', true);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', {external: true});
   };
   const executeMacro = (m)=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, m.sql);

@@ -232,6 +232,8 @@ class QueryToolLocators:
 
     query_output_canvas_css = "#id-dataoutput .rdg"
 
+    pagination_inputs = "#id-dataoutput .PaginationInputs"
+
     query_output_cells = ".rdg-cell[role='gridcell']"
 
     sql_editor_message = "//div[@id='id-messages'][contains(string(), '{}')]"

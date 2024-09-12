@@ -74,8 +74,8 @@ key combination to select from a popup menu of autocomplete options.
 
 After entering a query, select the *Execute script* icon from the toolbar. The
 complete contents of the SQL editor panel will be sent to the database server
-for execution. To execute only a section of the code that is displayed in the 
-SQL editor, highlight the text that you want the server to execute, and click the 
+for execution. To execute only a section of the code that is displayed in the
+SQL editor, highlight the text that you want the server to execute, and click the
 *Execute script* icon.
 
 .. image:: images/query_execute_script.png
@@ -177,6 +177,7 @@ You can:
 * Use the *Save results to file* icon to save the content of the *Data Output*
   tab as a comma-delimited file.
 * Edit the data in the result set of a SELECT query if it is updatable.
+* Move between pages of data result.
 
 .. _updatable-result-set:
 
