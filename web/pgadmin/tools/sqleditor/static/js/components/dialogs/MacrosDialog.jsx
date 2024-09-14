@@ -192,6 +192,11 @@ export default function MacrosDialog({onClose, onSave}) {
     return <></>;
   }
 
+  const schema = React.useRef(null);
+
+  if (!schema.current)
+    schema.current = new MacrosSchema(keyOptions);
+
   return (
     <StyledBox>
       <SchemaView
@@ -202,7 +207,7 @@ export default function MacrosDialog({onClose, onSave}) {
           }
           return Promise.resolve({macro: userMacrosData.filter((m)=>Boolean(m.name))});
         }}
-        schema={new MacrosSchema(keyOptions)}
+        schema={schema.current}
         viewHelperProps={{
           mode: 'edit',
         }}
