@@ -22,7 +22,7 @@ export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDa
     keys.push('role');
   }
   return new VariableSchema(
-    ()=>getNodeAjaxOptions('vopts', nodeObj, treeNodeInfo, itemNodeData, null, (vars)=>{
+    () => getNodeAjaxOptions('vopts', nodeObj, treeNodeInfo, itemNodeData, null, (vars)=>{
       let res = [];
       _.each(vars, function(v) {
         res.push({
@@ -38,8 +38,8 @@ export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDa
 
       return res;
     }),
-    ()=>getNodeListByName('database', treeNodeInfo, itemNodeData),
-    ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+    () => getNodeListByName('database', treeNodeInfo, itemNodeData),
+    () => getNodeListByName('role', treeNodeInfo, itemNodeData),
     keys
   );
 }
@@ -59,6 +59,8 @@ export default class VariableSchema extends BaseUISchema {
     this.varTypes = {};
     this.keys = keys;
     this.allReadOnly = false;
+
+    setTimeout(() => this.setVarTypes(vnameOptions), 0);
   }
 
   setAllReadOnly(isReadOnly) {
@@ -66,10 +68,18 @@ export default class VariableSchema extends BaseUISchema {
   }
 
   setVarTypes(options) {
-    options.forEach((option)=>{
-      this.varTypes[option.value] = {
-        ...option,
-      };
+    let optPromise = options;
+
+    if (typeof options === 'function') {
+      optPromise = options();
+    }
+
+    Promise.resolve(optPromise).then((res) => {
+      res.forEach((option) => {
+        this.varTypes[option.value] = {
+          ...option,
+        };
+      });
     });
   }
 
@@ -145,13 +155,10 @@ export default class VariableSchema extends BaseUISchema {
       },
       {
         id: 'name', label: gettext('Name'), type:'text',
-        editable: function(state) {
-          return obj.isNew(state) || !obj.allReadOnly;
-        },
+        editable: (state) => (obj.isNew(state) || !obj.allReadOnly),
         cell: () => ({
           cell: 'select',
-          options: this.vnameOptions,
-          optionsLoaded: (options)=>{obj.setVarTypes(options);},
+          options: obj.vnameOptions,
           controlProps: { allowClear: false },
         }),
       },
@@ -165,9 +172,9 @@ export default class VariableSchema extends BaseUISchema {
       {
         id: 'value', label: gettext('Value'), type: 'text',
         deps: ['name'], editable: !obj.allReadOnly,
-        depChange: (state, source)=>{
+        depChange: (state, source) => {
           if(source[source.length-1] == 'name') {
-            let variable = this.varTypes[state.name];
+            let variable = obj.varTypes[state.name];
             if(variable.vartype === 'bool'){
               return {
                 value: false,
@@ -178,19 +185,20 @@ export default class VariableSchema extends BaseUISchema {
             };
           }
         },
-        cell: (row)=>{
-          let variable = this.varTypes[row.name];
-          return this.getValueFieldProps(variable);
+        cell: (row) => {
+          let variable = obj.varTypes[row.name];
+          return obj.getValueFieldProps(variable);
         }
       },
-      {id: 'database', label: gettext('Database'), type: 'text',
-        cell: ()=>({cell: 'select', options: this.databaseOptions }),
+      {
+        id: 'database', label: gettext('Database'), type: 'text',
+        cell: ()=>({cell: 'select', options: obj.databaseOptions }),
       },
-      {id: 'role', label: gettext('Role'), type: 'text',
-        cell: ()=>({cell: 'select', options: this.roleOptions,
-          controlProps: {
-            allowClear: false,
-          }
+      {
+        id: 'role', label: gettext('Role'), type: 'text',
+        cell: () => ({
+          cell: 'select', options: obj.roleOptions,
+          controlProps: { allowClear: false },
         }),
       },
     ];

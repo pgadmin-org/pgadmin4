@@ -12,6 +12,7 @@ import { useFieldOptions } from './useFieldOptions';
 import { useFieldValue } from './useFieldValue';
 import { useSchemaState } from './useSchemaState';
 import { useFieldSchema } from './useFieldSchema';
+import { useSchemaStateSubscriber } from './useSchemaStateSubscriber';
 
 
 export {
@@ -20,4 +21,5 @@ export {
   useFieldValue,
   useFieldSchema,
   useSchemaState,
+  useSchemaStateSubscriber,
 };

@@ -15,7 +15,9 @@ import CustomPropTypes from 'sources/custom_prop_types';
 
 import { FieldControl } from './FieldControl';
 import { SchemaStateContext } from './SchemaState';
-import { useFieldSchema, useFieldValue } from './hooks';
+import {
+  useFieldSchema, useFieldValue, useSchemaStateSubscriber,
+} from './hooks';
 import { registerView } from './registry';
 import { createFieldControls, listenDepChanges  } from './utils';
 
@@ -23,13 +25,15 @@ import { createFieldControls, listenDepChanges  } from './utils';
 export default function FieldSetView({
   field, accessPath, dataDispatch, viewHelperProps, controlClassName,
 }) {
-  const [key, setRefreshKey] = useState(0);
+  const [, setKey] = useState(0);
+  const subscriberManager = useSchemaStateSubscriber(setKey);
   const schema = field.schema;
   const schemaState = useContext(SchemaStateContext);
   const value = useFieldValue(accessPath, schemaState);
   const options = useFieldSchema(
-    field, accessPath, value, viewHelperProps, schemaState, key, setRefreshKey
+    field, accessPath, value, viewHelperProps, schemaState, subscriberManager
   );
+
   const label = field.label;
 
   listenDepChanges(accessPath, field, options.visible, schemaState);

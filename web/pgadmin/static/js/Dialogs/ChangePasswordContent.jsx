@@ -65,10 +65,16 @@ class ChangePasswordSchema extends BaseUISchema {
 
 export default function ChangePasswordContent({getInitData=() => { /*This is intentional (SonarQube)*/ },
   onSave, onClose, hasCsrfToken=false, showUser=true}) {
+  const schema=React.useRef(null);
+  if (!schema.current)
+    schema.current = new ChangePasswordSchema(
+      '', false, hasCsrfToken, showUser
+    );
+
   return <SchemaView
     formType={'dialog'}
     getInitData={getInitData}
-    schema={new ChangePasswordSchema('', false, hasCsrfToken, showUser)}
+    schema={schema.current}
     viewHelperProps={{
       mode: 'create',
     }}

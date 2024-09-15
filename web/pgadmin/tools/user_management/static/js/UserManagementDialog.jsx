@@ -399,6 +399,11 @@ function UserManagementDialog({onClose}) {
     window.open(url_for('help.static', { 'filename': 'user_management.html' }), 'pgadmin_help');
   };
 
+  const schema = React.useRef(null);
+
+  if (!schema.current)
+    schema.current = new UserManagementSchema(authSourcesOptions, roleOptions);
+
   return <StyledBox><SchemaView
     formType={'dialog'}
     getInitData={()=>{ return new Promise((resolve, reject)=>{
@@ -410,7 +415,7 @@ function UserManagementDialog({onClose}) {
           reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
         });
     }); }}
-    schema={new UserManagementSchema(authSourcesOptions, roleOptions)}
+    schema={schema.current}
     viewHelperProps={{
       mode: 'edit',
     }}

@@ -955,7 +955,6 @@ export const InputSelect = forwardRef(({
     return () => umounted = true;
   }, [optionsReloadBasis]);
 
-
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter?.(finalOptions)) || finalOptions;
   const flatFiltered = flattenSelectOptions(filteredOptions);

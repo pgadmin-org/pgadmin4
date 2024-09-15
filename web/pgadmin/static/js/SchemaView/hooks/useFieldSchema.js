@@ -14,32 +14,32 @@ import { booleanEvaluator } from '../options';
 
 
 export const useFieldSchema = (
-  field, accessPath, value, viewHelperProps, schemaState, key, setRefreshKey
+  field, accessPath, value, viewHelperProps, schemaState, subscriberManager
 ) => {
+
   useEffect(() => {
-    if (!schemaState || !field) return;
+    if (!schemaState || !field || !subscriberManager?.current) return;
 
     // It already has 'id', 'options' is already evaluated.
     if (field.id)
-      return schemaState.subscribe(
-        accessPath, () => setRefreshKey?.({id: Date.now()}), 'options'
-      );
+      return subscriberManager.current?.add(schemaState, accessPath, 'options');
 
     // There are no dependencies.
     if (!_.isArray(field?.deps)) return;
 
     // Subscribe to all the dependents.
     const unsubscribers = field.deps.map((dep) => (
-      schemaState.subscribe(
-        accessPath.concat(dep), () => setRefreshKey?.({id: Date.now()}),
-        'value'
+      subscriberManager.current?.add(
+        schemaState,  accessPath.concat(dep), 'value'
       )
     ));
 
     return () => {
-      unsubscribers.forEach(unsubscribe => unsubscribe());
+      unsubscribers.forEach(
+        unsubscribe => subscriberManager.current?.remove(unsubscribe)
+      );
     };
-  }, [key, schemaState?._id]);
+  });
 
   if (!field) return { visible: true };
   if (field.id) return schemaState?.options(accessPath);

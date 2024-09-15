@@ -10,16 +10,13 @@
 import { useEffect } from 'react';
 
 
-export const useFieldOptions = (
-  path, schemaState, key, setRefreshKey
-) => {
-  useEffect(() => {
-    if (!schemaState) return;
+export const useFieldOptions = (path, schemaState, subscriberManager) => {
 
-    return schemaState.subscribe(
-      path, () => setRefreshKey?.({id: Date.now()}), 'options'
-    );
-  }, [key, schemaState?._id]);
+  useEffect(() => {
+    if (!schemaState || !subscriberManager?.current) return;
+
+    return subscriberManager.current?.add(schemaState,  path, 'options');
+  });
 
   return schemaState?.options(path) || {visible: true};
 };

@@ -17,7 +17,7 @@ import { View, hasView } from '../registry';
 import { StaticMappedFormControl, MappedFormControl } from '../MappedControl';
 
 
-const DEFAULT_TAB = 'general';
+const DEFAULT_TAB = gettext('General');
 
 export const createFieldControls = ({
   schema, schemaState, accessPath, viewHelperProps, dataDispatch
@@ -50,13 +50,13 @@ export const createFieldControls = ({
   };
 
   // Create default group - 'General'.
-  createGroup(DEFAULT_TAB, gettext('General'), true);
+  createGroup(DEFAULT_TAB, DEFAULT_TAB, true);
 
   schema?.fields?.forEach((field) => {
     if (!isModeSupportedByField(field, viewHelperProps)) return;
 
     let inlineGroup = null;
-    const inlineGroupId = field[inlineGroup];
+    const inlineGroupId = field['inlineGroup'];
 
     if(field.type === 'group') {
 
