@@ -31,7 +31,7 @@ const StyledBox = styled(Box)(() => ({
 }));
 
 class UserManagementCollection extends BaseUISchema {
-  constructor(authSources, roleOptions) {
+  constructor() {
     super({
       id: undefined,
       username: undefined,
@@ -46,8 +46,14 @@ class UserManagementCollection extends BaseUISchema {
 
     this.authOnlyInternal = (current_user['auth_sources'].length  == 1 &&
       current_user['auth_sources'].includes(AUTH_METHODS['INTERNAL']));
-    this.authSources = authSources;
-    this.roleOptions = roleOptions;
+  }
+
+  setAuthSources(src) {
+    this.authSources = src;
+  }
+
+  setRoleOptions(src) {
+    this.roleOptions = src;
   }
 
   get idAttribute() {
@@ -113,13 +119,17 @@ class UserManagementCollection extends BaseUISchema {
           return obj.isEditable(state) && state.auth_source != AUTH_METHODS['INTERNAL'];
         }
       }, {
-        id: 'role', label: gettext('Role'), cell: 'select',
-        options: obj.roleOptions, minWidth: 95, width: 95,
-        controlProps: {
-          allowClear: false,
-          openOnEnter: false,
-          first_empty: false,
-        },
+        id: 'role', label: gettext('Role'),
+        cell: () => ({
+          cell: 'select',
+          options: obj.roleOptions,
+          controlProps: {
+            allowClear: false,
+            openOnEnter: false,
+            first_empty: false,
+          },
+        }),
+        minWidth: 95, width: 95,
         editable: (state)=> {
           return obj.isEditable(state);
         }
@@ -238,10 +248,18 @@ class UserManagementCollection extends BaseUISchema {
 }
 
 class UserManagementSchema extends BaseUISchema {
-  constructor(authSources, roleOptions) {
+  constructor() {
     super({refreshBrowserTree: false});
-    this.userManagementCollObj = new UserManagementCollection(authSources, roleOptions);
+    this.userManagementCollObj = new UserManagementCollection();
     this.changeOwnership = false;
+  }
+
+  setAuthSources(src) {
+    this.userManagementCollObj.setAuthSources(src);
+  }
+
+  setRoleOptions(src) {
+    this.userManagementCollObj.setRoleOptions(src);
   }
 
   deleteUser(deleteRow) {
@@ -317,8 +335,8 @@ function UserManagementDialog({onClose}) {
   const [authSources, setAuthSources] = React.useState([]);
   const [roles, setRoles] = React.useState([]);
   const api = getApiInstance();
-
-  const fetchData = async ()=>{
+  const schema = React.useRef(null);
+  const fetchData = async () => {
     try {
       api.get(url_for('user_management.auth_sources'))
         .then(res=>{
@@ -340,7 +358,7 @@ function UserManagementDialog({onClose}) {
     }
   };
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     fetchData();
   }, []);
 
@@ -382,27 +400,31 @@ function UserManagementDialog({onClose}) {
     value: m.value,
   }));
 
-  if(authSourcesOptions.length <= 0) {
-    return <></>;
-  }
-
-  const roleOptions = roles.map((m)=>({
+  const roleOptions = roles.map((m) => ({
     label: m.name,
     value: m.id,
   }));
+
+  if (!schema.current)
+    schema.current = new UserManagementSchema();
+
+  if(authSourcesOptions.length <= 0) {
+    return <></>;
+  }
 
   if(roleOptions.length <= 0) {
     return <></>;
   }
 
+  schema.current.setAuthSources(authSourcesOptions);
+  schema.current.setRoleOptions(roleOptions);
+
   const onDialogHelp = () => {
-    window.open(url_for('help.static', { 'filename': 'user_management.html' }), 'pgadmin_help');
+    window.open(
+      url_for('help.static', { 'filename': 'user_management.html' }),
+      'pgadmin_help'
+    );
   };
-
-  const schema = React.useRef(null);
-
-  if (!schema.current)
-    schema.current = new UserManagementSchema(authSourcesOptions, roleOptions);
 
   return <StyledBox><SchemaView
     formType={'dialog'}
