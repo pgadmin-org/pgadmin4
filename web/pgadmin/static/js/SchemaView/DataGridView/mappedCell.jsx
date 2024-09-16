@@ -39,8 +39,15 @@ export function getMappedCell({field}) {
     );
     let value = useFieldValue(colAccessPath, schemaState, subscriberManager);
     let rowValue = useFieldValue(rowAccessPath, schemaState);
+    const rerenderCellOnDepChange = (...args) => {
+      subscriberManager.current?.signal(...args);
+    };
 
-    listenDepChanges(colAccessPath, field, true, schemaState);
+
+    listenDepChanges(
+      colAccessPath, field, true, schemaState, rowValue,
+      rerenderCellOnDepChange
+    );
 
     if (!field.id) {
       console.error(`No id set for the field: ${field}`);
@@ -93,9 +100,13 @@ export function getMappedCell({field}) {
       props.cell = 'unknown';
     }
 
+    const memDeps = [
+      ...flatternObject(colOptions), value, row.index,
+      field?.deps?.map((dep) => rowValue[dep])
+    ];
+
     return useMemo(
-      () => <MappedCellControl {...props}/>,
-      [...flatternObject(colOptions), value, row.index]
+      () => <MappedCellControl {...props}/>, memDeps
     );
   };
 
