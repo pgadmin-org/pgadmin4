@@ -149,6 +149,9 @@ export function getSchemaDataDiff(
     };
 
     schema.fields.forEach((field) => {
+      // Never include data from the field in the changes, marked as
+      // 'excluded'.
+      if (field.exclude) return;
       /*
        * If skipChange is true, then field will not be considered for changed
        * data. This is helpful when 'Save' or 'Reset' should not be enabled on
