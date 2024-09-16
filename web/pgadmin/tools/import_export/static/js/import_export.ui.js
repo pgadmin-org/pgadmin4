@@ -200,16 +200,29 @@ export default class ImportExportSchema extends BaseUISchema {
         id: 'columns',
         label: gettext(this.colums_selection_label[this._type]),
         group: gettext('Columns'),
-        type: 'select',
-        options: obj.fieldOptions.columns,
-        optionsLoaded: (options) => {
-          obj.notNullColOptions = options.map((o) => {
-            return { ...o, selected: false };
-          });
-        },
-        controlProps:{multiple: true, allowClear: false,
-          placeholder: this._type === 'i' ? gettext('Columns for importing...') : gettext('Columns for exporting...'),
-        },
+        type: () => ({
+          type: 'select',
+          options: obj.fieldOptions.columns,
+          optionsLoaded: (options) => {
+            obj.notNullColOptions = options.map((o) => {
+              return { ...o, selected: false };
+            });
+
+            if (!obj.state) return;
+
+            const data = obj.state.data;
+            obj.state.data = {
+              ...data,
+              notNullColOptions: obj.notNullColOptions,
+            };
+          },
+          controlProps:{
+            multiple: true, allowClear: false,
+            placeholder:
+              this._type === 'i' ? gettext('Columns for importing...') :
+              gettext('Columns for exporting...'),
+          },
+        }),
         deps:['is_import'],
         depChange:(state)=>{
           this._type = state.is_import? 'i' : 'e';
@@ -220,19 +233,23 @@ export default class ImportExportSchema extends BaseUISchema {
         id: 'icolumns',
         label: gettext('NOT NULL columns'),
         group: gettext('Columns'),
-        deps: ['format', 'is_import'],
+        deps: ['format', 'is_import', 'notNullColOptions'],
         type: () => ({
           type: 'select',
           options: obj.notNullColOptions,
           optionsReloadBasis: obj.notNullColOptions.length,
           controlProps: {
-            multiple: true, allowClear: true, placeholder: gettext('Not null columns...'),
+            multiple: true, allowClear: true,
+            placeholder: gettext('Not null columns...'),
           },
         }),
         disabled:function(state){
           return (state?.format != 'csv' || !state?.is_import);
         },
         helpMessage: gettext('Do not match the specified column values against the null string. In the default case where the null string is empty, this means that empty values will be read as zero-length strings rather than nulls, even when they are not quoted. This option is allowed only in import, and only when using CSV format.'),
+      },
+      {
+        id: 'notNullColOptions', exclude: true, visible: false, type: 'text',
       }
     ];
   }
