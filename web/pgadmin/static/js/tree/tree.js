@@ -477,7 +477,7 @@ export class Tree {
     let result = {};
     if (identifier === undefined) return;
     let item = TreeNode.prototype.isPrototypeOf(identifier) ? identifier : this.findNode(identifier.path);
-    if (item === undefined) return;
+    if (!item) return;
     do {
       const currentNodeData = item.getData();
       if (currentNodeData._type in this.Nodes && this.Nodes[currentNodeData._type].hasId) {

@@ -611,7 +611,9 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
     const scrollXPos = scrollX || 0;
     const scrollYPos = scrollY || this.props.model.state.scrollOffset;
     const div = this.wrapperRef.current.querySelector('div').querySelector('div') as HTMLDivElement;
-    div.scroll(scrollXPos, scrollYPos);
+    if (div) {
+      div.scroll(scrollXPos, scrollYPos);
+    }
 
   };
 
