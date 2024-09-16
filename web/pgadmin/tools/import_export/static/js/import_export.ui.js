@@ -220,7 +220,7 @@ export default class ImportExportSchema extends BaseUISchema {
             multiple: true, allowClear: false,
             placeholder:
               this._type === 'i' ? gettext('Columns for importing...') :
-              gettext('Columns for exporting...'),
+                gettext('Columns for exporting...'),
           },
         }),
         deps:['is_import'],
