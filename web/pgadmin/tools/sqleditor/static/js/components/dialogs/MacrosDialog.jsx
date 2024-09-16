@@ -188,11 +188,11 @@ export default function MacrosDialog({onClose, onSave}) {
     value: m.id,
   }));
 
+  const schema = React.useRef(null);
+
   if(keyOptions.length <= 0) {
     return <></>;
   }
-
-  const schema = React.useRef(null);
 
   if (!schema.current)
     schema.current = new MacrosSchema(keyOptions);

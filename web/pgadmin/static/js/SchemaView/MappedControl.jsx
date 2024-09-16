@@ -363,8 +363,7 @@ export const MappedFormControl = ({
   };
 
   const depVals = listenDepChanges(
-    accessPath, field, options.visible, schemaState, state,
-    avoidRenderingWhenNotMounted
+    accessPath, field, schemaState, avoidRenderingWhenNotMounted
   );
 
   let newProps = {
