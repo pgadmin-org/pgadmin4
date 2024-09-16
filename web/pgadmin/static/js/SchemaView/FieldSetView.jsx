@@ -36,7 +36,9 @@ export default function FieldSetView({
 
   const label = field.label;
 
-  listenDepChanges(accessPath, field, options.visible, schemaState);
+  listenDepChanges(
+    accessPath, field, schemaState, () => subscriberManager.current?.signal()
+  );
 
   const fieldGroups = useMemo(
     () => createFieldControls({

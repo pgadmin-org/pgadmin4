@@ -70,7 +70,8 @@ export default function DataGridView({
     );
   }, [refreshKey]);
 
-  listenDepChanges(accessPath, field, options.visible, schemaState);
+  // We won't refresh the whole grid on dependent changes.
+  listenDepChanges(accessPath, field, schemaState);
 
   if (!features.current) {
     features.current = new FeatureSet();

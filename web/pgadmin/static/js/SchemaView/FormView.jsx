@@ -133,7 +133,9 @@ export default function FormView({
     }
   }, [isOnScreen]);
   
-  listenDepChanges(accessPath, field, visible, schemaState);
+  listenDepChanges(
+    accessPath, field, schemaState, () => subscriberManager.current?.signal()
+  );
 
   // Upon reset, set the tab to first.
   useEffect(() => {

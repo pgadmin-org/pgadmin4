@@ -14,7 +14,7 @@ import { evalFunc } from 'sources/utils';
 
 
 export const listenDepChanges = (
-  accessPath, field, visible, schemaState, data, setRefreshKey
+  accessPath, field, schemaState, setRefreshKey
 ) => {
   const deps = field?.deps ? (evalFunc(null, field.deps) || []) : null;
   const parentPath = accessPath ? [...accessPath] : [];
@@ -25,7 +25,7 @@ export const listenDepChanges = (
   }
 
   useEffect(() => {
-    if (!visible || !schemaState || !field) return;
+    if (!schemaState || !field) return;
 
     if(field.depChange || field.deferredDepChange) {
       schemaState.addDepListener(

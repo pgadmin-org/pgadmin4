@@ -28,8 +28,9 @@ export default function InlineView({
   const { visible } =
     accessPath ? useFieldOptions(accessPath, schemaState) : { visible: true };
 
+  // We won't rerender the InlineView on changes of the dependencies.
   if (!accessPath || isPropertyMode)
-    listenDepChanges(accessPath, field, visible, schemaState);
+    listenDepChanges(accessPath, field, schemaState);
 
   // Check whether form is kept hidden by visible prop.
   // We don't support inline-view in 'property' mode

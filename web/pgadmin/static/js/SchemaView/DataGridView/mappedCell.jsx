@@ -43,10 +43,8 @@ export function getMappedCell({field}) {
       subscriberManager.current?.signal(...args);
     };
 
-
     listenDepChanges(
-      colAccessPath, field, true, schemaState, rowValue,
-      rerenderCellOnDepChange
+      colAccessPath, field, schemaState, rerenderCellOnDepChange
     );
 
     if (!field.id) {
