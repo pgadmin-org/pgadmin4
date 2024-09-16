@@ -220,13 +220,15 @@ export default class ImportExportSchema extends BaseUISchema {
         id: 'icolumns',
         label: gettext('NOT NULL columns'),
         group: gettext('Columns'),
-        type: 'select',
         deps: ['format', 'is_import'],
-        options: obj.notNullColOptions,
-        optionsReloadBasis: obj.notNullColOptions.length,
-        controlProps: {
-          multiple: true, allowClear: true, placeholder: gettext('Not null columns...'),
-        },
+        type: () => ({
+          type: 'select',
+          options: obj.notNullColOptions,
+          optionsReloadBasis: obj.notNullColOptions.length,
+          controlProps: {
+            multiple: true, allowClear: true, placeholder: gettext('Not null columns...'),
+          },
+        }),
         disabled:function(state){
           return (state?.format != 'csv' || !state?.is_import);
         },
