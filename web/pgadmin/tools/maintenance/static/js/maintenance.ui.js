@@ -395,6 +395,7 @@ export default class MaintenanceSchema extends BaseUISchema {
         label: gettext('Type of objects'),
         schema: obj.getVacuumSchema(),
         group: gettext('Options'),
+        deps: ['op'],
         visible: function(state) {
           if (state?.op == 'ANALYZE') {
             return obj?.nodeInfo?.server?.version >= 120000;
