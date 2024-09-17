@@ -55,7 +55,7 @@ class GoogleCredSchema extends BaseUISchema{
         disabled: (state)=>{
           return !state.client_secret_file;
         },
-        onClick: (...args) => {
+        onClick: () => {
           const schemaState = obj.state;
           if (!schemaState) return;
 
@@ -71,7 +71,7 @@ class GoogleCredSchema extends BaseUISchema{
                 // FIXME:: Show error message.
                 console.error(
                   err instanceof Error ?
-                  err : Error(gettext('Something went wrong'))
+                    err : Error(gettext('Something went wrong'))
                 );
               });
           }, 0);

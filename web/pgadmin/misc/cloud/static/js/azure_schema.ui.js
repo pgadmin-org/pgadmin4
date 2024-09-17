@@ -101,7 +101,7 @@ class AzureCredSchema extends BaseUISchema {
         helpMessage: gettext(
           'After clicking the button above you will be redirected to the Microsoft Azure authentication page in a new browser tab if the Interactive Browser option is selected.'
         ),
-        onClick: (...args) => {
+        onClick: () => {
           const schemaState = obj.state;
           if (!schemaState) return;
 
@@ -125,7 +125,7 @@ class AzureCredSchema extends BaseUISchema {
               // TODO:: Show error message.
               console.error(
                 err instanceof Error ?
-                err : Error(gettext('Something went wrong'))
+                  err : Error(gettext('Something went wrong'))
               );
             });
           }, 0);
