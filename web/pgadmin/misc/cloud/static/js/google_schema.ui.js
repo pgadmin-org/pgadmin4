@@ -55,33 +55,30 @@ class GoogleCredSchema extends BaseUISchema{
         disabled: (state)=>{
           return !state.client_secret_file;
         },
-        deferredDepChange: (state, source)=>{
-          return new Promise((resolve, reject)=>{
-            /* button clicked */
-            if(source == 'auth_btn') {
-              obj.fieldOptions.authenticateGoogle(state.client_secret_file)
-                .then((apiRes)=>{
-                  resolve(()=>{
-                    if(apiRes){
-                      obj.fieldOptions.verification_ack()
-                        .then(()=>{
-                          resolve();
-                        })
-                        .catch((err)=>{
-                          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-                        });
-                    }
-                  });
-                })
-                .catch((err)=>{
-                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-                });
-            }
-          });
-        }
-      }
-    ];}
+        onClick: (...args) => {
+          const schemaState = obj.state;
+          if (!schemaState) return;
 
+          const state = schemaState.data;
+
+          setTimeout(() => {
+            obj.fieldOptions.authenticateGoogle(state.client_secret_file)
+              .then((apiRes) => {
+                if(apiRes) {
+                  obj.fieldOptions.verification_ack();
+                }
+              }).catch((err) => {
+                // FIXME:: Show error message.
+                console.error(
+                  err instanceof Error ?
+                  err : Error(gettext('Something went wrong'))
+                );
+              });
+          }, 0);
+        },
+      },
+    ];
+  }
 }
 
 class GoogleProjectDetailsSchema extends BaseUISchema {

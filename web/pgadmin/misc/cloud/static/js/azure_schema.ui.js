@@ -101,31 +101,34 @@ class AzureCredSchema extends BaseUISchema {
         helpMessage: gettext(
           'After clicking the button above you will be redirected to the Microsoft Azure authentication page in a new browser tab if the Interactive Browser option is selected.'
         ),
-        depChange: (state, source)=> {
-          if(source == 'auth_type' || source == 'azure_tenant_id'){
-            return {is_authenticated: false, auth_code: ''};
-          }
-          if(source == 'auth_btn') {
-            return {is_authenticating: true};
-          }
-        },
-        deferredDepChange: (state, source)=>{
-          return new Promise((resolve, reject)=>{
-            /* button clicked */
-            if(source == 'auth_btn') {
-              obj.fieldOptions.authenticateAzure(state.auth_type, state.azure_tenant_id)
-                .then(()=>{
-                  resolve(()=>({
-                    is_authenticated: true,
-                    is_authenticating: false,
-                    auth_code: ''
-                  }));
-                })
-                .catch((err)=>{
-                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-                });
-            }
-          });
+        onClick: (...args) => {
+          const schemaState = obj.state;
+          if (!schemaState) return;
+
+          const state = schemaState.data;
+          const setSchemaData = (data) => {
+            schemaState.data = {...schemaState.data, ...data};
+          };
+
+          setTimeout(() => {
+            setSchemaData({is_authenticating: true});
+
+            obj.fieldOptions.authenticateAzure(
+              state.auth_type, state.azure_tenant_id
+            ).then(() => {
+              setSchemaData({
+                is_authenticated: true,
+                is_authenticating: false,
+                auth_code: ''
+              });
+            }).catch((err) => {
+              // TODO:: Show error message.
+              console.error(
+                err instanceof Error ?
+                err : Error(gettext('Something went wrong'))
+              );
+            });
+          }, 0);
         },
         disabled: (state)=> {
           if(state.auth_type == 'interactive_browser_credential' && state.azure_tenant_id == ''){
