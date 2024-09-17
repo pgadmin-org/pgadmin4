@@ -76,7 +76,7 @@ export const createFieldControls = ({
 
       const { visible } = schemaState.options(accessPath.concat(field.id));
       currentGroup = createGroup(
-        field.id, field.label, visible, field, true
+        field.id, field.label || field.group, visible, field, true
       );
     } else {
       const { group } = field;
