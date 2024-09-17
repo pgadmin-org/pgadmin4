@@ -100,11 +100,6 @@ export function getMappedCell({field}) {
       props.cell = 'unknown';
     }
 
-    const memDeps = [
-      ...flatternObject(colOptions), value, row.index,
-      field?.deps?.map((dep) => rowValue[dep])
-    ];
-
     return useMemo(
       () => <MappedCellControl {...props}/>,
       [...(depVals || []), ...flatternObject(colOptions), value, row.index]
