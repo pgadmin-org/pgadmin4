@@ -36,6 +36,19 @@ const StyledBox = styled(Box)(({theme}) => ({
   '& .DataGridFormHeader-border': {
     ...theme.mixins.panelBorder,
     borderBottom: 0,
+    '& .DataGridFormHeader-gridHeader': {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    '& .DataGridView-gridHeaderText': {
+      padding: theme.spacing(0.5, 1),
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    '& .DataGridFormHeader-gridHeader-search': {
+      flex: 1,
+      padding: 0,
+      display: 'flex',
+    },
     '& .DataGridFormHeader-body': {
       padding: '0',
       backgroundColor: theme.palette.grey[400],
@@ -125,9 +138,9 @@ export function DataGridFormHeader({tableEleRef}) {
   return (
     <StyledBox>
       <Box className='DataGridFormHeader-border'>
-        <Box className='DataGridView-gridHeader'>
+        <Box className='DataGridFormHeader-gridHeader'>
           {label && <Box className='DataGridView-gridHeaderText'>{label}</Box>}
-          <Box className='DataGridView-gridHeaderText' style={{flex: 1}}>
+          <Box className='DataGridFormHeader-gridHeader-search'>
             <SearchBox/>
           </Box>
         </Box>

@@ -16,14 +16,15 @@ class TokenHeaderSchema extends BaseUISchema {
   constructor(tokenOptions) {
     super({
       token: undefined,
+      isNew: false,
     });
 
     this.tokenOptions = tokenOptions;
-    this.isNewFTSConf = true;
   }
 
-  addDisabled() {
-    return this.isNewFTSConf;
+  set isNewFTSConf(flag) {
+    if (!this.state) return;
+    this.state.data = {...this.state.data, isNew: flag};
   }
 
   getNewData(data) {
@@ -36,8 +37,14 @@ class TokenHeaderSchema extends BaseUISchema {
   get baseFields() {
     let obj = this;
     return [{
-      id: 'token', label: gettext('Tokens'), type:'select', editable: false,
-      options: this.tokenOptions, disabled: function() { return obj.isNewFTSConf; }
+      id: 'token', label: gettext('Tokens'), deps: ['isNew'],
+      type: () => ({
+        type: 'select',
+        options: this.tokenOptions,
+      }),
+      disabled: function() { return obj.isNewFTSConf; }
+    }, {
+      id: 'isNew', visible: false, type: 'text',
     }];
   }
 }
