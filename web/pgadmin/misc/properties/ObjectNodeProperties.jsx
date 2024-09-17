@@ -242,6 +242,10 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
     return nodeData?._id + '-' + staleCounter.current;
   }, [isActive, nodeData?._id, isStale]);
 
+  if(!isActive && actionType == 'properties') {
+    return <></>;
+  }
+
   /* Fire at will, mount the DOM */
   return (
     <SchemaView
