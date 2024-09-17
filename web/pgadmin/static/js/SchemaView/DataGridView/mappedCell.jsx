@@ -43,7 +43,8 @@ export function getMappedCell({field}) {
       subscriberManager.current?.signal(...args);
     };
 
-    listenDepChanges(
+    
+    const depVals = listenDepChanges(
       colAccessPath, field, schemaState, rerenderCellOnDepChange
     );
 
@@ -98,13 +99,9 @@ export function getMappedCell({field}) {
       props.cell = 'unknown';
     }
 
-    const memDeps = [
-      ...flatternObject(colOptions), value, row.index,
-      field?.deps?.map((dep) => rowValue[dep])
-    ];
-
     return useMemo(
-      () => <MappedCellControl {...props}/>, memDeps
+      () => <MappedCellControl {...props}/>,
+      [...(depVals || []), ...flatternObject(colOptions), value, row.index]
     );
   };
 
