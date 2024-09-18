@@ -16,15 +16,15 @@ class TokenHeaderSchema extends BaseUISchema {
   constructor(tokenOptions) {
     super({
       token: undefined,
-      isNew: false,
+      isNew: true,
     });
 
     this.tokenOptions = tokenOptions;
   }
 
   set isNewFTSConf(flag) {
-    if (!this.state) return;
-    this.state.data = {...this.state.data, isNew: flag};
+    if (this.state)
+      this.state.data = {...this.state.data, isNew: flag};
   }
 
   getNewData(data) {
@@ -35,16 +35,17 @@ class TokenHeaderSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    let obj = this;
     return [{
       id: 'token', label: gettext('Tokens'), deps: ['isNew'],
       type: () => ({
         type: 'select',
         options: this.tokenOptions,
       }),
-      disabled: function() { return obj.isNewFTSConf; }
-    }, {
-      id: 'isNew', visible: false, type: 'text',
+      disabled: function() {
+        return this.state ? this.state.data.isNew : true;
+      }
+    },{
+      id: 'isNew', visible: false, type: 'text', exclude: true,
     }];
   }
 }
@@ -160,12 +161,13 @@ export default class FTSConfigurationSchema extends BaseUISchema {
       }, {
         id: 'tokens', label: '', type: 'collection',
         group: gettext('Tokens'), mode: ['create','edit'],
-        editable: false, schema: this.tokColumnSchema,
+        schema: this.tokColumnSchema,
         headerSchema: this.tokHeaderSchema,
         headerFormVisible: true,
         GridHeader: DataGridFormHeader,
         uniqueCol : ['token'],
-        canAdd: true, canEdit: false, canDelete: true,
+        canAdd: (state, helpderProps) => (helpderProps.mode !== 'create'),
+        canDelete: true,
       }
     ];
   }

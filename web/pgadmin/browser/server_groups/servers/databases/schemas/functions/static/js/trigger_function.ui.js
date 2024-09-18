@@ -161,10 +161,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         type: 'sql', isFullTab: true,
         mode: ['properties', 'create', 'edit'],
         group: gettext('Code'), deps: ['lanname'],
-        visible: (state) => {
-          return state.lanname !== 'c';
-        },
-        disabled: obj.isDisabled, readonly: obj.isReadonly,
+        readonly: (state) => (obj.isDisabled() || state.lanname === 'c'),
       },{
         id: 'probin', label: gettext('Object file'), cell: 'string',
         type: 'text', group: gettext('Definition'), deps: ['lanname'],
@@ -260,8 +257,8 @@ export default class TriggerFunctionSchema extends BaseUISchema {
 
     if (isEmptyString(state.service)) {
 
-      /* code validation*/
-      if (isEmptyString(state.prosrc)) {
+      /* code validation */
+      if (isEmptyString(state.prosrc) && state.lanname !== 'c') {
         errmsg = gettext('Code cannot be empty.');
         setError('prosrc', errmsg);
         return true;
