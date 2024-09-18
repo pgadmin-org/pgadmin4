@@ -115,6 +115,17 @@ function showErrorDialog(intervalID) {
   }).loadFile('./src/html/server_error.html');
 }
 
+function reloadApp() {
+  const currWin = BrowserWindow.getFocusedWindow();
+
+  const preventUnload = (event) => {
+    event.preventDefault();
+    currWin.webContents.off('will-prevent-unload', preventUnload);
+  };
+  currWin.webContents.on('will-prevent-unload', preventUnload)
+  currWin.webContents.reload();
+}
+
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
@@ -287,6 +298,7 @@ function launchPgAdminWindow() {
       });
     },
     'configure': openConfigure,
+    'reloadApp': reloadApp,
   });
 
   pgAdminMainScreen.loadURL(startPageUrl);
@@ -353,9 +365,10 @@ ipcMain.on('restartApp', ()=>{
   app.relaunch();
   app.exit(0);
 });
-ipcMain.handle('log', (text) => ()=>{
+ipcMain.on('log', (text) => ()=>{
   misc.writeServerLog(text);
 });
+ipcMain.on('reloadApp', reloadApp);
 ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
   try {
     await misc.getAvailablePort(fixedPort);

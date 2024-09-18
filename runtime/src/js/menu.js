@@ -75,7 +75,7 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
     {
       label: 'View',
       submenu: [
-        { label: 'Reload', click: ()=>BrowserWindow.getFocusedWindow().webContents.reload()},
+        { label: 'Reload', click: callbacks['reloadApp']},
         { label: 'Toggle Developer Tools', click: ()=>BrowserWindow.getFocusedWindow().webContents.openDevTools({ mode: 'bottom' })},
         { type: 'separator' },
         { role: 'resetZoom' },

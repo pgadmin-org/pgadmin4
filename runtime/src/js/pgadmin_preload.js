@@ -23,4 +23,5 @@ contextBridge.exposeInMainWorld('electronUI', {
   showOpenDialog: (options) => ipcRenderer.invoke('showOpenDialog', options),
   showSaveDialog: (options) => ipcRenderer.invoke('showSaveDialog', options),
   log: (text)=> ipcRenderer.send('log', text),
+  reloadApp: ()=>{ipcRenderer.send('reloadApp');},
 });

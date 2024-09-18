@@ -31,10 +31,11 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #6502 <https://github.com/pgadmin-org/pgadmin4/issues/6502>`_ -  Fix the query tool restore connection issue on the server disconnection from the left side object explorer. 
+  | `Issue #6502 <https://github.com/pgadmin-org/pgadmin4/issues/6502>`_ -  Fix the query tool restore connection issue on the server disconnection from the left side object explorer.
   | `Issue #7076 <https://github.com/pgadmin-org/pgadmin4/issues/7076>`_ -  Revamp the current password saving implementation to a keyring and reduce repeated OS user password prompts.
   | `Issue #7571 <https://github.com/pgadmin-org/pgadmin4/issues/7571>`_ -  Fixed an issue where users could not use pgAdmin if they did not have access to the management database.
   | `Issue #7811 <https://github.com/pgadmin-org/pgadmin4/issues/7811>`_ -  Fixed an issue where servers listed in the servers.json file were being reimported upon container restart.
   | `Issue #7839 <https://github.com/pgadmin-org/pgadmin4/issues/7839>`_ -  Added support for OIDC based OAuth2 authentication.
   | `Issue #7878 <https://github.com/pgadmin-org/pgadmin4/issues/7878>`_ -  Fixed an issue where cursor moves to end of line when editing input fields.
+  | `Issue #7890 <https://github.com/pgadmin-org/pgadmin4/issues/7890>`_ -  Fixed an issue where "Quit App" confirmation modal in desktop app is not respecting "Confirm on close or refresh?".
   | `Issue #7895 <https://github.com/pgadmin-org/pgadmin4/issues/7895>`_ -  Fixed an issue where different client backend shows all SQL are same.
