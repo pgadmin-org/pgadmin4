@@ -67,13 +67,23 @@ export default function withStandardTabInfo(Component, tabId) {
       };
     }, []);
 
+    ////////
+    // Special case:
+    //
+    // When the tree is being recreated during reloading on changes of some
+    // preferences, it is possible that the tree returns 'selected' node, but -
+    // it does not have the 'treeNodeInfo' as it was actually part of the
+    // previous instance of the tree.
+    //
+    // In that case - we consider that there is no node selected in the tree.
+    ///////
     return (
       <ErrorBoundary>
         <Component
           {...props}
-          nodeItem={nodeItem}
-          nodeData={nodeData}
-          node={node}
+          nodeItem={treeNodeInfo ? nodeItem : undefined}
+          nodeData={treeNodeInfo ? nodeData : undefined}
+          node={treeNodeInfo ? node : undefined}
           treeNodeInfo={treeNodeInfo}
           isActive={isActive}
           isStale={isStale}
