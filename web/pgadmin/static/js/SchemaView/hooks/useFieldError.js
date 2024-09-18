@@ -9,9 +9,7 @@
 
 import { useEffect } from 'react';
 
-const convertKeysToString = (arr) => {
-  return (arr||[]).map((key) => String(key))
-};
+const convertKeysToString = (arr) => (arr||[]).map((key) => String(key));
 const isPathEqual = (path1, path2) => (
   Array.isArray(path1) &&
   Array.isArray(path2) &&

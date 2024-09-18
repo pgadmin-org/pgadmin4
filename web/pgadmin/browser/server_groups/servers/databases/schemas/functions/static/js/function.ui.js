@@ -159,33 +159,21 @@ export default class FunctionSchema extends BaseUISchema {
     }
   }
 
-  isGreaterThan95(state){
-    if (
+  isLessThan95ORNonSPL(state) {
+    return (
+      this.inCatalog() ||
       this.node_info['node_info'].server.version < 90500 ||
       this.node_info['node_info']['server'].server_type != 'ppas' ||
       state.lanname != 'edbspl'
-    ) {
-      state.provolatile = null;
-      state.proisstrict = false;
-      state.procost = null;
-      state.proleakproof = false;
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
 
-  isGreaterThan96(state){
-    if (
+  isLessThan96ORNonSPL(state){
+    return (
       this.node_info['node_info'].server.version < 90600 ||
       this.node_info['node_info']['server'].server_type != 'ppas' ||
       state.lanname != 'edbspl'
-    ) {
-      state.proparallel = null;
-      return true;
-    } else {
-      return false;
-    }
+    );
   }
 
 
@@ -210,7 +198,7 @@ export default class FunctionSchema extends BaseUISchema {
         if (this.type !== 'procedure') {
           obj.inCatalog(state);
         } else {
-          obj.isGreaterThan95(state);
+          obj.isLessThan95ORNonSPL(state);
         }
       },
       noEmpty: true,
@@ -328,7 +316,7 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'VOLATILE', 'value': 'v'},
         {'label': 'STABLE', 'value': 's'},
         {'label': 'IMMUTABLE', 'value': 'i'},
-      ], disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isGreaterThan95,
+      ], disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isLessThan95ORNonSPL,
       controlProps: {allowClear: false},
     },{
       id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
@@ -336,8 +324,22 @@ export default class FunctionSchema extends BaseUISchema {
       visible: obj.isVisible, readonly: obj.isReadonly,
     },{
       id: 'proisstrict', label: gettext('Strict?'), type: 'switch',
-      group: gettext('Options'), disabled: obj.inCatalog(),
+      group: gettext('Options'),
+      disabled: obj.inCatalog() ? true : obj.isLessThan95ORNonSPL,
       deps: ['lanname'],
+      depChange: (state, source) => (
+        (source[source.length - 1] !== 'lanname') ? undefined : (
+          obj.isLessThan95ORNonSPL(state)
+        ) ? {
+          provolatile: null,
+          proisstrict: false,
+          procost: null,
+          proleakproof: false,
+          proparallel: null,
+        } : (
+          obj.isLessThan95ORNonSPL(state) ? { proparallel: null } : undefined
+        )
+      ),
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
       group: gettext('Options'), type: 'switch',
@@ -357,13 +359,13 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'RESTRICTED', 'value': 'r'},
         {'label': 'SAFE', 'value': 's'},
       ],
-      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan96,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isLessThan96ORNonSPL,
       min_version: 90600,
       controlProps: {allowClear: false},
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: (this.type !== 'procedure') ? obj.isDisabled: obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.isDisabled : obj.isLessThan95ORNonSPL,
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
@@ -378,7 +380,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'proleakproof', label: gettext('Leak proof?'),
       group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isLessThan95ORNonSPL,
       deps: ['lanname'],
     },{
       id: 'prosupportfunc', label: gettext('Support function'),
