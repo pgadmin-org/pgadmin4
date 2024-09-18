@@ -363,10 +363,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           connected_once: true,
           obtaining_conn: false,
         });
-
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
-        let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
-        pgAdmin.Browser.notifier.success(_.escape(msg));
+        if(!qtState.params.is_query_tool) {
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
+          let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
+          pgAdmin.Browser.notifier.success(_.escape(msg));
+        }
       }).catch((error)=>{
         if(error.response?.request?.responseText?.search('Ticket expired') !== -1) {
           Kerberos.fetch_ticket()
