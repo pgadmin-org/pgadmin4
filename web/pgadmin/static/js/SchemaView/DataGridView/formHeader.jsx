@@ -77,7 +77,7 @@ export function DataGridFormHeader({tableEleRef}) {
     viewHelperProps,
   } = useContext(DataGridContext);
   const {
-    addOnTop, canAddRow, canEdit, expandEditOnAdd, headerFormVisible
+    canAdd, addOnTop, canAddRow, canEdit, expandEditOnAdd, headerFormVisible
   } = options;
   const rows = table.getRowModel().rows;
 
@@ -85,8 +85,12 @@ export function DataGridFormHeader({tableEleRef}) {
   const newRowIndex = useRef(-1);
   const schemaState = useContext(SchemaStateContext);
   const headerFormData = useRef({});
-  const [addDisabled, setAddDisabled] = useState(canAddRow);
+  const [addDisabled, setAddDisabled] = useState(!canAdd || !canAddRow);
   const {headerSchema} = field;
+  const disableAddButton = (flag) => {
+    if (!canAdd || !canAddRow) return;
+    setAddDisabled(flag);
+  };
 
   const onAddClick = useCallback(() => {
 
@@ -154,8 +158,8 @@ export function DataGridFormHeader({tableEleRef}) {
             showFooter={false}
             onDataChange={(isDataChanged, dataChanged)=>{
               headerFormData.current = dataChanged;
-              setAddDisabled(
-                canAddRow && headerSchema.addDisabled(headerFormData.current)
+              disableAddButton(
+                headerSchema.addDisabled(headerFormData.current)
               );
             }}
             hasSQL={false}
