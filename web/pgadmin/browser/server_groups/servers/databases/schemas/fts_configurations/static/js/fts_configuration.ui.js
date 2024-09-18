@@ -35,14 +35,13 @@ class TokenHeaderSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    let obj = this;
     return [{
       id: 'token', label: gettext('Tokens'), deps: ['isNew'],
       type: () => ({
         type: 'select',
         options: this.tokenOptions,
       }),
-      disabled: function(state) {
+      disabled: function() {
         return this.state ? this.state.data.isNew : true;
       }
     },{
@@ -167,9 +166,7 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         headerFormVisible: true,
         GridHeader: DataGridFormHeader,
         uniqueCol : ['token'],
-        canAdd: (state, viewHelpderProps) => {
-          return viewHelpderProps.mode !== 'create'
-        },
+        canAdd: (state, helpderProps) => (helpderProps.mode !== 'create'),
         canDelete: true,
       }
     ];
