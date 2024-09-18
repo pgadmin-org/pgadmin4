@@ -9,8 +9,12 @@
 
 import { useEffect } from 'react';
 
-const convertKeysToString = (arr) => (arr||[]).map((key) => String(key));
+const convertKeysToString = (arr) => {
+  return (arr||[]).map((key) => String(key))
+};
 const isPathEqual = (path1, path2) => (
+  Array.isArray(path1) &&
+  Array.isArray(path2) &&
   JSON.stringify(convertKeysToString(path1)) ===
   JSON.stringify(convertKeysToString(path2))
 );
@@ -39,7 +43,9 @@ export const useFieldError = (path, schemaState, subscriberManager) => {
   });
 
   const errors = schemaState?.errors || {};
-  const error = isPathEqual(errors.name, path) ? errors.message : null;
+  const error = (
+    Array.isArray(errors.name) && isPathEqual(errors.name, path)
+  ) ? errors.message : null;
 
   return {hasError: !_.isNull(error), error};
 };
