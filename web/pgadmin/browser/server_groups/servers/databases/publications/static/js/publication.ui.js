@@ -116,7 +116,6 @@ export class PublicationTableSchema extends BaseUISchema {
         deps:['table_name'],
         disabled: (state) => !obj.isTableName(state),
         depChange: (state) => {
-          debugger;
           if(!state.table_name) {
             return {
               columns: [],

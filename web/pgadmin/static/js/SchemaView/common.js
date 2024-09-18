@@ -7,8 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { evalFunc } from 'sources/utils';
-
 
 export function generateTimeBasedRandomNumberString() {
   return new Date().getTime() + '' +  Math.floor(Math.random() * 1000001);
