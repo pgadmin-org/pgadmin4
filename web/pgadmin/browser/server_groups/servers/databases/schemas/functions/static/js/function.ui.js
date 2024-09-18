@@ -331,14 +331,14 @@ export default class FunctionSchema extends BaseUISchema {
         (source[source.length - 1] !== 'lanname') ? undefined : (
           obj.isLessThan95ORNonSPL(state)
         ) ? {
-          provolatile: null,
-          proisstrict: false,
-          procost: null,
-          proleakproof: false,
-          proparallel: null,
-        } : (
-          obj.isLessThan95ORNonSPL(state) ? { proparallel: null } : undefined
-        )
+            provolatile: null,
+            proisstrict: false,
+            procost: null,
+            proleakproof: false,
+            proparallel: null,
+          } : (
+            obj.isLessThan95ORNonSPL(state) ? { proparallel: null } : undefined
+          )
       ),
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
