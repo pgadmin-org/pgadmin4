@@ -101,6 +101,7 @@ export default function FormView({
         'select:not(disabled)',
         'textarea',
         '[tabindex]:not([tabindex="-1"]):not([data-test="tabpanel"])',
+        'div[class="cm-content"]:not([aria-readonly="true"])',
       ].join(', '));
 
       if (firstFocussableElement) firstFocussableElement.focus();

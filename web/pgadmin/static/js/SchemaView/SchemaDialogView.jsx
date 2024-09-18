@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
@@ -47,6 +47,7 @@ export default function SchemaDialogView({
 }) {
   // View helper properties
   const onDataChange  = props.onDataChange;
+  const [resetKey, setResetKey] = useState(0);
 
   // Schema data state manager
   const {schemaState, dataDispatch, reset} = useSchemaState({
@@ -54,6 +55,11 @@ export default function SchemaDialogView({
     viewHelperProps: viewHelperProps, onDataChange: onDataChange,
     loadingText,
   });
+
+  const resetView = () => {
+    reset();
+    setResetKey(Date.now());
+  };
 
   // Is saving operation in progress?
   const setSaving = (val) => schemaState.isSaving = val;
@@ -68,26 +74,13 @@ export default function SchemaDialogView({
   const Notifier = props.Notifier || pgAdmin.Browser.notifier;
 
   useEffect(() => {
-    /*
-     * Docker on load focusses itself, so our focus should execute later.
-     */
-    let focusTimeout = setTimeout(()=>{
-    }, 250);
-
-    // Clear the focus timeout if unmounted.
-    return () => {
-      clearTimeout(focusTimeout);
-    };
-  }, []);
-
-  useEffect(()=>{
     if (!props.resetKey) return;
-    reset();
+    resetView();
   }, [props.resetKey]);
 
   const onResetClick = () => {
     const resetIt = () => {
-      reset();
+      resetView();
       return true;
     };
 
@@ -194,7 +187,7 @@ export default function SchemaDialogView({
             hasSQLTab={props.hasSQL} getSQLValue={getSQLValue}
             isTabView={isTabView}
             className={props.formClassName}
-            showError={true} resetKey={props.resetKey}
+            showError={true} resetKey={resetKey}
             focusOnFirstInput={true}
           />
         </Box>
@@ -235,7 +228,7 @@ export default function SchemaDialogView({
           </Box>
         }
       </SchemaStateContext.Provider>
-    </StyledBox>, [schema._id, viewHelperProps.mode]
+    </StyledBox>, [schema._id, viewHelperProps.mode, resetKey]
   );
 }
 

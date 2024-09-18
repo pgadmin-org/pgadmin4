@@ -13,10 +13,15 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class RuleSchema extends BaseUISchema {
   constructor(fieldOptions={}) {
+    const schemaNode = fieldOptions?.nodeInfo['schema'];
+    const schema = schemaNode?.label || '';
+    const view = fieldOptions?.nodeData?.label;
+
     super({
       oid: undefined,
       name: undefined,
-      schema: undefined
+      schema: schema,
+      view: view,
     });
 
     this.fieldOptions = {
@@ -42,7 +47,11 @@ export default class RuleSchema extends BaseUISchema {
           if (state.name == '_RETURN') {
             return true;
           }
-          return !(obj.isNew(state) || obj.fieldOptions.nodeInfo.server.version >= 90400);
+
+          return !(
+            obj.isNew(state) ||
+            obj.fieldOptions.nodeInfo.server.version >= 90400
+          );
         }, noEmpty: true
       },
       {
@@ -50,25 +59,18 @@ export default class RuleSchema extends BaseUISchema {
         type: 'text', mode: ['properties'],
       },
       {
-        id: 'schema', label:'',
-        type: 'text', visible: false, disabled: (state) => {
-          // It is used while generating sql
-          state.schema = ('schema' in obj.fieldOptions.nodeInfo) ? obj.fieldOptions.nodeInfo.schema.label : '';
-        },
+        id: 'schema', label:'', type: 'text', visible: false,
       },
       {
-        id: 'view', label:'',
-        type: 'text', visible: false, disabled: (state) => {
-          // It is used while generating sql
-          state.view = obj.fieldOptions.nodeData.label;
-        },
+        id: 'view', label:'', type: 'text', visible: false,
       },
       {
         id: 'is_enable_rule', label: gettext('Rule enabled?'),
         mode: ['edit', 'properties'], group: gettext('Definition'),
         type: 'select',
         disabled: () => {
-          return 'catalog' in obj.fieldOptions.nodeInfo || 'view' in obj.fieldOptions.nodeInfo;
+          return 'catalog' in obj.fieldOptions.nodeInfo ||
+            'view' in obj.fieldOptions.nodeInfo;
         },
         options: [
           {label: gettext('Enable'), value: 'O'},
@@ -90,13 +92,12 @@ export default class RuleSchema extends BaseUISchema {
         ],
       },
       {
-        id: 'do_instead', label: gettext('Do instead?'), group: gettext('Definition'),
-        type: 'switch',
+        id: 'do_instead', label: gettext('Do instead?'), type: 'switch',
+        group: gettext('Definition'),
       },
       {
         id: 'condition', label: gettext('Condition'),
         type: 'sql', isFullTab: true, group: gettext('Condition'),
-
       },
       {
         id: 'statements', label: gettext('Commands'),
@@ -107,7 +108,8 @@ export default class RuleSchema extends BaseUISchema {
         type: 'switch', mode: ['properties'],
       },
       {
-        id: 'comment', label: gettext('Comment'), cell: 'text', type: 'multiline',
+        id: 'comment', label: gettext('Comment'), cell: 'text',
+        type: 'multiline',
       },
     ];
   }
