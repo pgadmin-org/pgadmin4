@@ -236,7 +236,11 @@ export function useBeforeUnload({ enabled, isNewTab, beforeClose, closePanel }) 
 
   useEffect(()=>{
     if(getBrowser().name == 'Electron'  && isNewTab) {
-      window.addEventListener('beforeunload', onBeforeUnloadElectron);
+      if(enabled) {
+        window.addEventListener('beforeunload', onBeforeUnloadElectron);
+      } else {
+        window.removeEventListener('beforeunload', onBeforeUnloadElectron);
+      }
     } else if(getBrowser().name != 'Electron') {
       if(enabled){
         window.addEventListener('beforeunload', onBeforeUnload);

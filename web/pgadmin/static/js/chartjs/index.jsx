@@ -112,7 +112,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
   }, []);
 
   useEffect(()=>{
-    let theme1 = {
+    let scaleColors = {
       scales: {
         x: {
           ticks: {
@@ -130,7 +130,11 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
         },
       },
     };
-    let merged = _.merge(options, theme1);
+    let merged = options;
+    // Override only if scales are actually defined.
+    if(options.scales && Object.keys(options.scales).length > 0) {
+      merged = _.merge(options, scaleColors);
+    }
     chartObj.current.options = merged;
     chartObj.current.update(props.updateOptions || {});
   },[theme]);
@@ -213,7 +217,7 @@ export function PieChart({options, ...props}) {
   let optionsMerged = _.merge({
     responsive: true,
     maintainAspectRatio: false,
-    normalized: true
+    normalized: true,
   }, options);
   return (
     <BaseChart {...props} options={optionsMerged} type='pie'/>

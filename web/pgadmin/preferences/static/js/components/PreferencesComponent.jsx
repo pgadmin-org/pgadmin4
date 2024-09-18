@@ -26,6 +26,7 @@ import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/j
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
 import usePreferences from '../store';
+import { getBrowser } from '../../../../static/js/utils';
 
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -107,6 +108,16 @@ class PreferencesSchema extends BaseUISchema {
 
   get baseFields() {
     return this.schemaFields;
+  }
+}
+
+async function reloadPgAdmin() {
+  let {name: browser} = getBrowser();
+  if(browser == 'Electron') {
+    await window.electronUI.log('test');
+    await window.electronUI.reloadApp();
+  } else {
+    location.reload();
   }
 }
 
@@ -583,7 +594,7 @@ export default function PreferencesComponent({ ...props }) {
           gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
           function () {
             /* If user clicks Yes */
-            location.reload();
+            reloadPgAdmin();
             return true;
           },
           function () { props.closeModal();},
@@ -630,7 +641,7 @@ export default function PreferencesComponent({ ...props }) {
             onclick: () => {
               resetPrefsToDefault(false);
               closeModal();
-            }            
+            }
           }
         ];
       }
@@ -643,7 +654,7 @@ export default function PreferencesComponent({ ...props }) {
       method: 'DELETE'
     }).then(()=>{
       if (refresh){
-        location.reload();
+        reloadPgAdmin();
         return true;
       }
       preferencesStore.cache();
