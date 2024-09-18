@@ -28,6 +28,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       indnullsnotdistinct: undefined,
       columns: [],
       include: [],
+      columns_updated_at: 0,
     });
 
     this.fieldOptions = fieldOptions;
@@ -44,6 +45,8 @@ export default class UniqueConstraintSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.fieldOptions.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   get baseFields() {
@@ -71,20 +74,21 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       }
     },{
       id: 'columns', label: gettext('Columns'),
-      deps: ()=>{
-        let ret = ['index'];
+      deps: () => {
+        let ret = ['index', 'columns_updated_at'];
         if(obj.inTable) {
           ret.push(['columns']);
         }
         return ret;
       },
-      depChange: (state, source, topState, actionObj)=>{
+      depChange: (state, source, topState, actionObj) => {
         /* If in table, sync up value with columns in table */
         if(obj.inTable && !state) {
           /* the FK is removed by some other dep, this can be a no-op */
           return;
         }
         let currColumns = state.columns || [];
+
         if(obj.inTable && source[0] == 'columns') {
           if(actionObj.type == SCHEMA_STATE_ACTIONS.DELETE_ROW) {
             let oldColumn = _.get(actionObj.oldState, actionObj.path.concat(actionObj.value));
@@ -100,7 +104,8 @@ export default class UniqueConstraintSchema extends BaseUISchema {
         }
         return {columns: currColumns};
       },
-      cell: ()=>({
+      editable: false,
+      cell: () => ({
         cell: '',
         controlProps: {
           formatter: {
@@ -111,7 +116,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
           },
         }
       }),
-      type: ()=>({
+      type: () => ({
         type: 'select',
         optionsReloadBasis: obj.fieldOptions.columns?.map ? _.join(obj.fieldOptions.columns.map((c)=>c.label), ',') : null,
         options: obj.fieldOptions.columns,
@@ -119,26 +124,20 @@ export default class UniqueConstraintSchema extends BaseUISchema {
           allowClear:false,
           multiple: true,
           formatter: {
-            fromRaw: (backendVal, allOptions)=>{
+            fromRaw: (backendVal, allOptions) => {
               /* remove the column key and pass as array */
-              let optValues = (backendVal||[]).map((singleVal)=>singleVal.column);
-              return _.filter(allOptions, (opt)=>optValues.indexOf(opt.value)>-1);
+              let optValues = (backendVal||[]).map((singleVal) => singleVal.column);
+              return _.filter(allOptions, (opt) => optValues.indexOf(opt.value)>-1);
             },
             toRaw: (value)=>{
               /* take the array and convert to column key collection */
-              return (value||[]).map((singleVal)=>({column: singleVal.value}));
+              return (value||[]).map((singleVal) => ({column: singleVal.value}));
             },
           },
         },
       }), group: gettext('Definition'),
-      editable: false,
-      readonly: function(state) {
-        return obj.isReadOnly(state);
-      },
-      disabled: function(state) {
-        // Disable if index is selected.
-        return !(_.isUndefined(state.index) || state.index == '');
-      },
+      readonly: (state) => obj.isReadOnly(state),
+      disabled: (state) => !(_.isUndefined(state.index) || state.index == ''),
     },{
       id: 'include', label: gettext('Include columns'),
       type: ()=>({
@@ -259,6 +258,8 @@ export default class UniqueConstraintSchema extends BaseUISchema {
         return obj.isReadOnly(state);
       },
       min_version: 150000
+    },{
+      id: 'columns_updated_at', visible: false, exclude: true,
     }];
   }
 
