@@ -258,8 +258,6 @@ export default class UniqueConstraintSchema extends BaseUISchema {
         return obj.isReadOnly(state);
       },
       min_version: 150000
-    },{
-      id: 'columns_updated_at', visible: false, exclude: true,
     }];
   }
 
