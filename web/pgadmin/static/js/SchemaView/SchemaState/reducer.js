@@ -114,7 +114,7 @@ export const sessDataReducer = (state, action) => {
     return data;
 
   case SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE:
-    data = getDepChange(action.path, data, state, action);
+    data = getDepChange(action.path, _.cloneDeep(data), state, action);
     break;
   }
 

@@ -52,7 +52,7 @@ class NewConnectionSchema extends BaseUISchema {
     if(this.groupedServers?.length != 0) {
       return Promise.resolve(this.groupedServers);
     }
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       this.api.get(url_for('sqleditor.get_new_connection_servers'))
         .then(({data: respData})=>{
           let groupedOptions = [];
@@ -61,7 +61,7 @@ class NewConnectionSchema extends BaseUISchema {
               return;
             }
             /* initial selection */
-            let foundServer = _.find(v, (o)=>o.value==obj.params.sid);
+            let foundServer = _.find(v, (o) => o.value == obj.params.sid);
             foundServer && (foundServer.selected = true);
             groupedOptions.push({
               label: k,
@@ -69,7 +69,7 @@ class NewConnectionSchema extends BaseUISchema {
             });
           });
           /* Will be re-used for changing icon when connected */
-          this.groupedServers = groupedOptions.map((group)=>{
+          this.groupedServers = groupedOptions.map((group) => {
             return {
               label: group.label,
               options: group.options.map((o)=>({...o, selected: false})),
@@ -118,18 +118,19 @@ class NewConnectionSchema extends BaseUISchema {
           optionsLoaded: (res) => self.flatServers = flattenSelectOptions(res),
           optionsReloadBasis: self.flatServers.map((s) => s.connected).join(''),
         }),
-        depChange: (state)=>{
+        depChange: (state) => {
           /* Once the option is selected get the name */
           /* Force sid to null, and set only if connected */
           let selectedServer = _.find(
             self.flatServers, (s) => s.value == state.sid
           );
+
           return {
             server_name: selectedServer?.label,
             did: null,
             user: null,
             role: null,
-            sid: null,
+            sid: state.sid,
             fgcolor: selectedServer?.fgcolor,
             bgcolor: selectedServer?.bgcolor,
             connected: selectedServer?.connected,
@@ -138,6 +139,7 @@ class NewConnectionSchema extends BaseUISchema {
         deferredDepChange: (state, source, topState, actionObj) => {
           return new Promise((resolve) => {
             let sid = actionObj.value;
+
             if(!_.find(self.flatServers, (s) => s.value == sid)?.connected) {
               this.connectServer(sid, state.user, null, (data) => {
                 self.setServerConnected(sid, data.icon);
