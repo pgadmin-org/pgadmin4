@@ -9,10 +9,11 @@
 
 import { useEffect } from 'react';
 
+const convertKeysToString = (arr) => (arr||[]).map((key) => String(key));
 const isPathEqual = (path1, path2) => (
-  JSON.stringify(path1) === JSON.stringify(path2)
+  JSON.stringify(convertKeysToString(path1)) ===
+  JSON.stringify(convertKeysToString(path2))
 );
-
 
 export const useFieldError = (path, schemaState, subscriberManager) => {
 
