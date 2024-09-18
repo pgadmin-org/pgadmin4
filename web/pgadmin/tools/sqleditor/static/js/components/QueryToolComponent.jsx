@@ -333,7 +333,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
   };
 
-  const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false)=>{
+  const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, reexecute=false)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
     if(qtState.params.is_query_tool) {
@@ -363,7 +363,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           connected_once: true,
           obtaining_conn: false,
         });
-        if(!qtState.params.is_query_tool) {
+        //this condition works if user is in View/Edit Data or user does not saved server or tunnel password and disconnected the server and executing the query
+        if(!qtState.params.is_query_tool || reexecute) {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
           let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
           pgAdmin.Browser.notifier.success(_.escape(msg));
