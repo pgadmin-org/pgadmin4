@@ -290,7 +290,7 @@ export class ResultSetUtils {
       if(e?.response?.status == 428){
         this.connectServerModal(e.response?.data?.result, async (passwordData)=>{
           await this.connectServer(this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
-            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor);
+            await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, true);
           });
         }, ()=>{
           /*This is intentional (SonarQube)*/
