@@ -155,7 +155,7 @@ export function DataGridFormHeader({tableEleRef}) {
             schema={headerSchema}
             viewHelperProps={viewHelperProps}
             showFooter={false}
-            onDataChange={(isDataChanged, dataChanged)=>{
+            onDataChange={()=>{
               disableAddButton(
                 headerSchema.addDisabled(headerSchema.state.data)
               );
