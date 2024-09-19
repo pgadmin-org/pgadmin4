@@ -75,7 +75,7 @@ msgstr "Текущий пользователь"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:71
 msgid "Electron Version"
-msgstr ""
+msgstr "Электронная версия"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:80 pgadmin/browser/__init__.py:86
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:346
@@ -84,7 +84,7 @@ msgstr "Обозреватель"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:89
 msgid "Operating System"
-msgstr ""
+msgstr "Операционная система"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:99
 #, fuzzy
@@ -93,11 +93,11 @@ msgstr "Загрузка файла..."
 
 #: pgadmin/about/static/js/AboutComponent.jsx:109
 msgid "Log File"
-msgstr ""
+msgstr "Файл журнала"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:119
 msgid "pgAdmin Server Configuration"
-msgstr ""
+msgstr "pgAdmin Конфигурация сервера"
 
 #: pgadmin/about/static/js/about.js:43
 #, python-format
@@ -106,59 +106,59 @@ msgstr "О %s"
 
 #: pgadmin/authenticate/__init__.py:132
 msgid "Your account is locked. Please contact the Administrator."
-msgstr ""
+msgstr "Ваша учетная запись заблокирована. Обратитесь к администратору."
 
 #: pgadmin/authenticate/__init__.py:150
 msgid "{0} more attempts remaining."
-msgstr ""
+msgstr "Осталось еще {0} попыток."
 
 #: pgadmin/authenticate/__init__.py:154
 msgid "{0} more attempt remaining."
-msgstr ""
+msgstr "Осталось еще {0} попыток."
 
 #: pgadmin/authenticate/internal.py:27
 msgid "Login failed"
-msgstr ""
+msgstr "Ошибка входа"
 
 #: pgadmin/authenticate/internal.py:28
 msgid "Email/Username not provided"
-msgstr ""
+msgstr "Эл.почта/Имя пользователя не указаны"
 
 #: pgadmin/authenticate/internal.py:29
 msgid "Password not provided"
-msgstr ""
+msgstr "Пароль не указан"
 
 #: pgadmin/authenticate/internal.py:30
 msgid "Email/Username is not valid"
-msgstr ""
+msgstr "Эл.почта/Имя пользователя недействительны"
 
 #: pgadmin/authenticate/internal.py:96
 msgid "internal"
-msgstr ""
+msgstr "внутренний"
 
 #: pgadmin/authenticate/kerberos.py:161
 msgid "kerberos"
-msgstr ""
+msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:169
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
-msgstr ""
+msgstr "Невозможно использовать аутентификацию Kerberos, так как не удалось загрузить модуль GSSAPI."
 
 #: pgadmin/authenticate/kerberos.py:210
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
-msgstr ""
+msgstr "Ошибка аутентификации Kerberos. Не удалось найти тикет Kerberos."
 
 #: pgadmin/authenticate/kerberos.py:240
 msgid "Delegated credentials not supplied."
-msgstr ""
+msgstr "Делегированные полномочия не предоставлены."
 
 #: pgadmin/authenticate/ldap.py:30
 msgid "Error searching the LDAP directory: {}"
-msgstr ""
+msgstr "Ошибка поиска в каталоге LDAP: {}"
 
 #: pgadmin/authenticate/ldap.py:33
 msgid "Error connecting to the LDAP server: {}\n"
-msgstr ""
+msgstr "Ошибка подключения к серверу LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:48
 msgid "ldap"
@@ -166,15 +166,15 @@ msgstr ""
 
 #: pgadmin/authenticate/ldap.py:65
 msgid "LDAP configuration error: Set the bind password."
-msgstr ""
+msgstr "Ошибка конфигурации LDAP: Установите пароль привязки."
 
 #: pgadmin/authenticate/ldap.py:149
 msgid "Error binding to the LDAP server: {}\n"
-msgstr ""
+msgstr "Ошибка привязки к серверу LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:153
 msgid "Error starting TLS: {}\n"
-msgstr ""
+msgstr "Ошибка запуска TLS: {}\n"
 
 #: pgadmin/authenticate/ldap.py:230
 msgid "LDAP configuration error: {}\n"
@@ -699,7 +699,7 @@ msgstr "Отладчик"
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:56
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:63
 msgid "Schema Diff"
-msgstr ""
+msgstr "Схема Diff"
 
 #: pgadmin/browser/register_browser_preferences.py:450
 #: pgadmin/tools/erd/static/js/ERDModule.js:57
@@ -8639,19 +8639,19 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:34
 msgid "Set as default"
-msgstr ""
+msgstr "Выбрать по умолчанию"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:45
 msgid "Database Server"
-msgstr ""
+msgstr "Сервер базы данных"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:50
 msgid "Binary Path"
-msgstr ""
+msgstr "Бинарный путь"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:59
 msgid "Select folder"
-msgstr ""
+msgstr "Выбрать папку"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:60
 #, fuzzy
@@ -8666,7 +8666,7 @@ msgstr "Пути программ"
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:66
 #, fuzzy
 msgid "Validate Path"
-msgstr "Проверять?"
+msgstr "Проверить"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:66
 #, fuzzy
@@ -9408,38 +9408,38 @@ msgstr "Опустошить"
 #: pgadmin/browser/static/js/MainMenuFactory.js:35
 #, fuzzy
 msgid "Configure..."
-msgstr "Конфигурация FTS..."
+msgstr "Настроить..."
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:36
 #, fuzzy
 msgid "View log..."
-msgstr "Представление..."
+msgstr "Посмотреть журнал..."
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:37
 msgid "Enter Full Screen"
-msgstr ""
+msgstr "Во весь экран"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:38
 msgid "Exit Full Screen"
-msgstr ""
+msgstr "Оконный режим"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:39
 msgid "Actual Size"
-msgstr ""
+msgstr "Фактический размер"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:40
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:270
 msgid "Zoom In"
-msgstr ""
+msgstr "Увеличить масштаб"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:41
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:280
 msgid "Zoom Out"
-msgstr ""
+msgstr "Уменьшить масштаб"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:129
 msgid "Error in opening window"
-msgstr ""
+msgstr "Error in opening window"
 
 #: pgadmin/browser/static/js/browser.js:29
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:99
@@ -9451,7 +9451,7 @@ msgstr "Выберите объект в дереве."
 
 #: pgadmin/browser/static/js/browser.js:125
 msgid "Register"
-msgstr ""
+msgstr "Регистрация"
 
 #: pgadmin/browser/static/js/browser.js:158
 msgid "No menu available for this object."
@@ -9968,27 +9968,27 @@ msgstr "Создание %s"
 
 #: pgadmin/browser/static/js/node.js:124
 msgid "Refresh..."
-msgstr ""
+msgstr "Обновить..."
 
 #: pgadmin/browser/static/js/node.js:136
 msgid "Properties..."
-msgstr ""
+msgstr "Свойства..."
 
 #: pgadmin/browser/static/js/node.js:155
 #, python-format
 msgid "Remove %s"
-msgstr ""
+msgstr "Удалить %s"
 
 #: pgadmin/browser/static/js/node.js:155
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:755
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:100
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:225
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 #: pgadmin/browser/static/js/node.js:174
 msgid "Delete (Cascade)"
-msgstr ""
+msgstr "Удалить (каскад)"
 
 #: pgadmin/browser/static/js/node.js:231
 #, python-format
@@ -9997,7 +9997,7 @@ msgstr "Скрипт %s"
 
 #: pgadmin/browser/static/js/node.js:244
 msgid "Scripts"
-msgstr ""
+msgstr "Скрипты"
 
 #: pgadmin/browser/static/js/node.js:470
 #, python-format
@@ -11338,11 +11338,11 @@ msgstr "Язык пользователя"
 
 #: pgadmin/misc/__init__.py:79
 msgid "Theme"
-msgstr ""
+msgstr "Тема"
 
 #: pgadmin/misc/__init__.py:80
 msgid "Themes"
-msgstr ""
+msgstr "Темs"
 
 #: pgadmin/misc/__init__.py:86
 msgid ""
@@ -12545,6 +12545,10 @@ msgid ""
 "version.  The default path will be used for server versions that do not "
 "have a  path specified."
 msgstr ""
+"Укажите каталог, в котором находятся утилиты psql, pg_dump, pg_dumpall и "
+"pg_restore для соответствующей версии сервера баз данных. "Для версий "
+сервера, для которых путь не указан, будет использоваться путь "
+"по умолчанию."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:276
 #: pgadmin/utils/constants.py:26
@@ -14153,18 +14157,18 @@ msgstr "Отладчик — "
 
 #: pgadmin/tools/erd/__init__.py:48
 msgid "ERD tool"
-msgstr ""
+msgstr "Инструмент ERD"
 
 #: pgadmin/tools/erd/__init__.py:70
 msgid "Open project"
-msgstr ""
+msgstr "Открыть проект"
 
 #: pgadmin/tools/erd/__init__.py:89
 msgid "Save project"
-msgstr ""
+msgstr "Сохранить проект"
 
 #: pgadmin/tools/erd/__init__.py:108
-msgid "Save project as"
+msgid "Сохранить проект как"
 msgstr ""
 
 #: pgadmin/tools/erd/__init__.py:126
@@ -14254,7 +14258,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/__init__.py:409
 msgid "Notation to be used to present cardinality."
-msgstr ""
+msgstr "Обозначение, используемое для представления важности."
 
 #: pgadmin/tools/erd/static/js/ERDModule.js:91
 #: pgadmin/tools/erd/static/js/ERDModule.js:101
@@ -14274,11 +14278,11 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:61
 msgid "Connected"
-msgstr ""
+msgstr "Подключен"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:63
 msgid "Connecting"
-msgstr ""
+msgstr "Подключение"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:65
 msgid "Disconnected"
@@ -18762,7 +18766,7 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Schema Diff (Beta)"
-#~ msgstr ""
+#~ msgstr "Схема Diff (бета)"
 
 #~ msgid "Crypt key is missing."
 #~ msgstr ""
@@ -19612,6 +19616,9 @@ msgstr ""
 #~ " theme. Below is the preview of "
 #~ "the theme"
 #~ msgstr ""
+#~ "Для применения темы требуется "
+#~ "обновление. Ниже представлен "
+#~ "препросмотр темы"
 
 #~ msgid "Show"
 #~ msgstr "Показать"
@@ -19620,7 +19627,7 @@ msgstr ""
 #~ msgstr "Скрыть"
 
 #~ msgid "(in minutes)"
-#~ msgstr ""
+#~ msgstr (в минутах)""
 
 #~ msgid "Category is not selected."
 #~ msgstr "Категория не выбрана."
