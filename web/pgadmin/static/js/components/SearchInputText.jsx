@@ -36,9 +36,9 @@ export const SearchInputText = ({
     onChange,
   };
   if (alignment == SEARCH_INPUT_ALIGNMENT.RIGHT)
-    props.style['margin-left'] = 'auto';
+    props.style['marginLeft'] = 'auto';
   else
-    props.style['margin-right'] = 'auto';
+    props.style['marginRight'] = 'auto';
 
   return <InputText {...props}/>;
 };
