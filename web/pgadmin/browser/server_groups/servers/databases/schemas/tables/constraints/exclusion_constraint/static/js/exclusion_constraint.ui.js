@@ -79,10 +79,14 @@ class ExclusionColHeaderSchema extends BaseUISchema {
     return [{
       id: 'is_exp', label: gettext('Is expression'), type:'switch', editable: false,
     },{
-      id: 'column', label: gettext('Column'), type: 'select', editable: false,
-      options: this.columns, deps: ['is_exp'],
-      optionsReloadBasis: this.columns?.map ? _.join(this.columns.map((c)=>c.label), ',') : null,
-      optionsLoaded: (res)=>this.columnOptions=res,
+      id: 'column', label: gettext('Column'), editable: false,
+      options: this.columns, deps: ['is_exp', 'columns_updated_at'],
+      type: () => ({
+        type: 'select',
+        optionsReloadBasis: this.columns?.map ?
+          _.join(this.columns.map((c)=>c.label), ',') : null,
+        optionsLoaded: (res)=>this.columnOptions=res,
+      }),
       disabled: (state)=>state.is_exp,
     },{
       id: 'expression', label: gettext('Expression'), editable: false, deps: ['is_exp'],
@@ -208,6 +212,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       condeferred: undefined,
       columns: [],
       include: [],
+      columns_updated_at: 0,
     });
 
     this.nodeInfo = nodeInfo;
@@ -236,6 +241,8 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
   changeColumnOptions(columns) {
     this.exHeaderSchema.changeColumnOptions(columns);
     this.fieldOptions.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   isReadonly(state) {
@@ -426,6 +433,9 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
           return {include: []};
         }
       }
+    }, {
+      // Don't include this in the data.
+      id: 'columns_updated_at', exclude: true, type: 'text', visible: false,
     }];
   }
 

@@ -12,6 +12,8 @@ import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import TableSchema from '../../../../static/js/table.ui';
+
+
 export default class PrimaryKeySchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}) {
     super({

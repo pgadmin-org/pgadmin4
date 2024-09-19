@@ -26,6 +26,7 @@ class IndexColHeaderSchema extends BaseUISchema {
       is_exp: true,
       colname: '',
       expression: '',
+      columns_updated_at: 0,
     });
 
     this.columns = columns;
@@ -33,6 +34,8 @@ class IndexColHeaderSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   addDisabled(state) {
@@ -51,14 +54,18 @@ class IndexColHeaderSchema extends BaseUISchema {
     return [{
       id: 'is_exp', label: gettext('Is expression'), type:'switch', editable: false,
     },{
-      id: 'colname', label: gettext('Column'), type: 'select', editable: false,
-      options: this.columns, deps: ['is_exp'],
-      optionsReloadBasis: this.columns?.map ? _.join(this.columns.map((c)=>c.label), ',') : null,
-      optionsLoaded: (res)=>this.columnOptions=res,
-      disabled: (state)=>state.is_exp, node: 'column',
+      id: 'colname', label: gettext('Column'), editable: false,
+      deps: ['is_exp', 'columns_updated_at'],
+      type: () => ({
+        type: 'select', options: this.columns,
+        optionsReloadBasis: this.columns?.map ?
+          _.join(this.columns.map((c)=>c.label), ',') : null,
+        optionsLoaded: (res) => this.columnOptions = res,
+      }),
+      disabled: (state) => state.is_exp, node: 'column',
     },{
-      id: 'expression', label: gettext('Expression'), editable: false, deps: ['is_exp'],
-      type: 'sql', disabled: (state)=>!state.is_exp,
+      id: 'expression', label: gettext('Expression'), editable: false,
+      deps: ['is_exp'], type: 'sql', disabled: (state)=>!state.is_exp,
     }];
   }
 }
