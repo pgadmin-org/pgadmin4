@@ -49,6 +49,7 @@ class ExclusionColHeaderSchema extends BaseUISchema {
       is_exp: undefined,
       column: undefined,
       expression: undefined,
+      columns_updated_at: 0,
     });
 
     this.columns = columns;
@@ -56,6 +57,8 @@ class ExclusionColHeaderSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   addDisabled(state) {
@@ -406,7 +409,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       editable: false,
       canDelete: true, canAdd: true,
       mode: ['properties', 'create', 'edit'], min_version: 110000,
-      deps: ['index'],
+      deps: ['index', 'columns_updated_at'],
       readonly: function() {
         if(!obj.isNew()) {
           return true;
