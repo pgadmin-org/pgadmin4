@@ -75,7 +75,6 @@ export function getMappedCell({field}) {
       row,
       dataDispatch,
       onCellChange: (changeValue) => {
-        if (!colOptions.editable) return;
         if(field.radioType) {
           dataDispatch({
             type: SCHEMA_STATE_ACTIONS.BULK_UPDATE,
