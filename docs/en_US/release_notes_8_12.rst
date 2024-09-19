@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #1900 <https://github.com/pgadmin-org/pgadmin4/issues/1900>`_ -  Added feature to restore preferences to their default values.
+  | `Issue #6222 <https://github.com/pgadmin-org/pgadmin4/issues/6222>`_ -  Add a new config variable - ALLOW_SPECIAL_EMAIL_DOMAINS to allow special domains for pgAdmin user emails.
   | `Issue #7293 <https://github.com/pgadmin-org/pgadmin4/issues/7293>`_ -  Allow running non-continuous selected SQL code blocks in the query tool.
 
 Housekeeping

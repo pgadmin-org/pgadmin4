@@ -400,6 +400,7 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_CHANGE_NOTICE = \
 CHECK_EMAIL_DELIVERABILITY = False
 SECURITY_EMAIL_VALIDATOR_ARGS = \
     {"check_deliverability": CHECK_EMAIL_DELIVERABILITY}
+ALLOW_SPECIAL_EMAIL_DOMAINS = []
 
 ##########################################################################
 # Upgrade checks

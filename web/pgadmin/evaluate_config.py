@@ -10,6 +10,7 @@
 import os
 import sys
 import keyring
+import email_validator
 
 # User configs loaded from config_local, config_distro etc.
 custom_config_settings = {}
@@ -135,5 +136,14 @@ def evaluate_and_patch_config(config: dict) -> dict:
             'APPLICATION_ROOT': os.environ["SCRIPT_NAME"],
             'SESSION_COOKIE_PATH': os.environ["SCRIPT_NAME"],
         }))
+
+    # Allow special email domains
+    try:
+        email_validator.SPECIAL_USE_DOMAIN_NAMES = [
+            d for d in email_validator.SPECIAL_USE_DOMAIN_NAMES
+            if d not in config.get('ALLOW_SPECIAL_EMAIL_DOMAINS', [])
+        ]
+    except Exception:
+        pass
 
     return config
