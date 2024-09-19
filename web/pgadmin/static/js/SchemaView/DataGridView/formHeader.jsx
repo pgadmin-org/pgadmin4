@@ -84,7 +84,6 @@ export function DataGridFormHeader({tableEleRef}) {
   const label = field.label || '';
   const newRowIndex = useRef(-1);
   const schemaState = useContext(SchemaStateContext);
-  const headerFormData = useRef({});
   const [addDisabled, setAddDisabled] = useState(!canAdd || !canAddRow);
   const {headerSchema} = field;
   const disableAddButton = (flag) => {
@@ -98,7 +97,7 @@ export function DataGridFormHeader({tableEleRef}) {
       return;
     }
 
-    let newRow = headerSchema.getNewData(headerFormData.current);
+    let newRow = headerSchema.getNewData(headerSchema.state.data);
 
     newRowIndex.current = addOnTop ? 0 : rows.length;
 
@@ -157,9 +156,8 @@ export function DataGridFormHeader({tableEleRef}) {
             viewHelperProps={viewHelperProps}
             showFooter={false}
             onDataChange={(isDataChanged, dataChanged)=>{
-              headerFormData.current = dataChanged;
               disableAddButton(
-                headerSchema.addDisabled(headerFormData.current)
+                headerSchema.addDisabled(headerSchema.state.data)
               );
             }}
             hasSQL={false}
