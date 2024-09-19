@@ -278,7 +278,8 @@ class UserManagementSchema extends BaseUISchema {
     const api = getApiInstance();
     return [
       {
-        id: 'userManagement', label: '', type: 'collection', schema: obj.userManagementCollObj,
+        id: 'userManagement', label: '', type: 'collection',
+        schema: obj.userManagementCollObj,
         canAdd: true, canDelete: true, isFullTab: true,
         addOnTop: true,
         canDeleteRow: (row)=>{

@@ -12,6 +12,8 @@ import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import TableSchema from '../../../../static/js/table.ui';
+
+
 export default class PrimaryKeySchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}) {
     super({
@@ -26,6 +28,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       condeferred: undefined,
       columns: [],
       include: [],
+      columns_updated_at: 0,
     });
 
     this.fieldOptions = fieldOptions;
@@ -42,6 +45,8 @@ export default class PrimaryKeySchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.fieldOptions.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   get baseFields() {
@@ -69,14 +74,14 @@ export default class PrimaryKeySchema extends BaseUISchema {
       }
     },{
       id: 'columns', label: gettext('Columns'),
-      deps: ()=>{
-        let ret = ['index'];
+      deps: () => {
+        let ret = ['index', 'columns_updated_at'];
         if(obj.inTable) {
           ret.push(['columns']);
         }
         return ret;
       },
-      depChange: (state, source, topState, actionObj)=>{
+      depChange: (state, source, topState, actionObj) => {
         /* If in table, sync up value with columns in table */
         if(obj.inTable && !state) {
           /* the FK is removed by some other dep, this can be a no-op */
@@ -99,7 +104,8 @@ export default class PrimaryKeySchema extends BaseUISchema {
         }
         return {columns: currColumns};
       },
-      cell: ()=>({
+      editable: false,
+      cell: () => ({
         cell: '',
         controlProps: {
           formatter: {
@@ -110,7 +116,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
           },
         }
       }),
-      type: ()=>({
+      type: () => ({
         type: 'select',
         optionsReloadBasis: obj.fieldOptions.columns?.map ? _.join(obj.fieldOptions.columns.map((c)=>c.label), ',') : null,
         options: obj.fieldOptions.columns,
@@ -130,16 +136,8 @@ export default class PrimaryKeySchema extends BaseUISchema {
           },
         },
       }), group: gettext('Definition'),
-      editable: false,
-      readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
-      },
-      disabled: function(state) {
-        // Disable if index is selected.
-        return !(_.isUndefined(state.index) || state.index == '');
-      },
+      readonly: (state) => !obj.isNew(state),
+      disabled: (state) => !(_.isUndefined(state.index) || state.index == ''),
     },{
       id: 'include', label: gettext('Include columns'),
       type: ()=>({

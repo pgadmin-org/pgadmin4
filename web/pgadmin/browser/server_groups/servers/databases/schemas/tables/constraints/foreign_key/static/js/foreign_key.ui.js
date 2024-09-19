@@ -48,6 +48,7 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
       references: undefined,
       referenced: undefined,
       _disable_references: false,
+      columns_updated_at: 0,
     });
 
     this.fieldOptions = fieldOptions;
@@ -56,6 +57,8 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.fieldOptions.local_column = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   addDisabled(state) {
@@ -84,9 +87,15 @@ class ForeignKeyHeaderSchema extends BaseUISchema {
   get baseFields() {
     let obj = this;
     return [{
-      id: 'local_column', label: gettext('Local column'), type:'select', editable: false,
-      options: this.fieldOptions.local_column,
-      optionsReloadBasis: this.fieldOptions.local_column?.map ? _.join(this.fieldOptions.local_column.map((c)=>c.label), ',') : null,
+      id: 'local_column', label: gettext('Local column'), editable: false,
+      deps: ['columns_updated_at'],
+      type: () => ({
+        type: 'select',
+        options: this.fieldOptions.local_column,
+        optionsReloadBasis: this.fieldOptions.local_column?.map ?
+          _.join(this.fieldOptions.local_column.map((c) => c.label), ',') :
+          null
+      }),
     },{
       id: 'references', label: gettext('References'), type: 'select', editable: false,
       options: this.fieldOptions.references,

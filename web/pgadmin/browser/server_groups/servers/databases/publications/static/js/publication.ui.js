@@ -43,14 +43,14 @@ export class DefaultWithSchema extends BaseUISchema {
 }
 
 export class PublicationTableSchema extends BaseUISchema {
-  constructor(allTables,getColumns) {
+  constructor(allTables, getColumns) {
     super({
       table_name: undefined,
       where: undefined,
-      columns:undefined,
+      columns: [],
     });
     this.allTables = allTables;
-    this.getColumns=getColumns;
+    this.getColumns = getColumns;
     this.allTablesOptions = [];
     this.varTypes = {};
     this.allReadOnly = false;
@@ -104,7 +104,7 @@ export class PublicationTableSchema extends BaseUISchema {
           cell: 'select',
           options: this.allTables,
           optionsLoaded: (options) => {
-            obj.allTablesOptions=options;
+            obj.allTablesOptions = options;
           },
           controlProps: { allowClear: false },
         }),
@@ -118,7 +118,7 @@ export class PublicationTableSchema extends BaseUISchema {
         depChange: (state) => {
           if(!state.table_name) {
             return {
-              columns: null,
+              columns: [],
             };
           }
         },
@@ -127,9 +127,10 @@ export class PublicationTableSchema extends BaseUISchema {
         },
         cell: (state) => {
           let tid = obj.getTableOid(state.table_name);
-          return{
+
+          return {
             cell: 'select',
-            options: (state.table_name && tid) ? ()=>obj.getColumns({tid: tid}) : [],
+            options: (state.table_name && tid) ? () => obj.getColumns({tid: tid}) : [],
             optionsReloadBasis: tid,
             controlProps: { allowClear: true, multiple: true},
           };

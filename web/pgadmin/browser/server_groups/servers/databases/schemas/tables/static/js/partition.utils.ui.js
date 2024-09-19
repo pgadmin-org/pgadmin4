@@ -15,6 +15,7 @@ export class PartitionKeysSchema extends BaseUISchema {
   constructor(columns=[], getCollations=[], getOperatorClass=[]) {
     super({
       key_type: 'column',
+      columns_updated_at: 0,
     });
     this.columns = columns;
     this.columnsReloadBasis = false;
@@ -24,6 +25,8 @@ export class PartitionKeysSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.columns = columns;
+    if (this.state)
+      this.state.data = {...this.state.data, columns_updated_at: Date.now()};
   }
 
   isEditable(state) {
@@ -40,9 +43,9 @@ export class PartitionKeysSchema extends BaseUISchema {
       },{
         label: gettext('Expression'), value: 'expression',
       }],
-    },{
+    }, {
       id: 'pt_column', label: gettext('Column'), type:'select',
-      deps: ['key_type', ['columns']],
+      deps: ['key_type', 'columns_updated_at'],
       depChange: (state, source)=>{
         if(state.key_type == 'expression' || source[0] == 'columns') {
           return {
@@ -50,9 +53,9 @@ export class PartitionKeysSchema extends BaseUISchema {
           };
         }
       },
-      cell: ()=>({
+      cell: () => ({
         cell: 'select',
-        optionsReloadBasis: _.join(obj.columns.map((c)=>c.label), ','),//obj.columnsReloadBasis,
+        optionsReloadBasis: _.join(obj.columns.map((c) => c.label), ','),
         options: obj.columns,
         controlProps: {
           allowClear: false,

@@ -451,7 +451,9 @@ export default class TableSchema extends BaseUISchema {
   }
 
   changeColumnOptions(columns) {
-    let colOptions = (columns||[]).map((c)=>({label: c.name, value: c.name, image:'icon-column'}));
+    let colOptions = (columns||[]).map(
+      (c) => ({label: c.name, value: c.name, image:'icon-column'})
+    );
     this.constraintsObj.changeColumnOptions(colOptions);
     this.partitionKeysObj.changeColumnOptions(colOptions);
     this.partitionsObj.changeColumnOptions(colOptions);
@@ -749,7 +751,7 @@ export default class TableSchema extends BaseUISchema {
             let typeTable = _.find(obj.ofTypeTables||[], (t)=>t.label==state.typname);
             finalCols = typeTable.oftype_columns;
           }
-          resolve(()=>{
+          resolve(() => {
             obj.changeColumnOptions(finalCols);
             return {
               columns: finalCols,

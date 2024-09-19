@@ -43,8 +43,6 @@ export function getMappedCell({field}) {
       subscriberManager.current?.signal(...args);
     };
 
-
-    
     const depVals = listenDepChanges(
       colAccessPath, field, schemaState, rerenderCellOnDepChange
     );
@@ -55,7 +53,7 @@ export function getMappedCell({field}) {
       rowValue = row.original;
       colOptions = { disabled: true, readonly: true };
     } else {
-      colOptions['readonly'] = !colOptions['editable'];
+      colOptions = {...colOptions, readonly: !colOptions['editable']};
     }
 
     let cellProps = {};
@@ -77,7 +75,6 @@ export function getMappedCell({field}) {
       row,
       dataDispatch,
       onCellChange: (changeValue) => {
-        if (colOptions.disabled) return;
         if(field.radioType) {
           dataDispatch({
             type: SCHEMA_STATE_ACTIONS.BULK_UPDATE,
