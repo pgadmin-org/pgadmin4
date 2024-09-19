@@ -7,19 +7,38 @@
 #
 ##########################################################################
 
+import email_validator
 from email_validator import validate_email as email_validate, \
     EmailNotValidError
 
 
-def validate_email(email, check_email_deliverability=None):
+def validate_email(email, email_config=None):
     try:
-        if check_email_deliverability is None:
+        if email_config is None:
+            email_config = {}
             import config
-            check_email_deliverability = config.CHECK_EMAIL_DELIVERABILITY
+            email_config['CHECK_EMAIL_DELIVERABILITY'] = \
+                config.CHECK_EMAIL_DELIVERABILITY
+            email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'] = \
+                config.ALLOW_SPECIAL_EMAIL_DOMAINS
+
+        # Allow special email domains
+        if isinstance(email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'], str):
+            email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'] = \
+                email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'].split(',')
+
+        try:
+            email_validator.SPECIAL_USE_DOMAIN_NAMES = [
+                d for d in email_validator.SPECIAL_USE_DOMAIN_NAMES
+                if d not in email_config['ALLOW_SPECIAL_EMAIL_DOMAINS']
+            ]
+        except Exception:
+            pass
 
         # Validate.
         _ = email_validate(
-            email, check_deliverability=check_email_deliverability)
+            email,
+            check_deliverability=email_config['CHECK_EMAIL_DELIVERABILITY'])
 
         # Update with the normalized form.
         return True
