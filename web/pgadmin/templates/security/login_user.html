@@ -4,6 +4,15 @@
 {% for key, lang in config.LANGUAGES.items() %}
 {% set _ = ns.langOptions.append({'value': key, 'label': lang}) %}
 {% endfor %}
+{% set oauth2_config = [] %}
+{% for i in config.OAUTH2_CONFIG %}
+  {% set _tmp = oauth2_config.append({'OAUTH2_NAME': config.OAUTH2_CONFIG[loop.index-1]['OAUTH2_NAME'],
+    'OAUTH2_BUTTON_COLOR':  config.OAUTH2_CONFIG[loop.index-1]['OAUTH2_BUTTON_COLOR'],
+    'OAUTH2_DISPLAY_NAME':  config.OAUTH2_CONFIG[loop.index-1]['OAUTH2_DISPLAY_NAME'],
+    'OAUTH2_ICON':  config.OAUTH2_CONFIG[loop.index-1]['OAUTH2_ICON']
+  }) %}
+{% endfor %}
+
 {% set page_props = {
     'userLanguage': user_language,
     'langOptions': ns.langOptions,
@@ -15,7 +24,7 @@
         'OAUTH2': config.OAUTH2,
         'KERBEROS': config.KERBEROS,
     },
-    'oauth2Config': config.OAUTH2_CONFIG,
+    'oauth2Config': oauth2_config,
     'loginBanner': config.LOGIN_BANNER|safe
 } %}
 {% extends "security/render_page.html" %}

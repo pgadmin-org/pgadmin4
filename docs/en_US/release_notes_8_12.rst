@@ -2,7 +2,7 @@
 Version 8.12
 ************
 
-Release date: 2024-09-19
+Release date: 2024-09-23
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v8.11.
 
@@ -40,3 +40,4 @@ Bug fixes
   | `Issue #7878 <https://github.com/pgadmin-org/pgadmin4/issues/7878>`_ -  Fixed an issue where cursor moves to end of line when editing input fields.
   | `Issue #7890 <https://github.com/pgadmin-org/pgadmin4/issues/7890>`_ -  Fixed an issue where "Quit App" confirmation modal in desktop app is not respecting "Confirm on close or refresh?".
   | `Issue #7895 <https://github.com/pgadmin-org/pgadmin4/issues/7895>`_ -  Fixed an issue where different client backend shows all SQL are same.
+  | `Issue #7945 <https://github.com/pgadmin-org/pgadmin4/issues/7945>`_ -  Fixed a security issue where the OAuth2 client ID and secret exposed through the web browser (CVE-2024-9014).
