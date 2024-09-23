@@ -24,7 +24,7 @@ import { DataGridContext, DataGridRowContext } from './context';
 export function DataGridRow({rowId, row, isResizing}) {
   const schemaState = useContext(SchemaStateContext);
 
-  const { accessPath, options, table, features } = useContext(
+  const { accessPath, options, features } = useContext(
     DataGridContext
   );
 
