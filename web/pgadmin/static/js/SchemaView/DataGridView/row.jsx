@@ -21,7 +21,7 @@ import { useFieldOptions } from '../hooks';
 import { DataGridContext, DataGridRowContext } from './context';
 
 
-export function DataGridRow({rowId, isResizing}) {
+export function DataGridRow({rowId, row, isResizing}) {
   const schemaState = useContext(SchemaStateContext);
 
   const { accessPath, options, table, features } = useContext(
@@ -32,7 +32,6 @@ export function DataGridRow({rowId, isResizing}) {
   const rowOptions = useFieldOptions(rowAccessPath, schemaState);
 
   const rowRef = useRef(null);
-  const row = table.getRowModel().rows[rowId];
 
   /*
    * Memoize the row to avoid unnecessary re-render. If table data changes,

@@ -169,7 +169,10 @@ export default function DataGridView({
                           transform: `translateY(${virtualRow.start}px)`,
                         }}
                       >
-                        <GridRow rowId={row.id} isResizing={isResizing}/>
+                        <GridRow
+                          rowId={virtualRow.index} isResizing={isResizing}
+                          row={row}
+                        />
                       </PgReactTableRow>
                     );
                   })
