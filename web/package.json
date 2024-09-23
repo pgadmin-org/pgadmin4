@@ -174,7 +174,7 @@
     "auditpy": "safety check --full-report -i 51668 -i 52495",
     "audit-all": "yarn run auditjs && yarn run auditpy"
   },
-  "packageManager": "yarn@3.8.3",
+  "packageManager": "yarn@3.8.5",
   "browserslist": [
     "defaults and fully supports es6-module"
   ]
