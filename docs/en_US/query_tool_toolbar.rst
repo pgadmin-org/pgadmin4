@@ -226,6 +226,8 @@ The status bar shows the following information:
 * **Total rows**: The total number of rows returned by the query.
 * **Query complete**: The time is taken by the query to complete.
 * **Rows selected**: The number of rows selected in the data output panel.
-* **Changes staged**: This information showed the number of rows added, deleted, and updated.
+* **Changes staged**: This information shows the number of rows added, deleted, and updated.
+* **LF/CRLF**: It shows the end of line sequence to be used for the editor. When opening an empty editor, it will be decided based on OS.
+  And when opening an existing file, it will be based on file end of lines. One can change the EOL by clicking on any of the options.
 * **Ln**: In the Query tab, it is the line number at which the cursor is positioned.
 * **Col**: In the Query tab, it is the column number at which the cursor is positioned

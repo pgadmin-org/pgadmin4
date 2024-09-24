@@ -9,7 +9,7 @@ import { errorMarkerEffect } from './extensions/errorMarker';
 import { currentQueryHighlighterEffect } from './extensions/currentQueryHighlighter';
 import { activeLineEffect, activeLineField } from './extensions/activeLineMarker';
 import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/breakpointGutter';
-import { autoCompleteCompartment } from './extensions/extraStates';
+import { autoCompleteCompartment, eol, eolCompartment } from './extensions/extraStates';
 
 
 function getAutocompLoading({ bottom, left }, dom) {
@@ -30,11 +30,13 @@ export default class CustomEditorView extends EditorView {
     this._cleanDoc = this.state.doc;
   }
 
-  getValue(tillCursor=false) {
+  getValue(tillCursor=false, useLineSep=false) {
     if(tillCursor) {
       return this.state.sliceDoc(0, this.state.selection.main.head);
+    } else if (useLineSep) {
+      return this.state.doc.sliceString(0, this.state.doc.length, this.getEOL());
     }
-    return this.state.doc.toString();
+    return this.state.sliceDoc();
   }
 
   /* Function to extract query based on position passed */
@@ -327,5 +329,15 @@ export default class CustomEditorView extends EditorView {
 
   setQueryHighlightMark(from,to) {
     this.dispatch({ effects: currentQueryHighlighterEffect.of({ from, to }) });
+  }
+
+  getEOL(){
+    return this.state.facet(eol);
+  }
+
+  setEOL(val){
+    this.dispatch({
+      effects: eolCompartment.reconfigure(eol.of(val))
+    });
   }
 }

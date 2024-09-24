@@ -91,8 +91,9 @@ export function usePgMenuGroup() {
   const prevMenuOpenIdRef = useRef(null);
 
   const toggleMenu = React.useCallback((e)=>{
+    const name = e.currentTarget?.getAttribute('name') || e.currentTarget?.name;
     setOpenMenuName(()=>{
-      return prevMenuOpenIdRef.current == e.currentTarget?.name ? null : e.currentTarget?.name;
+      return prevMenuOpenIdRef.current == name ? null : name;
     });
     prevMenuOpenIdRef.current = null;
   }, []);

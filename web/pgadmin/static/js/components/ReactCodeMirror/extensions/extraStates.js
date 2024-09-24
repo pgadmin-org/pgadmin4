@@ -13,4 +13,10 @@ export const indentNewLine = Facet.define({
   combine: values => values.length ? values[0] : true,
 });
 
+export const eol = Facet.define({
+  combine: values => values.length ? values[0] : '\n',
+});
+
 export const autoCompleteCompartment = new Compartment();
+export const eolCompartment = new Compartment();
+

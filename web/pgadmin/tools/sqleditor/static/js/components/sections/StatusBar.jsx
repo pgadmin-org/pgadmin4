@@ -9,12 +9,13 @@
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useState, useContext }  from 'react';
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import _ from 'lodash';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import { useStopwatch } from '../../../../../../static/js/custom_hooks';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import gettext from 'sources/gettext';
+import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -26,17 +27,17 @@ const StyledBox = styled(Box)(({theme}) => ({
   userSelect: 'text',
   '& .StatusBar-padding': {
     padding: '2px 12px',
-    '& .StatusBar-mlAuto': {
+    '&.StatusBar-mlAuto': {
       marginLeft: 'auto',
     },
-    '& .StatusBar-divider': {
+    '&.StatusBar-divider': {
       ...theme.mixins.panelBorder.right,
     },
   },
 }));
 
-export function StatusBar() {
 
+export function StatusBar({eol, handleEndOfLineChange}) {
   const eventBus = useContext(QueryToolEventsContext);
   const [position, setPosition] = useState([1, 1]);
   const [lastTaskText, setLastTaskText] = useState(null);
@@ -49,6 +50,8 @@ export function StatusBar() {
     deleted: 0,
   });
   const {seconds, minutes, hours, msec, start:startTimer, pause:pauseTimer, reset:resetTimer} = useStopwatch({});
+  const eolMenuRef = React.useRef(null);
+  const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, (newPos)=>{
@@ -109,7 +112,36 @@ export function StatusBar() {
           <span>{gettext('Changes staged: %s', stagedText)}</span>
         </Box>
       }
-      <Box className='StatusBar-padding StatusBar-mlAuto'>{gettext('Ln %s, Col %s', position[0], position[1])}</Box>
+      
+      <Box className='StatusBar-padding StatusBar-mlAuto' style={{display:'flex'}}>
+        <Box className="StatusBar-padding StatusBar-divider">
+          <Tooltip title="Select EOL Sequence" disableInteractive enterDelay={2500}>
+            <span
+              onClick={toggleMenu}
+              ref={eolMenuRef}
+              name="menu-eoloptions"
+              style={{
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontSize: 'inherit',
+              }}
+            >
+              {eol.toUpperCase()}
+            </span>
+          </Tooltip>
+          <PgMenu
+            anchorRef={eolMenuRef}
+            open={openMenuName=='menu-eoloptions'}
+            onClose={onMenuClose}
+            label={gettext('EOL Options Menu')}
+          >
+            <PgMenuItem hasCheck value="lf" checked={eol === 'lf'} onClick={handleEndOfLineChange}>{gettext('LF')}</PgMenuItem>
+            <PgMenuItem hasCheck value="crlf" checked={eol === 'crlf'} onClick={handleEndOfLineChange}>{gettext('CRLF')}</PgMenuItem>
+          </PgMenu>
+        </Box>
+        <Box className='StatusBar-padding'>{gettext('Ln %s, Col %s', position[0], position[1])}</Box>
+      </Box>
     </StyledBox>
   );
 }
