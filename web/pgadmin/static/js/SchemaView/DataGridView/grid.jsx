@@ -146,7 +146,7 @@ export default function DataGridView({
     }}>
       <StyleDataGridBox className={classList.join(' ')}>
         <Box className='DataGridView-grid'>
-          <GridHeader tableEleRef={tableEleRef} />
+          <GridHeader tableEleRef={tableEleRef} rows={rows} />
           <DndProvider backend={HTML5Backend}>
             <PgReactTable
               ref={tableEleRef} table={table} data-test="data-grid-view"

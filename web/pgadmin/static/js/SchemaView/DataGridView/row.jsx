@@ -21,16 +21,15 @@ import { useFieldOptions } from '../hooks';
 import { DataGridContext, DataGridRowContext } from './context';
 
 
-export function DataGridRow({rowId, row, isResizing}) {
+export function DataGridRow({row, isResizing}) {
   const schemaState = useContext(SchemaStateContext);
 
   const { accessPath, options, features } = useContext(
     DataGridContext
   );
-
+  const rowId = row.index;
   const rowAccessPath = schemaState.accessPath(accessPath, rowId);
   const rowOptions = useFieldOptions(rowAccessPath, schemaState);
-
   const rowRef = useRef(null);
 
   /*
