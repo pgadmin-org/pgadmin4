@@ -116,7 +116,7 @@
     "insert-if": "^1.1.0",
     "ip-address": "^9.0.5",
     "json-bignumber": "^1.0.1",
-    "jsoneditor": "^9.5.4",
+    "jsoneditor": "^10.1.0",
     "leaflet": "^1.9.4",
     "lodash": "4.*",
     "moment": "^2.29.4",

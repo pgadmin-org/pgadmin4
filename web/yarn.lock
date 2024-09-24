@@ -3821,7 +3821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.31.1":
+"ace-builds@npm:^1.35.0":
   version: 1.36.2
   resolution: "ace-builds@npm:1.36.2"
   checksum: d5bfde2b0306800e8f838305d6024e308cce93b30f5b7266db7bcae0a21b7c7f5dc33cacbca2058d8473d5b9e68d6931ac6ff6495ae32d6b9e93c1616f1f72dd
@@ -9942,20 +9942,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsoneditor@npm:^9.5.4":
-  version: 9.10.5
-  resolution: "jsoneditor@npm:9.10.5"
+"jsoneditor@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "jsoneditor@npm:10.1.0"
   dependencies:
-    ace-builds: ^1.31.1
+    ace-builds: ^1.35.0
     ajv: ^6.12.6
     javascript-natural-sort: ^0.7.1
     jmespath: ^0.16.0
     json-source-map: ^0.6.1
-    jsonrepair: 3.1.0
+    jsonrepair: ^3.8.0
     mobius1-selectr: ^2.4.13
     picomodal: ^3.0.0
-    vanilla-picker: ^2.12.2
-  checksum: 9790c8a8def712ae30b9c46b68d27ad64fdee75d069ee30958a269ae49a5625ec08ca1d1d81cdb49721484d2abe6bee5cbd159a283a47c3f3e1343f2e60a8df6
+    vanilla-picker: ^2.12.3
+  checksum: 221a40a886640378b0eefc7c85148517f1150a11a92d8dbe4a64893b7c97bd4f68d3afb81f11986cc33c7729f6b26abd9a9f71ca27ce7c15900e1a2d5a9b58de
   languageName: node
   linkType: hard
 
@@ -9966,12 +9966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonrepair@npm:3.1.0":
-  version: 3.1.0
-  resolution: "jsonrepair@npm:3.1.0"
+"jsonrepair@npm:^3.8.0":
+  version: 3.8.1
+  resolution: "jsonrepair@npm:3.8.1"
   bin:
     jsonrepair: bin/cli.js
-  checksum: 54923aa28a46cf8258a77fbd367bfcbd81f248f4bb23728b9211f35d8d410a0035de62b41a019c7295cbbcd030accc4a4464d610b0d6ef2ca006a8345af7b4a1
+  checksum: 38342bdc7ef4a5b3e16e52292501694b33b760a9bdeede2a3bcfc92b17b3b54f8a9c23da93b01744bc7b38f644ba75b41708c50729799dc29c69200f31346226
   languageName: node
   linkType: hard
 
@@ -13873,7 +13873,7 @@ __metadata:
     jest: ^29.6.4
     jest-environment-jsdom: ^29.6.4
     json-bignumber: ^1.0.1
-    jsoneditor: ^9.5.4
+    jsoneditor: ^10.1.0
     leaflet: ^1.9.4
     loader-utils: ^3.2.1
     lodash: 4.*
@@ -15841,7 +15841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vanilla-picker@npm:^2.12.2":
+"vanilla-picker@npm:^2.12.3":
   version: 2.12.3
   resolution: "vanilla-picker@npm:2.12.3"
   dependencies:
