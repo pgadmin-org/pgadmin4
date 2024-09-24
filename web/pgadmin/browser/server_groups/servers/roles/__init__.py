@@ -794,7 +794,7 @@ rolmembership:{
 
     def _set_rolemembership(self, row):
 
-        if 'rolmembers' in row:
+        if 'rolmembers' in row and row['rolmembers'] is not None:
             rolmembers = []
             for role in row['rolmembers']:
                 role = re.search(r'([01])(.+)', role)
