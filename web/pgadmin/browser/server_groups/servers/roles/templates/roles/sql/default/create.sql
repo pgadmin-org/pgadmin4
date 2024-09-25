@@ -32,10 +32,11 @@ CREATE ROLE {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data
 
 	CONNECTION LIMIT {{ data.rolconnlimit }}{% endif %}{% if data.rolvaliduntil and data.rolvaliduntil is not none %}
 
-	VALID UNTIL {{ data.rolvaliduntil|qtLiteral(conn) }} {% endif %}{% if data.rolpassword %}
-
-	PASSWORD {% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% if data.members and data.members|length > 0 %}
-
+	VALID UNTIL {{ data.rolvaliduntil|qtLiteral(conn) }} {% endif %}{% if data.rolpassword %}{% if data.rolencryptedpassword %}
+	
+	ENCRYPTED PASSWORD{% else %}
+	
+	PASSWORD{% endif %}{% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% if data.members and data.members|length > 0 %}
 
 GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(data.rolname) }};{% endif %}{% if data.admins and data.admins|length > 0 %}
 

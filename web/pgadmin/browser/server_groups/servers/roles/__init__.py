@@ -677,11 +677,11 @@ rolmembership:{
                     'rolcanlogin', 'rolsuper', 'rolcreatedb',
                     'rolcreaterole', 'rolinherit', 'rolreplication',
                     'rolconnlimit', 'rolvaliduntil', 'rolpassword',
-                    'rolbypassrls'
+                    'rolencryptedpassword', 'rolbypassrls'
                 ] if self.manager.version >= 90200 else [
                     'rolcanlogin', 'rolsuper', 'rolcreatedb',
                     'rolcreaterole', 'rolinherit', 'rolconnlimit',
-                    'rolvaliduntil', 'rolpassword'
+                    'rolvaliduntil', 'rolpassword', 'rolencryptedpassword'
                 ]
 
                 fetch_name, check_permission, \

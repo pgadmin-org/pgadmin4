@@ -89,6 +89,11 @@ export default class RoleSchema extends BaseUISchema {
         disabled: obj.readOnly,
       },
       {
+        id: 'rolencryptedpassword', label: gettext('Encrypted Password?'), type: 'switch',
+        group: gettext('Definition'), mode: ['edit', 'create'],
+        deps: ['rolcanlogin'], disabled: obj.readOnly,
+      },
+      {
         id: 'rolpassword', label: gettext('Password'), type: 'password',
         group: gettext('Definition'), mode: ['edit', 'create'],
         control: 'input', deps: ['rolcanlogin'], retype: true,

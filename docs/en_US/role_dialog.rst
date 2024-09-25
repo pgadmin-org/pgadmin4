@@ -31,6 +31,7 @@ Click the *Definition* tab to continue.
 
 Use the *Definition* tab to set a password and configure connection rules:
 
+* If enabled, *Encrypted Password?* will consider the password as encrypted and will use ENCRYPTED keyword.
 * Provide a password that will be associated with the role in the *Password*
   field.
 * Provide an expiration date for the password in the *Account Expires* field

@@ -43,9 +43,11 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 {% endif %}{% if 'rolvaliduntil' in data %}
 
 	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
-{% endif %}{% endif %}{% if 'rolpassword' in data %}
+{% endif %}{% endif %}{% if 'rolpassword' in data %}{% if data.rolencryptedpassword %}
 
-	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% endif %}
+	ENCRYPTED PASSWORD{% else %}
+
+	PASSWORD{% endif %}{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% endif %}
 
 {% if 'revoked_admins' in data and
 	data.revoked_admins|length > 0
