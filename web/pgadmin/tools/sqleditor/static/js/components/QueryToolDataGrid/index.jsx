@@ -130,7 +130,7 @@ function SelectAllHeaderRenderer({isCellSelected}) {
   }, [isCellSelected]);
 
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="-1" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
+    tabIndex="0" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
