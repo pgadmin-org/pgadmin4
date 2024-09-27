@@ -246,11 +246,18 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     }
   };
 
+  const onkeydown = (e)=>{
+    // If only the Enter key is pressed, then save the changes.
+    if(e.keyCode == 13 && !e.shiftKey) {
+      onOK();
+    }
+  };
+
   return (
     <Portal container={document.body}>
       <ResizableDiv columnIndex={column.idx}
         className='Editors-textEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
-        <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} />
+        <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} onKeyDown={onkeydown} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
             {gettext('Cancel')}
