@@ -89,7 +89,7 @@ export class LayoutDocker {
     if(panelData.internal?.manualClose && !force) {
       this.eventBus.fireEvent(LAYOUT_EVENTS.CLOSING, panelId);
     } else {
-      this.layoutObj.dockMove(panelData, 'remove');
+      this.layoutObj.dockMove(panelData, null, 'remove');
       // rc-dock is not firing the "active" event after a tab is removed
       // and another is focussed. here we try get the new active id and
       // manually fire the active event

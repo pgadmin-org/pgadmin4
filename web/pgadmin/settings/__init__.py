@@ -119,15 +119,9 @@ def store(setting=None, value=None):
         success = 0
         errormsg = str(e)
 
-    try:
-        info = traceback.format_exc()
-    except Exception as e:
-        info = str(e)
-
     return make_json_response(success=success,
                               errormsg=errormsg,
-                              info=info,
-                              result=request.form)
+                              info=gettext("Setting stored"))
 
 
 @blueprint.route("/layout", methods=['DELETE'], endpoint='reset_layout')
