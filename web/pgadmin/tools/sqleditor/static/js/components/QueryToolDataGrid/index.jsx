@@ -37,6 +37,7 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     '& .QueryTool-columnName': {
       fontWeight: 'bold',
     },
+    backgroundColor: theme.palette.grey[600],
   },
   '& .QueryTool-editedCell': {
     fontWeight: 'bold',
@@ -53,6 +54,8 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
   },
   '& .QueryTool-rowNumCell': {
     padding: '0px 8px',
+    fontWeight: 900,
+    color: theme.otherVars.tree.textFg,
   },
   '& .QueryTool-colHeaderSelected': {
     outlineColor: theme.palette.primary.main,
@@ -63,7 +66,24 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     outlineColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
-  }
+  },
+  '& .rdg-row': {
+    '&:nth-of-type(even)': {
+      backgroundColor: theme.palette.grey[200],
+    },
+    '& .rdg-cell:nth-of-type(1)': {
+      backgroundColor: theme.palette.grey[600],
+    },
+    '& .rdg-cell:nth-of-type(1)[aria-selected="true"]':{
+      backgroundColor: theme.palette.primary.main, 
+      color: theme.palette.primary.contrastText,
+    },
+  },
+  '& .rdg-header-row': {
+    '& .rdg-cell:nth-of-type(1)': {
+      backgroundColor: theme.palette.grey[600]
+    },
+  },
 }));
 
 export const RowInfoContext = React.createContext();
