@@ -276,6 +276,7 @@ GeoJsonLayer.propTypes = {
     getPopupContent: PropTypes.func,
     infoList: PropTypes.array,
   }),
+  setHomeCoordinates: PropTypes.func,
 };
 
 function TheMap({data}) {
@@ -311,7 +312,7 @@ function TheMap({data}) {
         this._map.setView(this.options.homeCoordinates.getCenter(), this.options.homeZoom);
       }
     };
-    
+
     zoomControlWithHome.current.onAdd = function (map) {
       let controlName = 'leaflet-control-zoom',
         container = Leaflet.DomUtil.create('div', controlName + ' leaflet-bar'),

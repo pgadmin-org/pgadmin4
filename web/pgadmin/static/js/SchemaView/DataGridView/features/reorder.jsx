@@ -17,6 +17,7 @@ import { booleanEvaluator, registerOptionEvaluator } from '../../options';
 
 import { ACTION_COLUMN } from './common';
 import Feature from './feature';
+import PropTypes from 'prop-types';
 
 
 // Register the 'canReorder' options for the collection
@@ -61,6 +62,9 @@ export default class Reorder extends Feature {
     };
 
     Cell.displayName = 'ReorderCell';
+    Cell.propTypes = {
+      row: PropTypes.object,
+    };
 
     columns.splice(0, 0, {
       ...ACTION_COLUMN,

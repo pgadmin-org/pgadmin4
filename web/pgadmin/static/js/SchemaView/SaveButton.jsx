@@ -11,10 +11,11 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { PrimaryButton } from 'sources/components/Buttons';
 import { SchemaStateContext } from './SchemaState';
+import PropTypes from 'prop-types';
 
 
 export function SaveButton({
-  label, Icon, checkDirtyOnEnableSave, onClick, mode,
+  label, icon, checkDirtyOnEnableSave, onClick, mode,
 }) {
   const [key, setKey] = useState(0);
   const schemaState = useContext(SchemaStateContext);
@@ -41,10 +42,18 @@ export function SaveButton({
 
   return (
     <PrimaryButton
-      data-test='Save' onClick={onClick} startIcon={Icon}
+      data-test='Save' onClick={onClick} startIcon={icon}
       disabled={isDisabled}
     >
       {label}
     </PrimaryButton>
   );
 }
+
+SaveButton.propTypes = {
+  label: PropTypes.string,
+  icon: PropTypes.any,
+  onClick: PropTypes.func,
+  checkDirtyOnEnableSave: PropTypes.bool,
+  mode: PropTypes.string,
+};

@@ -177,7 +177,7 @@ MappedFormControlBase.propTypes = {
   type: PropTypes.oneOfType([
     PropTypes.string, PropTypes.func,
   ]).isRequired,
-  value: PropTypes.any,
+  state: PropTypes.any,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
   className: PropTypes.oneOfType([
@@ -333,6 +333,10 @@ export const StaticMappedFormControl = ({accessPath, field, ...props}) => {
   );
 };
 
+StaticMappedFormControl.propTypes = {
+  accessPath: PropTypes.array.isRequired,
+  field: PropTypes.object,
+};
 
 export const MappedFormControl = ({
   accessPath, dataDispatch, field, onChange, ...props
@@ -415,6 +419,8 @@ export const MappedFormControl = ({
 };
 
 MappedFormControl.propTypes = {
+  accessPath: PropTypes.array.isRequired,
+  field: PropTypes.object,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 

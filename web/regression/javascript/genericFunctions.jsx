@@ -18,6 +18,7 @@ import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 export function withBrowser(WrappedComp) {
+  /* eslint-disable react/display-name */
   return (props)=>{
     return <Theme>
       <PgAdminContext.Provider value={fakePgAdmin}>

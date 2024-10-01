@@ -16,6 +16,7 @@ import { useStopwatch } from '../../../../../../static/js/custom_hooks';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import gettext from 'sources/gettext';
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
+import PropTypes from 'prop-types';
 
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -110,7 +111,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
 
   return (
     <StyledBox>
-      {rowsCount && <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s', rowsCount)}</Box>}
+      <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s', rowsCount)}</Box>
       {lastTaskText &&
         <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
@@ -157,3 +158,8 @@ export function StatusBar({eol, handleEndOfLineChange}) {
     </StyledBox>
   );
 }
+
+StatusBar.propTypes = {
+  eol: PropTypes.string,
+  handleEndOfLineChange: PropTypes.func,
+};

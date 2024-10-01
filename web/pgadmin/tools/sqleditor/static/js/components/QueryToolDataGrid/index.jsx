@@ -75,7 +75,7 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
       backgroundColor: theme.palette.grey[600],
     },
     '& .rdg-cell:nth-of-type(1)[aria-selected="true"]':{
-      backgroundColor: theme.palette.primary.main, 
+      backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
     },
   },
@@ -321,6 +321,7 @@ function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelec
 RowNumColFormatter.propTypes = {
   row: PropTypes.object,
   rowKeyGetter: PropTypes.func,
+  rowIdx: PropTypes.number,
   dataChangeStore: PropTypes.object,
   onSelectedColumnsChange: PropTypes.func,
 };
@@ -460,4 +461,5 @@ QueryToolDataGrid.propTypes = {
   onSelectedColumnsChange: PropTypes.func,
   rowKeyGetter: PropTypes.func,
   columnWidthBy: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  startRowNum: PropTypes.number,
 };

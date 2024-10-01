@@ -172,8 +172,6 @@ export default function SchemaDialogView({
     return <SaveIcon />;
   };
 
-  let ButtonIcon = getButtonIcon();
-
   /* I am Groot */
   return useMemo(() =>
     <StyledBox>
@@ -219,7 +217,7 @@ export default function SchemaDialogView({
                 icon={<SettingsBackupRestoreIcon />}
                 label={ gettext('Reset') }/>
               <SaveButton
-                onClick={onSaveClick} Icon={ButtonIcon}
+                onClick={onSaveClick} icon={getButtonIcon()}
                 label={props.customSaveBtnName || gettext('Save')}
                 checkDirtyOnEnableSave={checkDirtyOnEnableSave}
                 mode={viewHelperProps.mode}

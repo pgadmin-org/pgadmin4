@@ -154,7 +154,8 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
                 QueryToolLocators.pagination_inputs +
                 f' span:nth-of-type(1)')
 
-            self.assertEqual(page_info.text, f"Showing: {page['page_info']}")
+            self.assertEqual(page_info.text,
+                             f"Showing rows: {page['page_info']}")
 
             page_info = self.page.find_by_css_selector(
                 QueryToolLocators.pagination_inputs + ' span:nth-of-type(3)')
