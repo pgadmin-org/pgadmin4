@@ -11,6 +11,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { DefaultButton } from 'sources/components/Buttons';
 import { SchemaStateContext } from './SchemaState';
+import PropTypes from 'prop-types';
 
 
 export function ResetButton({label, icon, onClick}) {
@@ -40,3 +41,9 @@ export function ResetButton({label, icon, onClick}) {
     </DefaultButton>
   );
 }
+
+ResetButton.propTypes = {
+  label: PropTypes.string,
+  icon: PropTypes.any,
+  onClick: PropTypes.func,
+};

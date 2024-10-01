@@ -44,6 +44,8 @@ module.exports = [
             '@babel/plugin-proposal-class-properties',
           ],
         },
+        ...reactjs.configs.recommended.parserOptions,
+        ...reactjs.configs['jsx-runtime'].parserOptions,
       },
       'sourceType': 'module',
       globals: {
@@ -86,8 +88,10 @@ module.exports = [
       'no-prototype-builtins': 'off',
       'no-global-assign': 'off',
       'no-import-assign': 'off',
-      'react/jsx-uses-vars': 'error',
-      'react/jsx-uses-react': 'error'
+      ...reactjs.configs.recommended.rules,
+      ...reactjs.configs['jsx-runtime'].rules,
+      'react/jsx-uses-react': 'error',
+      'react/jsx-uses-vars': 'error'
     },
     'settings': {
       'react': {
@@ -123,5 +127,5 @@ module.exports = [
       'jest/no-conditional-expect': 'off',
       'jest/valid-title': 'off',
     },
-  }
+  },
 ];

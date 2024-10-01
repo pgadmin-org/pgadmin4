@@ -51,7 +51,8 @@ InlineView.propTypes = {
   children : PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
-  ])
+  ]),
+  viewHelperProps: PropTypes.object,
 };
 
 registerView(InlineView, 'InlineView');

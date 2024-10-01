@@ -225,6 +225,11 @@ function PaginationInputs({pagination, totalRowCount, clearSelection}) {
     </Box>
   );
 }
+PaginationInputs.propTypes = {
+  pagination: PropTypes.object,
+  totalRowCount: PropTypes.number,
+  clearSelection: PropTypes.func,
+};
 export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, allRowsSelect}) {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -450,4 +455,6 @@ ResultSetToolbar.propTypes = {
   query: PropTypes.string,
   canEdit: PropTypes.bool,
   totalRowCount: PropTypes.number,
+  allRowsSelect: PropTypes.string,
+  pagination: PropTypes.object,
 };

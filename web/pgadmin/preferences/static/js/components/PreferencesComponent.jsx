@@ -161,6 +161,7 @@ function RightPanel({ schema, refreshKey, ...props }) {
 
 RightPanel.propTypes = {
   schema: PropTypes.object,
+  refreshKey: PropTypes.number,
   initValues: PropTypes.object,
   onDataChange: PropTypes.func
 };

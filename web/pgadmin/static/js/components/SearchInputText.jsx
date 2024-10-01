@@ -49,4 +49,5 @@ SearchInputText.propTypes = {
   placeholder: PropTypes.string,
   size: PropTypes.oneOf(Object.values(SEARCH_INPUT_SIZE)),
   alignment: PropTypes.oneOf(Object.values(SEARCH_INPUT_ALIGNMENT)),
+  style: PropTypes.object,
 };

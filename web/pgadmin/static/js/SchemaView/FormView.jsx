@@ -59,7 +59,7 @@ const ErrorMessageBox = () => {
 
 // The first component of schema view form.
 export default function FormView({
-  accessPath, schema=null, isNested=false, dataDispatch, className, 
+  accessPath, schema=null, isNested=false, dataDispatch, className,
   hasSQLTab, getSQLValue, isTabView=true, viewHelperProps, field,
   showError=false, resetKey, focusOnFirstInput=false
 }) {
@@ -133,7 +133,7 @@ export default function FormView({
       onScreenTracker.current = false;
     }
   }, [isOnScreen]);
-  
+
   listenDepChanges(
     accessPath, field, schemaState, () => subscriberManager.current?.signal()
   );
@@ -180,7 +180,7 @@ export default function FormView({
               scrollButtons="auto"
               action={(ref) => ref?.updateIndicator()}
             >{
-                finalGroups.map((tabGroup, idx) => 
+                finalGroups.map((tabGroup, idx) =>
                   <Tab
                     key={tabGroup.id}
                     label={tabGroup.label}
@@ -191,14 +191,14 @@ export default function FormView({
                     }
                   />
                 )
-              }{hasSQLTab && 
+              }{hasSQLTab &&
                 <Tab
                   key={'sql-tab'}
                   label={gettext('SQL')}
                   data-test={'SQL'}
                 />
               }</Tabs>
-          </Box> 
+          </Box>
           {
             finalGroups.map((group, idx) => {
               let contentClassName = [
@@ -238,7 +238,7 @@ export default function FormView({
             })
           }
           {
-            hasSQLTab && 
+            hasSQLTab &&
               <TabPanel
                 key={'sql-tab'}
                 value={tabValue}
@@ -313,6 +313,8 @@ FormView.propTypes = {
   className: CustomPropTypes.className,
   field: PropTypes.object,
   showError: PropTypes.bool,
+  resetKey: PropTypes.number,
+  focusOnFirstInput: PropTypes.bool,
 };
 
 registerView(FormView, 'FormView');
