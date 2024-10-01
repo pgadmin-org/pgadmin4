@@ -83,7 +83,7 @@ export function DataGridHeader({tableEleRef}) {
     <Box className='DataGridView-gridHeader'>
       {label && <Box className='DataGridView-gridHeaderText'>{label}</Box>}
       <Box className='DataGridView-gridHeader-middle'
-        style={{flex: 1, padding: 0}}>
+        style={{flex: 1, padding: 0, display: 'flex'}}>
         <SearchBox />
       </Box>
       <Box className='DataGridView-gridControls'>

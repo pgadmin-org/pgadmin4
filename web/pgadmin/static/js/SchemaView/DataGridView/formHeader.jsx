@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import PropTypes from 'prop-types';
 
 import { SCHEMA_STATE_ACTIONS } from 'sources/SchemaView/SchemaState';
 import { DefaultButton } from 'sources/components/Buttons';
@@ -70,16 +71,14 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
-export function DataGridFormHeader({tableEleRef}) {
+export function DataGridFormHeader({tableEleRef, rows}) {
 
   const {
-    accessPath, field, dataDispatch, options, virtualizer, table,
-    viewHelperProps,
+    accessPath, field, dataDispatch, options, virtualizer, viewHelperProps,
   } = useContext(DataGridContext);
   const {
     canAdd, addOnTop, canAddRow, canEdit, expandEditOnAdd, headerFormVisible
   } = options;
-  const rows = table.getRowModel().rows;
 
   const label = field.label || '';
   const newRowIndex = useRef(-1);
@@ -178,4 +177,5 @@ export function DataGridFormHeader({tableEleRef}) {
 
 DataGridFormHeader.propTypes = {
   tableEleRef: CustomPropTypes.ref,
+  rows: PropTypes.any,
 };

@@ -252,6 +252,15 @@ export function validateCollectionSchema(
   const rows = sessData[field.id] || [];
   const currPath = accessPath.concat(field.id);
 
+  // Loop through data.
+  for(const [rownum, row] of rows.entries()) {
+    if(validateSchema(
+      field.schema, row, setError, currPath.concat(rownum), field.label
+    )) {
+      return true;
+    }
+  }
+
   // Validate duplicate rows.
   const dupInd = checkUniqueCol(rows, field.uniqueCol);
 
@@ -269,15 +278,6 @@ export function validateCollectionSchema(
       );
     }
     return true;
-  }
-
-  // Loop through data.
-  for(const [rownum, row] of rows.entries()) {
-    if(validateSchema(
-      field.schema, row, setError, currPath.concat(rownum), field.label
-    )) {
-      return true;
-    }
   }
 
   return false;

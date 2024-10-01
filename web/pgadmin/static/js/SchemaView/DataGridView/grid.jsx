@@ -146,7 +146,7 @@ export default function DataGridView({
     }}>
       <StyleDataGridBox className={classList.join(' ')}>
         <Box className='DataGridView-grid'>
-          <GridHeader tableEleRef={tableEleRef} />
+          <GridHeader tableEleRef={tableEleRef} rows={rows} />
           <DndProvider backend={HTML5Backend}>
             <PgReactTable
               ref={tableEleRef} table={table} data-test="data-grid-view"
@@ -169,7 +169,10 @@ export default function DataGridView({
                           transform: `translateY(${virtualRow.start}px)`,
                         }}
                       >
-                        <GridRow rowId={row.id} isResizing={isResizing}/>
+                        <GridRow
+                          rowId={virtualRow.index} isResizing={isResizing}
+                          row={row}
+                        />
                       </PgReactTableRow>
                     );
                   })

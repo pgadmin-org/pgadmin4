@@ -61,7 +61,7 @@ function MappedFormControlBase({
   }
 
   if (name && _.isNumber(name)) {
-    name = String('name');
+    name = String(name);
   }
 
   /* The mapping uses Form* components as it comes with labels */
