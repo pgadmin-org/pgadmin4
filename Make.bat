@@ -57,10 +57,8 @@ REM Main build sequence Ends
     IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files (x86)\PostgreSQL\12"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Redist\MSVC\14.16.27012"
+    IF "%PGADMIN_VCREDIST_FILE%" == "" SET "PGADMIN_VCREDIST_FILE=vcredist_x64.exe"
     IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64"
-
-    REM Set REDIST_NAME (the filename)
-    set "VCREDIST_FILE=vcredist_x64.exe"
 
     REM Set additional variables we need
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\version.py')  DO SET APP_MAJOR=%%a
@@ -98,7 +96,7 @@ REM Main build sequence Ends
     ECHO PostgreSQL directory:      %PGADMIN_POSTGRES_DIR%
     ECHO.
     ECHO VC++ redist directory:     %PGADMIN_VCREDIST_DIR%
-    ECHO VC++ redist file:          %VCREDIST_FILE%
+    ECHO VC++ redist file:          %PGADMIN_VCREDIST_FILE%
     ECHO InnoTool directory:        %PGADMIN_INNOTOOL_DIR%
     ECHO signtool directory:        %PGADMIN_SIGNTOOL_DIR%
     ECHO.
@@ -335,7 +333,7 @@ REM Main build sequence Ends
 
     ECHO Staging VC++ runtime...
     MKDIR "%BUILDROOT%\installer" || EXIT /B 1
-    COPY "%PGADMIN_VCREDIST_DIR%\%VCREDIST_FILE%" "%BUILDROOT%\installer" > nul || EXIT /B 1
+    COPY "%PGADMIN_VCREDIST_DIR%\%PGADMIN_VCREDIST_FILE%" "%BUILDROOT%\installer" > nul || EXIT /B 1
 
     CD %WD%
     EXIT /B 0
@@ -353,7 +351,7 @@ REM Main build sequence Ends
     ECHO Processing installer configuration script...
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in" "-o" "%WD%\pkg\win32\installer.iss.in_stage1" "-s" MYAPP_FULLVERSION -r """%APP_VERSION%"""
     CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage1" "-o" "%WD%\pkg\win32\installer.iss.in_stage2" "-s" MYAPP_VERSION -r """v%APP_MAJOR%"""
-    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss" "-s" MYAPP_VCDIST -r """%PGADMIN_VCREDIST_DIRNAME%\%VCREDIST_FILE%"""
+    CALL "%PGADMIN_PYTHON_DIR%\python" "%WD%\pkg\win32\replace.py" "-i" "%WD%\pkg\win32\installer.iss.in_stage2" "-o" "%WD%\pkg\win32\installer.iss" "-s" MYAPP_VCDIST -r """%PGADMIN_VCREDIST_DIRNAME%\%PGADMIN_VCREDIST_FILE%"""
 
     ECHO Cleaning up...
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
