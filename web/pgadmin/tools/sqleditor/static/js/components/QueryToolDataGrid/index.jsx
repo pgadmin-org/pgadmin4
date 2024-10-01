@@ -139,15 +139,23 @@ function SelectAllHeaderRenderer({isCellSelected}) {
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
   const onClick = ()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, true, ()=>{
-      onRowSelectionChange({ type: 'HEADER', checked: !isRowSelected });
-    });
+    onRowSelectionChange({ type: 'HEADER', checked: !isRowSelected });
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.ALL_PAGE_ROWS_SELECTED, !isRowSelected);
   };
 
   useLayoutEffect(() => {
     if (!isCellSelected) return;
     cellRef.current?.focus({ preventScroll: true });
   }, [isCellSelected]);
+
+  useEffect(()=>{
+    const unregClear = eventBus.registerListener(QUERY_TOOL_EVENTS.CLEAR_ROWS_SELECTED, ()=>{
+      onRowSelectionChange({ type: 'HEADER', checked: false });
+    });
+    return ()=>{
+      unregClear();
+    };
+  }, []);
 
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
     tabIndex="0" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
@@ -167,15 +175,13 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
   }
 
   const onClick = ()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, true, ()=>{
-      const newSelectedCols = new Set(selectedColumns);
-      if (newSelectedCols.has(column.idx)) {
-        newSelectedCols.delete(column.idx);
-      } else {
-        newSelectedCols.add(column.idx);
-      }
-      onSelectedColumnsChange(newSelectedCols);
-    });
+    const newSelectedCols = new Set(selectedColumns);
+    if (newSelectedCols.has(column.idx)) {
+      newSelectedCols.delete(column.idx);
+    } else {
+      newSelectedCols.add(column.idx);
+    }
+    onSelectedColumnsChange(newSelectedCols);
   };
 
   const isSelected = selectedColumns.has(column.idx);
@@ -296,9 +302,10 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
 }
 function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelectedColumnsChange}) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
+  const {startRowNum} = useContext(DataGridExtrasContext);
 
   let rowKey = rowKeyGetter(row);
-  let rownum = rowIdx+1;
+  let rownum = rowIdx+(startRowNum??1);
   if(rowKey in (dataChangeStore?.added || {})) {
     rownum = rownum+'+';
   } else if(rowKey in (dataChangeStore?.deleted || {})) {
@@ -375,7 +382,7 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
-  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, ...props}) {
+  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, ...props}) {
   const [readyColumns, setReadyColumns] = useState([]);
   const eventBus = useContext(QueryToolEventsContext);
   const onSelectedColumnsChangeWrapped = (arg)=>{
@@ -392,7 +399,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }, []);
 
   const dataGridExtras = useMemo(()=>({
-    onSelectedCellChange, handleCopy
+    onSelectedCellChange, handleCopy, startRowNum
   }), [onSelectedCellChange]);
 
   useEffect(()=>{

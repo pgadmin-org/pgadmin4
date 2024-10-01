@@ -513,10 +513,10 @@ THREADED_MODE = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ##########################################################################
-# Number of records to fetch in one batch in query tool when query result
-# set is large.
+# Number of records to fetch in one page in query tool when query result
+# set is large and is divided in multiple pages
 ##########################################################################
-ON_DEMAND_RECORD_COUNT = 1000
+DATA_RESULT_ROWS_PER_PAGE = 1000
 
 ##########################################################################
 # Allow users to display Gravatar image for their username in Server mode

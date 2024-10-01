@@ -188,35 +188,37 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
 
         # For deleted rows
         elif of_type == 'deleted':
+            delete_all = changed_data.get('delete_all', False)
             list_of_sql[of_type] = []
             is_first = True
             rows_to_delete = []
-            keys = None
-            no_of_keys = None
-            for each_row in changed_data[of_type]:
-                rows_to_delete.append(changed_data[of_type][each_row])
-                # Fetch the keys for SQL generation
-                if is_first:
-                    # We need to covert dict_keys to normal list in
-                    # Python3
-                    # In Python2, it's already a list & We will also
-                    # fetch column names using index
-                    keys = list(
-                        changed_data[of_type][each_row].keys()
-                    )
-                    no_of_keys = len(keys)
-                    is_first = False
-            # Map index with column name for each row
-            for row in rows_to_delete:
-                for k, v in row.items():
-                    # Set primary key with label & delete index based
-                    # mapped key
-                    try:
-                        row[changed_data['columns']
-                                        [int(k)]['name']] = v
-                    except ValueError:
-                        continue
-                    del row[k]
+            keys = []
+            no_of_keys = 0
+            if not delete_all:
+                for each_row in changed_data[of_type]:
+                    rows_to_delete.append(changed_data[of_type][each_row])
+                    # Fetch the keys for SQL generation
+                    if is_first:
+                        # We need to covert dict_keys to normal list in
+                        # Python3
+                        # In Python2, it's already a list & We will also
+                        # fetch column names using index
+                        keys = list(
+                            changed_data[of_type][each_row].keys()
+                        )
+                        no_of_keys = len(keys)
+                        is_first = False
+                # Map index with column name for each row
+                for row in rows_to_delete:
+                    for k, v in row.items():
+                        # Set primary key with label & delete index based
+                        # mapped key
+                        try:
+                            row[changed_data['columns']
+                                            [int(k)]['name']] = v
+                        except ValueError:
+                            continue
+                        del row[k]
 
             sql = render_template(
                 "/".join([command_obj.sql_path, 'delete.sql']),

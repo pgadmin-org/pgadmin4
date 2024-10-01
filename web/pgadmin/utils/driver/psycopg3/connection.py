@@ -1308,6 +1308,7 @@ WHERE db.datname = current_database()""")
         return True, {'columns': columns, 'rows': rows}
 
     def async_fetchmany_2darray(self, records=2000,
+                                from_rownum=0, to_rownum=0,
                                 formatted_exception_msg=False):
         """
         User should poll and check if status is ASYNC_OK before calling this
@@ -1342,6 +1343,10 @@ WHERE db.datname = current_database()""")
                 try:
                     if records == -1:
                         result = cur.fetchall(_tupples=True)
+                    elif records is None:
+                        result = cur.fetchwindow(from_rownum=from_rownum,
+                                                 to_rownum=to_rownum,
+                                                 _tupples=True)
                     else:
                         result = cur.fetchmany(records, _tupples=True)
                 except psycopg.ProgrammingError:
@@ -1537,6 +1542,12 @@ Failed to reset the connection to the server due to following error:
         """
 
         return self.row_count
+
+    @property
+    def total_rows(self):
+        if self.__async_cursor is None:
+            return 0
+        return self.__async_cursor.rowcount
 
     def get_column_info(self):
         """

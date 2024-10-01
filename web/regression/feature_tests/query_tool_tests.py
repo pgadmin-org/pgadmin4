@@ -47,10 +47,10 @@ class QueryToolFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self._reset_options()
-        # on demand result set on scrolling.
-        print("\nOn demand query result... ",
+        # pagination result on page change.
+        print("\nPagination query result... ",
               file=sys.stderr, end="")
-        self._on_demand_result()
+        self._pagination_result()
         self.page.clear_query_tool()
 
         # explain query with verbose and cost
@@ -129,18 +129,12 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # close menu
         query_op.click()
 
-    def _on_demand_result(self):
-        ON_DEMAND_CHUNKS = 2
-        row_id_to_find = config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS
-
-        query = """-- On demand query result on scroll
--- Grid select all
--- Column select all
+    def _pagination_result(self):
+        query = """-- Pagination result
 SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
-            config.ON_DEMAND_RECORD_COUNT * ON_DEMAND_CHUNKS)
+            config.DATA_RESULT_ROWS_PER_PAGE * 2.5)
 
-        print("\nOn demand result set on scrolling... ",
-              file=sys.stderr, end="")
+        print("\nPagination result... ", file=sys.stderr, end="")
         self.page.execute_query(query)
 
         # wait for header of the table to be visible
@@ -151,94 +145,33 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             (By.CSS_SELECTOR,
              QueryToolLocators.query_output_cells)))
 
-        self.page.find_by_css_selector(
-            QueryToolLocators.query_output_canvas_css)
+        for i, page in enumerate([
+            {'page_info': '1 to 1000', 'cell_rownum': '1'},
+            {'page_info': '1001 to 2000', 'cell_rownum': '1001'},
+            {'page_info': '2001 to 2500', 'cell_rownum': '2001'}
+        ]):
+            page_info = self.page.find_by_css_selector(
+                QueryToolLocators.pagination_inputs +
+                f' span:nth-of-type(1)')
 
-        self._check_ondemand_result(row_id_to_find)
-        print("OK.", file=sys.stderr)
+            self.assertEqual(page_info.text, f"Showing: {page['page_info']}")
 
-        print("On demand result set on grid select all... ",
-              file=sys.stderr, end="")
-        self.page.click_execute_query_button()
+            page_info = self.page.find_by_css_selector(
+                QueryToolLocators.pagination_inputs + ' span:nth-of-type(3)')
 
-        # wait for header of the table to be visible
-        self.page.find_by_css_selector(
-            QueryToolLocators.query_output_canvas_css)
+            self.assertEqual(page_info.text, "of 3")
 
-        # wait for the rows in the table to be displayed
-        self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR,
-             QueryToolLocators.query_output_cells))
-        )
+            cell_rownum = self.page.find_by_css_selector(
+                QueryToolLocators.query_output_cells + ':nth-of-type(1)')
 
-        # Select all rows in a table
-        multiple_check = True
-        while multiple_check:
-            try:
-                select_all = self.wait.until(EC.element_to_be_clickable(
-                    (By.XPATH, QueryToolLocators.select_all_column)))
-                select_all.click()
-                multiple_check = False
-            except (StaleElementReferenceException,
-                    ElementClickInterceptedException):
-                pass
+            self.assertEqual(cell_rownum.text, page['cell_rownum'])
 
-        self._check_ondemand_result(row_id_to_find)
-        print("OK.", file=sys.stderr)
-
-        print("On demand result set on column select all... ",
-              file=sys.stderr, end="")
-        self.page.click_execute_query_button()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
-
-        # wait for header of the table to be visible
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
-
-        # wait for the rows in the table to be displayed
-        self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR,
-             QueryToolLocators.query_output_cells))
-        )
-
-        self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
-
-        self._check_ondemand_result(row_id_to_find)
-        print("OK.", file=sys.stderr)
-
-    def _check_ondemand_result(self, row_id_to_find):
-        # scroll to bottom to bring last row of next chunk in viewport.
-        scroll = 10
-        status = False
-        while scroll:
-            # click on first data column to select all column.
-            column_1 = \
+            if i < 2:
                 self.page.find_by_css_selector(
-                    QueryToolLocators.output_column_header_css.format('id1'))
-            column_1.click()
-            grid = self.page.find_by_css_selector('.rdg')
-            scrolling_height = grid.size['height']
-            self.driver.execute_script(
-                "document.querySelector('.rdg').scrollTop="
-                "document.querySelector('.rdg').scrollHeight"
-            )
-            # Table height takes some time to update, for which their is no
-            # particular way
-            time.sleep(2)
-            if grid.size['height'] == scrolling_height and \
-                self.page.check_if_element_exist_by_xpath(
-                    QueryToolLocators.output_column_data_xpath.format(
-                        row_id_to_find)):
-                status = True
-                break
-            else:
-                scroll -= 1
+                    QueryToolLocators.pagination_inputs +
+                    ' button[aria-label="Next Page"]').click()
 
-        self.assertTrue(
-            status, "Element is not loaded to the rows id: "
-                    "{}".format(row_id_to_find))
+            self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
     def _query_tool_explain_with_verbose_and_cost(self):
         query = """-- Explain query with verbose and cost

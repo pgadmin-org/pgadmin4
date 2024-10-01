@@ -14,7 +14,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_EDITOR, PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\
     PREF_LABEL_SQL_FORMATTING, PREF_LABEL_GRAPH_VISUALISER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields
-from config import ON_DEMAND_RECORD_COUNT
+from config import DATA_RESULT_ROWS_PER_PAGE
 
 UPPER_CASE_STR = gettext('Upper case')
 LOWER_CASE_STR = gettext('Lower case')
@@ -346,15 +346,15 @@ def register_query_tool_preferences(self):
         ),
     )
 
-    self.on_demand_record_count = self.preference.register(
-        'Results_grid', 'on_demand_record_count',
-        gettext("On demand record count"), 'integer', ON_DEMAND_RECORD_COUNT,
-        min_val=1,
+    self.data_result_rows_per_page = self.preference.register(
+        'Results_grid', 'data_result_rows_per_page',
+        gettext("Data result rows per page"), 'integer',
+        DATA_RESULT_ROWS_PER_PAGE, min_val=10,
         category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('Specify the number of records to fetch in one batch '
-                         'in query tool when query result set is large. '
-                         'Changing this value will override '
-                         'ON_DEMAND_RECORD_COUNT setting from config file.')
+        help_str=gettext('Specify the number of records to fetch in one batch.'
+                         ' Changing this value will override'
+                         ' DATA_RESULT_ROWS_PER_PAGE setting from config '
+                         ' file.')
     )
 
     self.sql_font_size = self.preference.register(

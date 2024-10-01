@@ -41,7 +41,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
   const eventBus = useContext(QueryToolEventsContext);
   const [position, setPosition] = useState([1, 1]);
   const [lastTaskText, setLastTaskText] = useState(null);
-  const [rowsCount, setRowsCount] = useState([0, 0]);
+  const [rowsCount, setRowsCount] = useState(0);
   const [selectedRowsCount, setSelectedRowsCount] = useState(0);
   const [dataRowChangeCounts, setDataRowChangeCounts] = useState({
     isDirty: false,
@@ -52,6 +52,8 @@ export function StatusBar({eol, handleEndOfLineChange}) {
   const {seconds, minutes, hours, msec, start:startTimer, pause:pauseTimer, reset:resetTimer} = useStopwatch({});
   const eolMenuRef = React.useRef(null);
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
+  // NONE - no select, PAGE - show select all, ALL - select all.
+  const [allRowsSelect, setAllRowsSelect] = useState('NONE');
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, (newPos)=>{
@@ -70,20 +72,30 @@ export function StatusBar({eol, handleEndOfLineChange}) {
       pauseTimer(endTime);
       setLastTaskText(taskText);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.ROWS_FETCHED, (fetched, total)=>{
-      setRowsCount([fetched||0, total||0]);
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TOTAL_ROWS_COUNT, (total)=>{
+      setRowsCount(total);
+    });
+    eventBus.registerListener(QUERY_TOOL_EVENTS.ALL_ROWS_SELECTED_STATUS, (v)=>{
+      setAllRowsSelect(v);
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows)=>{
       setSelectedRowsCount(rows);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (_isDirty, dataChangeStore)=>{
+  }, []);
+
+  useEffect(()=>{
+    const unregDataChange = eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (_isDirty, dataChangeStore)=>{
       setDataRowChangeCounts({
         added: Object.keys(dataChangeStore.added||{}).length,
         updated: Object.keys(dataChangeStore.updated||{}).length,
-        deleted: Object.keys(dataChangeStore.deleted||{}).length,
+        deleted: dataChangeStore.delete_all ? rowsCount : Object.keys(dataChangeStore.deleted||{}).length,
       });
     });
-  }, []);
+
+    return ()=>{
+      unregDataChange();
+    };
+  }, [rowsCount]);
 
   let stagedText = '';
   if(dataRowChangeCounts.added > 0) {
@@ -98,7 +110,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
 
   return (
     <StyledBox>
-      <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s of %s', rowsCount[0], rowsCount[1])}</Box>
+      {rowsCount && <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s', rowsCount)}</Box>}
       {lastTaskText &&
         <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
@@ -106,13 +118,13 @@ export function StatusBar({eol, handleEndOfLineChange}) {
         <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
       {Boolean(selectedRowsCount) &&
-        <Box className='StatusBar-padding StatusBar-divider'>{gettext('Rows selected: %s',selectedRowsCount)}</Box>}
+        <Box className='StatusBar-padding StatusBar-divider'>{gettext('Rows selected: %s', allRowsSelect == 'ALL' ? rowsCount : selectedRowsCount)}</Box>}
       {stagedText &&
         <Box className='StatusBar-padding StatusBar-divider'>
           <span>{gettext('Changes staged: %s', stagedText)}</span>
         </Box>
       }
-      
+
       <Box className='StatusBar-padding StatusBar-mlAuto' style={{display:'flex'}}>
         <Box className="StatusBar-padding StatusBar-divider">
           <Tooltip title="Select EOL Sequence" disableInteractive enterDelay={2500}>

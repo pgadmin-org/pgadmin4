@@ -214,6 +214,48 @@ Data Editing Options
    | SQL                  | Use the SQL button to check the current query that gave the data.                                 |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
+
+Pagination Options
+********************
+
+.. image:: images/query_data_pagination.png
+    :alt: Query tool data pagination options
+    :align: center
+
+.. table::
+   :class: longtable
+   :widths: 1 4 1
+
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | Icon                 | Behavior                                                                                          | Shortcut       |
+   +======================+===================================================================================================+================+
+   | *Rows Range*         | Show the current row numbers visible in the data grid.                                            |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Edit Range*         | Click to open the from and to rows range inputs to allow setting them.                            |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Page No*            | Enter the page no you want to jump to out of total shown next to this input                       |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *First Page*         | Click to go to the first page.                                                                    |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Previous Page*      | Click to go to the previous page.                                                                 |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Next Page*          | Click to go to the next page.                                                                     |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Last Page*          | Click to go to the last page.                                                                     |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+
+
+.. image:: images/query_data_pagination_edit.png
+    :alt: Query tool data pagination options
+    :align: center
+
+One can click the edit range button to open rows range editor:
+
+* From and to range should be between 1 and total rows.
+* The range can be applied by clicking the *Apply* button or by pressing enter in the range inputs.
+* Once the range is applied, pgAdmin will recalculate the rows per page. The pagination will then behave based on the new rows per page.
+* It may be possible that on pressing next page button, the new rows range is not next to manually enterred range.
+
 Status Bar
 **********
 

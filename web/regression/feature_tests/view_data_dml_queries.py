@@ -172,8 +172,6 @@ CREATE TABLE public.nonintpkey
         self._copy_paste_row(config_data_local)
 
         self._update_row(config_data_local)
-        self.page.click_tab("Messages")
-        self._verify_messsages("")
         self.page.click_tab("Data Output")
         updated_row_data = {
             i: config_data_local['update'][i] if i in config_data_local[
