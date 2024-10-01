@@ -20,7 +20,10 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #1780 <https://github.com/pgadmin-org/pgadmin4/issues/1780>`_ -  Replace infinite scrolling with pagination in query tool data output for better UX and performance.
+  | `Issue #2874 <https://github.com/pgadmin-org/pgadmin4/issues/2874>`_ -  Alternate the background color of rows to enhance readability.
   | `Issue #7393 <https://github.com/pgadmin-org/pgadmin4/issues/7393>`_ -  Added support for auto-detecting and setting the End-of-line character (LF/CRLF) in the query tool editor.
+  | `Issue #7863 <https://github.com/pgadmin-org/pgadmin4/issues/7863>`_ -  Make the background color for the serial number and header cells distinct.
 
 Housekeeping
 ************
