@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
+import { getPlatform } from '../../../../../static/js/utils';
 
 export const QUERY_TOOL_EVENTS = {
   TRIGGER_STOP_EXECUTION: 'TRIGGER_STOP_EXECUTION',
@@ -113,4 +114,4 @@ export const PANELS = {
 
 export const MAX_QUERY_LENGTH = 1000000;
 
-export const OS_EOL = navigator.platform === 'win32' ? 'crlf' : 'lf';
+export const OS_EOL = getPlatform() === 'Windows' ? 'crlf' : 'lf';

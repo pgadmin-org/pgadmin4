@@ -736,3 +736,16 @@ export const memoizeTimeout = (fn, time) => new Proxy(fn, {
     return result;
   }
 });
+
+export function getPlatform() {
+  const platform = navigator.userAgent;
+  if (platform.includes('Win')) {
+    return 'Windows';
+  } else if (platform.includes('Mac')) {
+    return 'Mac';
+  } else if (platform.includes('Linux')) {
+    return 'Linux';
+  } else {
+    return 'Unknown';
+  }
+}
