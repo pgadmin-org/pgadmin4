@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Fixup the passwd file, in case we're on OpenShift
 if ! whoami > /dev/null 2>&1; then
@@ -8,6 +8,30 @@ if ! whoami > /dev/null 2>&1; then
     fi
   fi
 fi
+
+# usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, for Docker's secrets feature)
+function file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		printf >&2 'error: both %s and %s are set (but are exclusive)\n' "$var" "$fileVar"
+		exit 1
+	fi
+	local val="$def"
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+}
+
+# Set values for config variables that can be passed using secrets
+file_env PGADMIN_CONFIG_CONFIG_DATABASE_URI
+file_env PGADMIN_DEFAULT_PASSWORD
 
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
@@ -40,7 +64,7 @@ fi
 # Check whether the external configuration database exists if it is being used.
 external_config_db_exists="False"
 if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}" ]; then
-     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(${PGADMIN_CONFIG_CONFIG_DATABASE_URI}); print(val)")
+     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db("${PGADMIN_CONFIG_CONFIG_DATABASE_URI}"); print(val)")
 fi
 
 if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "False" ]; then
@@ -59,7 +83,6 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
         ALLOW_SPECIAL_EMAIL_DOMAINS=${PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS}
     fi
      email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}}"
-#    email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}}"
     echo "email config is ${email_config}"
      is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${email_config}); print(val)")
      if echo "${is_valid_email}" | grep "False" > /dev/null; then
@@ -68,12 +91,6 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
      fi
     # Switch back to root directory for further process
     cd /pgadmin4
-
-    # Read secret contents
-    if [ -n "${PGADMIN_DEFAULT_PASSWORD_FILE}" ]; then
-        PGADMIN_DEFAULT_PASSWORD=$(cat "${PGADMIN_DEFAULT_PASSWORD_FILE}")
-        export PGADMIN_DEFAULT_PASSWORD
-    fi
 
     # Set the default username and password in a
     # backwards compatible way

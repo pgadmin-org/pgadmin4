@@ -191,6 +191,7 @@ COPY DEPENDENCIES /pgadmin4/DEPENDENCIES
 # Install runtime dependencies and configure everything in one RUN step
 RUN apk add --no-cache \
         python3 \
+        bash \
         py3-pip \
         postfix \
         krb5-libs \
