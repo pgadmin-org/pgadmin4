@@ -935,7 +935,7 @@ function Dashboard({
   const filteredDashData = useMemo(()=>{
     if (mainTabVal == 1 && activeOnly && dashData.length > 0) {
       // we want to show 'idle in transaction', 'active', 'active in transaction', and future non-blank, non-"idle" status values
-      return dashData[0]['activity'].filter((r)=>(r.state && r.state != '' && r.state != 'idle'));
+      return dashData[0]['activity']?.filter((r)=>(r.state && r.state != '' && r.state != 'idle'));
     }
     return dashData && dashData[0] && dashData[0]['activity'] || [];
   }, [dashData, activeOnly, mainTabVal]);
