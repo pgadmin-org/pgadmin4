@@ -89,6 +89,15 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
 export const RowInfoContext = React.createContext();
 export const DataGridExtrasContext = React.createContext();
 
+function getCopyShortcutHandler(handleCopy) {
+  return (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+      e.preventDefault();
+      handleCopy();
+    }
+  };
+}
+
 function CustomRow(props) {
   const rowRef = useRef();
   const dataGridExtras = useContext(DataGridExtrasContext);
@@ -104,14 +113,17 @@ function CustomRow(props) {
   } else if(props.selectedCellIdx == 0) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
-  const openEditorOnEnter = (e)=>{
+  const handleKeyDown = (e)=>{
+    const handleCopyShortcut = getCopyShortcutHandler(dataGridExtras.handleCopy);
+    // Invokes the copy handler.
+    handleCopyShortcut(e);
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
       props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
   };
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
-      <Row ref={rowRef} onKeyDown={openEditorOnEnter} {...props} />
+      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} />
     </RowInfoContext.Provider>
   );
 }
@@ -124,14 +136,6 @@ CustomRow.propTypes = {
   viewportColumns: PropTypes.array,
   selectCell: PropTypes.func,
 };
-
-function getCopyShortcutHandler(handleCopy) {
-  return (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
-      handleCopy();
-    }
-  };
-}
 
 function SelectAllHeaderRenderer({isCellSelected}) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
