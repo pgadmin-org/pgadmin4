@@ -15,6 +15,7 @@ fi
 function file_env() {
 	local var="$1"
 	local fileVar="${var}_FILE"
+	local def="${2:-}"
 	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
 		printf >&2 'error: both %s and %s are set (but are exclusive)\n' "$var" "$fileVar"
 		exit 1
@@ -30,7 +31,9 @@ function file_env() {
 }
 
 # Set values for config variables that can be passed using secrets
-file_env PGADMIN_CONFIG_CONFIG_DATABASE_URI
+if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI_FILE}" ]; then
+  file_env PGADMIN_CONFIG_CONFIG_DATABASE_URI
+fi
 file_env PGADMIN_DEFAULT_PASSWORD
 
 # Populate config_distro.py. This has some default config, as well as anything
