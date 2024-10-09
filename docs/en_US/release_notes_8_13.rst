@@ -39,5 +39,6 @@ Bug fixes
   | `Issue #7919 <https://github.com/pgadmin-org/pgadmin4/issues/7919>`_ -  Fixed an issue where the dock layout was not saved upon closing a tab.
   | `Issue #7920 <https://github.com/pgadmin-org/pgadmin4/issues/7920>`_ -  Fixed an issue where the copy shortcut CTRL +C was not working in the Query Tool data grid.
   | `Issue #7955 <https://github.com/pgadmin-org/pgadmin4/issues/7955>`_ -  Fixed an issue where Dashboard tab showing 'Something went wrong'.
+  | `Issue #7957 <https://github.com/pgadmin-org/pgadmin4/issues/7957>`_ -  Fixed an issue where cursor selection is not visible in the PSQL tool.
   | `Issue #7965 <https://github.com/pgadmin-org/pgadmin4/issues/7965>`_ -  Allow OAuth2 params OAUTH2_NAME, OAUTH2_DISPLAY_NAME, OAUTH2_ICON, OAUTH2_BUTTON_COLOR to be optional.
   | `Issue #7988 <https://github.com/pgadmin-org/pgadmin4/issues/7988>`_ -  Add appropriate minimum width and height setting for desktop apps to avoid app accidentally going below visibility levels.

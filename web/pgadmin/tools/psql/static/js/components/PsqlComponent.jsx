@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect } from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 
@@ -20,6 +20,16 @@ import { io } from 'socketio';
 import { copyToClipboard } from '../../../../../static/js/clipboard';
 import 'pgadmin.browser.keyboard';
 import gettext from 'sources/gettext';
+
+
+const Root = styled(Box)(()=>({
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  flexGrow: '1',
+  tabIndex: '0',
+}));
 
 function psql_socket_io(socket, is_enable, sid, db, server_type, fitAddon, term, role){
   // Listen all the socket events emit from server.
@@ -163,7 +173,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
         foreground: theme.palette.text.primary,
         cursor: theme.palette.text.primary,
         cursorAccent: theme.palette.text.primary,
-        selection: theme.palette.primary.main
+        selectionBackground: `${theme.otherVars.editor.selectionBg}`,
       };
     }
   };
@@ -191,8 +201,8 @@ export default function  PsqlComponent({ params, pgAdmin }) {
 
 
   return (
-    <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
-    </Box>
+    <Root ref={containerRef}>
+    </Root>
   );
 }
 
