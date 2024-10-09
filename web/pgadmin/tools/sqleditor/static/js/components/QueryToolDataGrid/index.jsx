@@ -67,10 +67,10 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
   },
+  '& .rdg-row.rdg-row-even': {
+    backgroundColor: theme.palette.grey[200],
+  },
   '& .rdg-row': {
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.grey[200],
-    },
     '& .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.grey[600],
     },
