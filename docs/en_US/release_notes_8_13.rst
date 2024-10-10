@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 16.4
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 17.0
 
 
 New features
@@ -43,3 +43,6 @@ Bug fixes
   | `Issue #7965 <https://github.com/pgadmin-org/pgadmin4/issues/7965>`_ -  Allow OAuth2 params OAUTH2_NAME, OAUTH2_DISPLAY_NAME, OAUTH2_ICON, OAUTH2_BUTTON_COLOR to be optional.
   | `Issue #7988 <https://github.com/pgadmin-org/pgadmin4/issues/7988>`_ -  Add appropriate minimum width and height setting for desktop apps to avoid app accidentally going below visibility levels.
   | `Issue #7993 <https://github.com/pgadmin-org/pgadmin4/issues/7993>`_ -  Fixed an issue where graphical explain keeps the node details open even after plan changed.
+  | `Issue #8007 <https://github.com/pgadmin-org/pgadmin4/issues/8007>`_ -  Fixed an issue in the debugger where function arguments of the character data type were being truncated.
+  | `Issue #8013 <https://github.com/pgadmin-org/pgadmin4/issues/8013>`_ -  Fix the issue where rows do not retain shading when scrolling.
+  | `Issue #8022 <https://github.com/pgadmin-org/pgadmin4/issues/8022>`_ -  Use PG17 as the default in the container.
