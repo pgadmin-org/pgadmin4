@@ -11,9 +11,9 @@
 {% for dict_item in data %}
 {% if 'type' in dict_item and 'value' in dict_item %}
 {% if ('NULL:' not in dict_item['value']|string and dict_item['value'] != 'NULL' and '[]' not in dict_item['type']) %}
-{{ dict_item['value']|qtLiteral(conn) }}::{{ dict_item['type'] }}{% if not loop.last %}, {% endif %}
+{{ dict_item['value']|qtLiteral(conn) }}::{{ dict_item['type'] }}{% if dict_item['type'] == 'character' %}({{ dict_item['value']|length }}){% endif %}{% if not loop.last %}, {% endif %}
 {% elif dict_item['value'] == 'NULL' or 'NULL:' in dict_item['value'] %}
-{{ dict_item['value'] }}::{{ dict_item['type'] }}{% if not loop.last %}, {% endif %}
+{{ dict_item['value'] }}::{{ dict_item['type'] }}{% if dict_item['type'] == 'character' %}({{ dict_item['value']|length }}){% endif %}{% if not loop.last %}, {% endif %}
 {% else %}
 {% if '[]' in dict_item['type'] %}
  ARRAY[
@@ -22,9 +22,9 @@
 {{ dict_list['value']|qtLiteral(conn) }}{% if not loop.last %}, {% endif %}
 {% endif %}
 {% endfor %}
-]::{{ dict_item['type'] }}
+]::{{ dict_item['type'] }}{% if dict_item['type'] == 'character' %}({{ dict_item['value']|length }}){% endif %}
 
-{% else %} {{ dict_item['value'] }}::{{ dict_item['type'] }}
+{% else %} {{ dict_item['value'] }}::{{ dict_item['type'] }}{% if dict_item['type'] == 'character' %}({{ dict_item['value']|length }}){% endif %}
 {% endif %} {% if not loop.last %}, {% endif %}
 {% endif %}
 {% endif %}
