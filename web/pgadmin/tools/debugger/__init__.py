@@ -1005,9 +1005,6 @@ def start_debugger_listener(trans_id):
         did=de_inst.debugger_data['database_id'],
         conn_id=de_inst.debugger_data['conn_id'])
 
-    ver = manager.version
-    server_type = manager.server_type
-
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
