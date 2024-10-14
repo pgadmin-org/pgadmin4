@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the pgAdmin project.
 #
 # oon arfiandwi <oon@oo.or.id>, 2023.
+# kiraware <kiraware@github.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version:  pgAdmin4\n"
 "Report-Msgid-Bugs-To: oon@oo.or.id\n"
 "POT-Creation-Date: 2024-10-10 17:50+0530\n"
 "PO-Revision-Date: 2024-06-08 07:54+0000\n"
-"Last-Translator: oon arfiandwi <oon@oo.or.id>\n"
+"Last-Translator: kiraware <kiraware@github.com>\n"
 "Language: id\n"
 "Language-Team: Indonesian <http://webl.oo.or.id/projects/pgadmin4/web-"
 "pgadmin/id/>\n"
@@ -69,7 +70,7 @@ msgstr "Mode Aplikasi"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:54
 msgid "Commit:"
-msgstr ""
+msgstr "Komit:"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:62
 msgid "Current User"
@@ -77,7 +78,7 @@ msgstr "Pengguna saat ini"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:71
 msgid "Electron Version"
-msgstr ""
+msgstr "Versi Electron"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:80 pgadmin/browser/__init__.py:86
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:358
@@ -98,7 +99,7 @@ msgstr "File log"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:119
 msgid "pgAdmin Server Configuration"
-msgstr ""
+msgstr "Konfigurasi Server pgAdmin"
 
 #: pgadmin/about/static/js/about.js:43
 #, python-format
@@ -418,6 +419,9 @@ msgid ""
 "utility specified {0}. Please check that the hook utility is configured "
 "correctly."
 msgstr ""
+"Password master tidak dapat diambil dari utilitas MASTER_PASSWORD_HOOK "
+"yang ditentukan {0}. Silakan periksa apakah utilitas hook telah "
+"dikonfigurasi dengan benar."
 
 #: pgadmin/browser/__init__.py:825
 msgid "Incorrect master password"
@@ -603,7 +607,7 @@ msgstr "Panel tab ke belakang"
 
 #: pgadmin/browser/register_browser_preferences.py:162
 msgid "Close tab panel"
-msgstr ""
+msgstr "Tutup panel tab"
 
 #: pgadmin/browser/register_browser_preferences.py:177
 msgid "Tabbed panel forward"
@@ -1308,7 +1312,7 @@ msgstr "Cast..."
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:391
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:438
 msgid "Something went wrong"
-msgstr ""
+msgstr "Ada yang salah"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.ui.js:49
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:67
@@ -8907,7 +8911,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:212
 msgid "Reassign/Drop Owned - ${data.label}"
-msgstr ""
+msgstr "Pindahkan/Hapus Kepemilikan - ${data.label}"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:213
 msgid "Reassign/Drop"
@@ -10610,15 +10614,15 @@ msgstr "Tampilkan aktivitas?"
 
 #: pgadmin/dashboard/__init__.py:162
 msgid "If set to True, activity will be displayed on dashboards."
-msgstr ""
+msgstr "Jika diatur ke True, aktivitas akan ditampilkan di dasbor."
 
 #: pgadmin/dashboard/__init__.py:168
 msgid "Show state?"
-msgstr ""
+msgstr "Tampilkan status?"
 
 #: pgadmin/dashboard/__init__.py:170
 msgid "If set to True, state tables will be displayed on dashboards."
-msgstr ""
+msgstr "Jika diatur ke True, tabel status akan ditampilkan di dasbor."
 
 #: pgadmin/dashboard/__init__.py:176
 msgid "Long running query thresholds"
@@ -10817,7 +10821,7 @@ msgstr "Sesi aktif saja"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:320
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitas"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:322
 msgid "Configuration"
@@ -10826,11 +10830,11 @@ msgstr "Konfigurasi"
 #: pgadmin/dashboard/static/js/Dashboard.jsx:322
 #: pgadmin/dashboard/static/js/Dashboard.jsx:515
 msgid "Logs"
-msgstr ""
+msgstr "Log"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:322
 msgid "System"
-msgstr ""
+msgstr "Sistem"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:326
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:56
@@ -10882,19 +10886,19 @@ msgstr "Deskripsi"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:474
 msgid "Failed to download the logs."
-msgstr ""
+msgstr "Gagal mengunduh log."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:489
 msgid "View the log details"
-msgstr ""
+msgstr "Lihat detail log"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:494
 msgid "Error Severity"
-msgstr ""
+msgstr "Tingkat Kesalahan"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:504
 msgid "Log Prefix/Timestamp"
-msgstr ""
+msgstr "Prefix Log/Timestamp"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:558
 msgid "View the active session details"
@@ -10966,15 +10970,15 @@ msgstr "Disiapkan pada"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:827
 msgid "Text"
-msgstr ""
+msgstr "Teks"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:828
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:829
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:851
 msgid "Please connect to the selected server to view the dashboard."
@@ -10986,13 +10990,15 @@ msgstr "Memuat dasbor..."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:880
 msgid "Loading logs..."
-msgstr ""
+msgstr "Memuat log..."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:889
 msgid ""
 "Please enable the logging to view the server logs or check the log file "
 "is in place or not."
 msgstr ""
+"Silakan aktifkan logging untuk melihat log server atau periksa apakah file log "
+"ada di tempatnya.
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:911
 msgid ""
@@ -11010,19 +11016,19 @@ msgstr "Gagal memverifikasi keberadaan ekstensi statistik sistem."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:966
 msgid "Table based logs"
-msgstr ""
+msgstr "Log berbasis tabel"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:971
 msgid "Log Format"
-msgstr ""
+msgstr "Format Log"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:983
 msgid "Tabular format?"
-msgstr ""
+msgstr "Format tabular?"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:1001
 msgid "Download logs "
-msgstr ""
+msgstr "Unduh log"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:1085
 msgid "Sessions"
@@ -11091,15 +11097,15 @@ msgstr "Blok I/O"
 
 #: pgadmin/dashboard/static/js/ServerLog.ui.js:25
 msgid "Error severity"
-msgstr ""
+msgstr "Tingkat kesalahan"
 
 #: pgadmin/dashboard/static/js/ServerLog.ui.js:33
 msgid "Log line prefix/timestamp"
-msgstr ""
+msgstr "Prefix log/timestamp"
 
 #: pgadmin/dashboard/static/js/ServerLog.ui.js:41
 msgid "Log"
-msgstr ""
+msgstr "Log"
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:154
 msgid "Welcome"
@@ -11659,6 +11665,8 @@ msgid ""
 "Click the save button to apply the theme. Below is the preview of the "
 "theme."
 msgstr ""
+"Klik tombol simpan untuk menerapkan tema. Di bawah ini adalah pratinjau "
+"tema."
 
 #: pgadmin/misc/__init__.py:249
 msgid "Invalid binary path."
@@ -12967,15 +12975,15 @@ msgstr ""
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:620
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:715
 msgid "Reset all preferences"
-msgstr ""
+msgstr "Atur ulang semua preferensi"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:633
 msgid "Save & Reload"
-msgstr ""
+msgstr "Simpan & Muat Ulang"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:641
 msgid "Save & Reload Later"
-msgstr ""
+msgstr "Simpan & Muat Ulang Nanti"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:709
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:206
@@ -12995,7 +13003,7 @@ msgstr "Atur ulang tata letak"
 
 #: pgadmin/settings/__init__.py:124
 msgid "Setting stored"
-msgstr ""
+msgstr "Pengaturan disimpan"
 
 #: pgadmin/static/js/BrowserComponent.jsx:45
 msgid "Dashboard"
@@ -13011,11 +13019,11 @@ msgstr "Bergantung"
 
 #: pgadmin/static/js/BrowserComponent.jsx:104
 msgid "Quit pgAdmin 4"
-msgstr ""
+msgstr "Keluar dari pgAdmin 4"
 
 #: pgadmin/static/js/BrowserComponent.jsx:105
 msgid "Are you sure you want to quit the application?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin keluar dari aplikasi?"
 
 #: pgadmin/static/js/api_instance.js:48 pgadmin/static/js/socket_instance.js:48
 msgid "Connection to pgAdmin server has been lost"
@@ -13184,6 +13192,9 @@ msgid ""
 "${keyringName}. Enter the master password for your existing pgAdmin saved"
 " passwords and they will be re-encrypted and saved when you click OK."
 msgstr ""
+"Password yang disimpan dienkripsi menggunakan kunci enkripsi yang disimpan di "
+"${keyringName}. Masukkan password master untuk password pgAdmin yang sudah "
+"disimpan dan mereka akan dienkripsi ulang dan disimpan saat Anda mengklik OK."
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:81
 msgid "Please set a master password for pgAdmin."
@@ -13221,13 +13232,15 @@ msgstr "Judul tidak boleh kosong"
 
 #: pgadmin/static/js/Dialogs/index.jsx:92
 msgid "Migration failed"
-msgstr ""
+msgstr "Migrasi gagal"
 
 #: pgadmin/static/js/Dialogs/index.jsx:93
 msgid ""
 "Passwords previously saved can not be re-encrypted using encryption key "
 "stored in the ${res.data.data.keyring_name}. due to ${error}"
 msgstr ""
+"Password yang sebelumnya disimpan tidak dapat dienkripsi ulang menggunakan "
+"kunci enkripsi yang disimpan di ${res.data.data.keyring_name} karena ${error}."
 
 #: pgadmin/static/js/Dialogs/index.jsx:95
 msgid "Migration successful"
@@ -13238,6 +13251,8 @@ msgid ""
 "Passwords previously saved are re-encrypted using encryption key stored "
 "in the ${res.data.data.keyring_name}."
 msgstr ""
+"Password yang sebelumnya disimpan telah dienkripsi ulang menggunakan kunci "
+"enkripsi yang disimpan di ${res.data.data.keyring_name}."
 
 #: pgadmin/static/js/Dialogs/index.jsx:108
 msgid "Set Master Password"
@@ -13435,7 +13450,7 @@ msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 msgstr ""
-"Gunakan tombol Explain/Explain analyze untuk menghasilkan rencana kueri. "
+"Gunakan tombol Jelaskan/Jelaskan Analisis untuk menghasilkan rencana kueri. "
 "Atau, Anda juga dapat mengeksekusi \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 
 #: pgadmin/static/js/PgTreeView/index.jsx:99
@@ -13477,7 +13492,7 @@ msgstr "Tidak ada pembaruan."
 
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:201
 msgid "SQL help for this object type."
-msgstr ""
+msgstr "Bantuan SQL untuk tipe objek ini."
 
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:218
 msgid "Reset"
@@ -13489,7 +13504,7 @@ msgstr "Edit objek..."
 
 #: pgadmin/static/js/SchemaView/DataGridView/formHeader.jsx:169
 msgid "Add"
-msgstr ""
+msgstr "Tambah"
 
 #: pgadmin/static/js/SchemaView/DataGridView/header.jsx:91
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:374
@@ -15658,7 +15673,7 @@ msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
 msgstr ""
-"Schema Diff tidak mendukung perbandingan antara Server Postgres dan EDB "
+"Perbandingan skema tidak mendukung perbandingan antara Server Postgres dan EDB "
 "Postgres Advanced Server."
 
 #: pgadmin/tools/schema_diff/__init__.py:740
@@ -15717,7 +15732,7 @@ msgstr "Memuat grid hasil..."
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:83
 msgid "DDL Comparision"
-msgstr ""
+msgstr "Perbandingan DDL"
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:86
 msgid "Source"
@@ -15849,7 +15864,7 @@ msgstr "Ketergantungan tidak akan diselesaikan dalam perbandingan skema."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffComponent.jsx:73
 msgid "Error in schema diff initialize ${err.response.data}"
-msgstr ""
+msgstr "Kesalahan dalam inisialisasi perbandingan skema ${err.response.data}"
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:135
 msgid "Object name"
@@ -16182,7 +16197,7 @@ msgstr "Kunci harus unik."
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:104
 msgid "Name must be unique."
-msgstr ""
+msgstr "Nama harus unik."
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:30
 msgid ""
@@ -16326,7 +16341,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:502
 msgid "Open File"
-msgstr "Membuka file"
+msgstr "Buka Berkas"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:512
 msgid "Edit"
@@ -16334,7 +16349,7 @@ msgstr "Edit"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:518
 msgid "Sort/Filter"
-msgstr "Sortir/Filter"
+msgstr "Urutkan/Filter"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:520
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:690
@@ -16371,22 +16386,22 @@ msgstr "Eksekusi skrip"
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:448
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:425
 msgid "Execute query"
-msgstr ""
+msgstr "Eksekusi kueri"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:537
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:707
 msgid "Execute options"
-msgstr "Operasikan opsi"
+msgstr "Opsi eksekusi"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:904
 #: pgadmin/utils/constants.py:23
 msgid "Explain"
-msgstr "Explain"
+msgstr "Jelaskan"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:544
 msgid "Explain Analyze"
-msgstr "Explain Analyze"
+msgstr "Jelaskan Analisis"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:546
 msgid "Explain Settings"
@@ -16500,7 +16515,7 @@ msgstr "Kelola makro"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:648
 msgid "Add to macros"
-msgstr ""
+msgstr "Tambah ke makro"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:40
 msgid "Recorded time"
@@ -16621,7 +16636,7 @@ msgstr "mdtk"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:240
 msgid "Refetching latest results..."
-msgstr ""
+msgstr "Mengambil hasil terbaru..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:240
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:877
@@ -16687,7 +16702,7 @@ msgstr "Menghapus filter..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1069
 msgid "Fetching rows..."
-msgstr ""
+msgstr "Mengambil baris..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1112
 msgid "Save data changes?"
@@ -16741,53 +16756,53 @@ msgstr "Tidak ada output data. Ekskusu kueri untuk mendapatkan output."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:170
 msgid "Showing rows:"
-msgstr ""
+msgstr "Menampilkan baris:"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:181
 msgid "to"
-msgstr ""
+msgstr "hingga"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:192
 #, python-format
 msgid "Showing rows: %s to %s"
-msgstr ""
+msgstr "Menampilkan baris: %s hingga %s"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:195
 msgid "Apply (or press Enter on input)"
-msgstr ""
+msgstr "Terapkan (atau tekan Enter pada input)"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:195
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:200
 msgid "Edit range"
-msgstr ""
+msgstr "Rentang edit"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:200
 msgid "Cancel edit"
-msgstr ""
+msgstr "Batalkan edit"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:206
 msgid "Page No:"
-msgstr ""
+msgstr "Halaman No:"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:217
 msgid "of"
-msgstr ""
+msgstr "dari"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:220
 msgid "First Page"
-msgstr ""
+msgstr "Halaman Pertama"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:221
 msgid "Previous Page"
-msgstr ""
+msgstr "Halaman Sebelumnya"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:222
 msgid "Next Page"
-msgstr ""
+msgstr "Halaman Berikutnya"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:223
 msgid "Last Page"
-msgstr ""
+msgstr "Halaman Terakhir"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:378
 msgid "Copy options"
@@ -16811,20 +16826,20 @@ msgstr "Simpan Hasil untuk Diarsipkan"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:403
 msgid "SQL query of data"
-msgstr ""
+msgstr "Kueri SQL dari data"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:412
 msgid "All rows on this page are selected."
-msgstr ""
+msgstr "Semua baris di halaman ini telah dipilih."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:422
 #, python-format
 msgid "All %s rows are selected."
-msgstr ""
+msgstr "Semua %s baris telah dipilih."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:424
 msgid "Clear Selection"
-msgstr ""
+msgstr "Hapus Pilihan"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:438
 msgid "Copy Options Menu"
@@ -16860,7 +16875,7 @@ msgstr "Dihapus: %s"
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:114
 #, python-format
 msgid "Total rows: %s"
-msgstr ""
+msgstr "Total baris: %s"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:122
 #, python-format
@@ -16874,15 +16889,15 @@ msgstr "Perubahan bertahap: %s"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:150
 msgid "EOL Options Menu"
-msgstr ""
+msgstr "Menu Opsi EOL"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:152
 msgid "LF"
-msgstr ""
+msgstr "LF"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:153
 msgid "CRLF"
-msgstr ""
+msgstr "CRLF"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:156
 #, python-format
@@ -17038,17 +17053,19 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:149
 msgid "Underline query at cursor?"
-msgstr ""
+msgstr "Garis bawah kueri di posisi kursor?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid ""
 "If set to True, query tool will parse and underline the query at the "
 "cursor position."
 msgstr ""
+"Jika diatur ke True, alat kueri akan memparsing dan memberi garis bawah "
+"pada kueri di posisi kursor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:160
 msgid "Underlined query execute warning?"
-msgstr ""
+msgstr "Peringatan eksekusi kueri yang digarisbawahi?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:163
 msgid ""
@@ -17056,6 +17073,9 @@ msgid ""
 "button in the query tool. The warning will appear only if Underline query"
 " at cursor? is set to False."
 msgstr ""
+"Jika diatur ke True, alat kueri akan memberi peringatan saat mengklik tombol "
+"Eksekusi Kueri di alat kueri. Peringatan akan muncul hanya jika 'Garis bawah "
+"kueri di posisi kursor?' diatur ke False."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:172
 msgid "Plain text mode?"
@@ -17103,11 +17123,11 @@ msgstr "Menentukan apakah akan memasukkan braket berpasangan ke dalam editor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:213
 msgid "Highlight selection matches?"
-msgstr ""
+msgstr "Sorot kecocokan pilihan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:215
 msgid "Specifies whether or not to highlight matched selected text in the editor."
-msgstr ""
+msgstr "Menentukan apakah akan menyorot teks yang dipilih yang cocok di editor."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:223
 msgid "Brace matching?"
@@ -17213,13 +17233,15 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:351
 msgid "Data result rows per page"
-msgstr ""
+msgstr "Baris hasil data per halaman"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:354
 msgid ""
 "Specify the number of records to fetch in one batch. Changing this value "
 "will override DATA_RESULT_ROWS_PER_PAGE setting from config  file."
 msgstr ""
+"Tentukan jumlah catatan yang diambil dalam satu batch. Mengubah nilai ini "
+"akan menggantikan pengaturan DATA_RESULT_ROWS_PER_PAGE dari file konfigurasi."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:362
 msgid "Font size"
@@ -17412,13 +17434,15 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:907
 msgid "Auto-indent new line?"
-msgstr ""
+msgstr "Auto-indent baris baru?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:909
 msgid ""
 "Specifies whether the newly added line using enter key should be auto-"
 "indented or not"
 msgstr ""
+"Menentukan apakah baris yang baru ditambahkan menggunakan tombol enter "
+"harus di-indent otomatis atau tidak."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:917
 msgid "Expression Width"
@@ -17614,7 +17638,7 @@ msgid ""
 "Utility file not found. Please correct the Binary Path in the Preferences"
 " dialog"
 msgstr ""
-"File utilitas tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
+"Berkas utilitas tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
 "Preferensi"
 
 #: pgadmin/utils/__init__.py:347
@@ -17631,7 +17655,7 @@ msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
 "dialog"
 msgstr ""
-"File '%s' tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
+"Berkas '%s' tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
 "Preferensi"
 
 #: pgadmin/utils/__init__.py:569
@@ -17661,12 +17685,12 @@ msgstr "Atribut 'Host' atau 'Service' tidak ditemukan untuk server '%s'"
 #: pgadmin/utils/__init__.py:661
 #, python-format
 msgid "Error parsing input file %s: %s"
-msgstr "Kesalahan parsing file input %s: %s"
+msgstr "Kesalahan saat memparsing berkas input %s: %s"
 
 #: pgadmin/utils/__init__.py:664
 #, python-format
 msgid "Error reading input file %s: [%d] %s"
-msgstr "Kesalahan membaca file input %s: [%d] %s"
+msgstr "Kesalahan membaca berkas input %s: [%d] %s"
 
 #: pgadmin/utils/__init__.py:703
 #, python-format
@@ -17713,7 +17737,7 @@ msgstr "Memformat SQL"
 
 #: pgadmin/utils/constants.py:28
 msgid "Tab settings"
-msgstr "Pengaturan Tab"
+msgstr "Pengaturan tab"
 
 #: pgadmin/utils/constants.py:29
 msgid "Refresh rates"
@@ -17757,7 +17781,7 @@ msgstr "EDB Advanced Server 16"
 
 #: pgadmin/utils/constants.py:95
 msgid "EDB Advanced Server 17"
-msgstr ""
+msgstr "EDB Advanced Server 17"
 
 #: pgadmin/utils/constants.py:100
 msgid "PostgreSQL 12"
@@ -17781,7 +17805,7 @@ msgstr "PostgreSQL 16"
 
 #: pgadmin/utils/constants.py:115
 msgid "PostgreSQL 17"
-msgstr ""
+msgstr "PostgreSQL 17"
 
 #: pgadmin/utils/constants.py:123
 #, python-format
