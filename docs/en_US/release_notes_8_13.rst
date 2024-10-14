@@ -36,6 +36,7 @@ Bug fixes
   | `Issue #5307 <https://github.com/pgadmin-org/pgadmin4/issues/5307>`_ -  Fixed an issue to allow the Enter key to save data in the result grid text editor.
   | `Issue #7289 <https://github.com/pgadmin-org/pgadmin4/issues/7289>`_ -  Move 'About pgAdmin 4' to app menu on macOS.
   | `Issue #7837 <https://github.com/pgadmin-org/pgadmin4/issues/7837>`_ -  Fixed an issue where role properties were not loading.
+  | `Issue #7907 <https://github.com/pgadmin-org/pgadmin4/issues/7907>`_ -  Ensure server connection is successful for sslrootcert=system in server configuration.
   | `Issue #7919 <https://github.com/pgadmin-org/pgadmin4/issues/7919>`_ -  Fixed an issue where the dock layout was not saved upon closing a tab.
   | `Issue #7920 <https://github.com/pgadmin-org/pgadmin4/issues/7920>`_ -  Fixed an issue where the copy shortcut CTRL +C was not working in the Query Tool data grid.
   | `Issue #7955 <https://github.com/pgadmin-org/pgadmin4/issues/7955>`_ -  Fixed an issue where Dashboard tab showing 'Something went wrong'.
