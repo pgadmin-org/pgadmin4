@@ -833,6 +833,10 @@ export function ResultSet() {
   // NONE - no select, PAGE - show select all, ALL - select all.
   const [allRowsSelect, setAllRowsSelect] = useState('NONE');
 
+  // We'll use this track if any changes were saved.
+  // It will help to decide whether results refresh is required or not on page change.
+  const pageDataDirty = useRef(false);
+
   const selectedCell = useRef([]);
   const selectedRange = useRef(null);
   const setSelectedCell = (val)=>{
@@ -1093,9 +1097,23 @@ export function ResultSet() {
   };
 
   useEffect(()=>{
-    eventBus.registerListener(QUERY_TOOL_EVENTS.FETCH_WINDOW, fetchWindow);
+    let deregExecEnd;
+    const deregFetch = eventBus.registerListener(QUERY_TOOL_EVENTS.FETCH_WINDOW, (...args)=>{
+      if(pageDataDirty.current) {
+        deregExecEnd = eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, (success)=>{
+          if(!success) return;
+          pageDataDirty.current = false;
+          fetchWindow(...args);
+        }, true);
+        executionStartCallback(rsu.current.query, {refreshData: true});
+      } else {
+        pageDataDirty.current = false;
+        fetchWindow(...args);
+      }
+    });
     return ()=>{
-      eventBus.deregisterListener(QUERY_TOOL_EVENTS.FETCH_WINDOW, fetchWindow);
+      deregFetch();
+      deregExecEnd?.();
     };
   }, [columns]);
 
@@ -1171,7 +1189,7 @@ export function ResultSet() {
       } catch {/* History errors should not bother others */}
 
       if(!respData.data.status) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_DONE, false);
+        pageDataDirty.current = false;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
         pgAdmin.Browser.notifier.error(respData.data.result, 20000);
         // If the transaction is not idle, notify the user that previous queries are not rolled back,
@@ -1184,7 +1202,38 @@ export function ResultSet() {
         return;
       }
 
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_DONE, true);
+      pageDataDirty.current = true;
+      if(_.size(dataChangeStore.added)) {
+        // Update the rows in a grid after addition
+        respData.data.query_results.forEach((qr)=>{
+          if(!_.isNull(qr.row_added)) {
+            let rowClientPK = Object.keys(qr.row_added)[0];
+            setRows((prevRows)=>{
+              let rowIdx = prevRows.findIndex((r)=>rowKeyGetter(r)==rowClientPK);
+              return [
+                ...prevRows.slice(0, rowIdx),
+                {
+                  ...prevRows[rowIdx],
+                  ...qr.row_added[rowClientPK],
+                },
+                ...prevRows.slice(rowIdx+1),
+              ];
+            });
+          }
+        });
+      }
+      let deletedKeys = Object.keys(dataChangeStore.deleted);
+      if(deletedKeys.length == rows.length) {
+        setRows([]);
+      }
+      else if(deletedKeys.length > 0) {
+        setRows((prevRows)=>{
+          return prevRows.filter((row)=>{
+            return deletedKeys.indexOf(row[rsu.current.clientPK]) == -1;
+          });
+        });
+        setColumns((prev)=>prev);
+      }
       dispatchDataChange({type: 'reset'});
       setSelectedRows(new Set());
       setSelectedColumns(new Set());
@@ -1194,10 +1243,8 @@ export function ResultSet() {
       if(respData.data.transaction_status > CONNECTION_STATUS.TRANSACTION_STATUS_IDLE) {
         pgAdmin.Browser.notifier.info(gettext('Auto-commit is off. You still need to commit changes to the database.'));
       }
-
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, {refreshData: true});
     } catch (error) {
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_DONE, false);
+      pageDataDirty.current = false;
       eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
         checkTransaction: true,
       });
