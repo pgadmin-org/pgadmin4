@@ -308,7 +308,7 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
 
     ECHO Attempting to sign the pgAdmin4.exe...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /fd certHash /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
