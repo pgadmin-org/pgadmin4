@@ -68,6 +68,10 @@ function parseEwkbData(rows, column) {
       let value = item[key];
       let buffer = Buffer.from(value, 'hex');
       let geometry = WkxGeometry.parse(buffer);
+      if (isNaN(geometry.x) || isNaN(geometry.y)){
+        unsupportedRows.push(item);
+        return true;
+      }
       if (geometry.hasZ) {
         geometries3D.push(geometry);
         return true;
