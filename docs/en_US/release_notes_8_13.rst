@@ -2,7 +2,7 @@
 Version 8.13
 ************
 
-Release date: 2024-10-17
+Release date: 2024-10-18
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v8.12.
 
@@ -35,6 +35,7 @@ Bug fixes
 
   | `Issue #5307 <https://github.com/pgadmin-org/pgadmin4/issues/5307>`_ -  Fixed an issue to allow the Enter key to save data in the result grid text editor.
   | `Issue #7289 <https://github.com/pgadmin-org/pgadmin4/issues/7289>`_ -  Move 'About pgAdmin 4' to app menu on macOS.
+  | `Issue #7655 <https://github.com/pgadmin-org/pgadmin4/issues/7655>`_ -  Fixed an issue where the query tool was crashing when an empty geometry was being rendered.
   | `Issue #7837 <https://github.com/pgadmin-org/pgadmin4/issues/7837>`_ -  Fixed an issue where role properties were not loading.
   | `Issue #7907 <https://github.com/pgadmin-org/pgadmin4/issues/7907>`_ -  Ensure server connection is successful for sslrootcert=system in server configuration.
   | `Issue #7919 <https://github.com/pgadmin-org/pgadmin4/issues/7919>`_ -  Fixed an issue where the dock layout was not saved upon closing a tab.
