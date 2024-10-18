@@ -5,15 +5,12 @@
 {% set _ = ns.langOptions.append({'value': key, 'label': lang}) %}
 {% endfor %}
 {% set oauth2_config = [] %}
-{% set oauth2_config_to_be_included = ['OAUTH2_NAME', 'OAUTH2_DISPLAY_NAME', 'OAUTH2_ICON', 'OAUTH2_BUTTON_COLOR' ] %}
-{% for oauth_client in config.OAUTH2_CONFIG %}
-{% set _tmp = [] %}
-{% for key, value in oauth_client.items() %}
-{% if key in oauth2_config_to_be_included  %}
-{% set _ = _tmp.append((key, value)) %}
-{% endif %}
-{% endfor %}
-{% set _ = oauth2_config.append(dict.from_keys(_tmp)) %}
+{% for i in config.OAUTH2_CONFIG %}
+  {% set _tmp = oauth2_config.append({'OAUTH2_NAME': config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_NAME', ''),
+    'OAUTH2_BUTTON_COLOR':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_BUTTON_COLOR', ''),
+    'OAUTH2_DISPLAY_NAME':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_DISPLAY_NAME', ''),
+    'OAUTH2_ICON':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_ICON', '')
+  }) %}
 {% endfor %}
 
 {% set page_props = {
