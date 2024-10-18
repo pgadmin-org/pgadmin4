@@ -26,7 +26,7 @@ passlib==1.*
 pytz==2024.*
 speaklater3==1.*
 sqlparse==0.*
-psutil==6.0.*
+psutil==6.1.*
 psycopg[c]==3.2.3
 python-dateutil==2.*
 SQLAlchemy==2.*
