@@ -2,7 +2,7 @@
 Version 8.13
 ************
 
-Release date: 2024-10-18
+Release date: 2024-10-22
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v8.12.
 
