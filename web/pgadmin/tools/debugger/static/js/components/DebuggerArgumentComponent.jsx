@@ -342,13 +342,23 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function setDebuggerArgs(funcArgsData, funcObj, myObj) {
+    // Ensure unchecked boolean checkboxes are set to false.
+    const setBooleanDefaults = (dataArray) => {
+      dataArray.forEach(data => {
+        if (data.type === 'boolean' && (data.value === undefined || data.value === '' || data.value === '0' )) {
+          data.value = false;
+        }
+      });
+    };
     // Check if the arguments already available in the sqlite database
     // then we should use the existing arguments
     let initVal = { 'aregsCollection': [] };
     if (funcArgsData.length == 0) {
+      setBooleanDefaults(myObj);
       initVal = { 'aregsCollection': myObj };
       debuggerArgsData.current = initVal;
     } else {
+      setBooleanDefaults(funcObj);
       initVal = { 'aregsCollection': funcObj };
       debuggerArgsData.current = initVal;
     }

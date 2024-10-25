@@ -114,6 +114,7 @@ class ArgementsCollectionSchema extends BaseUISchema {
         },
         editable: true,
         align_center: true,
+        disabled: (state) => state.use_default
       },
       {
         id: 'use_default',
@@ -121,7 +122,7 @@ class ArgementsCollectionSchema extends BaseUISchema {
         type: 'checkbox',
         cell: 'checkbox',
         width: 62,
-        disabled: (state) => {return state.disable_use_default;}
+        disabled: (state) => state.disable_use_default
       },
       {
         id: 'default_value',
