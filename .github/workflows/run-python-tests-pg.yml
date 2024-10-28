@@ -115,6 +115,11 @@ jobs:
           
           psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
+# Pin the python version to v3.12 till pgAdmin supports latest versions.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install Python dependencies on Linux and macOS
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
         run: make install-python-testing
