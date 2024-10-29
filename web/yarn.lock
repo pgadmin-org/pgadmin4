@@ -2281,6 +2281,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
+  languageName: node
+  linkType: hard
+
 "@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0, @lezer/common@npm:^1.2.0":
   version: 1.2.1
   resolution: "@lezer/common@npm:1.2.1"
@@ -5173,10 +5180,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^3.0.0":
-  version: 3.9.1
-  resolution: "chart.js@npm:3.9.1"
-  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
+"chart.js@npm:^4.4.6":
+  version: 4.4.6
+  resolution: "chart.js@npm:4.4.6"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 4dcf6aa20f41115bb9e848d3053960eb4eeaaa94272344cc2b9b8faba33316c43893311897e20cd2bcd5b7963333cb30b7805829b78918d1d8c14a9e772e0c87
   languageName: node
   linkType: hard
 
@@ -13853,7 +13862,7 @@ __metadata:
     browserfs: ^1.4.3
     browserify: ^17.0.0
     buffer: ^6.0.3
-    chart.js: ^3.0.0
+    chart.js: ^4.4.6
     chartjs-plugin-zoom: ^2.0.1
     codemirror: ^6.0.1
     convert-units: ^2.3.4
