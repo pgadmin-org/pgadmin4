@@ -3033,16 +3033,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@szhsin/react-menu@npm:^2.2.0":
-  version: 2.3.4
-  resolution: "@szhsin/react-menu@npm:2.3.4"
+"@szhsin/react-menu@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "@szhsin/react-menu@npm:4.2.2"
   dependencies:
     prop-types: ^15.7.2
-    react-transition-state: ^1.1.3
+    react-transition-state: ^2.1.0
   peerDependencies:
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  checksum: 94d8b78166a69816852b53e1cf7929ffbbbb54010958d9124e48fcea4a72bc0572b242efb176d3c3cec003014ef7d26b9d191f5baf11825bedabf13ff1c525a9
+    react: ">=16.14.0"
+    react-dom: ">=16.14.0"
+  checksum: b65c231e5a5fb258aa3211c6acc93b805df2992b55dcbd791535745b1a1670ce4ee3ecdf83e271621cfc3f78fed5e8768c32004fc0fe3d1ef4f93c6a53b41086
   languageName: node
   linkType: hard
 
@@ -13364,13 +13364,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-transition-state@npm:^1.1.3":
-  version: 1.1.5
-  resolution: "react-transition-state@npm:1.1.5"
+"react-transition-state@npm:^2.1.0":
+  version: 2.1.3
+  resolution: "react-transition-state@npm:2.1.3"
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 4ca616583cd12825706be94886cf1512e0995170709435971787c7d5adf3d95d6349df17f45d74e805453e338a220e2ebe1b54a5d696bcad4617a71e24e02c59
+  checksum: 6a5fd4d729695b42fc220903f0ea6faf19fe2ed576350cf58fdfcffb98e838ed1ea789b707996297fcf13b7e4b052cfc84004d90e5b9667fe01538226aa2cec6
   languageName: node
   linkType: hard
 
@@ -13824,7 +13824,7 @@ __metadata:
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
-    "@szhsin/react-menu": ^2.2.0
+    "@szhsin/react-menu": ^4.2.2
     "@tanstack/react-query": 5.37.1
     "@tanstack/react-table": ^8.16.0
     "@tanstack/react-virtual": ^3.8.4
