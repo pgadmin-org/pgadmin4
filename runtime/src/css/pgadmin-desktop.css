@@ -108,11 +108,11 @@ body {
   cursor: unset;
 }
 
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   body {
     --color: #d4d4d4;
     --background-color: #212121;
     --border-color: #4a4a4a;
     --primary-color: #234d6e;
   }
-} */
+}
