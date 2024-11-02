@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+ <style>
+.lights { fill:#fff }
+.other-worker &gt; rect { stroke-width:0.5; fill:#addff3; stroke: #2980b9; }
+.other-worker .squares, .other-worker .side-handles { fill: #2980b9; }
+.selected-worker &gt; rect { stroke-width:0.5; fill:#f0ecb6; stroke: #c18f35; }
+.selected-worker .squares, .selected-worker .side-handles { fill: #c18f35; }
+</style></defs>
+<g class="other-worker" transform="matrix(1.2 0 0 1.25 -7.14 -1.2)"><rect x="12.3" y="11.9" width="39.8" height="8.41" ry=".942"/><path class="squares" d="m19.2 13.4h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm-9.16 3.07h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27z"/><path class="side-handles" d="m14.1 13h1.24v6.1h-1.24zm34.5 0h1.24v6.1h-1.24z"/><g class="lights"><rect x="35.3" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="38.1" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="41" y="13.9" width="1.83" height="1.83" ry=".6"/></g></g>
+<g class="other-worker" transform="matrix(1.2 0 0 1.25 -7.14 24.7)"><rect x="12.3" y="11.9" width="39.8" height="8.41" ry=".942"/><path class="squares" d="m19.2 13.4h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm-9.16 3.07h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27z"/><path class="side-handles" d="m14.1 13h1.24v6.1h-1.24zm34.5 0h1.24v6.1h-1.24z"/><g class="lights"><rect x="35.3" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="38.1" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="41" y="13.9" width="1.83" height="1.83" ry=".6"/></g></g>
+<g class="selected-worker" transform="matrix(1.2 0 0 1.25 -6.84 11.7)"><rect x="12.3" y="11.9" width="39.8" height="8.41" ry=".942"/><path class="squares" d="m19.2 13.4h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm-9.16 3.07h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27zm3.05 0h2.27v2.27h-2.27z"/><path class="side-handles" d="m14.1 13h1.24v6.1h-1.24zm34.5 0h1.24v6.1h-1.24z"/><g class="lights"><rect x="35.3" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="38.1" y="13.9" width="1.83" height="1.83" ry=".6"/><rect x="41" y="13.9" width="1.83" height="1.83" ry=".6"/></g></g>
+</svg>
