@@ -2,7 +2,7 @@
 Version 8.13
 ************
 
-Release date: 2024-10-22
+Release date: 2024-11-14
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v8.12.
 
@@ -29,6 +29,8 @@ New features
 Housekeeping
 ************
 
+  | `Issue #8061 <https://github.com/pgadmin-org/pgadmin4/issues/8061>`_ -  Updated the react-menu library from v2 to v4.
+  | `Issue #8077 <https://github.com/pgadmin-org/pgadmin4/issues/8077>`_ -  Remove bootstrap from the runtime code.
 
 Bug fixes
 *********
@@ -49,5 +51,3 @@ Bug fixes
   | `Issue #8007 <https://github.com/pgadmin-org/pgadmin4/issues/8007>`_ -  Fixed an issue in the debugger where function arguments of the character data type were being truncated.
   | `Issue #8013 <https://github.com/pgadmin-org/pgadmin4/issues/8013>`_ -  Fix the issue where rows do not retain shading when scrolling.
   | `Issue #8022 <https://github.com/pgadmin-org/pgadmin4/issues/8022>`_ -  Use PG17 as the default in the container.
-  | `Issue #8061 <https://github.com/pgadmin-org/pgadmin4/issues/8061>`_ -  Updated the react-menu library from v2 to v4.
-  | `Issue #8077 <https://github.com/pgadmin-org/pgadmin4/issues/8077>`_ -  Remove bootstrap from the runtime code.
