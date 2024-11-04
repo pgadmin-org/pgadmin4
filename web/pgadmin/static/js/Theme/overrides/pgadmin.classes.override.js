@@ -24,5 +24,8 @@ export default function pgadminOverride(theme) {
       '&.icon-terminal': {
         fontSize: '1.3rem !important',
       }
+    },
+    '.text-muted': {
+      color: theme.otherVars.textMuted
     }
   };}
