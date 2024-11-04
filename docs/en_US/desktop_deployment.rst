@@ -43,36 +43,27 @@ browser and the Python server creating a standalone application.
     :alt: Runtime Standalone
     :align: center
 
-Runtime Menu
-------------
+Runtime Menu Items
+------------------
 
 .. image:: images/runtime_menu.png
     :alt: Runtime Menu
     :align: center
 
-Use the *File Menu* to access the *Runtime Menu*:
+Use the *File Menu* to access the runtime menu items:
 
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | Option                  | Action                                                                                                  |
 +=========================+=========================================================================================================+
-| *Configure...*          | Click to open configuration dialog to configure fixed port, port number and connection timeout.         |
+| *View logs...*          | Click to open the view log dialog to view the pgAdmin 4 logs.                                           |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
-| *View log...*           | Click to open the view log dialog to view the pgAdmin 4 logs.                                           |
-+-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Enter Full Screen*     | Click to enter/exit the full screen mode. Keyboard Shortcuts: OSX (Cmd + Ctrl + F), Other OS (F10).     |
-+-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Actual Size*           | Click to change the window size to it original size. Keyboard Shortcuts: OSX (Cmd + 0),                 |
-|                         | Other OS (Ctrl + 0).                                                                                    |
-+-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Zoom In*               | Click to increase the zoom level. Keyboard Shortcuts: OSX (Cmd + +), Other OS (Ctrl + +).               |
-+-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Zoom Out*              | Click to decrease the zoom level. Keyboard Shortcuts: OSX (Cmd + -), Other OS (Ctrl + -).               |
+| *Configure runtime...*  | Click to open configuration dialog to configure fixed port, port number and connection timeout.         |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 
 Configuration Dialog
 --------------------
 
-Use the *Runtime Menu* to access the *Configuration* dialog:
+Use the *Configure runtime...* option to access the *Configuration* dialog:
 
 .. image:: images/runtime_configuration.png
     :alt: Runtime Configuration
@@ -101,7 +92,7 @@ Timeout*, and 'Open Documentation in Default Browser?' configuration parameters:
 Log dialog
 ----------
 
-Use the *Runtime Menu* to access the *Log* dialog:
+Use the *File Menu* to access the *View Logs* dialog:
 
 .. image:: images/runtime_view_log.png
     :alt: Runtime View Log
