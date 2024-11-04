@@ -414,6 +414,10 @@ export default function Graphical({planData, ctx}) {
     setExplainPlanDetails([title, details]);
   }, []);
 
+  useEffect(()=>{
+    setExplainPlanDetails([null, null]);
+  }, [planData]);
+
   return (
     <StyledBox ref={graphContainerRef} height="100%" width="100%" overflow="auto">
       <Box position="absolute" top="4px" left="4px" gap="4px" display="flex">

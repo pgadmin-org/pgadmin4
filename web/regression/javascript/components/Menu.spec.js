@@ -32,7 +32,7 @@ describe('Menu', ()=>{
     };
     it('init', ()=>{
       ctrlMount();
-      const menu = screen.getByRole('menu');
+      const menu = screen.getByRole('menu',{hidden: true});
       expect(menu.getAttribute('data-state')).toBe('closed');
     });
 

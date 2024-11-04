@@ -1005,9 +1005,6 @@ def start_debugger_listener(trans_id):
         did=de_inst.debugger_data['database_id'],
         conn_id=de_inst.debugger_data['conn_id'])
 
-    ver = manager.version
-    server_type = manager.server_type
-
     # find the debugger version and execute the query accordingly
     dbg_version = de_inst.debugger_data['debugger_version']
     if dbg_version <= 2:
@@ -1065,38 +1062,6 @@ def start_debugger_listener(trans_id):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-            if de_inst.function_data['arg_mode']:
-                # In EDBAS 90, if an SPL-function has both an OUT-parameter
-                # and a return value (which is not possible on PostgreSQL
-                # otherwise), the return value is transformed into an extra
-                # OUT-parameter named "_retval_"
-                if de_inst.function_data['args_name']:
-                    arg_name = de_inst.function_data['args_name'].split(",")
-                    if '_retval_' in arg_name:
-                        arg_mode = de_inst.function_data['arg_mode'].split(",")
-                        arg_mode.pop()
-                    else:
-                        arg_mode = de_inst.function_data['arg_mode'].split(",")
-                else:
-                    arg_mode = de_inst.function_data['arg_mode'].split(",")
-            else:
-                arg_mode = ['i'] * len(
-                    de_inst.function_data['args_type'].split(",")
-                )
-
-            if de_inst.function_data['args_type']:
-                if de_inst.function_data['args_name']:
-                    arg_name = de_inst.function_data['args_name'].split(",")
-                    if '_retval_' in arg_name:
-                        arg_type = de_inst.function_data[
-                            'args_type'].split(",")
-                        arg_type.pop()
-                    else:
-                        arg_type = de_inst.function_data[
-                            'args_type'].split(",")
-                else:
-                    arg_type = de_inst.function_data['args_type'].split(",")
-
             debugger_args_values = []
             if de_inst.function_data['args_value']:
                 debugger_args_values = copy.deepcopy(
@@ -1107,29 +1072,16 @@ def start_debugger_listener(trans_id):
                         val_list = arg['value'][1:-1].split(',')
                         arg['value'] = get_debugger_arg_val(val_list)
 
-            # Below are two different template to execute and start executer
-            if manager.server_type != 'pg' and manager.version < 90300:
-                str_query = render_template(
-                    "/".join([DEBUGGER_SQL_PATH, 'execute_edbspl.sql']),
-                    func_name=func_name,
-                    is_func=de_inst.function_data['is_func'],
-                    lan_name=de_inst.function_data['language'],
-                    ret_type=de_inst.function_data['return_type'],
-                    data=debugger_args_values,
-                    arg_type=arg_type,
-                    args_mode=arg_mode,
-                    conn=conn
-                )
-            else:
-                str_query = render_template(
-                    "/".join([DEBUGGER_SQL_PATH, 'execute_plpgsql.sql']),
-                    func_name=func_name,
-                    is_func=de_inst.function_data['is_func'],
-                    ret_type=de_inst.function_data['return_type'],
-                    data=debugger_args_values,
-                    is_ppas_database=de_inst.function_data['is_ppas_database'],
-                    conn=conn
-                )
+            # Template to execute and start executer
+            str_query = render_template(
+                "/".join([DEBUGGER_SQL_PATH, 'execute_plpgsql.sql']),
+                func_name=func_name,
+                is_func=de_inst.function_data['is_func'],
+                ret_type=de_inst.function_data['return_type'],
+                data=debugger_args_values,
+                is_ppas_database=de_inst.function_data['is_ppas_database'],
+                conn=conn
+            )
 
             status, result = execute_async_search_path(
                 conn, str_query, de_inst.debugger_data['search_path'])
@@ -1150,34 +1102,16 @@ def start_debugger_listener(trans_id):
             # other information during debugging
             int_session_id = res['rows'][0]['pldbg_create_listener']
 
-            # In EnterpriseDB versions <= 9.1 the
-            # pldbg_set_global_breakpoint function took five arguments,
-            # the 2nd argument being the package's OID, if any. Starting
-            # with 9.2, the package OID argument is gone, and the function
-            # takes four arguments like the community version has always
-            # done.
-            if server_type == 'ppas' and ver <= 90100:
-                sql = render_template(
-                    "/".join([template_path, 'add_breakpoint_edb.sql']),
-                    session_id=int_session_id,
-                    function_oid=de_inst.debugger_data['function_id']
-                )
+            sql = render_template(
+                "/".join([template_path, 'add_breakpoint_pg.sql']),
+                session_id=int_session_id,
+                function_oid=de_inst.debugger_data['function_id']
+            )
 
-                status, res = execute_dict_search_path(
-                    conn, sql, de_inst.debugger_data['search_path'])
-                if not status:
-                    return internal_server_error(errormsg=res)
-            else:
-                sql = render_template(
-                    "/".join([template_path, 'add_breakpoint_pg.sql']),
-                    session_id=int_session_id,
-                    function_oid=de_inst.debugger_data['function_id']
-                )
-
-                status, res = execute_dict_search_path(
-                    conn, sql, de_inst.debugger_data['search_path'])
-                if not status:
-                    return internal_server_error(errormsg=res)
+            status, res = execute_dict_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=res)
 
             # wait for the target
             sql = render_template(

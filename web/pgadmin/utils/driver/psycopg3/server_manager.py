@@ -670,10 +670,13 @@ WHERE db.oid = {0}""".format(did))
                 with_complete_path = False
                 orig_value = value
                 # Getting complete file path if the key is one of the below.
-                if key in ['passfile', 'sslcert', 'sslkey', 'sslrootcert',
-                           'sslcrl', 'sslcrldir']:
+                if key in ['passfile', 'sslcert', 'sslkey','sslcrl',
+                           'sslcrldir']:
                     with_complete_path = True
                     value = get_complete_file_path(value)
+
+                if key == 'sslrootcert' and value != 'system':
+                    dsn_args[key] = get_complete_file_path(value)
 
                 # If key is hostaddr and ssh tunnel is in use don't overwrite.
                 if key == 'hostaddr' and self.use_ssh_tunnel:

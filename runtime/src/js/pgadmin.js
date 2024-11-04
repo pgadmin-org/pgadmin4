@@ -79,7 +79,7 @@ function openConfigure() {
   const win = new BrowserWindow({
     show: false,
     width: 600,
-    height: 620,
+    height: 580,
     position: 'center',
     resizable: false,
     icon: '../../assets/pgAdmin4.png',
@@ -122,7 +122,7 @@ function reloadApp() {
     event.preventDefault();
     currWin.webContents.off('will-prevent-unload', preventUnload);
   };
-  currWin.webContents.on('will-prevent-unload', preventUnload)
+  currWin.webContents.on('will-prevent-unload', preventUnload);
   currWin.webContents.reload();
 }
 
@@ -264,8 +264,8 @@ function launchPgAdminWindow() {
     'frame': true,
     'position': 'center',
     'resizable': true,
-    'min_width': 640,
-    'min_height': 480,
+    'minWidth': 640,
+    'minHeight': 480,
     'width': 1024,
     'height': 768,
     'focus': true,
@@ -323,8 +323,8 @@ function launchPgAdminWindow() {
         action: 'allow',
         overrideBrowserWindowOptions: {
           'position': 'center',
-          'min_width': 640,
-          'min_height': 480,
+          'minWidth': 640,
+          'minHeight': 480,
           icon: '../../assets/pgAdmin4.png',
           ...pgAdminMainScreen.getBounds(),
           webPreferences: {

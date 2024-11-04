@@ -41,6 +41,20 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
   });
 
   let menuFile = pgadminMenus.shift();
+
+  if (isMac) {
+  // Remove About pgAdmin 4 from help menu and add it to the top of menuFile submenu.
+    const helpMenu = pgadminMenus.find((menu) => menu.name == 'help');
+    if (helpMenu) {
+      const aboutItem = helpMenu.submenu.find((item) => item.name === 'mnu_about');
+      if (aboutItem) {
+        helpMenu.submenu = helpMenu.submenu.filter((item) => item.name !== 'mnu_about');
+        menuFile.submenu.unshift(aboutItem);
+        menuFile.submenu.splice(1, 0, { type: 'separator' });
+      }
+    }
+  }
+  
   template.push({
     ...menuFile,
     submenu: [

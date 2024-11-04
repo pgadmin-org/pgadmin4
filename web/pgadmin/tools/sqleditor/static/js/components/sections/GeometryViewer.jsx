@@ -68,6 +68,10 @@ function parseEwkbData(rows, column) {
       let value = item[key];
       let buffer = Buffer.from(value, 'hex');
       let geometry = WkxGeometry.parse(buffer);
+      if (((isNaN(geometry.x) || isNaN(geometry.y)) && !(_.isNil(geometry.x) && _.isNil(geometry.y)))){
+        unsupportedRows.push(item);
+        return true;
+      }
       if (geometry.hasZ) {
         geometries3D.push(geometry);
         return true;
@@ -196,7 +200,7 @@ function PopupTable({data}) {
           return (
             <tr key={row.column}>
               <td className={'GeometryViewer-tableCell ' + 'GeometryViewer-tableCellHead'}>{row.column}</td>
-              <td className='GeometryViewer-tableCell'>{row.value}</td>
+              <td className='GeometryViewer-tableCell'>{`${row.value}`}</td>
             </tr>
           );
         })}
@@ -309,7 +313,7 @@ function TheMap({data}) {
       if (this.options.maxLength > 0) {
         this._map.fitBounds(this.options.homeCoordinates);
       } else {
-        this._map.setView(this.options.homeCoordinates.getCenter(), this.options.homeZoom);
+        this.options.homeCoordinates && this._map.setView(this.options.homeCoordinates.getCenter(), this.options.homeZoom);
       }
     };
 
@@ -322,7 +326,7 @@ function TheMap({data}) {
         options.homeCoordinates = homeCoordinates.current?.bounds;
       }
       if (options.homeZoom === null) {
-        options.homeZoom = map.getBoundsZoom(homeCoordinates.current?.bounds);
+        options.homeZoom = homeCoordinates.current?.bounds ? map.getBoundsZoom(homeCoordinates.current?.bounds) : 0;
       }
       if(options.maxLength === null) {
         options.maxLength = homeCoordinates.current?.maxLength;

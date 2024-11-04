@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
+import { getPlatform } from '../../../../../static/js/utils';
 
 export const QUERY_TOOL_EVENTS = {
   TRIGGER_STOP_EXECUTION: 'TRIGGER_STOP_EXECUTION',
@@ -48,7 +49,6 @@ export const QUERY_TOOL_EVENTS = {
   SAVE_FILE_DONE: 'SAVE_FILE_DONE',
   QUERY_CHANGED: 'QUERY_CHANGED',
   API_ERROR: 'API_ERROR',
-  SAVE_DATA_DONE: 'SAVE_DATA_DONE',
   TASK_START: 'TASK_START',
   TASK_END: 'TASK_END',
   RENDER_GEOMETRIES: 'RENDER_GEOMETRIES',
@@ -113,4 +113,4 @@ export const PANELS = {
 
 export const MAX_QUERY_LENGTH = 1000000;
 
-export const OS_EOL = navigator.platform === 'win32' ? 'crlf' : 'lf';
+export const OS_EOL = getPlatform() === 'Windows' ? 'crlf' : 'lf';

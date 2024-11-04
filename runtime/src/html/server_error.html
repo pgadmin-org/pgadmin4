@@ -6,29 +6,26 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Fatal Error</title>
   <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
-  <style>
-    body, html {
-      font-size: 14px;
-      background-color: #ebeef3;
-    }
-    @media screen and (forced-colors: active) {
-      body {
-        forced-color-adjust: none !important;
-      }
-    }
-  </style>
 </head>
+<style>
+  .header {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: red;
+  }
+  .content .form-input {
+    flex-grow: 1;
+  }
+</style>
 <body>
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <label id="server_error_label" style=" color: red; font-size: large;"></label>
-      <textarea id="server_error_log" style="min-width: 750px; min-height: 300px; resize: none;" readonly></textarea>
-    </div>
-    <div class="p-2 d-flex fixed-bottom shadow bg-white">
-      <div class="mr-auto" id="status-text"></div>
-      <div class="ml-auto">
-        <button id="btnConfigure" class="btn btn-primary">Configure...</button>
-      </div>
+  <div class="content">
+    <div class="header" id="server_error_label">The pgAdmin 4 server could not be contacted:</div>
+    <textarea class="form-input" id="server_error_log" style="min-width: 750px; min-height: 300px;resize: none;" readonly></textarea>
+  </div>
+  <div class="footer">
+    <div class="mr-auto" id="status-text"></div>
+    <div class="ml-auto">
+      <button id="btnConfigure" class="btn btn-primary">Configure...</button>
     </div>
   </div>
   <script>

@@ -54,8 +54,7 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
   },
   '& .QueryTool-rowNumCell': {
     padding: '0px 8px',
-    fontWeight: 900,
-    color: theme.otherVars.tree.textFg,
+    color: 'inherit',
   },
   '& .QueryTool-colHeaderSelected': {
     outlineColor: theme.palette.primary.main,
@@ -67,10 +66,10 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
   },
+  '& .rdg-row.rdg-row-even': {
+    backgroundColor: theme.palette.grey[200],
+  },
   '& .rdg-row': {
-    '&:nth-of-type(even)': {
-      backgroundColor: theme.palette.grey[200],
-    },
     '& .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.grey[600],
     },
@@ -78,6 +77,10 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
     },
+    '&[aria-selected="true"] .rdg-cell:nth-of-type(1)': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+    }
   },
   '& .rdg-header-row': {
     '& .rdg-cell:nth-of-type(1)': {
@@ -88,6 +91,15 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
 
 export const RowInfoContext = React.createContext();
 export const DataGridExtrasContext = React.createContext();
+
+function getCopyShortcutHandler(handleCopy) {
+  return (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+      e.preventDefault();
+      handleCopy();
+    }
+  };
+}
 
 function CustomRow(props) {
   const rowRef = useRef();
@@ -104,14 +116,17 @@ function CustomRow(props) {
   } else if(props.selectedCellIdx == 0) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
-  const openEditorOnEnter = (e)=>{
+  const handleKeyDown = (e)=>{
+    const handleCopyShortcut = getCopyShortcutHandler(dataGridExtras.handleCopy);
+    // Invokes the copy handler.
+    handleCopyShortcut(e);
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
       props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
   };
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
-      <Row ref={rowRef} onKeyDown={openEditorOnEnter} {...props} />
+      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} />
     </RowInfoContext.Provider>
   );
 }
@@ -124,14 +139,6 @@ CustomRow.propTypes = {
   viewportColumns: PropTypes.array,
   selectCell: PropTypes.func,
 };
-
-function getCopyShortcutHandler(handleCopy) {
-  return (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
-      handleCopy();
-    }
-  };
-}
 
 function SelectAllHeaderRenderer({isCellSelected}) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
