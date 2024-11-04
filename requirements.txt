@@ -52,7 +52,7 @@ azure-identity==1.19.0
 google-api-python-client==2.*
 google-auth-oauthlib==1.2.1
 keyring==25.*
-Werkzeug==3.0.*
+Werkzeug==3.1.*
 typer[all]==0.12.*
 setuptools==75.*; python_version >= '3.12'
 jsonformatter~=0.3.2
