@@ -148,7 +148,7 @@
     "sql-formatter": "^15.4.0",
     "uplot": "^1.6.24",
     "uplot-react": "^1.1.4",
-    "valid-filename": "^2.0.1",
+    "valid-filename": "^4.0.0",
     "wkx": "^0.5.0",
     "zustand": "^4.5.4"
   },
