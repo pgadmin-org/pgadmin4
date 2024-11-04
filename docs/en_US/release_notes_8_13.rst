@@ -2,7 +2,7 @@
 Version 8.13
 ************
 
-Release date: 2024-10-22
+Release date: 2024-11-14
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v8.12.
 
@@ -29,6 +29,8 @@ New features
 Housekeeping
 ************
 
+  | `Issue #8061 <https://github.com/pgadmin-org/pgadmin4/issues/8061>`_ -  Updated the react-menu library from v2 to v4.
+  | `Issue #8077 <https://github.com/pgadmin-org/pgadmin4/issues/8077>`_ -  Remove bootstrap from the runtime code.
 
 Bug fixes
 *********
@@ -37,6 +39,7 @@ Bug fixes
   | `Issue #7289 <https://github.com/pgadmin-org/pgadmin4/issues/7289>`_ -  Move 'About pgAdmin 4' to app menu on macOS.
   | `Issue #7655 <https://github.com/pgadmin-org/pgadmin4/issues/7655>`_ -  Fixed an issue where the query tool was crashing when an empty geometry was being rendered.
   | `Issue #7837 <https://github.com/pgadmin-org/pgadmin4/issues/7837>`_ -  Fixed an issue where role properties were not loading.
+  | `Issue #7883 <https://github.com/pgadmin-org/pgadmin4/issues/7883>`_ -  Fix multiple issues related to debugger params dialog input.
   | `Issue #7907 <https://github.com/pgadmin-org/pgadmin4/issues/7907>`_ -  Ensure server connection is successful for sslrootcert=system in server configuration.
   | `Issue #7919 <https://github.com/pgadmin-org/pgadmin4/issues/7919>`_ -  Fixed an issue where the dock layout was not saved upon closing a tab.
   | `Issue #7920 <https://github.com/pgadmin-org/pgadmin4/issues/7920>`_ -  Fixed an issue where the copy shortcut CTRL +C was not working in the Query Tool data grid.

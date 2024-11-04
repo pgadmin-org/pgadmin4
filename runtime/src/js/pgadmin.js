@@ -79,7 +79,7 @@ function openConfigure() {
   const win = new BrowserWindow({
     show: false,
     width: 600,
-    height: 620,
+    height: 580,
     position: 'center',
     resizable: false,
     icon: '../../assets/pgAdmin4.png',
@@ -122,7 +122,7 @@ function reloadApp() {
     event.preventDefault();
     currWin.webContents.off('will-prevent-unload', preventUnload);
   };
-  currWin.webContents.on('will-prevent-unload', preventUnload)
+  currWin.webContents.on('will-prevent-unload', preventUnload);
   currWin.webContents.reload();
 }
 
