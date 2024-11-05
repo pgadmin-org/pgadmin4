@@ -93,6 +93,7 @@ fi
 # Set SELinux up:
 if [ ${IS_REDHAT} == 1 ]; then
     echo "Configuring SELinux..."
+    setsebool -P httpd_tmp_exec 1 1> /dev/null
     setsebool -P httpd_can_network_connect 1 1> /dev/null
     setsebool -P httpd_can_network_connect_db 1 1> /dev/null
     semanage fcontext -a -t httpd_var_lib_t '/var/lib/pgadmin(/.*)?' 1> /dev/null
