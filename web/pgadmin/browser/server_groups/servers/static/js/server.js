@@ -79,6 +79,11 @@ define('pgadmin.node.server', [
           category: 'register', priority: 1, label: gettext('Server...'),
           data: {action: 'create'}, enable: 'canCreate',
         },{
+          name: 'disconnect_all_servers', node: 'server_group', module: this,
+          applies: ['object','context'], callback: 'disconnect_all_servers',
+          priority: 5, label: gettext('Disconnect from all servers'),
+          data:{action: 'disconnect_all'}, enable: 'can_disconnect_all'
+        },{
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 3, label: gettext('Server...'),
@@ -200,6 +205,9 @@ define('pgadmin.node.server', [
           node?.connected && node?.user?.is_superuser
             && node?.in_recovery && node?.wal_pause);
       },
+      can_disconnect_all: function(node, item) {
+        return _.some(item.children, (child) => pgAdmin.Browser.tree.getData(child).connected);
+      },
       callbacks: {
         /* Connect the server */
         connect_server: function(args){
@@ -215,73 +223,40 @@ define('pgadmin.node.server', [
           return false;
         },
         /* Disconnect the server */
-        disconnect_server: function(args, notify) {
+        disconnect_server: function(args) {
           let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = 'item' in input ? input.item : t.selected(),
             d = i ? t.itemData(i) : undefined;
-
           if (d) {
-            notify = notify || _.isUndefined(notify) || _.isNull(notify);
-
-            let disconnect = function() {
-              getApiInstance().delete(
-                obj.generate_url(i, 'connect', d, true),
-              ).then(({data: res})=> {
-                if (res.success == 1) {
-                  pgAdmin.Browser.notifier.success(res.info);
-                  d = t.itemData(i);
-                  t.removeIcon(i);
-                  d.connected = false;
-                  // Update server tree node data after server diconnected.
-                  t.update(i,d);
-
-                  // Generate the event that server is disconnected
-                  pgBrowser.Events.trigger(
-                    'pgadmin:server:disconnect',
-                    {item: i, data: d}, false
-                  );
-                  if (d.shared && pgAdmin.server_mode == 'True'){
-                    d.icon = 'icon-shared-server-not-connected';
-                  }else{
-                    d.icon = 'icon-server-not-connected';
-                  }
-                  t.addIcon(i, {icon: d.icon});
-                  obj.callbacks.refresh.apply(obj, [null, i]);
-                  setTimeout(() => {
-                    t.close(i);
-                  }, 10);
-                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
-                    delete pgBrowser.serverInfo[d._id];
-                  }
-                  else {
-                    try {
-                      pgAdmin.Browser.notifier.error(res.errormsg);
-                    } catch (e) {
-                      console.warn(e.stack || e);
-                    }
-                    t.unload(i);
-                  }
-                }
-              }).catch(function(error) {
-                pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-                t.unload(i);
-              });
-            };
-
-            if (notify) {
-              pgAdmin.Browser.notifier.confirm(
-                gettext('Disconnect from server'),
-                gettext('Are you sure you want to disconnect from the server %s?', d.label),
-                function() { disconnect(); },
-                function() { return true;},
-              );
-            } else {
-              disconnect();
-            }
+            disconnect_from_server(obj, d, t, i, true);
           }
-
+          return false;
+        },
+        disconnect_all_servers: function(args, item) {
+          let children = item.children ?? [],
+            obj = this,
+            t = pgBrowser.tree;
+          if (children) {
+            pgAdmin.Browser.notifier.confirm(
+              gettext('Disconnect from all servers'),
+              gettext('Are you sure you want to disconnect from all servers?'),
+              function() {
+                _.forEach(children, function(child) {
+                  let data = pgAdmin.Browser.tree.getData(child);
+                  if (data.connected) {
+                    disconnect_from_server(obj, data, t, child, false);
+                  }
+                });
+                t.deselect(item);
+                setTimeout(() => {
+                  t.select(item);
+                }, 100);
+              },
+              function() { return true;},
+            );
+          }
           return false;
         },
         /* Connect the server (if not connected), before opening this node */
@@ -818,6 +793,78 @@ define('pgadmin.node.server', [
           }
           pgAdmin.Browser.notifier.pgRespErrorNotify(error);
         });
+    };
+    let disconnect_from_server = async function(obj, data, tree, item, notify=false) {
+      let d = data,
+        i = item,
+        t = tree,
+        label = data.label;
+
+      let disconnect = function() {
+        d.label = `<span class='text-muted'>[Disconnecting...]</span> ${label}`;
+        t.setLabel(i,{label:d.label});
+        t.close(i);
+        getApiInstance().delete(
+          obj.generate_url(i, 'connect', d, true),
+        ).then(({data: res})=> {
+          if (res.success == 1) {
+            if (notify) {
+              pgAdmin.Browser.notifier.success(res.info);
+            } else {
+              pgAdmin.Browser.notifier.success(`${label} - ${res.info}`);
+            }
+            d = t.itemData(i);
+            t.removeIcon(i);
+            d.connected = false;
+            d.label = label;
+            t.setLabel(i, {label});
+            // Update server tree node data after server diconnected.
+            t.update(i,d);
+            // Generate the event that server is disconnected
+            pgBrowser.Events.trigger(
+              'pgadmin:server:disconnect',
+              {item: i, data: d}, false
+            );
+            if (d.shared && pgAdmin.server_mode == 'True'){
+              d.icon = 'icon-shared-server-not-connected';
+            }else{
+              d.icon = 'icon-server-not-connected';
+            }
+            t.addIcon(i, {icon: d.icon});
+            obj.callbacks.refresh.apply(obj, [null, i]);
+            setTimeout(() => {
+              t.close(i);
+            }, 10);
+            if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+              delete pgBrowser.serverInfo[d._id];
+            }
+            else {
+              try {
+                pgAdmin.Browser.notifier.error(res.errormsg);
+              } catch (e) {
+                console.warn(e.stack || e);
+              }
+              t.setLabel(i, {label});
+              t.unload(i);
+            }
+          }
+        }).catch(function(error) {
+          pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+          t.setLabel(i, {label});
+          t.unload(i);
+        });
+      };
+
+      if (notify) {
+        pgAdmin.Browser.notifier.confirm(
+          gettext('Disconnect from server'),
+          gettext('Are you sure you want to disconnect from the server %s?', label),
+          function() { disconnect(); },
+          function() { return true;},
+        );
+      } else {
+        disconnect();
+      }
     };
   }
 
