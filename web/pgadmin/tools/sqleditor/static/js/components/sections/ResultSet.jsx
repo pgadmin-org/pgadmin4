@@ -868,15 +868,19 @@ export function ResultSet() {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
   };
 
+  const resetSelectionAndChanges = ()=>{
+    dispatchDataChange({type: 'reset'});
+    setSelectedRows(new Set());
+    setSelectedColumns(new Set());
+  };
+
   const executionStartCallback = async (query, {
     explainObject, macroSQL, external=false, reconnect=false, executeCursor=false, refreshData=false
   })=>{
     const yesCallback = async ()=>{
       /* Reset */
       eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, null);
-      dispatchDataChange({type: 'reset'});
-      setSelectedRows(new Set());
-      setSelectedColumns(new Set());
+      resetSelectionAndChanges();
       rsu.current.resetClientPKIndex();
       setLoaderText(gettext('Waiting for the query to complete...'));
       setDataOutputQuery(query);
@@ -1110,6 +1114,7 @@ export function ResultSet() {
         pageDataDirty.current = false;
         fetchWindow(...args);
       }
+      resetSelectionAndChanges();
     });
     return ()=>{
       deregFetch();
@@ -1234,9 +1239,7 @@ export function ResultSet() {
         });
         setColumns((prev)=>prev);
       }
-      dispatchDataChange({type: 'reset'});
-      setSelectedRows(new Set());
-      setSelectedColumns(new Set());
+      resetSelectionAndChanges();
       eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, respData.data.transaction_status);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
       pgAdmin.Browser.notifier.success(gettext('Data saved successfully.'));

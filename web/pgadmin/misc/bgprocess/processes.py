@@ -177,11 +177,7 @@ class BatchProcess:
             import secrets
             import string
 
-            return ''.join(
-                secrets.choice(
-                    string.ascii_uppercase + string.digits
-                ) for _ in range(size)
-            )
+            return ''.join(secrets.choice(string.digits) for _ in range(size))
 
         created = False
         size = 0

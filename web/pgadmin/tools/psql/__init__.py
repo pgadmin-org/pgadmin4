@@ -263,10 +263,16 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
             timeout = 0
             # module provides access to platform-specific I/O
             # monitoring functions
-            (data_ready, _, _) = select.select([parent, fd], [], [],
-                                               timeout)
+            try:
+                (data_ready, _, _) = select.select([parent, fd], [], [],
+                                                   timeout)
 
-            read_terminal_data(parent, data_ready, max_read_bytes, sid)
+                read_terminal_data(parent, data_ready, max_read_bytes, sid)
+            except OSError as e:
+                # If the process is killed, bad file descriptor exception may
+                # occur. Handle it gracefully
+                if p.poll() is not None:
+                    raise e
 
 
 def pty_handel_io(connection_data, data, sid):

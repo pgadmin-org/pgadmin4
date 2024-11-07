@@ -73,10 +73,6 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     '& .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.grey[600],
     },
-    '& .rdg-cell:nth-of-type(1)[aria-selected="true"]':{
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.contrastText,
-    },
     '&[aria-selected="true"] .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
