@@ -21,8 +21,10 @@ New features
 ************
 
   | `Issue #1780 <https://github.com/pgadmin-org/pgadmin4/issues/1780>`_ -  Replace infinite scrolling with pagination in query tool data output for better UX and performance.
+  | `Issue #1984 <https://github.com/pgadmin-org/pgadmin4/issues/1984>`_ -  Add an object menu option to disconnect all server and database connections.
   | `Issue #2874 <https://github.com/pgadmin-org/pgadmin4/issues/2874>`_ -  Alternate the background color of rows to enhance readability.
   | `Issue #5869 <https://github.com/pgadmin-org/pgadmin4/issues/5869>`_ -  Allow to pass PGADMIN_CONFIG_CONFIG_DATABASE_URI from docker secrets.
+  | `Issue #6016 <https://github.com/pgadmin-org/pgadmin4/issues/6016>`_ -  Format dashboard graph metrics for better readability.
   | `Issue #7393 <https://github.com/pgadmin-org/pgadmin4/issues/7393>`_ -  Added support for auto-detecting and setting the End-of-line character (LF/CRLF) in the query tool editor.
   | `Issue #7863 <https://github.com/pgadmin-org/pgadmin4/issues/7863>`_ -  Make the background color for the serial number and header cells distinct.
 
@@ -31,6 +33,7 @@ Housekeeping
 
   | `Issue #8061 <https://github.com/pgadmin-org/pgadmin4/issues/8061>`_ -  Updated the react-menu library from v2 to v4.
   | `Issue #8077 <https://github.com/pgadmin-org/pgadmin4/issues/8077>`_ -  Remove bootstrap from the runtime code.
+  | `Issue #8102 <https://github.com/pgadmin-org/pgadmin4/issues/8077>`_ -  Remove the dependency on python packages eventlet and greenlet.
 
 Bug fixes
 *********
@@ -40,7 +43,6 @@ Bug fixes
   | `Issue #7655 <https://github.com/pgadmin-org/pgadmin4/issues/7655>`_ -  Fixed an issue where the query tool was crashing when an empty geometry was being rendered.
   | `Issue #7837 <https://github.com/pgadmin-org/pgadmin4/issues/7837>`_ -  Fixed an issue where role properties were not loading.
   | `Issue #7883 <https://github.com/pgadmin-org/pgadmin4/issues/7883>`_ -  Fix multiple issues related to debugger params dialog input.
-  | `Issue #7907 <https://github.com/pgadmin-org/pgadmin4/issues/7907>`_ -  Ensure server connection is successful for sslrootcert=system in server configuration.
   | `Issue #7919 <https://github.com/pgadmin-org/pgadmin4/issues/7919>`_ -  Fixed an issue where the dock layout was not saved upon closing a tab.
   | `Issue #7920 <https://github.com/pgadmin-org/pgadmin4/issues/7920>`_ -  Fixed an issue where the copy shortcut CTRL +C was not working in the Query Tool data grid.
   | `Issue #7955 <https://github.com/pgadmin-org/pgadmin4/issues/7955>`_ -  Fixed an issue where Dashboard tab showing 'Something went wrong'.
