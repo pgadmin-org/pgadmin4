@@ -1129,7 +1129,7 @@ def poll(trans_id):
     pagination = {
         'page_size': page_size,
         'page_count': math.ceil(conn.total_rows / page_size),
-        'page_no': math.floor(rows_fetched_from / page_size) + 1,
+        'page_no': math.floor((rows_fetched_from - 1) / page_size) + 1,
         'rows_from': rows_fetched_from,
         'rows_to': rows_fetched_to
     }
@@ -1197,7 +1197,7 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
     pagination = {
         'page_size': page_size,
         'page_count': math.ceil(conn.total_rows / page_size),
-        'page_no': math.floor(rows_fetched_from / page_size) + 1,
+        'page_no': math.floor((rows_fetched_from - 1) / page_size) + 1,
         'rows_from': rows_fetched_from,
         'rows_to': rows_fetched_to
     }

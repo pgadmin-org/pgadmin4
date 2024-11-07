@@ -33,7 +33,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
       '&[aria-colindex="1"]': {
         padding: 0,
       },
-      '&[aria-selected=true]:not([role="columnheader"])': {
+      '&[aria-selected=true]:not([aria-colindex="1"]):not([role="columnheader"])': {
         outlineWidth: '0px',
         outlineOffset: '0px',
       },
@@ -61,7 +61,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
   },
   '&.ReactGrid-cellSelection': {
     '& .rdg-cell': {
-      '&[aria-selected=true]:not([role="columnheader"])': {
+      '&[aria-selected=true]:not([aria-colindex="1"]):not([role="columnheader"])': {
         outlineWidth: '1px',
         outlineOffset: '-1px',
         backgroundColor: theme.palette.primary.light,
