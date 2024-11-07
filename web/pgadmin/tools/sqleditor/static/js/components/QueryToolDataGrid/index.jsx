@@ -22,6 +22,7 @@ import { QueryToolEventsContext } from '../QueryToolComponent';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
+import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
@@ -92,11 +93,26 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
 export const RowInfoContext = React.createContext();
 export const DataGridExtrasContext = React.createContext();
 
-function getCopyShortcutHandler(handleCopy) {
+// Handles shortcut key events for the grid.
+function handleShortcutKeyDown(props) {
+
   return (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+    const isTextEditorFocused = document.activeElement?.matches('.Editors-textarea');
+    // Handle Copy shortcut (Cmd/Ctrl + C)
+    if(((e.metaKey && isMac) || (e.ctrlKey && !isMac)) && e.key !== 'Control' && e.keyCode == 67) {
       e.preventDefault();
-      handleCopy();
+      props.handleCopy();
+    }
+    // Handle Select All (Cmd/Ctrl + A)
+    if (((e.metaKey && isMac) || (e.ctrlKey && !isMac)) && e.key === 'a') {
+      // If the text editor is focused, let the default select-all behavior run.
+      if (!isTextEditorFocused) {
+        e.preventDefault();
+        props.eventBus.fireEvent(QUERY_TOOL_EVENTS.ALL_ROWS_SELECTED, true);
+      }
+    }
+    if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
+      props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
   };
 }
@@ -104,6 +120,7 @@ function getCopyShortcutHandler(handleCopy) {
 function CustomRow(props) {
   const rowRef = useRef();
   const dataGridExtras = useContext(DataGridExtrasContext);
+  const eventBus = useContext(QueryToolEventsContext);
 
   const rowInfoValue = useMemo(()=>({
     getCellElement: (colIdx)=>{
@@ -116,14 +133,16 @@ function CustomRow(props) {
   } else if(props.selectedCellIdx == 0) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
-  const handleKeyDown = (e)=>{
-    const handleCopyShortcut = getCopyShortcutHandler(dataGridExtras.handleCopy);
-    // Invokes the copy handler.
-    handleCopyShortcut(e);
-    if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
-      props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
-    }
-  };
+  const handleKeyDown = handleShortcutKeyDown({
+    handleCopy:dataGridExtras.handleCopy, 
+    eventBus:eventBus,
+    row:props.row,
+    isRowSelected:props.isRowSelected,
+    selectedCellIdx:props.selectedCellIdx,
+    viewportColumns:props.viewportColumns,
+    selectCell:props.selectCell
+  });
+
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
       <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} />
@@ -140,12 +159,13 @@ CustomRow.propTypes = {
   selectCell: PropTypes.func,
 };
 
-function SelectAllHeaderRenderer({isCellSelected}) {
+function SelectAllHeaderRenderer({isCellSelected, onSelectedColumnsChange}) {
   const [isRowSelected, onRowSelectionChange] = useRowSelection();
   const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
   const onClick = ()=>{
+    onSelectedColumnsChange(new Set());
     onRowSelectionChange({ type: 'HEADER', checked: !isRowSelected });
     eventBus.fireEvent(QUERY_TOOL_EVENTS.ALL_PAGE_ROWS_SELECTED, !isRowSelected);
   };
@@ -159,17 +179,26 @@ function SelectAllHeaderRenderer({isCellSelected}) {
     const unregClear = eventBus.registerListener(QUERY_TOOL_EVENTS.CLEAR_ROWS_SELECTED, ()=>{
       onRowSelectionChange({ type: 'HEADER', checked: false });
     });
+    const allRowsSelect = eventBus.registerListener(QUERY_TOOL_EVENTS.ALL_ROWS_SELECTED, (isSelected)=>{
+      onSelectedColumnsChange(new Set());
+      onRowSelectionChange({ type: 'HEADER', checked: isSelected });
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.ALL_PAGE_ROWS_SELECTED, isSelected);
+    });
     return ()=>{
       unregClear();
+      allRowsSelect();
     };
   }, []);
 
+  const handleKeyDown = handleShortcutKeyDown({handleCopy:dataGridExtras.handleCopy, eventBus:eventBus});
+
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="0" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
+    tabIndex={0} onKeyDown={handleKeyDown}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
   isCellSelected: PropTypes.bool,
+  onSelectedColumnsChange: PropTypes.func
 };
 
 function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange, isCellSelected}) {
@@ -180,6 +209,8 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
   if(isCellSelected) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
+
+  const handleKeyDown = handleShortcutKeyDown({handleCopy:dataGridExtras.handleCopy, eventBus:eventBus});
 
   const onClick = ()=>{
     const newSelectedCols = new Set(selectedColumns);
@@ -199,8 +230,8 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
   }, [isCellSelected]);
 
   return (
-    <Box ref={cellRef} className={'QueryTool-columnHeader ' + (isSelected ? 'QueryTool-colHeaderSelected' : null)} onClick={onClick} tabIndex="0"
-      onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)} data-column-key={column.key}>
+    <Box ref={cellRef} className={'QueryTool-columnHeader ' + (isSelected ? 'QueryTool-colHeaderSelected' : null)} onClick={onClick} tabIndex={0}
+      onKeyDown={handleKeyDown} data-column-key={column.key}>
       {(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') &&
       <Box>
         <PgIconButton title={gettext('View all geometries in this column')} icon={<MapIcon data-label="MapIcon"/>} size="small" style={{marginRight: '0.25rem'}} onClick={(e)=>{
@@ -348,7 +379,9 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColu
   }
 
   let rowNumCol = retColumns[0];
-  rowNumCol.renderHeaderCell = SelectAllHeaderRenderer;
+  rowNumCol.renderHeaderCell = (props)=>{
+    return <SelectAllHeaderRenderer {...props} onSelectedColumnsChange={onSelectedColumnsChange} />;
+  };
   rowNumCol.renderCell = (props)=>{
     return <RowNumColFormatter {...props} rowKeyGetter={rowKeyGetter} dataChangeStore={dataChangeStore} onSelectedColumnsChange={onSelectedColumnsChange} />;
   };
