@@ -12,7 +12,7 @@ import select
 import struct
 import config
 import re
-from eventlet.green import subprocess
+import subprocess
 from sys import platform as _platform
 from config import PG_DEFAULT_DRIVER
 from flask import Response, request

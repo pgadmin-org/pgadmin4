@@ -12,7 +12,6 @@ Flask==3.0.*
 Flask-Login==0.*
 Flask-Mail==0.*
 Flask-Migrate==4.*
-greenlet==1.1.2;  python_version <= '3.10'
 Flask-SQLAlchemy==3.1.*
 Flask-WTF==1.2.*
 Flask-Compress==1.*
@@ -36,7 +35,6 @@ cryptography==43.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.9.*
-eventlet==0.37.0
 user-agents==2.2.0
 pywinpty==2.0.*; sys_platform=="win32"
 Authlib==1.3.*
