@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-10 17:50+0530\n"
+"POT-Creation-Date: 2024-11-07 19:07+0530\n"
 "PO-Revision-Date: 2017-04-14 22:53+0200\n"
 "Last-Translator: Jonas Thelemann\n"
 "Language: de\n"
@@ -1232,7 +1232,7 @@ msgstr "Umwandlung..."
 #: pgadmin/static/js/socket_instance.js:30
 #: pgadmin/static/js/socket_instance.js:33
 #: pgadmin/tools/backup/static/js/backup.js:268
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:436
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:446
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:465
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:391
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:395
@@ -2176,7 +2176,7 @@ msgstr "Datentyp"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:420
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:230
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:43
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:128
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:129
 msgid "Default"
 msgstr "Standard"
 
@@ -2439,7 +2439,7 @@ msgstr "Sicherheitsetiketten"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:117
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:376
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:377
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:232
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:235
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:238
@@ -7014,7 +7014,7 @@ msgid "Delete (Force)"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:108
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:234
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:553
 msgid "Disconnect from database"
 msgstr ""
 
@@ -7024,40 +7024,53 @@ msgid "Selected database is already disconnected."
 msgstr "Datenbank getrennt."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:115
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:261
+msgid "Disconnect from all databases"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:117
+msgid "All the databases are already disconnected."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:122
 msgid "ERD For Database"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:192
-#: pgadmin/browser/server_groups/servers/static/js/server.js:579
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:199
+#: pgadmin/browser/server_groups/servers/static/js/server.js:554
 msgid "Connection lost"
 msgstr "Verbindung unterbrochen"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:193
-#: pgadmin/browser/server_groups/servers/static/js/server.js:580
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:200
+#: pgadmin/browser/server_groups/servers/static/js/server.js:555
 msgid "Would you like to reconnect to the database?"
 msgstr "Möchten Sie wieder eine Verbindung zur Datenbank herstellen?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:235
-#, python-format
-msgid "Are you sure you want to disconnect from database - %s?"
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:262
+msgid "Are you sure you want to disconnect from all databases?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:410
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:411
 msgid "Connect to database."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:426
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:427
 msgid "Connect to database"
 msgstr "Zu Datenbank verbinden"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:450
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:451
 msgid "Database already connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:498
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:499
 #: pgadmin/static/js/helpers/Notifier.jsx:126
 #, python-format
 msgid "Error: Object not found - %s."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:554
+#, python-format
+msgid "Are you sure you want to disconnect from database - %s?"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:118
@@ -8728,154 +8741,163 @@ msgid "Copy of %s"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:79
-#: pgadmin/browser/server_groups/servers/static/js/server.js:84
+#: pgadmin/browser/server_groups/servers/static/js/server.js:89
 msgid "Server..."
 msgstr "Server..."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:89
+#: pgadmin/browser/server_groups/servers/static/js/server.js:84
+#: pgadmin/browser/server_groups/servers/static/js/server.js:243
+msgid "Disconnect from all servers"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:94
 msgid "Connect Server"
 msgstr "Server verbinden"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:91
+#: pgadmin/browser/server_groups/servers/static/js/server.js:96
 msgid "Database server is already connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:96
-#: pgadmin/browser/server_groups/servers/static/js/server.js:275
+#: pgadmin/browser/server_groups/servers/static/js/server.js:101
+#: pgadmin/browser/server_groups/servers/static/js/server.js:860
 msgid "Disconnect from server"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:98
+#: pgadmin/browser/server_groups/servers/static/js/server.js:103
 msgid "Database server is already disconnected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:104
+#: pgadmin/browser/server_groups/servers/static/js/server.js:109
 msgid "Reload Configuration"
 msgstr "Konfiguration neu laden"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:106
+#: pgadmin/browser/server_groups/servers/static/js/server.js:111
 msgid ""
 "Please select a server from the object explorer to reload the "
 "configuration files."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:111
+#: pgadmin/browser/server_groups/servers/static/js/server.js:116
 msgid "Add Named Restore Point..."
 msgstr "Benannten Wiederherstellungspunkt hinzufügen..."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:113
+#: pgadmin/browser/server_groups/servers/static/js/server.js:118
 msgid ""
 "Please select any server from the object explorer to Add Named Restore "
 "Point."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:118
+#: pgadmin/browser/server_groups/servers/static/js/server.js:123
 msgid "Change Password..."
 msgstr "Passwort Ändern..."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:120
+#: pgadmin/browser/server_groups/servers/static/js/server.js:125
 msgid "Please connect server to enable change password."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:125
+#: pgadmin/browser/server_groups/servers/static/js/server.js:130
 msgid "Pause Replay of WAL"
 msgstr "WAL-Wiedergabe pausieren"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:127
+#: pgadmin/browser/server_groups/servers/static/js/server.js:132
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Pause Replay of WAL."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:132
+#: pgadmin/browser/server_groups/servers/static/js/server.js:137
 msgid "Resume Replay of WAL"
 msgstr "WAL-Wiedergabe fortsetzen"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:134
+#: pgadmin/browser/server_groups/servers/static/js/server.js:139
 msgid ""
 "Please select a connected database as a Super user and run in Recovery "
 "mode to Resume Replay of WAL."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:139
+#: pgadmin/browser/server_groups/servers/static/js/server.js:144
 msgid "Clear Saved Password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:148
+#: pgadmin/browser/server_groups/servers/static/js/server.js:153
 msgid "Clear SSH Tunnel Password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:155
+#: pgadmin/browser/server_groups/servers/static/js/server.js:160
 msgid "SSH Tunnel password is not saved for selected server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:160
+#: pgadmin/browser/server_groups/servers/static/js/server.js:165
 msgid "Copy Server..."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:276
-#, python-format
-msgid "Are you sure you want to disconnect from the server %s?"
+#: pgadmin/browser/server_groups/servers/static/js/server.js:244
+msgid "Are you sure you want to disconnect from all servers?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:328
+#: pgadmin/browser/server_groups/servers/static/js/server.js:303
 msgid "Reload server configuration"
 msgstr "Serverkonfiguration neu laden"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:329
+#: pgadmin/browser/server_groups/servers/static/js/server.js:304
 #, python-format
 msgid "Are you sure you want to reload the server configuration on %s?"
 msgstr ""
 "Sind Sie sicher, dass Sie die Server-Konfiguration auf %s neu laden "
 "möchten?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:362
+#: pgadmin/browser/server_groups/servers/static/js/server.js:337
 msgid "Restore point name"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:383
+#: pgadmin/browser/server_groups/servers/static/js/server.js:358
 #: pgadmin/static/js/Dialogs/index.jsx:209
 msgid "Change Password"
 msgstr "Passwort ändern"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:456
+#: pgadmin/browser/server_groups/servers/static/js/server.js:431
 msgid "Clear saved password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:457
+#: pgadmin/browser/server_groups/servers/static/js/server.js:432
 #, python-format
 msgid "Are you sure you want to clear the saved password for server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:494
+#: pgadmin/browser/server_groups/servers/static/js/server.js:469
 msgid "Clear SSH Tunnel password"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:495
+#: pgadmin/browser/server_groups/servers/static/js/server.js:470
 #, python-format
 msgid ""
 "Are you sure you want to clear the saved password of SSH Tunnel for "
 "server %s?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:601
+#: pgadmin/browser/server_groups/servers/static/js/server.js:576
 msgid ""
 "You have connected to a server version that is older than is supported by"
 " pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
 "ways. Or a plague of frogs. Either way, you have been warned!"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:604
+#: pgadmin/browser/server_groups/servers/static/js/server.js:579
 msgid "Server connected"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:665
+#: pgadmin/browser/server_groups/servers/static/js/server.js:640
 msgid "Connect to server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:675
+#: pgadmin/browser/server_groups/servers/static/js/server.js:650
 msgid "Connect to Server"
 msgstr "Zu Server verbinden"
+
+#: pgadmin/browser/server_groups/servers/static/js/server.js:861
+#, python-format
+msgid "Are you sure you want to disconnect from the server %s?"
+msgstr ""
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:85
 msgid "Server group"
@@ -9980,7 +10002,7 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:155
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:755
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:100
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:384
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:400
 msgid "Delete"
 msgstr ""
 
@@ -11352,19 +11374,19 @@ msgstr "Binärpfade"
 msgid "Could not find a process with the specified ID."
 msgstr "Konnte nicht einen Prozess mit der angegebenen ID finden."
 
-#: pgadmin/misc/bgprocess/processes.py:254
+#: pgadmin/misc/bgprocess/processes.py:250
 msgid "The process has already been started."
 msgstr "Der Prozess wurde bereits gestartet."
 
-#: pgadmin/misc/bgprocess/processes.py:256
+#: pgadmin/misc/bgprocess/processes.py:252
 msgid "The process has already finished and cannot be restarted."
 msgstr "Der Prozess ist bereits beendet und kann nicht neu gestartet werden."
 
-#: pgadmin/misc/bgprocess/processes.py:673
+#: pgadmin/misc/bgprocess/processes.py:669
 msgid "Status for the background process '{0}' could not be loaded."
 msgstr "Status für den Hintergrundprozess '{0}' konnte nicht geladen werden."
 
-#: pgadmin/misc/bgprocess/processes.py:882
+#: pgadmin/misc/bgprocess/processes.py:878
 msgid "Unable to kill the background process '{0}'"
 msgstr ""
 
@@ -12480,7 +12502,7 @@ msgstr "Alle Dateien"
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:86
 #: pgadmin/static/js/helpers/ModalProvider.jsx:55
 #: pgadmin/static/js/helpers/Notifier.jsx:49
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:856
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:866
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:545
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:263
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:440
@@ -13067,7 +13089,7 @@ msgid "Add"
 msgstr ""
 
 #: pgadmin/static/js/SchemaView/DataGridView/header.jsx:91
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:374
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:390
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:622
 msgid "Add row"
 msgstr ""
@@ -13256,7 +13278,7 @@ msgstr ""
 #: pgadmin/static/js/components/ReactCodeMirror/index.jsx:47
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:308
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:311
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:376
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:392
 msgid "Copy"
 msgstr ""
 
@@ -13873,25 +13895,25 @@ msgstr ""
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1236
+#: pgadmin/tools/debugger/__init__.py:1233
 msgid "Debugging aborted successfully."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1608
+#: pgadmin/tools/debugger/__init__.py:1605
 msgid "Value deposited successfully"
 msgstr "Wert wurde erfolgreich hinterlegt"
 
-#: pgadmin/tools/debugger/__init__.py:1610
+#: pgadmin/tools/debugger/__init__.py:1607
 msgid "Error while setting the value"
 msgstr "Fehler beim Setzen des Wertes"
 
-#: pgadmin/tools/debugger/__init__.py:1983
-#: pgadmin/tools/debugger/__init__.py:2042
+#: pgadmin/tools/debugger/__init__.py:1980
+#: pgadmin/tools/debugger/__init__.py:2039
 msgid "Execution completed with an error."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1997
-#: pgadmin/tools/debugger/__init__.py:2058
+#: pgadmin/tools/debugger/__init__.py:1994
+#: pgadmin/tools/debugger/__init__.py:2055
 msgid "Execution Completed."
 msgstr "Ausführung Abgeschlossen."
 
@@ -13912,7 +13934,7 @@ msgstr ""
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:91
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:146
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:173
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:861
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:871
 msgid "Debug"
 msgstr "Testen"
 
@@ -13926,7 +13948,7 @@ msgid "Set Breakpoint"
 msgstr ""
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:384
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:742
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:752
 msgid "Debugger Target Initialization Error"
 msgstr ""
 
@@ -13934,8 +13956,8 @@ msgstr ""
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:544
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:548
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:598
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:422
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:795
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:432
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:805
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:134
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:153
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:162
@@ -13983,31 +14005,31 @@ msgstr ""
 msgid "YYYY-MM-DD"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:120
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:121
 msgid "Use Default?"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:423
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:433
 msgid "Unable to fetch the arguments from server"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:483
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:493
 msgid "Clear failed"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:731
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:741
 msgid "Error occurred: "
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:763
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:773
 msgid "Debugger Listener Startup Error"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:787
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:797
 msgid "Debugger Listener Startup Set Arguments Error"
 msgstr ""
 
-#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:851
+#: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:861
 msgid "Clear All"
 msgstr ""
 
@@ -14398,7 +14420,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:97
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:313
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:932
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:940
 msgid "Unsaved changes"
 msgstr "Nicht gespeicherte Änderungen"
 
@@ -15013,13 +15035,13 @@ msgstr "Ausführliche Meldungen"
 msgid "PSQL"
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:404
+#: pgadmin/tools/psql/__init__.py:410
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:468 pgadmin/tools/psql/__init__.py:502
+#: pgadmin/tools/psql/__init__.py:474 pgadmin/tools/psql/__init__.py:508
 msgid "Invalid session.\r\n"
 msgstr ""
 
@@ -15601,27 +15623,27 @@ msgstr ""
 msgid "Sort/Filter options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:96
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:95
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:97
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:96
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:98
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:97
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:98
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
 msgstr ""
@@ -15640,7 +15662,7 @@ msgstr ""
 msgid "Invalid JSON input"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:203
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:202
 msgid "View all geometries in this column"
 msgstr ""
 
@@ -15699,49 +15721,49 @@ msgstr ""
 msgid "New query tool for current connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:98
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:102
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:101
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:105
 msgid "3D geometries not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:108
 msgid "Unsupported geometries not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:120
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:124
 msgid "Empty row."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:179
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:183
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:358
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:362
 msgid "Empty"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:363
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
 msgid "Street"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:370
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:374
 msgid "Topography"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:381
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:385
 msgid "Gray Style"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:392
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:396
 msgid "Light Color"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:403
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:407
 msgid "Dark Matter"
 msgstr ""
 
@@ -15876,7 +15898,7 @@ msgid "Execute options"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:904
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:912
 #: pgadmin/utils/constants.py:23
 msgid "Explain"
 msgstr "Erklären"
@@ -16119,7 +16141,7 @@ msgid "Refetching latest results..."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:240
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:877
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:885
 msgid "Waiting for the query to complete..."
 msgstr ""
 
@@ -16156,7 +16178,7 @@ msgstr ""
 msgid "%s rows affected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:933
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:941
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
@@ -16164,170 +16186,170 @@ msgstr ""
 "Die Daten wurden geändert, aber nicht gespeichert. Sind Sie sicher, dass "
 "Sie die Änderungen verwerfen möchten?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:948
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:956
 msgid "Applying the new filter..."
 msgstr "Wende den neuen Filter an ..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:989
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:997
 msgid "Downloading results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:995
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1003
 msgid "Setting the limit on the result..."
 msgstr "Setzen des Limits für das Ergebnis..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1009
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1017
 msgid "Removing the filter..."
 msgstr "Filter entfernen..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1069
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1077
 msgid "Fetching rows..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1112
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1135
 msgid "Save data changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1115
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1138
 msgid "The data has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1141
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1164
 msgid "Saving data..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1168
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1180
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1203
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1193
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1245
 msgid "Data saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1195
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1372
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1422
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1441
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:397
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1491
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:413
 #: pgadmin/utils/constants.py:30
 msgid "Graph Visualiser"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1458
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1508
 msgid "No data output. Execute a query to get output."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:170
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:180
 msgid "Showing rows:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:181
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:193
 msgid "to"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:192
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:206
 #, python-format
 msgid "Showing rows: %s to %s"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:195
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:209
 msgid "Apply (or press Enter on input)"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:195
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:200
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:209
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:214
 msgid "Edit range"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:200
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:214
 msgid "Cancel edit"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:206
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:220
 msgid "Page No:"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:217
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:233
 msgid "of"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:220
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:236
 msgid "First Page"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:221
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:237
 msgid "Previous Page"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:222
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:238
 msgid "Next Page"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:223
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:239
 msgid "Last Page"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:378
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:394
 msgid "Copy options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:380
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:396
 msgid "Paste"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:382
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:398
 msgid "Paste options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:388
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:404
 msgid "Save Data Changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:392
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:408
 msgid "Save results to file"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:403
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:419
 msgid "SQL query of data"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:412
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:428
 msgid "All rows on this page are selected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:422
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:438
 #, python-format
 msgid "All %s rows are selected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:424
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:440
 msgid "Clear Selection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:438
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:454
 msgid "Copy Options Menu"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:440
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:456
 msgid "Copy with headers"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:446
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:462
 msgid "Paste Options Menu"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:448
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:464
 msgid "Paste with SERIAL/IDENTITY values?"
 msgstr ""
 
