@@ -16,7 +16,7 @@ export function minMaxValidator(label, value, minValue, maxValue) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
 
-  if(isNaN(minValue) || isNaN(maxValue)) {
+  if((!_.isUndefined(minValue) && isNaN(minValue)) || (!_.isUndefined(maxValue) && isNaN(maxValue))) {
     return pgAdmin.Browser.messages.INVALID_MIN_MAX;
   } else if (!_.isUndefined(minValue) && (value < minValue || value === '-')) {
     return sprintf(pgAdmin.Browser.messages.MUST_GR_EQ, label, minValue);

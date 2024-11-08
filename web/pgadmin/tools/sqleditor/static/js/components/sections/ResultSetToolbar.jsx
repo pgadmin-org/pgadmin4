@@ -443,9 +443,10 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
             )
           }
         </Box>
+        {totalRowCount > 0 &&
         <Box>
           <PaginationInputs key={JSON.stringify(pagination)} pagination={pagination} totalRowCount={totalRowCount} clearSelection={clearSelection} />
-        </Box>
+        </Box>}
       </StyledDiv>
       <PgMenu
         anchorRef={copyMenuRef}
