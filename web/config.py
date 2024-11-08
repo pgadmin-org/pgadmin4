@@ -302,17 +302,18 @@ MAX_SESSION_IDLE_TIME = 60
 ##########################################################################
 # External Database Settings
 #
-# All configuration settings are stored by default in the SQLite database.
-# In order to use external databases like PostgreSQL sets the value of
+# All configuration settings are stored in a SQLite database by default.
+# In order to use external databases like PostgreSQL, set the value of
 # CONFIG_DATABASE_URI like below:
 # dialect+driver://username:password@host:port/database
 #
-# PostgreSQL:
-# postgresql://username:password@host:port/database
-# Specify Schema Name
-# postgresql://username:password@host:port/database?options=-csearch_path=pgadmin
-# Using PGPASS file
-# postgresql://username@host:port?options=-csearch_path=pgadmin
+# PostgreSQL example:
+# postgresql+psycopg://username:password@host:port/database
+# or using PGPASS file:
+# postgresql+psycopg://username@host:port?options=-csearch_path=pgadmin
+# Optional: Add ?options=-csearch_path=pgadmin for schema specification
+# Note: Legacy URIs using postgresql:// will be automatically converted to
+#       use psycopg3
 ##########################################################################
 CONFIG_DATABASE_URI = ''
 

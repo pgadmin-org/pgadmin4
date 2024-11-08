@@ -830,6 +830,37 @@ def clear_database_servers(load_user=current_user, from_setup=False,
         return False, error_msg
 
 
+def normalize_sqlalchemy_uri(uri):
+    """
+    Normalize postgres URIs for sqlalchemy compatibility.
+    Used for config database connections.
+
+    Args:
+        uri (str): db URI to normalize
+
+    Returns:
+        str: normalized URI compatible with pscopg dialect if postgres db and
+             dialect+driver is unset, unchanged uri otherwise
+    Note:
+        For pgAdmin's config database using psycopg3, SQLAlchemy requires
+        the 'postgresql+psycopg://' dialect specification.
+    """
+    if not uri:
+        return uri
+
+    # Map old/alternative dialect names to SQLAlchemy's psycopg dialect
+    pg_dialects = {
+        'postgresql:': 'postgresql+psycopg:',
+        'postgresql+psycopg3:': 'postgresql+psycopg:'
+    }
+
+    for old, new in pg_dialects.items():
+        if uri.startswith(old):
+            return uri.replace(old, new)
+
+    return uri
+
+
 def _does_user_exist(user, from_setup, auth_source=INTERNAL):
     """
     This function will check user is exist or not. If exist then return

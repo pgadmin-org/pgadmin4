@@ -44,22 +44,22 @@ Basic syntax:
 
 .. code-block:: bash
 
-    postgresql://username:password@host:port/database
+    postgresql+psycopg://username:password@host:port/database
 
 Using specific schema (It is recommended to create the schema in advance):
 
 .. code-block:: bash
 
-    postgresql://username:password@host:port/database?options=-csearch_path=<schema name>
+    postgresql+psycopg://username:password@host:port/database?options=-csearch_path=<schema name>
 
 Using default pgpass path for the service account:
 
 .. code-block:: bash
 
-    postgresql://username@host:port?options=-csearch_path=<schema name>
+    postgresql+psycopg://username@host:port?options=-csearch_path=<schema name>
 
 Specifying pgpass file path:
 
 .. code-block:: bash
 
-    postgresql://username@host:port?passfile=<path of the pgpass file>&options=-csearch_path=<schema name>
+    postgresql+psycopg://username@host:port?passfile=<path of the pgpass file>&options=-csearch_path=<schema name>

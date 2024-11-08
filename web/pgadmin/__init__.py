@@ -39,7 +39,8 @@ from jinja2 import select_autoescape
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
+from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat, \
+    normalize_sqlalchemy_uri
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -335,11 +336,9 @@ def create_app(app_name=None):
     ##########################################################################
     if config.CONFIG_DATABASE_URI is not None and \
             len(config.CONFIG_DATABASE_URI) > 0:
-        uri = config.CONFIG_DATABASE_URI
-        pg_pattern = r'^postgresql(\+psycopg3)?:'
-        if re.match(pg_pattern, uri):
-            uri = re.sub(pg_pattern, 'postgresql+psycopg:', uri)
-        app.config['SQLALCHEMY_DATABASE_URI'] = uri
+        app.config['SQLALCHEMY_DATABASE_URI'] = normalize_sqlalchemy_uri(
+            config.CONFIG_DATABASE_URI
+        )
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
             .format(config.SQLITE_PATH.replace('\\', '/'),
