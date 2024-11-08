@@ -153,17 +153,17 @@ function PaginationInputs({pagination, totalRowCount, clearSelection}) {
     setErrorInputs((prev)=>{
       let errors = {...prev};
 
-      if(minMaxValidator('', inputs.pageNo, 1, inputs.pageCount) || isEmptyString(inputs.pageNo)) {
+      if(minMaxValidator('', parseInt(inputs.pageNo), 1, parseInt(inputs.pageCount)) || isEmptyString(inputs.pageNo)) {
         errors.pageNo = true;
       } else {
         errors.pageNo = false;
       }
-      if(minMaxValidator('', inputs.from, 1, inputs.to) || isEmptyString(inputs.from)) {
+      if(minMaxValidator('', parseInt(inputs.from), 1, parseInt(inputs.to)) || isEmptyString(inputs.from)) {
         errors.from = true;
       } else {
         errors.from = false;
       }
-      if(minMaxValidator('', inputs.to, 1, totalRowCount) || isEmptyString(inputs.to)) {
+      if(minMaxValidator('', parseInt(inputs.to), 1, totalRowCount) || isEmptyString(inputs.to)) {
         errors.to = true;
       } else {
         errors.to = false;
@@ -233,8 +233,8 @@ function PaginationInputs({pagination, totalRowCount, clearSelection}) {
       <span> {gettext('of')} {pagination.page_count}</span>
       <div className='PaginationInputs-divider'>&nbsp;</div>
       <PgButtonGroup size="small">
-        <PgIconButton title={gettext('First Page')} disabled={pagination.page_no == 1} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
-        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no == 1} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
+        <PgIconButton title={gettext('First Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
+        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
         <PgIconButton title={gettext('Next Page')} disabled={pagination.page_no == pagination.page_count} onClick={()=>goToPage(pagination.page_no+1)} icon={<FastForwardRoundedIcon />}/>
         <PgIconButton title={gettext('Last Page')} disabled={pagination.page_no == pagination.page_count} onClick={()=>goToPage(pagination.page_count)} icon={<SkipNextRoundedIcon />} />
       </PgButtonGroup>
@@ -423,7 +423,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
           </>
           }
           {
-            allRowsSelect == 'PAGE' && (
+            allRowsSelect == 'PAGE' && totalRowCount > pagination.page_size && (
               <div>
                 <span>{gettext('All rows on this page are selected.')}</span>
                 <PgButtonGroup size="small">

@@ -62,7 +62,7 @@ jobs:
           ECHO Running %INSTALLER_EXE%...
           %INSTALLER_EXE% --prefix C:\PostgreSQL\${{ matrix.pgver }} --datadir C:\PostgreSQL\${{ matrix.pgver }}\data --serverport 59${{ matrix.pgver }} --superpassword postgres --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components pgAdmin,stackbuilder --enable-components server,commandlinetools"
           choco install -y mitkerberos
-          
+
           REM Ignore error 3010 (reboot required)
           IF %ERRORLEVEL% EQU 3010 cmd /c "exit /b 0"
         shell: cmd
@@ -92,12 +92,12 @@ jobs:
           sudo sed -i "s/port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
           sudo sed -i "s/#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/plugin_debugger'/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
           sudo su - postgres -c "/usr/lib/postgresql/${{ matrix.pgver }}/bin/postgres -D /var/lib/postgresql/${{ matrix.pgver }}/main -c config_file=/etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf &"
-          
+
           until sudo runuser -l postgres -c "pg_isready -p 59${{ matrix.pgver }}" 2>/dev/null; do
             >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
             sleep 2
           done
-          
+
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
 
@@ -107,18 +107,13 @@ jobs:
           echo local all all trust > /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
           sed -i '' "s/#port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /opt/homebrew/var/postgresql@${{ matrix.pgver }}/postgresql.conf
           brew services restart postgresql@${{ matrix.pgver }}
-          
+
           until /opt/homebrew/opt/postgresql@${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }} 2>/dev/null; do
             >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
             sleep 2
           done
-          
-          psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
-# Pin the python version to v3.12 till pgAdmin supports latest versions.
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+          psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
       - name: Install Python dependencies on Linux and macOS
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
@@ -140,21 +135,21 @@ jobs:
         run: |
           cat <<EOF > web/config_local.py
           from config import *
-          
+
           # Debug mode
           DEBUG = True
-          
+
           # App mode
           SERVER_MODE = False
-          
+
           # Log
           CONSOLE_LOG_LEVEL = DEBUG
           FILE_LOG_LEVEL = DEBUG
-          
+
           DEFAULT_SERVER = '127.0.0.1'
-          
+
           UPGRADE_CHECK_ENABLED = False
-          
+
           LOG_FILE = "$(pwd)/var/pgadmin4.log"
           SESSION_DB_PATH = "$(pwd)/var/sessions"
           STORAGE_DIR = "$(pwd)/var/storage"
@@ -162,7 +157,7 @@ jobs:
           TEST_SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
           AZURE_CREDENTIAL_CACHE_DIR = "$(pwd)/var/azurecredentialcache"
           EOF
-          
+
           cat <<EOF > web/regression/test_config.json
           {
             "pgAdmin4_login_credentials": {
@@ -211,7 +206,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           FOR /f "delims=" %%D IN ('python -c "import os; print(os.getcwd().replace('\\', '\\\\'))"') DO SET WORKING_DIR=%%D
-          
+
           > web\config_local.py (
             @echo.from config import *
             @echo.
@@ -236,7 +231,7 @@ jobs:
             @echo.TEST_SQLITE_PATH = "%WORKING_DIR%\\var\\test_pgadmin4.db"
             @echo.AZURE_CREDENTIAL_CACHE_DIR = "%WORKING_DIR%\\var\\azurecredentialcache"
           )
-          
+
           > web\regression\test_config.json (
             @echo.{
             @echo.  "pgAdmin4_login_credentials": {

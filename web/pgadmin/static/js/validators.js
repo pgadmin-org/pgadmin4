@@ -15,7 +15,10 @@ import pgAdmin from 'sources/pgadmin';
 export function minMaxValidator(label, value, minValue, maxValue) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
-  if (!_.isUndefined(minValue) && (value < minValue || value === '-')) {
+
+  if(isNaN(minValue) || isNaN(maxValue)) {
+    return pgAdmin.Browser.messages.INVALID_MIN_MAX;
+  } else if (!_.isUndefined(minValue) && (value < minValue || value === '-')) {
     return sprintf(pgAdmin.Browser.messages.MUST_GR_EQ, label, minValue);
   } else if (!_.isUndefined(maxValue) && value > maxValue) {
     return sprintf(pgAdmin.Browser.messages.MUST_LESS_EQ, label, maxValue);
