@@ -19,7 +19,8 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class SchemaDiffViewCompare(SchemaDiffObjectCompare):
-    view_keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2', 'setting', 'indrelid']
+    view_keys_to_ignore = ['oid', 'schema', 'xmin', 'oid-2', 'setting', 
+                           'indrelid']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
                               'tgqual', 'tgconstraint', 'nspname']
