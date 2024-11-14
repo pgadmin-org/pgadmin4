@@ -225,7 +225,9 @@ describe('SchemaView', ()=>{
       let onResetAction = (data)=> {
         expect(ctrl.container.querySelector('[data-test="Reset"]').hasAttribute('disabled')).toBe(true);
         expect(ctrl.container.querySelector('[data-test="Save"]').hasAttribute('disabled')).toBe(true);
-        expect(onDataChange).toHaveBeenCalledWith(false, data);
+        const callArgs = onDataChange.mock.calls[onDataChange.mock.calls.length - 1];
+        expect(callArgs[0]).toEqual(false);
+        expect(callArgs[1]).toEqual(data);
       };
 
       beforeEach(async ()=>{
@@ -274,7 +276,9 @@ describe('SchemaView', ()=>{
         expect(ctrl.container.querySelector('[data-test="Reset"]').hasAttribute('disabled')).toBe(true);
         expect(ctrl.container.querySelector('[data-test="Save"]').hasAttribute('disabled')).toBe(true);
         // on reset, orig data will be considered
-        expect(onDataChange).toHaveBeenCalledWith(false, { id: undefined, field1: null, field2: null, fieldcoll: null });
+        const callArgs = onDataChange.mock.calls[onDataChange.mock.calls.length - 1];
+        expect(callArgs[0]).toEqual(false);
+        expect(callArgs[1]).toEqual({ id: undefined, field1: null, field2: null, fieldcoll: null });
       });
     });
   });

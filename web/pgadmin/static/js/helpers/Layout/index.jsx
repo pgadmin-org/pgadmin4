@@ -15,6 +15,8 @@ import ContextMenu from '../../components/ContextMenu';
 import { showRenameTab } from '../../Dialogs';
 import usePreferences from '../../../../preferences/static/js/store';
 import _ from 'lodash';
+import UtilityView from '../../UtilityView';
+import ToolView from '../../ToolView';
 
 function TabTitle({id, closable, defaultInternal}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
@@ -482,6 +484,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
       <div id="layout-portal"></div>
       <ContextMenu menuItems={contextMenuItems} position={contextPos} onClose={()=>setContextPos([null, null, null])}
         label="Layout Context Menu" />
+      <UtilityView dockerObj={layoutDockerObj} />
+      <ToolView dockerObj={layoutDockerObj} />
     </LayoutDockerContext.Provider>
   );
 }

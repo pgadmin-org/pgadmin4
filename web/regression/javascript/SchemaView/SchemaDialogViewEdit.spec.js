@@ -120,7 +120,9 @@ describe('SchemaView', ()=>{
         });
         expect(ctrl.container.querySelector('[data-test="Reset"]').hasAttribute('disabled')).toBe(true);
         expect(ctrl.container.querySelector('[data-test="Save"]').hasAttribute('disabled')).toBe(true);
-        expect(onDataChange).toHaveBeenCalledWith(false, {});
+        const callArgs = onDataChange.mock.calls[onDataChange.mock.calls.length - 1];
+        expect(callArgs[0]).toEqual(false);
+        expect(callArgs[1]).toEqual({});
       });
     });
   });

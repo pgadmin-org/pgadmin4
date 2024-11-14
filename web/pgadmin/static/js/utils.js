@@ -415,21 +415,27 @@ export function checkTrojanSource(content, isPasteEvent) {
 }
 
 export function downloadBlob(blob, fileName) {
-  let urlCreator = window.URL || window.webkitURL,
-    downloadUrl = urlCreator.createObjectURL(blob),
-    link = document.createElement('a');
-
-  document.body.appendChild(link);
-
   if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
-  // IE10+ : (has Blob, but not a[download] or URL)
+    // IE10+ : (has Blob, but not a[download] or URL)
     window.navigator.msSaveBlob(blob, fileName);
   } else {
+    const urlCreator = window.URL || window.webkitURL;
+    const downloadUrl = urlCreator.createObjectURL(blob);
+
+    const link = document.createElement('a');
     link.setAttribute('href', downloadUrl);
     link.setAttribute('download', fileName);
+    link.style.setProperty('visibility ', 'hidden');
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   }
-  document.body.removeChild(link);
+}
+
+export function downloadFile(textData, fileName, fileType) {
+  const respBlob = new Blob([textData], {type : fileType});
+  downloadBlob(respBlob, fileName);
 }
 
 export function toPrettySize(rawSize, from='B') {
@@ -748,4 +754,50 @@ export function getPlatform() {
   } else {
     return 'Unknown';
   }
+}
+
+/**
+ * Decimal adjustment of a number.
+ *
+ * @param {String}  type  The type of adjustment.
+ * @param {Number}  value The number.
+ * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+ * @returns {Number} The adjusted value.
+ */
+function decimalAdjust(type, value, exp) {
+  // If the exp is undefined or zero...
+  if (typeof exp === 'undefined' || +exp === 0) {
+    return Math[type](value);
+  }
+  value = +value;
+  exp = +exp;
+  // If the value is not a number or the exp is not an integer...
+  if (isNaN(value) || exp % 1 !== 0) {
+    return NaN;
+  }
+  // Shift
+  value = value.toString().split('e');
+  value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+  // Shift back
+  value = value.toString().split('e');
+  return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+}
+
+// Decimal round
+if (!Math.round10) {
+  Math.round10 = function(value, exp) {
+    return decimalAdjust('round', value, exp);
+  };
+}
+// Decimal floor
+if (!Math.floor10) {
+  Math.floor10 = function(value, exp) {
+    return decimalAdjust('floor', value, exp);
+  };
+}
+// Decimal ceil
+if (!Math.ceil10) {
+  Math.ceil10 = function(value, exp) {
+    return decimalAdjust('ceil', value, exp);
+  };
 }

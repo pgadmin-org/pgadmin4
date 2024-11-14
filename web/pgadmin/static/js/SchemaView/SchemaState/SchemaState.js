@@ -223,7 +223,7 @@ export class SchemaState extends DepListener {
     state.data = sessData;
     state._changes = state.changes();
     state.updateOptions();
-    state.onDataChange && state.onDataChange(state.isDirty, state._changes);
+    state.onDataChange && state.onDataChange(state.isDirty, state._changes, state.errors);
   }
 
   changes(includeSkipChange=false) {

@@ -317,13 +317,13 @@ const StyledPgTableRoot = styled('div')(({theme})=>({
 
 const queryClient = new QueryClient();
 
-export default function PgTable({ caveTable = true, tableNoBorder = true, ...props }) {
+export default function PgTable({ caveTable = true, tableNoBorder = true, tableNoHeader=false, ...props }) {
   const [searchVal, setSearchVal] = React.useState('');
 
   return (
     <QueryClientProvider client={queryClient}>
       <StyledPgTableRoot className={[tableNoBorder ? '' : 'pgtable-pgrt-border', caveTable ? 'pgtable-pgrt-cave' : ''].join(' ')} data-test={props['data-test']}>
-        <Box className='pgtable-header'>
+        {!tableNoHeader && <Box className='pgtable-header'>
           {props.customHeader && (<Box className={['pgtable-custom-header-section', props['className']].join(' ')}> {props.customHeader }</Box>)}
           <Box marginLeft="auto">
             <InputText
@@ -336,7 +336,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, ...pro
               }}
             />
           </Box>
-        </Box>
+        </Box>}
         <div className={'pgtable-body'} >
           <Table {...props} searchVal={searchVal}/>
         </div>
@@ -349,6 +349,7 @@ PgTable.propTypes = {
   customHeader: PropTypes.element,
   caveTable: PropTypes.bool,
   tableNoBorder: PropTypes.bool,
+  tableNoHeader: PropTypes.bool,
   'data-test': PropTypes.string,
   'className': PropTypes.string
 };

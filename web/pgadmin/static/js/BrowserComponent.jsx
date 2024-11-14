@@ -10,10 +10,8 @@ import Statistics from '../../misc/statistics/static/js/Statistics';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import Dependencies from '../../misc/dependencies/static/js/Dependencies';
 import Dependents from '../../misc/dependents/static/js/Dependents';
-import UtilityView from './UtilityView';
 import ModalProvider from './helpers/ModalProvider';
 import { NotifierProvider } from './helpers/Notifier';
-import ToolView from './ToolView';
 import ObjectExplorerToolbar from './helpers/ObjectExplorerToolbar';
 import MainMoreToolbar from './helpers/MainMoreToolbar';
 import Dashboard from '../../dashboard/static/js/Dashboard';
@@ -144,8 +142,6 @@ export default function BrowserComponent({pgAdmin}) {
             resetToTabPanel={BROWSER_PANELS.MAIN}
           />
         </div>
-        <UtilityView />
-        <ToolView />
       </ModalProvider>
       <ObjectBreadcrumbs pgAdmin={pgAdmin} />
     </PgAdminContext.Provider>

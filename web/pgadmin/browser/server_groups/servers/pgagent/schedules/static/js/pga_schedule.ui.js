@@ -11,9 +11,8 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 import moment from 'moment';
-import { WEEKDAYS, MONTHDAYS, MONTHS, HOURS, MINUTES } from '../../../../../../static/js/constants';
-
-const PGAGENT_MONTHDAYS = [...MONTHDAYS].concat([{label: gettext('Last day'), value: 'Last Day'}]);
+import { WEEKDAYS, MONTHS, HOURS, MINUTES, PGAGENT_MONTHDAYS } from '../../../../../../static/js/constants';
+import { DaysSchema, TimesSchema } from './repeat.ui';
 
 export class ExceptionsSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
@@ -60,119 +59,6 @@ export class ExceptionsSchema extends BaseUISchema {
     } else {
       setError('jscdate', null);
     }
-  }
-}
-
-const BooleanArrayFormatter = {
-  fromRaw: (originalValue, options) => {
-    if (!_.isNull(originalValue) && !_.isUndefined(originalValue) && Array.isArray(originalValue)) {
-      let retValue = [],
-        index = 0;
-      originalValue.forEach( function (value) {
-        if (value) {
-          retValue.push(options[index]);
-        }
-        index = index + 1;
-      });
-
-      return retValue;
-    }
-
-    return originalValue;
-  },
-
-  toRaw: (selectedVal, options)=> {
-    if (!_.isNull(options) && !_.isUndefined(options) && Array.isArray(options)) {
-      let retValue = [];
-      options.forEach( function (option) {
-        let elementFound = _.find(selectedVal, (selVal)=>_.isEqual(selVal.label, option.label));
-        if(_.isUndefined(elementFound)) {
-          retValue.push(false);
-        } else {
-          retValue.push(true);
-        }
-      });
-
-      return retValue;
-    }
-
-    return selectedVal;
-  }
-};
-
-export class DaysSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues={}) {
-    super({
-      ...initValues,
-    });
-
-    this.fieldOptions = {
-      ...fieldOptions,
-    };
-  }
-
-  get baseFields() {
-    return [
-      {
-        id: 'jscweekdays', label: gettext('Week Days'), type: 'select',
-        group: gettext('Days'),
-        controlProps: { allowClear: true, multiple: true, allowSelectAll: true,
-          placeholder: gettext('Select the weekdays...'),
-          formatter: BooleanArrayFormatter,
-        },
-        options: WEEKDAYS,
-      }, {
-        id: 'jscmonthdays', label: gettext('Month Days'), type: 'select',
-        group: gettext('Days'),
-        controlProps: { allowClear: true, multiple: true, allowSelectAll: true,
-          placeholder: gettext('Select the month days...'),
-          formatter: BooleanArrayFormatter,
-        },
-        options: PGAGENT_MONTHDAYS,
-      }, {
-        id: 'jscmonths', label: gettext('Months'), type: 'select',
-        group: gettext('Days'),
-        controlProps: { allowClear: true, multiple: true, allowSelectAll: true,
-          placeholder: gettext('Select the months...'),
-          formatter: BooleanArrayFormatter,
-        },
-        options: MONTHS,
-      }
-    ];
-  }
-}
-
-export class TimesSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues={}) {
-    super({
-      ...initValues,
-    });
-
-    this.fieldOptions = {
-      ...fieldOptions,
-    };
-  }
-
-  get baseFields() {
-    return [
-      {
-        id: 'jschours', label: gettext('Hours'), type: 'select',
-        group: gettext('Times'),
-        controlProps: { allowClear: true, multiple: true, allowSelectAll: true,
-          placeholder: gettext('Select the hours...'),
-          formatter: BooleanArrayFormatter,
-        },
-        options: HOURS,
-      }, {
-        id: 'jscminutes', label: gettext('Minutes'), type: 'select',
-        group: gettext('Times'),
-        controlProps: { allowClear: true, multiple: true, allowSelectAll: true,
-          placeholder: gettext('Select the minutes...'),
-          formatter: BooleanArrayFormatter,
-        },
-        options: MINUTES,
-      }
-    ];
   }
 }
 

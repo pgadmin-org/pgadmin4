@@ -104,3 +104,5 @@ export const WEEKDAYS = [
     {label: gettext('52'), value: '52'}, {label: gettext('53'), value: '53'}, {label: gettext('54'), value: '54'}, {label: gettext('55'), value: '55'},
     {label: gettext('56'), value: '56'}, {label: gettext('57'), value: '57'}, {label: gettext('58'), value: '58'}, {label: gettext('59'), value: '59'},
   ];
+
+export const PGAGENT_MONTHDAYS = [...MONTHDAYS].concat([{label: gettext('Last day'), value: 'Last Day'}]);

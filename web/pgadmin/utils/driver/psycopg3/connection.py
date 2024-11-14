@@ -1302,6 +1302,11 @@ WHERE db.datname = current_database()""")
         rows = []
         self.row_count = cur.rowcount
 
+        # If multiple queries are run, make sure to reach
+        # the last query result
+        while cur.nextset():
+            pass  # This loop is empty
+
         if cur.get_rowcount() > 0:
             rows = cur.fetchall()
 

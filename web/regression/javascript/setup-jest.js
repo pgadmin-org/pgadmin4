@@ -94,6 +94,15 @@ Element.prototype.getBoundingClientRect = jest.fn(function () {
   };
 });
 
+Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
+  writable: true,
+  value: jest.fn().mockReturnValue({
+    x: 0,
+    y: 0,
+    width: 100,
+  }),
+});
+
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 

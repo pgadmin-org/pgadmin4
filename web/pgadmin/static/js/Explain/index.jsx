@@ -465,7 +465,9 @@ function parsePlanData(data, ctx) {
   return retPlan;
 }
 
-export default function Explain({plans=[]}) {
+export default function Explain({plans=[],
+  emptyMessage=gettext('Use Explain/Explain analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".')
+}) {
 
   const [tabValue, setTabValue] = React.useState(0);
 
@@ -490,7 +492,7 @@ export default function Explain({plans=[]}) {
   if(_.isEmpty(plans)) {
     return (
       <StyledBox height="100%" display="flex" flexDirection="column">
-        <EmptyPanelMessage text={gettext('Use Explain/Explain analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".')} />
+        {emptyMessage && <EmptyPanelMessage text={emptyMessage} />}
       </StyledBox>
     );
   }
@@ -526,5 +528,6 @@ export default function Explain({plans=[]}) {
 }
 
 Explain.propTypes = {
-  plans: PropTypes.array,
+  plans: PropTypes.array.isRequired,
+  emptyMessage: PropTypes.string,
 };

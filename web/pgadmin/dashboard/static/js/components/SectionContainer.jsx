@@ -35,7 +35,7 @@ const StyledBox = styled(Box)(({theme}) => ({
 
 export default function SectionContainer({title, titleExtras, children, style}) {
   return (
-    <StyledBox style={style}>
+    <StyledBox className='SectionContainer-root' style={style}>
       <Box className='SectionContainer-cardHeader' title={title}>
         <div className='SectionContainer-cardTitle'>{title}</div>
         <div style={{marginLeft: 'auto'}}>

@@ -261,15 +261,17 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
   let placeholder = '';
   let regExp = /[a-zA-Z]/;
   let timeZoneString = '';
+
+  controlProps = controlProps ?? {};
   if (controlProps?.pickerType === 'Date') {
-    format = controlProps.format || DATE_TIME_FORMAT.DATE;
+    format = controlProps?.format || DATE_TIME_FORMAT.DATE;
     placeholder = controlProps.placeholder || 'YYYY-MM-DD';
   } else if (controlProps?.pickerType === 'Time') {
-    format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.TIME_12 : DATE_TIME_FORMAT.TIME_24);
-    placeholder = controlProps.placeholder || 'HH:mm:ss';
+    format = controlProps?.format || (controlProps?.ampm ? DATE_TIME_FORMAT.TIME_12 : DATE_TIME_FORMAT.TIME_24);
+    placeholder = controlProps?.placeholder || 'HH:mm:ss';
   } else {
-    format = controlProps.format || (controlProps.ampm ? DATE_TIME_FORMAT.DATE_TIME_12 : DATE_TIME_FORMAT.DATE_TIME_24);
-    placeholder = controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z';
+    format = controlProps?.format || (controlProps?.ampm ? DATE_TIME_FORMAT.DATE_TIME_12 : DATE_TIME_FORMAT.DATE_TIME_24);
+    placeholder = controlProps?.placeholder || 'YYYY-MM-DD HH:mm:ss Z';
   }
 
   const handleChange = (dateVal) => {
@@ -572,7 +574,7 @@ FormInputSwitch.propTypes = {
   labelTooltip: PropTypes.string
 };
 
-export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
+export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, disabled, labelPlacement, ...props }) {
   controlProps = controlProps || {};
   return (
     <FormControlLabel
@@ -585,6 +587,7 @@ export function InputCheckbox({ cid, helpid, value, onChange, controlProps, read
           inputProps={{ 'aria-describedby': helpid, 'title': controlProps.label}}
           {...props} />
       }
+      disabled={disabled}
       label={controlProps.label}
       labelPlacement={labelPlacement}
     />
@@ -597,6 +600,7 @@ InputCheckbox.propTypes = {
   controlProps: PropTypes.object,
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
+  disabled: PropTypes.bool,
   labelPlacement: PropTypes.string
 };
 

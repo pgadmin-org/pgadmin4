@@ -173,7 +173,7 @@ basicSettings = createTheme(basicSettings, {
     MuiTabs: {
       styleOverrides: {
         root: {
-          minHeight: 0,
+          minHeight: '30px',
         }
       }
     },
@@ -242,6 +242,7 @@ basicSettings = createTheme(basicSettings, {
           marginBottom: 0,
           marginLeft: 0,
           marginRight: 0,
+          gap: '4px'
         }
       }
     },
