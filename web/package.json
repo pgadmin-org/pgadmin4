@@ -37,7 +37,7 @@
     "eslint": "^9.11.1",
     "eslint-plugin-jest": "^28.8.0",
     "eslint-plugin-react": "^7.34.3",
-    "exports-loader": "^4.0.0",
+    "exports-loader": "^5.0.0",
     "globals": "^15.8.0",
     "html-react-parser": "^5.0.6",
     "image-minimizer-webpack-plugin": "^4.0.2",

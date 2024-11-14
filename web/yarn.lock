@@ -7141,14 +7141,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exports-loader@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "exports-loader@npm:4.0.0"
+"exports-loader@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "exports-loader@npm:5.0.0"
   dependencies:
     source-map: ^0.6.1
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 8d92a3a04e55abf87c245ea19b449fa109d17de5629bb0e5888eaadae3aeefdba497c7faf7d1ae4b072bd89a68a9d72ed37102cd0a5ccb5e804e7ca7269309c9
+  checksum: 0ec3332c7394032c2e487652860d1f6ce78224349cb5be6b7cf1cafd4473910fb448ae54dde7f88fe393a77d7c0c6ce142427c7a9d135260a589af1ee19e18f2
   languageName: node
   linkType: hard
 
@@ -13313,7 +13313,7 @@ __metadata:
     eslint: ^9.11.1
     eslint-plugin-jest: ^28.8.0
     eslint-plugin-react: ^7.34.3
-    exports-loader: ^4.0.0
+    exports-loader: ^5.0.0
     globals: ^15.8.0
     hotkeys-js: ^3.13.3
     html-react-parser: ^5.0.6
