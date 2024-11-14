@@ -163,7 +163,10 @@ export default class SQLEditor {
       });
     }
 
-    pgBrowser.add_menu_category('view_data', gettext('View/Edit Data'), 100, '');
+    pgBrowser.add_menu_category({
+      name: 'view_data', label: gettext('View/Edit Data'), priority: 100
+    });
+
     pgBrowser.add_menus(menus);
   }
 

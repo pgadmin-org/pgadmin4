@@ -119,7 +119,7 @@ define('pgadmin.node.database', [
         },{
           name: 'generate_erd', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'generate_erd',
-          category: 'erd', priority: 5, label: gettext('ERD For Database'),
+          priority: 5, label: gettext('ERD For Database'),
           enable: (node) => {
             return node.allowConn;
           }

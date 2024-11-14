@@ -90,7 +90,7 @@ function(
         },{
           name: 'reset_table_stats', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
-          category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
+          priority: 4, label: gettext('Reset Statistics'),
           enable : 'canCreate',
         },{
           name: 'detach_partition', node: 'partition', module: this,
@@ -121,7 +121,7 @@ function(
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',
-          category: 'Count', priority: 2, label: gettext('Count Rows'),
+          priority: 2, label: gettext('Count Rows'),
           enable: true,
         }]);
       },

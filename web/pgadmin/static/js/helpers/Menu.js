@@ -10,17 +10,18 @@ import _ from 'lodash';
 import gettext from 'sources/gettext';
 
 export default class Menu {
-  constructor(name, label, id, index, addSepratior) {
+  constructor(name, label, id, index, addSeprator, hasDynamicMenuItems) {
     this.label = label;
     this.name = name;
     this.id = id;
     this.index = index || 1;
     this.menuItems = [];
-    this.addSepratior = addSepratior || false;
+    this.addSeprator = addSeprator || false;
+    this.hasDynamicMenuItems = hasDynamicMenuItems;
   }
 
-  static create(name, label, id, index, addSepratior) {
-    let menuObj = new Menu(name, label, id, index, addSepratior);
+  static create(name, label, id, index, addSeprator, hasDynamicMenuItems) {
+    let menuObj = new Menu(name, label, id, index, addSeprator, hasDynamicMenuItems);
     return menuObj;
   }
 
@@ -30,7 +31,7 @@ export default class Menu {
       label: this.label,
       name: this.name,
       index: this.index,
-      addSepratior: this.addSepratior,
+      addSeprator: this.addSeprator,
     };
   }
 
@@ -41,13 +42,10 @@ export default class Menu {
         this.menuItems.splice(index, 0, menuItem);
       } else {
         this.menuItems.push(menuItem);
-        Menu.sortMenus(this.menuItems);
       }
     } else {
       throw new Error(gettext('Invalid MenuItem instance'));
     }
-
-
   }
 
   addMenuItems(menuItems) {
@@ -59,7 +57,6 @@ export default class Menu {
           item.menu_items.forEach((i)=> {
             i.parentMenu = item;
           });
-          Menu.sortMenus(item.menu_items);
         }
       } else {
         let subItems = Object.values(item);
@@ -88,16 +85,16 @@ export default class Menu {
 
   setMenuItems(menuItems) {
     this.menuItems = menuItems;
-    Menu.sortMenus(this.menuItems);
+  }
 
-    this.menuItems.forEach((item)=> {
-      if(item?.menu_items?.length > 0) {
-        Menu.sortMenus(item.menu_items);
-      }
-    });
+  clearMenuItems() {
+    this.menuItems = [];
   }
 
   static sortMenus(menuItems) {
+    if(!menuItems || menuItems.length <=0) {
+      return;
+    }
     // Sort by alphanumeric ordered first
     menuItems.sort(function (a, b) {
       return a.label.localeCompare(b.label);
@@ -106,6 +103,10 @@ export default class Menu {
     // Sort by priority
     menuItems.sort(function (a, b) {
       return a.priority - b.priority;
+    });
+
+    menuItems.forEach((mi)=>{
+      Menu.sortMenus(mi.getMenuItems());
     });
   }
 
@@ -117,9 +118,9 @@ export default class Menu {
 
 export class MenuItem {
   constructor(options, onDisableChange) {
-    let menu_opts = [
+    let allowedOptions = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
-      'category', 'target', 'url', 'node',
+      'category', 'target', 'url', 'node', 'single',
       'checked', 'below', 'menu_items', 'is_checkbox', 'action', 'applies', 'is_native_only', 'type',
     ];
     let defaults = {
@@ -127,7 +128,7 @@ export class MenuItem {
       target: '_self',
       enable: true,
     };
-    _.extend(this, defaults, _.pick(options, menu_opts));
+    _.extend(this, defaults, _.pick(options, allowedOptions));
     if (!this.callback) {
       this.callback = (item) => {
         if (item.url != '#') {
@@ -157,6 +158,11 @@ export class MenuItem {
 
   change_checked(isChecked) {
     this.checked = isChecked;
+  }
+
+  addMenuItems(items) {
+    this.menu_items = this.menu_items ?? [];
+    this.menu_items = this.menu_items.concat(items);
   }
 
   getMenuItems() {

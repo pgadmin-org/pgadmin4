@@ -82,12 +82,12 @@ define('pgadmin.node.compound_trigger', [
         },{
           name: 'enable_compound_trigger', node: 'compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'enable_compound_trigger',
-          category: 'connect', priority: 3, label: gettext('Enable compound trigger'),
+          priority: 3, label: gettext('Enable compound trigger'),
           enable : 'canCreate_with_compound_trigger_enable',
         },{
           name: 'disable_compound_trigger', node: 'compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'disable_compound_trigger',
-          category: 'drop', priority: 3, label: gettext('Disable compound trigger'),
+          priority: 3, label: gettext('Disable compound trigger'),
           enable : 'canCreate_with_compound_trigger_disable',
         },{
           name: 'create_compound_trigger_onView', node: 'view', module: this,

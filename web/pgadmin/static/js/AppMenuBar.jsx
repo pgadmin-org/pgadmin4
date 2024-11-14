@@ -67,7 +67,7 @@ export default function AppMenuBar() {
     pgAdmin.Browser.Events.on('pgadmin:enable-disable-menu-items', _.debounce(()=>{
       forceUpdate();
     }, 100));
-    pgAdmin.Browser.Events.on('pgadmin:refresh-menu-item', _.debounce(()=>{
+    pgAdmin.Browser.Events.on('pgadmin:refresh-app-menu', _.debounce(()=>{
       forceUpdate();
     }, 100));
   }, []);
@@ -95,6 +95,18 @@ export default function AppMenuBar() {
 
   const userMenuInfo = pgAdmin.Browser.utils.userMenuInfo;
 
+  const getPgMenu = (menu)=>{
+    return menu.getMenuItems()?.map((menuItem, i)=>{
+      const submenus = menuItem.getMenuItems();
+      if(submenus) {
+        return <PgSubMenu key={menuItem.label} label={menuItem.label}>
+          {getPgMenu(menuItem)}
+        </PgSubMenu>;
+      }
+      return getPgMenuItem(menuItem, i);
+    });
+  };
+
   return (
     <StyledBox data-test="app-menu-bar">
       <div className='AppMenuBar-logo' />
@@ -106,17 +118,7 @@ export default function AppMenuBar() {
               label={menu.label}
               key={menu.name}
             >
-              {menu.getMenuItems().map((menuItem, i)=>{
-                const submenus = menuItem.getMenuItems();
-                if(submenus) {
-                  return <PgSubMenu key={menuItem.label} label={menuItem.label}>
-                    {submenus.map((submenuItem, si)=>{
-                      return getPgMenuItem(submenuItem, si);
-                    })}
-                  </PgSubMenu>;
-                }
-                return getPgMenuItem(menuItem, i);
-              })}
+              {getPgMenu(menu)}
             </PgMenu>
           );
         })}

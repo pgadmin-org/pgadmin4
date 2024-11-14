@@ -136,7 +136,8 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
 }
 
 /* Get the nodes list based on current selected node id */
-export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, filter=()=>true) {
+export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, filter=()=>true, postTransform=(res)=>res) {
+  nodeObj = typeof(nodeObj) == 'string' ? pgAdmin.Browser.Nodes[nodeObj] : nodeObj;
   /* Transform the result to add image details */
   const transform = (rows) => {
     let res = [];
@@ -158,7 +159,7 @@ export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, 
       }
     });
 
-    return res;
+    return postTransform(res);
   };
 
   return getNodeAjaxOptions('nodes', nodeObj, treeNodeInfo, itemNodeData, params, transform);

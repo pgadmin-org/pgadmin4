@@ -64,7 +64,7 @@ define('pgadmin.node.schema', [
         },{
           name: 'generate_erd', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'generate_erd',
-          category: 'erd', priority: 5, label: gettext('ERD For Schema')
+          priority: 5, label: gettext('ERD For Schema')
         }]);
       },
       can_create_schema: function(node) {

@@ -87,8 +87,10 @@ define('pgadmin.node.mview', [
           @property {data} - Allow create view option on schema node or
           system view nodes.
          */
-        pgAdmin.Browser.add_menu_category(
-          'refresh_mview', gettext('Refresh View'), 18, '');
+        pgAdmin.Browser.add_menu_category({
+          name: 'refresh_mview', label: gettext('Refresh View'), priority: 18
+        });
+
         pgBrowser.add_menus([{
           name: 'create_mview_on_coll', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

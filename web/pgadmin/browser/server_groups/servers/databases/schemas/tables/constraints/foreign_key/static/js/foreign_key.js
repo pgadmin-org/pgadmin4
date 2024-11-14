@@ -47,7 +47,7 @@ define('pgadmin.node.foreign_key', [
         },{
           name: 'validate_foreign_key', node: 'foreign_key', module: this,
           applies: ['object', 'context'], callback: 'validate_foreign_key',
-          category: 'validate', priority: 4, label: gettext('Validate foreign key'),
+          priority: 4, label: gettext('Validate foreign key'),
           enable : 'is_not_valid',
         },
         ]);
