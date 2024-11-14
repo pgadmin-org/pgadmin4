@@ -73,6 +73,10 @@ define('pgadmin.node.server', [
 
         this.initialized = true;
 
+        pgBrowser.add_menu_category({
+          name: 'server', label: gettext('Server'), priority: 1
+        });
+
         pgBrowser.add_menus([{
           name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

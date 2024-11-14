@@ -314,6 +314,7 @@ define('pgadmin.browser', [
 
     add_menu_category: function({name, ...options}) {
       this.menu_categories[name] = {
+        name: name,
         label: '(No Label)',
         priority: 10,
         icon: '',

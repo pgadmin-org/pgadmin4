@@ -49,8 +49,8 @@ export default class MainMenuFactory {
     MAIN_MENUS.forEach((_menu) => {
       let menuObj = Menu.create(_menu.name, _menu.label, _menu.id, _menu.index, _menu.addSeprator, _menu.hasDynamicMenuItems);
       pgAdmin.Browser.MainMenus.push(menuObj);
-      // Don't add menuItems for Object menu as it's menuItems get changed on tree selection.
-      if(_menu.name !== 'object') {
+      // Don't add menuItems for hasDynamicMenuItems true as it's menuItems get changed on tree selection.
+      if(!_menu.hasDynamicMenuItems) {
         menuObj.clearMenuItems();
         menuObj.addMenuItems(MainMenuFactory.createMenuItems(pgAdmin.Browser.all_menus_cache[_menu.name]));
       }

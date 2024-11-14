@@ -9,6 +9,7 @@
 
 import sys
 import secrets
+import time
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.locators import BrowserToolBarLocators
@@ -86,6 +87,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
         table_node.click()
+        time.sleep(2)
 
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,

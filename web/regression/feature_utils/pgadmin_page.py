@@ -1253,7 +1253,8 @@ class PgadminPage:
                 WebDriverWait(self.driver, 10).until(
                     EC.visibility_of_element_located(verify_locator))
                 click_status = True
-            except Exception:
+            except Exception as e:
+                print(e)
                 attempt += 1
         return click_status
 

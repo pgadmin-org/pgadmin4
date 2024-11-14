@@ -44,7 +44,6 @@ export default class SearchObjectModule {
       enable: this.search_objects_enabled,
       priority: 3,
       label: gettext('Search Objects...'),
-      below: true,
       data: {
         data_disabled: gettext('Please select a database from the object explorer to search the database objects.'),
       },
