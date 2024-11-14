@@ -29,4 +29,5 @@ Housekeeping
 
 Bug fixes
 *********
+  | `Issue #5099 <https://github.com/pgadmin-org/pgadmin4/issues/5099>`_ -  Fixed an issue where Ctrl/Cmd + A was not selecting all data in query tool data grid.
 

@@ -22,6 +22,7 @@ import { QueryToolEventsContext } from '../QueryToolComponent';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
+import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
@@ -88,15 +89,6 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
 export const RowInfoContext = React.createContext();
 export const DataGridExtrasContext = React.createContext();
 
-function getCopyShortcutHandler(handleCopy) {
-  return (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
-      e.preventDefault();
-      handleCopy();
-    }
-  };
-}
-
 function CustomRow(props) {
   const rowRef = useRef();
   const dataGridExtras = useContext(DataGridExtrasContext);
@@ -113,9 +105,7 @@ function CustomRow(props) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
   const handleKeyDown = (e)=>{
-    const handleCopyShortcut = getCopyShortcutHandler(dataGridExtras.handleCopy);
-    // Invokes the copy handler.
-    handleCopyShortcut(e);
+    dataGridExtras.handleShortcuts(e);
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
       props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
@@ -160,8 +150,13 @@ function SelectAllHeaderRenderer({isCellSelected}) {
     };
   }, []);
 
+  useEffect(()=>{
+    const unregSelect = eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SELECT_ALL, ()=>!isRowSelected && onClick());
+    return unregSelect;
+  }, [isRowSelected]);
+
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="0" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
+    tabIndex="0" onKeyDown={dataGridExtras.handleShortcuts}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
@@ -196,7 +191,7 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
 
   return (
     <Box ref={cellRef} className={'QueryTool-columnHeader ' + (isSelected ? 'QueryTool-colHeaderSelected' : null)} onClick={onClick} tabIndex="0"
-      onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)} data-column-key={column.key}>
+      onKeyDown={dataGridExtras.handleShortcuts} data-column-key={column.key}>
       {(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') &&
       <Box>
         <PgIconButton title={gettext('View all geometries in this column')} icon={<MapIcon data-label="MapIcon"/>} size="small" style={{marginRight: '0.25rem'}} onClick={(e)=>{
@@ -398,12 +393,27 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
   }
 
+  function handleShortcuts(e) {
+    // Handle Copy shortcut Cmd/Ctrl + c
+    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+      e.preventDefault();
+      handleCopy();
+    }
+
+    // Handle Select All Cmd + A(mac) / Ctrl + a (others)
+    if((isMac() && e.metaKey) || (!isMac() && e.ctrlKey) && e.key === 'a') {
+      e.preventDefault();
+      onSelectedColumnsChangeWrapped(new Set());
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SELECT_ALL);
+    }
+  }
+
   const renderCustomRow = useCallback((key, props) => {
     return <CustomRow key={key} {...props} />;
   }, []);
 
   const dataGridExtras = useMemo(()=>({
-    onSelectedCellChange, handleCopy, startRowNum
+    onSelectedCellChange, handleShortcuts, startRowNum
   }), [onSelectedCellChange]);
 
   useEffect(()=>{
