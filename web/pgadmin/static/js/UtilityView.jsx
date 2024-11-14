@@ -13,7 +13,7 @@ import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import url_for from 'sources/url_for';
 import ErrorBoundary from './helpers/ErrorBoundary';
-import { usePgAdmin } from './BrowserComponent';
+import { usePgAdmin } from './PgAdminProvider';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import { generateNodeUrl } from '../../browser/static/js/node_ajax';
 import usePreferences from '../../preferences/static/js/store';
@@ -34,6 +34,7 @@ export default function UtilityView({dockerObj}) {
       const panelId = _.uniqueId(BROWSER_PANELS.UTILITY_DIALOG);
       const onClose = ()=>docker.current.close(panelId);
       docker.current.openDialog({
+      // pgAdmin.Browser.docker.default_workspace.openDialog({
         id: panelId,
         title: panelTitle,
         content: (
@@ -58,6 +59,7 @@ export default function UtilityView({dockerObj}) {
                   pgAdmin.Browser.notifier.success(data.info);
                 }
                 onClose();
+                //pgAdmin.Browser.docker.default_workspace.close(panelId);
               })}
               extraData={dialogProps.extraData??{}}
             />
@@ -91,6 +93,7 @@ function UtilityViewContent({schema, treeNodeInfo, actionType, formType, onClose
   /* Node type & Node obj*/
   let nodeObj = extraData.nodeType? pgAdmin.Browser.Nodes[extraData.nodeType]: undefined;
   let itemNodeData = extraData?.itemNodeData ? itemNodeData: undefined;
+  // const onClose = ()=>pgAdmin.Browser.docker.default_workspace.close(panelId);
 
   /* on save button callback, promise required */
   const onSaveClick = (isNew, data)=>new Promise((resolve, reject)=>{

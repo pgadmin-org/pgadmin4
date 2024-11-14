@@ -17,10 +17,12 @@ const Browser = {
   Events: new EventBus(),
   get_preferences_for_module: ()=>({}),
   docker: {
-    eventBus: new EventBus(),
-    find: ()=>{},
-    openTab: ()=>{},
-    focus: ()=>{},
+    default_workspace: {
+      eventBus: new EventBus(),
+      find: ()=>{},
+      openTab: ()=>{},
+      focus: ()=>{},
+    }
   },
   onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
   utils: {

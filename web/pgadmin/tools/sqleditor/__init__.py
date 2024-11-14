@@ -62,6 +62,8 @@ from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
+from pgadmin.browser.server_groups.servers.utils import \
+    convert_connection_parameter
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -339,6 +341,11 @@ def panel(trans_id):
     )
 
 
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
+    '<did>',
+    methods=["POST"], endpoint='initialize_sqleditor_with_did'
+)
 @blueprint.route(
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
     '<int:did>',
@@ -2325,7 +2332,7 @@ def get_new_connection_data(sgid=None, sid=None):
         server_groups = ServerGroup.query.all()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
-        servers = Server.query.all()
+        servers = Server.query.filter(Server.is_adhoc == 0)
 
         for server in servers:
             manager = driver.connection_manager(server.id)
@@ -2338,6 +2345,11 @@ def get_new_connection_data(sgid=None, sid=None):
                                                     server),
                 'fgcolor': server.fgcolor,
                 'bgcolor': server.bgcolor,
+                'host': server.host,
+                'port': server.port,
+                'service': server.service,
+                'connection_params':
+                    convert_connection_parameter(server.connection_params),
                 'connected': connected})
 
         msg = "Success"

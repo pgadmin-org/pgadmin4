@@ -13,7 +13,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Grid, InputLabel } from '@mui/material';
 import { InputSQL } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';
-import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../static/js/PgAdminProvider';
 
 export default function AboutComponent() {
   const containerRef = useRef();

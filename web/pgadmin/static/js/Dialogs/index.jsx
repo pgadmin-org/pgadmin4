@@ -188,8 +188,8 @@ export function showChangeServerPassword() {
     isPgPassFileUsed = arguments[4];
 
   const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
+  const onClose = ()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);};
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: title,
     content: (
@@ -230,8 +230,8 @@ export function showChangeServerPassword() {
 
 export function showChangeUserPassword(url) {
   const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
+  const onClose = ()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);};
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: gettext('Change pgAdmin User Password'),
     content: (
@@ -288,8 +288,8 @@ export function showNamedRestorePoint() {
     itemNodeData = arguments[3];
 
   const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
+  const onClose = ()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);};
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: title,
     content: (

@@ -1,9 +1,16 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import React from 'react';
 import { InputCheckbox, InputText } from './FormComponents';
 import PropTypes from 'prop-types';
-
 
 const Root = styled('div')(()=>({
   /* Display the privs table only when focussed */
