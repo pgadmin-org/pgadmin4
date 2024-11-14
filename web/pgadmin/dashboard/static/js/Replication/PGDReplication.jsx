@@ -16,7 +16,7 @@ import getApiInstance, { parseApiError } from '../../../../static/js/api_instanc
 import SectionContainer from '../components/SectionContainer';
 import RefreshButton from '../components/RefreshButtons';
 import { getExpandCell, getSwitchCell } from '../../../../static/js/components/PgReactTableStyled';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 import PGDOutgoingSchema from './schema_ui/pgd_outgoing.ui';

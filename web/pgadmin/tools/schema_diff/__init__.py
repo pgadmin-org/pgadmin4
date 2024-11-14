@@ -274,7 +274,8 @@ def servers():
             server_icon_and_background
 
         for server in Server.query.filter(
-                or_(Server.user_id == current_user.id, Server.shared)):
+                or_(Server.user_id == current_user.id, Server.shared),
+                Server.is_adhoc == 0):
 
             shared_server = SharedServer.query.filter_by(
                 name=server.name, user_id=current_user.id,

@@ -17,7 +17,6 @@ import pgAdmin from 'sources/pgadmin';
 import Processes from '../../../pgadmin/misc/bgprocess/static/js/Processes';
 import { withBrowser } from '../genericFunctions';
 
-
 const processData = {
   acknowledge: null,
   current_storage_dir: null,

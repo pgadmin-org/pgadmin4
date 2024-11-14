@@ -1,13 +1,22 @@
-import React, {useEffect, useMemo, useState } from 'react';
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
+import React, {Fragment, useEffect, useMemo, useState } from 'react';
 import AppMenuBar from './AppMenuBar';
 import ObjectBreadcrumbs from './components/ObjectBreadcrumbs';
-import Layout, { LayoutDocker, getDefaultGroup } from './helpers/Layout';
+import Layout, { LAYOUT_EVENTS, LayoutDocker, getDefaultGroup } from './helpers/Layout';
 import gettext from 'sources/gettext';
 import ObjectExplorer from './tree/ObjectExplorer';
 import Properties from '../../misc/properties/Properties';
 import SQL from '../../misc/sql/static/js/SQL';
 import Statistics from '../../misc/statistics/static/js/Statistics';
-import { BROWSER_PANELS } from '../../browser/static/js/constants';
+import { BROWSER_PANELS, WORKSPACES } from '../../browser/static/js/constants';
 import Dependencies from '../../misc/dependencies/static/js/Dependencies';
 import Dependents from '../../misc/dependents/static/js/Dependents';
 import ModalProvider from './helpers/ModalProvider';
@@ -21,6 +30,10 @@ import PropTypes from 'prop-types';
 import Processes from '../../misc/bgprocess/static/js/Processes';
 import { useBeforeUnload } from './custom_hooks';
 import pgWindow from 'sources/window';
+import WorkspaceToolbar from '../../misc/workspaces/static/js/WorkspaceToolbar';
+import WorkspaceWelcomePage from '../../misc/workspaces/static/js/WorkspaceWelcomePage';
+import { useWorkspace, WorkspaceProvider } from '../../misc/workspaces/static/js/WorkspaceProvider';
+import { PgAdminProvider, usePgAdmin } from './PgAdminProvider'; 
 
 
 const objectExplorerGroup  = {
@@ -36,6 +49,14 @@ const mainPanelGroup  = {
 
 export const processesPanelData = {
   id: BROWSER_PANELS.PROCESSES, title: gettext('Processes'), content: <Processes />, closable: true, group: 'playground'
+};
+
+export const welcomeQueryToolPanelData = {
+  id: BROWSER_PANELS.WELCOME_QUERY_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={'Query Tool'} />, closable: false, group: 'playground'
+};
+
+export const welcomePSQLPanelData = {
+  id: BROWSER_PANELS.WELCOME_PSQL_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={'PSQL'} />, closable: false, group: 'playground'
 };
 
 export const defaultTabsData = [
@@ -60,40 +81,85 @@ export const defaultTabsData = [
   processesPanelData,
 ];
 
+let defaultLayout = {
+  dockbox: {
+    mode: 'vertical',
+    children: [
+      {
+        mode: 'horizontal',
+        children: [
+          {
+            size: 20,
+            tabs: [
+              LayoutDocker.getPanel({
+                id: BROWSER_PANELS.OBJECT_EXPLORER, title: gettext('Object Explorer'),
+                content: <ObjectExplorer />, group: 'object-explorer'
+              }),
+            ],
+          },
+          {
+            size: 80,
+            id: BROWSER_PANELS.MAIN,
+            group: 'playground',
+            tabs: defaultTabsData.map((t)=>LayoutDocker.getPanel(t)),
+            panelLock: {panelStyle: 'playground'},
+          }
+        ]
+      },
+    ]
+  },
+};
+
+function Layouts({browser}) {
+  const pgAdmin = usePgAdmin();
+  const {config, enabled, currentWorkspace} = useWorkspace();
+  return (
+    <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
+      {enabled && <WorkspaceToolbar/> }
+      <Layout
+        getLayoutInstance={(obj)=>{
+          pgAdmin.Browser.docker.default_workspace = obj;
+        }}
+        defaultLayout={defaultLayout}
+        layoutId='Browser/Layout'
+        savedLayout={pgAdmin.Browser.utils.layout}
+        groups={{
+          'object-explorer': objectExplorerGroup,
+          'playground': mainPanelGroup,
+        }}
+        noContextGroups={['object-explorer']}
+        resetToTabPanel={BROWSER_PANELS.MAIN}
+        isLayoutVisible={!enabled || currentWorkspace == WORKSPACES.DEFAULT}
+      />
+      {enabled && config.map((item)=>(
+        <Layout
+          key={item.docker}
+          getLayoutInstance={(obj)=>{
+            pgAdmin.Browser.docker[item.docker] = obj;
+            obj.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
+          }}
+          defaultLayout={item.layout}
+          groups={{
+            'playground': {...getDefaultGroup()},
+          }}
+          resetToTabPanel={BROWSER_PANELS.MAIN}
+          isLayoutVisible={currentWorkspace == item.workspace}
+        />
+      ))}
+    </div>
+  );
+}
+Layouts.propTypes = {
+  browser: PropTypes.string,
+};
 
 export default function BrowserComponent({pgAdmin}) {
-  let defaultLayout = {
-    dockbox: {
-      mode: 'vertical',
-      children: [
-        {
-          mode: 'horizontal',
-          children: [
-            {
-              size: 20,
-              tabs: [
-                LayoutDocker.getPanel({
-                  id: BROWSER_PANELS.OBJECT_EXPLORER, title: gettext('Object Explorer'),
-                  content: <ObjectExplorer />, group: 'object-explorer'
-                }),
-              ],
-            },
-            {
-              size: 80,
-              id: BROWSER_PANELS.MAIN,
-              group: 'playground',
-              tabs: defaultTabsData.map((t)=>LayoutDocker.getPanel(t)),
-              panelLock: {panelStyle: 'playground'},
-            }
-          ]
-        },
-      ]
-    },
-  };
+
   const {isLoading, failed, getPreferencesForModule} = usePreferences();
   let { name: browser } = useMemo(()=>getBrowser(), []);
   const [uiReady, setUiReady] = useState(false);
   const confirmOnClose = getPreferencesForModule('browser').confirm_on_refresh_close;
+  const isClassicUI = getPreferencesForModule('misc').layout == 'classic';
 
   useBeforeUnload({
     enabled: confirmOnClose,
@@ -120,41 +186,29 @@ export default function BrowserComponent({pgAdmin}) {
   if(failed) {
     return <>Failed to load preferences</>;
   }
+  /* In case of classic UI all workspace objects should point to the
+  * the instance of the default layout.
+  */
+  if (isClassicUI && pgAdmin.Browser.docker.default_workspace) {
+    pgAdmin.Browser.docker.query_tool_workspace = pgAdmin.Browser.docker.default_workspace;
+    pgAdmin.Browser.docker.psql_workspace = pgAdmin.Browser.docker.default_workspace;
+    pgAdmin.Browser.docker.schema_diff_workspace = pgAdmin.Browser.docker.default_workspace;
+  }
 
   return (
-    <PgAdminContext.Provider value={pgAdmin}>
-      <ModalProvider>
-        <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} onReady={()=>setUiReady(true)}/>
-        {browser != 'Electron' && <AppMenuBar />}
-        <div style={{height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
-          <Layout
-            getLayoutInstance={(obj)=>{
-              pgAdmin.Browser.docker = obj;
-            }}
-            defaultLayout={defaultLayout}
-            layoutId='Browser/Layout'
-            savedLayout={pgAdmin.Browser.utils.layout}
-            groups={{
-              'object-explorer': objectExplorerGroup,
-              'playground': mainPanelGroup,
-            }}
-            noContextGroups={['object-explorer']}
-            resetToTabPanel={BROWSER_PANELS.MAIN}
-          />
-        </div>
-      </ModalProvider>
-      <ObjectBreadcrumbs pgAdmin={pgAdmin} />
-    </PgAdminContext.Provider>
+    <PgAdminProvider value={pgAdmin}>
+      <WorkspaceProvider>
+        <ModalProvider>
+          <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} onReady={()=>setUiReady(true)}/>
+          {browser != 'Electron' && <AppMenuBar />}
+          <Layouts browser={browser} />
+        </ModalProvider>
+        <ObjectBreadcrumbs pgAdmin={pgAdmin} />
+      </WorkspaceProvider>
+    </PgAdminProvider>
   );
 }
 
 BrowserComponent.propTypes = {
   pgAdmin: PropTypes.object,
 };
-
-export const PgAdminContext = React.createContext();
-
-export function usePgAdmin() {
-  const pgAdmin = React.useContext(PgAdminContext);
-  return pgAdmin;
-}
