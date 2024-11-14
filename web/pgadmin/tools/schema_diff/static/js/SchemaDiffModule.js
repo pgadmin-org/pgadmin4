@@ -23,10 +23,11 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
-import { PgAdminContext } from '../../../../static/js/BrowserComponent';
+import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 
 export default class SchemaDiff {
   static instance;
+  static panelTitleCount = 1;
 
   static getInstance(...args) {
     if (!SchemaDiff.instance) {
@@ -60,7 +61,8 @@ export default class SchemaDiff {
   }
 
   launchSchemaDiff() {
-    let panelTitle = gettext('Schema Diff');
+    let panelTitle = gettext('Schema Diff - ' + SchemaDiff.panelTitleCount);
+    SchemaDiff.panelTitleCount++;
     const trans_id = commonUtils.getRandomInt(1, 9999999);
 
     let url_params = {
@@ -89,12 +91,12 @@ export default class SchemaDiff {
     const root = ReactDOM.createRoot(container);
     root.render(
       <Theme>
-        <PgAdminContext.Provider value={pgAdmin}>
+        <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
             <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin }}></SchemaDiffComponent>
           </ModalProvider>
-        </PgAdminContext.Provider>
+        </PgAdminProvider>
       </Theme>
     );
   }

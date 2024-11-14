@@ -15,18 +15,15 @@ import InfoIcon from '@mui/icons-material/InfoRounded';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
-import SettingsBackupRestoreIcon from
-  '@mui/icons-material/SettingsBackupRestore';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import Box from '@mui/material/Box';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import { parseApiError } from 'sources/api_instance';
-import { usePgAdmin } from 'sources/BrowserComponent';
+import { usePgAdmin } from 'sources/PgAdminProvider';
 import { useIsMounted } from 'sources/custom_hooks';
-import {
-  DefaultButton, PgIconButton
-} from 'sources/components/Buttons';
+import { DefaultButton, PgIconButton } from 'sources/components/Buttons';
 import CustomPropTypes from 'sources/custom_prop_types';
 import gettext from 'sources/gettext';
 
@@ -38,12 +35,14 @@ import { SchemaStateContext } from './SchemaState';
 import { StyledBox } from './StyledComponents';
 import { useSchemaState } from './hooks';
 import { getForQueryParams } from './common';
+import { QueryToolIcon } from '../components/ExternalIcon';
+import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
 
 
 /* If its the dialog */
 export default function SchemaDialogView({
   getInitData, viewHelperProps, loadingText, schema={}, showFooter=true,
-  isTabView=true, checkDirtyOnEnableSave=false, ...props
+  isTabView=true, checkDirtyOnEnableSave=false, customCloseBtnName=gettext('Close'), ...props
 }) {
   // View helper properties
   const onDataChange  = props.onDataChange;
@@ -168,6 +167,10 @@ export default function SchemaDialogView({
       return <PublishIcon />;
     } else if(props.customSaveBtnIconType == 'done') {
       return <DoneIcon />;
+    } else if(props.customSaveBtnIconType == 'Query Tool') {
+      return <QueryToolIcon />;
+    } else if(props.customSaveBtnIconType == 'PSQL') {
+      return <TerminalRoundedIcon style={{width:'unset'}}/>;
     }
     return <SaveIcon />;
   };
@@ -208,10 +211,13 @@ export default function SchemaDialogView({
                 </Box>
             }
             <Box marginLeft='auto'>
-              <DefaultButton data-test='Close' onClick={props.onClose}
-                startIcon={<CloseIcon />} className='Dialog-buttonMargin'>
-                { gettext('Close') }
-              </DefaultButton>
+              {
+                Boolean(customCloseBtnName) &&
+                  <DefaultButton data-test='Close' onClick={props.onClose}
+                    startIcon={<CloseIcon />} className='Dialog-buttonMargin'>
+                    { customCloseBtnName }
+                  </DefaultButton>
+              }
               <ResetButton
                 onClick={onResetClick}
                 icon={<SettingsBackupRestoreIcon />}
@@ -260,4 +266,5 @@ SchemaDialogView.propTypes = {
   formClassName: CustomPropTypes.className,
   Notifier: PropTypes.object,
   checkDirtyOnEnableSave: PropTypes.bool,
+  customCloseBtnName: PropTypes.string,
 };

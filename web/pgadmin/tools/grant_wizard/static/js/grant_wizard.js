@@ -83,13 +83,13 @@ define([
 
       const panelTitle = gettext('Grant Wizard');
       const panelId = BROWSER_PANELS.GRANT_WIZARD;
-      pgBrowser.docker.openDialog({
+      pgBrowser.docker.default_workspace.openDialog({
         id: panelId,
         title: panelTitle,
         manualClose: false,
         content: (
           <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d}
-            onClose={()=>{pgBrowser.docker.close(panelId);}}
+            onClose={()=>{pgBrowser.docker.default_workspace.close(panelId);}}
           />
         )
       }, pgBrowser.stdW.lg, pgBrowser.stdH.lg);

@@ -458,14 +458,12 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg": "",
-    "pg-12": "",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
     "ppas": "",
-    "ppas-12": "",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",
@@ -480,14 +478,12 @@ DEFAULT_BINARY_PATHS = {
 
 FIXED_BINARY_PATHS = {
     "pg": "",
-    "pg-12": "",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
     "ppas": "",
-    "ppas-12": "",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",

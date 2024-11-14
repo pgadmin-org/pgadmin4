@@ -474,6 +474,12 @@ def create_app(app_name=None):
     else:
         run_migration_for_sqlite()
 
+    # Delete all the adhoc(temporary) servers from the pgAdmin database.
+    from pgadmin.browser.server_groups.servers.utils import (
+        delete_adhoc_servers)
+    with app.app_context():
+        delete_adhoc_servers()
+
     Mail(app)
 
     # Don't bother paths when running in cli mode

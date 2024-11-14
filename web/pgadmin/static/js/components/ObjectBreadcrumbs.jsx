@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CommentIcon from '@mui/icons-material/Comment';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
-import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../static/js/PgAdminProvider';
 import usePreferences from '../../../preferences/static/js/store';
 
 const StyledBox = styled(Box)(({theme}) => ({

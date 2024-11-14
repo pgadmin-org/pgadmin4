@@ -382,7 +382,7 @@ define('pgadmin.browser.node', [
 
           treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
           const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
-          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
+          const onClose = (force=false)=>{ pgBrowser.docker.default_workspace.close(panelId, force); };
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
@@ -412,7 +412,7 @@ define('pgadmin.browser.node', [
           // browser tree upon the 'Save' button click.
           treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
           const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
-          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
+          const onClose = (force=false)=>{ pgBrowser.docker.default_workspace.close(panelId, force); };
           const onSave = (newNodeData)=>{
             // Clear the cache for this node now.
             setTimeout(()=>{
@@ -438,7 +438,7 @@ define('pgadmin.browser.node', [
           });
         } else {
           const panelId = BROWSER_PANELS.EDIT_PROPERTIES+nodeData.id;
-          const onClose = (force=false)=>{ pgBrowser.docker.close(panelId, force); };
+          const onClose = (force=false)=>{ pgBrowser.docker.default_workspace.close(panelId, force); };
           const onSave = (newNodeData)=>{
             let _old = nodeData,
               _new = newNodeData.node,
@@ -466,7 +466,7 @@ define('pgadmin.browser.node', [
             );
             onClose();
           };
-          if(pgBrowser.docker.find(panelId)) {
+          if(pgBrowser.docker.default_workspace.find(panelId)) {
             let msg = gettext('Are you sure want to stop editing the properties of %s "%s"?');
             if (args.action == 'edit') {
               msg = gettext('Are you sure want to reset the current changes and re-open the panel for %s "%s"?');
@@ -742,6 +742,11 @@ define('pgadmin.browser.node', [
           item);
         return true;
       },
+      // Callback called - when a node is deselected in browser tree.
+      deselected: function() {
+        // The following call disables all menus mapped to any selected tree node.
+        pgAdmin.Browser.enable_disable_menus.apply(pgBrowser, []);
+      },
       removed: function(item) {
         let self = this;
         setTimeout(function() {
@@ -838,10 +843,10 @@ define('pgadmin.browser.node', [
       if(update) {
         dialogProps.onClose(true);
         setTimeout(()=>{
-          pgBrowser.docker.openDialog(panelData, w, h);
+          pgBrowser.docker.default_workspace.openDialog(panelData, w, h);
         }, 10);
       } else {
-        pgBrowser.docker.openDialog(panelData, w, h);
+        pgBrowser.docker.default_workspace.openDialog(panelData, w, h);
       }
     },
     _find_parent_node: function(t, i, d) {

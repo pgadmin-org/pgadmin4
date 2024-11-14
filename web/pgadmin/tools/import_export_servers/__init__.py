@@ -89,7 +89,8 @@ def get_servers():
         # Loop through all the servers for specific server group
         servers = Server.query.filter(
             Server.user_id == current_user.id,
-            Server.servergroup_id == group.id)
+            Server.servergroup_id == group.id,
+            Server.is_adhoc == 0)
         for server in servers:
             children.append({'value': server.id, 'label': server.name})
 

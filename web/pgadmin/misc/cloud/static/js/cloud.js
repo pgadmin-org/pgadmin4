@@ -79,7 +79,7 @@ define('pgadmin.misc.cloud', [
 
       const panelTitle = gettext('Deploy Cloud Instance');
       const panelId = BROWSER_PANELS.CLOUD_WIZARD;
-      pgAdmin.Browser.docker.openDialog({
+      pgAdmin.Browser.docker.default_workspace.openDialog({
         id: panelId,
         title: panelTitle,
         manualClose: true,
@@ -93,7 +93,7 @@ define('pgadmin.misc.cloud', [
                 .catch((error) => {
                   pgAdmin.Browser.notifier.error(gettext(`Error while clearing cloud wizard data: ${error.response.data.errormsg}`));
                 });
-              pgAdmin.Browser.docker.close(panelId, true);
+              pgAdmin.Browser.docker.default_workspace.close(panelId, true);
             }}/>
         )
       }, pgAdmin.Browser.stdW.lg, pgAdmin.Browser.stdH.lg);

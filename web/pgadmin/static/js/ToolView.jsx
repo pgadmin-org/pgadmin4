@@ -9,7 +9,7 @@
 
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
-import { usePgAdmin } from './BrowserComponent';
+import { usePgAdmin } from './PgAdminProvider';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
@@ -35,8 +35,7 @@ ToolForm.propTypes = {
   params: PropTypes.object,
 };
 
-
-export default function ToolView() {
+export default function ToolView({dockerObj}) {
   const pgAdmin = usePgAdmin();
 
   useEffect(()=>{
@@ -54,7 +53,17 @@ export default function ToolView() {
           window.open(toolUrl);
         }
       } else {
-        pgAdmin.Browser.docker.openTab({
+        // Handler here will return which layout instance the tool should go in
+        // case of workspace layout.
+        let handler = pgAdmin.Browser.getDockerHandler?.(panelId);
+        if(!handler) {
+          handler = {
+            docker: dockerObj,
+            focus: ()=>{},
+          };
+        }
+        handler.focus();
+        handler.docker.openTab({
           id: panelId,
           title: panelId,
           content: (
@@ -73,3 +82,6 @@ export default function ToolView() {
   }, []);
   return <></>;
 }
+ToolView.propTypes = {
+  dockerObj: PropTypes.object
+};

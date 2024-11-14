@@ -18,7 +18,7 @@ import SectionContainer from '../components/SectionContainer';
 import ReplicationStatsSchema from './schema_ui/replication_stats.ui';
 import RefreshButton from '../components/RefreshButtons';
 import { getExpandCell, getSwitchCell } from '../../../../static/js/components/PgReactTableStyled';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 

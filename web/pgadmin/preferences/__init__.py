@@ -14,7 +14,7 @@ side and for getting/setting preferences.
 
 import config
 import json
-from flask import render_template, url_for, Response, request, session
+from flask import render_template, Response, request, session, current_app
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
@@ -24,6 +24,8 @@ from pgadmin.utils.ajax import make_json_response
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.browser.server_groups import ServerGroupModule as sgm
+from pgadmin.browser.server_groups.servers.utils import (
+    disconnect_from_all_servers, delete_adhoc_servers)
 
 MODULE_NAME = 'preferences'
 
@@ -226,6 +228,7 @@ def save():
     Save a specific preference.
     """
     pref_data = get_data()
+    has_layout_changed = False
 
     for data in pref_data:
         if data['name'] in ['vw_edt_tab_title_placeholder',
@@ -240,6 +243,10 @@ def save():
 
         if not res:
             return internal_server_error(errormsg=msg)
+
+        if 'cleanup_on_layout_change' in data and \
+                data['cleanup_on_layout_change']:
+            has_layout_changed = True
 
         response = success_return()
 
@@ -268,6 +275,12 @@ def save():
                             httponly=config.SESSION_COOKIE_HTTPONLY,
                             samesite=config.SESSION_COOKIE_SAMESITE,
                             **domain)
+
+    # if layout is changed from 'Workspace' to 'Classic', disconnect all
+    # servers.
+    if has_layout_changed:
+        disconnect_from_all_servers()
+        delete_adhoc_servers()
 
     return response
 

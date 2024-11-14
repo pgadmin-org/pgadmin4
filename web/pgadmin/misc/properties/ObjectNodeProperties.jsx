@@ -14,7 +14,7 @@ import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import gettext from 'sources/gettext';
 import { generateNodeUrl } from '../../browser/static/js/node_ajax';
-import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { LAYOUT_EVENTS, LayoutDockerContext } from '../../static/js/helpers/Layout';
 import usePreferences from '../../preferences/static/js/store';
 import PropTypes from 'prop-types';

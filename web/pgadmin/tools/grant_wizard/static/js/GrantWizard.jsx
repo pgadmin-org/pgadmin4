@@ -21,7 +21,7 @@ import getApiInstance from '../../../../static/js/api_instance';
 import SchemaView from '../../../../static/js/SchemaView';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from './privilege_schema.ui';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 
 export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
 
