@@ -7340,6 +7340,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"filename-reserved-regex@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "filename-reserved-regex@npm:3.0.0"
+  checksum: 1803e19ce64d7cb88ee5a1bd3ce282470a5c263987269222426d889049fc857e302284fa71937de9582eba7a9f39539557d45e0562f2fa51cade8efc68c65dd9
+  languageName: node
+  linkType: hard
+
 "filenamify@npm:^2.0.0":
   version: 2.1.0
   resolution: "filenamify@npm:2.1.0"
@@ -13378,7 +13385,7 @@ __metadata:
     uplot: ^1.6.24
     uplot-react: ^1.1.4
     url-loader: ^4.1.1
-    valid-filename: ^2.0.1
+    valid-filename: ^4.0.0
     webfonts-loader: ^8.0.1
     webpack: ^5.88.2
     webpack-bundle-analyzer: ^4.8.0
@@ -15226,12 +15233,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"valid-filename@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "valid-filename@npm:2.0.1"
+"valid-filename@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "valid-filename@npm:4.0.0"
   dependencies:
-    filename-reserved-regex: ^2.0.0
-  checksum: 513c4b24578fd19d07f5bb6a4ce96b80b2e87b6d91a75c3d87d9dc342e14dd1bf1f464de474d5e4c3ccc8f841167fc353fe68f66858ee53c7d0981b271d4ffb5
+    filename-reserved-regex: ^3.0.0
+  checksum: 7486511751ade6ff9df254aec0aaad7c7461ff767e71e0bb2083f597d29c0e464919232594c53438b395e14166244dd8e69716cd661d8e7449ff0c916f9792cc
   languageName: node
   linkType: hard
 
