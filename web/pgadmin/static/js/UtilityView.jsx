@@ -13,7 +13,7 @@ import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import url_for from 'sources/url_for';
 import ErrorBoundary from './helpers/ErrorBoundary';
-import { usePgAdmin } from './BrowserComponent';
+import { usePgAdmin } from './PgAdminProvider';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import { generateNodeUrl } from '../../browser/static/js/node_ajax';
 import usePreferences from '../../preferences/static/js/store';

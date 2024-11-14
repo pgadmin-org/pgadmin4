@@ -81,9 +81,9 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         onClose();
       }
     };
-    pgAdmin.Browser.docker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+    pgAdmin.Browser.docker.default_workspace.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
     return ()=>{
-      pgAdmin.Browser.docker.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+      pgAdmin.Browser.docker.default_workspace.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
     };
   }, []);
 
