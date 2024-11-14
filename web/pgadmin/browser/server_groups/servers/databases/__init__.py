@@ -202,6 +202,10 @@ class DatabaseView(PGChildNodeView):
             {'get': 'get_icu_locale'},
             {'get': 'get_icu_locale'}
         ],
+        'get_builtin_locale': [
+            {'get': 'get_builtin_locale'},
+            {'get': 'get_builtin_locale'}
+        ],
         'vopts': [
             {}, {'get': 'variable_options'}
         ],
@@ -681,6 +685,29 @@ class DatabaseView(PGChildNodeView):
         for row in rset['rows']:
             res.append(
                 {'label': row['colliculocale'], 'value': row['colliculocale']})
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition(action="get_builtin_locale")
+    def get_builtin_locale(self, gid, sid, did=None):
+        """
+        This function is used to get the list of builtin locale
+        """
+        res = []
+        SQL = render_template(
+            "/".join([self.template_path, 'get_builtin_locale.sql'])
+        )
+        status, rset = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            res.append(
+                {'label': row['collbuiltinlocale'],
+                 'value': row['collbuiltinlocale']})
 
         return make_json_response(
             data=res,

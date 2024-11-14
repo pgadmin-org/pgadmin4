@@ -44,8 +44,9 @@ Use the *Definition* tab to set properties for the database:
 * Select the strategy from the drop-down listbox in the *Strategy* field while
   creating a new database. This option is available from v15 and above.
 * Select the locale provider from the drop-down listbox in the *Locale Provider*
-  field to set the default collation for this database. Possible values are: icu, libc.
-  This option is available from v15 and above.
+  field to set the default collation for this database. Possible values are: icu, libc and builtin.
+  This option is available from v15 and above. **Note:** The icu and libc options are available
+  from v15 and builtin option is available from v17 onwards.
 * Select the collation order from the drop-down listbox in the *Collation* field.
 * Select the character classification from the drop-down listbox in the
   *Character Type* field. This affects the categorization of characters, e.g.
@@ -57,6 +58,8 @@ Use the *Definition* tab to set properties for the database:
 * Specify the icu rules in the *ICU Rules* field as additional collation
   rules to customize the behavior of the default collation of this database.
   This option is available from v16 and above.
+* Select the builtin locale from the drop-down listbox in the *Builtin Locale* if the
+  builtin locale provider is used. This option is available from v17 and above.
 * Specify a connection limit in the *Connection Limit* field to configure the
   maximum number of connection requests. The default value (*-1*) allows
   unlimited connections to the database.

@@ -48,7 +48,7 @@ export class DefaultPrivSchema extends BaseUISchema {
 }
 
 export default class DatabaseSchema extends BaseUISchema {
-  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
+  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       name: undefined,
       owner: undefined,
@@ -76,6 +76,7 @@ export default class DatabaseSchema extends BaseUISchema {
     });
     this.getVariableSchema = getVariableSchema;
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
+    this.nodeInfo = nodeInfo;
     this.fieldOptions = {
       role: [],
       encoding: [],
@@ -84,6 +85,7 @@ export default class DatabaseSchema extends BaseUISchema {
       datcollate: [],
       datctype: [],
       daticulocale: [],
+      datbuiltinlocale: [],
       ...fieldOptions,
     };
   }
@@ -148,13 +150,21 @@ export default class DatabaseSchema extends BaseUISchema {
         editable: false, type: 'select', group: gettext('Definition'),
         readonly: function(state) {return !obj.isNew(state); },
         controlProps: { allowClear: false },
-        options: [{
-          label: gettext('icu'),
-          value: 'icu',
-        }, {
-          label: gettext('libc'),
-          value: 'libc',
-        }],
+        options: function() {
+          let options = [{
+            label: gettext('icu'),
+            value: 'icu',
+          }, {
+            label: gettext('libc'),
+            value: 'libc',
+          }];
+          if(obj.getServerVersion() >= 170000) {
+            options.push({
+              label: gettext('builtin'), value: 'builtin',
+            });
+          }
+          return Promise.resolve(options);
+        },
         min_version: 150000
       },{
         id: 'datcollate', label: gettext('Collation'),
@@ -213,6 +223,20 @@ export default class DatabaseSchema extends BaseUISchema {
           return state.datlocaleprovider !== 'icu';
         },
         min_version: 160000
+      }, {
+        id: 'datbuiltinlocale', label: gettext('Builtin Locale'),
+        editable: false, type: 'select', group: gettext('Definition'),
+        readonly: function(state) {return !obj.isNew(state); },
+        options: this.fieldOptions.datbuiltinlocale,
+        deps: ['datlocaleprovider'],
+        depChange: (state)=>{
+          if (state.datlocaleprovider !== 'builtin')
+            return { datbuiltinlocale: '' };
+        },
+        disabled: function(state) {
+          return state.datlocaleprovider !== 'builtin';
+        },
+        min_version: 170000
       }, {
         id: 'datconnlimit', label: gettext('Connection limit'),
         editable: false, type: 'int', group: gettext('Definition'),
@@ -294,5 +318,14 @@ export default class DatabaseSchema extends BaseUISchema {
         },
       },
     ];
+  }
+
+  validate(state, setError) {
+    if (state.datlocaleprovider && this.isNew(state) &&
+        (state.datlocaleprovider == 'builtin' && !state.datbuiltinlocale)) {
+      setError('datbuiltinlocale', gettext('Please specify Builtin Locale.'));
+      return true;
+    }
+    return false;
   }
 }

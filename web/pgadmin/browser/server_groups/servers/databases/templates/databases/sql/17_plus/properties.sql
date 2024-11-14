@@ -2,8 +2,9 @@ SELECT
     db.oid AS did, db.oid, db.datname AS name, db.dattablespace AS spcoid,
     spcname, datallowconn, pg_catalog.pg_encoding_to_char(encoding) AS encoding,
     pg_catalog.pg_get_userbyid(datdba) AS datowner, db.datcollate, db.datctype,
-    datconnlimit, datlocale AS daticulocale, daticurules, datcollversion,
-    CASE WHEN datlocprovider = 'i' THEN 'icu' ELSE 'libc' END datlocaleprovider,
+    datconnlimit, datlocale AS daticulocale, datlocale AS datbuiltinlocale, daticurules, datcollversion,
+    CASE WHEN datlocprovider = 'i' THEN 'icu' WHEN datlocprovider = 'b' THEN 'builtin'
+    ELSE 'libc' END datlocaleprovider,
     pg_catalog.has_database_privilege(db.oid, 'CREATE') AS cancreate,
     pg_catalog.current_setting('default_tablespace') AS default_tablespace,
     descr.description AS comments, db.datistemplate AS is_template,
