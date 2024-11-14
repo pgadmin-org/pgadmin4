@@ -18,7 +18,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import PropTypes from 'prop-types';
 
-import { usePgAdmin } from 'sources/BrowserComponent';
+import { usePgAdmin } from 'sources/PgAdminProvider';
 import gettext from 'sources/gettext';
 import { PgIconButton, PgButtonGroup } from 'sources/components/Buttons';
 import CustomPropTypes from 'sources/custom_prop_types';

@@ -17,7 +17,7 @@ import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'pgadmin.browser';
 import PsqlComponent from './components/PsqlComponent';
-import { PgAdminContext } from '../../../../static/js/BrowserComponent';
+import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 import getApiInstance from '../../../../static/js/api_instance';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -187,12 +187,12 @@ export default class Psql {
     const root = ReactDOM.createRoot(container);
     root.render(
       <Theme>
-        <PgAdminContext.Provider value={pgAdmin}>
+        <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
             <PsqlComponent params={params} pgAdmin={pgAdmin} />
           </ModalProvider>
-        </PgAdminContext.Provider>
+        </PgAdminProvider>
       </Theme>
     );
   }

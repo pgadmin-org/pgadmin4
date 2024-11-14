@@ -14,7 +14,7 @@ side and for getting/setting preferences.
 
 import config
 import json
-from flask import render_template, url_for, Response, request, session
+from flask import render_template, Response, request, session, current_app
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule

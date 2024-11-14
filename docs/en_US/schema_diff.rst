@@ -44,6 +44,18 @@ Use the :ref:`Preferences <preferences>` dialog to specify following:
  * *Schema Diff* should ignore the whitespaces while comparing string objects. Set *Ignore whitespaces* option to true.
  * *Schema Diff* should ignore the owner while comparing objects. Set *Ignore owner* option to true.
 
+Schema Diff in Workspace Layout
+*******************************
+
+The workspace layout offers a distraction-free, dedicated area for the Schema Diff.
+By default, the Schema Diff workspace button remains disabled until at least one Schema Diff tab is opened.
+
+**Note**: In the Workspace layout, all Schema Diff tabs open within the Schema Diff workspace.
+
+.. image:: images/schema_diff_workspace.png
+    :alt: schema diff workspace
+    :align: center
+
 
 The *Schema Diff* panel is divided into two panels; an Object Comparison panel
 and a DDL Comparison panel.

@@ -29,7 +29,7 @@ define('pgadmin.settings', ['sources/pgadmin'], function(pgAdmin) {
     // We will force unload method to not to save current layout
     // and reload the window
     show: function() {
-      pgAdmin.Browser.docker.resetLayout();
+      pgAdmin.Browser.docker.default_workspace.resetLayout();
     },
   };
 

@@ -43,6 +43,7 @@ define('app', [
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
+  pgAdmin.Browser.docker = {};
 
   // Add menus from back end.
   pgAdmin.Browser.utils.addBackendMenus(pgAdmin.Browser);

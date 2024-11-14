@@ -15,6 +15,7 @@ import getApiInstance from './api_instance';
 import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { isMac } from './keyboard_shortcuts';
+import { WORKSPACES } from '../../browser/static/js/constants';
 
 export function parseShortcutValue(obj) {
   let shortcut = '';
@@ -606,34 +607,6 @@ export function fullHexColor(shortHex) {
   return shortHex;
 }
 
-export function gettextForTranslation(translations, ...replaceArgs) {
-  const text = replaceArgs[0];
-  let rawTranslation = translations[text] ? translations[text] : text;
-
-  if(arguments.length == 2) {
-    return rawTranslation;
-  }
-
-  try {
-    return rawTranslation.split('%s')
-      .map(function(w, i) {
-        if(i > 0) {
-          if(i < replaceArgs.length) {
-            return [replaceArgs[i], w].join('');
-          } else {
-            return ['%s', w].join('');
-          }
-        } else {
-          return w;
-        }
-      })
-      .join('');
-  } catch(e) {
-    console.error(e);
-    return rawTranslation;
-  }
-}
-
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
 const requestAnimationFrame =
   window.requestAnimationFrame ||
@@ -758,6 +731,10 @@ export function getPlatform() {
   } else {
     return 'Unknown';
   }
+}
+
+export function isDefaultWorkspace() {
+  return pgAdmin.Browser?.docker?.currentWorkspace == WORKSPACES.DEFAULT;
 }
 
 /**
