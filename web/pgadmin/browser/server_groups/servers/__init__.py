@@ -1388,7 +1388,7 @@ class ServerNode(PGChildNodeView):
             If Yes, connect the server and return connection.
             If No, Raise HTTP error and ask for the password.
 
-            In case of 'Save Password' request from user, excrypted Password
+            In case of 'Save Password' request from user, encrypted Password
             will be stored in the respected server database and
             establish the connection OR just connect the server and do not
             store the password.
