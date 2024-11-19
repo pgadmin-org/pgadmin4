@@ -39,7 +39,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
   public static readonly renderHeight: number = 24;
   private static readonly itemIdToRefMap: Map<number, HTMLDivElement> = new Map();
   private static readonly refToItemIdMap: Map<number, HTMLDivElement> = new Map();
-  private fileTreeEvent: IFileTreeXTriggerEvents;
+  private readonly fileTreeEvent: IFileTreeXTriggerEvents;
 
   constructor(props) {
     super(props);
@@ -119,7 +119,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     this.setActiveFile(this.props.item);
   }
 
-  private setActiveFile = async (FileOrDir): Promise<void> => {
+  private readonly setActiveFile = async (FileOrDir): Promise<void> => {
     this.props.changeDirectoryCount(FileOrDir.parent);
     if(FileOrDir._loaded !== true) {
       this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'added', FileOrDir);
@@ -142,7 +142,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     }
   }
 
-  private handleDivRef = (r: HTMLDivElement) => {
+  private readonly handleDivRef = (r: HTMLDivElement) => {
     if (r === null) {
       FileTreeItem.itemIdToRefMap.delete(this.props.item.id);
     } else {
@@ -151,42 +151,42 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     }
   };
 
-  private handleContextMenu = (ev: React.MouseEvent) => {
+  private readonly handleContextMenu = (ev: React.MouseEvent) => {
     const { item, itemType, onContextMenu } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onContextMenu(ev, item as FileOrDir);
     }
   };
 
-  private handleClick = (ev: React.MouseEvent) => {
+  private readonly handleClick = (ev: React.MouseEvent) => {
     const { item, itemType, onClick } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onClick(ev, item as FileEntry, itemType);
     }
   };
 
-  private handleDoubleClick = (ev: React.MouseEvent) => {
+  private readonly handleDoubleClick = (ev: React.MouseEvent) => {
     const { item, itemType, onDoubleClick } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onDoubleClick(ev, item as FileEntry, itemType);
     }
   };
 
-  private handleMouseEnter = (ev: React.MouseEvent) => {
+  private readonly handleMouseEnter = (ev: React.MouseEvent) => {
     const { item, itemType, onMouseEnter } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onMouseEnter?.(ev, item as FileEntry);
     }
   };
 
-  private handleMouseLeave = (ev: React.MouseEvent) => {
+  private readonly handleMouseLeave = (ev: React.MouseEvent) => {
     const { item, itemType, onMouseLeave } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onMouseLeave?.(ev, item as FileEntry);
     }
   };
 
-  private handleDragStartItem = (e: React.DragEvent) => {
+  private readonly handleDragStartItem = (e: React.DragEvent) => {
     const { item, itemType, events } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       const ref = FileTreeItem.itemIdToRefMap.get(item.id);

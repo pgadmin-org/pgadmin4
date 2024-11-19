@@ -3,7 +3,7 @@ import { FileEntry, Directory, FileType } from 'react-aspen';
 import { FileTreeXEvent, IFileTreeXHandle } from '../types';
 
 export class KeyboardHotkeys {
-  private hotkeyActions = {
+  private readonly hotkeyActions = {
     'ArrowUp': () => this.jumpToPrevItem(),
     'ArrowDown': () => this.jumpToNextItem(),
     'ArrowRight': () => this.expandOrJumpToFirstChild(),
@@ -34,17 +34,17 @@ export class KeyboardHotkeys {
     }
   };
 
-  private jumpToFirstItem = (): void => {
+  private readonly jumpToFirstItem = (): void => {
     const { root } = this.fileTreeX.getModel();
     this.fileTreeX.setActiveFile(root.getFileEntryAtIndex(0), true);
   };
 
-  private jumpToLastItem = (): void => {
+  private readonly jumpToLastItem = (): void => {
     const { root } = this.fileTreeX.getModel();
     this.fileTreeX.setActiveFile(root.getFileEntryAtIndex(root.branchSize - 1), true);
   };
 
-  private jumpToNextItem = (): void => {
+  private readonly jumpToNextItem = (): void => {
     const { root } = this.fileTreeX.getModel();
     let currentPseudoActive = this.fileTreeX.getActiveFile();
     if (!currentPseudoActive) {
@@ -63,7 +63,7 @@ export class KeyboardHotkeys {
     }
   };
 
-  private jumpToPrevItem = (): void => {
+  private readonly jumpToPrevItem = (): void => {
     const { root } = this.fileTreeX.getModel();
     let currentPseudoActive = this.fileTreeX.getActiveFile();
     if (!currentPseudoActive) {
@@ -103,7 +103,7 @@ export class KeyboardHotkeys {
     }
   }
 
-  private selectFileOrToggleDirState = (): void => {
+  private readonly selectFileOrToggleDirState = (): void => {
     const currentPseudoActive = this.fileTreeX.getActiveFile();
     if (!currentPseudoActive) { return; }
     if (currentPseudoActive.type === FileType.Directory) {
@@ -113,7 +113,7 @@ export class KeyboardHotkeys {
     }
   };
 
-  private toggleDirectoryExpand = (): void => {
+  private readonly toggleDirectoryExpand = (): void => {
     const currentPseudoActive = this.fileTreeX.getActiveFile();
     if (!currentPseudoActive) { return; }
     if (currentPseudoActive.type === FileType.Directory) {
@@ -121,7 +121,7 @@ export class KeyboardHotkeys {
     }
   };
 
-  private resetSteppedOrSelectedItem = (): void => {
+  private readonly resetSteppedOrSelectedItem = (): void => {
     const currentPseudoActive = this.fileTreeX.getActiveFile();
     if (currentPseudoActive) {
       return this.resetSteppedItem();
@@ -129,11 +129,11 @@ export class KeyboardHotkeys {
     this.fileTreeX.setActiveFile(null);
   };
 
-  private resetSteppedItem = () => {
+  private readonly resetSteppedItem = () => {
     this.fileTreeX.setActiveFile(null);
   };
 
-  private copyEntry = () => {
+  private readonly copyEntry = () => {
     const currentPseudoActive = this.fileTreeX.getActiveFile();
     this.events.dispatch(FileTreeXEvent.onTreeEvents, null, 'copied', currentPseudoActive);
   };
