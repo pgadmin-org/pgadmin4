@@ -1507,7 +1507,8 @@ Failed to reset the connection to the server due to following error:
                         for col in self.column_info:
                             col['pos'] = pos
                             pos += 1
-
+                else:
+                    self.column_info = None
                 self.row_count = cur.get_rowcount()
                 if not no_result and cur.get_rowcount() > 0:
                     result = []

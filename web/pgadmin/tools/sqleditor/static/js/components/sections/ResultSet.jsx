@@ -753,6 +753,8 @@ export class ResultSetUtils {
       }
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, tabMsg, true);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
+      /* Clear the query data if the query has no result to display.*/
+      onResultsAvailable(null, [], []);
     }
     return retMsg;
   }
