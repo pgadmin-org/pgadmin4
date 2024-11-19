@@ -9,7 +9,7 @@ export interface IFileTreeXTriggerEvents {
 }
 
 export interface IItemRendererX extends IItemRenderer {
-    getBoundingClientRectForItem(item: FileEntry | Directory): ClientRect
+    getBoundingClientRectForItem(item: FileEntry | Directory): DOMRect
 }
 
 // Here imagination is your limit! IFileTreeHandle has core low-level features you can build on top of as your application needs
