@@ -46,7 +46,8 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 # Languages we support in the UI
 LANGUAGES = {
     'en': 'English',
-    'zh': 'Chinese (Simplified)',
+    'zh_Hans_CN': 'Chinese (Simplified)',
+    'zh_Hant_TW': 'Chinese (Traditional)',
     'cs': 'Czech',
     'fr': 'French',
     'de': 'German',
