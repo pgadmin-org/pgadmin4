@@ -406,10 +406,11 @@ def _connect(conn, **kwargs):
         user = kwargs['user']
         role = kwargs['role'] if kwargs['role'] else None
         password = kwargs['password'] if kwargs['password'] else None
+        encpass = kwargs['encpass'] if kwargs['encpass'] else None
         is_ask_password = True
     if user:
         status, msg = conn.connect(user=user, role=role,
-                                   password=password)
+                                   password=password, encpass=encpass)
     else:
         status, msg = conn.connect(**kwargs)
 
@@ -424,8 +425,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         kwargs.pop('conn_id')
 
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
-
+    server = Server.query.filter_by(id=sid).first()
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+    if kwargs.get('password', None) is None:
+        kwargs['encpass'] = server.password
+    else:
+        kwargs['encpass'] = None
 
     if did is None:
         did = manager.did
@@ -459,7 +465,6 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
             if not status:
                 current_app.logger.error(msg)
                 if is_ask_password:
-                    server = Server.query.filter_by(id=sid).first()
                     return True, make_json_response(
                         success=0,
                         status=428,

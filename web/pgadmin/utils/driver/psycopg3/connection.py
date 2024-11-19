@@ -233,7 +233,10 @@ class Connection(BaseConnection):
             kwargs.pop('password')
             is_update_password = False
         else:
-            encpass = kwargs['password'] if 'password' in kwargs else None
+            if 'encpass' in kwargs:
+                encpass = kwargs['encpass']
+            else:
+                encpass = kwargs['password'] if 'password' in kwargs else None
 
         return password, encpass, is_update_password
 
