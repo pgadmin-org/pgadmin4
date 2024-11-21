@@ -10,7 +10,7 @@ import React, {useContext, useCallback, useEffect, useMemo } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
-import {PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import {OS_EOL, PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -190,7 +190,9 @@ export default function Query({onTextSelect, handleEndOfLineChange}) {
         editor.current.markClean();
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
         const lineSep = res.data.includes('\r\n') ? 'crlf' : 'lf';
-        handleEndOfLineChange(lineSep);
+        if (lineSep !== OS_EOL){
+          handleEndOfLineChange(lineSep);
+        }
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
         pgAdmin.Browser.notifier.error(parseApiError(err));
