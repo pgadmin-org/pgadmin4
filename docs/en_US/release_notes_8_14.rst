@@ -29,7 +29,9 @@ Housekeeping
 
 Bug fixes
 *********
+
   | `Issue #5099 <https://github.com/pgadmin-org/pgadmin4/issues/5099>`_ -  Fixed an issue where Ctrl/Cmd + A was not selecting all data in query tool data grid.
+  | `Issue #7865 <https://github.com/pgadmin-org/pgadmin4/issues/7865>`_ -  Fixed an issue related to the query tool update connection after the server disconnected from the object explorer.
   | `Issue #8010 <https://github.com/pgadmin-org/pgadmin4/issues/5099>`_ -  Fixed an issue where query tool should show results and messages only from the last executed query.
   | `Issue #8127 <https://github.com/pgadmin-org/pgadmin4/issues/8127>`_ -  Fixed an issue where query tool should not prompt for unsaved changes when there are no changes.
 
