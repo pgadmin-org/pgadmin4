@@ -142,6 +142,12 @@ Override the default file path for the preferences customization at the containe
 /pgadmin4/preferences.json mapped file below for more information. See the format
 of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/preferences.html#json-format>`_.
 
+**PGPASS_FILE**
+
+*Default: <null>*
+This varible should be set to if you want to pass password using pgpass
+file for the servers added in pgadmin.
+
 **GUNICORN_ACCESS_LOGFILE**
 
 *Default: -* (stdout)
