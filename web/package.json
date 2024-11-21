@@ -79,7 +79,7 @@
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^5.16.6",
     "@mui/lab": "^5.0.0-alpha.165",
-    "@mui/material": "^5.15.10",
+    "@mui/material": "^6.1.8",
     "@mui/x-date-pickers": "^7.7.1",
     "@projectstorm/react-diagrams": "^7.0.4",
     "@simonwep/pickr": "^1.5.1",
