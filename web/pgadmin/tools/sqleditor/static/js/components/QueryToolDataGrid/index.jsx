@@ -401,9 +401,8 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     }
 
     // Handle Select All Cmd + A(mac) / Ctrl + a (others)
-    if((isMac() && e.metaKey) || (!isMac() && e.ctrlKey) && e.key === 'a') {
+    if(((isMac() && e.metaKey) || (!isMac() && e.ctrlKey)) && e.key === 'a') {
       e.preventDefault();
-      onSelectedColumnsChangeWrapped(new Set());
       eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SELECT_ALL);
     }
   }

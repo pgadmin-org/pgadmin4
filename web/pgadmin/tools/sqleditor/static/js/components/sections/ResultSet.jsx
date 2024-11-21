@@ -1038,6 +1038,7 @@ export function ResultSet() {
       } else {
         setAllRowsSelect('NONE');
       }
+      setSelectedColumns(new Set());
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.ALL_ROWS_SELECTED, ()=>{
