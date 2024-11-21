@@ -28,13 +28,14 @@ def get_crypt_key():
     :return: the key
     """
     enc_key = current_app.keyManager.get()
-    # if desktop mode and master pass disabled then use the password hash
+    # if desktop mode and master pass and local os secret is
+    # disabled then use the password hash
     if not config.MASTER_PASSWORD_REQUIRED and\
             not config.USE_OS_SECRET_STORAGE and not config.SERVER_MODE:
         return True, current_user.password
     # if desktop mode and master pass enabled
-    elif config.MASTER_PASSWORD_REQUIRED and \
-            enc_key is None:
+    elif (config.MASTER_PASSWORD_REQUIRED or config.USE_OS_SECRET_STORAGE) \
+            and enc_key is None:
         return False, None
     elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
             'pass_enc_key' in session:

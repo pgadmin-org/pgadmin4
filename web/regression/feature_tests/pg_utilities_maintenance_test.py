@@ -112,9 +112,11 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             (By.CSS_SELECTOR,
              NavMenuLocators.tools_menu_css),
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css))
-        maintenance_obj = self.wait.until(EC.visibility_of_element_located(
+        self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css)))
-        maintenance_obj.click()
+        self.page.retry_click(
+            (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css),
+            (By.XPATH, NavMenuLocators.maintenance_operation))
 
         self.assertFalse(self.page.check_utility_error(),
                          'Binary path is not configured.')

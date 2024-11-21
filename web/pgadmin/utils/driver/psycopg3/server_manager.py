@@ -242,7 +242,8 @@ WHERE db.oid = {0}""".format(did))
                                 "Could not find the specified database."
                             ))
 
-        if not get_crypt_key()[0]:
+        if not get_crypt_key()[0] and (
+                config.SERVER_MODE or not config.USE_OS_SECRET_STORAGE):
             # the reason its not connected might be missing key
             raise CryptKeyMissing()
 
