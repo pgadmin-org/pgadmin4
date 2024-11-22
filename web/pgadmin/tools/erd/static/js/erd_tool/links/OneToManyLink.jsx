@@ -281,7 +281,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
     }
 
     // If there is existing link which has two points add one
-    if (points.length === 2 && !this.state.canDrag) {
+    if (points.length === 2 && !this.state.canDrag && onePoint.point.getX() != manyPoint.point.getX()) {
       this.props.link.addPoint(
         new PointModel({
           link: this.props.link,
@@ -291,6 +291,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
     }
 
     paths.push(this.generateCustomEndWidget(onePoint));
+
     for (let j = 0; j < points.length - 1; j++) {
       paths.push(
         this.generateLink(
@@ -318,7 +319,6 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
       );
     }
     paths.push(this.generateCustomEndWidget(manyPoint));
-
 
     this.refPaths = [];
     return <StyledG data-default-link-test={this.props.link.getOptions().testName}>{paths}</StyledG>;
