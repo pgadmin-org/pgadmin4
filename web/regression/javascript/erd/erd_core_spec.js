@@ -230,7 +230,7 @@ describe('ERDCore', ()=>{
       }));
     });
 
-    it('deserializeData', (done)=>{
+    it('deserializeData', ()=>{
       let nodesDict = {};
       TEST_TABLES_DATA.forEach((table)=>{
         nodesDict[`id-${table.name}`] = {
@@ -269,11 +269,6 @@ describe('ERDCore', ()=>{
       erdCoreObj.deserializeData(TEST_TABLES_DATA);
       expect(erdCoreObj.addNode).toHaveBeenCalledTimes(TEST_TABLES_DATA.length);
       expect(erdCoreObj.addLink).toHaveBeenCalledTimes(1);
-
-      setTimeout(()=>{
-        expect(erdCoreObj.dagreDistributeNodes).toHaveBeenCalled();
-        done();
-      }, 500);
     });
 
     it('clearSelection', ()=>{

@@ -49,7 +49,7 @@ export default class ERDCore {
         marginx: 5,
         marginy: 5,
       },
-      includeLinks: true,
+      includeLinks: false,
     });
 
     this.engine.getNodeFactories().registerFactory(new TableNodeFactory());
@@ -645,12 +645,10 @@ export default class ERDCore {
         });
       }
     });
-
-    setTimeout(this.dagreDistributeNodes.bind(this), 250);
   }
 
-  repaint() {
-    this.getEngine().repaintCanvas();
+  async repaint() {
+    await this.getEngine().repaintCanvas(true);
   }
 
   clearSelection() {
@@ -679,9 +677,15 @@ export default class ERDCore {
       .filter(entity => entity instanceof OneToManyLinkModel);
   }
 
-  dagreDistributeNodes() {
+  async dagreDistributeNodes() {
     this.dagre_engine.redistribute(this.getModel());
-    this.repaint();
+
+    // Swith left/right ports.
+    this.getModel().getNodes().forEach((node)=>{
+      this.optimizePortsPosition(node);
+    });
+
+    await this.repaint();
   }
 
   zoomIn() {

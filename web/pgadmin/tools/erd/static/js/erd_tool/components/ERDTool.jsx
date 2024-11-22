@@ -512,7 +512,7 @@ export default class ERDTool extends React.Component {
         });
         if (this.diagram.getNodesData().length === 0){
           this.setState({dirty: false});
-          this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);  
+          this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
         }
         this.diagram.repaint();
       },
@@ -520,8 +520,10 @@ export default class ERDTool extends React.Component {
     );
   }
 
-  onAutoDistribute() {
-    this.diagram.dagreDistributeNodes();
+  async onAutoDistribute() {
+    this.setLoading('Auto distributing...');
+    await this.diagram.dagreDistributeNodes();
+    this.setLoading();
   }
 
   onChangeColors(fillColor, textColor) {
@@ -883,7 +885,9 @@ export default class ERDTool extends React.Component {
     } catch (error) {
       this.handleAxiosCatch(error);
     }
-    this.setLoading(null);
+    setTimeout(()=>{
+      this.onAutoDistribute();
+    }, 250);
   }
 
   render() {
