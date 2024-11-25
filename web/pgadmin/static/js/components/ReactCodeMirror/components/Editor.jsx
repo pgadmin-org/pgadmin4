@@ -104,7 +104,14 @@ function handlePaste(e) {
 function insertTabWithUnit({ state, dispatch }) {
   if (state.selection.ranges.some(r => !r.empty))
     return indentMore({ state, dispatch });
-  dispatch(state.update(state.replaceSelection(state.facet(indentUnit)), { scrollIntoView: true, userEvent: 'input' }));
+
+  // If indent is space based, then calc the number of spaces required.
+  let indentVal = state.facet(indentUnit);
+  if(indentVal != '\t') {
+    const line = state.doc.lineAt(state.selection.main.head);
+    indentVal =  ' '.repeat(indentVal.length - (state.selection.main.head - line.from) % indentVal.length);
+  }
+  dispatch(state.update(state.replaceSelection(indentVal), { scrollIntoView: true, userEvent: 'input' }));
   return true;
 }
 
@@ -181,7 +188,7 @@ export default function Editor({
   useEffect(() => {
     if (!checkIsMounted()) return;
     const finalOptions = { ...defaultOptions, ...options };
-    const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n'; 
+    const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n';
     const finalExtns = [
       (language == 'json') ? json() : sql({dialect: PgSQL}),
       ...defaultExtensions,
