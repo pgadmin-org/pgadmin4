@@ -8638,6 +8638,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-address@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "ip-address@npm:10.0.1"
+  checksum: 525d5391cfd31a91f80f5857e98487aeaa8474e860a6725a0b6461ac8e436c7f8c869774dece391c8f8e7486306a34a4d1c094778c4c583a3f1f2cd905e5ed50
+  languageName: node
+  linkType: hard
+
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -13455,7 +13462,7 @@ __metadata:
     immutability-helper: ^3.0.0
     imports-loader: ^4.0.1
     insert-if: ^1.1.0
-    ip-address: ^9.0.5
+    ip-address: ^10.0.1
     jest: ^29.6.4
     jest-environment-jsdom: ^29.6.4
     json-bignumber: ^1.0.1
