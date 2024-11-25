@@ -4,7 +4,7 @@ import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstan
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
-import { Box, Grid, List, ListItem, ListSubheader } from '@mui/material';
+import { Box, Grid, List, ListItem, ListItemButton, ListSubheader } from '@mui/material';
 import url_for from 'sources/url_for';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import moment from 'moment';
@@ -268,7 +268,7 @@ QuerySourceIcon.propTypes = {
 };
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
-  return <ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
+  return <ListItemButton component='li' tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
     selectedItemKey==itemKey && ele?.scrollIntoView({
       block: 'center',
       behavior: 'smooth',
@@ -281,7 +281,7 @@ function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick
     <Box fontSize="12px">
       {formatEntryDate(entry.start_time)}
     </Box>
-  </ListItem>;
+  </ListItemButton>;
 }
 
 const EntryPropType = PropTypes.shape({
