@@ -1759,8 +1759,7 @@ def check_and_upgrade_to_qt(trans_id, connect):
 
     if 'gridData' in session and str(trans_id) in session['gridData']:
         data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
-        if data.object_type == 'table' or data.object_type == 'view' or\
-                data.object_type == 'mview':
+        if data.object_type in ['table', 'foreign_table', 'view', 'mview']:
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 data.sid)
             default_conn = manager.connection(conn_id=data.conn_id,
