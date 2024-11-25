@@ -505,6 +505,8 @@ preferences for copied data.
   character for copied data.
 * Use the *Result copy quoting* drop-down listbox to select which type of fields
   require quoting; select *All*, *None*, or *Strings*.
+* When the *Striped rows?* switch is set to true, the result grid will display
+  rows with alternating background colors.
 
 .. image:: images/preferences_sql_keyboard_shortcuts.png
     :alt: Preferences dialog sql keyboard shortcuts section

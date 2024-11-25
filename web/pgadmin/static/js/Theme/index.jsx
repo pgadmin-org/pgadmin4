@@ -646,6 +646,20 @@ function getFinalTheme(baseTheme) {
           }
         }
       },
+      MuiRadio: {
+        styleOverrides: {
+          root: {
+            padding: '0px',
+            color: baseTheme.otherVars.inputBorderColor,
+          },
+
+          colorPrimary: {
+            '&.Mui-disabled': {
+              color: baseTheme.palette.checkbox.disabled
+            }
+          }
+        }
+      },
       MuiToggleButton: {
         styleOverrides: {
           root: {

@@ -1536,6 +1536,7 @@ export function ResultSet() {
             onSelectedColumnsChange={setSelectedColumns}
             onSelectedCellChange={setSelectedCell}
             onSelectedRangeChange={setSelectedRange}
+            stripedRows={queryToolCtx.preferences?.sqleditor?.striped_rows}
           />
         </Box>
       </>}

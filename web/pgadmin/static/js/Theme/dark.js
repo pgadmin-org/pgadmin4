@@ -17,10 +17,10 @@ export default function(basicSettings) {
       default: {
         main: '#6b6b6b',
         contrastText: '#fff',
-        borderColor: '#2e2e2e',
-        disabledBorderColor: '#2e2e2e',
+        borderColor: '#282828',
+        disabledBorderColor: '#282828',
         disabledContrastText: '#fff',
-        hoverMain: '#303030',
+        hoverMain: '#333333',
         hoverContrastText: '#fff',
         hoverBorderColor: '#151515',
       },
@@ -41,9 +41,9 @@ export default function(basicSettings) {
       },
       error: {
         main: '#da6758',
-        light: '#212121',
+        light: '#1e1e1e',
         contrastText: '#fff',
-        lighter: '#212121',
+        lighter: '#1e1e1e',
       },
       warning: {
         main: '#eea236',
@@ -55,9 +55,9 @@ export default function(basicSettings) {
       },
       grey: {
         '200': '#424242',
-        '400': '#303030',
-        '600': '#2e2e2e',
-        '800': '#212121',
+        '400': '#333333',
+        '600': '#282828',
+        '800': '#1e1e1e',
       },
       text: {
         primary: '#d4d4d4',
@@ -67,19 +67,19 @@ export default function(basicSettings) {
         disabled: '#6b6b6b'
       },
       background: {
-        paper: '#212121',
-        default: '#212121',
+        paper: '#1e1e1e',
+        default: '#1e1e1e',
       }
     },
     custom: {
       icon: {
         main: '#6b6b6b',
         contrastText: '#fff',
-        borderColor: darken('#2e2e2e', 0.6),
+        borderColor: darken('#282828', 0.6),
         disabledMain: '#6b6b6b',
         disabledContrastText: '#fff',
-        disabledBorderColor: '#2e2e2e',
-        hoverMain: '#303030',
+        disabledBorderColor: '#282828',
+        hoverMain: '#333333',
         hoverContrastText: '#fff',
       }
     },
@@ -98,15 +98,16 @@ export default function(basicSettings) {
       stepBg: '#FFFFFF',
       stepFg: '#000',
       toggleBtnBg: '#000',
-      editorToolbarBg: '#303030',
-      qtDatagridBg: '#2e2e2e',
+      editorToolbarBg: '#333333',
+      qtDatagridBg: '#282828',
       qtDatagridSelectFg: '#d4d4d4',
       cardHeaderBg: '#424242',
       colorFg: '#FFFFFF',
-      emptySpaceBg: '#212121',
+      emptySpaceBg: '#1e1e1e',
       textMuted: '#8A8A8A',
-      erdCanvasBg: '#303030',
+      erdCanvasBg: '#333333',
       erdGridColor: '#444952',
+      noteBg: '#4a4a4a',
       scroll: {
         baseColor: '#616161',
         barBackgroundColor: '#61616133',
@@ -122,7 +123,7 @@ export default function(basicSettings) {
       },
       editor: {
         fg: '#fff',
-        bg: '#212121',
+        bg: '#1e1e1e',
         selectionBg: '#536270',
         keyword: '#db7c74',
         number: '#7fcc5c',
@@ -138,14 +139,14 @@ export default function(basicSettings) {
         activeline: '#323e43',
         activelineLight: '#323e43',
         currentQueryBorderColor: '#A5CBE2',
-        guttersBg: '#303030',
+        guttersBg: '#333333',
         guttersFg: '#8A8A8A',
       },
       tree: {
         textFg: '#d4d4d4',
-        inputBg: '#212121',
+        inputBg: '#1e1e1e',
         fgHover: '#d4d4d4',
-        bgHover: '#303030',
+        bgHover: '#333333',
         textHoverFg: '#d4d4d4',
         bgSelected: '#323E43',
       }

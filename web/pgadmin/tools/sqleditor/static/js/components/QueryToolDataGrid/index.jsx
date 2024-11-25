@@ -27,7 +27,7 @@ import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
 
-const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
+const StyledPgReactDataGrid = styled(PgReactDataGrid)(({stripedRows, theme})=>({
   '& .QueryTool-columnHeader': {
     padding: '3px 6px',
     height: '100%',
@@ -67,9 +67,9 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({theme})=>({
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
   },
-  '& .rdg-row.rdg-row-even': {
-    backgroundColor: theme.palette.grey[200],
-  },
+  ... stripedRows && {'& .rdg-row.rdg-row-even': {
+    backgroundColor: theme.palette.grey[400],
+  }},
   '& .rdg-row': {
     '& .rdg-cell:nth-of-type(1)': {
       backgroundColor: theme.palette.grey[600],
