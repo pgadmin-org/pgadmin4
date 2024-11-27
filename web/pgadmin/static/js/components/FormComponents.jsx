@@ -77,8 +77,9 @@ const Root = styled('div')(({theme}) => ({
   },
   '& .Form-noteRoot': {
     display: 'flex',
-    backgroundColor: theme.otherVars.borderColor,
+    backgroundColor: theme.otherVars.noteBg,
     padding: theme.spacing(1),
+    border: `1px solid ${theme.otherVars.borderColor}`
   },
   '& .Form-plainstring': {
     padding: theme.spacing(0.5),
@@ -623,14 +624,14 @@ FormInputCheckbox.propTypes = {
   labelTooltip: PropTypes.string
 };
 
-export function InputRadio({ helpid, value, onChange, controlProps, readonly, labelPlacement, ...props }) {
+export function InputRadio({ helpid, value, onChange, controlProps, readonly, labelPlacement, disabled }) {
   controlProps = controlProps || {};
   return (
     <FormControlLabel
       control={
         <Radio
           color="primary"
-          checked={props?.disabled ? false : value }
+          checked={value}
           onChange={
             readonly ? () => {
               /*This is intentional (SonarQube)*/ } : onChange
@@ -638,13 +639,12 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, la
           value={value}
           name="radio-button-demo"
           inputProps={{ 'aria-label': value, 'aria-describedby': helpid }}
-          style={{ padding: 0 }}
           disableRipple
         />
       }
+      disabled={disabled}
       label={controlProps.label}
       labelPlacement={labelPlacement}
-      className={(readonly || props.disabled) ? 'Form-readOnlySwitch' : null}
     />
   );
 }

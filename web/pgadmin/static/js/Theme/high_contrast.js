@@ -28,6 +28,7 @@ export default function(basicSettings) {
         main: '#84D6FF',
         light: '#84D6FF',
         contrastText: '#010B15',
+        contrastTextLight: '#010B15',
         hoverMain: '#fff',
         hoverBorderColor: '#fff',
         disabledMain: '#8B9CAD',
@@ -39,12 +40,12 @@ export default function(basicSettings) {
       },
       error: {
         main: '#EE7A55',
-        light: '#EE7A55',
+        light: '#010B15',
         contrastText: '#010B15',
       },
       warning: {
         main: '#F4D35E',
-        light: '#F4D35E',
+        light: '#010B15',
         contrastText: '#010B15',
       },
       info: {
@@ -83,7 +84,7 @@ export default function(basicSettings) {
     otherVars: {
       colorBrand: '#84D6FF',
       borderColor: '#A6B7C8',
-      inputBorderColor: '#6b6b6b',
+      inputBorderColor: '#8B9CAD',
       inputDisabledBg: '#1F2932',
       errorColor: '#DA6758',
       headerBg: '#010B15',
@@ -104,6 +105,7 @@ export default function(basicSettings) {
       textMuted: '#8b9cad',
       erdCanvasBg: '#010B15',
       erdGridColor: '#1F2932',
+      noteBg: '#010B15',
       scroll: {
         baseColor: '#C9D0D7',
         barBackgroundColor: '#C9D0D733',

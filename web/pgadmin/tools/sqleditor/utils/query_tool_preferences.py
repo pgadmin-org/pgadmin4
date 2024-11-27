@@ -357,6 +357,14 @@ def register_query_tool_preferences(self):
                          ' file.')
     )
 
+    self.stripped_rows = self.preference.register(
+        'Results_grid', 'striped_rows',
+        gettext("Striped rows?"), 'boolean',
+        True, category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('If set to true, the result grid will display'
+                         ' rows with alternating background colors.')
+    )
+
     self.sql_font_size = self.preference.register(
         'Editor', 'sql_font_size',
         gettext("Font size"), 'numeric', '1',

@@ -114,6 +114,7 @@ export default function(basicSettings) {
       textMuted: '#646B82',
       erdCanvasBg: '#fff',
       erdGridColor: '#bac1cd',
+      noteBg: '#dde0e6',
       explain: {
         sev2: {
           color: '#222222',
