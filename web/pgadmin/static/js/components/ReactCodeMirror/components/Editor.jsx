@@ -165,7 +165,7 @@ const defaultExtensions = [
 
 export default function Editor({
   currEditor, name, value, options, onCursorActivity, onChange, readonly,
-  disabled, autocomplete = false, breakpoint = false, onBreakPointChange,
+  disabled, autocomplete = false, autocompleteOnKeyPress, breakpoint = false, onBreakPointChange,
   showActiveLine=false, keepHistory = true, cid, helpid, labelledBy,
   customKeyMap, language='pgsql'
 }) {
@@ -331,7 +331,7 @@ export default function Editor({
       }],
     };
     if (autocomplete) {
-      if (pref.autocomplete_on_key_press) {
+      if (pref.autocomplete_on_key_press || autocompleteOnKeyPress) {
         newConfigExtn.push(autocompletion({
           ...autoCompOptions,
           activateOnTyping: true,

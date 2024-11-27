@@ -14,16 +14,15 @@ import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import usePreferences from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
 
 export default class DataFilterSchema extends BaseUISchema {
-  constructor(fieldOptions = {}) {
+  constructor(getColumns) {
     super({
       filter_sql: ''
     });
 
-    this.fieldOptions = {
-      ...fieldOptions,
-    };
+    this.getColumns = getColumns;
   }
 
   get baseFields() {
@@ -31,6 +30,31 @@ export default class DataFilterSchema extends BaseUISchema {
       id: 'filter_sql',
       label: gettext('Data Filter'),
       type: 'sql', isFullTab: true, cell: 'text',
+      controlProps: {
+        autocompleteOnKeyPress: true,
+        autocompleteProvider: (context, onAvailable)=>{
+          return new Promise((resolve, reject)=>{
+            const word = context.matchBefore(/\w*/);
+            const fullSql = context.state.doc.toString();
+            this.getColumns().then((columns) => {
+              onAvailable();
+              resolve({
+                from: word.from,
+                options: (columns??[]).map((col)=>({
+                  label: col.label, type: 'property',
+                })),
+                validFor: (text, from)=>{
+                  return text.startsWith(fullSql.slice(from));
+                }
+              });
+            })
+              .catch((err) => {
+                onAvailable();
+                reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
+              });
+          });
+        }
+      }
     }];
   }
 
@@ -64,8 +88,7 @@ export function showViewData(
     return;
   }
 
-  const parentData = pgBrowser.tree.getTreeNodeHierarchy(  treeIdentifier
-  );
+  const parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
   if (hasServerOrDatabaseConfiguration(parentData)
     || !hasSchemaOrCatalogOrViewInformation(parentData)) {
@@ -157,7 +180,11 @@ function generateFilterValidateUrl(nodeData, parentData) {
 function showFilterDialog(pgBrowser, item, queryToolMod, transId,
   gridUrl, queryToolTitle, validateUrl) {
 
-  let schema = new DataFilterSchema();
+  const treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
+  const itemNodeData = pgBrowser.tree.findNodeByDomElement(item).getData();
+  let schema = new DataFilterSchema(
+    ()=>getNodeListByName('column', treeNodeInfo, itemNodeData),
+  );
   let helpUrl = url_for('help.static', {'filename': 'viewdata_filter.html'});
 
   let okCallback = function() {
@@ -168,7 +195,7 @@ function showFilterDialog(pgBrowser, item, queryToolMod, transId,
     gettext('Data Filter - %s', queryToolTitle),{
       schema, urlBase: validateUrl, helpUrl, saveBtnName: gettext('OK'), isTabView: false,
       onSave: okCallback,
-    }, pgBrowser.stdW.md, pgBrowser.stdH.sm
+    }, pgBrowser.stdW.md, pgBrowser.stdH.md
   );
 }
 

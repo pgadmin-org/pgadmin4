@@ -260,7 +260,8 @@ export default function FormView({
     let contentClassName = [
       isSingleCollection() ? 'FormView-singleCollectionPanelContent' :
         'FormView-nonTabPanelContent',
-      (schemaState.errors?.message ? 'FormView-errorMargin' : null)
+      (schemaState.errors?.message ? 'FormView-errorMargin' : null),
+      (finalGroups.some((g)=>g.isFullTab) ? 'FormView-fullControl' : ''),
     ];
     return (
       <>
@@ -275,7 +276,8 @@ export default function FormView({
             classNameRoot={[
               isSingleCollection() ?
                 'FormView-singleCollectionPanel' : 'FormView-nonTabPanel',
-              className
+              className,
+              (finalGroups.some((g)=>g.isFullTab) ? 'FormView-fullSpace' : ''),
             ].join(' ')}
             className={contentClassName.join(' ')}>
             {

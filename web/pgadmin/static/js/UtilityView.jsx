@@ -41,7 +41,7 @@ export default function UtilityView({dockerObj}) {
             <UtilityViewContent
               docker={docker.current}
               panelId={panelId}
-              schema={dialogProps.schema}
+              {...dialogProps}
               treeNodeInfo={treeNodeInfo}
               actionType={dialogProps.actionType??'create'}
               formType='dialog'
@@ -60,10 +60,6 @@ export default function UtilityView({dockerObj}) {
                 onClose();
               })}
               extraData={dialogProps.extraData??{}}
-              saveBtnName={dialogProps.saveBtnName}
-              urlBase={dialogProps.urlBase}
-              sqlHelpUrl={dialogProps.sqlHelpUrl}
-              helpUrl={dialogProps.helpUrl}
             />
           </ErrorBoundary>
         )
