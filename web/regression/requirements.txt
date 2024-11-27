@@ -25,4 +25,4 @@ python-mimeparse==2.0.0
 testscenarios==0.5.0
 testtools==2.7.2
 traceback2==1.4.0
-selenium==4.26.1
+selenium==4.27.1
