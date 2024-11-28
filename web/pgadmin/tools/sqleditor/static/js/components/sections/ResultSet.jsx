@@ -675,15 +675,18 @@ export class ResultSetUtils {
       return retVal;
     }
     let copiedRowsObjects = [];
-    try {
-      /* If the raw row objects are available, use to them identify null values */
-      copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows'));
-    } catch {/* Suppress the error */}
+    if(fromClipboard) {
+      try {
+        /* If the raw row objects are available, use to them identify null values */
+        copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows'));
+      } catch {/* Suppress the error */}
+    }
     for(const [recIdx, rec] of result?.entries()??[]) {
       // Convert 2darray to dict.
       let rowObj = {};
       for(const col of columns) {
-        let columnVal = rec[col.pos];
+        // if column data is undefined and there is not default value then set it to null.
+        let columnVal = rec[col.pos] ?? (col.has_default_val ? undefined : null);
         /* If the source is clipboard, then it needs some extra handling */
         if(fromClipboard) {
           columnVal = this.processClipboardVal(columnVal, col, copiedRowsObjects[recIdx]?.[col.key], pasteSerials);
