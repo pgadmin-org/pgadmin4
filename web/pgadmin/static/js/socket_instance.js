@@ -9,7 +9,7 @@
 import { io } from 'socketio';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-
+import { parseApiError } from './api_instance';
 export function openSocket(namespace, options) {
   return new Promise((resolve, reject)=>{
     const socketObj = io(namespace, {
@@ -42,7 +42,9 @@ export function socketApiGet(socket, endpoint, params) {
       resolve(data);
     });
     socket.on(`${endpoint}_failed`, (data)=>{
-      reject(new Error(data));
+      /* when data comes in JSON format, 
+      that must be parsed to only error message */
+      reject(new Error(parseApiError(data)));
     });
     socket.on('disconnect', ()=>{
       reject(new Error(gettext('Connection to pgAdmin server has been lost')));
