@@ -45,7 +45,7 @@
     "imagemin": "^9.0.0",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",
-    "imports-loader": "^4.0.1",
+    "imports-loader": "^5.0.0",
     "jest": "^29.6.4",
     "jest-environment-jsdom": "^29.6.4",
     "loader-utils": "^3.2.1",
