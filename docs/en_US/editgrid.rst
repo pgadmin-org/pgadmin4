@@ -212,6 +212,7 @@ To add new column(s) in data sorting grid, click on the [+] icon.
 
 * Use the drop-down *Column* to select the column you want to sort.
 * Use the drop-down *Order* to select the sort order for the column.
+* Use the drop-down *NULLs* to select the NULL values order for the column.
 
 To delete a row from the grid, click the trash icon.
 

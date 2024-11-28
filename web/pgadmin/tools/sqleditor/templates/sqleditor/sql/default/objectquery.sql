@@ -5,7 +5,7 @@ WHERE {{ sql_filter }}
 {% endif %}
 {% if data_sorting and data_sorting|length > 0 %}
 ORDER BY {% for obj in data_sorting %}
-{{ conn|qtIdent(obj.name) }} {{ obj.order|upper }}{% if not loop.last %}, {% else %} {% endif %}
+{{ conn|qtIdent(obj.name) }} {{ obj.order|upper }}{% if obj.order_null %} {{ obj.order_null|upper }}{% endif %}{% if not loop.last %}, {% else %} {% endif %}
 {% endfor %}
 {% endif %}
 {% if limit > 0 %}

@@ -144,7 +144,7 @@ export const FormContentBox = styled(Box)(({theme}) => ({
     '& .FormView-fullControl': {
       display: 'flex',
       flexDirection: 'column',
-      '& .FormView-sqlTabInput': {
+      '& .FormView-sqlTabInput, & .Form-sql': {
         border: 0,
       },
     }
@@ -152,7 +152,9 @@ export const FormContentBox = styled(Box)(({theme}) => ({
   '& .FormView-nonTabPanel': {
     ...theme.mixins.tabPanel,
     '& .FormView-nonTabPanelContent': {
-      height: 'unset',
+      '&:not(.FormView-fullControl)': {
+        height: 'unset',
+      },
       '& .FormView-controlRow': {
         marginBottom: theme.spacing(1),
       },

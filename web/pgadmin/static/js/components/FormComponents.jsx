@@ -190,9 +190,10 @@ FormInput.propTypes = {
   labelTooltip: PropTypes.string
 };
 
-export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
+export function InputSQL({ value, options={}, onChange, className, controlProps, inputRef, ...props }) {
 
   const editor = useRef();
+  const { autocompleteProvider, autocompleteOnKeyPress } = options;
 
   return (
     <Root style={{height: '100%'}}>
@@ -200,13 +201,18 @@ export function InputSQL({ value, options, onChange, className, controlProps, in
         currEditor={(obj) => {
           editor.current = obj;
           inputRef?.(obj);
+          if(autocompleteProvider) {
+            editor.current.registerAutocomplete(autocompleteProvider);
+          }
         }}
         value={value || ''}
         options={{
-          ...options,
+          ..._.omit(options, ['autocompleteProvider', 'autocompleteOnKeyPress']),
         }}
         className={'Form-sql ' + className}
         onChange={onChange}
+        autocomplete={true}
+        autocompleteOnKeyPress={autocompleteOnKeyPress}
         {...controlProps}
         {...props}
       />
