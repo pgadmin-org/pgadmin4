@@ -654,15 +654,15 @@ export function requestAnimationAndFocus(ele) {
   });
 }
 
-
-export function scrollbarWidth() {
-  // thanks too https://davidwalsh.name/detect-scrollbar-width
-  const scrollDiv = document.createElement('div');
-  scrollDiv.setAttribute('style', 'width: 100px; height: 100px; overflow: scroll; position:absolute; top:-9999px;');
-  document.body.appendChild(scrollDiv);
-  const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-  document.body.removeChild(scrollDiv);
-  return scrollbarWidth;
+export function measureText(text, font) {
+  if(!measureText.ele) {
+    measureText.ele = document.createElement('div');
+    measureText.ele.style.cssText = `position: absolute; visibility: hidden; white-space: nowrap; font: ${font}`;
+    document.body.appendChild(measureText.ele);
+  }
+  measureText.ele.innerHTML = text;
+  const dim = measureText.ele.getBoundingClientRect();
+  return {width: dim.width, height: dim.height};
 }
 
 const CHART_THEME_COLORS = {

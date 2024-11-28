@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
+import { measureText } from '../../../../../../static/js/utils';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
@@ -271,7 +272,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   canvasContext.font = '12px Roboto';
 
   for(const col of retColumns) {
-    col.width = getTextWidth(col, rows, canvasContext, columnWidthBy);
+    col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy);
     col.resizable = true;
     col.renderEditCellOptions = {
       commitOnOutsideClick: false,
@@ -347,7 +348,7 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColu
   return retColumns;
 }
 
-function getTextWidth(column, rows, canvas, columnWidthBy) {
+function getColumnWidth(column, rows, canvas, columnWidthBy) {
   const dataWidthReducer = (longest, nextRow) => {
     let value = nextRow[column.key];
     if(_.isNull(value) || _.isUndefined(value)) {
@@ -358,16 +359,16 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
   };
 
   let columnHeaderLen = column.display_name.length > column.display_type.length ?
-    canvas.measureText(column.display_name).width : canvas.measureText(column.display_type).width;
-  /* padding 12, icon-width 15 */
-  columnHeaderLen += 15 + 12;
+    measureText(column.display_name, '12px Roboto').width : measureText(column.display_type, '12px Roboto').width;
+  /* padding 12,  margin 4, icon-width 15, */
+  columnHeaderLen += 15 + 12 + 4;
   if(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') {
     columnHeaderLen += 40;
   }
   let width = columnHeaderLen;
   if(typeof(columnWidthBy) == 'number') {
-    /* padding 16 */
-    width = 16 + Math.ceil(canvas.measureText(rows.reduce(dataWidthReducer, '')).width);
+    /* padding 16, border 1px */
+    width = 16 + measureText(rows.reduce(dataWidthReducer, ''), '12px Roboto').width + 1;
     if(width > columnWidthBy && columnWidthBy > 0) {
       width = columnWidthBy;
     }
@@ -375,8 +376,6 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
       width = columnHeaderLen;
     }
   }
-  /* Gracefull */
-  width += 8;
   return width;
 }
 

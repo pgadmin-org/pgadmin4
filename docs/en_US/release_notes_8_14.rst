@@ -25,7 +25,6 @@ New features
   | `Issue #5786 <https://github.com/pgadmin-org/pgadmin4/issues/5786>`_ -  Allow the use of a pgpass file in the pgAdmin container via Docker secrets.
   | `Issue #6592 <https://github.com/pgadmin-org/pgadmin4/issues/6592>`_ -  Fixed multiple issues and improved ERD auto-layout.
   | `Issue #8095 <https://github.com/pgadmin-org/pgadmin4/issues/8095>`_ -  Added support for a builtin locale provider in the Database dialog.
-  | `Issue #8134 <https://github.com/pgadmin-org/pgadmin4/issues/8134>`_ -  Add a user preference to enable/disable alternating row background colors in the data output of query tool.
 
 Housekeeping
 ************
@@ -39,5 +38,9 @@ Bug fixes
   | `Issue #7486 <https://github.com/pgadmin-org/pgadmin4/issues/7486>`_ -  Fixed an issue where indent with space was not aligning to next tab position.
   | `Issue #7865 <https://github.com/pgadmin-org/pgadmin4/issues/7865>`_ -  Fixed an issue related to the query tool update connection after the server disconnected from the object explorer.
   | `Issue #8010 <https://github.com/pgadmin-org/pgadmin4/issues/8010>`_ -  Fixed an issue where query tool should show results and messages only from the last executed query.
+  | `Issue #8028 <https://github.com/pgadmin-org/pgadmin4/issues/8028>`_ -  Fixed an issue where query tool throws syntax error if a newly added row is untouched and saved.
   | `Issue #8065 <https://github.com/pgadmin-org/pgadmin4/issues/8065>`_ -  Ensure the crypt key is retrieved correctly on backend server restart.
+  | `Issue #8098 <https://github.com/pgadmin-org/pgadmin4/issues/8098>`_ -  Fixed an issue in schema diff where an error message popup was showing some garbage without any info.
   | `Issue #8127 <https://github.com/pgadmin-org/pgadmin4/issues/8127>`_ -  Fixed an issue where query tool should not prompt for unsaved changes when there are no changes.
+  | `Issue #8134 <https://github.com/pgadmin-org/pgadmin4/issues/8134>`_ -  Add a user preference to enable/disable alternating row background colors in the data output of query tool.
+  | `Issue #8158 <https://github.com/pgadmin-org/pgadmin4/issues/8158>`_ -  Fixed an issue where auto-width of wide columns in data output is incorrectly calculated.
