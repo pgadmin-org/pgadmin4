@@ -20,8 +20,12 @@ class PasswordExec:
 
     lock = Lock()
 
-    def __init__(self, cmd, expiration_seconds=None, timeout=60):
-        self.cmd = str(cmd)
+    def __init__(self, cmd, host, port, username, expiration_seconds=None,
+                 timeout=60):
+        cmd = str(cmd).replace('%HOSTNAME%', host)
+        cmd = cmd.replace('%PORT%', str(port))
+        cmd = cmd.replace('%USERNAME%', username)
+        self.cmd = cmd
         self.expiration_seconds = int(expiration_seconds) \
             if expiration_seconds is not None else None
         self.timeout = int(timeout)
