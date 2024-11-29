@@ -53,7 +53,7 @@ google-auth-oauthlib==1.2.1
 keyring==25.*
 Werkzeug==3.0.*; python_version <= '3.8'
 Werkzeug==3.1.*; python_version >= '3.9'
-typer[all]==0.13.*
+typer[all]==0.14.*
 setuptools==75.*; python_version >= '3.12'
 jsonformatter~=0.3.4
 libgravatar==1.0.*
