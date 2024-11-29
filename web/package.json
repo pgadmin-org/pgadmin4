@@ -73,7 +73,7 @@
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.12.13",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/lang-sql": "^6.6.5",
+    "@codemirror/lang-sql": "^6.8.0",
     "@date-io/core": "^3.0.0",
     "@date-io/date-fns": "3.x",
     "@emotion/sheet": "^1.0.1",
@@ -174,7 +174,7 @@
     "auditpy": "safety check --full-report -i 51668 -i 52495",
     "audit-all": "yarn run auditjs && yarn run auditpy"
   },
-  "packageManager": "yarn@3.8.5",
+  "packageManager": "yarn@3.8.6",
   "browserslist": [
     "defaults and fully supports es6-module"
   ]
