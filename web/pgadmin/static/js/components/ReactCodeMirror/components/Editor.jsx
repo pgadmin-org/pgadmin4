@@ -127,12 +127,12 @@ const defaultExtensions = [
   syntaxHighlighting,
   keymap.of([{
     key: 'Tab',
+    run: acceptCompletion,
+  },{
+    key: 'Tab',
     preventDefault: true,
     run: insertTabWithUnit,
     shift: indentLess,
-  },{
-    key: 'Tab',
-    run: acceptCompletion,
   },{
     key: 'Backspace',
     preventDefault: true,

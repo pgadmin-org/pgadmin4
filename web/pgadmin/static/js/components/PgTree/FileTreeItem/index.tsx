@@ -72,6 +72,8 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     const itemChildren = item.children && item.children.length > 0 && item._metadata.data._type.indexOf('coll-') !== -1 ? '(' + item.children.length + ')' : '';
     const extraClasses = item._metadata.data.extraClasses ? item._metadata.data.extraClasses.join(' ') : '';
 
+    const tags = item._metadata.data?.tags ?? [];
+
     return (
       <div
         className={cn('file-entry', {
@@ -103,9 +105,13 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
           }
           <span className='file-name'>
             { _.unescape(this.props.item.getMetadata('data')._label)}
-            <span className='children-count'>{itemChildren}</span>
           </span>
-
+          <span className='children-count'>{itemChildren}</span>
+          {tags.map((tag)=>(
+            <div key={tag.text} className='file-tag' style={{'--tag-color': tag.color} as React.CSSProperties}>
+              {tag.text}
+            </div>
+          ))}
         </span>
       </div>);
   }

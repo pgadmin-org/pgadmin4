@@ -37,6 +37,7 @@ from pgadmin.browser.server_groups.servers.utils import \
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED
 from sqlalchemy import or_
+from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path
@@ -278,7 +279,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 is_kerberos_conn=bool(server.kerberos_conn),
                 gss_authenticated=manager.gss_authenticated,
                 cloud_status=server.cloud_status,
-                description=server.comment
+                description=server.comment,
+                tags=server.tags
             )
 
     @property
@@ -550,6 +552,44 @@ class ServerNode(PGChildNodeView):
 
             data['connection_params'] = existing_conn_params
 
+    @staticmethod
+    def update_tags(data, server):
+        """
+        This function is used to update tags
+        """
+        old_tags = getattr(server, 'tags', [])
+        # add old_text for comparison
+        old_tags = [{**tag, 'old_text': tag['text']}
+                    for tag in old_tags] if old_tags is not None else []
+        new_tags_info = data.get('tags', None)
+
+        def update_tag(tags, changed):
+            for i, item in enumerate(tags):
+                if item['old_text'] == changed['old_text']:
+                    item = {**item, **changed}
+                    tags[i] = item
+                    break
+
+        if new_tags_info:
+            deleted_ids = [t['old_text']
+                           for t in new_tags_info.get('deleted', [])]
+            if len(deleted_ids) > 0:
+                old_tags = [
+                    t for t in old_tags if t['old_text'] not in deleted_ids
+                ]
+
+            for item in new_tags_info.get('changed', []):
+                update_tag(old_tags, item)
+
+            for item in new_tags_info.get('added', []):
+                old_tags.append(item)
+
+            # remove the old_text key
+            data['tags'] = [
+                {k: v for k, v in tag.items()
+                 if k != 'old_text'} for tag in old_tags
+            ]
+
     @pga_login_required
     def nodes(self, gid):
         res = []
@@ -609,7 +649,8 @@ class ServerNode(PGChildNodeView):
                     shared=server.shared,
                     is_kerberos_conn=bool(server.kerberos_conn),
                     gss_authenticated=manager.gss_authenticated,
-                    description=server.comment
+                    description=server.comment,
+                    tags=server.tags
                 )
             )
 
@@ -678,7 +719,8 @@ class ServerNode(PGChildNodeView):
                 shared=server.shared,
                 username=server.username,
                 is_kerberos_conn=bool(server.kerberos_conn),
-                gss_authenticated=manager.gss_authenticated
+                gss_authenticated=manager.gss_authenticated,
+                tags=server.tags
             ),
         )
 
@@ -783,7 +825,8 @@ class ServerNode(PGChildNodeView):
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
             'connection_params': 'connection_params',
-            'prepare_threshold': 'prepare_threshold'
+            'prepare_threshold': 'prepare_threshold',
+            'tags': 'tags'
         }
 
         disp_lbl = {
@@ -808,6 +851,7 @@ class ServerNode(PGChildNodeView):
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server)
+        self.update_tags(data, server)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \
@@ -837,6 +881,10 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=gettext('No parameters were changed.')
             )
+
+        # tags is JSON type, sqlalchemy sometimes will not detect change
+        if 'tags' in data:
+            flag_modified(server, 'tags')
 
         try:
             db.session.commit()
@@ -872,7 +920,8 @@ class ServerNode(PGChildNodeView):
                 username=server.username,
                 role=server.role,
                 is_password_saved=bool(server.save_password),
-                description=server.comment
+                description=server.comment,
+                tags=server.tags
             )
         )
 
@@ -1022,6 +1071,10 @@ class ServerNode(PGChildNodeView):
             tunnel_authentication = bool(server.tunnel_authentication)
             tunnel_keep_alive = server.tunnel_keep_alive
 
+        tags = None
+        if server.tags is not None:
+            tags = [{**tag, 'old_text': tag['text']}
+                    for tag in server.tags]
         response = {
             'id': server.id,
             'name': server.name,
@@ -1064,7 +1117,8 @@ class ServerNode(PGChildNodeView):
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
             'connection_string': display_connection_str,
-            'prepare_threshold': server.prepare_threshold
+            'prepare_threshold': server.prepare_threshold,
+            'tags': tags,
         }
 
         return ajax_response(response)
@@ -1180,7 +1234,8 @@ class ServerNode(PGChildNodeView):
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
                 connection_params=connection_params,
-                prepare_threshold=data.get('prepare_threshold', None)
+                prepare_threshold=data.get('prepare_threshold', None),
+                tags=data.get('tags', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -1273,7 +1328,8 @@ class ServerNode(PGChildNodeView):
                     manager and manager.gss_authenticated else False,
                     is_password_saved=bool(server.save_password),
                     is_tunnel_password_saved=tunnel_password_saved,
-                    user_id=server.user_id
+                    user_id=server.user_id,
+                    tags=data.get('tags', None)
                 )
             )
 
