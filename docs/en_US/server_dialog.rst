@@ -205,6 +205,9 @@ Use the fields in the *Advanced* tab to configure a connection:
   command will be used as the SQL password. This may be useful when the password
   should be generated as a transient authorization token instead of providing a
   password when connecting in `PAM authentication <https://www.postgresql.org/docs/current/auth-pam.html>`_ scenarios.
+  You can pass server hostname, port and DB username to the password exec command as variable by providing placeholders
+  like ``%HOST%``, ``%PORT%`` and ``%USERNAME%`` which will be replace with the server connection information.
+  Example: ``/path/to/script --hostnmae %HOST% --port %PORT% --username %USERNAME%``
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
   of the password generated with a *Password exec command*. If not specified,
   the password will not expire until your pgAdmin session does.

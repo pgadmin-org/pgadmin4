@@ -83,7 +83,8 @@ class ServerManager(object):
         self.db_res = server.db_res
         self.name = server.name
         self.passexec = \
-            PasswordExec(server.passexec_cmd, server.passexec_expiration) \
+            PasswordExec(server.passexec_cmd, server.host, server.port,
+                         server.username, server.passexec_expiration) \
             if server.passexec_cmd else None
         self.service = server.service
 
