@@ -70,12 +70,6 @@ export default class MainMenuFactory {
     return new MenuItem({type: 'separator', label, priority});
   }
 
-  static refreshMainMenuItems(menu, menuItems) {
-    menu.setMenuItems(menuItems);
-    window.electronUI?.setMenus(MainMenuFactory.toElectron());
-    pgAdmin.Browser.Events.trigger('pgadmin:refresh-menu-item', pgAdmin.Browser.MainMenus);
-  }
-
   static createMenuItem(options) {
     return new MenuItem({...options, callback: () => {
       // Some callbacks registered in 'callbacks' check and call specifiec callback function
@@ -127,6 +121,8 @@ export default class MainMenuFactory {
 
     // set the context menu as well
     pgAdmin.Browser.BrowserContextMenu = MainMenuFactory.getDynamicMenu('context', item, itemData, true);
+
+    window.electronUI?.setMenus(MainMenuFactory.toElectron());
 
     pgAdmin.Browser.Events.trigger('pgadmin:refresh-app-menu');
   }
