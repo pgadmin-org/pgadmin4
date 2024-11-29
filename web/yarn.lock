@@ -8512,15 +8512,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"imports-loader@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "imports-loader@npm:4.0.1"
+"imports-loader@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "imports-loader@npm:5.0.0"
   dependencies:
-    source-map: ^0.6.1
+    source-map-js: ^1.0.2
     strip-comments: ^2.0.1
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 831882988de72f40be8c1177a18ef207a3e351efec088d7ebd94a31583b713c256ce89dd4af87469b77f650ec78e5fd78089d58ef648b20f3f1dc5e437425e03
+  checksum: 49bc106c68084b6c168a0fe738300c9fdbfd9ab06084e22a24af69bf6c0a3e7447684c5a0911060f56a6946fec6992d5026749fa245e2ae9c534d7d0d19648dd
   languageName: node
   linkType: hard
 
@@ -13491,7 +13491,7 @@ __metadata:
     imagemin-mozjpeg: ^10.0.0
     imagemin-optipng: ^8.0.0
     immutability-helper: ^3.0.0
-    imports-loader: ^4.0.1
+    imports-loader: ^5.0.0
     insert-if: ^1.1.0
     ip-address: ^10.0.1
     jest: ^29.6.4
@@ -14040,7 +14040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.0.1, source-map-js@npm:^1.2.1":
+"source-map-js@npm:^1.0.1, source-map-js@npm:^1.0.2, source-map-js@npm:^1.2.1":
   version: 1.2.1
   resolution: "source-map-js@npm:1.2.1"
   checksum: 4eb0cd997cdf228bc253bcaff9340afeb706176e64868ecd20efbe6efea931465f43955612346d6b7318789e5265bdc419bc7669c1cebe3db0eb255f57efa76b
