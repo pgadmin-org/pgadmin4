@@ -3228,6 +3228,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ejs@npm:^3.1.2":
+  version: 3.1.5
+  resolution: "@types/ejs@npm:3.1.5"
+  checksum: e142266283051f27a7f79329871b311687dede19ae20268d882e4de218c65e1311d28a300b85579ca67157a8d601b7234daa50c2f99b252b121d27b4e5b21468
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.7":
   version: 3.7.7
   resolution: "@types/eslint-scope@npm:3.7.7"
@@ -5390,6 +5397,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^11.0.0":
+  version: 11.1.0
+  resolution: "commander@npm:11.1.0"
+  checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.19.0, commander@npm:^2.20.0, commander@npm:^2.8.1":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -5401,13 +5415,6 @@ __metadata:
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
   checksum: 53501cbeee61d5157546c0bef0fedb6cdfc763a882136284bed9a07225f09a14b82d2a84e7637edfd1a679fb35ed9502fd58ef1d091e6287f60d790147f68ddc
-  languageName: node
-  linkType: hard
-
-"commander@npm:^9.3.0":
-  version: 9.5.0
-  resolution: "commander@npm:9.5.0"
-  checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
   languageName: node
   linkType: hard
 
@@ -6526,7 +6533,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ejs@npm:~3.1.8":
+"ejs@npm:^3.1.9":
   version: 3.1.10
   resolution: "ejs@npm:3.1.10"
   dependencies:
@@ -10452,12 +10459,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.17":
-  version: 4.3.0
-  resolution: "marked@npm:4.3.0"
+"marked@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "marked@npm:5.1.2"
   bin:
     marked: bin/marked.js
-  checksum: 0db6817893952c3ec710eb9ceafb8468bf5ae38cb0f92b7b083baa13d70b19774674be04db5b817681fa7c5c6a088f61300815e4dd75a59696f4716ad69f6260
+  checksum: fff8741a1dc7313f32bea221079a3d6ff55cd485170fade8841b77b48c89ad5b96676e645636e73e50f4b5b6d65cf9d8821072afb16173822505949df2407ffe
   languageName: node
   linkType: hard
 
@@ -13552,7 +13559,7 @@ __metadata:
     webpack-bundle-analyzer: ^4.8.0
     webpack-cli: ^5.1.4
     wkx: ^0.5.0
-    yarn-audit-html: 4.0.0
+    yarn-audit-html: 7.3.2
     zustand: ^4.5.4
   languageName: unknown
   linkType: soft
@@ -15974,16 +15981,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yarn-audit-html@npm:4.0.0":
-  version: 4.0.0
-  resolution: "yarn-audit-html@npm:4.0.0"
+"yarn-audit-html@npm:7.3.2":
+  version: 7.3.2
+  resolution: "yarn-audit-html@npm:7.3.2"
   dependencies:
-    commander: ^9.3.0
-    ejs: ~3.1.8
-    marked: ^4.0.17
+    "@types/ejs": ^3.1.2
+    commander: ^11.0.0
+    ejs: ^3.1.9
+    marked: ^5.1.2
+  dependenciesMeta:
+    "@types/ejs":
+      optional: true
   bin:
-    yarn-audit-html: index.js
-  checksum: b2f6f24577322e652d23773d21ff341fbbd0130b6be572ec55d8cc45b21e9964d051204dbad1688e6919fe36413a8de31ba36cbaffc2adc6fc353ec869dd1e67
+    yarn-audit-html: lib/cli.js
+  checksum: cb774feff4d1651e91e8b15ce0f52650c3f72f45d14be1a6cdbdd1d1c5b5595c51230f3a060ea2742df353b0f65c40d25f57f31cfb63f7969e24c29f73a18bd2
   languageName: node
   linkType: hard
 
