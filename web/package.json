@@ -107,7 +107,7 @@
     "chartjs-plugin-zoom": "^2.0.1",
     "codemirror": "^6.0.1",
     "convert-units": "^2.3.4",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "diff-arrays-of-objects": "^1.1.8",
     "hotkeys-js": "^3.13.3",
     "html-to-image": "^1.11.11",
