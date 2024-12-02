@@ -36,12 +36,15 @@ if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI_FILE}" ]; then
 fi
 file_env PGADMIN_DEFAULT_PASSWORD
 
+# TO enable custom path for config_distro, pass config distro path via environment variable.
+export CONFIG_DISTRO_FILE_PATH="${PGADMIN_CONFIG_DISTRO_FILE:-/pgadmin4/config_distro.py}"
+
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
 # Only update the file on first launch. The empty file is created during the
 # container build so it can have the required ownership.
-if [ "$(wc -m /pgadmin4/config_distro.py | awk '{ print $1 }')" = "0" ]; then
-    cat << EOF > /pgadmin4/config_distro.py
+if [ "$(wc -m "${CONFIG_DISTRO_FILE_PATH}" | awk '{ print $1 }')" = "0" ]; then
+    cat << EOF > "${CONFIG_DISTRO_FILE_PATH}"
 CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
@@ -61,7 +64,7 @@ EOF
     for var in $(env | grep "^PGADMIN_CONFIG_" | cut -d "=" -f 1); do
         # shellcheck disable=SC2086
         # shellcheck disable=SC2046
-        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> /pgadmin4/config_distro.py
+        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> "${CONFIG_DISTRO_FILE_PATH}"
     done
 fi
 
