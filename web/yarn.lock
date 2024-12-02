@@ -3219,12 +3219,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/classnames@npm:^2.2.6":
-  version: 2.3.0
-  resolution: "@types/classnames@npm:2.3.0"
+"@types/classnames@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@types/classnames@npm:2.3.4"
   dependencies:
     classnames: "*"
-  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
+  checksum: fde8318ae51735c98ca54d90688e50cd2dc04d0414cafbcd3c7c703157c553a4c60d534bc796f68b56d17047f2f058c149bf03d059b3c7b683b6f98b11b0db83
   languageName: node
   linkType: hard
 
@@ -13446,7 +13446,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.6.3
     "@testing-library/react": 16.0.1
     "@testing-library/user-event": ^14.5.2
-    "@types/classnames": ^2.2.6
+    "@types/classnames": ^2.3.4
     "@types/jest": ^29.5.4
     "@types/react": ^18.0.2
     "@types/react-dom": ^18.0.0
