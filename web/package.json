@@ -81,7 +81,7 @@
     "@mui/icons-material": "^6.1.8",
     "@mui/lab": "^6.0.0-beta.16",
     "@mui/material": "^6.1.8",
-    "@mui/x-date-pickers": "^7.22.3",
+    "@mui/x-date-pickers": "^7.23.0",
     "@projectstorm/react-diagrams": "^7.0.4",
     "@simonwep/pickr": "^1.5.1",
     "@szhsin/react-menu": "^4.2.2",

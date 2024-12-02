@@ -2496,13 +2496,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.22.3":
-  version: 7.22.3
-  resolution: "@mui/x-date-pickers@npm:7.22.3"
+"@mui/x-date-pickers@npm:^7.23.0":
+  version: 7.23.0
+  resolution: "@mui/x-date-pickers@npm:7.23.0"
   dependencies:
     "@babel/runtime": ^7.25.7
     "@mui/utils": ^5.16.6 || ^6.0.0
-    "@mui/x-internals": 7.21.0
+    "@mui/x-internals": 7.23.0
     "@types/react-transition-group": ^4.4.11
     clsx: ^2.1.1
     prop-types: ^15.8.1
@@ -2519,8 +2519,8 @@ __metadata:
     moment: ^2.29.4
     moment-hijri: ^2.1.2 || ^3.0.0
     moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/react":
       optional: true
@@ -2540,19 +2540,19 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 4238d34eb385eb777adb024c301584780dfd1f78b324ec5967605884bb5b6776f3f8ff4429c4994d6c7a448b074e7a10345bf06df73564ef9182b185a784f41a
+  checksum: 6a56925fcddd0bebea7ef2034d3afcfd85317cb58a6a013899fd9f73f4bba3212567d7c371312d7b8d56ad5ce343d17b6204421abc0bf86335dc743d367eaaee
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:7.21.0":
-  version: 7.21.0
-  resolution: "@mui/x-internals@npm:7.21.0"
+"@mui/x-internals@npm:7.23.0":
+  version: 7.23.0
+  resolution: "@mui/x-internals@npm:7.23.0"
   dependencies:
     "@babel/runtime": ^7.25.7
     "@mui/utils": ^5.16.6 || ^6.0.0
   peerDependencies:
-    react: ^17.0.0 || ^18.0.0
-  checksum: 3c0687ff5a82b24fa27ea4d1fabec6a3bf31ed70605bf86de1a1d4737e482986cea1ae928f3610d828e6eb96142122a8ae227051590d4338dca331efd8179257
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 2af6f344ca6c7a503d5bb99757496b64cb15aeedf78d60faae77bf147c2c18e9cc674ad9865ad48843562a440a429c32e1362a6a3588bf5904ca39071dd44a85
   languageName: node
   linkType: hard
 
@@ -13441,7 +13441,7 @@ __metadata:
     "@mui/icons-material": ^6.1.8
     "@mui/lab": ^6.0.0-beta.16
     "@mui/material": ^6.1.8
-    "@mui/x-date-pickers": ^7.22.3
+    "@mui/x-date-pickers": ^7.23.0
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
