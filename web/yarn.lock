@@ -13560,7 +13560,7 @@ __metadata:
     webpack-cli: ^5.1.4
     wkx: ^0.5.0
     yarn-audit-html: 7.3.2
-    zustand: ^4.5.4
+    zustand: ^5.0.1
   languageName: unknown
   linkType: soft
 
@@ -15372,7 +15372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.0":
+"use-sync-external-store@npm:^1.2.0":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"
   peerDependencies:
@@ -16022,15 +16022,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.5.4":
-  version: 4.5.5
-  resolution: "zustand@npm:4.5.5"
-  dependencies:
-    use-sync-external-store: 1.2.2
+"zustand@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "zustand@npm:5.0.1"
   peerDependencies:
-    "@types/react": ">=16.8"
+    "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
-    react: ">=16.8"
+    react: ">=18.0.0"
+    use-sync-external-store: ">=1.2.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -16038,6 +16037,8 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 654e47959970bc66bbf2ae80fced7e556dd488e9ee54eb678330cb036ecc7184f4b8c2cae273be28022533622c54ab6339bf3fe30d19236367c5c251b6c6679a
+    use-sync-external-store:
+      optional: true
+  checksum: 66eb196c3134957143bd54c4adc24d0baad321a6edfbf495cd571110dfb8c52c92949c3dd246e7ac992791fa81c4947d6431c8724db2b48e26f3f5d30268bec1
   languageName: node
   linkType: hard
