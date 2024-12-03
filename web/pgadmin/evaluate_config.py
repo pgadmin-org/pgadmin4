@@ -10,7 +10,7 @@
 import os
 import sys
 import keyring
-import email_validator
+import importlib.util
 
 # User configs loaded from config_local, config_distro etc.
 custom_config_settings = {}
@@ -25,6 +25,17 @@ def get_variables_from_module(module_name):
                      if not (key.startswith('__') or key.startswith('_')) and
                      validate_config_variable(key, value)}
     return variables
+
+
+# Function to load config_distro at custom path
+def import_module_from_path(module_name, file_path):
+    # Create a module spec
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    # Create the module based on the spec
+    module = importlib.util.module_from_spec(spec)
+    # Execute the module (this loads it)
+    spec.loader.exec_module(module)
+    return module
 
 
 def validate_config_variable(key, value):
@@ -47,7 +58,12 @@ def validate_config_variable(key, value):
 
 # Load distribution-specific config overrides
 try:
-    import config_distro
+    if 'CONFIG_DISTRO_FILE_PATH' in os.environ:
+        config_distro_path = os.environ['CONFIG_DISTRO_FILE_PATH']
+        config_distro = import_module_from_path('config_distro',
+                                                config_distro_path)
+    else:
+        import config_distro
     config_distro_settings = get_variables_from_module('config_distro')
     custom_config_settings.update(config_distro_settings)
 except ImportError:
