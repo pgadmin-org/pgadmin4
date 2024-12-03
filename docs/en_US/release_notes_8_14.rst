@@ -24,6 +24,7 @@ New features
   | `Issue #3751 <https://github.com/pgadmin-org/pgadmin4/issues/3751>`_ -  Show auto-complete column names in filtered rows dialog of table and filter options of view/edit data tool.
   | `Issue #5786 <https://github.com/pgadmin-org/pgadmin4/issues/5786>`_ -  Allow the use of a pgpass file in the pgAdmin container via Docker secrets.
   | `Issue #6592 <https://github.com/pgadmin-org/pgadmin4/issues/6592>`_ -  Fixed multiple issues and improved ERD auto-layout.
+  | `Issue #7330 <https://github.com/pgadmin-org/pgadmin4/issues/7330>`_ -  Add support to deploy pgAdmin in a container with readOnlyRootFilesystem to true.
   | `Issue #8095 <https://github.com/pgadmin-org/pgadmin4/issues/8095>`_ -  Added support for a builtin locale provider in the Database dialog.
 
 Housekeeping
