@@ -14,6 +14,7 @@ from threading import Lock
 from flask import current_app
 
 import config
+from pgadmin.utils.driver import get_driver
 
 
 class PasswordExec:
@@ -22,9 +23,9 @@ class PasswordExec:
 
     def __init__(self, cmd, host, port, username, expiration_seconds=None,
                  timeout=60):
-        cmd = str(cmd).replace('%HOSTNAME%', host)
-        cmd = cmd.replace('%PORT%', str(port))
-        cmd = cmd.replace('%USERNAME%', username)
+        self.host = host
+        self.port = port
+        self.username = username
         self.cmd = cmd
         self.expiration_seconds = int(expiration_seconds) \
             if expiration_seconds is not None else None
@@ -36,6 +37,12 @@ class PasswordExec:
         if config.SERVER_MODE and not config.ENABLE_SERVER_PASS_EXEC_CMD:
             # Arbitrary shell execution on server is a security risk
             raise NotImplementedError('Passexec not available in server mode')
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        self.cmd = str(self.cmd)
+        self.cmd = self.cmd.replace('%HOSTNAME%', self.host)
+        self.cmd = self.cmd.replace('%PORT%', str(self.port))
+        self.cmd = self.cmd.replace('%USERNAME%',
+                                    driver.qtIdent(None,self.username))
         with self.lock:
             if not self.password or self.is_expired():
                 if not self.cmd:
