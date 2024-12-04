@@ -8229,13 +8229,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-dom-parser@npm:5.0.10":
-  version: 5.0.10
-  resolution: "html-dom-parser@npm:5.0.10"
+"html-dom-parser@npm:5.0.11":
+  version: 5.0.11
+  resolution: "html-dom-parser@npm:5.0.11"
   dependencies:
     domhandler: 5.0.3
     htmlparser2: 9.1.0
-  checksum: ec0470f9f6046af7d4d591aea15b49ca0a178ce430d09cadbb098212749a0b2c9b078cf9ede5df50238bc2842c17c7895126788c51927ff726088aad36c98ab5
+  checksum: d0cf3a181eac8920005324fdf0d19ff34d2b5012164a4f2c638a094b06e950989a48e9b7722387ff45b72cdbd8ec0a8aea6aaf9c558f9d11b586c4bc0b07aec0
   languageName: node
   linkType: hard
 
@@ -8255,12 +8255,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-react-parser@npm:^5.0.6":
-  version: 5.1.18
-  resolution: "html-react-parser@npm:5.1.18"
+"html-react-parser@npm:^5.1.19":
+  version: 5.1.19
+  resolution: "html-react-parser@npm:5.1.19"
   dependencies:
     domhandler: 5.0.3
-    html-dom-parser: 5.0.10
+    html-dom-parser: 5.0.11
     react-property: 2.0.2
     style-to-js: 1.1.16
   peerDependencies:
@@ -8269,7 +8269,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 23f9df714b9458e4b45009da7dc60e6a6d018223b0bd077c9f68c62239bdde98a8b0aac6ee1b2504474d7bd0833d018941ed325777e3efaa6780b3373cd38eb1
+  checksum: e1d9c20166b74645b7ccd18dc328e4a7ebf6dcc4fcec30e2070b0faece5474a36e9ce1a0d52504120b4c363e41976541a3a4b79af0aa343ea3a42c08aa34b8ff
   languageName: node
   linkType: hard
 
@@ -13499,7 +13499,7 @@ __metadata:
     exports-loader: ^5.0.0
     globals: ^15.13.0
     hotkeys-js: ^3.13.3
-    html-react-parser: ^5.0.6
+    html-react-parser: ^5.1.19
     html-to-image: ^1.11.11
     image-minimizer-webpack-plugin: ^4.0.2
     imagemin: ^9.0.0

@@ -40,7 +40,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "exports-loader": "^5.0.0",
     "globals": "^15.13.0",
-    "html-react-parser": "^5.0.6",
+    "html-react-parser": "^5.1.19",
     "image-minimizer-webpack-plugin": "^4.0.2",
     "imagemin": "^9.0.0",
     "imagemin-mozjpeg": "^10.0.0",
