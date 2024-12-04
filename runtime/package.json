@@ -10,7 +10,7 @@
     "start": "electron .",
     "linter": "yarn run eslint -c .eslintrc.js ."
   },
-  "packageManager": "yarn@3.8.6",
+  "packageManager": "yarn@3.8.7",
   "devDependencies": {
     "electron": "latest",
     "eslint": "^9.16.0"
