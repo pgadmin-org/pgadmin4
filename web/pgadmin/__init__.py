@@ -829,7 +829,7 @@ def create_app(app_name=None):
         # but the user session may still be active. Logout the user
         # to get the key again when login
         if config.SERVER_MODE and current_user.is_authenticated and \
-            app.PGADMIN_EXTERNAL_AUTH_SOURCE not in [
+            session['auth_source_manager']['current_source'] not in [
                 KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
@@ -915,6 +915,10 @@ def create_app(app_name=None):
     @app.errorhandler(HTTPException)
     def http_exception_handler(e):
         current_app.logger.error(e, exc_info=True)
+        if e.code == 400 and\
+                e.description == 'The CSRF session token is missing.':
+            error = str(e.description) + 'Please refresh the page.'
+            return internal_server_error(errormsg=gettext(error))
         return e
 
     # Intialize the key manager
