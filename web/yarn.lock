@@ -2308,10 +2308,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^6.1.9":
-  version: 6.1.9
-  resolution: "@mui/core-downloads-tracker@npm:6.1.9"
-  checksum: fbdf672c4a5636d9459e4d8ee5b6a855dccf2de2d8bed5ed0c3f94144e8a2974bcad00fd059b10a231fed54ade767736786363164f5de1fedf8957e3c7c9daa5
+"@mui/core-downloads-tracker@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/core-downloads-tracker@npm:6.1.10"
+  checksum: 853515ae3a09d2b8d2a7fc5a1eec235954e2739400b3739cda049bc363d2ad255728037b964ded4150d19b795699a0df9017140a3e019ae8f070b2491fc9345a
   languageName: node
   linkType: hard
 
@@ -2360,15 +2360,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^6.1.8":
-  version: 6.1.9
-  resolution: "@mui/material@npm:6.1.9"
+"@mui/material@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/material@npm:6.1.10"
   dependencies:
     "@babel/runtime": ^7.26.0
-    "@mui/core-downloads-tracker": ^6.1.9
-    "@mui/system": ^6.1.9
+    "@mui/core-downloads-tracker": ^6.1.10
+    "@mui/system": ^6.1.10
     "@mui/types": ^7.2.19
-    "@mui/utils": ^6.1.9
+    "@mui/utils": ^6.1.10
     "@popperjs/core": ^2.11.8
     "@types/react-transition-group": ^4.4.11
     clsx: ^2.1.1
@@ -2379,7 +2379,7 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
-    "@mui/material-pigment-css": ^6.1.9
+    "@mui/material-pigment-css": ^6.1.10
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -2392,7 +2392,24 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: bb172eac3f9fd04f30081b949ed13bb0b9c7671d3f25d3b417ee7287d672ff3162eff49b9d018b42d6d81ef527e1b225b0d5ed0a8598600e1da59f0e5a8739b9
+  checksum: 0683224833e11a4317c001f0a2ed1e37e6fe63109d1742e7e67911845bd3ea8730221168d7ed4a76d745c195430d9aef0e9cf88c0242e9cf09b01f2e5afa6ca1
+  languageName: node
+  linkType: hard
+
+"@mui/private-theming@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/private-theming@npm:6.1.10"
+  dependencies:
+    "@babel/runtime": ^7.26.0
+    "@mui/utils": ^6.1.10
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: c25c90ec3f199569cb2b266c232500c1c47fef9b822912b0a1c1b61d3c96401db6dde47d545de0b2bf2ad4e79bcdf6ce185aab5506a4b2f9d079821d54f6fc80
   languageName: node
   linkType: hard
 
@@ -2410,6 +2427,29 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 5225585fb1a77efb7fa631c0dff8b33d7f66ea00505028642c37486ee7d767c87816e699a261780e6789e0e16b8c76a5c565cfe4ac72a3ba4b925e55b58acb7b
+  languageName: node
+  linkType: hard
+
+"@mui/styled-engine@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/styled-engine@npm:6.1.10"
+  dependencies:
+    "@babel/runtime": ^7.26.0
+    "@emotion/cache": ^11.13.5
+    "@emotion/serialize": ^1.3.3
+    "@emotion/sheet": ^1.4.0
+    csstype: ^3.1.3
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@emotion/react": ^11.4.1
+    "@emotion/styled": ^11.3.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+  checksum: 9cd5b930fe043ff0f8d93d72dabae61ceb586b23ac646017fa41bb308f2c4e79e6cc74609793725a05d64ece8a1e1f8f6535057fb1355ed3276abb4456d2f54c
   languageName: node
   linkType: hard
 
@@ -2436,7 +2476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^6.0.0-dev.240424162023-9968b4889d, @mui/system@npm:^6.1.9":
+"@mui/system@npm:^6.0.0-dev.240424162023-9968b4889d":
   version: 6.1.9
   resolution: "@mui/system@npm:6.1.9"
   dependencies:
@@ -2461,6 +2501,34 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 13ddea7191a944f1ae6573fc0497997de2490e6a5084618b0165977d3728cf38bcd253f5c81a477dbea2680650f2a666e4dda9aa5218a614541f2f60c33c78a0
+  languageName: node
+  linkType: hard
+
+"@mui/system@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/system@npm:6.1.10"
+  dependencies:
+    "@babel/runtime": ^7.26.0
+    "@mui/private-theming": ^6.1.10
+    "@mui/styled-engine": ^6.1.10
+    "@mui/types": ^7.2.19
+    "@mui/utils": ^6.1.10
+    clsx: ^2.1.1
+    csstype: ^3.1.3
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@emotion/react": ^11.5.0
+    "@emotion/styled": ^11.3.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+    "@types/react":
+      optional: true
+  checksum: 4b4ded9431b5ceee08d07bc3ba4778a33e95e7aafff03ba487881709d64a02d40fa4686aac63da16d15ad4280c0424a1bed3fc31d6f39762e8d7136a194a081d
   languageName: node
   linkType: hard
 
@@ -2493,6 +2561,26 @@ __metadata:
     "@types/react":
       optional: true
   checksum: a2c61c0537b312ab0faeb3f13e7f3b0736e11f29e7907ccd77b0643afc0dca3a0dceb3817371666f35ca8df723ddeac9b2bbb6b759206bde99e03514cfd4ebb9
+  languageName: node
+  linkType: hard
+
+"@mui/utils@npm:^6.1.10":
+  version: 6.1.10
+  resolution: "@mui/utils@npm:6.1.10"
+  dependencies:
+    "@babel/runtime": ^7.26.0
+    "@mui/types": ^7.2.19
+    "@types/prop-types": ^15.7.13
+    clsx: ^2.1.1
+    prop-types: ^15.8.1
+    react-is: ^18.3.1
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 92d3e30ca38cb77e7a9de555cc6b3521d1a50aafedfc769d6b6f55d9fd41e8f71ea3b4e716bedb55e52b88d495a25168d9e2dbd5ed23db496edee6a10f28ec6d
   languageName: node
   linkType: hard
 
@@ -13448,7 +13536,7 @@ __metadata:
     "@fortawesome/fontawesome-free": latest
     "@mui/icons-material": ^6.1.8
     "@mui/lab": ^6.0.0-beta.16
-    "@mui/material": ^6.1.8
+    "@mui/material": ^6.1.10
     "@mui/x-date-pickers": ^7.23.0
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
