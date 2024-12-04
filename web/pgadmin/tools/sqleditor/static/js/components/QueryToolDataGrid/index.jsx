@@ -274,15 +274,8 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   for(const col of retColumns) {
     col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy);
     col.resizable = true;
-    col.renderEditCellOptions = {
+    col.editorOptions = {
       commitOnOutsideClick: false,
-      onCellKeyDown: (e)=>{
-        // global keyboard shortcuts will work now and will open the the editor for the cell once pgAdmin reopens
-        if(!e.metaKey && !e.altKey && !e.shiftKey && !e.ctrlKey){
-          /* Do not open the editor */
-          e.preventDefault();
-        }
-      }
     };
     setEditorFormatter(col);
   }
@@ -393,12 +386,6 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }
 
   function handleShortcuts(e) {
-    // Handle Copy shortcut Cmd/Ctrl + c
-    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
-      e.preventDefault();
-      handleCopy();
-    }
-
     // Handle Select All Cmd + A(mac) / Ctrl + a (others)
     if(((isMac() && e.metaKey) || (!isMac() && e.ctrlKey)) && e.key === 'a') {
       e.preventDefault();
