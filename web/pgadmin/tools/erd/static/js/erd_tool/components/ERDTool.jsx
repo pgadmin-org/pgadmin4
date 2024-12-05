@@ -516,7 +516,11 @@ export default class ERDTool extends React.Component {
         }
         this.diagram.repaint();
       },
-      () => {/*This is intentional (SonarQube)*/}
+      () => {/*This is intentional (SonarQube)*/},
+      gettext('Delete'),
+      gettext('Cancel'),
+      null,
+      'error'
     );
   }
 

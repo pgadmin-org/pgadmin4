@@ -46,7 +46,7 @@ function renderExtraButtons(button) {
   case 'primary':
     return <PrimaryButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</PrimaryButton>;
   case 'default':
-    return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</DefaultButton>;
+    return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick} color={button.color ?? 'default'}>{button.label}</DefaultButton>;
   default:
     return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onclick}>{button.label}</DefaultButton>;
   };
@@ -58,13 +58,13 @@ function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = ge
       <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <Box className='Alert-footer'>
         {confirm &&
-          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
+          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} autoFocus={true}>{cancelLabel}</DefaultButton>
         }
         {
           extraButtons?.length ?
             extraButtons.map(button=>renderExtraButtons(button))
             :
-            <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+            <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick}>{okLabel}</PrimaryButton>
         }
       </Box>
     </StyledBox>
@@ -104,7 +104,9 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
       onOkClick?.();
       closeModal();
     };
-    const extraButtons =  extras?.(closeModal);
+    
+    const extraButtons = Array.isArray(extras) ? extras : extras?.(closeModal);
+
     return (
       <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} extraButtons={extraButtons} />
     );
