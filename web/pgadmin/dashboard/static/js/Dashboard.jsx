@@ -252,6 +252,7 @@ CustomRefresh.propTypes = {
   setRefresh: PropTypes.func,
 };
 
+
 function ActiveOnlyHeader({activeOnly, setActiveOnly}) {
   return (
     <InputCheckbox
@@ -1082,8 +1083,7 @@ function Dashboard({
                 {!_.isUndefined(preferences) && preferences.show_activity && (
                   <Fragment>
                     <CustomRefresh refresh={refresh} setRefresh={setRefresh}/>
-                    <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}
-                    >
+                    <SectionContainer title={gettext('Sessions')} style={{height: 'auto', minHeight: '200px', maxHeight:'400px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -1093,7 +1093,7 @@ function Dashboard({
                         schema={activeQSchemaObj}
                       ></PgTable>
                     </SectionContainer>
-                    <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
+                    <SectionContainer title={gettext('Locks')} style={{height: 'auto', minHeight: '200px',  maxHeight:'400px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -1101,7 +1101,7 @@ function Dashboard({
                         data={(dashData !== undefined && dashData[0] && dashData[0]['locks']) || []}
                       ></PgTable>
                     </SectionContainer>
-                    <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px', paddingBottom: '20px'}}>
+                    <SectionContainer title={gettext('Prepared Transactions')} style={{height: 'auto', minHeight: '200px',  maxHeight:'400px', paddingBottom: '20px'}}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}

@@ -39,6 +39,7 @@ Bug fixes
   | `Issue #5099 <https://github.com/pgadmin-org/pgadmin4/issues/5099>`_ -  Fixed an issue where Ctrl/Cmd + A was not selecting all data in query tool data grid.
   | `Issue #7384 <https://github.com/pgadmin-org/pgadmin4/issues/7384>`_ -  Fixed an issue where querying a foreign table gives the error 'ForeignTableCommand' object has no attribute 'auto_commit'.
   | `Issue #7486 <https://github.com/pgadmin-org/pgadmin4/issues/7486>`_ -  Fixed an issue where indent with space was not aligning to next tab position.
+  | `Issue #7809 <https://github.com/pgadmin-org/pgadmin4/issues/7809>`_ -  Fixed an issue where pgAdmin crashes on accessing the dashboard state tab when database is super busy.
   | `Issue #7865 <https://github.com/pgadmin-org/pgadmin4/issues/7865>`_ -  Fixed an issue related to the query tool update connection after the server disconnected from the object explorer.
   | `Issue #8010 <https://github.com/pgadmin-org/pgadmin4/issues/8010>`_ -  Fixed an issue where query tool should show results and messages only from the last executed query.
   | `Issue #8028 <https://github.com/pgadmin-org/pgadmin4/issues/8028>`_ -  Fixed an issue where query tool throws syntax error if a newly added row is untouched and saved.
