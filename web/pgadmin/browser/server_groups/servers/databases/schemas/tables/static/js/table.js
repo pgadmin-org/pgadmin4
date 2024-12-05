@@ -398,6 +398,9 @@ define('pgadmin.node.table', [
           }
           insertChildrenNodes();
         }
+
+        let selectedTable = pgBrowser.tree.selected();
+        pgBrowser.tree.refresh(selectedTable);
       },
       handle_cache: function() {
         // Clear Table's cache as column's type is dependent on two node
