@@ -233,3 +233,18 @@ Use the fields in the *Advanced* tab to configure a connection:
 .. toctree::
 
     clear_saved_passwords
+
+
+Click the *Tags* tab to continue.
+
+.. image:: images/server_tags.png
+    :alt: Server dialog tags tab
+    :align: center
+
+Use the table in the *Tags* tab to add tags. The tags will be shown on the right side of
+a server node label in the object explorer tree.
+
+Click on the *+* button to add a new tag. Some of the parameters are:
+
+* *Text* field to specify the tag name.
+* *Color* field to select the accent color of the tag.

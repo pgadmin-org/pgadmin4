@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 40
+SCHEMA_VERSION = 41
 
 ##########################################################################
 #
@@ -209,6 +209,7 @@ class Server(db.Model):
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
     prepare_threshold = db.Column(db.Integer(), nullable=True)
+    tags = db.Column(types.JSON)
 
 
 class ModulePreference(db.Model):

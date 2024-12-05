@@ -50,14 +50,6 @@ const Root = styled('div')(({theme}) => ({
   '& .Form-optionIcon': {
     ...theme.mixins.nodeIcon,
   },
-  // '& .Form-label': {
-  //   margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
-  //   display: 'flex',
-  //   wordBreak: 'break-word'
-  // },
-  // '& .Form-labelError': {
-  //   color: theme.palette.error.main,
-  // },
   '& .Form-sql': {
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,

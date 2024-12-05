@@ -225,6 +225,21 @@
       "expected_data": {
         "status_code": 200
       }
+    },
+    {
+      "name": "Add server with tags",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "tags": [
+          {"text":  "tag1", "color":  "#000"}
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
     }
   ],
   "is_password_saved": [

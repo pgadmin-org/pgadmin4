@@ -528,6 +528,7 @@ def dump_database_servers(output_file, selected_servers,
                       server.kerberos_conn),
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
+            add_value(attr_dict, "Tags", server.tags)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True
@@ -765,6 +766,8 @@ def load_database_servers(input_file, selected_servers,
             new_server.shared_username = obj.get("SharedUsername", None)
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            new_server.tags = obj.get("Tags", None)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True

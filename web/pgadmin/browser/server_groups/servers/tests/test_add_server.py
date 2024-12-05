@@ -88,6 +88,9 @@ class AddServerTest(BaseTestGenerator):
         if 'bgcolor' in self.test_data:
             self.server['bgcolor'] = self.test_data['bgcolor']
 
+        if 'tags' in self.test_data:
+            self.server['tags'] = self.test_data['tags']
+
         if self.is_positive_test:
             if hasattr(self, 'with_save'):
                 self.server['save_password'] = self.with_save

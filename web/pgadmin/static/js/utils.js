@@ -684,6 +684,10 @@ export function getChartColor(index, theme='light', colorPalette=CHART_THEME_COL
   return palette[index % palette.length];
 }
 
+export function getRandomColor() {
+  return '#' + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, '0');
+}
+
 // Using this function instead of 'btoa' directly.
 // https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
 function stringToBase64(str) {

@@ -157,7 +157,7 @@ function SelectAllHeaderRenderer({isCellSelected}) {
   }, [isRowSelected]);
 
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="0" onKeyDown={dataGridExtras.handleShortcuts}></div>;
+    tabIndex="0" onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
@@ -192,7 +192,7 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
 
   return (
     <Box ref={cellRef} className={'QueryTool-columnHeader ' + (isSelected ? 'QueryTool-colHeaderSelected' : null)} onClick={onClick} tabIndex="0"
-      onKeyDown={dataGridExtras.handleShortcuts} data-column-key={column.key}>
+      onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)} data-column-key={column.key}>
       {(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') &&
       <Box>
         <PgIconButton title={gettext('View all geometries in this column')} icon={<MapIcon data-label="MapIcon"/>} size="small" style={{marginRight: '0.25rem'}} onClick={(e)=>{
@@ -385,7 +385,13 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
   }
 
-  function handleShortcuts(e) {
+  function handleShortcuts(e, withCopy=false) {
+    // Handle Copy shortcut Cmd/Ctrl + c
+    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67 && withCopy) {
+      e.preventDefault();
+      handleCopy();
+    }
+
     // Handle Select All Cmd + A(mac) / Ctrl + a (others)
     if(((isMac() && e.metaKey) || (!isMac() && e.ctrlKey)) && e.key === 'a') {
       e.preventDefault();

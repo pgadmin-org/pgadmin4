@@ -31,6 +31,7 @@ import {
   useFieldOptions, useFieldValue, useFieldError, useSchemaStateSubscriber,
 } from './hooks';
 import { listenDepChanges } from './utils';
+import { InputColor } from '../components/FormComponents';
 
 
 /* Control mapping for form view */
@@ -263,6 +264,8 @@ function MappedCellControlBase({
     return <InputDateTimePicker name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'sql':
     return <InputSQL name={name} value={value} onChange={onSqlChange} {...props} />;
+  case 'color':
+    return <InputColor name={name} value={value} onChange={onTextChange} {...props} />;
   case 'file':
     return <InputFileSelect name={name} value={value} onChange={onTextChange} inputRef={props.inputRef} {...props} />;
   case 'keyCode':
