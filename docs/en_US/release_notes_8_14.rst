@@ -27,6 +27,7 @@ New features
   | `Issue #6794 <https://github.com/pgadmin-org/pgadmin4/issues/6794>`_ -  Add support for passing connection details as placeholders in the passexec command.
   | `Issue #7330 <https://github.com/pgadmin-org/pgadmin4/issues/7330>`_ -  Add support to deploy pgAdmin in a container with readOnlyRootFilesystem to true.
   | `Issue #8095 <https://github.com/pgadmin-org/pgadmin4/issues/8095>`_ -  Added support for a builtin locale provider in the Database dialog.
+  | `Issue #8192 <https://github.com/pgadmin-org/pgadmin4/issues/8192>`_ -  Added support for adding tags on a server node.
 
 Housekeeping
 ************
@@ -47,3 +48,4 @@ Bug fixes
   | `Issue #8134 <https://github.com/pgadmin-org/pgadmin4/issues/8134>`_ -  Add a user preference to enable/disable alternating row background colors in the data output of query tool.
   | `Issue #8157 <https://github.com/pgadmin-org/pgadmin4/issues/8157>`_ -  Fixed an issue where doing Ctrl/Cmd+C on a selected text in a cell editor of data output in the query tool copied the complete text.
   | `Issue #8158 <https://github.com/pgadmin-org/pgadmin4/issues/8158>`_ -  Fixed an issue where auto-width of wide columns in data output is incorrectly calculated.
+  | `Issue #8215 <https://github.com/pgadmin-org/pgadmin4/issues/8215>`_ -  Ensure correct custom SSL certificate passed in connection string.
