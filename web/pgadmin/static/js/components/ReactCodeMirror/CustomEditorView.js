@@ -27,7 +27,9 @@ function getAutocompLoading({ bottom, left }, dom) {
 export default class CustomEditorView extends EditorView {
   constructor(...args) {
     super(...args);
+    // Set the initial and clean state for the document and EOL(end of line).
     this._cleanDoc = this.state.doc;
+    this._cleanDocEOL = this.getEOL();
   }
 
   getValue(tillCursor=false, useLineSep=false) {
@@ -268,10 +270,12 @@ export default class CustomEditorView extends EditorView {
 
   markClean() {
     this._cleanDoc = this.state.doc;
+    this._cleanDocEOL = this.getEOL(); // Update the initial EOL value.
   }
 
   isDirty() {
-    return !this._cleanDoc.eq(this.state.doc);
+    // Return true if either the document content or the EOL(end of line) has changed.
+    return !this._cleanDoc.eq(this.state.doc) || this._cleanDocEOL !== this.getEOL();
   }
 
   fireDOMEvent(event) {
@@ -339,5 +343,12 @@ export default class CustomEditorView extends EditorView {
     this.dispatch({
       effects: eolCompartment.reconfigure(eol.of(val))
     });
+  }
+
+  // Use to detect EOL type.
+  detectEOL(content) {
+    const lineSep = content.includes('\r\n') ? '\r\n' : '\n';
+    this.setEOL(lineSep);
+    return lineSep == '\r\n' ? 'crlf' : 'lf';
   }
 }
