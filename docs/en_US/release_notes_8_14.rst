@@ -41,6 +41,7 @@ Bug fixes
   | `Issue #7486 <https://github.com/pgadmin-org/pgadmin4/issues/7486>`_ -  Fixed an issue where indent with space was not aligning to next tab position.
   | `Issue #7809 <https://github.com/pgadmin-org/pgadmin4/issues/7809>`_ -  Fixed an issue where pgAdmin crashes on accessing the dashboard state tab when database is super busy.
   | `Issue #7865 <https://github.com/pgadmin-org/pgadmin4/issues/7865>`_ -  Fixed an issue related to the query tool update connection after the server disconnected from the object explorer.
+  | `Issue #7892 <https://github.com/pgadmin-org/pgadmin4/issues/7892>`_ -  Fixed an issue where a column name change in the edit dialog of the table node does not show the updated column name.
   | `Issue #8010 <https://github.com/pgadmin-org/pgadmin4/issues/8010>`_ -  Fixed an issue where query tool should show results and messages only from the last executed query.
   | `Issue #8028 <https://github.com/pgadmin-org/pgadmin4/issues/8028>`_ -  Fixed an issue where query tool throws syntax error if a newly added row is untouched and saved.
   | `Issue #8065 <https://github.com/pgadmin-org/pgadmin4/issues/8065>`_ -  Ensure the crypt key is retrieved correctly on backend server restart.
