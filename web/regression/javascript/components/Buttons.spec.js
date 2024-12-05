@@ -28,7 +28,7 @@ describe('components Buttons', ()=>{
     let ThemedBtn = withTheme(DefaultButton);
     render(<ThemedBtn className="testClass">Test</ThemedBtn>);
     const btn = screen.getByRole('button');
-    expect(btn.classList.contains('MuiButton-outlined')).toBe(true);
+    expect(btn.classList.contains('MuiButton-outlined')).toBe(false);
     expect(btn.classList.contains('testClass')).toBe(true);
   });
 

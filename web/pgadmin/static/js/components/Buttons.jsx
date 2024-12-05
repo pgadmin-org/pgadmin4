@@ -15,7 +15,7 @@ import ShortcutTitle from './ShortcutTitle';
 import { styled } from '@mui/material/styles';
 
 
-const StyledButton = styled(Button)(({theme}) => ({
+const StyledButton = styled(Button)(({theme, color}) => ({
   '&.Buttons-primaryButton': {
     border: '1px solid '+theme.palette.primary.main,
     '&.Mui-disabled': {
@@ -37,18 +37,19 @@ const StyledButton = styled(Button)(({theme}) => ({
     }
   },
   '&.Buttons-defaultButton': {
-    backgroundColor: theme.palette.default.main,
-    color: theme.palette.default.contrastText,
-    border: '1px solid '+theme.palette.default.borderColor,
+    // Use the color prop to determine the background color and text color.
+    backgroundColor: theme.palette[color]?.main ?? theme.palette.default.main,
+    border: '1px solid '+ theme.palette.default.borderColor,
+    color: theme.palette[color]?.contrastText ?? theme.palette.default.contrastText,
     whiteSpace: 'nowrap',
     '&.Mui-disabled': {
       color: [theme.palette.default.disabledContrastText, '!important'],
       borderColor: theme.palette.default.disabledBorderColor
     },
     '&:hover': {
-      backgroundColor: theme.palette.default.hoverMain,
-      color: theme.palette.default.hoverContrastText,
-      borderColor: theme.palette.default.hoverBorderColor,
+      backgroundColor: theme.palette[color]?.hoverMain ?? theme.palette.default.hoverMain,
+      color: theme.palette[color]?.contrastText ?? theme.palette.default.hoverContrastText,
+      borderColor: theme.palette[color]?.hoverBorderColor ?? theme.palette.default.hoverBorderColor,
     },
     '&.Buttons-noBorder': {
       border: 0,
@@ -143,16 +144,19 @@ PrimaryButton.propTypes = {
 
 /* pgAdmin default button */
 export const DefaultButton = forwardRef((props, ref)=>{
-  let {children, className, size, noBorder, ...otherProps} = props;
+  let {children, className, size, noBorder, color, ...otherProps} = props;
+  let variant = 'outlined';
   let allClassName = ['Buttons-defaultButton', className];
   if(size == 'xs') {
     size = undefined;
     allClassName.push('Buttons-xsButton');
+  } else if(color !== 'default'){
+    variant='contained';
   }
   noBorder && allClassName.push('Buttons-noBorder');
   const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
-    <StyledButton variant="outlined" ref={ref} size={size} className={allClassName.join(' ')} data-label={dataLabel} color="default" {...otherProps}>{children}</StyledButton>
+    <StyledButton variant={variant} ref={ref} size={size} className={allClassName.join(' ')} data-label={dataLabel} {...otherProps} color={color ?? 'default'} >{children}</StyledButton>
   );
 });
 DefaultButton.displayName = 'DefaultButton';
@@ -161,6 +165,7 @@ DefaultButton.propTypes = {
   noBorder: PropTypes.bool,
   children: CustomPropTypes.children,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  color: PropTypes.string,
 };
 
 
