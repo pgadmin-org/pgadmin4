@@ -562,6 +562,8 @@ Use the *Ignore Tablespace* switch to ignores the tablespace while comparing the
 Use the *Ignore Whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
+Use the *Ignore Partitions* switch to ignores the partitions while comparing
+the partitions tables. 
 
 The Storage Node
 ****************

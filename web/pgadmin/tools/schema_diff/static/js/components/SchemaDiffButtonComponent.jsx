@@ -93,12 +93,14 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
       compareParams.ignoreWhitespaces && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_WHITESPACE);
       compareParams.ignoreTablespace && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_TABLESPACE);
       compareParams.ignoreGrants && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS);
+      compareParams.ignorePartitions && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_PARTITIONS);
       setSelectedCompare(prefCompareOptions);
     } else {
       schemaDiffCtx?.preferences_schema_diff?.ignore_owner && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_OWNER);
       schemaDiffCtx?.preferences_schema_diff?.ignore_whitespaces && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_WHITESPACE);
       schemaDiffCtx?.preferences_schema_diff?.ignore_tablespace && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_TABLESPACE);
       schemaDiffCtx?.preferences_schema_diff?.ignore_grants && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS);
+      schemaDiffCtx?.preferences_schema_diff?.ignore_partitions && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_PARTITIONS);
       setSelectedCompare(prefCompareOptions);
     }
   }, [schemaDiffCtx.preferences_schema_diff]);
@@ -141,6 +143,7 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
       'ignoreWhitespaces': selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_WHITESPACE) ? 1 : 0,
       'ignoreTablespace': selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_TABLESPACE) ? 1 : 0,
       'ignoreGrants': selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS) ? 1 : 0,
+      'ignorePartitions': selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_PARTITIONS) ? 1 : 0,
     };
     let filterParam = selectedFilters;
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_COMPARE_DIFF, { sourceData, targetData, compareParams: compareParam, filterParams: filterParam });
@@ -194,6 +197,8 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
           onClick={() => { selectCompareOption(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_TABLESPACE); }}>{IGNORE_OPTION.TABLESPACE}</PgMenuItem>
         <PgMenuItem hasCheck checked={selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS)}
           onClick={() => { selectCompareOption(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS); }}>{IGNORE_OPTION.GRANTS}</PgMenuItem>
+        <PgMenuItem hasCheck checked={selectedCompare.includes(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_PARTITIONS)}
+          onClick={() => { selectCompareOption(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_PARTITIONS); }}>{IGNORE_OPTION.PARTITIONS}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterRef}

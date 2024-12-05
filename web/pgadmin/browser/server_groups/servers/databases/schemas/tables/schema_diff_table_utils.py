@@ -59,6 +59,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
         ignore_tablespace = kwargs.get('ignore_tablespace')
         ignore_grants = kwargs.get('ignore_grants')
+        ignore_partitions = kwargs.get('ignore_partitions')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -96,7 +97,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     ignore_owner=ignore_owner,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_tablespace=ignore_tablespace,
-                                    ignore_grants=ignore_grants)
+                                    ignore_grants=ignore_grants,
+                                    ignore_partitions=ignore_partitions)
 
     def ddl_compare(self, **kwargs):
         """
@@ -300,6 +302,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
+        ignore_partitions = kwargs.get('ignore_partitions')
 
         # Get the difference result for source and target columns
         col_diff = self.table_col_comp(source, target)
@@ -314,7 +317,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         diff = self.get_sql_from_table_diff(**target_params)
 
         ignore_sub_modules = ['column', 'constraints']
-        if self.manager.version < 100000:
+        if self.manager.version < 100000 or ignore_partitions:
             ignore_sub_modules.append('partition')
         if self.manager.server_type == 'pg' or self.manager.version < 120000:
             ignore_sub_modules.append('compound_trigger')
