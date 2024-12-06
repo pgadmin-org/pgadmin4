@@ -941,6 +941,11 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 ENABLE_SERVER_PASS_EXEC_CMD = False
 
 #############################################################################
+# Maximum number of Tags allowed on a server node
+##############################################################################
+MAX_SERVER_TAGS_ALLOWED = 5
+
+#############################################################################
 # Number of records to fetch in one batch for server logs.
 ##############################################################################
 

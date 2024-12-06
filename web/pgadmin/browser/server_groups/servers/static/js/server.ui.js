@@ -398,10 +398,10 @@ export default class ServerSchema extends BaseUISchema {
         helpMessage: gettext('If it is set to 0, every query is prepared the first time it is executed. If it is set to blank, prepared statements are disabled on the connection.')
       },
       {
-        id: 'tags', label: '',
+        id: 'tags', label: gettext('Tags'),
         type: 'collection', group: gettext('Tags'),
         schema: this.tagsSchema, mode: ['edit', 'create'], uniqueCol: ['text'],
-        canAdd: true, canEdit: false, canDelete: true,
+        canAdd: true, canEdit: false, canDelete: true, maxCount: pgAdmin.Browser.utils.max_server_tags_allowed,
       },
     ];
   }

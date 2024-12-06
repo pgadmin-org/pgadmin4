@@ -100,6 +100,7 @@ define('pgadmin.browser.utils',
     pg_libpq_version: {{pg_libpq_version|e}},
     support_ssh_tunnel: '{{ support_ssh_tunnel }}' == 'True',
     logout_url: '{{logout_url}}',
+    max_server_tags_allowed: {{max_server_tags_allowed}},
 
     counter: {total: 0, loaded: 0},
     registerScripts: function (ctx) {

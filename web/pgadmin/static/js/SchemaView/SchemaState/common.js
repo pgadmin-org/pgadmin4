@@ -252,6 +252,11 @@ export function validateCollectionSchema(
   const rows = sessData[field.id] || [];
   const currPath = accessPath.concat(field.id);
 
+  if(rows.length > field.maxCount) {
+    setError(currPath, gettext('Maximum %s \'%s\' allowed',field.maxCount, field.label));
+    return true;
+  }
+
   // Loop through data.
   for(const [rownum, row] of rows.entries()) {
     if(validateSchema(

@@ -502,7 +502,6 @@ def utils():
     # This will be opposite of use_space option
     editor_indent_with_tabs = False if editor_use_spaces else True
 
-    prefs = Preferences.module('browser')
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -574,6 +573,7 @@ def utils():
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
             enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
+            max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
