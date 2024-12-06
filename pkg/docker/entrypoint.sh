@@ -37,8 +37,7 @@ fi
 file_env PGADMIN_DEFAULT_PASSWORD
 
 # TO enable custom path for config_distro, pass config distro path via environment variable.
-export CONFIG_DISTRO_FILE_PATH="${PGADMIN_CONFIG_DISTRO_FILE:-/pgadmin4/config_distro.py}"
-
+export CONFIG_DISTRO_FILE_PATH="${PGADMIN_CUSTOM_CONFIG_DISTRO_FILE:-/pgadmin4/config_distro.py}"
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
 # Only update the file on first launch. The empty file is created during the

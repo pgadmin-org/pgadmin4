@@ -142,12 +142,14 @@ Override the default file path for the preferences customization at the containe
 /pgadmin4/preferences.json mapped file below for more information. See the format
 of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/preferences.html#json-format>`_.
 
-**PGADMIN_CONFIG_DISTRO_FILE**
+**PGADMIN_CUSTOM_CONFIG_DISTRO_FILE**
 
 *Default: /pgadmin4/config_distro.py*
 
 Override the default file path for the pgadmin configurations file.This can be used while provisioning
-container with read only root file system to achieve a more secure pgadmin4 deployment for docker and kubernetes.
+container with read only root file system to achieve a more secure pgadmin4 deployment for kubernetes.
+Note that if you are externally mapping this file, then environment variables passed using *PGADMIN_CONFIG_*
+suffix will be ignored.
 
 **PGPASS_FILE**
 
