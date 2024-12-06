@@ -45,6 +45,7 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
         ignore_tablespace = kwargs.get('ignore_tablespace')
         ignore_grants = kwargs.get('ignore_grants')
+        ignore_partitions = kwargs.get('ignore_partitions')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -80,7 +81,8 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
                                     ignore_owner=ignore_owner,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_tablespace=ignore_tablespace,
-                                    ignore_grants=ignore_grants)
+                                    ignore_grants=ignore_grants
+                                    ignore_partitions=ignore_partitions)
 
     def ddl_compare(self, **kwargs):
         """

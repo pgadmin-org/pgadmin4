@@ -106,6 +106,14 @@ class SchemaDiffModule(PgAdminModule):
                              'in the Schema Diff tab.')
         )
 
+        self.preference.register(
+            'display', 'ignore_partitioons',
+            gettext("Ignore Partitions"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('Set ignore partitions on or off by default '
+                             'in the drop-down menu near the Compare button '
+                             'in the Schema Diff tab.')
+        )
 
 blueprint = SchemaDiffModule(MODULE_NAME, __name__, static_url_path='/static')
 
