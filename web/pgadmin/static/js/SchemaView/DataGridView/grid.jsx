@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
-import { usePgAdmin } from 'sources/BrowserComponent';
+import { usePgAdmin } from 'sources/PgAdminProvider';
 import {
   PgReactTable, PgReactTableBody, PgReactTableHeader,
   PgReactTableRow, 

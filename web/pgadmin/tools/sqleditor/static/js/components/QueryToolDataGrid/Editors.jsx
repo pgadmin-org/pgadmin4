@@ -17,7 +17,7 @@ import JSONBigNumber from 'json-bignumber';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
-import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 

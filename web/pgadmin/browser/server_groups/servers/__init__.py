@@ -33,7 +33,8 @@ from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
-    is_valid_ipaddress, get_replication_type
+    (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
+     check_ssl_fields)
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED
 from sqlalchemy import or_
@@ -225,7 +226,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         hide_shared_server = get_preferences()
         servers = Server.query.filter(
             or_(Server.user_id == current_user.id, Server.shared),
-            Server.servergroup_id == gid)
+            Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
         servers = self.get_servers(servers, hide_shared_server, gid)
@@ -464,73 +465,6 @@ class ServerNode(PGChildNodeView):
         'clear_saved_password': [{'put': 'clear_saved_password'}],
         'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}],
     })
-    SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
-
-    def check_ssl_fields(self, data):
-        """
-        This function will allow us to check and set defaults for
-        SSL fields
-
-        Args:
-            data: Response data
-
-        Returns:
-            Flag and Data
-        """
-        flag = False
-
-        if 'sslmode' in data and data['sslmode'] in self.SSL_MODES:
-            flag = True
-            ssl_fields = [
-                'sslcert', 'sslkey', 'sslrootcert', 'sslcrl', 'sslcompression'
-            ]
-            # Required SSL fields for SERVER mode from user
-            required_ssl_fields_server_mode = ['sslcert', 'sslkey']
-
-            for field in ssl_fields:
-                if field in data:
-                    continue
-                elif config.SERVER_MODE and \
-                        field in required_ssl_fields_server_mode:
-                    # In Server mode,
-                    # we will set dummy SSL certificate file path which will
-                    # prevent using default SSL certificates from web servers
-
-                    # Set file manager directory from preference
-                    import os
-                    file_extn = '.key' if field.endswith('key') else '.crt'
-                    dummy_ssl_file = os.path.join(
-                        '<STORAGE_DIR>', '.postgresql',
-                        'postgresql' + file_extn
-                    )
-                    data[field] = dummy_ssl_file
-                    # For Desktop mode, we will allow to default
-
-        return flag, data
-
-    def convert_connection_parameter(self, params):
-        """
-        This function is used to convert the connection parameter based
-        on the instance type.
-        """
-        conn_params = None
-        # if params is of type list then it is coming from the frontend,
-        # and we have to convert it into the dict and store it into the
-        # database
-        if isinstance(params, list):
-            conn_params = {}
-            for item in params:
-                conn_params[item['name']] = item['value']
-        # if params is of type dict then it is coming from the database,
-        # and we have to convert it into the list of params to show on GUI.
-        elif isinstance(params, dict):
-            conn_params = []
-            for key, value in params.items():
-                if value is not None:
-                    conn_params.append(
-                        {'name': key, 'keyword': key, 'value': value})
-
-        return conn_params
 
     def update_connection_parameter(self, data, server):
         """
@@ -600,7 +534,7 @@ class ServerNode(PGChildNodeView):
         servers = Server.query.filter(
             or_(Server.user_id == current_user.id,
                 Server.shared),
-            Server.servergroup_id == gid)
+            Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
 
@@ -979,9 +913,9 @@ class ServerNode(PGChildNodeView):
         Return list of attributes of all servers.
         """
         servers = Server.query.filter(
-            or_(Server.user_id == current_user.id,
-                Server.shared),
-            Server.servergroup_id == gid).order_by(Server.name)
+            or_(Server.user_id == current_user.id, Server.shared),
+            Server.servergroup_id == gid,
+            Server.is_adhoc == 0).order_by(Server.name)
         sg = ServerGroup.query.filter_by(
             id=gid
         ).first()
@@ -1061,7 +995,7 @@ class ServerNode(PGChildNodeView):
         tunnel_authentication = False
         tunnel_keep_alive = 0
         connection_params = \
-            self.convert_connection_parameter(server.connection_params)
+            convert_connection_parameter(server.connection_params)
 
         if server.use_ssh_tunnel:
             use_ssh_tunnel = bool(server.use_ssh_tunnel)
@@ -1183,7 +1117,7 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        connection_params = self.convert_connection_parameter(
+        connection_params = convert_connection_parameter(
             data.get('connection_params', []))
 
         if 'hostaddr' in connection_params and \
@@ -1195,7 +1129,7 @@ class ServerNode(PGChildNodeView):
             )
 
         # To check ssl configuration
-        _, connection_params = self.check_ssl_fields(connection_params)
+        _, connection_params = check_ssl_fields(connection_params)
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
@@ -1433,7 +1367,8 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid, is_qt=False):
+    def connect(self, gid, sid, is_qt=False, server=None,
+                from_welcome_page=False):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1453,8 +1388,12 @@ class ServerNode(PGChildNodeView):
             'Connection Request for server#{0}'.format(sid)
         )
 
-        # Fetch Server Details
-        server = Server.query.filter_by(id=sid).first()
+        # In case of Workspace layout ad-hoc server maybe pass to this
+        # function in that case no need to fetch the server detail based on
+        # sid.
+        if server is None:
+            server = Server.query.filter_by(id=sid).first()
+
         shared_server = None
         if server.shared and server.user_id != current_user.id:
             shared_server = ServerModule.get_shared_server(server, gid)
@@ -1505,7 +1444,6 @@ class ServerNode(PGChildNodeView):
             manager.update(server)
         conn = manager.connection()
 
-        crypt_key = None
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1571,7 +1509,8 @@ class ServerNode(PGChildNodeView):
         # not provided, or password has not been saved earlier.
         if prompt_password or prompt_tunnel_password:
             return self.get_response_for_password(
-                server, 428, prompt_password, prompt_tunnel_password
+                server, 428, prompt_password, prompt_tunnel_password,
+                from_welcome_page=from_welcome_page
             )
 
         try:
@@ -1583,7 +1522,9 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             return self.get_response_for_password(
-                server, 401, True, True, getattr(e, 'message', str(e)))
+                server, 401, True, True,
+                getattr(e, 'message', str(e)),
+                from_welcome_page=from_welcome_page)
 
         if not status:
             current_app.logger.error(
@@ -1594,7 +1535,8 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, True, True, errmsg
+                server, 401, True, True, errmsg,
+                from_welcome_page=from_welcome_page
             )
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
@@ -1651,6 +1593,8 @@ class ServerNode(PGChildNodeView):
                 success=1,
                 info=gettext("Server connected."),
                 data={
+                    "sid": server.id,
+                    "did": manager.did,
                     'icon': server_icon_and_background(True, manager, server),
                     'connected': True,
                     'server_type': manager.server_type,
@@ -2035,7 +1979,8 @@ class ServerNode(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     def get_response_for_password(self, server, status, prompt_password=False,
-                                  prompt_tunnel_password=False, errmsg=None):
+                                  prompt_tunnel_password=False, errmsg=None,
+                                  from_welcome_page=False):
 
         if server.use_ssh_tunnel:
             data = {
@@ -2053,10 +1998,12 @@ class ServerNode(PGChildNodeView):
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and
                     session['allow_save_password'] else False,
+                "hide_save_password": from_welcome_page,
                 "allow_save_tunnel_password":
                     True if config.ALLOW_SAVE_TUNNEL_PASSWORD and
                     'allow_save_password' in session and
-                    session['allow_save_password'] else False
+                    session['allow_save_password'] else False,
+                "hide_save_tunnel_password": from_welcome_page
             }
             return make_json_response(
                 success=0,
@@ -2065,6 +2012,7 @@ class ServerNode(PGChildNodeView):
             )
         else:
             data = {
+                "sid": server.id,
                 "server_label": server.name,
                 "username": server.username,
                 "errmsg": errmsg,
@@ -2074,6 +2022,7 @@ class ServerNode(PGChildNodeView):
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and
                     session['allow_save_password'] else False,
+                "hide_save_password": from_welcome_page,
             }
             return make_json_response(
                 success=0,

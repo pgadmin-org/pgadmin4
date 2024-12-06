@@ -28,6 +28,7 @@ PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
 PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
 PREF_LABEL_REFRESH_RATES = gettext('Refresh rates')
 PREF_LABEL_GRAPH_VISUALISER = gettext('Graph Visualiser')
+PREF_LABEL_USER_INTERFACE = gettext('User Interface')
 
 PGADMIN_STRING_SEPARATOR = '_$PGADMIN$_'
 PGADMIN_NODE = 'pgadmin.node.%s'
@@ -154,3 +155,4 @@ DBMS_JOB_SCHEDULER_ID = 999999
 IP_ADDRESS_STRING = '{}/{}'
 TWO_PARAM_STRING = '{0}/{1}'
 SERVER_NOT_FOUND = gettext("Could not find the specified server.")
+SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']

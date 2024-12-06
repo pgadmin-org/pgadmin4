@@ -492,7 +492,7 @@ def dump_database_servers(output_file, selected_servers,
     servers_dumped = 0
 
     # Dump servers
-    servers = Server.query.filter_by(user_id=user_id).all()
+    servers = Server.query.filter_by(user_id=user_id, is_adhoc=0).all()
     server_dict = {}
     for server in servers:
         if selected_servers is None or (

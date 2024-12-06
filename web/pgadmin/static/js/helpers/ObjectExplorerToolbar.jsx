@@ -1,7 +1,17 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React, { useEffect, useState } from 'react';
-import { usePgAdmin } from '../BrowserComponent';
+import { usePgAdmin } from '../PgAdminProvider';
 import { Box } from '@mui/material';
-import { QueryToolIcon, RowFilterIcon, TerminalIcon, ViewDataIcon } from '../components/ExternalIcon';
+import { QueryToolIcon, RowFilterIcon, ViewDataIcon } from '../components/ExternalIcon';
+import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { PgButtonGroup, PgIconButton } from '../components/Buttons';
 import _ from 'lodash';
@@ -66,7 +76,7 @@ export default function ObjectExplorerToolbar() {
         <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context']} shortcut={browserPref?.sub_menu_view_data} />
         <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context']} />
         <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} shortcut={browserPref?.sub_menu_search_objects} />
-        {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />}
+        {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} menuItem={menus['psql']} />}
       </PgButtonGroup>
     </Box>
   );

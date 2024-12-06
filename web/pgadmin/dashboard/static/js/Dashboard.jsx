@@ -31,7 +31,7 @@ import Memory from './SystemStats/Memory';
 import Storage from './SystemStats/Storage';
 import withStandardTabInfo from '../../../static/js/helpers/withStandardTabInfo';
 import { BROWSER_PANELS } from '../../../browser/static/js/constants';
-import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../static/js/PgAdminProvider';
 import usePreferences from '../../../preferences/static/js/store';
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 import { parseApiError } from '../../../static/js/api_instance';
