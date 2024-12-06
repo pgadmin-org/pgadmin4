@@ -525,7 +525,7 @@ define('pgadmin.browser.node', [
           title = gettext('Delete FORCE %s?', obj.label);
 
         } else if (input.url == 'delete') {
-          msg = gettext('Are you sure you want to delete %s <b>"%s"</b> and all the objects that depend on it?',
+          msg = gettext('Are you sure you want to delete the %s <b>"%s"</b> and all the objects that depend on it?',
             obj.label.toLowerCase(), d.label);
           title = gettext('Delete CASCADE %s?', obj.label);
 
@@ -539,10 +539,10 @@ define('pgadmin.browser.node', [
           }
         } else {
           if (obj.dropAsRemove) {
-            msg = gettext('Are you sure you want to remove %s "%s"?', obj.label.toLowerCase(), d.label);
+            msg = gettext('Are you sure you want to remove the %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
             title = gettext('Remove %s?', obj.label);
           } else {
-            msg = gettext('Are you sure you want to delete %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
+            msg = gettext('Are you sure you want to delete the %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
             title = gettext('Delete %s?', obj.label);
           }
 
@@ -592,7 +592,12 @@ define('pgadmin.browser.node', [
               }
               pgAdmin.Browser.notifier.alert(gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
             });
-          }
+          },
+          function() { return true;},
+          gettext('Delete'),
+          gettext('Cancel'),
+          null,
+          'error'
         );
       },
       // Callback for creating script(s) & opening them in Query editor
