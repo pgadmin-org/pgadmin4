@@ -191,7 +191,7 @@ _.extend(pgBrowser.keyboardNavigation, {
     if(combo.key === shortcut_obj.close_tab_panel) {
       const panelId = dockLayoutTabs[activeTabIdx].id?.slice(14);
       if (panelId) {
-        pgAdmin.Browser.docker.close(panelId);
+        pgAdmin.Browser.docker.default_workspace.close(panelId);
       }
     } else {
       if (combo.key === shortcut_obj.tabbed_panel_backward) activeTabIdx = (activeTabIdx + dockLayoutTabs.length - 1) % dockLayoutTabs.length;
@@ -291,7 +291,7 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   isPropertyPanelVisible: function() {
     let isPanelVisible = false;
-    _.each(pgAdmin.Browser.docker.findPanels(), (panel) => {
+    _.each(pgAdmin.Browser.docker.default_workspace.findPanels(), (panel) => {
       if (panel._type === 'properties')
         isPanelVisible = panel.isVisible();
     });

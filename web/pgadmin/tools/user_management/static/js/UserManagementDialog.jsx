@@ -459,13 +459,13 @@ UserManagementDialog.propTypes = {
 export function showUserManagement() {
   const panelTitle = gettext('User Management');
   const panelId = BROWSER_PANELS.USER_MANAGEMENT;
-  pgAdmin.Browser.docker.openDialog({
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: panelTitle,
     manualClose: false,
     content: (
       <UserManagementDialog
-        onClose={()=>{pgAdmin.Browser.docker.close(panelId);}}
+        onClose={()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);}}
       />
     )
   }, pgAdmin.Browser.stdW.lg, pgAdmin.Browser.stdH.md);

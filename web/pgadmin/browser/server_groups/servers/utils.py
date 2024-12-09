@@ -8,21 +8,22 @@
 ##########################################################################
 
 """Server helper utilities"""
+import config
 from ipaddress import ip_address
 import keyring
 from flask_login import current_user
 from werkzeug.exceptions import InternalServerError
 from flask import render_template
 from pgadmin.utils.constants import KEY_RING_USERNAME_FORMAT, \
-    KEY_RING_SERVICE_NAME, KEY_RING_USER_NAME, KEY_RING_TUNNEL_FORMAT, \
-    KEY_RING_DESKTOP_USER
+    KEY_RING_SERVICE_NAME, KEY_RING_TUNNEL_FORMAT, \
+    KEY_RING_DESKTOP_USER, SSL_MODES
 from pgadmin.utils.crypto import encrypt, decrypt
-import config
 from pgadmin.model import db, Server
 from flask import current_app
-from pgadmin.utils.exception import CryptKeyMissing
-from pgadmin.utils.master_password import validate_master_password, \
-    get_crypt_key, set_masterpass_check_text
+from pgadmin.utils.master_password import set_masterpass_check_text
+from pgadmin.utils.driver import get_driver
+from .... import socketio as sio
+from sqlalchemy import text
 
 
 def is_valid_ipaddress(address):
@@ -316,7 +317,7 @@ def migrate_passwords_from_pgadmin_db(servers, old_key, enc_key):
 
 
 def get_servers_with_saved_passwords():
-    all_server = Server.query.all()
+    all_server = Server.query.filter(Server.is_adhoc == 0)
     servers_with_pwd_in_os_secret = []
     servers_with_pwd_in_pgadmin_db = []
     saved_password_servers = []
@@ -560,3 +561,116 @@ def get_replication_type(conn, sversion):
         raise InternalServerError(res)
 
     return res['rows'][0]['type']
+
+
+def convert_connection_parameter(params):
+    """
+    This function is used to convert the connection parameter based
+    on the instance type.
+    """
+    conn_params = None
+    # if params is of type list then it is coming from the frontend,
+    # and we have to convert it into the dict and store it into the
+    # database
+    if isinstance(params, list):
+        conn_params = {}
+        for item in params:
+            conn_params[item['name']] = item['value']
+    # if params is of type dict then it is coming from the database,
+    # and we have to convert it into the list of params to show on GUI.
+    elif isinstance(params, dict):
+        conn_params = []
+        for key, value in params.items():
+            if value is not None:
+                conn_params.append(
+                    {'name': key, 'keyword': key, 'value': value})
+
+    return conn_params
+
+
+def check_ssl_fields(data):
+    """
+    This function will allow us to check and set defaults for
+    SSL fields
+
+    Args:
+        data: Response data
+
+    Returns:
+        Flag and Data
+    """
+    flag = False
+
+    if 'sslmode' in data and data['sslmode'] in SSL_MODES:
+        flag = True
+        ssl_fields = [
+            'sslcert', 'sslkey', 'sslrootcert', 'sslcrl', 'sslcompression'
+        ]
+        # Required SSL fields for SERVER mode from user
+        required_ssl_fields_server_mode = ['sslcert', 'sslkey']
+
+        for field in ssl_fields:
+            if field in data:
+                continue
+            elif config.SERVER_MODE and \
+                    field in required_ssl_fields_server_mode:
+                # In Server mode,
+                # we will set dummy SSL certificate file path which will
+                # prevent using default SSL certificates from web servers
+
+                # Set file manager directory from preference
+                import os
+                file_extn = '.key' if field.endswith('key') else '.crt'
+                dummy_ssl_file = os.path.join(
+                    '<STORAGE_DIR>', '.postgresql',
+                    'postgresql' + file_extn
+                )
+                data[field] = dummy_ssl_file
+                # For Desktop mode, we will allow to default
+
+    return flag, data
+
+
+def disconnect_from_all_servers():
+    """
+    This function is used to disconnect all the servers
+    """
+    all_servers = Server.query.all()
+    for server in all_servers:
+        manager = get_driver(config.PG_DEFAULT_DRIVER).connection_manager(
+            server.id)
+        # Check if any psql terminal is running for the current disconnecting
+        # server. If any terminate the psql tool connection.
+        if 'sid_soid_mapping' in current_app.config and str(server.id) in \
+            current_app.config['sid_soid_mapping'] and \
+                str(server.id) in current_app.config['sid_soid_mapping']:
+            for i in current_app.config['sid_soid_mapping'][str(server.id)]:
+                sio.emit('disconnect-psql', namespace='/pty', to=i)
+
+        manager.release()
+
+
+def delete_adhoc_servers():
+    """
+    This function will remove all the adhoc servers.
+    """
+    try:
+        db.session.query(Server).filter(Server.is_adhoc == 1).delete()
+        db.session.commit()
+
+        # Reset the sequence again
+        if config.CONFIG_DATABASE_URI is not None and \
+                len(config.CONFIG_DATABASE_URI) > 0:
+            query = ("SELECT setval(pg_get_serial_sequence('server', "
+                     "'id'), coalesce(max(id),0) + 1, false) FROM "
+                     "server;")
+        else:
+            query = ("UPDATE sqlite_sequence SET seq = "
+                     "(SELECT max(id) from server)  WHERE name = "
+                     "'server'")
+        with db.engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+    except Exception:
+        db.session.rollback()
+        raise
