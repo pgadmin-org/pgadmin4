@@ -167,7 +167,8 @@ export default function reactAspenOverride(theme) {
         padding: '0px 4px',
         borderRadius: theme.shape.borderRadius,
         backgroundColor: 'color-mix(in srgb, color-mix(in srgb, var(--tag-color) 10%, #fff) 50%, transparent);',
-        lineHeight: 1.2
+        lineHeight: 1.2,
+        whiteSpace: 'nowrap'
       },
 
       i: {
