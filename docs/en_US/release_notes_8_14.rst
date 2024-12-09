@@ -10,7 +10,7 @@ Supported Database Servers
 **************************
 **PostgreSQL**: 12, 13, 14, 15, 16 and 17
 
-**EDB Advanced Server**: 12, 13, 14, 15, and 16
+**EDB Advanced Server**: 12, 13, 14, 15, 16 and 17
 
 Bundled PostgreSQL Utilities
 ****************************
