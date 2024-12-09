@@ -23,16 +23,14 @@ jobs:
       matrix:
         pgver: [12, 13, 14, 15, 16]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup the EDB APT repo on Linux
         run: |
-          sudo su -c 'echo "deb [arch=amd64] https://apt.enterprisedb.com/$(lsb_release -cs)-edb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/edb-$(lsb_release -cs).list'
-          sudo su -c 'echo "machine apt.enterprisedb.com login ${{ secrets.EDB_REPO_USERNAME }} password ${{ secrets.EDB_REPO_PASSWORD }}" > /etc/apt/auth.conf.d/edb.conf'
-          sudo wget -q -O - https://apt.enterprisedb.com/edb-deb.gpg.key | sudo apt-key add -
+          curl -1sLf 'https://downloads.enterprisedb.com/${{ secrets.CLOUDSMITH_TOKEN }}/enterprise/setup.deb.sh' | sudo -E bash
 
       - name: Install platform dependencies
         run: |
