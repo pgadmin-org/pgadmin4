@@ -48,7 +48,12 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+
+      - name: Install pgagent on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: |
+          sudo apt install -y edb-as${{ matrix.pgver }}-pgagent
 
       - name: Install platform dependencies on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -77,7 +82,7 @@ jobs:
         shell: cmd
 
       - name: Add edb_job_scheduler into config file.
-        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver == 16 }}
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver >= 16 }}
         run: |
           sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/edb_job_scheduler,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo su -c "echo \"edb_job_scheduler.database_list = 'test_dbms_job_scheduler'\" >> /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf"

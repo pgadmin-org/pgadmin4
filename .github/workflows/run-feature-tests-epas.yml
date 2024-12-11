@@ -35,7 +35,12 @@ jobs:
       - name: Install platform dependencies
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+
+      - name: Install pgagent on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: |
+          sudo apt install -y edb-as${{ matrix.pgver }}-pgagent
 
       - name: Create the tablespace directory
         run: |
