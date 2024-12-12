@@ -10,7 +10,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutDockerContext, LAYOUT_EVENTS } from './Layout';
-import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../static/js/PgAdminProvider';
 import ErrorBoundary from './ErrorBoundary';
 
 export default function withStandardTabInfo(Component, tabId) {

@@ -28,7 +28,7 @@ import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { GraphVisualiser } from './GraphVisualiser';
-import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
 

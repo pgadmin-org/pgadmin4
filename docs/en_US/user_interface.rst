@@ -32,7 +32,7 @@ the right pane.
 Select an icon from the *Quick Links* panel on the *Dashboard* tab to:
 
 * Click the *Add New Server* button to open the
-  :ref:`Create - Server dialog <server_dialog>` to add a new server definition.
+  :ref:`Register - Server dialog <server_dialog>` to add a new server definition.
 * Click the *Configure pgAdmin* button to open the
   :ref:`Preferences dialog <preferences>` to customize your pgAdmin client.
 

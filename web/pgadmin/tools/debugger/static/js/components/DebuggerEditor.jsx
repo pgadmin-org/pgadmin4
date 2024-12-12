@@ -19,7 +19,7 @@ import getApiInstance from '../../../../../static/js/api_instance';
 import CodeMirror from '../../../../../static/js/components/ReactCodeMirror';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
 import { DebuggerContext, DebuggerEventsContext } from './DebuggerComponent';
-import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 import { isShortcutValue, parseKeyEventValue, parseShortcutValue } from '../../../../../static/js/utils';
 
 

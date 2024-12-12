@@ -533,7 +533,34 @@ export default function PreferencesComponent({ ...props }) {
     }
 
     if (_data.length > 0) {
-      save(_data, data);
+      let raise_layout_warning = false;
+      // Check whether layout is changed from Workspace to Classic.
+      let layoutPref = _data.find(x => x.name === 'layout');
+      if (!_.isUndefined(layoutPref) && layoutPref.value == 'classic') {
+        layoutPref['cleanup_on_layout_change'] = true;
+        raise_layout_warning = true;
+      }
+
+      // If layout is changed then raise the warning to close all the connections and if user cancel then
+      if (raise_layout_warning) {
+        pgAdmin.Browser.notifier.confirm(
+          gettext('Layout changed'),
+          `${gettext('Switching from Workspace to Classic layout will disconnect all server connections and refresh the entire page.')}
+           ${gettext('To avoid losing unsaved data, click Cancel to manually review and close your connections.')}
+           ${gettext('Note that if you choose Cancel, any changes to your preferences will not be saved.')}<br><br>
+           ${gettext('Do you want to continue?')}`,
+          function () {
+            save(_data, data, true);
+          },
+          function () {
+            return true;
+          },
+          gettext('Continue'),
+          gettext('Cancel')
+        );
+      } else {
+        save(_data, data);
+      }
     }
 
   }
@@ -546,62 +573,74 @@ export default function PreferencesComponent({ ...props }) {
     return requires_refresh;
   }
 
-  function save(save_data, data) {
+  function save(save_data, data, layout_changed=false) {
     api({
       url: url_for('preferences.index'),
       method: 'PUT',
       data: save_data,
     }).then(() => {
-      let requiresTreeRefresh = save_data.some((s)=>{
-        return (
-          s.name=='show_system_objects' || s.name=='show_empty_coll_nodes' ||
-          s.name.startsWith('show_node_') || s.name=='hide_shared_server' ||
-          s.name=='show_user_defined_templates'
-        );
-      });
-      let requires_refresh = false;
-      for (const [key] of Object.entries(data.current)) {
-        let pref = preferencesStore.getPreferenceForId(Number(key));
-        requires_refresh = checkRefreshRequired(pref, requires_refresh);
-      }
-
-      if (requiresTreeRefresh) {
-        pgAdmin.Browser.notifier.confirm(
-          gettext('Object explorer refresh required'),
-          gettext(
-            'An object explorer refresh is required. Do you wish to refresh it now?'
-          ),
-          function () {
-            pgAdmin.Browser.tree.destroy().then(
-              () => {
-                pgAdmin.Browser.Events.trigger(
-                  'pgadmin-browser:tree:destroyed', undefined, undefined
-                );
-                return true;
-              }
+      // If layout is changed then only refresh the object explorer.
+      if (layout_changed) {
+        pgAdmin.Browser.tree.destroy().then(
+          () => {
+            pgAdmin.Browser.Events.trigger(
+              'pgadmin-browser:tree:destroyed', undefined, undefined
             );
-          },
-          function () {
             return true;
-          },
-          gettext('Refresh'),
-          gettext('Later')
+          }
         );
-      }
+      } else {
+        let requiresTreeRefresh = save_data.some((s)=>{
+          return (
+            s.name=='show_system_objects' || s.name=='show_empty_coll_nodes' ||
+            s.name.startsWith('show_node_') || s.name=='hide_shared_server' ||
+            s.name=='show_user_defined_templates'
+          );
+        });
+        let requires_refresh = false;
+        for (const [key] of Object.entries(data.current)) {
+          let pref = preferencesStore.getPreferenceForId(Number(key));
+          requires_refresh = checkRefreshRequired(pref, requires_refresh);
+        }
 
-      if (requires_refresh) {
-        pgAdmin.Browser.notifier.confirm(
-          gettext('Refresh required'),
-          gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
-          function () {
-            /* If user clicks Yes */
-            reloadPgAdmin();
-            return true;
-          },
-          function () { props.closeModal();},
-          gettext('Refresh'),
-          gettext('Later')
-        );
+        if (requiresTreeRefresh) {
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Object explorer refresh required'),
+            gettext(
+              'An object explorer refresh is required. Do you wish to refresh it now?'
+            ),
+            function () {
+              pgAdmin.Browser.tree.destroy().then(
+                () => {
+                  pgAdmin.Browser.Events.trigger(
+                    'pgadmin-browser:tree:destroyed', undefined, undefined
+                  );
+                  return true;
+                }
+              );
+            },
+            function () {
+              return true;
+            },
+            gettext('Refresh'),
+            gettext('Later')
+          );
+        }
+
+        if (requires_refresh) {
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Refresh required'),
+            gettext('A page refresh is required. Do you wish to refresh the page now?'),
+            function () {
+              /* If user clicks Yes */
+              reloadPgAdmin();
+              return true;
+            },
+            function () { props.closeModal();},
+            gettext('Refresh'),
+            gettext('Later')
+          );
+        }
       }
       // Refresh preferences cache
       preferencesStore.cache();
