@@ -107,7 +107,7 @@ class SchemaDiffObjectCompare:
                                     ignore_owner=ignore_owner,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_tablespace=ignore_tablespace,
-                                    ignore_grants=ignore_grants
+                                    ignore_grants=ignore_grants,
                                     ignore_partitions=ignore_partitions)
 
     def ddl_compare(self, **kwargs):

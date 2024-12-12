@@ -493,7 +493,7 @@ def compare_dictionaries(**kwargs):
         "group_name": group_name,
         "target_schema": target_schema,
         "ignore_whitespaces": ignore_whitespaces,
-        "ignore_grants": ignore_grants
+        "ignore_grants": ignore_grants,
         "ignore_partitions": ignore_partitions
     }
 
