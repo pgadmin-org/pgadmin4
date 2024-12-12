@@ -15,6 +15,7 @@ import {
 
 import OneToManyPortModel from 'pgadmin.tools.erd/erd_tool/ports/OneToManyPort';
 import {OneToManyLinkModel, OneToManyLinkWidget, OneToManyLinkFactory} from 'pgadmin.tools.erd/erd_tool/links/OneToManyLink';
+import ERDModel from 'pgadmin.tools.erd/erd_tool/ERDModel';
 import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 
@@ -108,14 +109,14 @@ describe('ERD OneToManyLinkModel', ()=>{
 
 describe('ERD OneToManyLinkWidget', ()=>{
   let linkFactory = new OneToManyLinkFactory();
+  let model = new ERDModel();
   let engine = {
     getFactoryForLink: ()=>linkFactory,
+    getModel: ()=>model
   };
   let link = null;
 
   beforeEach(()=>{
-
-
     link = new OneToManyLinkModel({
       color: '#000',
       data: {
@@ -128,6 +129,45 @@ describe('ERD OneToManyLinkWidget', ()=>{
     link.setSourcePort(new OneToManyPortModel({options: {}}));
     link.setTargetPort(new OneToManyPortModel({options: {}}));
   });
+
+  jest.spyOn(model, 'getNodes').mockReturnValue([
+    {
+      name: 'test1',
+      getID: function() {
+        return 'id1';
+      },
+      getData: function(){ return {
+        'name': 'table1',
+        'schema': 'erd1',
+        'columns': [
+          {'name': 'col11', attnum: 0},
+          {'name': 'col12', attnum: 1},
+        ],
+      };},
+      getConstraintCols: function(){ return {
+        ukCols: [],
+        pkCols: []
+      };}
+    },
+    {
+      name: 'test2',
+      getID: function() {
+        return 'id2';
+      },
+      getData: function(){ return {
+        'name': 'table2',
+        'schema': 'erd2',
+        'columns': [
+          {'name': 'col21', attnum: 0},
+          {'name': 'col22', attnum: 1},
+        ],
+      };},
+      getConstraintCols: function(){ return {
+        ukCols: [],
+        pkCols: []
+      };}
+    },
+  ]);
 
   it('render', ()=>{
     let linkWidget = render(
