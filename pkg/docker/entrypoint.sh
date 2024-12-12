@@ -40,9 +40,9 @@ file_env PGADMIN_DEFAULT_PASSWORD
 export CONFIG_DISTRO_FILE_PATH="${PGADMIN_CUSTOM_CONFIG_DISTRO_FILE:-/pgadmin4/config_distro.py}"
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
-# Only update the file on first launch. The empty file is created during the
+# Only update the file on first launch. The empty file is created only in default path during the
 # container build so it can have the required ownership.
-if [ "$(wc -m "${CONFIG_DISTRO_FILE_PATH}" | awk '{ print $1 }')" = "0" ]; then
+if [ ! -e "${CONFIG_DISTRO_FILE_PATH}" ] || [ "$(wc -m "${CONFIG_DISTRO_FILE_PATH}" 2>/dev/null | awk '{ print $1 }')" = "0" ]; then
     cat << EOF > "${CONFIG_DISTRO_FILE_PATH}"
 CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
