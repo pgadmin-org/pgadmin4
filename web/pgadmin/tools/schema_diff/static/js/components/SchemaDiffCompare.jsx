@@ -275,6 +275,7 @@ export function SchemaDiffCompare({ params }) {
         'ignore_whitespaces': compareParams['ignoreWhitespaces'],
         'ignore_tablespace': compareParams['ignoreTablespace'],
         'ignore_grants': compareParams['ignoreGrants'],
+        'ignore_partitions': compareParams['ignorePartitions'],
       };
       let socketEndpoint = 'compare_database';
       if (sourceData['scid'] != null && targetData['scid'] != null) {

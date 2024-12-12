@@ -277,6 +277,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     target_schema = kwargs.get('target_schema')
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
     ignore_grants = kwargs.get('ignore_grants', False)
+    ignore_partitions = kwargs.get('ignore_partitions', False)
 
     for key in intersect_keys:
         source_object_id, target_object_id = \
@@ -357,7 +358,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     target_params=temp_tgt_params,
                     source=dict1[key], target=dict2[key], diff_dict=diff_dict,
                     target_schema=target_schema,
-                    ignore_whitespaces=ignore_whitespaces)
+                    ignore_whitespaces=ignore_whitespaces,
+                    ignore_partitions=ignore_partitions)
             else:
                 temp_src_params = copy.deepcopy(source_params)
                 temp_tgt_params = copy.deepcopy(target_params)
@@ -431,6 +433,7 @@ def compare_dictionaries(**kwargs):
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
     ignore_tablespace = kwargs.get('ignore_tablespace')
     ignore_grants = kwargs.get('ignore_grants')
+    ignore_partitions = kwargs.get('ignore_partitions')
 
     dict1 = copy.deepcopy(source_dict)
     dict2 = copy.deepcopy(target_dict)
@@ -491,7 +494,8 @@ def compare_dictionaries(**kwargs):
         "group_name": group_name,
         "target_schema": target_schema,
         "ignore_whitespaces": ignore_whitespaces,
-        "ignore_grants": ignore_grants
+        "ignore_grants": ignore_grants,
+        "ignore_partitions": ignore_partitions
     }
 
     identical, different = _get_identical_and_different_list(

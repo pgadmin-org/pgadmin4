@@ -106,6 +106,14 @@ class SchemaDiffModule(PgAdminModule):
                              'in the Schema Diff tab.')
         )
 
+        self.preference.register(
+            'display', 'ignore_partitioons',
+            gettext("Ignore Partitions"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('Set ignore partitions on or off by default '
+                             'in the drop-down menu near the Compare button '
+                             'in the Schema Diff tab.')
+        )
 
 blueprint = SchemaDiffModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -477,6 +485,8 @@ def compare_database(params):
         ignore_whitespaces = bool(params['ignore_whitespaces'])
         ignore_tablespace = bool(params['ignore_tablespace'])
         ignore_grants = bool(params['ignore_grants'])
+        ignore_partitions = bool(params['ignore_partitions'])
+
 
         # Fetch all the schemas of source and target database
         # Compare them and get the status.
@@ -506,7 +516,8 @@ def compare_database(params):
                 node_percent=node_percent, ignore_owner=ignore_owner,
                 ignore_whitespaces=ignore_whitespaces,
                 ignore_tablespace=ignore_tablespace,
-                ignore_grants=ignore_grants)
+                ignore_grants=ignore_grants,
+                ignore_partitions=ignore_partitions)
         comparison_result = \
             comparison_result + comparison_schema_result
 
@@ -530,7 +541,8 @@ def compare_database(params):
                         ignore_owner=ignore_owner,
                         ignore_whitespaces=ignore_whitespaces,
                         ignore_tablespace=ignore_tablespace,
-                        ignore_grants=ignore_grants)
+                        ignore_grants=ignore_grants,
+                        ignore_partitions=ignore_partitions)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -553,7 +565,8 @@ def compare_database(params):
                         ignore_owner=ignore_owner,
                         ignore_whitespaces=ignore_whitespaces,
                         ignore_tablespace=ignore_tablespace,
-                        ignore_grants=ignore_grants)
+                        ignore_grants=ignore_grants,
+                        ignore_partitions=ignore_partitions)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -578,7 +591,8 @@ def compare_database(params):
                         ignore_owner=ignore_owner,
                         ignore_whitespaces=ignore_whitespaces,
                         ignore_tablespace=ignore_tablespace,
-                        ignore_grants=ignore_grants)
+                        ignore_grants=ignore_grants,
+                        ignore_partitions=ignore_partitions)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -623,6 +637,8 @@ def compare_schema(params):
         ignore_whitespaces = bool(params['ignore_whitespaces'])
         ignore_tablespace = bool(params['ignore_tablespace'])
         ignore_grants = bool(params['ignore_grants'])
+        ignore_partitions = bool(params['ignore_partitions']) 
+ 
         all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
         node_percent = round(100 / len(all_registered_nodes), 2)
         total_percent = 0
@@ -643,7 +659,8 @@ def compare_schema(params):
                 ignore_owner=ignore_owner,
                 ignore_whitespaces=ignore_whitespaces,
                 ignore_tablespace=ignore_tablespace,
-                ignore_grants=ignore_grants)
+                ignore_grants=ignore_grants,
+                ignore_partitions=ignore_partitions)
 
         comparison_result = \
             comparison_result + comparison_schema_result
@@ -779,6 +796,7 @@ def compare_database_objects(**kwargs):
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
     ignore_tablespace = kwargs.get('ignore_tablespace')
     ignore_grants = kwargs.get('ignore_grants')
+    ignore_partitions = kwargs.get('ignore_partitions')
     comparison_result = []
 
     all_registered_nodes = SchemaDiffRegistry.get_registered_nodes(None,
@@ -804,7 +822,8 @@ def compare_database_objects(**kwargs):
                                ignore_owner=ignore_owner,
                                ignore_whitespaces=ignore_whitespaces,
                                ignore_tablespace=ignore_tablespace,
-                               ignore_grants=ignore_grants)
+                               ignore_grants=ignore_grants,
+                               ignore_partitions=ignore_partitions)
 
             if res is not None:
                 comparison_result = comparison_result + res
@@ -837,6 +856,7 @@ def compare_schema_objects(**kwargs):
     ignore_whitespaces = kwargs.get('ignore_whitespaces')
     ignore_tablespace = kwargs.get('ignore_tablespace')
     ignore_grants = kwargs.get('ignore_grants')
+    ignore_partitions = kwargs.get('ignore_partitions')
 
     source_schema_name = None
     if is_schema_source_only:
@@ -875,7 +895,8 @@ def compare_schema_objects(**kwargs):
                                ignore_owner=ignore_owner,
                                ignore_whitespaces=ignore_whitespaces,
                                ignore_tablespace=ignore_tablespace,
-                               ignore_grants=ignore_grants)
+                               ignore_grants=ignore_grants,
+                               ignore_partitions=ignore_partitions)
 
             if res is not None:
                 comparison_result = comparison_result + res
