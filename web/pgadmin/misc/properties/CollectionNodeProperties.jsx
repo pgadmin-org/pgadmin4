@@ -197,7 +197,7 @@ export default function CollectionNodeProperties({
     };
 
     if (confirm) {
-      pgAdmin.Browser.notifier.confirm(title, msg, dropNodeProperties, null);
+      pgAdmin.Browser.notifier.confirm(title, msg, dropNodeProperties, null, gettext('Delete'), gettext('Cancel'), null, 'error');
     } else {
       dropNodeProperties();
     }

@@ -42,6 +42,8 @@ export default function(basicSettings) {
         main: '#EE7A55',
         light: '#010B15',
         contrastText: '#010B15',
+        hoverMain: '#fff',
+        hoverBorderColor: '#fff',
       },
       warning: {
         main: '#F4D35E',

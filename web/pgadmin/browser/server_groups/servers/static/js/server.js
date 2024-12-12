@@ -862,9 +862,11 @@ define('pgadmin.node.server', [
       if (notify) {
         pgAdmin.Browser.notifier.confirm(
           gettext('Disconnect from server'),
-          gettext('Are you sure you want to disconnect from the server %s?', label),
+          gettext('Are you sure you want to disconnect from the server <b>%s</b>?', label),
           function() { disconnect(); },
           function() { return true;},
+          gettext('Disconnect'),
+          gettext('Cancel')
         );
       } else {
         disconnect();
