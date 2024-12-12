@@ -127,6 +127,7 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
+        ignore_partitions = kwargs.get('ignore_partitions')
         diff = ''
 
         # Get the difference DDL/DML statements for table
@@ -171,7 +172,8 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
                     "source": source,
                     "target": target,
                     "target_schema": target_schema,
-                    "ignore_whitespaces": ignore_whitespaces
+                    "ignore_whitespaces": ignore_whitespaces,
+                    "ignore_partitions": ignore_partitions
                 }
                 diff = self._compare_source_and_target(
                     intersect_keys, module_view, source_params,

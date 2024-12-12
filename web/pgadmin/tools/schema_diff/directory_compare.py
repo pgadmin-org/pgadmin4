@@ -358,7 +358,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     target_params=temp_tgt_params,
                     source=dict1[key], target=dict2[key], diff_dict=diff_dict,
                     target_schema=target_schema,
-                    ignore_whitespaces=ignore_whitespaces)
+                    ignore_whitespaces=ignore_whitespaces,
+                    ignore_partitions=ignore_partitions)
             else:
                 temp_src_params = copy.deepcopy(source_params)
                 temp_tgt_params = copy.deepcopy(target_params)
