@@ -61,7 +61,9 @@ jobs:
             sleep 2
           done
 
-          psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+      - name: Create pgagent extension on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
 
       - name: Install Python dependencies
         run: make install-python-testing
