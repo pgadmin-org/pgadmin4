@@ -2584,9 +2584,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.23.0":
-  version: 7.23.0
-  resolution: "@mui/x-date-pickers@npm:7.23.0"
+"@mui/x-date-pickers@npm:^7.23.2":
+  version: 7.23.2
+  resolution: "@mui/x-date-pickers@npm:7.23.2"
   dependencies:
     "@babel/runtime": ^7.25.7
     "@mui/utils": ^5.16.6 || ^6.0.0
@@ -2628,7 +2628,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 6a56925fcddd0bebea7ef2034d3afcfd85317cb58a6a013899fd9f73f4bba3212567d7c371312d7b8d56ad5ce343d17b6204421abc0bf86335dc743d367eaaee
+  checksum: 9770fb684bfa701897ec7c90d96bbc32d5566a30b2ccf542a9861d6a635fbd0a10714070b99d21d673095dd2b50083abde19697e15ece79e59544fbf4e3d1538
   languageName: node
   linkType: hard
 
@@ -13551,7 +13551,7 @@ __metadata:
     "@mui/icons-material": ^6.1.10
     "@mui/lab": ^6.0.0-beta.16
     "@mui/material": ^6.1.10
-    "@mui/x-date-pickers": ^7.23.0
+    "@mui/x-date-pickers": ^7.23.2
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
