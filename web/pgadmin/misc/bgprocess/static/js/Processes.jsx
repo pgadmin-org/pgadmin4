@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import url_for from 'sources/url_for';
 import { Box } from '@mui/material';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import ErrorBoundary from '../../../../static/js/helpers/ErrorBoundary';
 import ProcessDetails from './ProcessDetails';
@@ -163,7 +163,7 @@ export default function Processes() {
   const onViewDetailsClick = useCallback((p)=>{
     const panelTitle = gettext('Process Watcher - %s', p.type_desc);
     const panelId = BROWSER_PANELS.PROCESS_DETAILS+''+p.id;
-    pgAdmin.Browser.docker.openDialog({
+    pgAdmin.Browser.docker.default_workspace.openDialog({
       id: panelId,
       title: panelTitle,
       content: (

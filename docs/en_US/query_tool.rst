@@ -41,6 +41,47 @@ The Query Tool features two panels:
   server messages related to the query's execution and any asynchronous
   notifications received from the server.
 
+Query Tool in Workspace Layout
+******************************
+
+The workspace layout offers a distraction-free, dedicated area for the Query Tool.
+When the Query Tool workspace is accessed, the Welcome page opens by default.
+
+**Note**: In the Workspace layout, all Query Tool and View/Edit Data tabs open within the Query Tool workspace.
+
+In the classic UI, users must connect to a database server and navigate to the
+database node before using the Query Tool. However, with the introduction of the
+Workspace layout and Welcome page, users can seamlessly connect to any ad-hoc
+server, even if it is not registered in the Object Explorer.
+
+.. image:: images/query_tool_workspace.png
+    :alt: Query tool workspace
+    :align: center
+
+* Select *Existing Server* from the dropdown to connect to a server already
+  listed in the Object Explorer. It is optional.
+* Provide the *Server Name* for ad-hoc servers.
+* Specify the IP address of the server host, or the fully qualified domain
+  name in the *Host name/address* field.
+* Enter the listener port number of the server host in the *Port* field.
+* Use the *Database* field to specify the name of the database to which
+  the client will connect.
+* Use the *User* field to specify the name of a user that will be used when
+  authenticating with the server.
+* Use the *Password* field to provide a password that will be supplied when
+  authenticating with the server.
+* Use the *Role* field to specify the name of a role that has privileges that
+  will be conveyed to the client after authentication with the server.
+* Use the *Service* field to specify the service name. For more information,
+  see
+  `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgservice.html>`_.
+* Use the fields in the *Connection Parameters* to configure the connection parameters.
+
+After filling in all the required fields, click the Connect & Open Query Tool
+button to launch the Query Tool with the provided server details. If the password
+is not supplied, you will be prompted to enter it.
+
+
 Toolbar
 *******
 

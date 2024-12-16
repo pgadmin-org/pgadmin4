@@ -20,7 +20,7 @@ import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessag
 import { parseApiError } from '../../../../static/js/api_instance';
 import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 
 const Root = styled('div')(({theme}) => ({
   height : '100%',

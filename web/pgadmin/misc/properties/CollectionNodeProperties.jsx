@@ -21,7 +21,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
-import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
 
 const StyledBox = styled(Box)(({theme}) => ({

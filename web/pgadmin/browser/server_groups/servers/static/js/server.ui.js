@@ -45,6 +45,98 @@ class TagsSchema extends BaseUISchema {
   }
 }
 
+export function getConnectionParameters() {
+  return [{
+    'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
+  }, {
+    'value': 'passfile', 'label': gettext('Password file'), 'vartype': 'file'
+  }, {
+    'value': 'channel_binding', 'label': gettext('Channel binding'), 'vartype': 'enum',
+    'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+    'min_server_version': '13'
+  }, {
+    'value': 'connect_timeout', 'label': gettext('Connection timeout (seconds)'), 'vartype': 'integer'
+  }, {
+    'value': 'client_encoding', 'label': gettext('Client encoding'), 'vartype': 'string'
+  },  {
+    'value': 'options', 'label': gettext('Options'), 'vartype': 'string'
+  }, {
+    'value': 'application_name', 'label': gettext('Application name'), 'vartype': 'string'
+  }, {
+    'value': 'fallback_application_name', 'label': gettext('Fallback application name'), 'vartype': 'string'
+  }, {
+    'value': 'keepalives', 'label': gettext('Keepalives'), 'vartype': 'integer'
+  }, {
+    'value': 'keepalives_idle', 'label': gettext('Keepalives idle (seconds)'), 'vartype': 'integer'
+  }, {
+    'value': 'keepalives_interval', 'label': gettext('Keepalives interval (seconds)'), 'vartype': 'integer'
+  }, {
+    'value': 'keepalives_count', 'label': gettext('Keepalives count'), 'vartype': 'integer'
+  }, {
+    'value': 'tcp_user_timeout', 'label': gettext('TCP user timeout (milliseconds)'), 'vartype': 'integer',
+    'min_server_version': '12'
+  },  {
+    'value': 'tty', 'label': gettext('TTY'), 'vartype': 'string',
+    'max_server_version': '13'
+  }, {
+    'value': 'replication', 'label': gettext('Replication'), 'vartype': 'enum',
+    'enumvals': [gettext('on'), gettext('off'), gettext('database')],
+    'min_server_version': '11'
+  }, {
+    'value': 'gssencmode', 'label': gettext('GSS encmode'), 'vartype': 'enum',
+    'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+    'min_server_version': '12'
+  }, {
+    'value': 'sslmode', 'label': gettext('SSL mode'), 'vartype': 'enum',
+    'enumvals': [gettext('allow'), gettext('prefer'), gettext('require'),
+      gettext('disable'), gettext('verify-ca'), gettext('verify-full')]
+  }, {
+    'value': 'sslcompression', 'label': gettext('SSL compression?'), 'vartype': 'bool',
+  }, {
+    'value': 'sslcert', 'label': gettext('Client certificate'), 'vartype': 'file'
+  }, {
+    'value': 'sslkey', 'label': gettext('Client certificate key'), 'vartype': 'file'
+  }, {
+    'value': 'sslpassword', 'label': gettext('SSL password'), 'vartype': 'string',
+    'min_server_version': '13'
+  }, {
+    'value': 'sslrootcert', 'label': gettext('Root certificate'), 'vartype': 'file'
+  }, {
+    'value': 'sslcrl', 'label': gettext('Certificate revocation list'), 'vartype': 'file',
+  }, {
+    'value': 'sslcrldir', 'label': gettext('Certificate revocation list directory'), 'vartype': 'file',
+    'min_server_version': '14'
+  }, {
+    'value': 'sslsni', 'label': gettext('Server name indication'), 'vartype': 'bool',
+    'min_server_version': '14'
+  }, {
+    'value': 'requirepeer', 'label': gettext('Require peer'), 'vartype': 'string',
+  }, {
+    'value': 'ssl_min_protocol_version', 'label': gettext('SSL min protocol version'),
+    'vartype': 'enum', 'min_server_version': '13',
+    'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
+      gettext('TLSv1.3')]
+  }, {
+    'value': 'ssl_max_protocol_version', 'label': gettext('SSL max protocol version'),
+    'vartype': 'enum', 'min_server_version': '13',
+    'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
+      gettext('TLSv1.3')]
+  }, {
+    'value': 'krbsrvname', 'label': gettext('Kerberos service name'), 'vartype': 'string',
+  }, {
+    'value': 'gsslib', 'label': gettext('GSS library'), 'vartype': 'string',
+  }, {
+    'value': 'target_session_attrs', 'label': gettext('Target session attribute'),
+    'vartype': 'enum',
+    'enumvals': [gettext('any'), gettext('read-write'), gettext('read-only'),
+      gettext('primary'), gettext('standby'), gettext('prefer-standby')]
+  }, {
+    'value': 'load_balance_hosts', 'label': gettext('Load balance hosts'),
+    'vartype': 'enum', 'min_server_version': '16',
+    'enumvals': [gettext('disable'), gettext('random')]
+  }];
+};
+
 export default class ServerSchema extends BaseUISchema {
   constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
@@ -84,7 +176,7 @@ export default class ServerSchema extends BaseUISchema {
     });
 
     this.serverGroupOptions = serverGroupOptions;
-    this.paramSchema = new VariableSchema(this.getConnectionParameters(), null, null, ['name', 'keyword', 'value']);
+    this.paramSchema = new VariableSchema(getConnectionParameters(), null, null, ['name', 'keyword', 'value']);
     this.tagsSchema = new TagsSchema();
     this.userId = userId;
     _.bindAll(this, 'isShared');
@@ -503,97 +595,5 @@ export default class ServerSchema extends BaseUISchema {
       }
     }
     return false;
-  }
-
-  getConnectionParameters() {
-    return [{
-      'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
-    }, {
-      'value': 'passfile', 'label': gettext('Password file'), 'vartype': 'file'
-    }, {
-      'value': 'channel_binding', 'label': gettext('Channel binding'), 'vartype': 'enum',
-      'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
-      'min_server_version': '13'
-    }, {
-      'value': 'connect_timeout', 'label': gettext('Connection timeout (seconds)'), 'vartype': 'integer'
-    }, {
-      'value': 'client_encoding', 'label': gettext('Client encoding'), 'vartype': 'string'
-    },  {
-      'value': 'options', 'label': gettext('Options'), 'vartype': 'string'
-    }, {
-      'value': 'application_name', 'label': gettext('Application name'), 'vartype': 'string'
-    }, {
-      'value': 'fallback_application_name', 'label': gettext('Fallback application name'), 'vartype': 'string'
-    }, {
-      'value': 'keepalives', 'label': gettext('Keepalives'), 'vartype': 'integer'
-    }, {
-      'value': 'keepalives_idle', 'label': gettext('Keepalives idle (seconds)'), 'vartype': 'integer'
-    }, {
-      'value': 'keepalives_interval', 'label': gettext('Keepalives interval (seconds)'), 'vartype': 'integer'
-    }, {
-      'value': 'keepalives_count', 'label': gettext('Keepalives count'), 'vartype': 'integer'
-    }, {
-      'value': 'tcp_user_timeout', 'label': gettext('TCP user timeout (milliseconds)'), 'vartype': 'integer',
-      'min_server_version': '12'
-    },  {
-      'value': 'tty', 'label': gettext('TTY'), 'vartype': 'string',
-      'max_server_version': '13'
-    }, {
-      'value': 'replication', 'label': gettext('Replication'), 'vartype': 'enum',
-      'enumvals': [gettext('on'), gettext('off'), gettext('database')],
-      'min_server_version': '11'
-    }, {
-      'value': 'gssencmode', 'label': gettext('GSS encmode'), 'vartype': 'enum',
-      'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
-      'min_server_version': '12'
-    }, {
-      'value': 'sslmode', 'label': gettext('SSL mode'), 'vartype': 'enum',
-      'enumvals': [gettext('allow'), gettext('prefer'), gettext('require'),
-        gettext('disable'), gettext('verify-ca'), gettext('verify-full')]
-    }, {
-      'value': 'sslcompression', 'label': gettext('SSL compression?'), 'vartype': 'bool',
-    }, {
-      'value': 'sslcert', 'label': gettext('Client certificate'), 'vartype': 'file'
-    }, {
-      'value': 'sslkey', 'label': gettext('Client certificate key'), 'vartype': 'file'
-    }, {
-      'value': 'sslpassword', 'label': gettext('SSL password'), 'vartype': 'string',
-      'min_server_version': '13'
-    }, {
-      'value': 'sslrootcert', 'label': gettext('Root certificate'), 'vartype': 'file'
-    }, {
-      'value': 'sslcrl', 'label': gettext('Certificate revocation list'), 'vartype': 'file',
-    }, {
-      'value': 'sslcrldir', 'label': gettext('Certificate revocation list directory'), 'vartype': 'file',
-      'min_server_version': '14'
-    }, {
-      'value': 'sslsni', 'label': gettext('Server name indication'), 'vartype': 'bool',
-      'min_server_version': '14'
-    }, {
-      'value': 'requirepeer', 'label': gettext('Require peer'), 'vartype': 'string',
-    }, {
-      'value': 'ssl_min_protocol_version', 'label': gettext('SSL min protocol version'),
-      'vartype': 'enum', 'min_server_version': '13',
-      'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
-        gettext('TLSv1.3')]
-    }, {
-      'value': 'ssl_max_protocol_version', 'label': gettext('SSL max protocol version'),
-      'vartype': 'enum', 'min_server_version': '13',
-      'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
-        gettext('TLSv1.3')]
-    }, {
-      'value': 'krbsrvname', 'label': gettext('Kerberos service name'), 'vartype': 'string',
-    }, {
-      'value': 'gsslib', 'label': gettext('GSS library'), 'vartype': 'string',
-    }, {
-      'value': 'target_session_attrs', 'label': gettext('Target session attribute'),
-      'vartype': 'enum',
-      'enumvals': [gettext('any'), gettext('read-write'), gettext('read-only'),
-        gettext('primary'), gettext('standby'), gettext('prefer-standby')]
-    }, {
-      'value': 'load_balance_hosts', 'label': gettext('Load balance hosts'),
-      'vartype': 'enum', 'min_server_version': '16',
-      'enumvals': [gettext('disable'), gettext('random')]
-    }];
   }
 }

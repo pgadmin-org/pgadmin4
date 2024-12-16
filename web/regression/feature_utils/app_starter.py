@@ -13,6 +13,7 @@ import secrets
 
 import time
 from selenium.common.exceptions import WebDriverException
+from regression.python_test_utils import test_utils
 
 
 class AppStarter:
@@ -41,6 +42,9 @@ class AppStarter:
             stderr=open(os.devnull, 'w'),
             env=env
         )
+
+        # Function is used to change the layout for feature test
+        test_utils.change_layout_for_feature_test()
 
         def launch_browser(retry_count):
             try:

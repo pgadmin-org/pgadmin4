@@ -53,8 +53,7 @@ DEFAULT_BINARY_PATHS = {
         'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
-        'pg-13': '/usr/local/pgsql-13',
-        'pg-12': '/usr/local/pgsql-12'
+        'pg-13': '/usr/local/pgsql-13'
 }
 EOF
 

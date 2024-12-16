@@ -308,6 +308,17 @@ def start_process(data):
 
             _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
+            if psql_utility is None:
+                sio.emit('pty-output',
+                         {
+                             'result': gettext(
+                                 'PSQL utility not found. Specify the binary '
+                                 'path in the preferences for the appropriate '
+                                 'server version, or select "Set as default" '
+                                 'to use an existing binary path.'),
+                             'error': True},
+                         namespace='/pty', room=request.sid)
+                return
             connection_data = get_connection_str(psql_utility, db,
                                                  manager)
         except Exception as e:

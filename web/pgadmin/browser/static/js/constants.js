@@ -41,7 +41,16 @@ export const BROWSER_PANELS = {
   GRANT_WIZARD: 'id-grant-wizard',
   SEARCH_OBJECTS: 'id-search-objects',
   USER_MANAGEMENT: 'id-user-management',
-  IMPORT_EXPORT_SERVERS: 'id-import-export-servers'
+  IMPORT_EXPORT_SERVERS: 'id-import-export-servers',
+  WELCOME_QUERY_TOOL: 'id-welcome-querytool',
+  WELCOME_PSQL_TOOL: 'id-welcome-psql'
+};
+
+export const WORKSPACES = {
+  DEFAULT: 'default_workspace',
+  QUERY_TOOL: 'query_tool_workspace',
+  PSQL_TOOL: 'psql_workspace',
+  SCHEMA_DIFF_TOOL: 'schema_diff_workspace'
 };
 
 export const WEEKDAYS = [
