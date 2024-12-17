@@ -165,7 +165,7 @@ DefaultButton.propTypes = {
 
 
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, accesskey, isDropdown, ...props}, ref)=>{
+export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, accesskey, isDropdown, tooltipPlacement, ...props}, ref)=>{
   let shortcutTitle = null;
   if(accesskey || shortcut) {
     shortcutTitle = <ShortcutTitle title={title} accesskey={accesskey} shortcut={shortcut}/>;
@@ -192,7 +192,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     }
   } else if(color == 'primary') {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined}>
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
         <PrimaryButton ref={ref} style={style}
           className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
           accessKey={accesskey} data-label={title || ''} {...props}>
@@ -203,7 +203,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     );
   } else {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined}>
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
         <DefaultButton ref={ref} style={style}
           className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
           accessKey={accesskey} data-label={title || ''} {...props}>
@@ -225,6 +225,7 @@ PgIconButton.propTypes = {
   disabled: PropTypes.bool,
   splitButton: PropTypes.bool,
   isDropdown: PropTypes.bool,
+  tooltipPlacement: PropTypes.string,
 };
 
 export const PgButtonGroup = forwardRef(({children, ...props}, ref)=>{

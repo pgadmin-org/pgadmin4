@@ -213,12 +213,15 @@ export default class SQLEditor {
     let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
     let open_new_tab = browser_preferences.new_browser_tab_open;
     const [icon, tooltip] = panelTitleFunc.getQueryToolIcon(panel_title, is_query_tool);
+    let selectedNodeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(
+      pgAdmin.Browser.tree.selected()
+    );
 
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.QUERY_TOOL}_${trans_id}`,
       panel_url,
-      {...params, title: _.escape(panel_title.replace('\\', '\\\\'))},
+      {...params, title: _.escape(panel_title.replace('\\', '\\\\')), selectedNodeInfo: JSON.stringify(selectedNodeInfo)},
       {title: panel_title, icon: icon, tooltip: tooltip, renamable: true},
       Boolean(open_new_tab?.includes('qt'))
     );
@@ -226,9 +229,7 @@ export default class SQLEditor {
   }
 
   async loadComponent(container, params) {
-    let selectedNodeInfo = pgWindow.pgAdmin.Browser.tree.getTreeNodeHierarchy(
-      pgWindow.pgAdmin.Browser.tree.selected()
-    );
+    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(params.selectedNodeInfo) : params.selectedNodeInfo;
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);

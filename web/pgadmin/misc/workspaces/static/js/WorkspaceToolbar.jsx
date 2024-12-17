@@ -20,6 +20,7 @@ import { styled } from '@mui/material/styles';
 import { WORKSPACES } from '../../../../browser/static/js/constants';
 import { useWorkspace } from './WorkspaceProvider';
 import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
+import gettext from 'sources/gettext';
 
 const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
   '&.Buttons-iconButtonDefault': {
@@ -28,10 +29,16 @@ const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
     borderRadius: 0,
     padding: '8px 6px',
     height: '40px',
+    backgroundColor: theme.palette.background.default,
+    '&:hover': {
+      borderColor: 'transparent',
+    },
     '&.active': {
-      borderRightColor: theme.otherVars.activeBorder,
+      backgroundColor: theme.otherVars.tree.bgSelected,
+      borderRightColor: theme.palette.primary.main,
     },
     '&.Mui-disabled': {
+      backgroundColor: theme.palette.background.default,
       borderRightColor: 'transparent',
     }
   },
@@ -87,6 +94,14 @@ WorkspaceButton.propTypes = {
   value: PropTypes.string
 };
 
+const Root = styled('div')(({theme}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  ...theme.mixins.panelBorder.top,
+  ...theme.mixins.panelBorder.right,
+}));
+
 export default function WorkspaceToolbar() {
   const [menus, setMenus] = useState({
     'settings': undefined,
@@ -107,15 +122,15 @@ export default function WorkspaceToolbar() {
   }, []);
 
   return (
-    <Box style={{borderTop: '1px solid #dde0e6', borderRight: '1px solid #dde0e6'}} display="flex" flexDirection="column" alignItems="center" gap="2px">
-      <WorkspaceButton icon={<AccountTreeRoundedIcon />} value={WORKSPACES.DEFAULT} />
-      <WorkspaceButton icon={<QueryToolIcon />} value={WORKSPACES.QUERY_TOOL} />
-      <WorkspaceButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} value={WORKSPACES.PSQL_TOOL} />
-      <WorkspaceButton icon={<SchemaDiffIcon />} value={WORKSPACES.SCHEMA_DIFF_TOOL} />
+    <Root>
+      <WorkspaceButton icon={<AccountTreeRoundedIcon />} value={WORKSPACES.DEFAULT} title={gettext('Default Workspace')} tooltipPlacement="right" />
+      <WorkspaceButton icon={<QueryToolIcon />} value={WORKSPACES.QUERY_TOOL} title={gettext('Query Tool Workspace')} tooltipPlacement="right" />
+      <WorkspaceButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} value={WORKSPACES.PSQL_TOOL} title={gettext('PSQL Tool Workspace')} tooltipPlacement="right" />
+      <WorkspaceButton icon={<SchemaDiffIcon />} value={WORKSPACES.SCHEMA_DIFF_TOOL} title={gettext('Schema Diff Workspace')} tooltipPlacement="right" />
       <Box marginTop="auto">
-        <WorkspaceButton icon={<SettingsIcon />} menuItem={menus['settings']} />
+        <WorkspaceButton icon={<SettingsIcon />} menuItem={menus['settings']} title={gettext('Preferences')} tooltipPlacement="right" />
       </Box>
-    </Box>
+    </Root>
   );
 }
 
