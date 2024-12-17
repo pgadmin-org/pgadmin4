@@ -27,7 +27,7 @@ modify the values for the following parameters.
 
    "MFA_ENABLED","The default value for this parameter is True.
    To disable 2FA, set the value to *False*"
-   "SUPPORTED_MFA_LIST", "Set the authentication methods to be supported "
+   "MFA_SUPPORTED_METHODS", "Set the authentication methods to be supported e.g. email, authenticator"
    "MFA_EMAIL_SUBJECT", "<APP_NAME> - Verification Code e.g. pgAdmin 4 -
    Verification Code"
    "MFA_FORCE_REGISTRATION", "Force the user to configure the authentication
