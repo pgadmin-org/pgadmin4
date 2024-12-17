@@ -29,4 +29,5 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8142 <https://github.com/pgadmin-org/pgadmin4/issues/8142>`_ -  Correct the documentation for the MFA configuration.
   | `Issue #8208 <https://github.com/pgadmin-org/pgadmin4/issues/8208>`_ -  Allow deleting the entry while creating/adding new label to enumeration type.

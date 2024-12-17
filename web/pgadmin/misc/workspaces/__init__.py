@@ -10,18 +10,21 @@
 """A blueprint module implementing the workspace."""
 import json
 import config
+from config import PG_DEFAULT_DRIVER
 from flask import request, current_app
 from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from flask_security import current_user
 from pgadmin.utils import PgAdminModule
 from pgadmin.model import db, Server
+from pgadmin.utils.driver import get_driver
 from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.browser.server_groups.servers.utils import (
     is_valid_ipaddress, convert_connection_parameter, check_ssl_fields)
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import (
     disconnect_from_all_servers, delete_adhoc_servers)
+from pgadmin.tools.psql import get_open_psql_connections
 
 MODULE_NAME = 'workspace'
 
@@ -34,7 +37,8 @@ class WorkspaceModule(PgAdminModule):
             list: URL endpoints for Workspace module
         """
         return [
-            'workspace.adhoc_connect_server'
+            'workspace.adhoc_connect_server',
+            'workspace.layout_changed'
         ]
 
 
@@ -188,3 +192,30 @@ def layout_changed():
     delete_adhoc_servers()
 
     return make_json_response(status=200)
+
+
+def check_and_delete_adhoc_server(sid):
+    """
+    This function is used to check for adhoc server and if all Query Tool
+    and PSQL connections are closed then delete that server.
+    """
+    server = Server.query.filter_by(id=sid).first()
+    if server.is_adhoc:
+        # Check PSQL connections. If more connections are open for
+        # the given sid return from the function.
+        psql_connections = get_open_psql_connections()
+        if sid in psql_connections.values():
+            return
+
+        # Check Query Tool connections for the given sid
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        for key, value in manager.connections.items():
+            if key.startswith('CONN') and value.connected():
+                return
+
+        # Assumption at this point all the Query Tool and PSQL connections
+        # is closed, so now we can release the manager
+        manager.release()
+
+        # Delete the adhoc server from the pgadmin database
+        delete_adhoc_servers(sid)

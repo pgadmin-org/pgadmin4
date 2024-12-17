@@ -650,12 +650,15 @@ def disconnect_from_all_servers():
         manager.release()
 
 
-def delete_adhoc_servers():
+def delete_adhoc_servers(sid=None):
     """
     This function will remove all the adhoc servers.
     """
     try:
-        db.session.query(Server).filter(Server.is_adhoc == 1).delete()
+        if sid is not None:
+            db.session.query(Server).filter(Server.id == sid).delete()
+        else:
+            db.session.query(Server).filter(Server.is_adhoc == 1).delete()
         db.session.commit()
 
         # Reset the sequence again
