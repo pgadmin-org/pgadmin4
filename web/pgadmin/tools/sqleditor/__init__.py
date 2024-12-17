@@ -64,6 +64,7 @@ from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter
+from pgadmin.misc.workspaces import check_and_delete_adhoc_server
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -703,6 +704,9 @@ def close_sqleditor_session(trans_id):
                 if conn.connected():
                     conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
                     manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+                    # Check if all the connections of the adhoc server is
+                    # closed then delete the server from the pgadmin database.
+                    check_and_delete_adhoc_server(cmd_obj.sid)
 
         # Close the auto complete connection
         if hasattr(cmd_obj, 'conn_id_ac') and cmd_obj.conn_id_ac is not None:

@@ -45,6 +45,7 @@ else:
 session_input = dict()
 pdata = dict()
 cdata = dict()
+open_psql_connections = dict()
 
 
 class PSQLModule(PgAdminModule):
@@ -175,7 +176,7 @@ def get_user_env():
     return env
 
 
-def create_pty_terminal(connection_data):
+def create_pty_terminal(connection_data, server_id):
     # Create the pty terminal process, parent and fd are file descriptors
     # for parent and child.
     parent, fd = pty.openpty()
@@ -194,6 +195,7 @@ def create_pty_terminal(connection_data):
         app.config['sessions'][request.sid] = parent
         pdata[request.sid] = p
         cdata[request.sid] = fd
+        open_psql_connections[request.sid] = server_id
     else:
         app.config['sessions'][request.sid] = parent
         cdata[request.sid] = fd
@@ -234,7 +236,7 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
     sio.sleep(0)
 
 
-def windows_platform(connection_data, sid, max_read_bytes):
+def windows_platform(connection_data, sid, max_read_bytes, server_id):
     process = PtyProcess.spawn('cmd.exe', env=get_user_env())
 
     process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
@@ -242,6 +244,7 @@ def windows_platform(connection_data, sid, max_read_bytes):
     process.write("\r\n")
     app.config['sessions'][request.sid] = process
     pdata[request.sid] = process
+    open_psql_connections[request.sid] = server_id
     set_term_size(process, 50, 50)
 
     while True:
@@ -278,9 +281,10 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
 def pty_handel_io(connection_data, data, sid):
     max_read_bytes = 1024 * 20
     if _platform == 'win32':
-        windows_platform(connection_data, sid, max_read_bytes)
+        windows_platform(connection_data, sid, max_read_bytes,
+                         int(data['sid']))
     else:
-        p, parent, fd = create_pty_terminal(connection_data)
+        p, parent, fd = create_pty_terminal(connection_data, int(data['sid']))
         non_windows_platform(parent, p, fd, data, max_read_bytes, sid)
 
 
@@ -567,18 +571,31 @@ def server_disconnect(data):
         disconnect_socket()
 
 
+def cleanup_globals():
+    del pdata[request.sid]
+    del cdata[request.sid]
+    server_id = open_psql_connections[request.sid]
+    del open_psql_connections[request.sid]
+    # Check if all the connections of the adhoc server is closed
+    # then delete the server from the pgadmin database.
+    from pgadmin.misc.workspaces import check_and_delete_adhoc_server
+    check_and_delete_adhoc_server(server_id)
+
+
 def disconnect_socket():
     if _platform == 'win32':
         if request.sid in app.config['sessions']:
             process = app.config['sessions'][request.sid]
             process.terminate()
             del app.config['sessions'][request.sid]
+            cleanup_globals()
     else:
         os.write(app.config['sessions'][request.sid], r'\q\n'.encode())
         sio.sleep(1)
         os.close(app.config['sessions'][request.sid])
         os.close(cdata[request.sid])
         del app.config['sessions'][request.sid]
+        cleanup_globals()
 
 
 def get_connection_status(conn):
@@ -607,3 +624,11 @@ def _get_database_role(sid, did):
         return {'db_name': db_name, 'role': role}
     except Exception:
         return None
+
+
+def get_open_psql_connections():
+    """
+    This function returns open connections
+    """
+
+    return open_psql_connections
