@@ -181,6 +181,25 @@ class Notifier {
     this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, extras);
   }
 
+  confirmDelete(title, text, onOkClick, onCancelClick,okLabel = gettext('Yes'), cancelLabel = gettext('No')){
+
+    const  extraButtons = (closeModal) => {
+      return [
+        {
+          type: 'default',
+          icon: <CheckRoundedIcon />,
+          label: okLabel,
+          onClick: ()=>{
+            onOkClick();
+            closeModal();
+          },
+          color: 'error',
+        },
+      ];
+    };
+    this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, extraButtons);
+  }
+
   showModal(title, content, modalOptions) {
     this.modal.showModal(title, content, modalOptions);
   }
