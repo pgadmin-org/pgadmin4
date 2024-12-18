@@ -55,9 +55,11 @@ function WorkspaceButton({menuItem, value, ...props}) {
       setDisabled(!hasOpenTabs(value));
     });
     const deregChange = layout.eventBus.registerListener(LAYOUT_EVENTS.CHANGE, ()=>{
+      console.log(layout);
       setDisabled(!hasOpenTabs(value));
     });
     const deregRemove = layout.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, ()=>{
+      console.log(layout);
       setDisabled(!hasOpenTabs(value));
     });
 

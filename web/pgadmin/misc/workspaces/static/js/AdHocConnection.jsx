@@ -28,6 +28,7 @@ import * as showQueryTool from '../../../../tools/sqleditor/static/js/show_query
 import { getTitle, generateTitle } from '../../../../tools/sqleditor/static/js/sqleditor_title';
 import usePreferences from '../../../../preferences/static/js/store';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { isEmptyString } from '../../../../static/js/validators';
 
 class AdHocConnectionSchema extends BaseUISchema {
   constructor(connectExistingServer, initValues={}) {
@@ -183,11 +184,11 @@ class AdHocConnectionSchema extends BaseUISchema {
         deps: ['sid', 'connected'],
         disabled: (state) => state.sid,
       }, {
-        id: 'host', label: gettext('Host name/address'), type: 'text', noEmpty: true,
+        id: 'host', label: gettext('Host name/address'), type: 'text',
         deps: ['sid', 'connected'],
         disabled: (state) => state.sid,
       }, {
-        id: 'port', label: gettext('Port'), type: 'int', min: 1, max: 65535, noEmpty: true,
+        id: 'port', label: gettext('Port'), type: 'int', min: 1, max: 65535,
         deps: ['sid', 'connected'],
         disabled: (state) => state.sid,
       },{
@@ -215,7 +216,7 @@ class AdHocConnectionSchema extends BaseUISchema {
         }
       }, {
         id: 'user', label: gettext('User'), deps: ['sid', 'connected'],
-        noEmpty: true, controlProps: {creatable: true},
+        controlProps: {creatable: true},
         type: (state) => {
           if (state?.sid) {
             return {
@@ -261,8 +262,54 @@ class AdHocConnectionSchema extends BaseUISchema {
       }
     ];
   }
-}
 
+  validate(state, setError) {
+    let errmsg = null;
+
+    if (isEmptyString(state.service)) {
+      errmsg = gettext('Either Host name or Service must be specified.');
+      if(isEmptyString(state.host)) {
+        setError('host', errmsg);
+        return true;
+      } else {
+        setError('host', null);
+      }
+
+      /* Hostname, IP address validate */
+      if (state.host) {
+        // Check for leading and trailing spaces.
+        if (/(^\s)|(\s$)/.test(state.host)){
+          errmsg = gettext('Host name must be valid hostname or IPv4 or IPv6 address.');
+          setError('host', errmsg);
+          return true;
+        } else {
+          setError('host', null);
+        }
+      }
+
+      if(isEmptyString(state.username)) {
+        errmsg = gettext('Username must be specified.');
+        setError('username', errmsg);
+        return true;
+      } else {
+        setError('username', null);
+      }
+
+      if(isEmptyString(state.port)) {
+        errmsg = gettext('Port must be specified.');
+        setError('port', errmsg);
+        return true;
+      } else {
+        setError('port', null);
+      }
+    } else {
+      _.each(['host', 'db', 'username', 'port'], (item) => {
+        setError(item, null);
+      });
+    }
+    return false;
+  }
+}
 
 export default function AdHocConnection({mode}) {
   const [connecting, setConnecting] = useState(false);
@@ -313,6 +360,7 @@ export default function AdHocConnection({mode}) {
   const openQueryTool = (respData, formData)=>{
     const transId = commonUtils.getRandomInt(1, 9999999);
     let db_name = _.isNil(formData.database_name) ? formData.did : formData.database_name;
+    let user_name = formData.role || formData.user || respData.data.user.name;
 
     let parentData = {
       server_group: {_id: 1},
@@ -328,7 +376,7 @@ export default function AdHocConnection({mode}) {
     };
 
     const gridUrl = showQueryTool.generateUrl(transId, parentData, null);
-    const title = getTitle(pgAdmin, preferencesStore.getPreferencesForModule('browser'), null, false, formData.server_name, db_name, formData.role || formData.user);
+    const title = getTitle(pgAdmin, preferencesStore.getPreferencesForModule('browser'), null, false, formData.server_name, db_name, user_name);
     showQueryTool.launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, gridUrl, title, {
       user: formData.user,
       role: formData.role,
@@ -338,12 +386,13 @@ export default function AdHocConnection({mode}) {
   const openPSQLTool = (respData, formData)=> {
     const transId = commonUtils.getRandomInt(1, 9999999);
     let db_name = _.isNil(formData.database_name) ? formData.did : formData.database_name;
+    let user_name = formData.role || formData.user || respData.data.user.name;
 
     let panelTitle = '';
     // Set psql tab title as per prefrences setting.
     let title_data = {
       'database': db_name ? _.unescape(db_name) : 'postgres' ,
-      'username': formData.user,
+      'username': user_name,
       'server': formData.server_name,
       'type': 'psql_tool',
     };

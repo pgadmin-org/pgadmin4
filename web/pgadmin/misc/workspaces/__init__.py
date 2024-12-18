@@ -61,11 +61,26 @@ def index():
 )
 @pga_login_required
 def adhoc_connect_server():
-    required_args = ['host', 'port', 'user']
+    required_args = ['server_name', 'did']
 
     data = request.form if request.form else json.loads(
         request.data
     )
+
+    # Loop through data and if found any value is blank string then
+    # convert it to None as after porting into React, from frontend
+    # '' blank string is coming as a value instead of null.
+    for item in data:
+        if data[item] == '':
+            data[item] = None
+
+    # Some fields can be provided with service file so they are optional
+    if 'service' in data and not data['service']:
+        required_args.extend([
+            'host',
+            'port',
+            'user'
+        ])
 
     for arg in required_args:
         if arg not in data:
@@ -95,24 +110,28 @@ def adhoc_connect_server():
         data['connection_params'] = connection_params
 
     # Fetch all the new data in case of non-existing servers
+    new_host = data.get('host', None)
+    new_port = data.get('port', None)
     new_db = data.get('database_name', None)
     if new_db is None:
         new_db = data.get('did')
     new_username = data.get('user')
     new_role = data.get('role', None)
     new_server_name = data.get('server_name', None)
+    new_service = data.get('service', None)
 
     try:
         server = None
         if config.CONFIG_DATABASE_URI is not None and \
                 len(config.CONFIG_DATABASE_URI) > 0:
             # Filter out all the servers with the below combination.
-            servers = Server.query.filter_by(host=data['host'],
-                                             port=data['port'],
+            servers = Server.query.filter_by(host=new_host,
+                                             port=new_port,
                                              maintenance_db=new_db,
                                              username=new_username,
                                              name=new_server_name,
-                                             role=new_role
+                                             role=new_role,
+                                             service=new_service
                                              ).all()
 
             # If found matching servers then compare the connection_params as
@@ -123,12 +142,13 @@ def adhoc_connect_server():
                     server = existing_server
                     break
         else:
-            server = Server.query.filter_by(host=data['host'],
-                                            port=data['port'],
+            server = Server.query.filter_by(host=new_host,
+                                            port=new_port,
                                             maintenance_db=new_db,
                                             username=new_username,
                                             name=new_server_name,
                                             role=new_role,
+                                            service=new_service,
                                             connection_params=connection_params
                                             ).first()
 
@@ -156,12 +176,12 @@ def adhoc_connect_server():
                     user_id=current_user.id,
                     servergroup_id=data.get('gid', 1),
                     name=new_server_name,
-                    host=data.get('host', None),
-                    port=data.get('port'),
+                    host=new_host,
+                    port=new_port,
                     maintenance_db=new_db,
                     username=new_username,
                     role=new_role,
-                    service=data.get('service', None),
+                    service=new_service,
                     connection_params=connection_params,
                     is_adhoc=1
                 )

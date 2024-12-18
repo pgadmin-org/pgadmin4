@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #6513 <https://github.com/pgadmin-org/pgadmin4/issues/6513>`_ -  Change button labels and color in delete confirmation dialog for all objects to improve UX.
   | `Issue #7708 <https://github.com/pgadmin-org/pgadmin4/issues/7708>`_ -  Enhanced pgAdmin 4 with support for Workspace layouts.
 
 Housekeeping
