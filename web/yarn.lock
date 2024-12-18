@@ -12718,18 +12718,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-resize-observer@npm:^1.0.0":
-  version: 1.4.1
-  resolution: "rc-resize-observer@npm:1.4.1"
+"rc-resize-observer@npm:1.4.0":
+  version: 1.4.0
+  resolution: "rc-resize-observer@npm:1.4.0"
   dependencies:
     "@babel/runtime": ^7.20.7
     classnames: ^2.2.1
-    rc-util: ^5.44.1
+    rc-util: ^5.38.0
     resize-observer-polyfill: ^1.5.1
   peerDependencies:
     react: ">=16.9.0"
     react-dom: ">=16.9.0"
-  checksum: 0db4641a194ea7721d4b0fcba23e6c3ededb1a935346552bb6bce84c6a9490a88cd2abe1ec60ac6267096432d6461d168c08e19f954cf8a3f88c56048485bd02
+  checksum: e6ee24fd887ea440b07e0326c3fc60b240274fa43ea87cf8f86ca9e0741a2c817e47a182f336b00d7246b4fd21b3536f4d3aacd7f0db5ae673f106630cd348ba
   languageName: node
   linkType: hard
 
@@ -12766,7 +12766,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-util@npm:^5.12.0, rc-util@npm:^5.17.0, rc-util@npm:^5.19.2, rc-util@npm:^5.26.0, rc-util@npm:^5.27.0, rc-util@npm:^5.37.0, rc-util@npm:^5.44.0, rc-util@npm:^5.44.1, rc-util@npm:^5.5.0":
+"rc-util@npm:^5.12.0, rc-util@npm:^5.17.0, rc-util@npm:^5.19.2, rc-util@npm:^5.26.0, rc-util@npm:^5.27.0, rc-util@npm:^5.37.0, rc-util@npm:^5.38.0, rc-util@npm:^5.44.0, rc-util@npm:^5.5.0":
   version: 5.44.2
   resolution: "rc-util@npm:5.44.2"
   dependencies:

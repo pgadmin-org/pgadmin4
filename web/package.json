@@ -153,6 +153,9 @@
     "wkx": "^0.5.0",
     "zustand": "^5.0.1"
   },
+  "resolutions": {
+    "rc-resize-observer": "1.4.0"
+  },
   "scripts": {
     "linter": "yarn run eslint -c .eslintrc.js .",
     "webpacker": "yarn run webpack --config webpack.config.js --progress",
