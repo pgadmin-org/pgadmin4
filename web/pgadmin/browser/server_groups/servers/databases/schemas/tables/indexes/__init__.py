@@ -1145,7 +1145,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 difference={}
             )
 
-            required_create_keys = ['columns']
+            required_create_keys = ['columns', 'indconstraint']
 
             create_req = IndexesView._check_for_create_req(
                 required_create_keys,

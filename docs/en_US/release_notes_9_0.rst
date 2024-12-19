@@ -31,6 +31,7 @@ Bug fixes
 *********
 
   | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where option key was not registering in PSQL tool.
+  | `Issue #8072 <https://github.com/pgadmin-org/pgadmin4/issues/8072>`_ -  Fixed an issue where Schema Diff not produce difference script for Index definition with where condition.
   | `Issue #8142 <https://github.com/pgadmin-org/pgadmin4/issues/8142>`_ -  Correct the documentation for the MFA configuration.
   | `Issue #8208 <https://github.com/pgadmin-org/pgadmin4/issues/8208>`_ -  Allow deleting the entry while creating/adding new label to enumeration type.
   | `Issue #8209 <https://github.com/pgadmin-org/pgadmin4/issues/8209>`_ -  Fixed an issue where properties dialog throwing an error for Materialized View.
