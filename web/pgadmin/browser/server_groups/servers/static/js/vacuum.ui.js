@@ -24,7 +24,7 @@ export class VacuumTableSchema extends BaseUISchema {
         id: 'value', name: 'value', label: gettext('Value'),
         type: 'text', deps: [[this.valueDep]],
         editable: function() {
-          return obj.top.sessData[this.valueDep];
+          return obj?.top?.sessData?.[this.valueDep];
         },
         cell: (state)=>{
           switch(state.column_type) {
