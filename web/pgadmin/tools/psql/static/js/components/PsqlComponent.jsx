@@ -111,7 +111,7 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
   });
 
   term.onKey(function (ev) {
-    socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
+    socket.emit('socket_input', {'input': ev.domEvent.key, 'key_name': ev.domEvent.code});
   });
 }
 
