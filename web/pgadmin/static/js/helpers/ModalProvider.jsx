@@ -18,6 +18,7 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import HTMLReactParser from 'html-react-parser';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import _ from 'lodash';
 import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 import { styled } from '@mui/material/styles';
@@ -44,7 +45,7 @@ export function useModal() {
 function renderExtraButtons(button) {
   switch(button.type) {
   case 'primary':
-    return <PrimaryButton className='Alert-margin' startIcon={button.icon} onClick={button.onClick}>{button.label}</PrimaryButton>;
+    return <PrimaryButton className='Alert-margin' startIcon={button.icon} onClick={button.onClick} autoFocus>{button.label}</PrimaryButton>;
   case 'default':
     return <DefaultButton className='Alert-margin' startIcon={button.icon} onClick={button.onClick} color={button?.color}>{button.label}</DefaultButton>;
   default:
@@ -53,18 +54,20 @@ function renderExtraButtons(button) {
 }
 
 function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, extraButtons }) {
+  // Check if any extra buttons have an focus property to determine if autofocus should be applied.
+  const hasAutoFocus = _.some(extraButtons, item => !_.isNil(item.focus));
   return (
     <StyledBox display="flex" flexDirection="column" height="100%">
       <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <Box className='Alert-footer'>
         {confirm &&
-          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} autoFocus={true}>{cancelLabel}</DefaultButton>
+          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} autoFocus={hasAutoFocus} >{cancelLabel}</DefaultButton>
         }
         {
           extraButtons?.length ?
             extraButtons.map(button=>renderExtraButtons(button))
             :
-            <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon />} onClick={onOkClick}>{okLabel}</PrimaryButton>
+            <PrimaryButton className='Alert-margin' startIcon={<CheckRoundedIcon/>} onClick={onOkClick} autoFocus={true}>{okLabel}</PrimaryButton>
         }
       </Box>
     </StyledBox>

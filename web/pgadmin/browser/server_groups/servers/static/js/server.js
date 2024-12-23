@@ -243,7 +243,7 @@ define('pgadmin.node.server', [
             obj = this,
             t = pgBrowser.tree;
           if (children) {
-            pgAdmin.Browser.notifier.confirm(
+            pgAdmin.Browser.notifier.confirmDelete(
               gettext('Disconnect from all servers'),
               gettext('Are you sure you want to disconnect from all servers?'),
               function() {
@@ -862,7 +862,7 @@ define('pgadmin.node.server', [
       };
 
       if (notify) {
-        pgAdmin.Browser.notifier.confirm(
+        pgAdmin.Browser.notifier.confirmDelete(
           gettext('Disconnect from server'),
           gettext('Are you sure you want to disconnect from the server <b>%s</b>?', label),
           function() { disconnect(); },
