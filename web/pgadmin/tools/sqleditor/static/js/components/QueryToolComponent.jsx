@@ -365,7 +365,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       role: selectedConn.role,
       password: password,
       dbname: selectedConn.database_name
-    } : JSON.stringify(qtState.params.sql_filter))
+    } : qtState.params.sql_filter)
       .then(()=>{
         setQtStatePartial({
           connected: true,
