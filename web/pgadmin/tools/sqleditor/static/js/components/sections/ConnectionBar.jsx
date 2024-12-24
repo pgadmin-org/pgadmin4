@@ -110,7 +110,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
             onClick={queryToolCtx.params.is_query_tool ? ()=>setConnDropdownOpen(true) : undefined}
             style={{backgroundColor: queryToolCtx.params.bgcolor, color: queryToolCtx.params.fgcolor}}
           >
-            <Tooltip title={queryToolCtx.params.is_query_tool ? '' : connTitle}>
+            <Tooltip title={queryToolCtx.params.is_query_tool ? '' : connTitle} disableInteractive>
               <Box display="flex" width="100%">
                 <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">{connecting && gettext('(Obtaining connection)')}{connTitle}</Box>
                 {queryToolCtx.params.is_query_tool && <Box display="flex" alignItems="center"><KeyboardArrowDownIcon /></Box>}

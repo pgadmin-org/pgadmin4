@@ -197,7 +197,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     }
   } else if(color == 'primary') {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement} disableInteractive>
         <PrimaryButton ref={ref} style={style}
           className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
           accessKey={accesskey} data-label={title || ''} {...props}>
@@ -208,7 +208,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     );
   } else {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement} disableInteractive>
         <DefaultButton ref={ref} style={style}
           className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
           accessKey={accesskey} data-label={title || ''} {...props}>
