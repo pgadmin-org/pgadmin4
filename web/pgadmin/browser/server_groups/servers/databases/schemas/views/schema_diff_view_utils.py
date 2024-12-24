@@ -45,6 +45,7 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
         ignore_tablespace = kwargs.get('ignore_tablespace')
         ignore_grants = kwargs.get('ignore_grants')
+        ignore_partitions = kwargs.get('ignore_partitions')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -80,7 +81,8 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
                                     ignore_owner=ignore_owner,
                                     ignore_whitespaces=ignore_whitespaces,
                                     ignore_tablespace=ignore_tablespace,
-                                    ignore_grants=ignore_grants)
+                                    ignore_grants=ignore_grants,
+                                    ignore_partitions=ignore_partitions)
 
     def ddl_compare(self, **kwargs):
         """
@@ -125,6 +127,7 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
+        ignore_partitions = kwargs.get('ignore_partitions')
         diff = ''
 
         # Get the difference DDL/DML statements for table
@@ -169,7 +172,8 @@ class SchemaDiffViewCompare(SchemaDiffObjectCompare):
                     "source": source,
                     "target": target,
                     "target_schema": target_schema,
-                    "ignore_whitespaces": ignore_whitespaces
+                    "ignore_whitespaces": ignore_whitespaces,
+                    "ignore_partitions": ignore_partitions
                 }
                 diff = self._compare_source_and_target(
                     intersect_keys, module_view, source_params,
