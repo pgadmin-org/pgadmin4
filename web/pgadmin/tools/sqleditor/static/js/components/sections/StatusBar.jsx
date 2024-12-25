@@ -128,7 +128,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
 
       <Box className='StatusBar-padding StatusBar-mlAuto' style={{display:'flex'}}>
         <Box className="StatusBar-padding StatusBar-divider">
-          <Tooltip title="Select EOL Sequence" disableInteractive enterDelay={2500}>
+          <Tooltip title="Select EOL Sequence" enterDelay={2500}>
             <span
               onClick={toggleMenu}
               ref={eolMenuRef}
