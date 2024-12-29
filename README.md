@@ -22,9 +22,10 @@ which will execute the Python server and display the UI.
 To build the runtime, the following packages must be installed:
 
 * NodeJS 16+
+* Corepack
 * Yarn
 
-Change into the runtime directory, and run *yarn install*. This will install the
+Change into the runtime directory, and run *corepack enable*, then run *yarn install*. This will install the
 dependencies required.
 
 In order to use the runtime in a development environment, you'll need to copy
