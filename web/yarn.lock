@@ -9934,9 +9934,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsoneditor@npm:^10.1.0":
-  version: 10.1.1
-  resolution: "jsoneditor@npm:10.1.1"
+"jsoneditor@npm:^10.1.2":
+  version: 10.1.2
+  resolution: "jsoneditor@npm:10.1.2"
   dependencies:
     ace-builds: ^1.36.2
     ajv: ^6.12.6
@@ -9944,10 +9944,9 @@ __metadata:
     jmespath: ^0.16.0
     json-source-map: ^0.6.1
     jsonrepair: ^3.8.1
-    mobius1-selectr: ^2.4.13
     picomodal: ^3.0.0
     vanilla-picker: ^2.12.3
-  checksum: e83bd2ac4483a247f191d61b57966759ddb2123ed8d443d072137656fe9943cc95a2c32bdc222ee7627da2be032f0ea2825b8e09c938f0ea1424fce4bb438785
+  checksum: d2999019c4cb31e42397244e1027c384157e91f72c101517534b80ceb0efdfb3beae5e42ff940ef34b6cd317c1283370dd6898022afd362da9b14683501031e5
   languageName: node
   linkType: hard
 
@@ -10899,13 +10898,6 @@ __metadata:
   bin:
     mkdirp: dist/cjs/src/bin.js
   checksum: 972deb188e8fb55547f1e58d66bd6b4a3623bf0c7137802582602d73e6480c1c2268dcbafbfb1be466e00cc7e56ac514d7fd9334b7cf33e3e2ab547c16f83a8d
-  languageName: node
-  linkType: hard
-
-"mobius1-selectr@npm:^2.4.13":
-  version: 2.4.13
-  resolution: "mobius1-selectr@npm:2.4.13"
-  checksum: 6014642d798ded2d462240755c96e10781de9d9a4781ac800b62d2706f893502228b2e5acaae7eab775029c09eaf77c9a89765ff1561fb2f64b0ae55b4806c45
   languageName: node
   linkType: hard
 
@@ -13622,7 +13614,7 @@ __metadata:
     jest: ^29.6.4
     jest-environment-jsdom: ^29.6.4
     json-bignumber: ^1.0.1
-    jsoneditor: ^10.1.0
+    jsoneditor: ^10.1.2
     leaflet: ^1.9.4
     loader-utils: ^3.2.1
     lodash: 4.*
