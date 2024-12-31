@@ -59,6 +59,14 @@ export default function AboutComponent() {
       </Grid>
       <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
+          <InputLabel style={{fontWeight: 'bold'}}>{gettext('Python Version:')}</InputLabel>
+        </Grid>
+        <Grid item lg={9} md={9} sm={9} xs={12}>
+          <InputLabel>{aboutData.python_version}</InputLabel>
+        </Grid>
+      </Grid>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
+        <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Current User')}</InputLabel>
         </Grid>
         <Grid item lg={9} md={9} sm={9} xs={12}>
