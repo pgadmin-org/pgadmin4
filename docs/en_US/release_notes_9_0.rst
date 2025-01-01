@@ -25,6 +25,7 @@ New features
 
 Housekeeping
 ************
+  | `Issue #8249 <https://github.com/pgadmin-org/pgadmin4/issues/8249>`_ -  Show the python version used for the pgAdmin server in the about dialog.
 
 
 Bug fixes
@@ -35,3 +36,5 @@ Bug fixes
   | `Issue #8142 <https://github.com/pgadmin-org/pgadmin4/issues/8142>`_ -  Correct the documentation for the MFA configuration.
   | `Issue #8208 <https://github.com/pgadmin-org/pgadmin4/issues/8208>`_ -  Allow deleting the entry while creating/adding new label to enumeration type.
   | `Issue #8209 <https://github.com/pgadmin-org/pgadmin4/issues/8209>`_ -  Fixed an issue where properties dialog throwing an error for Materialized View.
+  | `Issue #8254 <https://github.com/pgadmin-org/pgadmin4/issues/8254>`_ -  Fix a formatting issue in View/Edit tool generated SQL where some filters are applied.
+  | `Issue #8255 <https://github.com/pgadmin-org/pgadmin4/issues/8255>`_ -  Fixed an issue where tooltip on a dropdown button is blocking access to dropdown menu.
