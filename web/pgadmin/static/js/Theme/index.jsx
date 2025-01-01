@@ -289,6 +289,7 @@ basicSettings = createTheme(basicSettings, {
     MuiTooltip: {
       defaultProps: {
         arrow: true,
+        disableInteractive: true
       },
       styleOverrides: {
         popper: {
