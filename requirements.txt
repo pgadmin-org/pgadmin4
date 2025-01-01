@@ -39,7 +39,7 @@ gssapi==1.9.*
 user-agents==2.2.0
 pywinpty==2.0.*; sys_platform=="win32"
 Authlib==1.3.*; python_version <= '3.8'
-Authlib==1.4.*
+Authlib==1.4.*; python_version >= '3.9'
 pyotp==2.*
 qrcode==7.*; python_version <= '3.8'
 qrcode[pil]==8.*; python_version >= '3.9'
