@@ -25,8 +25,8 @@ New features
 
 Housekeeping
 ************
-  | `Issue #8249 <https://github.com/pgadmin-org/pgadmin4/issues/8249>`_ -  Show the python version used for the pgAdmin server in the about dialog.
 
+  | `Issue #8249 <https://github.com/pgadmin-org/pgadmin4/issues/8249>`_ -  Show the python version used for the pgAdmin server in the about dialog.
 
 Bug fixes
 *********
