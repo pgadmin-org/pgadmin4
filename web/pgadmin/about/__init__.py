@@ -22,6 +22,7 @@ from pgadmin.model import User
 from user_agents import parse
 import platform
 import re
+import sys
 
 MODULE_NAME = 'about'
 
@@ -75,6 +76,7 @@ def index():
     info['version'] = config.APP_VERSION
     info['admin'] = admin
     info['current_user'] = current_user.email
+    info['python_version'] = sys.version
 
     if admin:
         settings = ""
