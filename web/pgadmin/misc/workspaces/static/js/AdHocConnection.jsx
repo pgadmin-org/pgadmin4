@@ -146,15 +146,16 @@ class AdHocConnectionSchema extends BaseUISchema {
             self.flatServers, (s) => s.value == state.sid
           );
           return {
-            server_name: selectedServer?.label,
+            server_name: null,
             did: null,
             user: null,
             role: null,
             sid: null,
-            host: selectedServer?.host,
-            port: selectedServer?.port,
-            service: selectedServer?.service,
-            connection_params: selectedServer?.connection_params,
+            host: null,
+            port: null,
+            service: null,
+            connection_params: null,
+            password: null,
             connected: selectedServer?.connected
           };
         },
@@ -165,13 +166,13 @@ class AdHocConnectionSchema extends BaseUISchema {
             if(sid && !_.find(self.flatServers, (s) => s.value == sid)?.connected) {
               this.connectExistingServer(sid, state.user, null, (data) => {
                 self.setServerConnected(sid, data.icon);
-                resolve(() => ({ sid: sid, host: selectedServer?.host,
+                resolve(() => ({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
                   port: selectedServer?.port, service: selectedServer?.service,
                   connection_params: selectedServer?.connection_params, connected: true
                 }));
               });
             } else {
-              resolve(()=>({ sid: sid, host: selectedServer?.host,
+              resolve(()=>({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
                 port: selectedServer?.port, service: selectedServer?.service,
                 connection_params: selectedServer?.connection_params, connected: true
               }));
@@ -236,7 +237,12 @@ class AdHocConnectionSchema extends BaseUISchema {
           maxLength: null,
           autoComplete: 'new-password'
         },
-        deps: ['sid', 'connected'],
+        deps: ['sid', 'did', 'user', 'role'],
+        depChange: (state, source)=> {
+          if (source == 'sid' || source == 'did' || source == 'user' ||  source == 'role') {
+            state.password = null;
+          }
+        }
       },{
         id: 'role', label: gettext('Role'), deps: ['sid', 'connected'],
         controlProps: {creatable: true},
@@ -433,19 +439,21 @@ export default function AdHocConnection({mode}) {
   };
 
   const onSaveClick = async (isNew, formData) => {
+    setConnecting(true);
     try {
       let {data: respData} = await api({
         method: 'POST',
         url: url_for('workspace.adhoc_connect_server'),
         data: JSON.stringify(formData)
       });
-
+      setConnecting(false);
       if (mode == 'Query Tool') {
         openQueryTool(respData, formData);
       } else if (mode == 'PSQL') {
         openPSQLTool(respData, formData);
       }
     } catch (error) {
+      setConnecting(false);
       if(!error.response) {
         pgAdmin.Browser.notifier.pgNotifier('error', error, 'Connection error', gettext('Connect to server.'));
       } else {

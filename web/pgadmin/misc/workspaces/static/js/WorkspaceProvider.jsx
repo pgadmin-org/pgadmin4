@@ -56,6 +56,7 @@ export function WorkspaceProvider({children}) {
 
   const changeWorkspace = (newVal)=>{
     // Set the currentWorkspace flag.
+    if (currentWorkspace == newVal) return;
     pgAdmin.Browser.docker.currentWorkspace = newVal;
     if (newVal == WORKSPACES.DEFAULT) {
       setTimeout(() => {
@@ -76,7 +77,6 @@ export function WorkspaceProvider({children}) {
   const hasOpenTabs = (forWs)=>{
     const wsConfig = config.find((i)=>i.workspace == forWs);
     if(wsConfig) {
-      //return Boolean(pgAdmin.Browser.docker[wsConfig.docker]?.layoutObj?.getRootElement().querySelector('.dock-tab'));
       return Boolean(pgAdmin.Browser.docker[wsConfig.docker]?.layoutObj?.getLayout()?.dockbox?.children?.[0]?.tabs?.length);
     }
     return true;
