@@ -1680,7 +1680,7 @@ Failed to reset the connection to the server due to following error:
         elif hasattr(exception_obj, 'diag') and \
             hasattr(exception_obj.diag, 'message_detail') and\
                 exception_obj.diag.message_detail is not None:
-            errmsg = exception_obj.diag.message_detail + \
+            errmsg = exception_obj.diag.message_detail + '\n' + \
                 exception_obj.diag.message_primary
         else:
             errmsg = str(exception_obj)
