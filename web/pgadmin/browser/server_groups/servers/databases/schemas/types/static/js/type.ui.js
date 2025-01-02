@@ -1311,7 +1311,7 @@ export default class TypeSchema extends BaseUISchema {
       canEdit: false,
       canDelete: true,
       canReorder: (state)=>(this.isNew(state)),
-      canDeleteRow: (state)=>(_.isUndefined(state.label)),
+      canDeleteRow: (state)=>(this.isNew(state)),
       canEditRow: true,
       disabled: () => obj.inCatalog(),
       deps: ['typtype'],
