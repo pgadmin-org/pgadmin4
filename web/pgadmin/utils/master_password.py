@@ -28,20 +28,23 @@ def get_crypt_key():
     :return: the key
     """
     enc_key = current_app.keyManager.get()
-    # if desktop mode and master pass and local os secret is
-    # disabled then use the password hash
-    if not config.MASTER_PASSWORD_REQUIRED and\
-            not config.USE_OS_SECRET_STORAGE and not config.SERVER_MODE:
-        return True, current_user.password
-    # if desktop mode and master pass enabled
-    elif (config.MASTER_PASSWORD_REQUIRED or config.USE_OS_SECRET_STORAGE) \
-            and enc_key is None:
-        return False, None
-    elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
-            'pass_enc_key' in session:
-        return True, session['pass_enc_key']
+    if config.SERVER_MODE:
+        if config.MASTER_PASSWORD_REQUIRED and enc_key is None:
+            return False, None
+        if 'pass_enc_key' in session:
+            return True, session['pass_enc_key']
     else:
-        return True, enc_key
+        # if desktop mode and master pass and
+        # local os secret is disabled then use the password hash
+        if not config.MASTER_PASSWORD_REQUIRED and\
+                not config.USE_OS_SECRET_STORAGE:
+            return True, current_user.password
+        # and master pass enabled or local os secret enabled
+        # but enc key is none
+        if (config.MASTER_PASSWORD_REQUIRED or config.USE_OS_SECRET_STORAGE) \
+                and enc_key is None:
+            return False, None
+    return True, enc_key
 
 
 def get_master_password_key_from_os_secret():
@@ -79,7 +82,7 @@ def validate_master_password(password):
         else:
             return True
     except Exception:
-        False
+        return False
 
 
 def set_masterpass_check_text(password, clear=False):
