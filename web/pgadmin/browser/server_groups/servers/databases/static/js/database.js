@@ -257,7 +257,7 @@ define('pgadmin.node.database', [
             t = pgBrowser.tree;
 
           if (children) {
-            pgAdmin.Browser.notifier.confirm(
+            pgAdmin.Browser.notifier.confirmDelete(
               gettext('Disconnect from all databases'),
               gettext('Are you sure you want to disconnect from all databases?'),
               function() {
@@ -557,7 +557,7 @@ define('pgadmin.node.database', [
           });
         };
         if (notify) {
-          pgAdmin.Browser.notifier.confirm(
+          pgAdmin.Browser.notifier.confirmDelete(
             gettext('Disconnect from database'),
             gettext('Are you sure you want to disconnect from the database - <b>%s</b>?', d.label),
             function() {

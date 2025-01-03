@@ -11,6 +11,7 @@ import { SnackbarProvider, SnackbarContent } from 'notistack';
 import { styled } from '@mui/material/styles';
 import {Box} from '@mui/material';
 import CloseIcon from '@mui/icons-material/CloseRounded';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import HTMLReactParser from 'html-react-parser';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -22,6 +23,7 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import { useModal } from './ModalProvider';
 import { parseApiError } from '../api_instance';
+import { DisonnectedIcon } from '../components/ExternalIcon';
 
 
 const Root = styled('div')(({theme}) => ({
@@ -67,6 +69,20 @@ AlertContent.propTypes = {
   okLabel: PropTypes.string,
   cancelLabel: PropTypes.string,
 };
+
+function createButtonConfig(icon, label, onOkClick, closeModal, type, color=null, focus=false){
+  // Creates a configuration object for a button.
+  return {
+    icon,
+    label,
+    onClick: () => {
+      onOkClick();
+      closeModal();
+    },    type,
+    color,
+    focus
+  };
+}
 
 // This can be called from iframe,
 // so need to separate the context to avoid hooks error
@@ -182,20 +198,16 @@ class Notifier {
   }
 
   confirmDelete(title, text, onOkClick, onCancelClick,okLabel = gettext('Yes'), cancelLabel = gettext('No')){
-
-    const  extraButtons = (closeModal) => {
-      return [
-        {
-          type: 'default',
-          icon: <CheckRoundedIcon />,
-          label: okLabel,
-          onClick: ()=>{
-            onOkClick();
-            closeModal();
-          },
-          color: 'error',
-        },
-      ];
+    const extraButtons = (closeModal) => {
+      // Button configurations for specific actions like "Delete" and "Disconnect".
+      const buttonConfigs = {
+        [gettext('Delete')]: () =>
+          createButtonConfig(<DeleteIcon />, okLabel, onOkClick, closeModal,'default','error', true),
+        [gettext('Disconnect')]: () =>
+          createButtonConfig(<DisonnectedIcon />, okLabel, onOkClick, closeModal, 'primary'),
+      };
+      // Return the button configuration for the specified `okLabel`, if it exists.
+      return buttonConfigs[okLabel] ? [buttonConfigs[okLabel]()] : [];
     };
     this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, extraButtons);
   }
