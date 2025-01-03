@@ -76,7 +76,7 @@ def index():
     info['version'] = config.APP_VERSION
     info['admin'] = admin
     info['current_user'] = current_user.email
-    info['python_version'] = sys.version
+    info['python_version'] = sys.version.split(" ", maxsplit=1)[0]
 
     if admin:
         settings = ""
