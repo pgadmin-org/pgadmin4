@@ -1675,26 +1675,23 @@ Failed to reset the connection to the server due to following error:
             message
 
         """
-        if hasattr(exception_obj, 'pgerror'):
-            errmsg = exception_obj.pgerror
-        elif hasattr(exception_obj, 'diag') and \
-            hasattr(exception_obj.diag, 'message_detail') and\
-                exception_obj.diag.message_detail is not None:
-            errmsg = exception_obj.diag.message_detail + '\n' + \
-                exception_obj.diag.message_primary
-        else:
-            errmsg = str(exception_obj)
-
         # if formatted_msg is false then return from the function
         if not formatted_msg:
+            if hasattr(exception_obj, 'pgerror'):
+                errmsg = exception_obj.pgerror
+            elif hasattr(exception_obj, 'diag') and \
+                hasattr(exception_obj.diag, 'message_detail') and\
+                    exception_obj.diag.message_detail is not None:
+                errmsg = (exception_obj.diag.message_primary + '\n' +
+                          exception_obj.diag.message_detail)
+            else:
+                errmsg = str(exception_obj)
+
             notices = self.get_notices()
+            errmsg = errmsg.replace('\n', '<br/>')
             return errmsg if notices == '' else notices + '\n' + errmsg
 
-        # Do not append if error starts with `ERROR:` as most pg related
-        # error starts with `ERROR:`
-        if not errmsg.startswith('ERROR:'):
-            errmsg = gettext('ERROR:  ') + errmsg + ' \n\n'
-
+        errmsg = ''
         if exception_obj.diag.severity is not None \
                 and exception_obj.diag.message_primary is not None:
             ex_diag_message = "{0}:  {1}".format(
@@ -1717,29 +1714,25 @@ Failed to reset the connection to the server due to following error:
             errmsg += gettext('SQL state: ')
             errmsg += exception_obj.diag.sqlstate
 
-        if exception_obj.diag.message_detail is not None and \
-                'Detail:'.lower() not in errmsg.lower():
+        if exception_obj.diag.message_detail is not None:
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Detail: ')
             errmsg += exception_obj.diag.message_detail
 
-        if exception_obj.diag.message_hint is not None and \
-                'Hint:'.lower() not in errmsg.lower():
+        if exception_obj.diag.message_hint is not None:
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Hint: ')
             errmsg += exception_obj.diag.message_hint
 
-        if exception_obj.diag.statement_position is not None and \
-                'Character:'.lower() not in errmsg.lower():
+        if exception_obj.diag.statement_position is not None:
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Character: ')
             errmsg += exception_obj.diag.statement_position
 
-        if exception_obj.diag.context is not None and \
-                'Context:'.lower() not in errmsg.lower():
+        if exception_obj.diag.context is not None:
             if not errmsg.endswith('\n'):
                 errmsg += '\n'
             errmsg += gettext('Context: ')
