@@ -835,8 +835,9 @@ def create_app(app_name=None):
         # but the user session may still be active. Logout the user
         # to get the key again when login
         if config.SERVER_MODE and current_user.is_authenticated and \
-            session['auth_source_manager']['current_source'] not in [
-                KERBEROS, OAUTH2, WEBSERVER] and \
+            'auth_source_manager' in session and \
+            session['auth_source_manager']['current_source'] not in \
+            [KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()
