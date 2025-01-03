@@ -24,6 +24,7 @@ import gettext from 'sources/gettext';
 import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { measureText } from '../../../../../../static/js/utils';
+import { useHeaderRowSelection } from 'react-data-grid';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
@@ -128,7 +129,7 @@ CustomRow.propTypes = {
 };
 
 function SelectAllHeaderRenderer({isCellSelected}) {
-  const [isRowSelected, onRowSelectionChange] = useRowSelection();
+  const {isRowSelected, onRowSelectionChange} = useHeaderRowSelection();
   const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
@@ -293,7 +294,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   return retColumns;
 }
 function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelectedColumnsChange}) {
-  const [isRowSelected, onRowSelectionChange] = useRowSelection();
+  const {isRowSelected, onRowSelectionChange} = useRowSelection();
   const {startRowNum} = useContext(DataGridExtrasContext);
 
   let rowKey = rowKeyGetter(row);

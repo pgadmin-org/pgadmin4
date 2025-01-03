@@ -40,3 +40,4 @@ Bug fixes
   | `Issue #8254 <https://github.com/pgadmin-org/pgadmin4/issues/8254>`_ -  Fix a formatting issue in View/Edit tool generated SQL where some filters are applied.
   | `Issue #8255 <https://github.com/pgadmin-org/pgadmin4/issues/8255>`_ -  Fixed an issue where tooltip on a dropdown button is blocking access to dropdown menu.
   | `Issue #8256 <https://github.com/pgadmin-org/pgadmin4/issues/8256>`_ -  Fix the error occurring while loading preferences on startup.
+  | `Issue #8273 <https://github.com/pgadmin-org/pgadmin4/issues/8273>`_ -  Fixed an issue where copying query tool output cell is not working if any SQL text is selected.

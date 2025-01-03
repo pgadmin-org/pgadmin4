@@ -12835,15 +12835,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#4e10a5a327ff58198ac83c7b0c62549b20b78ae5":
-  version: 7.0.0-beta.44
-  resolution: "react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#commit=4e10a5a327ff58198ac83c7b0c62549b20b78ae5"
+"react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#rebase-01-Jan-2025":
+  version: 7.0.0-beta.47
+  resolution: "react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#commit=3dfc2ca01a046d55c1c7a45392dcec104815dc76"
   dependencies:
     clsx: ^2.0.0
   peerDependencies:
     react: ^18.0 || ^19.0
     react-dom: ^18.0 || ^19.0
-  checksum: 75e8910f9b69c60c28223e82647cb8323e08d13d1b56eec94e918e7feadc50f5f4257205a3cd628b9fba019577c3ffab62bdecda7d950e7647ba75988de28261
+  checksum: 47c06eebc3b957e22256552a54193e234d4ea7117f8efa6842abcb2f7f9f6c9f8a936a39ff4870dd5fc4f8a9c834a05a301c4bff065ebd0bac7735d7bb53a8d3
   languageName: node
   linkType: hard
 
@@ -13641,7 +13641,7 @@ __metadata:
     react-arborist: ^3.2.0
     react-aspen: ^1.1.0
     react-checkbox-tree: ^1.7.2
-    react-data-grid: "https://github.com/pgadmin-org/react-data-grid.git#4e10a5a327ff58198ac83c7b0c62549b20b78ae5"
+    react-data-grid: "https://github.com/pgadmin-org/react-data-grid.git#rebase-01-Jan-2025"
     react-dnd: ^16.0.1
     react-dnd-html5-backend: ^16.0.1
     react-dom: ^18.2.0
