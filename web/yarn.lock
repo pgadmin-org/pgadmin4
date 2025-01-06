@@ -13246,14 +13246,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resize-detector@npm:^12.0.1":
-  version: 12.0.1
-  resolution: "react-resize-detector@npm:12.0.1"
+"react-resize-detector@npm:^12.0.2":
+  version: 12.0.2
+  resolution: "react-resize-detector@npm:12.0.2"
   dependencies:
     lodash: ^4.17.21
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
-  checksum: ed48406e4733fac4855820e4980403d3b25fd940ecce3d470791b2d7d5f3a64f42d60e54b8c0869ccf6ef6fc514429e6508fdc528bbf165adea52e102ffc8c04
+  checksum: 44f8adb5841c78f597894b9d3888acb651f797c0ffba553a8dc038759f9b7ed5d982497427a4e998d29a9bc983e795284c8bae984b2232579e3f9faa10e438a6
   languageName: node
   linkType: hard
 
@@ -13888,7 +13888,7 @@ __metadata:
     react-frame-component: ^5.2.6
     react-leaflet: ^4.2.1
     react-new-window: ^1.0.1
-    react-resize-detector: ^12.0.1
+    react-resize-detector: ^12.0.2
     react-rnd: ^10.4.14
     react-select: ^5.7.2
     react-timer-hook: ^3.0.5
