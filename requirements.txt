@@ -21,7 +21,7 @@ Flask-Babel==4.0.*
 Flask-Security-Too==5.5.*; python_version >= '3.10'
 Flask-Security-Too==5.4.*; python_version <= '3.9'
 Flask-SocketIO==5.5.*
-WTForms==3.2.*; python_version >= '3.10'
+WTForms==3.1.*; python_version >= '3.10'
 WTForms==3.1.*; python_version <= '3.9'
 passlib==1.*
 pytz==2024.*
