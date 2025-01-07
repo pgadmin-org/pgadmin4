@@ -2770,14 +2770,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-leaflet/core@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@react-leaflet/core@npm:2.1.0"
+"@react-leaflet/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@react-leaflet/core@npm:3.0.0"
   peerDependencies:
     leaflet: ^1.9.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: c11a15fb71a9929b809f346d8f784d0f32afa373bc096aa1f0d0fa6a2ef0ce632a563c31876abf8b255a12a19d6e80ece31e2ef505f79a678bbf073e7a6c5c60
+    react: ^19.0.0
+    react-dom: ^19.0.0
+  checksum: 38abc98bbf8c08bafa01fe83bd74e3142d250de42c08f7b1f981c96e6396a252e41e65c78331c413642e08ed943945a22c853946a9c3133749e7d6c97d234d11
   languageName: node
   linkType: hard
 
@@ -13015,16 +13015,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-leaflet@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "react-leaflet@npm:4.2.1"
+"react-leaflet@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "react-leaflet@npm:5.0.0"
   dependencies:
-    "@react-leaflet/core": ^2.1.0
+    "@react-leaflet/core": ^3.0.0
   peerDependencies:
     leaflet: ^1.9.0
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: 79222c2ba0c62facaa3dfee18f7a692f917a4fb744ba8d22269a77f9779fc9634962230eb51265ff2563a1a5e3287d2ec16640ee7f5de459458027e05cd756ba
+    react: ^19.0.0
+    react-dom: ^19.0.0
+  checksum: 830a48bacca1553b29f0a22a6aeb4590541d4c7a36cceb4653363edeec880d76f2418e487b20e3840097fea19cc8c53a1295eeb4f72212822c51dc0641c92db8
   languageName: node
   linkType: hard
 
@@ -13673,7 +13673,7 @@ __metadata:
     react-draggable: ^4.4.6
     react-dropzone: ^14.2.1
     react-frame-component: ^5.2.6
-    react-leaflet: ^4.2.1
+    react-leaflet: ^5.0.0
     react-new-window: ^1.0.1
     react-resize-detector: ^12.0.2
     react-rnd: ^10.4.14
