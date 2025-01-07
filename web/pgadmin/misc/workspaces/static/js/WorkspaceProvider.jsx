@@ -24,6 +24,7 @@ export function WorkspaceProvider({children}) {
   const lastSelectedTreeItem = useRef();
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
 
+  pgAdmin.Browser.docker.currentWorkspace = WORKSPACES.DEFAULT;
   /* In case of classic UI all workspace objects should point to the
   * the instance of the default layout.
   */

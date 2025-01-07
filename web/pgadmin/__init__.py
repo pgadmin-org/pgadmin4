@@ -311,7 +311,7 @@ def create_app(app_name=None):
                 if user is not None:
                     user_id = user.id
             user_language = Preferences.raw_value(
-                'misc', 'user_language', 'user_language', user_id
+                'misc', 'user_language', 'user_interface', user_id
             )
             if user_language is not None:
                 language = user_language

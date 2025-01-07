@@ -42,3 +42,4 @@ Bug fixes
   | `Issue #8256 <https://github.com/pgadmin-org/pgadmin4/issues/8256>`_ -  Fix the error occurring while loading preferences on startup.
   | `Issue #8273 <https://github.com/pgadmin-org/pgadmin4/issues/8273>`_ -  Fixed an issue where copying query tool output cell is not working if any SQL text is selected.
   | `Issue #8299 <https://github.com/pgadmin-org/pgadmin4/issues/8299>`_ -  Ensure master password pop up is not shown on setting MASTER_PASSWORD_REQUIRED to false.
+  | `Issue #8309 <https://github.com/pgadmin-org/pgadmin4/issues/8309>`_ -  Remove the option "With no data (concurrently)" from Refresh MATERIALIZED VIEW context menu.
