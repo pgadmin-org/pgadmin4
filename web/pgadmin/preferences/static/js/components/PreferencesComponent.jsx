@@ -15,6 +15,8 @@ import React, { useEffect, useMemo } from 'react';
 import { FileType } from 'react-aspen';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import HTMLReactParser from 'html-react-parser/lib/index';
 import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
@@ -85,6 +87,16 @@ const StyledBox = styled(Box)(({theme}) => ({
         marginLeft: '0.5em'
       },
     },
+
+  },
+  '& .Alert-footer': {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder.top,
+  },
+  '& .Alert-margin': {
+    marginLeft: '0.25rem',
   },
 }));
 
@@ -655,36 +667,31 @@ export default function PreferencesComponent({ ...props }) {
   };
 
   const reset = () => {
-    pgAdmin.Browser.notifier.confirm(
+    const text = `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
+${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
+<li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`;
+
+    pgAdmin.Browser.notifier.showModal(
       gettext('Reset all preferences'),
-      `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
-       ${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
-       <li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`,
-      function () {},
-      function () {},
-      '',
-      'Cancel',
-      function (closeModal) {
-        return [
-          {
-            type: 'default',
-            icon: <SaveSharpIcon />,
-            label: gettext('Save & Reload'),
-            onclick: () => {
-              resetPrefsToDefault(true);
-              closeModal();
-            }
-          }, {
-            type: 'primary',
-            icon: <SaveSharpIcon />,
-            label: gettext('Save & Reload Later'),
-            onclick: () => {
-              resetPrefsToDefault(false);
-              closeModal();
-            }
-          }
-        ];
-      }
+      (closeModal)=>{
+        const onClick = (reset) => {
+          resetPrefsToDefault(reset);
+          closeModal();
+        };
+        return(
+          <StyledBox display="flex" flexDirection="column" height="100%">
+            <Box flexGrow="1" p={2}>
+              {HTMLReactParser(text)}
+            </Box>
+            <Box className='Alert-footer'>
+              <DefaultButton className='Alert-margin' startIcon={<CloseIcon />} onClick={()=> closeModal()}>{'Cancel'}</DefaultButton>
+              <DefaultButton className='Alert-margin' startIcon={<SaveSharpIcon />} onClick={() => onClick(true)} >{gettext('Save & Reload')}</DefaultButton>
+              <PrimaryButton className='Alert-margin' startIcon={ <SaveSharpIcon />} onClick={()=>onClick(false)}>{gettext('Save & Reload Later')}</PrimaryButton>
+            </Box>
+          </StyledBox>
+        );
+      },
+      { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: true},
     );
   };
 

@@ -261,6 +261,7 @@ define('pgadmin.node.server', [
               function() { return true;},
               gettext('Disconnect'),
               gettext('Cancel'),
+              'disconnect'
             );
           }
           return false;
@@ -868,7 +869,8 @@ define('pgadmin.node.server', [
           function() { disconnect(); },
           function() { return true;},
           gettext('Disconnect'),
-          gettext('Cancel')
+          gettext('Cancel'),
+          'disconnect'
         );
       } else {
         disconnect();
