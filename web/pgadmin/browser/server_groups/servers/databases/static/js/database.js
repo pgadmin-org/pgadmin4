@@ -271,7 +271,8 @@ define('pgadmin.node.database', [
               },
               function() { return true;},
               gettext('Disconnect'),
-              gettext('Cancel')
+              gettext('Cancel'),
+              'disconnect'
             );
           }
 
@@ -565,7 +566,8 @@ define('pgadmin.node.database', [
             },
             function() { return true; },
             gettext('Disconnect'),
-            gettext('Cancel')
+            gettext('Cancel'),
+            'disconnect'
           );
         } else {
           disconnect();

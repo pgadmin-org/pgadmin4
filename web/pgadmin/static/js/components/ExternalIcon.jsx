@@ -71,8 +71,8 @@ ClearIcon.propTypes = {style: PropTypes.object};
 export const ConnectedIcon = ({style})=><ExternalIcon Icon={ConnectedSvg} style={{height: '1rem', ...style}} data-label="ConnectedIcon" />;
 ConnectedIcon.propTypes = {style: PropTypes.object};
 
-export const DisonnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} data-label="DisonnectedIcon" />;
-DisonnectedIcon.propTypes = {style: PropTypes.object};
+export const DisconnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} data-label="DisconnectedIcon" />;
+DisconnectedIcon.propTypes = {style: PropTypes.object};
 
 export const RegexIcon = ({style})=><ExternalIcon Icon={RegexSvg} style={style} data-label="RegexIcon" />;
 RegexIcon.propTypes = {style: PropTypes.object};

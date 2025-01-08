@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { ConnectedIcon, DisonnectedIcon, QueryToolIcon } from '../../../../../../static/js/components/ExternalIcon';
+import { ConnectedIcon, DisconnectedIcon, QueryToolIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { QueryToolContext } from '../QueryToolComponent';
 import { CONNECTION_STATUS, CONNECTION_STATUS_MESSAGE } from '../QueryToolConstants';
 import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
@@ -65,7 +65,7 @@ function ConnectionStatusIcon({connected, connecting, status}) {
       return <ConnectedIcon />;
     }
   } else {
-    return <DisonnectedIcon />;
+    return <DisconnectedIcon />;
   }
 }
 
