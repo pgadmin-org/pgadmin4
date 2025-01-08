@@ -66,7 +66,7 @@ function TableRow({index, style, schema, row, measureElement}) {
       </PgReactTableRowContent>
       <PgReactTableRowExpandContent row={row}>
         <FormView
-          accessPath={['data', index]}
+          accessPath={['data', row.index]}
           schema={schema}
           viewHelperProps={{ mode: 'properties' }}
         />
