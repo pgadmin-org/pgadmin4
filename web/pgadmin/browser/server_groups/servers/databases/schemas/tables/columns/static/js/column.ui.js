@@ -60,6 +60,7 @@ export default class ColumnSchema extends BaseUISchema {
       seqcycle: undefined,
       colconstype: 'n',
       genexpr: undefined,
+      isInclude: false
     });
 
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
@@ -382,7 +383,12 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'attstattarget', label: gettext('Statistics'), cell: 'text',
       type: 'text', readonly: obj.inSchemaWithColumnCheck, mode: ['properties', 'edit'],
       group: gettext('Definition'),
-    },{
+    },
+    {
+      // Use to check include columns.
+      id: 'isInclude', label: gettext(''), type: 'boolean', visible: false
+    },
+    {
       id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
       type: 'select', mode: ['properties', 'edit', 'create'],
       cell: 'select', readonly: obj.inSchemaWithColumnCheck,

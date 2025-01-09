@@ -129,6 +129,33 @@ export class ConstraintsSchema extends BaseUISchema {
           return {primary_key: []};
         }
         /* If columns changed */
+        if (actionObj.type === SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path.at(-1) === 'name') {
+          const primaryKey = state.primary_key[0] || {};
+          /* Extract primary key columns and included columns in a single pass through state columns.*/
+          const { primaryKeyColumns, includeColumns } = state.columns.reduce((acc, column) => {
+            if (column.is_primary_key) acc.primaryKeyColumns.push({ column: column.name });
+            if (column.isInclude) acc.includeColumns.push(column.name);
+            return acc;
+          }, { primaryKeyColumns: [], includeColumns: [] });
+          /* Check if updates are needed. */
+          const needsPrimaryKeyUpdate = JSON.stringify(primaryKeyColumns) !== JSON.stringify(primaryKey.columns || []);
+          const needsIncludeUpdate = includeColumns.length > 0;
+          /* Only update state if columns updated. */
+          if (needsPrimaryKeyUpdate || needsIncludeUpdate) {
+            primaryKey.columns = needsPrimaryKeyUpdate ? primaryKeyColumns : primaryKey.columns;
+            primaryKey.include = needsIncludeUpdate ? includeColumns : primaryKey.include;
+            return state;
+          }
+        }
+        /* Update include columns. */
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[actionObj.path.length - 1] === 'include'){
+          let include = state.primary_key[0].include;
+          state.columns = state.columns.map((c)=>({          
+            ...c, isInclude: include.indexOf(c.name) > -1,
+          }));
+          return {columns: state.columns};
+        }
+
         if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[actionObj.path.length-1] == 'columns') {
           /* Sync up the pk flag */
           let columns = state.primary_key[0].columns.map((c)=>c.column);
