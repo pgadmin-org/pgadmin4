@@ -183,6 +183,7 @@ def register_binary_typecasters(connection):
     connection.adapters.register_loader(1001,
                                         ByteaBinaryLoader)
 
+
 def register_array_to_string_typecasters(connection=None):
     type_array = PSYCOPG_SUPPORTED_BUILTIN_ARRAY_DATATYPES +\
         PSYCOPG_SUPPORTED_JSON_ARRAY_TYPES +\
@@ -223,6 +224,7 @@ class ByteaBinaryLoader(Loader):
 
     def load(self, data):
         return 'binary data' if data is not None else None
+
 
 class TextLoaderpgAdmin(TextLoader):
     def load(self, data):
