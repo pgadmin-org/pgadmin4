@@ -41,7 +41,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
         height: '100%',
       },
       '&.rdg-cell-copied[aria-selected=false][role="gridcell"]': {
-        backgroundColor: 'unset',
+        backgroundColor: 'inherit',
       }
     },
     '& .rdg-header-row .rdg-cell': {
