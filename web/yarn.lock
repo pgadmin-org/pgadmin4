@@ -13703,7 +13703,7 @@ __metadata:
     webpack-cli: ^5.1.4
     wkx: ^0.5.0
     yarn-audit-html: 7.3.2
-    zustand: ^5.0.1
+    zustand: ^5.0.3
   languageName: unknown
   linkType: soft
 
@@ -16248,9 +16248,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "zustand@npm:5.0.2"
+"zustand@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "zustand@npm:5.0.3"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -16265,6 +16265,6 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: b8c3bf776112fc606b716bda9d65642300fd8f9d13d8f2264a811492d266afed1e0348aaaecc7f4c6f52090a46dcca040fcddc6cea0e4b2f21dc798dd3bf7d92
+  checksum: 72da39ac3017726c3562c615a0f76cee0c9ea678d664f82ee7669f8cb5e153ee81059363473094e4154d73a2935ee3459f6792d1ec9d08d2e72ebe641a16a6ba
   languageName: node
   linkType: hard
