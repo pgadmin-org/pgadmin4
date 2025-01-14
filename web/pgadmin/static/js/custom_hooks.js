@@ -29,6 +29,32 @@ export function useInterval(callback, delay) {
   }, [delay]);
 }
 
+/* React hook for handling double and single click events */
+export function useSingleAndDoubleClick(handleSingleClick, handleDoubleClick, delay = 250) {
+  const clickCountRef = useRef(0);
+  const timerRef = useRef(null);
+
+  const handleClick = (e) => {
+    // Handle the logic here, no need to pass the event
+    clickCountRef.current += 1;
+
+    // Clear any previous timeout to ensure the double-click logic is triggered only once
+    clearTimeout(timerRef.current);
+
+    // Set the timeout to handle click logic after the delay
+    timerRef.current = setTimeout(() => {
+      if (clickCountRef.current === 1) handleSingleClick(e);
+      else if (clickCountRef.current === 2) handleDoubleClick(e);
+
+      // Reset the click count and props after handling
+      clickCountRef.current = 0;
+    }, delay);
+  };
+
+  return handleClick;
+}
+
+
 export function useDelayedCaller(callback) {
   let timer;
   useEffect(() => {
