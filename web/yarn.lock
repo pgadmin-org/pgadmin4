@@ -3028,21 +3028,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.64.0":
-  version: 5.64.0
-  resolution: "@tanstack/query-core@npm:5.64.0"
-  checksum: a489552af41419f9561baaff15073d63a4cf8634b5a9f4a484364a70734b6e37f7460560acccf61ef4b631ac4b6008000c4f13996b905f219b8099bd8343451c
+"@tanstack/query-core@npm:5.64.1":
+  version: 5.64.1
+  resolution: "@tanstack/query-core@npm:5.64.1"
+  checksum: cdead4a1589600c21a6a61d8cec8f54b2e806635d8c573972d4b2e448c66bc5c4b553eba366326d9346fe8e806f67f79e7973534904194b479a98dfa8231a453
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.64.0":
-  version: 5.64.0
-  resolution: "@tanstack/react-query@npm:5.64.0"
+"@tanstack/react-query@npm:5.64.1":
+  version: 5.64.1
+  resolution: "@tanstack/react-query@npm:5.64.1"
   dependencies:
-    "@tanstack/query-core": 5.64.0
+    "@tanstack/query-core": 5.64.1
   peerDependencies:
     react: ^18 || ^19
-  checksum: d6676fd1481753af1c348c8084057f9c879a8ac69c5cd5ae3f90ae29a6734a32511de90b2b02f9ac31da1ca475ecd72d2fb5e06d01dfa78c78d59919d32364d5
+  checksum: 4272c7319c2805aadbe201ace10989c717828b1b7ed5d478edd28e28d0d3692afe0f712f5f0c8584c667c0d25fc8395d585d0056d315e57101acb7ab7062c862
   languageName: node
   linkType: hard
 
@@ -13590,7 +13590,7 @@ __metadata:
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
     "@szhsin/react-menu": ^4.2.2
-    "@tanstack/react-query": 5.64.0
+    "@tanstack/react-query": 5.64.1
     "@tanstack/react-table": ^8.16.0
     "@tanstack/react-virtual": ^3.8.4
     "@testing-library/dom": 10.4.0
