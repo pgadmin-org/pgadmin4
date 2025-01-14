@@ -13,11 +13,11 @@
     },
     "table": {
         "type": "TABLE",
-        "acl": ["a", "r", "w", "d", "D", "x", "t"]
+        "acl": ["a", "r", "w", "d", "D", "x", "t", "m"]
     },
     "foreign_table": {
         "type": "FOREIGN TABLE",
-        "acl": ["a", "r", "w","x"]
+        "acl": ["a", "r", "w", "d", "D", "x", "t", "m"]
     },
     "sequence": {
         "type": "SEQUENCE",

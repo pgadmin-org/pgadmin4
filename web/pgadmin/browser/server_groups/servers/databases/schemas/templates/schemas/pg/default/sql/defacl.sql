@@ -16,6 +16,7 @@ FROM
         WHEN 'DELETE' THEN 'd'
         WHEN 'EXECUTE' THEN 'X'
         WHEN 'INSERT' THEN 'a'
+        WHEN 'MAINTAIN' THEN 'm'
         WHEN 'REFERENCES' THEN 'x'
         WHEN 'SELECT' THEN 'r'
         WHEN 'TEMPORARY' THEN 'T'

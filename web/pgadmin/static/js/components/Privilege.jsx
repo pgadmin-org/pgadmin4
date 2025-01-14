@@ -43,6 +43,7 @@ export default function Privilege({value, onChange, controlProps}) {
     't': 'TRIGGER',
     'U': 'USAGE',
     'X': 'EXECUTE',
+    'm': 'MAINTAIN',
   };
   let all = false;
   let allWithGrant = false;

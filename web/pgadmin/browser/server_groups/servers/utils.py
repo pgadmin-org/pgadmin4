@@ -120,7 +120,8 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
         'x': 'REFERENCES',
         't': 'TRIGGER',
         'U': 'USAGE',
-        'X': 'EXECUTE'
+        'X': 'EXECUTE',
+        'm': 'MAINTAIN'
     }
 
     privileges = []

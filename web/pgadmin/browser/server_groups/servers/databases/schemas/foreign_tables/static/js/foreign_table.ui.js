@@ -17,6 +17,7 @@ import VariableSchema from 'top/browser/server_groups/servers/static/js/variable
 import _ from 'lodash';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
+import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
 
 export default class ForeignTableSchema extends BaseUISchema {
@@ -50,6 +51,7 @@ export default class ForeignTableSchema extends BaseUISchema {
       nodeInfo: null,
       ...fieldOptions,
     };
+    this.nodeInfo = this.fieldOptions.nodeInfo;
 
     this.columnsObj = getNodeColumnSchema(this.fieldOptions.nodeInfo, this.fieldOptions.nodeData, this.fieldOptions.pgBrowser);
   }
@@ -222,7 +224,7 @@ export default class ForeignTableSchema extends BaseUISchema {
       },
       {
         id: 'relacl', label: gettext('Privileges'), type: 'collection',
-        schema: this.getPrivilegeRoleSchema(['a','r','w','x']),
+        schema: this.getPrivilegeRoleSchema(getPrivilegesForTableAndLikeObjects(obj.getServerVersion())),
         uniqueCol : ['grantee', 'grantor'],
         editable: false,
         group: gettext('Security'), mode: ['edit', 'create'],

@@ -88,7 +88,8 @@ define('pgadmin.node.schema', [
             roles:() => getNodeListByName('role', treeNodeInfo, itemNodeData, {
               cacheLevel: 'database'
             }),
-            server_info: pgBrowser.serverInfo[treeNodeInfo.server._id]
+            server_info: pgBrowser.serverInfo[treeNodeInfo.server._id],
+            nodeInfo: treeNodeInfo,
           },
           {
             namespaceowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name

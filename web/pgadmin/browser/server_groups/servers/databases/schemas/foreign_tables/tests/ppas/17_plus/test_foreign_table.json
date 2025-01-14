@@ -86,6 +86,10 @@
             "privilege_type":"t",
             "privilege":true,
             "with_grant":false
+          },{
+            "privilege_type":"m",
+            "privilege":true,
+            "with_grant":false
           }]
         }]
       },

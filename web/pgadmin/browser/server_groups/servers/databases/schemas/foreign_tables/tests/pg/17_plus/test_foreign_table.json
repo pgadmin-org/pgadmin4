@@ -11,7 +11,8 @@
         "fdwoptions": []
       },
       "store_object_id": "True"
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create foreign server for foreign table",
       "endpoint": "NODE-foreign_server.obj",
@@ -20,7 +21,8 @@
         "name":"test_fs_for_foreign_table"
       },
       "store_object_id": "True"
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create Foreign Table with all options",
       "endpoint": "NODE-foreign_table.obj",
@@ -28,7 +30,7 @@
       "msql_endpoint": "NODE-foreign_table.msql",
       "data": {
         "name": "FT1_$%{}[]()&*^!@\"'`\\/#",
-        "owner":"enterprisedb",
+        "owner":"postgres",
         "schema": "public",
         "basensp":"public",
         "description":"Test Comment",
@@ -57,7 +59,7 @@
         }],
         "relacl":[{
           "grantee":"PUBLIC",
-          "grantor":"enterprisedb",
+          "grantor":"postgres",
           "privileges":[{
             "privilege_type":"a",
             "privilege":true,
@@ -86,6 +88,10 @@
             "privilege_type":"t",
             "privilege":true,
             "with_grant":false
+          }, {
+            "privilege_type":"m",
+            "privilege":true,
+            "with_grant":false
           }]
         }]
       },
@@ -103,13 +109,14 @@
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "data": {
         "name": "FT1_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "enterprisedb",
+        "owner": "postgres",
         "schema": "public",
         "basensp": "public",
         "ftsrvname": "test_fs_for_foreign_table",
         "columns": []
       }
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table comment and add columns",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -132,7 +139,8 @@
       },
       "expected_sql_file": "alter_comment_add_columns.sql",
       "expected_msql_file": "alter_comment_add_columns_msql.sql"
-    },{
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table add constraints and options",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -159,7 +167,8 @@
       },
       "expected_sql_file": "alter_add_cons_opts.sql",
       "expected_msql_file": "alter_add_cons_opts_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table add privileges",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -169,7 +178,7 @@
         "relacl":{
           "added": [{
             "grantee":"PUBLIC",
-            "grantor":"enterprisedb",
+            "grantor":"postgres",
             "privileges":[{
               "privilege_type":"r",
               "privilege":true,
@@ -180,7 +189,8 @@
       },
       "expected_sql_file": "alter_add_priv.sql",
       "expected_msql_file": "alter_add_priv_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table change option and column",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -212,7 +222,8 @@
       },
       "expected_sql_file": "alter_col_opts.sql",
       "expected_msql_file": "alter_col_opts_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table remove option, constraint, privileges",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -222,7 +233,7 @@
         "relacl":{
           "deleted": [{
             "grantee":"PUBLIC",
-            "grantor":"enterprisedb",
+            "grantor":"postgres",
             "privileges":[{
               "privilege_type":"a",
               "privilege":true,

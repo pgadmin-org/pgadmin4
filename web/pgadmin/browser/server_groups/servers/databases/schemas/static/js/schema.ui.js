@@ -88,7 +88,7 @@ export default class PGSchema extends BaseUISchema {
         type: 'nested-tab',
         group: gettext('Default privileges'),
         mode: ['create','edit'],
-        schema: new DefaultPrivSchema(pgSchemaObj.getPrivilegeRoleSchema)
+        schema: new DefaultPrivSchema(pgSchemaObj.getPrivilegeRoleSchema, pgSchemaObj.fieldOptions.nodeInfo)
       }
     ];
   }

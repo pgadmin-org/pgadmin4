@@ -11,18 +11,21 @@ import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
+import { getPrivilegesForTableAndLikeObjects } from '../../schemas/tables/static/js/table.ui';
+
 
 export class DefaultPrivSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema) {
+  constructor(getPrivilegeRoleSchema, nodeInfo) {
     super();
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
+    this.nodeInfo = nodeInfo;
   }
 
   get baseFields() {
     return [
       {
         id: 'deftblacl', type: 'collection', group: gettext('Tables'),
-        schema: this.getPrivilegeRoleSchema(['a', 'r', 'w', 'd', 'D', 'x', 't']),
+        schema: this.getPrivilegeRoleSchema(getPrivilegesForTableAndLikeObjects(this.getServerVersion())),
         mode: ['edit', 'create'],
         canAdd: true, canDelete: true,
         uniqueCol : ['grantee', 'grantor'],
@@ -293,7 +296,7 @@ export default class DatabaseSchema extends BaseUISchema {
       },{
         type: 'nested-tab', group: gettext('Default Privileges'),
         mode: ['edit'],
-        schema: new DefaultPrivSchema(this.getPrivilegeRoleSchema),
+        schema: new DefaultPrivSchema(this.getPrivilegeRoleSchema, this.nodeInfo),
       },
       {
         id: 'schema_res', label: gettext('Schema restriction'),

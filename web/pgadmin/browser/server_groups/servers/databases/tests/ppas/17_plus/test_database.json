@@ -94,7 +94,6 @@
                                                         {"privilege_type":"r","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]
           },
           "deftblacl": {"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
-  
         },
         "expected_sql_file": "alter_default_db_privileges_sequences.sql",
         "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql"
@@ -123,7 +122,7 @@
               }
             ]
           }
-  
+
         },
         "expected_sql_file": "alter_default_db_privileges_types.sql"
       },
@@ -137,7 +136,7 @@
         "data": {
           "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]},
           "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]},
-          "deftblacl":{"added":[{"grantee":"enterprisedb","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}],"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false,"cid":"nn626"},{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn627"},{"privilege_type":"w","privilege":true,"with_grant":false,"cid":"nn628"},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
+          "deftblacl":{"added":[{"grantee":"enterprisedb","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false},{"privilege_type":"m","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}],"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false,"cid":"nn626"},{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn627"},{"privilege_type":"w","privilege":true,"with_grant":false,"cid":"nn628"},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
           "defseqacl":{"added":[{"grantee":"enterprisedb","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}],"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn673"},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
           },
         "expected_sql_file": "alter_default_db_privileges_reset_all.sql"
@@ -198,6 +197,10 @@
                 "with_grant": false
             }, {
                 "privilege_type": "t",
+                "privilege": true,
+                "with_grant": false
+            }, {
+                "privilege_type": "m",
                 "privilege": true,
                 "with_grant": false
             }]
@@ -308,6 +311,10 @@
                 "with_grant": false
             }, {
                 "privilege_type": "t",
+                "privilege": true,
+                "with_grant": false
+            }, {
+                "privilege_type": "m",
                 "privilege": true,
                 "with_grant": false
             }]
@@ -421,6 +428,10 @@
                 "privilege_type": "t",
                 "privilege": true,
                 "with_grant": false
+            }, {
+                "privilege_type": "m",
+                "privilege": true,
+                "with_grant": false
             }]
           }],
           "defseqacl": [{
@@ -531,6 +542,10 @@
                 "privilege_type": "t",
                 "privilege": true,
                 "with_grant": false
+            }, {
+                "privilege_type": "m",
+                "privilege": true,
+                "with_grant": false
             }]
           }],
           "defseqacl": [{
@@ -582,4 +597,3 @@
       }
     ]
   }
-  
