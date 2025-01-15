@@ -36,7 +36,8 @@ export const MENUS_COMPARE_CONSTANT = {
   COMPARE_IGNORE_OWNER: 1,
   COMPARE_IGNORE_WHITESPACE: 2,
   COMPARE_IGNORE_TABLESPACE: 3,
-  COMPARE_IGNORE_GRANTS: 4
+  COMPARE_IGNORE_GRANTS: 4,
+  COMPARE_IGNORE_PARTITIONS: 5
 };
 
 export const MENUS_FILTER_CONSTANT = {
@@ -70,5 +71,6 @@ export const IGNORE_OPTION = {
   OWNER : gettext('Ignore Owner'),
   WHITESPACE : gettext('Ignore Whitespace'),
   TABLESPACE: gettext('Ignore Tablespace'),
-  GRANTS: gettext('Ignore Grant/Revoke')
+  GRANTS: gettext('Ignore Grant/Revoke'),
+  PARTITIONS: gettext('Ignore Partitions')
 };
