@@ -13,10 +13,10 @@ Either build the sources or get them from macports or similar:
   
 ## Building
 
-1. To bundle a different version of Python from the default of 3.9.2, set the
+1. To bundle a different version of Python from the default of 3.13.1, set the
    *PGADMIN_PYTHON_VERSION* environment variable, e.g:
 
-       export PGADMIN_PYTHON_VERSION=3.8.5
+       export PGADMIN_PYTHON_VERSION=3.13.1
 
 2. If a path different from the default of /usr/local/pgsql for the PostgreSQL
    installation has been used, set the *PGADMIN_POSTGRES_DIR* environment variable
