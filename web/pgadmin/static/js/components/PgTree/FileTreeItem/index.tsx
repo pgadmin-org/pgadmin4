@@ -12,9 +12,9 @@ import * as React from 'react';
 import { ClasslistComposite } from 'aspen-decorations';
 import { Directory, FileEntry, IItemRendererProps, ItemType, RenamePromptHandle, FileType, FileOrDir} from 'react-aspen';
 import {IFileTreeXTriggerEvents, FileTreeXEvent } from '../types';
-import _ from 'lodash';
 import { Notificar } from 'notificar';
-
+import _ from 'lodash';
+import DoubleClickHandler from './DoubleClickHandler';
 interface IItemRendererXProps {
     /**
      * In this implementation, decoration are null when item is `PromptHandle`
@@ -58,7 +58,6 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
 
   public render() {
     const { item, itemType, decorations } = this.props;
-
     const isRenamePrompt = itemType === ItemType.RenamePrompt;
     const isNewPrompt = itemType === ItemType.NewDirectoryPrompt || itemType === ItemType.NewFilePrompt;
     const isDirExpanded = itemType === ItemType.Directory
@@ -93,7 +92,6 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
         data-depth={item.depth}
         onContextMenu={this.handleContextMenu}
         onClick={this.handleClick}
-        onDoubleClick={this.handleDoubleClick}
         onDragStart={this.handleDragStartItem}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
@@ -107,8 +105,8 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
           : null
         }
 
-        <span className='file-label'>
-          {
+        <DoubleClickHandler onDoubleClick={this.handleDoubleClick} onSingleClick={this.handleClick} >
+          <span className='file-label'>{
             item._metadata?.data?.icon ?
               <i className={cn('file-icon', item._metadata?.data?.icon ? item._metadata.data.icon : fileOrDir)} /> : null
           }
@@ -121,7 +119,8 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
               {tag.text}
             </div>
           ))}
-        </span>
+          </span>
+        </DoubleClickHandler>
       </div>);
   }
 
