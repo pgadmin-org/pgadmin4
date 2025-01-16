@@ -38,7 +38,7 @@ class FilterDialog():
 
             try:
                 columns, column_list = \
-                    trans_obj.get_all_columns_with_order(conn)
+                    trans_obj.get_all_columns_with_order()
             except (ConnectionLost, SSHTunnelConnectionLost):
                 raise
             except Exception as e:

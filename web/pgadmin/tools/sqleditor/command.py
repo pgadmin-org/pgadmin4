@@ -228,6 +228,15 @@ class SQLFilter():
             return self._data_sorting
         return None
 
+    def get_columns_list_with_order(self):
+        """
+        This function returns the list of columns with order.
+        """
+        if (self.all_columns_list_with_order_from_table and
+                len(self.all_columns_list_with_order_from_table) > 0):
+            return self.all_columns_list_with_order_from_table
+        return None
+
     def set_data_sorting(self, data_filter, set_from_filter_dialog=False):
         """
         This function validates the filter and set the
@@ -470,10 +479,52 @@ class TableCommand(GridCommand):
         # call base class init to fetch the table name
         super().__init__(**kwargs)
 
+        self.all_columns_list_with_order_from_table = None
+
         # Set the default sorting on table data by primary key if user
         # preference value is set
         self.data_sorting_by_pk = Preferences.module('sqleditor').preference(
             'table_view_data_by_pk').get()
+
+    def fetch_all_columns(self, conn):
+        """
+        This function fetches the list of columns for the
+        selected table and stores it locally.
+        """
+        all_columns = []
+        # Fetch the primary key column names
+        query = render_template(
+            "/".join([self.sql_path, 'primary_keys.sql']),
+            table_name=self.object_name,
+            table_nspname=self.nsp_name,
+            conn=conn,
+        )
+
+        status, result = conn.execute_dict(query)
+
+        if not status:
+            raise ExecuteError(result)
+
+        for row in result['rows']:
+            all_columns.append(row['attname'])
+
+        # Fetch the rest of the column names
+        query = render_template(
+            "/".join([self.sql_path, 'get_columns.sql']),
+            table_name=self.object_name,
+            table_nspname=self.nsp_name,
+            conn=conn,
+        )
+        status, result = conn.execute_dict(query)
+        if not status:
+            raise ExecuteError(result)
+
+        for row in result['rows']:
+            # Only append if not already present in the list
+            if row['attname'] not in all_columns:
+                all_columns.append(row['attname'])
+
+        self.all_columns_list_with_order_from_table = all_columns
 
     def get_sql(self, default_conn=None):
         """
@@ -575,49 +626,17 @@ class TableCommand(GridCommand):
             all_sorted_columns: Sorted columns for the Grid
             all_columns: List of columns for the select2 options
         """
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        if default_conn is None:
-            manager = driver.connection_manager(self.sid)
-            conn = manager.connection(did=self.did, conn_id=self.conn_id)
-        else:
-            conn = default_conn
 
         all_sorted_columns = []
         data_sorting = self.get_data_sorting()
         all_columns = []
-        # Fetch the primary key column names
-        query = render_template(
-            "/".join([self.sql_path, 'primary_keys.sql']),
-            table_name=self.object_name,
-            table_nspname=self.nsp_name,
-            conn=conn,
-        )
+        data_columns_list = self.get_columns_list_with_order()
 
-        status, result = conn.execute_dict(query)
+        # Assigns the list of columns from session for the table
+        if data_columns_list and len(data_columns_list) > 0:
+            all_columns = data_columns_list
 
-        if not status:
-            raise ExecuteError(result)
-
-        for row in result['rows']:
-            all_columns.append(row['attname'])
-
-        # Fetch the rest of the column names
-        query = render_template(
-            "/".join([self.sql_path, 'get_columns.sql']),
-            table_name=self.object_name,
-            table_nspname=self.nsp_name,
-            conn=conn,
-        )
-        status, result = conn.execute_dict(query)
-        if not status:
-            raise ExecuteError(result)
-
-        for row in result['rows']:
-            # Only append if not already present in the list
-            if row['attname'] not in all_columns:
-                all_columns.append(row['attname'])
-
-        # If user has custom data sorting then pass as it as it is
+        # If user has custom data sorting then pass as it is
         if data_sorting and len(data_sorting) > 0:
             all_sorted_columns = data_sorting
 

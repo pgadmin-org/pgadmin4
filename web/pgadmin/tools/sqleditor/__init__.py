@@ -23,6 +23,8 @@ from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
 from flask import request
 from flask_babel import gettext
+from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
+    import query_tool_connection_check
 from pgadmin.user_login_check import pga_login_required
 from flask_security import current_user
 from pgadmin.misc.file_manager import Filemanager
@@ -819,13 +821,14 @@ def start_view_data(trans_id):
 
     # Connect to the Server if not connected.
     if not default_conn.connected():
-        view = SchemaDiffRegistry.get_node_view('server')
-        response = view.connect(trans_obj.sgid,
-                                trans_obj.sid, True)
-        if response.status_code == 428:
+        # This will check if view/edit data tool connection is lost or not,
+        # if lost then it will reconnect
+        status, error_msg, conn, trans_obj, session_obj, response = \
+            query_tool_connection_check(trans_id)
+        # This is required for asking user to enter password
+        # when password is not saved for the server
+        if response is not None:
             return response
-        else:
-            conn = manager.connection(did=trans_obj.did)
 
         status, msg = default_conn.connect()
         if not status:
@@ -838,6 +841,9 @@ def start_view_data(trans_id):
 
         # set fetched row count to 0 as we are executing query again.
         trans_obj.update_fetched_row_cnt(0)
+
+        # Fetch the columns for the table and store it in session
+        trans_obj.fetch_all_columns(conn)
 
         # Fetch the sql and primary_keys from the object
         sql = trans_obj.get_sql(default_conn)
@@ -2264,7 +2270,6 @@ def get_filter_data(trans_id):
     Args:
         trans_id: unique transaction id
     """
-
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
