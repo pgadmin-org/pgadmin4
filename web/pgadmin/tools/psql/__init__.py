@@ -108,7 +108,7 @@ def panel(trans_id):
         'db': underscore_escape(data['db_name']),
         'server_type': params['server_type'],
         'is_enable': config.ENABLE_PSQL,
-        'title': underscore_unescape(params['title']),
+        'title': underscore_escape(params['title']),
         'theme': params['theme'],
         'o_db_name': underscore_escape(data['db_name']),
         'role': underscore_escape(data['role']),

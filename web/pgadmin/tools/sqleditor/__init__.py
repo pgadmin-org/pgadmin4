@@ -332,12 +332,14 @@ def panel(trans_id):
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+    params['title'] = underscore_escape(params['title'])
+    params['selectedNodeInfo'] = underscore_escape(params['selectedNodeInfo'])
     if 'database_name' in params:
         params['database_name'] = underscore_escape(params['database_name'])
 
     return render_template(
         "sqleditor/index.html",
-        title=underscore_unescape(params['title']),
+        title=underscore_escape(params['title']),
         params=json.dumps(params),
     )
 

@@ -143,14 +143,13 @@ export default class Psql {
 
     const [panelUrl, db_label] = this.getPanelUrls(transId, parentData);
 
-    const escapedTitle = _.escape(panelTitle);
     const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
-      {title: escapedTitle, db: db_label},
+      {title: panelTitle, db: db_label},
       {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
@@ -190,7 +189,7 @@ export default class Psql {
         <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <PsqlComponent params={params} pgAdmin={pgAdmin} />
+            <PsqlComponent params={JSON.parse(params)} pgAdmin={pgAdmin} />
           </ModalProvider>
         </PgAdminProvider>
       </Theme>
