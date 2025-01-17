@@ -191,7 +191,7 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
       ...(cell.column.columnDef.maxSize ? { maxWidth: `${cell.column.columnDef.maxSize}px` } : {})
     }}
     className={classNames.join(' ')}
-    title={String(cell.getValue() ?? '')}>
+    title={typeof(cell.getValue()) !== 'object' && String(cell.getValue() ?? '')}>
       <div className='pgrd-row-cell-content'>{children}</div>
     </div>
   );
