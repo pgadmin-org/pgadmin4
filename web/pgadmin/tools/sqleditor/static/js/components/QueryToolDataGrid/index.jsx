@@ -448,6 +448,13 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
               rowIdx
             }, true);
           }
+
+          // This is needed to prevent Codemirror from triggering copy.
+          if(mode == 'SELECT' && (e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+            // taken care by handleCopy.
+            e.preventDefault();
+            e.stopPropagation();
+          }
         }}
         {...props}
       />

@@ -221,7 +221,7 @@ export default class SQLEditor {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.QUERY_TOOL}_${trans_id}`,
       panel_url,
-      {...params, title: _.escape(panel_title.replace('\\', '\\\\')), selectedNodeInfo: JSON.stringify(selectedNodeInfo)},
+      {...params, title: panel_title, selectedNodeInfo: JSON.stringify(selectedNodeInfo)},
       {title: panel_title, icon: icon, tooltip: tooltip, renamable: true},
       Boolean(open_new_tab?.includes('qt'))
     );
@@ -229,7 +229,7 @@ export default class SQLEditor {
   }
 
   async loadComponent(container, params) {
-    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(params.selectedNodeInfo) : params.selectedNodeInfo;
+    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : params.selectedNodeInfo;
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);
