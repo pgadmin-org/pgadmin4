@@ -46,3 +46,4 @@ Bug fixes
   | `Issue #8299 <https://github.com/pgadmin-org/pgadmin4/issues/8299>`_ -  Ensure master password pop up is not shown on setting MASTER_PASSWORD_REQUIRED to false.
   | `Issue #8309 <https://github.com/pgadmin-org/pgadmin4/issues/8309>`_ -  Remove the option "With no data (concurrently)" from Refresh MATERIALIZED VIEW context menu.
   | `Issue #8320 <https://github.com/pgadmin-org/pgadmin4/issues/8320>`_ -  Fix an issue where wrong information is shown after using the filter on the Dashboard> State tab.
+  | `Issue #8365 <https://github.com/pgadmin-org/pgadmin4/issues/8365>`_ -  Fixed an issue where PSQL tool is not opening if database name have HTML characters in the name.

@@ -40,6 +40,7 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
+from pgadmin.browser.utils import underscore_escape
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -1688,7 +1689,7 @@ Failed to reset the connection to the server due to following error:
         # if formatted_msg is false then return from the function
         if not formatted_msg:
             notices = self.get_notices()
-            errmsg = errmsg.replace('\n', '<br/>')
+            errmsg = underscore_escape(errmsg).replace('\n', '<br/>')
             return errmsg if notices == '' else notices + '\n' + errmsg
 
         # Do not append if error starts with `ERROR:` as most pg related
