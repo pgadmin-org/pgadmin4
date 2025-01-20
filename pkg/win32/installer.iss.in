@@ -328,16 +328,6 @@ var
 begin
   Ret := True;
   case CurPageID of
-    wpSelectDir:
-      begin
-        // Validate InstallDir path
-        if Not IsPathValid(ExpandConstant('{app}')) then
-        begin
-          MsgBox(ExpandConstant('{cm:InvalidPath}'), mbError, MB_OK);
-          Ret := False;
-        end;
-      end;
-
     wpReady:
 	begin
       if (IsUpgradeMode) then
