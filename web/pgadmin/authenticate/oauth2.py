@@ -76,10 +76,13 @@ def init_app(app):
 
         if not current_user.is_authenticated:
             return redirect(get_safe_post_logout_redirect())
+
+        # Logout the user first to avoid crypt key issue while
+        # cancelling existing query tool transactions
+        logout_user()
         for key in list(session.keys()):
             session.pop(key)
 
-        logout_user()
         if logout_url:
             return redirect(logout_url.format(
                 redirect_uri=request.url_root,
