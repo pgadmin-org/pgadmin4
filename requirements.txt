@@ -28,7 +28,7 @@ pytz==2024.*
 speaklater3==1.*
 sqlparse==0.*
 psutil==6.1.*
-psycopg[c]==3.2.3
+psycopg[c]==3.2.4
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.2.*
