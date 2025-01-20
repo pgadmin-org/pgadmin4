@@ -145,36 +145,6 @@ begin
   Result := 0;
 end;
 
-function IsPathValid(Path: string): Boolean;
-var
-  I: Integer;
-  Ret: Boolean;
-begin
-  Ret := True;
-  Path := Uppercase(Path);
-  Result :=
-    (Length(Path) >= 3) and
-    (Path[1] >= 'A') and (Path[1] <= 'Z') and
-    (Path[2] = ':') and
-    (Path[3] = '\');
-
-  if Result then
-  begin
-    for I := 3 to Length(Path) do
-      begin
-        case Path[I] of
-          '0'..'9', 'A'..'Z', '\', ' ', '.', '-', '_', '(', ')':
-          else
-          begin
-            Ret := False;
-            break;
-          end;
-      end;
-    end;
-  end;
-  Result := Ret;
-end;
-
 function CheckPgAdminAlreadyInstalled: Boolean;
 var
   Version: String;

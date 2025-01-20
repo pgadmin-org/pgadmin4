@@ -32,6 +32,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5204 <https://github.com/pgadmin-org/pgadmin4/issues/5204>`_ -  Fixed an issue where pgadmin cannot install into path with non ASCII characters.
   | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where option key was not registering in PSQL tool.
   | `Issue #8072 <https://github.com/pgadmin-org/pgadmin4/issues/8072>`_ -  Fixed an issue where Schema Diff not produce difference script for Index definition with where condition.
   | `Issue #8142 <https://github.com/pgadmin-org/pgadmin4/issues/8142>`_ -  Correct the documentation for the MFA configuration.
