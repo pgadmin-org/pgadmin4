@@ -43,7 +43,7 @@ Authlib==1.4.*; python_version >= '3.9'
 pyotp==2.*
 qrcode==7.*; python_version <= '3.8'
 qrcode[pil]==8.*; python_version >= '3.9'
-boto3==1.35.*
+boto3==1.36.*
 urllib3==1.26.*
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.2.0
