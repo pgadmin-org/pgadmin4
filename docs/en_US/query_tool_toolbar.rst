@@ -29,7 +29,8 @@ File Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Open File*          | Click the *Open File* icon to display a previously saved query in the SQL Editor.                 | Cmd/Ctrl + O   |
+   | *Open File*          | Click the *Open File* icon to display a previously saved query in the same tab of the SQL Editor. |                |
+   |                      | To open the file in a new tab, select *Open in a new tab?* option from the dropdown.              | Cmd/Ctrl + O   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Save File*          | Click the *Save* icon to perform a quick-save of a previously saved query, or to access the       | Cmd/Ctrl + S   |
    |                      | *Save* menu:                                                                                      |                |
