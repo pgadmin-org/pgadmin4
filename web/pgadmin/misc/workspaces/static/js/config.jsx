@@ -13,11 +13,11 @@ import WorkspaceWelcomePage from './WorkspaceWelcomePage';
 import React from 'react';
 
 const welcomeQueryToolPanelData = {
-  id: BROWSER_PANELS.WELCOME_QUERY_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={'Query Tool'} />, closable: false, group: 'playground'
+  id: BROWSER_PANELS.WELCOME_QUERY_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={WORKSPACES.QUERY_TOOL} />, closable: false, group: 'playground'
 };
 
 const welcomePSQLPanelData = {
-  id: BROWSER_PANELS.WELCOME_PSQL_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={'PSQL'} />, closable: false, group: 'playground'
+  id: BROWSER_PANELS.WELCOME_PSQL_TOOL, title: gettext('Welcome'), content: <WorkspaceWelcomePage mode={WORKSPACES.PSQL_TOOL} />, closable: false, group: 'playground'
 };
 
 export const config = [

@@ -189,7 +189,7 @@ export default class Psql {
         <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <PsqlComponent params={JSON.parse(params)} pgAdmin={pgAdmin} />
+            <PsqlComponent params={params} pgAdmin={pgAdmin} />
           </ModalProvider>
         </PgAdminProvider>
       </Theme>

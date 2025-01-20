@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
@@ -27,8 +27,10 @@ import * as commonUtils from 'sources/utils';
 import * as showQueryTool from '../../../../tools/sqleditor/static/js/show_query_tool';
 import { getTitle, generateTitle } from '../../../../tools/sqleditor/static/js/sqleditor_title';
 import usePreferences from '../../../../preferences/static/js/store';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { isEmptyString } from '../../../../static/js/validators';
+import { getRandomInt } from '../../../../static/js/utils';
+import { useWorkspace } from './WorkspaceProvider';
 
 class AdHocConnectionSchema extends BaseUISchema {
   constructor(connectExistingServer, initValues={}) {
@@ -49,6 +51,7 @@ class AdHocConnectionSchema extends BaseUISchema {
         {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'},
         {'name': 'connect_timeout', 'value': 10, 'keyword': 'connect_timeout'}],
       ...initValues,
+      connection_refresh: 0,
     });
     this.flatServers = [];
     this.groupedServers = [];
@@ -56,6 +59,12 @@ class AdHocConnectionSchema extends BaseUISchema {
     this.api = getApiInstance();
     this.connectExistingServer = connectExistingServer;
     this.paramSchema = new VariableSchema(getConnectionParameters, null, null, ['name', 'keyword', 'value']);
+  }
+
+  refreshServerList() {
+    // its better to refresh the server list than monkey patching server connected status.
+    this.groupedServers = [];
+    this.state.setUnpreparedData(['connection_refresh'], getRandomInt(1, 9999));
   }
 
   setServerConnected(sid, icon) {
@@ -132,12 +141,12 @@ class AdHocConnectionSchema extends BaseUISchema {
     let self = this;
     return [
       {
-        id: 'sid', label: gettext('Existing Server (Optional)'), deps: ['connected'],
-        type: () => ({
+        id: 'sid', label: gettext('Existing Server (Optional)'), deps: ['connected', 'connection_refresh'],
+        type: (state) => ({
           type: 'select',
           options: () => self.getServerList(),
           optionsLoaded: (res) => self.flatServers = flattenSelectOptions(res),
-          optionsReloadBasis: self.flatServers.map((s) => s.connected).join(''),
+          optionsReloadBasis: `${self.flatServers.map((s) => s.connected).join('')}${state.connection_refresh}`,
         }),
         depChange: (state)=>{
           /* Once the option is selected get the name */
@@ -160,6 +169,7 @@ class AdHocConnectionSchema extends BaseUISchema {
           };
         },
         deferredDepChange: (state, source, topState, actionObj) => {
+          if(source.includes('connection_refresh')) return;
           return new Promise((resolve) => {
             let sid = actionObj.value;
             let selectedServer = _.find(self.flatServers, (s)=>s.value==sid);
@@ -323,6 +333,7 @@ export default function AdHocConnection({mode}) {
   const modal = useModal();
   const pgAdmin = usePgAdmin();
   const preferencesStore = usePreferences();
+  const {currentWorkspace} = useWorkspace();
 
   const connectExistingServer = async (sid, user, formData, connectCallback) => {
     setConnecting(true);
@@ -447,9 +458,9 @@ export default function AdHocConnection({mode}) {
         data: JSON.stringify(formData)
       });
       setConnecting(false);
-      if (mode == 'Query Tool') {
+      if (mode == WORKSPACES.QUERY_TOOL) {
         openQueryTool(respData, formData);
-      } else if (mode == 'PSQL') {
+      } else if (mode == WORKSPACES.PSQL_TOOL) {
         openPSQLTool(respData, formData);
       }
     } catch (error) {
@@ -478,11 +489,15 @@ export default function AdHocConnection({mode}) {
   };
 
   let saveBtnName = gettext('Connect & Open Query Tool');
-  if (mode == 'PSQL') {
+  if (mode == WORKSPACES.PSQL_TOOL) {
     saveBtnName = gettext('Connect & Open PSQL');
   }
 
   let adHocConObj = useMemo(() => new AdHocConnectionSchema(connectExistingServer), []);
+
+  useEffect(()=>{
+    if(currentWorkspace == mode) adHocConObj.refreshServerList();
+  }, [currentWorkspace]);
 
   return <SchemaView
     formType={'dialog'}
