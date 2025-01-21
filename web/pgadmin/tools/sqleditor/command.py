@@ -566,62 +566,23 @@ class TableCommand(GridCommand):
     def get_all_columns_with_order(self, default_conn=None):
         """
         It is overridden method specially for Table because we all have to
-        fetch primary keys and rest of the columns both.
+        fetch primary keys.
 
         Args:
             default_conn: Connection object
 
         Returns:
             all_sorted_columns: Sorted columns for the Grid
-            all_columns: List of columns for the select2 options
         """
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        if default_conn is None:
-            manager = driver.connection_manager(self.sid)
-            conn = manager.connection(did=self.did, conn_id=self.conn_id)
-        else:
-            conn = default_conn
 
         all_sorted_columns = []
         data_sorting = self.get_data_sorting()
-        all_columns = []
-        # Fetch the primary key column names
-        query = render_template(
-            "/".join([self.sql_path, 'primary_keys.sql']),
-            table_name=self.object_name,
-            table_nspname=self.nsp_name,
-            conn=conn,
-        )
 
-        status, result = conn.execute_dict(query)
-
-        if not status:
-            raise ExecuteError(result)
-
-        for row in result['rows']:
-            all_columns.append(row['attname'])
-
-        # Fetch the rest of the column names
-        query = render_template(
-            "/".join([self.sql_path, 'get_columns.sql']),
-            table_name=self.object_name,
-            table_nspname=self.nsp_name,
-            conn=conn,
-        )
-        status, result = conn.execute_dict(query)
-        if not status:
-            raise ExecuteError(result)
-
-        for row in result['rows']:
-            # Only append if not already present in the list
-            if row['attname'] not in all_columns:
-                all_columns.append(row['attname'])
-
-        # If user has custom data sorting then pass as it as it is
+        # If user has custom data sorting then pass as it is
         if data_sorting and len(data_sorting) > 0:
             all_sorted_columns = data_sorting
 
-        return all_sorted_columns, all_columns
+        return all_sorted_columns
 
     def can_edit(self):
         return True

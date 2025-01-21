@@ -23,6 +23,8 @@ from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
 from flask import request
 from flask_babel import gettext
+from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
+    import query_tool_connection_check
 from pgadmin.user_login_check import pga_login_required
 from flask_security import current_user
 from pgadmin.misc.file_manager import Filemanager
@@ -821,13 +823,14 @@ def start_view_data(trans_id):
 
     # Connect to the Server if not connected.
     if not default_conn.connected():
-        view = SchemaDiffRegistry.get_node_view('server')
-        response = view.connect(trans_obj.sgid,
-                                trans_obj.sid, True)
-        if response.status_code == 428:
+        # This will check if view/edit data tool connection is lost or not,
+        # if lost then it will reconnect
+        status, error_msg, conn, trans_obj, session_obj, response = \
+            query_tool_connection_check(trans_id)
+        # This is required for asking user to enter password
+        # when password is not saved for the server
+        if response is not None:
             return response
-        else:
-            conn = manager.connection(did=trans_obj.did)
 
         status, msg = default_conn.connect()
         if not status:

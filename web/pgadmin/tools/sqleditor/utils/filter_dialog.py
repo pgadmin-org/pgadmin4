@@ -37,8 +37,10 @@ class FilterDialog():
             msg = gettext('Success')
 
             try:
-                columns, column_list = \
-                    trans_obj.get_all_columns_with_order(conn)
+                columns = \
+                    trans_obj.get_all_columns_with_order()
+                column_list = [col_name for col_name in
+                               session_obj['columns_info'].keys()]
             except (ConnectionLost, SSHTunnelConnectionLost):
                 raise
             except Exception as e:
