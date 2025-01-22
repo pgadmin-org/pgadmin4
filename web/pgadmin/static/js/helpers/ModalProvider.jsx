@@ -50,7 +50,7 @@ export function useModal() {
 function AlertContent({ text, confirm, okLabel = gettext('OK'), cancelLabel = gettext('Cancel'), onOkClick, onCancelClick, okIcon = 'default'}) {
   return (
     <StyledBox display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
+      <Box flexGrow="1" p={2} whiteSpace='pre-line'>{typeof (text) == 'string' ? HTMLReactParser(text) : text}</Box>
       <Box className='Alert-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick}>{cancelLabel}</DefaultButton>

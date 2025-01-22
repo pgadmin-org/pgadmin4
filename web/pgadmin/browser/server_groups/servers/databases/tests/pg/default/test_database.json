@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "type": "alter",
-      "name": "Alert default priviliges for functions",
+      "name": "Alert default privileges for functions",
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
       "msql_endpoint": "NODE-database.msql_id",
@@ -34,6 +34,7 @@
       "name": "Alert default privileges for tables",
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
@@ -64,6 +65,7 @@
           ]
         }
       },
+      "expected_msql_file": "alter_default_db_privileges_tables_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_tables.sql"
     },
     {
@@ -96,14 +98,15 @@
         },
         "deftblacl": {"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
       },
-      "expected_sql_file": "alter_default_db_privileges_sequences.sql",
-      "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql"
+      "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql",
+      "expected_sql_file": "alter_default_db_privileges_sequences.sql"
     },
     {
       "type": "alter",
       "name": "Alert default privileges for types",
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
@@ -125,6 +128,7 @@
         }
 
       },
+      "expected_msql_file": "alter_default_db_privileges_types_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_types.sql"
     },
     {
@@ -137,10 +141,69 @@
       "data": {
         "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
         "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "deftblacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false,"cid":"nn626"},{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn627"},{"privilege_type":"w","privilege":true,"with_grant":false,"cid":"nn628"},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
-        "defseqacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn673"},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+        "deftblacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
+        "defseqacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
         },
       "expected_sql_file": "alter_default_db_privileges_reset_all.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges with new user add for function, table, sequence and type",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deffuncacl": {"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
+        "deftypeacl": {"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
+        "deftblacl":{"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
+        "defseqacl":{"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false}],"grantor":"postgres"}]}
+        },
+      "expected_msql_file": "alter_default_db_privileges_add_msql.sql",
+      "expected_sql_file": "alter_default_db_privileges_add_all.sql",
+      "pre_scenario_sql": "CREATE ROLE test_default_priv_user WITH NOLOGIN NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges with new user for function, table, sequence and type",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deffuncacl": {"changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "deftypeacl": {"changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "deftblacl":{
+          "added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"D","privilege":true,"with_grant":false}],"grantor":"postgres"}],
+          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":false}],"grantor":"postgres"}],
+          "changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"d","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "defseqacl":{
+          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}], "grantor":"postgres"}],
+          "changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":true}],"grantor":"postgres"}]}
+        },
+      "expected_msql_file": "alter_default_db_privileges_all_msql.sql",
+      "expected_sql_file": "alter_default_db_privileges_all.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges with new user reset all",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deffuncacl": {"deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "deftypeacl": {"deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "deftblacl":{
+          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"D","privilege":true,"with_grant":false}, {"privilege_type":"d","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
+        "defseqacl":{
+          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":true}],"grantor":"postgres"}]}
+        },
+      "expected_sql_file": "alter_default_db_privileges_newuser_reset_all.sql",
+      "post_scenario_sql": "DROP ROLE IF EXISTS test_default_priv_user;"
     }
   ]
 }

@@ -22,5 +22,9 @@
     "deffuncacl": {
         "type": "FUNCTION",
         "acl": ["X"]
+    },
+    "deftypeacl": {
+        "type": "TYPE",
+        "acl": ["U"]
     }
 }
