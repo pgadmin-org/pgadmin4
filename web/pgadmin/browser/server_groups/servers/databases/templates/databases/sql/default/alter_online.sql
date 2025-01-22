@@ -13,7 +13,7 @@
 {% endif %}
 {% if 'changed' in data.deffuncacl %}
 {% for priv in data.deffuncacl.changed %}
-{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee, priv.grantor) }}
 {{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
@@ -23,7 +23,6 @@
 {% endfor %}
 {% endif %}
 {% endif %}
-
 
 {# Change the variables/options #}
 {% if data.variables and data.variables|length > 0 %}
@@ -86,7 +85,8 @@
 {% endif %}
 {% if 'changed' in data.deftblacl %}
 {% for priv in data.deftblacl.changed %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'TABLES', priv.grantee, priv.grantor) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.deftblacl %}
@@ -97,7 +97,6 @@
 {% endif %}
 
 {# Change the default priviledges for the sequences #}
-{% if data.deftblacl %}
 {% if data.defseqacl %}
 {% if 'deleted' in data.defseqacl %}
 {% for priv in data.defseqacl.deleted %}
@@ -106,7 +105,7 @@
 {% endif %}
 {% if 'changed' in data.defseqacl %}
 {% for priv in data.defseqacl.changed %}
-{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'SEQUENCES', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'SEQUENCES', priv.grantee, priv.grantor) }}
 {{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
@@ -117,9 +116,26 @@
 {% endif %}
 {% endif %}
 
-
-
+{# Change the default priviledges/ACLs for types #}
+{% if data.deftypeacl %}
+{% if 'deleted' in data.deftypeacl %}
+{% for priv in data.deftypeacl.deleted %}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'TYPES', priv.grantee, priv.grantor) }}
+{% endfor %}
 {% endif %}
+{% if 'changed' in data.deftypeacl %}
+{% for priv in data.deftypeacl.changed %}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'TYPES', priv.grantee, priv.grantor) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TYPES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endfor %}
+{% endif %}
+{% if 'added' in data.deftypeacl %}
+{% for priv in data.deftypeacl.added %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TYPES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
 {# Change the security labels #}
 {% if data.seclabels and data.seclabels|length > 0 %}
 {% set seclabels = data.seclabels %}

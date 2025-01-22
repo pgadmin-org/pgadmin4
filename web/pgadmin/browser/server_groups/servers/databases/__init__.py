@@ -34,6 +34,7 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import db, Server, Database
+from pgadmin.browser.utils import underscore_escape
 from pgadmin.utils.constants import TWO_PARAM_STRING
 
 
@@ -1073,7 +1074,7 @@ class DatabaseView(PGChildNodeView):
                     status, errmsg = conn.connect()
 
                     return internal_server_error(
-                        errormsg=msg)
+                        errormsg=underscore_escape(msg))
 
         return make_json_response(success=1)
 

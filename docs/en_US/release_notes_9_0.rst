@@ -33,6 +33,7 @@ Bug fixes
 *********
 
   | `Issue #5204 <https://github.com/pgadmin-org/pgadmin4/issues/5204>`_ -  Fixed an issue where pgadmin cannot install into path with non ASCII characters.
+  | `Issue #6044 <https://github.com/pgadmin-org/pgadmin4/issues/6044>`_ -  Fixed an issue where filter dialog save fails when the PostgreSQL server/database connection is lost.
   | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where option key was not registering in PSQL tool.
   | `Issue #8072 <https://github.com/pgadmin-org/pgadmin4/issues/8072>`_ -  Fixed an issue where Schema Diff not produce difference script for Index definition with where condition.
   | `Issue #8142 <https://github.com/pgadmin-org/pgadmin4/issues/8142>`_ -  Correct the documentation for the MFA configuration.
@@ -48,3 +49,4 @@ Bug fixes
   | `Issue #8309 <https://github.com/pgadmin-org/pgadmin4/issues/8309>`_ -  Remove the option "With no data (concurrently)" from Refresh MATERIALIZED VIEW context menu.
   | `Issue #8320 <https://github.com/pgadmin-org/pgadmin4/issues/8320>`_ -  Fix an issue where wrong information is shown after using the filter on the Dashboard> State tab.
   | `Issue #8365 <https://github.com/pgadmin-org/pgadmin4/issues/8365>`_ -  Fixed an issue where PSQL tool is not opening if database name have HTML characters in the name.
+  | `Issue #8369 <https://github.com/pgadmin-org/pgadmin4/issues/8369>`_ -  Fixed an issue where Default Privileges and Privileges not working correctly.

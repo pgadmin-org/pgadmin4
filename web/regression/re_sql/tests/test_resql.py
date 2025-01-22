@@ -21,6 +21,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 from pgadmin.utils.constants import DBMS_JOB_SCHEDULER_ID
+from regression.python_test_utils.test_utils import set_isolation_level
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -255,6 +256,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             # Check precondition for schema
             self.check_schema_precondition(scenario)
 
+            if 'pre_scenario_sql' in scenario:
+                self.execute_prepost_sql(
+                    scenario['pre_scenario_sql'], False)
+
             # Preprocessed data to replace any place holder if available
             if 'preprocess_data' in scenario and \
                     scenario['preprocess_data'] and 'data' in scenario:
@@ -362,6 +367,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                         print(scenario['name'] + "... FAIL")
                         traceback.print_exc()
                         continue
+
+                if 'post_scenario_sql' in scenario:
+                    self.execute_prepost_sql(
+                        scenario['post_scenario_sql'], False)
 
                 print(scenario['name'] + "... ok")
             except Exception as _:
@@ -598,6 +607,30 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             traceback.print_exc()
         pg_cursor.close()
         return precondition_flag
+
+    def execute_prepost_sql(self, sql, use_test_config_db_conn):
+        """
+        This method executes post_condition_sql
+        :param post_condition_sql: SQL query
+        :param use_test_config_db_conn
+        """
+        if use_test_config_db_conn:
+            conn = self.test_config_db_conn
+            pg_cursor = self.test_config_db_conn.cursor()
+        else:
+            self.get_db_connection()
+            conn = self.connection
+            pg_cursor = self.connection.cursor()
+
+        try:
+            old_isolation_level = conn.isolation_level
+            set_isolation_level(conn, 0)
+            pg_cursor.execute(sql)
+            set_isolation_level(conn, old_isolation_level)
+            conn.commit()
+        except Exception as e:
+            traceback.print_exc()
+        pg_cursor.close()
 
     def check_schema_precondition(self, scenario):
         """

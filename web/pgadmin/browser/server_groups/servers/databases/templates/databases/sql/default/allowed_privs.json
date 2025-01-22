@@ -13,7 +13,7 @@
     },
     "deftblacl": {
         "type": "TABLE",
-        "acl": ["r", "a", "w", "d", "D", "x", "t"]
+        "acl": ["a", "r", "w", "d", "D", "x", "t"]
     },
     "defseqacl": {
         "type": "SEQUENCE",
@@ -22,5 +22,9 @@
     "deffuncacl": {
         "type": "FUNCTION",
         "acl": ["X"]
+    },
+    "deftypeacl": {
+        "type": "TYPE",
+        "acl": ["U"]
     }
 }
