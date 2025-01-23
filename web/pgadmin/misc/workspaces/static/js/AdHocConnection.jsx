@@ -148,7 +148,8 @@ class AdHocConnectionSchema extends BaseUISchema {
           optionsLoaded: (res) => self.flatServers = flattenSelectOptions(res),
           optionsReloadBasis: `${self.flatServers.map((s) => s.connected).join('')}${state.connection_refresh}`,
         }),
-        depChange: (state)=>{
+        depChange: (state, source)=>{
+          if(source == 'connection_refresh') return;
           /* Once the option is selected get the name */
           /* Force sid to null, and set only if connected */
           let selectedServer = _.find(
