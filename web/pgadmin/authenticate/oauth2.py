@@ -137,7 +137,8 @@ class OAuth2Authentication(BaseAuthentication):
 
     def get_profile_dict(self, profile):
         """
-        Returns the dictionary from profile whether it's a list or dictionary.
+        Returns the dictionary from profile 
+        whether it's a list or dictionary.
         Includes additional type checking.
         """
         if isinstance(profile, list):
