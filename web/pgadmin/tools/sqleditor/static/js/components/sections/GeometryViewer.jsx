@@ -310,17 +310,19 @@ function TheMap({data}) {
     });
 
     zoomControlWithHome.current._zoomHome = function () {
-      if (this.options.maxLength > 0) {
-        this._map.fitBounds(this.options.homeCoordinates);
+      let obj = this;
+      if (obj.options.maxLength > 0) {
+        obj._map.fitBounds(obj.options.homeCoordinates);
       } else {
-        this.options.homeCoordinates && this._map.setView(this.options.homeCoordinates.getCenter(), this.options.homeZoom);
+        obj.options.homeCoordinates && obj._map.setView(obj.options.homeCoordinates.getCenter(), obj.options.homeZoom);
       }
     };
 
     zoomControlWithHome.current.onAdd = function (map) {
+      let obj = this;
       let controlName = 'leaflet-control-zoom',
         container = Leaflet.DomUtil.create('div', controlName + ' leaflet-bar'),
-        options = this.options;
+        options = obj.options;
 
       if (options.homeCoordinates === null) {
         options.homeCoordinates = homeCoordinates.current?.bounds;
@@ -334,12 +336,12 @@ function TheMap({data}) {
 
       let zoomHomeText = `<i class="fa fa-${options.zoomHomeIcon}"></i>`;
 
-      this._zoomInButton = this._createButton(options.zoomInText, options.zoomInTitle, controlName + '-in', container, this._zoomIn.bind(this));
-      this._createButton(zoomHomeText, options.zoomHomeTitle, controlName + '-home', container, this._zoomHome.bind(this));
-      this._zoomOutButton = this._createButton(options.zoomOutText, options.zoomOutTitle, controlName + '-out', container, this._zoomOut.bind(this));
+      obj._zoomInButton = obj._createButton(options.zoomInText, options.zoomInTitle, controlName + '-in', container, obj._zoomIn.bind(this));
+      obj._createButton(zoomHomeText, options.zoomHomeTitle, controlName + '-home', container, obj._zoomHome.bind(this));
+      obj._zoomOutButton = obj._createButton(options.zoomOutText, options.zoomOutTitle, controlName + '-out', container, obj._zoomOut.bind(this));
 
-      this._updateDisabled();
-      map.on('zoomend zoomlevelschange', this._updateDisabled, this);
+      obj._updateDisabled();
+      map.on('zoomend zoomlevelschange', obj._updateDisabled, this);
 
       return container;
     };

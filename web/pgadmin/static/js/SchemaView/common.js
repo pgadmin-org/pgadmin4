@@ -96,7 +96,7 @@ export function prepareData(val, createMode=false) {
   return val;
 }
 
-export const flatternObject = (obj, base=[]) => Object.keys(obj).sort().reduce(
+export const flatternObject = (obj, base=[]) => Object.keys(obj).sort((a, b)=>a.localeCompare(b)).reduce(
   (r, k) => {
     r = r.concat(k);
     const value = obj[k];

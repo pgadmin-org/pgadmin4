@@ -10,7 +10,7 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import React, {useState, useEffect, useContext, useRef, useLayoutEffect, useMemo, useCallback} from 'react';
-import {Row, useRowSelection} from 'react-data-grid';
+import {Row, useRowSelection, useHeaderRowSelection} from 'react-data-grid';
 import LockIcon from '@mui/icons-material/Lock';
 import EditIcon from '@mui/icons-material/Edit';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
@@ -24,7 +24,6 @@ import gettext from 'sources/gettext';
 import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { measureText } from '../../../../../../static/js/utils';
-import { useHeaderRowSelection } from 'react-data-grid';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
@@ -158,10 +157,9 @@ function SelectAllHeaderRenderer({isCellSelected}) {
   }, [isRowSelected]);
 
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="0" onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)}></div>;
+    tabIndex="-1" onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
-  onAllRowsSelectionChange: PropTypes.func,
   isCellSelected: PropTypes.bool,
 };
 

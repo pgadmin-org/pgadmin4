@@ -60,7 +60,7 @@ export const createFieldControls = ({
 
     if(field.type === 'group') {
 
-      if (!field.id || (field.id in groups)) {
+      if (!field.id || (groups.includes(field.id))) {
         throw new Error('Group-id must be unique within a schema.');
       }
 

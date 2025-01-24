@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
@@ -148,7 +148,8 @@ class AdHocConnectionSchema extends BaseUISchema {
           optionsLoaded: (res) => self.flatServers = flattenSelectOptions(res),
           optionsReloadBasis: `${self.flatServers.map((s) => s.connected).join('')}${state.connection_refresh}`,
         }),
-        depChange: (state)=>{
+        depChange: (state, source)=>{
+          if(source == 'connection_refresh') return;
           /* Once the option is selected get the name */
           /* Force sid to null, and set only if connected */
           let selectedServer = _.find(
@@ -328,7 +329,6 @@ class AdHocConnectionSchema extends BaseUISchema {
 }
 
 export default function AdHocConnection({mode}) {
-  const [connecting, setConnecting] = useState(false);
   const api = getApiInstance();
   const modal = useModal();
   const pgAdmin = usePgAdmin();
@@ -336,7 +336,6 @@ export default function AdHocConnection({mode}) {
   const {currentWorkspace} = useWorkspace();
 
   const connectExistingServer = async (sid, user, formData, connectCallback) => {
-    setConnecting(true);
     try {
       let {data: respData} = await api({
         method: 'POST',
@@ -349,7 +348,6 @@ export default function AdHocConnection({mode}) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: formData
       });
-      setConnecting(false);
       connectCallback?.(respData.data);
     } catch (error) {
       if(!error.response) {
@@ -359,7 +357,6 @@ export default function AdHocConnection({mode}) {
           return (
             <ConnectServerContent
               closeModal={()=>{
-                setConnecting(false);
                 closeModal();
               }}
               data={error.response?.data?.result}
@@ -450,21 +447,18 @@ export default function AdHocConnection({mode}) {
   };
 
   const onSaveClick = async (isNew, formData) => {
-    setConnecting(true);
     try {
       let {data: respData} = await api({
         method: 'POST',
         url: url_for('workspace.adhoc_connect_server'),
         data: JSON.stringify(formData)
       });
-      setConnecting(false);
       if (mode == WORKSPACES.QUERY_TOOL) {
         openQueryTool(respData, formData);
       } else if (mode == WORKSPACES.PSQL_TOOL) {
         openPSQLTool(respData, formData);
       }
     } catch (error) {
-      setConnecting(false);
       if(!error.response) {
         pgAdmin.Browser.notifier.pgNotifier('error', error, 'Connection error', gettext('Connect to server.'));
       } else {
@@ -507,7 +501,7 @@ export default function AdHocConnection({mode}) {
     viewHelperProps={{
       mode: 'create',
     }}
-    loadingText={connecting ? 'Connecting...' : ''}
+    loadingText={'Connecting...'}
     onSave={onSaveClick}
     customSaveBtnName= {saveBtnName}
     customCloseBtnName={''}

@@ -379,7 +379,7 @@ export function evalFunc(obj, func, ...param) {
 
 export function getBrowser() {
   if(navigator.userAgent.indexOf('Electron') >= 0) {
-    return {name: 'Electron', version: navigator.userAgent.match(/Electron\/([\d\.]+\d+)/)[1]};
+    return {name: 'Electron', version: /Electron\/([\d.]+\d+)/.exec(navigator.userAgent)[1]};
   }
 
   let ua=navigator.userAgent,tem,M=(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i).exec(ua) || [];
@@ -388,7 +388,7 @@ export function getBrowser() {
     return {name:'IE', version:(tem[1]||'')};
   }
   if(ua.indexOf('Electron') >= 0) {
-    return {name: 'Electron', version: ua.match(/Electron\/([\d\.]+\d+)/)[1]};
+    return {name: 'Electron', version: /Electron\/([\d.]+\d+)/.exec(ua)[1]};
   }
 
   if(M[1]==='Chrome') {

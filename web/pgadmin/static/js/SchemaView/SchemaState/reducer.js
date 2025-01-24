@@ -99,16 +99,16 @@ export const sessDataReducer = (state, action) => {
 
     break;
 
-  case SCHEMA_STATE_ACTIONS.MOVE_ROW:
+  case SCHEMA_STATE_ACTIONS.MOVE_ROW: {
     rows = _.get(data, action.path)||[];
-    var row = rows[action.oldIndex];
+    let row = rows[action.oldIndex];
     rows.splice(action.oldIndex, 1);
     rows.splice(action.newIndex, 0, row);
 
     _.set(data, action.path, rows);
 
     break;
-
+  }
   case SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE:
     data.__deferred__ = [];
     return data;

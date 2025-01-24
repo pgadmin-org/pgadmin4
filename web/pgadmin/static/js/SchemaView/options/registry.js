@@ -101,8 +101,6 @@ export function schemaOptionsEvalulator({
 
         _.set(options, fieldOptionsPath, fieldOptions);
 
-        const rowIndexes = [FIELD_OPTIONS];
-
         rows?.forEach((row, idx) => {
           const schemaPath = [...fieldPath, idx];
           const schemaOptions = _.get(options, schemaPath, {});
@@ -123,8 +121,6 @@ export function schemaOptionsEvalulator({
             option: 'row', schema: field.schema, value: row, viewHelperProps,
             field, options: rowOptions, parentOptions: fieldOptions
           });
-
-          rowIndexes.push(idx);
         });
 
       }

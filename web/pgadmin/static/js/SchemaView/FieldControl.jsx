@@ -17,10 +17,9 @@ export const FieldControl = ({schemaId, item}) => {
   return useMemo(() =>
     <Control {...props}>
       {
-        children &&
-          children.map(
-            (child, idx) => <FieldControl key={idx} item={child}/>
-          )
+        children?.map(
+          (child, idx) => <FieldControl key={idx} item={child}/>
+        )
       }
     </Control>, [schemaId, Control, props, children]
   );

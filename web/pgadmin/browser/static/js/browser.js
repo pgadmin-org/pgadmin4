@@ -349,7 +349,7 @@ define('pgadmin.browser', [
             const getFullPath = (currPath, currMenu)=>{
               if(currMenu.node) {
                 return currPath.concat([currMenu.node]);
-              } else if(currMenu.category??'common' != 'common') {
+              } else if((currMenu.category??'common') != 'common') {
                 const currCat = self.menu_categories[currMenu.category];
                 if(currCat?.category) {
                   return getFullPath(currPath.concat([currMenu.category]), currCat);
