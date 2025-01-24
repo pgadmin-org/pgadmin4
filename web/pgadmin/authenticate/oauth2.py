@@ -161,7 +161,7 @@ class OAuth2Authentication(BaseAuthentication):
             return False, gettext(error_msg)
 
         email_key = [
-            value for value in self.email_keys 
+            value for value in self.email_keys
             if value in profile_dict.keys()
         ]
         email = profile_dict[email_key[0]] if (len(email_key) > 0) else None
