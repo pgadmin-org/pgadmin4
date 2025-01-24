@@ -160,8 +160,10 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.exception(error_msg)
             return False, gettext(error_msg)
         
-        email_key = \
-            [value for value in self.email_keys if value in profile_dict.keys()]
+        email_key =[
+            value for value in self.email_keys 
+            if value in profile_dict.keys()
+        ]
         email = profile_dict[email_key[0]] if (len(email_key) > 0) else None
 
         if not email:
