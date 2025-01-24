@@ -11,11 +11,14 @@ import sys
 import secrets
 import time
 
+from selenium.webdriver.support.wait import WebDriverWait
+
 from regression.python_test_utils import test_utils
 from regression.feature_utils.locators import BrowserToolBarLocators
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class BrowserToolBarFeatureTest(BaseFeatureTest):
@@ -68,6 +71,14 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
                                                            'db_password'],
                                                        self.test_db),
                         'Tree is not expanded to database node')
+
+        WebDriverWait(self.driver, 3).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR,
+                 BrowserToolBarLocators.open_query_tool_button_css)
+            ), "Timed out waiting for execute query button to appear"
+        )
+
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.open_query_tool_button_css),
@@ -87,7 +98,13 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
         table_node.click()
-        time.sleep(2)
+
+        WebDriverWait(self.driver, 3).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR,
+                 BrowserToolBarLocators.view_table_data_button_css)
+            ), "Timed out waiting for execute query button to appear"
+        )
 
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,

@@ -83,29 +83,28 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     const tags = item._metadata.data?.tags ?? [];
 
     return (
-      <div
-        className={cn('file-entry', {
-          renaming: isRenamePrompt,
-          prompt: isRenamePrompt || isNewPrompt,
-          new: isNewPrompt,
-        }, fileOrDir, decorations ? decorations.classlist : null, `depth-${item.depth}`, extraClasses)}
-        data-depth={item.depth}
-        onContextMenu={this.handleContextMenu}
-        onClick={this.handleClick}
-        onDragStart={this.handleDragStartItem}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        onKeyDown={()=>{/* taken care by parent */}}
-        // required for rendering context menus when opened through context menu button on keyboard
-        ref={this.handleDivRef}
-        draggable={true}>
+      <DoubleClickHandler onDoubleClick={this.handleDoubleClick} onSingleClick={this.handleClick}>
+        <div
+          className={cn('file-entry', {
+            renaming: isRenamePrompt,
+            prompt: isRenamePrompt || isNewPrompt,
+            new: isNewPrompt,
+          }, fileOrDir, decorations ? decorations.classlist : null, `depth-${item.depth}`, extraClasses)}
+          data-depth={item.depth}
+          onContextMenu={this.handleContextMenu}
+          onDragStart={this.handleDragStartItem}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          onKeyDown={()=>{/* taken care by parent */}}
+          // required for rendering context menus when opened through context menu button on keyboard
+          ref={this.handleDivRef}
+          draggable={true}>
 
-        {!isNewPrompt && fileOrDir === 'directory' ?
-          <i className={cn('directory-toggle', isDirExpanded ? 'open' : '')} />
-          : null
-        }
+          {!isNewPrompt && fileOrDir === 'directory' ?
+            <i className={cn('directory-toggle', isDirExpanded ? 'open' : '')} />
+            : null
+          }
 
-        <DoubleClickHandler onDoubleClick={this.handleDoubleClick} onSingleClick={this.handleClick} >
           <span className='file-label'>{
             item._metadata?.data?.icon ?
               <i className={cn('file-icon', item._metadata?.data?.icon ? item._metadata.data.icon : fileOrDir)} /> : null
@@ -120,8 +119,9 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
             </div>
           ))}
           </span>
-        </DoubleClickHandler>
-      </div>);
+        </div>
+      </DoubleClickHandler>
+    );
   }
 
   public componentDidMount() {
