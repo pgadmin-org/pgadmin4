@@ -137,7 +137,7 @@ class OAuth2Authentication(BaseAuthentication):
 
     def get_profile_dict(self, profile):
         """
-        Returns the dictionary from profile 
+        Returns the dictionary from profile
         whether it's a list or dictionary.
         Includes additional type checking.
         """
@@ -151,15 +151,15 @@ class OAuth2Authentication(BaseAuthentication):
     def login(self, form):
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
-        
+
         current_app.logger.debug(f"profile: {profile}")
         current_app.logger.debug(f"profile_dict: {profile_dict}")
-        
+
         if not profile_dict:
             error_msg = "No profile data found."
             current_app.logger.exception(error_msg)
             return False, gettext(error_msg)
-        
+
         email_key =[
             value for value in self.email_keys 
             if value in profile_dict.keys()
