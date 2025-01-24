@@ -213,7 +213,6 @@ function UtilityViewContent({schema, treeNodeInfo, actionType, formType, onClose
 }
 
 UtilityViewContent.propTypes = {
-  panelId: PropTypes.string,
   schema: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   actionType: PropTypes.string,

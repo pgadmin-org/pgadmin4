@@ -777,9 +777,6 @@ class ServerNode(PGChildNodeView):
             request.data
         )
 
-        old_server_name = ''
-        if 'name' in data:
-            old_server_name = server.name
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 

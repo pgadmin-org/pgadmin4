@@ -175,7 +175,7 @@ class Notifier {
     this.modal.alert(title, text, onOkClick, okLabel);
   }
 
-  confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'), okIcon) {
+  confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'), okIcon='default') {
     /* Use this if you want to use pgAdmin global notifier.
     Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
     this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, okIcon);

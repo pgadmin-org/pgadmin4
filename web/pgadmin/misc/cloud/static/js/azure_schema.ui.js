@@ -122,7 +122,6 @@ class AzureCredSchema extends BaseUISchema {
                 auth_code: ''
               });
             }).catch((err) => {
-              // TODO:: Show error message.
               console.error(
                 err instanceof Error ?
                   err : Error(gettext('Something went wrong'))

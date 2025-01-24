@@ -18,6 +18,7 @@ import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { LAYOUT_EVENTS, LayoutDockerContext } from '../../static/js/helpers/Layout';
 import usePreferences from '../../preferences/static/js/store';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeData, actionType, formType, onEdit, onSave, onClose,
   isActive, setIsStale, isStale}) {
@@ -44,7 +45,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   let updatedData =  ['table', 'partition'].includes(nodeType) && !_.isEmpty(nodeData.rows_cnt) ? {rows_cnt: nodeData.rows_cnt} : undefined;
 
   const objToString = (obj) => (
-    (obj && typeof obj === 'object') ? Object.keys(obj).sort().reduce(
+    (obj && typeof obj === 'object') ? Object.keys(obj).sort((a, b)=>a.localeCompare(b)).reduce(
       (acc, key) => (acc + `${key}=` + objToString(obj[key])), ''
     ) : String(obj)
   );

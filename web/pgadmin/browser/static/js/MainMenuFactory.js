@@ -187,7 +187,7 @@ export default class MainMenuFactory {
         const mi = getNewMenuItem(i);
         if(!mi) return;
 
-        if(i.category??'common' != 'common') {
+        if((i.category??'common') != 'common') {
           const cmi = getMenuCategory(i.category);
           if(cmi) {
             cmi.addMenuItems([...applySeparators(mi)]);

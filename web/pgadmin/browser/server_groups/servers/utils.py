@@ -425,7 +425,7 @@ def migrate_saved_passwords(master_key, master_password):
                     servers_with_pwd_in_os_secret)
             # Update driver manager with new passwords
             try:
-                update_session_manager(saved_password_servers)
+                update_session_manager(current_user.id, saved_password_servers)
             except Exception:
                 current_app.logger.warning(
                     'Error while updating session manger')
@@ -497,7 +497,7 @@ def delete_saved_passwords_from_os_secret_storage(servers):
 
         if len(servers) > 0:
             for ser in servers:
-                server, is_password_saved, is_tunnel_password_saved = ser
+                server, _, _ = ser
                 server_name = KEY_RING_USERNAME_FORMAT.format(server.name,
                                                               server.id)
                 server_password = keyring.get_password(
@@ -550,7 +550,7 @@ def update_session_manager(user_id=None, servers=None):
         return True
     except Exception:
         db.session.rollback()
-    raise
+        raise
 
 
 def get_replication_type(conn, sversion):

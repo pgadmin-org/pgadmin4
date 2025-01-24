@@ -155,7 +155,7 @@ export function Table({
   // Render the UI for your table
   const tableRef = useRef();
   let flatData = [];
-  let fetchMoreOnBottomReached = undefined;
+  let fetchMoreOnBottomReached;
   let totalFetched = 0;
   let totalDBRowCount = 0;
 

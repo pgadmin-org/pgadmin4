@@ -551,7 +551,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
     status, res = g.conn.execute_scalar(sql)
     if not status:
         return internal_server_error(errormsg=res)
-    if not res or len(res) < 0:
+    if not res or len(res) <= 0:
         return ajax_response(
             response={'logs_disabled': True},
             status=200
@@ -594,7 +594,7 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
                         {"error_severity": _tmp_log['error_severity'],
                          "timestamp": _tmp_log['timestamp'],
                          "message": _tmp_log['message']})
-                except Exception as e:
+                except Exception:
                     pass
 
         # CSV format
@@ -605,12 +605,10 @@ def logs(log_format=None, disp_format=None, sid=None, page=0):
                     final_cols.append({"error_severity": _tmp_log[11],
                                        "timestamp": _tmp_log[0],
                                        "message": _tmp_log[13]})
-                except Exception as e:
+                except Exception:
                     pass
 
         else:
-            col1 = []
-            col2 = []
             _pattern = re.compile(LOG_STATEMENTS)
             for f in final_res:
                 tmp = re.search(LOG_STATEMENTS, f)

@@ -120,12 +120,12 @@ export default function SchemaDialogView({
   const onSaveClick = () => {
     // Do nothing when there is no change or there is an error
     if (
-      !schemaState._changes || Object.keys(schemaState._changes) === 0 ||
+      !schemaState._changes || Object.keys(schemaState._changes).length === 0 ||
       schemaState.errors.name
     ) return;
 
     setSaving(true);
-    setLoaderText('Saving...');
+    setLoaderText(schemaState.customLoadingText || gettext('Saving...'));
 
     if (!schema.warningText) {
       save(schemaState.changes(true));

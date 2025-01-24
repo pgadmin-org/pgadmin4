@@ -55,7 +55,7 @@ export default class Reorder extends Feature {
         <div
           className='reorder-cell'
           data-handler-id={handlerId}
-          ref={dragHandleRef ? dragHandleRef : null}>
+          ref={dragHandleRef || null}>
           <DragIndicatorRoundedIcon fontSize="small" />
         </div>
       );
