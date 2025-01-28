@@ -136,6 +136,7 @@ export default class SequenceSchema extends BaseUISchema {
       }, {
         id: 'current_value', label: gettext('Current value'), type: 'int',
         mode: ['properties', 'edit'], group: gettext('Definition'),
+        helpMessage: gettext('Sets the sequence object\'s current value. The next nextval will return exactly the specified value, and sequence advancement commences with the following nextval.')
       }, {
         id: 'increment', label: gettext('Increment'), type: 'int',
         mode: ['properties', 'create', 'edit'], group: gettext('Definition'),

@@ -20,9 +20,11 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+
   | `Issue #6513 <https://github.com/pgadmin-org/pgadmin4/issues/6513>`_ -  Change button labels and color in delete confirmation dialog for all objects to improve UX.
   | `Issue #7708 <https://github.com/pgadmin-org/pgadmin4/issues/7708>`_ -  Enhanced pgAdmin 4 with support for Workspace layouts.
   | `Issue #8332 <https://github.com/pgadmin-org/pgadmin4/issues/8332>`_ -  Added the MAINTAIN privilege for PostgreSQL version 17 and above.
+  | `Issue #8391 <https://github.com/pgadmin-org/pgadmin4/issues/8391>`_ -  Add support for OAuth2 profile array response, which also takes care of the GitHub Private Email ID issue.
 
 Housekeeping
 ************
@@ -32,6 +34,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #3273 <https://github.com/pgadmin-org/pgadmin4/issues/3273>`_ -  Change the logic of setval function, so that the next nextval of sequence will return exactly the specified value.
   | `Issue #5204 <https://github.com/pgadmin-org/pgadmin4/issues/5204>`_ -  Fixed an issue where pgadmin cannot install into path with non ASCII characters.
   | `Issue #6044 <https://github.com/pgadmin-org/pgadmin4/issues/6044>`_ -  Fixed an issue where filter dialog save fails when the PostgreSQL server/database connection is lost.
   | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where option key was not registering in PSQL tool.

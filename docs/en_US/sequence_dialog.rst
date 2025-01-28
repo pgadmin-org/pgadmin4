@@ -35,6 +35,9 @@ Click the *Definition* tab to continue.
 
 Use the fields in the *Definition* tab to define the sequence:
 
+* Use the *Current Value* field to specify the sequence object\'s current value.
+  The next nextval will return exactly the specified value, and sequence advancement
+  commences with the following nextval. *This field is only available in the edit mode*.
 * Use the *Increment* field to specify which value is added to the current
   sequence value to create a new value.
 * Provide a value in the *Start* field to specify the beginning value of the

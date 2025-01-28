@@ -20,7 +20,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% endif %}
 {% if data.current_value is defined %}
 {% set seqname = conn|qtIdent(o_data.schema, data.name) %}
-SELECT setval({{ seqname|qtLiteral(conn) }}, {{ data.current_value }}, true);
+SELECT setval({{ seqname|qtLiteral(conn) }}, {{ data.current_value }}, false);
 
 {% endif %}
 {% if data.relpersistence in [True, False] and data.relpersistence != o_data.relpersistence %}
