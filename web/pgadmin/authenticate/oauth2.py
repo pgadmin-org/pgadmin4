@@ -135,11 +135,41 @@ class OAuth2Authentication(BaseAuthentication):
     def validate(self, form):
         return True, None
 
+    def get_profile_dict(self, profile):
+        """
+        Returns the dictionary from profile
+        whether it's a list or dictionary.
+        Includes additional type checking.
+        """
+        if isinstance(profile, list):
+            return profile[0] if profile else {}
+        elif isinstance(profile, dict):
+            return profile
+        else:
+            return {}
+
     def login(self, form):
         profile = self.get_user_profile()
-        email_key = \
-            [value for value in self.email_keys if value in profile.keys()]
-        email = profile[email_key[0]] if (len(email_key) > 0) else None
+        profile_dict = self.get_profile_dict(profile)
+
+        current_app.logger.debug(f"profile: {profile}")
+        current_app.logger.debug(f"profile_dict: {profile_dict}")
+
+        if not profile_dict:
+            error_msg = "No profile data found."
+            current_app.logger.exception(error_msg)
+            return False, gettext(error_msg)
+
+        email_key = [
+            value for value in self.email_keys
+            if value in profile_dict.keys()
+        ]
+        email = profile_dict[email_key[0]] if (len(email_key) > 0) else None
+
+        if not email:
+            error_msg = "No email found in profile data."
+            current_app.logger.exception(error_msg)
+            return False, gettext(error_msg)
 
         username = email
         username_claim = None
