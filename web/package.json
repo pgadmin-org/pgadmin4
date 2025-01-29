@@ -34,7 +34,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",
-    "eslint": "^9.17.0",
+    "eslint": "^9.19.0",
     "eslint-plugin-jest": "^28.10.0",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -66,7 +66,7 @@
     "webfonts-loader": "^8.0.1",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.8.0",
-    "webpack-cli": "^5.1.4",
+    "webpack-cli": "^6.0.1",
     "yarn-audit-html": "7.3.2"
   },
   "dependencies": {

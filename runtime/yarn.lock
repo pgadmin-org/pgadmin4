@@ -79,10 +79,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.18.0":
-  version: 9.18.0
-  resolution: "@eslint/js@npm:9.18.0"
-  checksum: a47cfcc684f87094992fe4a5c5e54018393231d8d42bd2150a08eb167813a6bf8d7c7ccbc9611933e5f782ff3b96a06c9be8d19342965cadd4530a45521b8981
+"@eslint/js@npm:9.19.0":
+  version: 9.19.0
+  resolution: "@eslint/js@npm:9.19.0"
+  checksum: bf4077b390894408408c8b5ca48c2cdaf91bce94e0a3b7ff4e79a2cb2d3ecc76d87b52b30af812285acf550e7a849138d2aad2cab0b0b5c0c9f7944fd45ba31f
   languageName: node
   linkType: hard
 
@@ -200,20 +200,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.10.7
-  resolution: "@types/node@npm:22.10.7"
+  version: 22.12.0
+  resolution: "@types/node@npm:22.12.0"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 2dce6c75c607c6269744f1ea2b5296e8685cd71d0dd5c599c3029626f9d2dc8b037912495cf68b30d6f39f44d3fa8b025e179662ef16dc363e0658425bedfde8
+  checksum: 2f6dd04abebc456900f7dab2311f63ab361818cd3ecf5078b72c63ed416a38a3e72711669a26cec070e0d2e09d7661976f7d1fa3fc029eb9383f0f7e421a1d55
   languageName: node
   linkType: hard
 
 "@types/node@npm:^20.9.0":
-  version: 20.17.14
-  resolution: "@types/node@npm:20.17.14"
+  version: 20.17.16
+  resolution: "@types/node@npm:20.17.16"
   dependencies:
     undici-types: ~6.19.2
-  checksum: a5a775f57271e5a73c9e1afc4f6ea0d24cb9b4856e3d7d1788ff9ba0cc3e3a90e7883383f183f193a36eed0c758809df626a9ad653458a06d4fc82644d89b6e0
+  checksum: dd19c04c592b602f20448187b4b6ab0293f22173a8bbe53aa3b559188f078b5261d748a107b84ee0580e2074cda760049b13d6e210f9850039bead01cb666a3f
   languageName: node
   linkType: hard
 
@@ -617,25 +617,25 @@ __metadata:
   linkType: hard
 
 "electron-store@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "electron-store@npm:10.0.0"
+  version: 10.0.1
+  resolution: "electron-store@npm:10.0.1"
   dependencies:
     conf: ^13.0.0
     type-fest: ^4.20.0
-  checksum: 1e624d0fc0f62bac7cacc210e09b0aa9706c9661d1c7a7b428731b9af728d58dcadaf1b690a769ff6c6e2e7e2224855233d88b658fcbb092d0345e2d5a469dfd
+  checksum: f80a02a226128f89bed0e6ba9ae28e75ba86acb7a922697ddc16b1014c9a6925dbb5f9024ee7fc500f74a4e389e158ee4889c84d91dcb861bd68f4934276af6c
   languageName: node
   linkType: hard
 
 "electron@npm:latest":
-  version: 34.0.0
-  resolution: "electron@npm:34.0.0"
+  version: 34.0.1
+  resolution: "electron@npm:34.0.1"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^20.9.0
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 0ee9a4bb3444cf13f8d0eeef928f9d8feee33d919c414672d794d6332d81fe3740c781060eba5374417742dd9f8159da2050c0fc14fac64d143be8ccb53e280c
+  checksum: 8bf0d9757e58379f2b60afed86a70b19a2326559d9c582a96d0970a13c68946c6db74759fd9036ab8971fa8009481a0f6d74c3dbbd413dd0bf31f1f280fa27e9
   languageName: node
   linkType: hard
 
@@ -735,16 +735,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.17.0":
-  version: 9.18.0
-  resolution: "eslint@npm:9.18.0"
+"eslint@npm:^9.19.0":
+  version: 9.19.0
+  resolution: "eslint@npm:9.19.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.12.1
     "@eslint/config-array": ^0.19.0
     "@eslint/core": ^0.10.0
     "@eslint/eslintrc": ^3.2.0
-    "@eslint/js": 9.18.0
+    "@eslint/js": 9.19.0
     "@eslint/plugin-kit": ^0.2.5
     "@humanfs/node": ^0.16.6
     "@humanwhocodes/module-importer": ^1.0.1
@@ -780,7 +780,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 5e05ae9d25a42ae8cad86a0118ea45107b42446f3614cd0ba822affa3eb85d746e0820529b1fde72820f24aa3c3447d3260505a5ee5e95be1b8b7455740a2256
+  checksum: 173c77ac3fd8fa69a9367c457f8048088450911f6f927b189bcc2fd1dcca71422346952cdb7217948d692f67b3e36238f5264717187e83a1cdbd1b37b89e3877
   languageName: node
   linkType: hard
 
@@ -1441,7 +1441,7 @@ __metadata:
     electron: latest
     electron-context-menu: ^4.0.4
     electron-store: ^10.0.0
-    eslint: ^9.17.0
+    eslint: ^9.19.0
   languageName: unknown
   linkType: soft
 
