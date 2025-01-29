@@ -3370,7 +3370,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.14":
+"@types/prop-types@npm:^15.7.14":
   version: 15.7.14
   resolution: "@types/prop-types@npm:15.7.14"
   checksum: d0c5407b9ccc3dd5fae0ccf9b1007e7622ba5e6f1c18399b4f24dff33619d469da4b9fa918a374f19dc0d9fe6a013362aab0b844b606cfc10676efba3f5f736d
@@ -3395,13 +3395,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.2":
-  version: 18.3.18
-  resolution: "@types/react@npm:18.3.18"
+"@types/react@npm:^19.0.8":
+  version: 19.0.8
+  resolution: "@types/react@npm:19.0.8"
   dependencies:
-    "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 5933597bc9f53e282f0438f0bb76d0f0fab60faabe760ea806e05ffe6f5c61b9b4d363e1a03a8fea47c510d493c6cf926cdeeba9f7074fa97b61940c350245e7
+  checksum: 80dd2e7fa4b3e0ea2d883c21317563f4af1c4d90a6250c8bcbc052079304dc3335369267026004ed5d7cac09c7b0026e02e71ae5cca3150643507e353219fe47
   languageName: node
   linkType: hard
 
@@ -13173,6 +13172,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react@npm:19.0.0"
+  checksum: 86de15d85b2465feb40297a90319c325cb07cf27191a361d47bcfe8c6126c973d660125aa67b8f4cbbe39f15a2f32efd0c814e98196d8e5b68c567ba40a399c6
+  languageName: node
+  linkType: hard
+
 "read-only-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "read-only-stream@npm:2.0.0"
@@ -13613,7 +13619,7 @@ __metadata:
     "@testing-library/user-event": ^14.5.2
     "@types/classnames": ^2.3.4
     "@types/jest": ^29.5.4
-    "@types/react": ^18.0.2
+    "@types/react": ^19.0.8
     "@types/react-dom": ^18.0.0
     "@xterm/addon-fit": ^0.10.0
     "@xterm/addon-search": ^0.15.0
@@ -13677,7 +13683,7 @@ __metadata:
     process: ^0.11.10
     prop-types: ^15.7.2
     rc-dock: ^3.2.9
-    react: ^18.2.0
+    react: ^19.0.0
     react-arborist: ^3.2.0
     react-aspen: ^1.1.0
     react-checkbox-tree: ^1.7.2
