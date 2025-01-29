@@ -37,6 +37,7 @@ import { useSchemaState } from './hooks';
 import { getForQueryParams } from './common';
 import { QueryToolIcon } from '../components/ExternalIcon';
 import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
+import { WORKSPACES } from '../../../browser/static/js/constants';
 
 
 /* If its the dialog */
@@ -167,9 +168,9 @@ export default function SchemaDialogView({
       return <PublishIcon />;
     } else if(props.customSaveBtnIconType == 'done') {
       return <DoneIcon />;
-    } else if(props.customSaveBtnIconType == 'Query Tool') {
+    } else if(props.customSaveBtnIconType == WORKSPACES.QUERY_TOOL) {
       return <QueryToolIcon />;
-    } else if(props.customSaveBtnIconType == 'PSQL') {
+    } else if(props.customSaveBtnIconType == WORKSPACES.PSQL_TOOL) {
       return <TerminalRoundedIcon style={{width:'unset'}}/>;
     }
     return <SaveIcon />;

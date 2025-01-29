@@ -95,23 +95,24 @@ def adhoc_connect_server():
     connection_params = convert_connection_parameter(
         data.get('connection_params', []))
 
-    if 'hostaddr' in connection_params and \
-            not is_valid_ipaddress(connection_params['hostaddr']):
-        return make_json_response(
-            success=0,
-            status=400,
-            errormsg=gettext('Not a valid Host address')
-        )
+    if connection_params is not None:
+        if 'hostaddr' in connection_params and \
+                not is_valid_ipaddress(connection_params['hostaddr']):
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=gettext('Not a valid Host address')
+            )
 
-    # To check ssl configuration
-    _, connection_params = check_ssl_fields(connection_params)
-    # set the connection params again in the data
-    if 'connection_params' in data:
-        data['connection_params'] = connection_params
+        # To check ssl configuration
+        _, connection_params = check_ssl_fields(connection_params)
+        # set the connection params again in the data
+        if 'connection_params' in data:
+            data['connection_params'] = connection_params
 
     # Fetch all the new data in case of non-existing servers
     new_host = data.get('host', None)
-    new_port = data.get('port', None)
+    new_port = int(data.get('port', 0))
     new_db = data.get('database_name', None)
     if new_db is None:
         new_db = data.get('did')

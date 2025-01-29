@@ -67,6 +67,9 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({stripedRows, theme})=>({
     outlineColor: theme.palette.primary.main,
     backgroundColor: theme.palette.primary.light,
     color: theme.otherVars.qtDatagridSelectFg,
+    '&.rdg-cell-copied[aria-selected=false][role="gridcell"]': {
+      backgroundColor: theme.palette.primary.light + '!important',
+    }
   },
   ... stripedRows && {'& .rdg-row.rdg-row-even': {
     backgroundColor: theme.palette.grey[400],

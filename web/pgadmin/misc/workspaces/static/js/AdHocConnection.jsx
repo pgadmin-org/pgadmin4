@@ -149,12 +149,15 @@ class AdHocConnectionSchema extends BaseUISchema {
           optionsReloadBasis: `${self.flatServers.map((s) => s.connected).join('')}${state.connection_refresh}`,
         }),
         depChange: (state, source)=>{
-          if(source == 'connection_refresh') return;
-          /* Once the option is selected get the name */
-          /* Force sid to null, and set only if connected */
+          // Check for connection status
           let selectedServer = _.find(
             self.flatServers, (s) => s.value == state.sid
           );
+          if(source.includes('connection_refresh')) {
+            return {
+              connected: selectedServer?.connected
+            };
+          }
           return {
             server_name: null,
             did: null,
@@ -205,7 +208,7 @@ class AdHocConnectionSchema extends BaseUISchema {
         disabled: (state) => state.sid,
       },{
         id: 'did', label: gettext('Database'), deps: ['sid', 'connected'],
-        noEmpty: true, controlProps: {creatable: true},
+        controlProps: {creatable: true},
         type: (state) => {
           if (state?.sid) {
             return {
@@ -303,15 +306,6 @@ class AdHocConnectionSchema extends BaseUISchema {
           setError('host', null);
         }
       }
-
-      if(isEmptyString(state.username)) {
-        errmsg = gettext('Username must be specified.');
-        setError('username', errmsg);
-        return true;
-      } else {
-        setError('username', null);
-      }
-
       if(isEmptyString(state.port)) {
         errmsg = gettext('Port must be specified.');
         setError('port', errmsg);
@@ -319,8 +313,24 @@ class AdHocConnectionSchema extends BaseUISchema {
       } else {
         setError('port', null);
       }
+
+      if(isEmptyString(state.did)) {
+        errmsg = gettext('Database must be specified.');
+        setError('did', errmsg);
+        return true;
+      } else {
+        setError('did', null);
+      }
+
+      if(isEmptyString(state.user)) {
+        errmsg = gettext('User must be specified.');
+        setError('user', errmsg);
+        return true;
+      } else {
+        setError('user', null);
+      }
     } else {
-      _.each(['host', 'db', 'username', 'port'], (item) => {
+      _.each(['host', 'port', 'did', 'user'], (item) => {
         setError(item, null);
       });
     }
