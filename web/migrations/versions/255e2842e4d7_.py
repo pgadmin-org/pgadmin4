@@ -32,6 +32,9 @@ def upgrade():
             batch_op.alter_column('id', autoincrement=True)
         batch_op.add_column(sa.Column('is_adhoc', sa.Integer(),
                                       server_default='0'))
+        batch_op.alter_column('tunnel_password',
+                              existing_type=sa.String(length=64),
+                              type_=sa.String())
 
 
 def downgrade():

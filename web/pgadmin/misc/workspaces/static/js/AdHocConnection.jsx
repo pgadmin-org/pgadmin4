@@ -482,6 +482,7 @@ export default function AdHocConnection({mode}) {
               data={error.response?.data?.result}
               onOK={(okFormData)=>{
                 formData['password'] = okFormData.get('password');
+                formData['tunnel_password'] = okFormData.get('tunnel_password');
                 onSaveClick(isNew, formData);
               }}
               hideSavePassword={true}

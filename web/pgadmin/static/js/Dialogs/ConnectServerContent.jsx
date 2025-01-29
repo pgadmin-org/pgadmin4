@@ -73,7 +73,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
             <InputText inputRef={firstEleRef} type="password" value={formData['tunnel_password']} controlProps={{maxLength:null, autoComplete:'new-password'}}
               onChange={(e)=>onTextChange(e, 'tunnel_password')} onKeyDown={(e)=>onKeyDown(e)} />
           </Box>
-          <Box marginTop='12px' marginBottom='12px' visibility={data.hide_save_tunnel_password ? 'hidden' : 'unset'}>
+          <Box marginTop='12px' marginBottom='12px' visibility={hideSavePassword ? 'hidden' : 'unset'}>
             <InputCheckbox controlProps={{label: gettext('Save Password')}} value={formData['save_tunnel_password']}
               onChange={(e)=>onTextChange(e.target.checked, 'save_tunnel_password')} disabled={!data.allow_save_tunnel_password} />
           </Box>

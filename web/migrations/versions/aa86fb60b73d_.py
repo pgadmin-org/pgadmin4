@@ -24,7 +24,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('server', sa.Column('tunnel_password', sa.String(length=64)))
+    op.add_column('server', sa.Column('tunnel_password', sa.String()))
 
 
 def downgrade():
