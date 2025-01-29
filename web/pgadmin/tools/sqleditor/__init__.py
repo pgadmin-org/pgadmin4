@@ -258,6 +258,18 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     else:
         sql_grid_data = session['gridData']
 
+    # if server disconnected and server password not saved, once re-connected
+    # it will check for the old transaction object and restore the filter_sql
+    # and data_sorting keys of the filter dialog into the
+    # newly created command object.
+    if str(trans_id) in sql_grid_data:
+        old_trans_obj = pickle.loads(
+            sql_grid_data[str(trans_id)]['command_obj'])
+        if old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
+            command_obj.set_filter(old_trans_obj._row_filter)
+            command_obj.set_data_sorting(
+                dict(data_sorting=old_trans_obj._data_sorting), True)
+
     # Use pickle to store the command object which will be used later by the
     # sql grid module.
     sql_grid_data[str(trans_id)] = {
