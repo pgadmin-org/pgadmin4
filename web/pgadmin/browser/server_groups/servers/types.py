@@ -203,7 +203,7 @@ class ServerType():
                     bin_path['binaryPath'].strip() != '':
                 return bin_path['binaryPath']
 
-            if bin_path['isDefault']:
+            if bin_path['isDefault'] and bin_path['binaryPath'] != '':
                 default_path = bin_path['binaryPath']
 
         return default_path

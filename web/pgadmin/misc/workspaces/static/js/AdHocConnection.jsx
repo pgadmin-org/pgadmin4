@@ -465,7 +465,7 @@ export default function AdHocConnection({mode}) {
       });
       if (mode == WORKSPACES.QUERY_TOOL) {
         openQueryTool(respData, formData);
-      } else if (mode == WORKSPACES.PSQL_TOOL) {
+      } else if (mode == WORKSPACES.PSQL_TOOL && pgAdmin['enable_psql']) {
         openPSQLTool(respData, formData);
       }
     } catch (error) {
