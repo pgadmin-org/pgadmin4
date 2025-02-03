@@ -2497,13 +2497,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.23.2":
-  version: 7.24.1
-  resolution: "@mui/x-date-pickers@npm:7.24.1"
+"@mui/x-date-pickers@npm:^7.25.0":
+  version: 7.25.0
+  resolution: "@mui/x-date-pickers@npm:7.25.0"
   dependencies:
     "@babel/runtime": ^7.25.7
     "@mui/utils": ^5.16.6 || ^6.0.0
-    "@mui/x-internals": 7.24.1
+    "@mui/x-internals": 7.25.0
     "@types/react-transition-group": ^4.4.11
     clsx: ^2.1.1
     prop-types: ^15.8.1
@@ -2541,19 +2541,19 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 12e77af6ecb4e791ff11fa2957223f2fa3dddce81073319fe872377b6dca08a6e20070f6eaf487c6cf7b6f07297f77948cbdde7d4e872a74bcfa0536072a67e1
+  checksum: 9f690cf16e0cd4836652ed2d9b3d3ffd5c3b171fce999c8e2d4c7789a146cca5ba30c5aa9f4ec533608da405528bd649ec914e42aaa75eda6393c05e466d6508
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:7.24.1":
-  version: 7.24.1
-  resolution: "@mui/x-internals@npm:7.24.1"
+"@mui/x-internals@npm:7.25.0":
+  version: 7.25.0
+  resolution: "@mui/x-internals@npm:7.25.0"
   dependencies:
     "@babel/runtime": ^7.25.7
     "@mui/utils": ^5.16.6 || ^6.0.0
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: b113eba3fa521d393b27cb015a46ac634b1a2de55dade8cc99f1428be55722311ad34e016e70ca6a594df57f4e18e435066e4f7ef642a93a8350766b4ddb1955
+  checksum: f99a6a1d85058b5372f3e74c79d93c0b77a21d499aa84652c929940984b8790abbd0ce9c4b56dfb48d2bf265574ecbca66db083e064cce33a595c4e3830a83c2
   languageName: node
   linkType: hard
 
@@ -13599,7 +13599,7 @@ __metadata:
     "@mui/icons-material": ^6.4.0
     "@mui/lab": ^6.0.0-beta.16
     "@mui/material": ^6.1.10
-    "@mui/x-date-pickers": ^7.23.2
+    "@mui/x-date-pickers": ^7.25.0
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
