@@ -601,7 +601,7 @@ class TablespaceView(PGChildNodeView):
         if not old_data['name'].startswith('pg_'):
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=old_data
+                data=old_data, conn=self.conn
             )
             SQL += "\n"
         SQL += render_template(
