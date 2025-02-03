@@ -18,7 +18,7 @@
 
 # Application version number components
 APP_RELEASE = 9
-APP_REVISION = 00
+APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.

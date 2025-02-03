@@ -180,6 +180,7 @@ class AdHocConnectionSchema extends BaseUISchema {
             if(sid && !_.find(self.flatServers, (s) => s.value == sid)?.connected) {
               this.connectExistingServer(sid, state.user, null, (data) => {
                 self.setServerConnected(sid, data.icon);
+                selectedServer.connected = true;
                 resolve(() => ({ sid: sid, server_name:selectedServer?.label, host: selectedServer?.host,
                   port: selectedServer?.port, service: selectedServer?.service,
                   connection_params: selectedServer?.connection_params, connected: true

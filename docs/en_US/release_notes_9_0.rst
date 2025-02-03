@@ -53,3 +53,4 @@ Bug fixes
   | `Issue #8320 <https://github.com/pgadmin-org/pgadmin4/issues/8320>`_ -  Fix an issue where wrong information is shown after using the filter on the Dashboard> State tab.
   | `Issue #8365 <https://github.com/pgadmin-org/pgadmin4/issues/8365>`_ -  Fixed an issue where PSQL tool is not opening if database name have HTML characters in the name.
   | `Issue #8369 <https://github.com/pgadmin-org/pgadmin4/issues/8369>`_ -  Fixed an issue where Default Privileges and Privileges not working correctly.
+  | `Issue #8408 <https://github.com/pgadmin-org/pgadmin4/issues/8408>`_ -  Fixed an issue where quotes were missing in the CREATE script for the tablespace.
