@@ -153,8 +153,7 @@ var
 begin
   sUnInstRegKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppName}{#CheckOldInstallerVersion}_is1';
   sUnInstPath := '';
-  if not RegQueryStringValue(HKLM, sUnInstRegKey, 'UninstallString', sUnInstPath) then
-    RegQueryStringValue(HKCU, sUnInstRegKey, 'UninstallString', sUnInstPath);
+  RegQueryStringValue(HKA, sUnInstRegKey, 'UninstallString', sUnInstPath);
   Result := sUnInstPath;
 end;
 
@@ -188,7 +187,7 @@ function CheckPgAdminAlreadyInstalled: Boolean;
 var
   Version: String;
 begin
-  if RegKeyExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#CheckOldInstallerVersion}') then
+  if RegKeyExists(HKA,'Software\{#MyAppName}\{#CheckOldInstallerVersion}') then
   begin
     if UnInstallOldVersion() < 3 then
     begin
@@ -196,10 +195,10 @@ begin
     end;
   end;
 
-  if RegValueExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}', 'Version') then
+  if RegValueExists(HKA,'Software\{#MyAppName}', 'Version') then
   begin
     UpgradeMode := True;
-    RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}', 'Version', Version);
+    RegQueryStringValue(HKA,'Software\{#MyAppName}', 'Version', Version);
     if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
     begin
       MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
