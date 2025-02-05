@@ -8,9 +8,8 @@
 #define MyAppArchitecturesMode "x64"
 #define MyAppVCDist MYAPP_VCDIST
 #define MyAppInvalidPath "Please provide a valid path."
-#define MyAppErrorMsgIsWin32 "You already have a 32 bit installation of pgAdmin 4. Please uninstall this before installing the 64 bit version."
-#define MyAppErrorMsgIsWin64 "You already have a 64 bit installation of pgAdmin 4. Please uninstall this before installing the 32 bit version."
 #define MinimumWindowsVer "6.2.9200"
+#define CheckOldInstallerVersion "v8"
 
 [Setup]
 AppId={#MyAppName}{#MyAppVersion}
@@ -51,7 +50,7 @@ english.NewerVersionExists=A newer version of {#MyAppName}
 english.InvalidPath={#MyAppInvalidPath}
 
 [Icons]
-Name: {group}\{#MyAppName} {#MyAppVersion}; Filename: {app}\runtime\{#MyAppExeName}; IconFilename: {app}\pgAdmin4.ico; WorkingDir: {app}\runtime;
+Name: {group}\{#MyAppName}; Filename: {app}\runtime\{#MyAppExeName}; IconFilename: {app}\pgAdmin4.ico; WorkingDir: {app}\runtime;
 
 [Files]
 Source: "..\..\win-build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs;
@@ -60,10 +59,10 @@ Source: "..\..\win-build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 Filename: "{app}\installer\{#MyAppVCDist}"; StatusMsg: "VC runtime redistributable package"; Parameters: "/passive /verysilent /norestart"; Check: InstallVC;
 
 [Registry]
-Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekeyifempty
-Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
-Root: HKA; Subkey: "Software\{#MyAppName}\{#MyAppVersion}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
+Root: HKA; Subkey: "Software\{#MyAppName}"; Flags: uninsdeletekeyifempty
+Root: HKA; Subkey: "Software\{#MyAppName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\{#MyAppName}"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
+Root: HKA; Subkey: "Software\{#MyAppName}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
 
 [Code]
 var
@@ -145,68 +144,77 @@ begin
   Result := 0;
 end;
 
+// This function is invoked only when the V8 version is already installed.
+// It retrieves the path of the uninstaller to remove the installed V8 version.
+function GetUninstallerPath(): String;
+var
+  sUnInstRegKey: String;
+  sUnInstPath: String;
+begin
+  sUnInstRegKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppName}{#CheckOldInstallerVersion}_is1';
+  sUnInstPath := '';
+  if not RegQueryStringValue(HKLM, sUnInstRegKey, 'UninstallString', sUnInstPath) then
+    RegQueryStringValue(HKCU, sUnInstRegKey, 'UninstallString', sUnInstPath);
+  Result := sUnInstPath;
+end;
+
+// This function is invoked only when the V8 version is already installed.
+// It is used to uninstall the installed V8 version.
+// Return Values:
+// 1 - Uninstaller path is empty.
+// 2 - Error executing the Uninstaller.
+// 3 - Successfully executed the Uninstaller
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallerPath: String;
+  iResultCode: Integer;
+begin
+  // default return value
+  Result := 0;
+
+  // get the uninstall path of the old app
+  sUnInstallerPath := GetUninstallerPath();
+  if sUnInstallerPath <> '' then begin
+    sUnInstallerPath := RemoveQuotes(sUnInstallerPath);
+    if Exec(sUnInstallerPath, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
 function CheckPgAdminAlreadyInstalled: Boolean;
 var
   Version: String;
-  InstallationFound: Boolean;
 begin
-  InstallationFound := False;
-  // Check the installation mode 64 or 32 bit of installer
-  if Is64BitInstallMode then
+  if RegKeyExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#CheckOldInstallerVersion}') then
   begin
-
-    // Check if pgAdmin 32 bit is already installed
-    RegQueryStringValue(HKLM32,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-
-    // If version is found then shouldn't install 64bit - abort
-    if Length(Version) > 0 then
+    if UnInstallOldVersion() < 3 then
     begin
-      MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin32}'), mbCriticalError, MB_OK);
-	  Result := False;
-	  InstallationFound := True;
+      Result := False;
     end;
-  end
-  else
-  begin
-    // Suppose system is running a 32-bit version of Windows then no need to check HKLM64 in RegQueryStringValue
-    // So IsWin64 - will make sure its should only execute on 64-bit version of windows.
-    if IsWin64 then
-	begin
-        // Check if pgAdmin 64 bit is already installed
-        RegQueryStringValue(HKLM64,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-
-        // If version is found the shouldn't install 32bit - abort
-        if Length(Version) > 0 then
-        begin
-          MsgBox(ExpandConstant('{#MyAppErrorMsgIsWin64}'), mbCriticalError, MB_OK);
-	      Result := False;
-	      InstallationFound := True;
-	    end;
-	end;
- end;
-
-  if  not (InstallationFound) then
-  begin
-     if RegValueExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version') then
-     begin
-       UpgradeMode := True;
-       RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}\{#MyAppVersion}', 'Version', Version);
-       if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
-       begin
-         MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
-         Result := False;
-       end
-	   else
-       begin
-        Result := True;
-       end;
-     end;
   end;
 
-  if  ( not (InstallationFound) and not (UpgradeMode) ) then
+  if RegValueExists(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}', 'Version') then
   begin
-   // This is required as it will be passed on to the InitializeSetup function
-   Result := True;
+    UpgradeMode := True;
+    RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\{#MyAppName}', 'Version', Version);
+    if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
+    begin
+      MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
+      Result := False;
+    end
+    else
+    begin
+      Result := True;
+    end;
+  end;
+
+  if  ( not (UpgradeMode) ) then
+  begin
+    // This is required as it will be passed on to the InitializeSetup function
+    Result := True;
   end;
 end;
 
