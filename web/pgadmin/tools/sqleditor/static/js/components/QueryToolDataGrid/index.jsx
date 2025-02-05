@@ -76,10 +76,10 @@ const StyledPgReactDataGrid = styled(PgReactDataGrid)(({stripedRows, theme})=>({
   }},
   '& .rdg-row': {
     '& .rdg-cell:nth-of-type(1)': {
-      backgroundColor: theme.palette.grey[600],
+      backgroundColor: theme.palette.grey[600] + '!important',
     },
     '&[aria-selected="true"] .rdg-cell:nth-of-type(1)': {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.main + '!important',
       color: theme.palette.primary.contrastText,
     }
   },
@@ -160,7 +160,7 @@ function SelectAllHeaderRenderer({isCellSelected}) {
   }, [isRowSelected]);
 
   return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
-    tabIndex="-1" onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)}></div>;
+    tabIndex="0" onKeyDown={(e)=>dataGridExtras.handleShortcuts(e, true)}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   isCellSelected: PropTypes.bool,

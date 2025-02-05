@@ -18,6 +18,9 @@ import threading
 import math
 
 import json
+
+from sqlalchemy import or_
+
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
 from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
@@ -2353,7 +2356,9 @@ def get_new_connection_data(sgid=None, sid=None):
         server_groups = ServerGroup.query.all()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
-        servers = Server.query.filter(Server.is_adhoc == 0)
+        servers = Server.query.filter(
+            or_(Server.user_id == current_user.id, Server.shared),
+            Server.is_adhoc == 0)
 
         for server in servers:
             manager = driver.connection_manager(server.id)
