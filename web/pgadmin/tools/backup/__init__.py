@@ -368,17 +368,17 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     if 'objects' in data:
         selected_objects = data.get('objects', {})
         for _key in selected_objects:
-            param = 'schema' if _key == 'schema' else 'table'
+            selected_key = 'schema' if _key == 'schema' else 'table'
             args.extend(
                 functools.reduce(operator.iconcat, map(
-                    lambda s: [f'--{param}',
-                               r'{0}.{1}'.format(
-                                   driver.qtIdent(conn, s['schema']).replace(
-                                       '"', '\"'),
-                                   driver.qtIdent(conn, s['name']).replace(
-                                       '"', '\"')) if type(
-                                   s) is dict else driver.qtIdent(
-                                   conn, s).replace('"', '\"')],
+                    lambda s, param=selected_key:[
+                        f'--{param}',
+                        r'{0}.{1}'.format(
+                            driver.qtIdent(conn, s['schema']).
+                            replace('"', '\"'),
+                            driver.qtIdent(conn, s['name']).replace('"', '\"'))
+                        if type(s) is dict
+                        else driver.qtIdent(conn, s).replace('"', '\"')],
                     selected_objects[_key] or []), [])
             )
 

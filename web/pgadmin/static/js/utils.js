@@ -48,6 +48,16 @@ export function isShortcutValue(obj) {
   return [obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k));
 }
 
+
+export function getEnterKeyHandler(clickHandler) {
+  return (e)=>{
+    if(e.code === 'Enter'){
+      e.preventDefault();
+      clickHandler(e);
+    }
+  };
+}
+
 // Convert shortcut obj to codemirror key format
 export function toCodeMirrorKey(obj) {
   let shortcut = '';

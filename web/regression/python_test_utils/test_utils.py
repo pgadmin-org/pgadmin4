@@ -1877,7 +1877,7 @@ def module_patch(*args):
 
             # module was imported, let's use it in the patch
             patch = mock.patch(*args)
-            patch.getter = lambda: imported
+            patch.getter = lambda imported_module=imported:imported_module
             patch.attribute = '.'.join(components[i:])
             return patch
         except Exception:
