@@ -402,7 +402,8 @@ CHECK_EMAIL_DELIVERABILITY = False
 SECURITY_EMAIL_VALIDATOR_ARGS = \
     {"check_deliverability": CHECK_EMAIL_DELIVERABILITY}
 ALLOW_SPECIAL_EMAIL_DOMAINS = []
-
+# Disables global deliverable check while email validation
+GLOBALLY_DELIVERABLE = True
 ##########################################################################
 # Upgrade checks
 ##########################################################################
