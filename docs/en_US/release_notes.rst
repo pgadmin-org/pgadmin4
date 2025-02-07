@@ -12,6 +12,7 @@ notes for it.
    :maxdepth: 1
 
 
+   release_notes_9_1
    release_notes_9_0
    release_notes_8_14
    release_notes_8_13
