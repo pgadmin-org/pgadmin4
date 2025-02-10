@@ -1,5 +1,7 @@
 SELECT DISTINCT att.attname as name, att.attnum as OID, pg_catalog.format_type(ty.oid,NULL) AS datatype,
-att.attnotnull as not_null, att.atthasdef as has_default_val, des.description, seq.seqtypid
+att.attnotnull as not_null,
+CASE WHEN att.atthasdef OR att.attidentity != '' THEN True
+ELSE False END as has_default_val, des.description, seq.seqtypid
 FROM pg_catalog.pg_attribute att
     JOIN pg_catalog.pg_type ty ON ty.oid=atttypid
     JOIN pg_catalog.pg_namespace tn ON tn.oid=ty.typnamespace
