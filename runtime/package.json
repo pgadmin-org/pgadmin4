@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
-    "electron-context-menu": "^4.0.4",
+    "electron-context-menu": "^4.0.5",
     "electron-store": "^10.0.0"
   }
 }
