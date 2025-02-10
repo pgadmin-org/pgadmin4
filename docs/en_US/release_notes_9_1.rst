@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #5128 <https://github.com/pgadmin-org/pgadmin4/issues/5128>`_ -  Add support for one to one relationship in the ERD tool.
 
 Housekeeping
 ************
@@ -28,3 +29,5 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8341 <https://github.com/pgadmin-org/pgadmin4/issues/8341>`_ -  Fixed an issue where the query tool was not treating IDENTITY columns as columns with default values when inserting new rows.
+  | `Issue #8410 <https://github.com/pgadmin-org/pgadmin4/issues/8410>`_ -  Fixed Docker image entrypoint.sh email validation.
