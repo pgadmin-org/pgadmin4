@@ -54,6 +54,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
     'save': true,
     'edit-table': true,
     'clone-table': true,
+    'one-to-one': true,
     'one-to-many': true,
     'many-to-many': true,
     'show-note': true,
@@ -121,6 +122,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.SINGLE_NODE_SELECTED, (selected)=>{
         setDisableButton('edit-table', !selected);
         setDisableButton('clone-table', !selected);
+        setDisableButton('one-to-one', !selected);
         setDisableButton('one-to-many', !selected);
         setDisableButton('many-to-many', !selected);
         setDisableButton('show-note', !selected);
@@ -210,12 +212,17 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
             }} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
-          <PgIconButton title={gettext('One-to-Many Relation')} icon={<span style={{letterSpacing: '-1px'}}>1M</span>}
+          <PgIconButton title={gettext('One-to-One Relation')} icon={<span style={{letterSpacing: '-1px'}}>1 - 1</span>}
+            shortcut={preferences.one_to_one} disabled={buttonsDisabled['one-to-one']}
+            onClick={()=>{
+              eventBus.fireEvent(ERD_EVENTS.ONE_TO_ONE);
+            }} />
+          <PgIconButton title={gettext('One-to-Many Relation')} icon={<span style={{letterSpacing: '-1px'}}>1 - M</span>}
             shortcut={preferences.one_to_many} disabled={buttonsDisabled['one-to-many']}
             onClick={()=>{
               eventBus.fireEvent(ERD_EVENTS.ONE_TO_MANY);
             }} />
-          <PgIconButton title={gettext('Many-to-Many Relation')} icon={<span style={{letterSpacing: '-1px'}}>MM</span>}
+          <PgIconButton title={gettext('Many-to-Many Relation')} icon={<span style={{letterSpacing: '-1px'}}>M - M</span>}
             shortcut={preferences.many_to_many} disabled={buttonsDisabled['many-to-many']}
             onClick={()=>{
               eventBus.fireEvent(ERD_EVENTS.MANY_TO_MANY);

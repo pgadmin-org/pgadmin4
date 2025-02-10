@@ -22,6 +22,8 @@ import ForeignKeySchema from '../../../../../browser/server_groups/servers/datab
 import diffArray from 'diff-arrays-of-objects';
 import TableSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import ColumnSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
+import UniqueConstraintSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui';
+import PrimaryKeySchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui';
 import { boundingBoxFromPolygons } from '@projectstorm/geometry';
 
 export default class ERDCore {
@@ -337,18 +339,19 @@ export default class ERDCore {
     let tableData = tableNode.getData();
     /* Remove the links if column dropped or primary key removed */
     _.differenceWith(oldTableData.columns, tableData.columns, function(existing, incoming) {
-      if(existing.attnum == incoming.attnum && existing.is_primary_key && !incoming.is_primary_key) {
-        return false;
-      }
       return existing.attnum == incoming.attnum;
     }).forEach((col)=>{
-      let existPort = tableNode.getPort(tableNode.getPortName(col.attnum));
-      if(existPort) {
-        Object.values(existPort.getLinks()).forEach((link)=>{
-          self.removeOneToManyLink(link);
-        });
-        tableNode.removePort(existPort);
-      }
+      this.getLeftRightPorts(tableNode, col.attnum).forEach(port => {
+        if (port) {
+          Object.values(port.getLinks()).forEach(link => {
+            self.removeOneToManyLink(link);
+          });
+          tableNode.removePort(port);
+        }
+      });
+    });
+    Object.values(tableNode.getLinks()).forEach(link=>{
+      link.fireEvent({},'updateLink');
     });
   }
 
@@ -482,6 +485,31 @@ export default class ERDCore {
         columns: [col],
       })
     );
+    // Below logic is to add one to one relationship
+    if(onetomanyData.constraint_type === 'primary_key') {
+      let newPk = new PrimaryKeySchema({},{});
+      let pkCol = {};
+      let column = _.find(targetNode.getColumns(), (colm)=>colm.attnum==onetomanyData.local_column_attnum);
+      column.is_primary_key = true;
+      pkCol.column =column.name;
+      tableData.primary_key = tableData.primary_key || [];
+      tableData.primary_key.push(
+        newPk.getNewData({
+          columns: [pkCol]
+        })
+      );
+
+    } else if (onetomanyData.constraint_type === 'unique') {
+      let newUk = new UniqueConstraintSchema({},{});
+      let ukCol = {};
+      ukCol.column = _.find(targetNode.getColumns(), (colm)=>colm.attnum==onetomanyData.local_column_attnum).name;
+      tableData.unique_constraint = tableData.unique_constraint || [];
+      tableData.unique_constraint.push(
+        newUk.getNewData({
+          columns: [ukCol]
+        })
+      );
+    }
     targetNode.setData(tableData);
     let newLink = this.addLink(onetomanyData, 'onetomany');
     this.clearSelection();

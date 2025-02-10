@@ -45,6 +45,10 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
     this._data = {
       ...data,
     };
+    this._linkPointType = {
+      sourceType: 'one',
+      targetType: 'many'
+    };
   }
 
   getData() {
@@ -76,6 +80,22 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
       ...super.serialize(),
       data: this.getData(),
     };
+  }
+  
+  setPointType(nodesDict) {
+    let data = this.getData();
+    let target = nodesDict[data['local_table_uid']].getData();
+    let colName = _.find(target.columns, (col)=>data.local_column_attnum == col.attnum).name;
+    let {pkCols=[], ukCols=[]} = nodesDict[data['local_table_uid']].getConstraintCols();
+    let targetType = pkCols.includes(colName) || ukCols.includes(colName) ? 'one' : 'many';
+    this._linkPointType = {
+      ...this._linkPointType,
+      targetType,
+    };
+  }
+
+  getPointType() {
+    return this._linkPointType;
   }
 }
 
@@ -173,6 +193,22 @@ CustomLinkEndWidget.propTypes = {
 export class OneToManyLinkWidget extends RightAngleLinkWidget {
   constructor(props) {
     super(props);
+    this.state = {};
+    this.setPointType();
+    this.updateLinkListener = this.props.link.registerListener({
+      updateLink: ()=>{
+        this.setPointType();
+        this.setState({});
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.link.deregisterListener(this.updateLinkListener);
+  }
+
+  setPointType() {
+    this.props.link.setPointType(this.props.diagramEngine.getModel().getNodesDict());
   }
 
   endPointTranslation(alignment) {
@@ -259,9 +295,10 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
     //ensure id is present for all points on the path
     let points = this.props.link.getPoints();
     let paths = [];
+    let {sourceType, targetType} = this.props.link.getPointType();
 
-    let onePoint = this.addCustomWidgetPoint('one', this.props.link.getSourcePort(), points[0]);
-    let manyPoint = this.addCustomWidgetPoint('many', this.props.link.getTargetPort(), points[points.length-1]);
+    let onePoint = this.addCustomWidgetPoint(sourceType, this.props.link.getSourcePort(), points[0]);
+    let manyPoint = this.addCustomWidgetPoint(targetType, this.props.link.getTargetPort(), points[points.length-1]);
 
     if (!this.state.canDrag && points.length > 2) {
       // Those points and its position only will be moved

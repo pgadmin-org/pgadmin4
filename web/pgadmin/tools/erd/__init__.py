@@ -248,6 +248,24 @@ class ERDModule(PgAdminModule):
 
         self.preference.register(
             'keyboard_shortcuts',
+            'one_to_one',
+            gettext('One to one link'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': False,
+                'control': True,
+                'key': {
+                    'key_code': 66,
+                    'char': 'b'
+                }
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
             'one_to_many',
             gettext('One to many link'),
             'keyboardshortcut',

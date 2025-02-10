@@ -207,6 +207,22 @@ The table node shows table details in a graphical representation:
 * you can click on the node and drag to move on the canvas.
 * Upon double click on the table node or by clicking the edit button from the toolbar, the table dialog opens where you can change the table details. Refer :ref:`table dialog <table_dialog>` for information on different fields.
 
+The One to One Link Dialog
+***************************
+
+.. image:: images/erd_11_dialog.png
+    :alt: ERD tool 1-1 dialog
+    :align: center
+
+The one to one link dialog allows you to:
+
+* Add a one to one relationship between two tables.
+* *Local Table* is the table that references a table and has the *one* end point.
+* *Local Column* the column that references.
+* *Select Constraint* To implement one to one relationship, the *Local Column* must have primaty key or unique constraint. The default is a unique constraint. Please note that this field is visible only when the selected *Local Column* does not have either of the mentioned constraints.
+* *Referenced Table* is the table that is being referred and has the *one* end point.
+* *Referenced Column* the column that is being referred.
+
 The One to Many Link Dialog
 ***************************
 
