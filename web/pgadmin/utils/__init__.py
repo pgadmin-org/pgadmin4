@@ -380,7 +380,7 @@ def get_binary_path_versions(binary_path: str) -> dict:
             # if path doesn't exist raise exception
             if not os.path.isdir(binary_path):
                 current_app.logger.warning('Invalid binary path.')
-                raise Exception()
+                raise FileNotFoundError()
             # Get the output of the '--version' command
             cmd = subprocess.run(
                 [full_path, '--version'],
@@ -390,8 +390,6 @@ def get_binary_path_versions(binary_path: str) -> dict:
             )
             if cmd.returncode == 0:
                 ret[utility] = cmd.stdout.split(") ", 1)[1].strip()
-            else:
-                raise Exception()
         except Exception as _:
             continue
 

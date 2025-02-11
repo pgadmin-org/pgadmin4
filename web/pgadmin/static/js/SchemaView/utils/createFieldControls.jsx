@@ -154,33 +154,37 @@ export const createFieldControls = ({
           isPropertyMode ? 'Properties-controlRow' : 'FormView-controlRow';
       break;
     default:
-      {
-        control = (
-          hasView(field.type) ? View(field.type) : (
-            field.id ? MappedFormControl : StaticMappedFormControl
-          )
-        );
+      if (hasView(field.type)) {
+        control = View(field.type);
+      } else if (field.id) {
+        control = MappedFormControl;
+      } else {
+        control = StaticMappedFormControl;
+      }
 
-        if (inlineGroup) {
-          controlProps['withContainer'] = false;
-          controlProps['controlGridBasis'] = 3;
-        }
+      if (inlineGroup) {
+        controlProps['withContainer'] = false;
+        controlProps['controlGridBasis'] = 3;
+      }
 
-        controlProps['className'] = field.isFullTab ? '' : (
-          isPropertyMode ? 'Properties-controlRow' : 'FormView-controlRow'
-        );
+      if (field.isFullTab) {
+        controlProps['className'] = '';
+      } else if (isPropertyMode) {
+        controlProps['className'] = 'Properties-controlRow';
+      } else {
+        controlProps['className'] = 'FormView-controlRow';
+      }
 
-        if (field.id) {
-          controlProps['id'] = field.id;
-          controlProps['onChange'] = (changeValue) => {
-            // Get the changes on dependent fields as well.
-            dataDispatch?.({
-              type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-              path: controlProps.accessPath,
-              value: changeValue,
-            });
-          };
-        }
+      if (field.id) {
+        controlProps['id'] = field.id;
+        controlProps['onChange'] = (changeValue) => {
+          // Get the changes on dependent fields as well.
+          dataDispatch?.({
+            type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+            path: controlProps.accessPath,
+            value: changeValue,
+          });
+        };
       }
       break;
     }
