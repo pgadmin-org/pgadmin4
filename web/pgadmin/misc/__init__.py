@@ -105,6 +105,20 @@ class MiscModule(PgAdminModule):
                 'Diff tools.'
             )
         )
+        self.preference.register(
+            'user_interface', 'open_in_res_workspace',
+            gettext("Open the Query Tool/PSQL in their respective workspaces"),
+            'boolean', False,
+            category_label=PREF_LABEL_USER_INTERFACE,
+            help_str=gettext(
+                'This setting applies only when the layout is set to '
+                'Workspace Layout. When set to True, all Query Tool/PSQL '
+                'tabs will open in their respective workspaces. By default, '
+                'this setting is False, meaning that Query Tool/PSQL tabs '
+                'will open in the currently active workspace (either the '
+                'default or the workspace selected at the time of opening)'
+            )
+        )
 
     def get_exposed_url_endpoints(self):
         """

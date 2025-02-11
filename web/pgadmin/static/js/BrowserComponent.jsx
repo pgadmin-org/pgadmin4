@@ -80,16 +80,16 @@ let defaultLayout = {
         mode: 'horizontal',
         children: [
           {
-            size: 20,
+            size: 10,
             tabs: [
               LayoutDocker.getPanel({
-                id: BROWSER_PANELS.OBJECT_EXPLORER, title: gettext('Object Explorer'),
+                id: BROWSER_PANELS.OBJECT_EXPLORER, title: gettext(''),
                 content: <ObjectExplorer />, group: 'object-explorer'
               }),
             ],
           },
           {
-            size: 80,
+            size: 90,
             id: BROWSER_PANELS.MAIN,
             group: 'playground',
             tabs: defaultTabsData.map((t)=>LayoutDocker.getPanel(t)),

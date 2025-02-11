@@ -9,7 +9,7 @@
 
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { WORKSPACES } from '../../../../browser/static/js/constants';
+import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../preferences/static/js/store';
 import { config } from './config';
@@ -23,8 +23,11 @@ export function WorkspaceProvider({children}) {
   const [currentWorkspace, setCurrentWorkspace] = useState(WORKSPACES.DEFAULT);
   const lastSelectedTreeItem = useRef();
   const isClassic = (usePreferences()?.getPreferencesForModule('misc')?.layout ?? 'classic') == 'classic';
+  const openInResWorkspace = usePreferences()?.getPreferencesForModule('misc')?.open_in_res_workspace && !isClassic;
 
-  pgAdmin.Browser.docker.currentWorkspace = WORKSPACES.DEFAULT;
+  if (_.isUndefined(pgAdmin.Browser.docker.currentWorkspace)) {
+    pgAdmin.Browser.docker.currentWorkspace = WORKSPACES.DEFAULT;
+  }
   /* In case of classic UI all workspace objects should point to the
   * the instance of the default layout.
   */
@@ -46,6 +49,14 @@ export function WorkspaceProvider({children}) {
       docker = pgAdmin.Browser.docker[wsConfig.docker];
       workspace = wsConfig.workspace;
     } else {
+      docker = pgAdmin.Browser.docker.default_workspace;
+      workspace = WORKSPACES.DEFAULT;
+    }
+
+    // If the layout is Workspace layout and 'Open the Query Tool/PSQL in their respective workspaces'
+    // is False then check the current workspace and set the workspace and docker accordingly.
+    if (!openInResWorkspace && pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT &&
+      (panelId.indexOf(BROWSER_PANELS.QUERY_TOOL) >= 0 || panelId.indexOf(BROWSER_PANELS.PSQL_TOOL) >= 0)) {
       docker = pgAdmin.Browser.docker.default_workspace;
       workspace = WORKSPACES.DEFAULT;
     }

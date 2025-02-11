@@ -23,7 +23,7 @@ import ReactDOM from 'react-dom/client';
 import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
@@ -229,6 +229,11 @@ export default class SQLEditor {
   }
 
   async loadComponent(container, params) {
+    let panelDocker = pgWindow.pgAdmin.Browser.docker.query_tool_workspace;
+    if (pgWindow.pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT) {
+      panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
+    }
+
     const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : params.selectedNodeInfo;
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
@@ -238,7 +243,7 @@ export default class SQLEditor {
         <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={pgWindow.pgAdmin.Browser.docker.query_tool_workspace}
+            <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={panelDocker}
               qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
           </ModalProvider>
         </PgAdminProvider>

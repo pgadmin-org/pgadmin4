@@ -299,6 +299,8 @@ export default function PreferencesComponent({ ...props }) {
         preferencesValues[element.id] = { 'warning': _val[0], 'alert': _val[1] };
       } else if (subNode.label == gettext('Results grid') && node.label == gettext('Query Tool')) {
         setResultsOptions(element, subNode, preferencesValues, type);
+      } else if (subNode.label == gettext('User Interface') && node.label == gettext('Miscellaneous')) {
+        setWorkspaceOptions(element, subNode, preferencesValues, type);
       } else {
         element.type = type;
         preferencesValues[element.id] = element.value;
@@ -323,6 +325,23 @@ export default function PreferencesComponent({ ...props }) {
       });
       element.disabled = (state) => {
         return state[size_control_id] != 'by_data';
+      };
+    }
+    element.type = type;
+    preferencesValues[element.id] = element.value;
+  }
+
+  function setWorkspaceOptions(element, subNode, preferencesValues, type) {
+    if (element.name== 'open_in_res_workspace') {
+      let layout_control_id = null;
+      subNode.preferences.forEach((_el) => {
+        if(_el.name == 'layout') {
+          layout_control_id = _el.id;
+        }
+
+      });
+      element.disabled = (state) => {
+        return state[layout_control_id] != 'workspace';
       };
     }
     element.type = type;

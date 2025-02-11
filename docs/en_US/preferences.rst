@@ -286,6 +286,11 @@ Expand the *Miscellaneous* node to specify miscellaneous display preferences.
   areas for the Query Tool, PSQL, and Schema Diff tools. 'Workspace' layout is
   the default layout, but user can change it to 'Classic'.
 
+* When the *Open the Query Tool/PSQL in their respective workspaces* switch is set to *True*
+  then all Query Tool/PSQL tabs will open in their respective workspaces. By default,
+  this setting is False, meaning that Query Tool/PSQL tabs will open in the currently
+  active workspace (either the default or the workspace selected at the time of opening).
+
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
