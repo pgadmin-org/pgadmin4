@@ -29,5 +29,6 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8181 <https://github.com/pgadmin-org/pgadmin4/issues/8181>`_ -  Fixed an issue where pgAdmin does not support pg_vector column length/precision.
   | `Issue #8341 <https://github.com/pgadmin-org/pgadmin4/issues/8341>`_ -  Fixed an issue where the query tool was not treating IDENTITY columns as columns with default values when inserting new rows.
   | `Issue #8410 <https://github.com/pgadmin-org/pgadmin4/issues/8410>`_ -  Fixed Docker image entrypoint.sh email validation.
