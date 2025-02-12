@@ -127,7 +127,6 @@ ACCESS_DENIED_MESSAGE = gettext(
     "Access denied: You’re having limited access. You’re not allowed to "
     "Rename, Delete or Create any files/folders")
 
-
 KEY_RING_SERVICE_NAME = 'pgAdmin4'
 KEY_RING_USER_NAME = 'pgadmin4-master-password'
 KEY_RING_USERNAME_FORMAT = KEY_RING_SERVICE_NAME + '-{0}-{1}'
@@ -150,3 +149,13 @@ IP_ADDRESS_STRING = '{}/{}'
 TWO_PARAM_STRING = '{0}/{1}'
 SERVER_NOT_FOUND = gettext("Could not find the specified server.")
 SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
+
+DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
+                         1562, 'varbit', 'bit varying',
+                         1563, 'varbit[]', 'bit varying[]',
+                         1042, 'bpchar', 'character',
+                         1043, 'varchar', 'character varying',
+                         1014, 'bpchar[]', 'character[]',
+                         1015, 'varchar[]', 'character varying[]',
+                         'vector', 'vector[]', 'halfvec', 'halfvec[]',
+                         'sparsevec', 'sparsevec[]']
