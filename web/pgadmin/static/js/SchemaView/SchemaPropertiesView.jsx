@@ -91,7 +91,7 @@ export default function SchemaPropertiesView({
                       {
                         group.controls.map(
                           (item, idx) => <FieldControl
-                            item={item} key={idx} schemaId={schema._id}
+                            item={item} key={`${item.controlProps.id}-${idx}`} schemaId={schema._id}
                           />
                         )
                       }

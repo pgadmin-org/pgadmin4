@@ -18,7 +18,7 @@ export const FieldControl = ({schemaId, item}) => {
     <Control {...props}>
       {
         children?.map(
-          (child, idx) => <FieldControl key={idx} item={child}/>
+          (child, idx) => <FieldControl key={`${child.controlProps.id}-${idx}`} item={child}/>
         )
       }
     </Control>, [schemaId, Control, props, children]

@@ -20,7 +20,7 @@ import { PgIconButton } from './Buttons';
 import CustomPropTypes from '../custom_prop_types';
 import { InputSwitch } from './FormComponents';
 import { Checkbox } from '@mui/material';
-
+import { getEnterKeyHandler } from '../utils';
 
 const StyledDiv = styled('div')(({theme})=>({
   '&.pgrt': {
@@ -265,6 +265,7 @@ export function PgReactTableHeader({table}) {
               <div title={flexRender(header.column.columnDef.header, header.getContext())}
                 style={{cursor: header.column.getCanSort() ? 'pointer' : 'initial'}}
                 onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                onKeyDown={header.column.getCanSort() ? getEnterKeyHandler(header.column.getToggleSortingHandler): undefined}
               >
                 {flexRender(header.column.columnDef.header, header.getContext())}
                 {header.column.getCanSort() && header.column.getIsSorted() &&
