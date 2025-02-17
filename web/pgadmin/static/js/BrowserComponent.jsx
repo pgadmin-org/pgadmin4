@@ -41,11 +41,6 @@ const objectExplorerGroup  = {
   panelExtra: () => <ObjectExplorerToolbar />
 };
 
-const mainPanelGroup  = {
-  ...getDefaultGroup(),
-  panelExtra: () => <MainMoreToolbar />
-};
-
 export const processesPanelData = {
   id: BROWSER_PANELS.PROCESSES, title: gettext('Processes'), content: <Processes />, closable: true, group: 'playground'
 };
@@ -71,6 +66,11 @@ export const defaultTabsData = [
   },
   processesPanelData,
 ];
+
+const mainPanelGroup  = {
+  ...getDefaultGroup(),
+  panelExtra: () => <MainMoreToolbar tabsData={defaultTabsData}/>
+};
 
 let defaultLayout = {
   dockbox: {
@@ -132,7 +132,7 @@ function Layouts({browser}) {
           }}
           defaultLayout={item.layout}
           groups={{
-            'playground': {...getDefaultGroup()},
+            'playground': item?.tabsData ? {...getDefaultGroup(), panelExtra: () => <MainMoreToolbar tabsData={item.tabsData}/>} : {...getDefaultGroup()},
           }}
           resetToTabPanel={BROWSER_PANELS.MAIN}
           isLayoutVisible={currentWorkspace == item.workspace}

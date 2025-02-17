@@ -88,10 +88,14 @@ export function WorkspaceProvider({children}) {
 
   const hasOpenTabs = (forWs)=>{
     const wsConfig = config.find((i)=>i.workspace == forWs);
+    if (wsConfig?.enableOnNoTabs) {
+      return true;
+    }
+    
     if(wsConfig) {
       return Boolean(pgAdmin.Browser.docker[wsConfig.docker]?.layoutObj?.getLayout()?.dockbox?.children?.[0]?.tabs?.length);
     }
-    return true;
+    return false;
   };
 
   const getLayoutObj = (forWs)=>{

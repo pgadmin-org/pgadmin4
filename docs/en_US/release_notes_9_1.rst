@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #5128 <https://github.com/pgadmin-org/pgadmin4/issues/5128>`_ -  Add support for one to one relationship in the ERD tool.
+  | `Issue #8436 <https://github.com/pgadmin-org/pgadmin4/issues/8436>`_ -  Enable the ability to close the 'Welcome' tab in the Query Tool/PSQL Workspace.
 
 Housekeeping
 ************
@@ -30,5 +31,8 @@ Bug fixes
 *********
 
   | `Issue #8181 <https://github.com/pgadmin-org/pgadmin4/issues/8181>`_ -  Fixed an issue where pgAdmin does not support pg_vector column length/precision.
+  | `Issue #8296 <https://github.com/pgadmin-org/pgadmin4/issues/8296>`_ -  Fixed an issue where pasting text containing JSON data into the query tool grid would result in incorrect parsing.
   | `Issue #8341 <https://github.com/pgadmin-org/pgadmin4/issues/8341>`_ -  Fixed an issue where the query tool was not treating IDENTITY columns as columns with default values when inserting new rows.
+  | `Issue #8389 <https://github.com/pgadmin-org/pgadmin4/issues/8389>`_ -  Fixed an issue where the ERD tool fails to open a saved file containing parent-child relationship within the same table.
   | `Issue #8410 <https://github.com/pgadmin-org/pgadmin4/issues/8410>`_ -  Fixed Docker image entrypoint.sh email validation.
+  | `Issue #8418 <https://github.com/pgadmin-org/pgadmin4/issues/8418>`_ -  Fixed an issue where the User Management and Change Password dialogs were hidden when selecting a menu while a workspace other than 'Default' was active.

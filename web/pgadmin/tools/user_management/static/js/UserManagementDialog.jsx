@@ -20,7 +20,6 @@ import {AUTH_METHODS} from 'pgadmin.browser.constants';
 import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from '../../../../static/js/validators';
 import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import _ from 'lodash';
 
 const StyledBox = styled(Box)(() => ({
@@ -457,16 +456,13 @@ UserManagementDialog.propTypes = {
 };
 
 export function showUserManagement() {
-  const panelTitle = gettext('User Management');
-  const panelId = BROWSER_PANELS.USER_MANAGEMENT;
-  pgAdmin.Browser.docker.default_workspace.openDialog({
-    id: panelId,
-    title: panelTitle,
-    manualClose: false,
-    content: (
-      <UserManagementDialog
-        onClose={()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);}}
-      />
-    )
-  }, pgAdmin.Browser.stdW.lg, pgAdmin.Browser.stdH.md);
+  const title = gettext('User Management');
+
+  pgAdmin.Browser.notifier.showModal(title, (onClose) => {
+    return <UserManagementDialog
+      onClose={()=>{onClose();}}
+    />;
+  },
+  { isFullScreen: false, isResizeable: true, showFullScreen: false, isFullWidth: true,
+    dialogWidth: pgAdmin.Browser.stdW.lg, dialogHeight: pgAdmin.Browser.stdH.md});
 }
