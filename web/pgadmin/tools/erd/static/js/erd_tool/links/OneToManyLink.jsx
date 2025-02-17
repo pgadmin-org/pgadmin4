@@ -97,6 +97,13 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
   getPointType() {
     return this._linkPointType;
   }
+
+  setFirstAndLastPathsDirection() {
+    let points = this.getPoints();
+    if (points.length > 2){
+      super.setFirstAndLastPathsDirection();
+    }
+  }
 }
 
 const svgLinkSelected =   keyframes`
