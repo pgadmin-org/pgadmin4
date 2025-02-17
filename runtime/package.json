@@ -13,7 +13,7 @@
   "packageManager": "yarn@3.8.7",
   "devDependencies": {
     "electron": "33.3.2",
-    "eslint": "^9.19.0"
+    "eslint": "^9.20.1"
   },
   "dependencies": {
     "axios": "^1.7.9",
