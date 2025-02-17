@@ -11663,6 +11663,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"papaparse@npm:^5.5.2":
+  version: 5.5.2
+  resolution: "papaparse@npm:5.5.2"
+  checksum: 59d5c6aca4fe1621cc12f66c024d0ea651bb4aad77d50c2d66a3e3c1ba60e992e2f52762f783fc2531348120c302ab272d8e448d853652232c9c742cdb666fb8
+  languageName: node
+  linkType: hard
+
 "parent-module@npm:^1.0.0":
   version: 1.0.1
   resolution: "parent-module@npm:1.0.1"
@@ -13671,6 +13678,7 @@ __metadata:
     moment-timezone: ^0.5.34
     notificar: ^1.0.1
     notistack: ^3.0.1
+    papaparse: ^5.5.2
     path-fx: ^2.0.0
     postcss: ^8.4.31
     postcss-loader: ^8.1.1
