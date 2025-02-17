@@ -12350,7 +12350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.31, postcss@npm:^8.4.33, postcss@npm:^8.4.38":
+"postcss@npm:^8.4.33, postcss@npm:^8.4.38":
   version: 8.5.1
   resolution: "postcss@npm:8.5.1"
   dependencies:
@@ -12358,6 +12358,17 @@ __metadata:
     picocolors: ^1.1.1
     source-map-js: ^1.2.1
   checksum: cfdcfcd019fca78160341080ba8986cf80cd6e9ca327ba61b86c03e95043e9bce56ad2e018851858039fd7264781797360bfba718dd216b17b3cd803a5134f2f
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.5.2":
+  version: 8.5.2
+  resolution: "postcss@npm:8.5.2"
+  dependencies:
+    nanoid: ^3.3.8
+    picocolors: ^1.1.1
+    source-map-js: ^1.2.1
+  checksum: 5097c458ce792d38bb93cb245f8603804b48087540b9d0e42d612f6d0bd7add4b47848cb9bc2a5ee388f70e45a1546fa7471b84697ab95aa8206aa3989fea611
   languageName: node
   linkType: hard
 
@@ -13680,7 +13691,7 @@ __metadata:
     notistack: ^3.0.1
     papaparse: ^5.5.2
     path-fx: ^2.0.0
-    postcss: ^8.4.31
+    postcss: ^8.5.2
     postcss-loader: ^8.1.1
     process: ^0.11.10
     prop-types: ^15.7.2
