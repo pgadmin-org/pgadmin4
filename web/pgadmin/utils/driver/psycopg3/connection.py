@@ -1350,7 +1350,9 @@ WHERE db.datname = current_database()""")
                 result = []
                 try:
                     if records == -1:
-                        result = cur.fetchall(_tupples=True)
+                        result = cur.fetchwindow(
+                            from_rownum=0, to_rownum=cur.get_rowcount() - 1,
+                            _tupples=True)
                     elif records is None:
                         result = cur.fetchwindow(from_rownum=from_rownum,
                                                  to_rownum=to_rownum,
