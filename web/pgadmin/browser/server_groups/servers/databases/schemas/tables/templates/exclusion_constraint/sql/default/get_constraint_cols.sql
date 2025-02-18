@@ -3,6 +3,7 @@
 UNION
 {% endif %}
 SELECT
+  a.attnum,
   i.indoption[{{loop.index -1}}] AS options,
   pg_catalog.pg_get_indexdef(i.indexrelid, {{loop.index}}, true) AS coldef,
   op.oprname,
@@ -21,3 +22,4 @@ LEFT OUTER JOIN pg_catalog.pg_collation coll ON a.attcollation=coll.oid
 LEFT OUTER JOIN pg_catalog.pg_namespace nspc ON coll.collnamespace=nspc.oid
 WHERE i.indexrelid = {{cid}}::oid
 {% endfor %}
+ORDER BY attnum
