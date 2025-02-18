@@ -36,3 +36,5 @@ Bug fixes
   | `Issue #8389 <https://github.com/pgadmin-org/pgadmin4/issues/8389>`_ -  Fixed an issue where the ERD tool fails to open a saved file containing parent-child relationship within the same table.
   | `Issue #8410 <https://github.com/pgadmin-org/pgadmin4/issues/8410>`_ -  Fixed Docker image entrypoint.sh email validation.
   | `Issue #8418 <https://github.com/pgadmin-org/pgadmin4/issues/8418>`_ -  Fixed an issue where the User Management and Change Password dialogs were hidden when selecting a menu while a workspace other than 'Default' was active.
+  | `Issue #8430 <https://github.com/pgadmin-org/pgadmin4/issues/8430>`_ -  Fixed an issue where the column order displayed was incorrect for exclusion constraints with multiple columns.
+  | `Issue #8435 <https://github.com/pgadmin-org/pgadmin4/issues/8435>`_ -  Ensure the saved passwords are decrypted with the correct encryption key for external authentication in server mode.
