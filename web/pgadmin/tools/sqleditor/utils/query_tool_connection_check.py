@@ -59,7 +59,7 @@ def query_tool_connection_check(trans_id):
         status, msg = conn.connect()
         if not status:
             current_app.logger.error(msg)
-            return internal_server_error(errormsg=str(msg))
+            return status, msg, None, None, None, None
         return status, None, conn, transaction_object, session_obj, None
     else:
         status = False

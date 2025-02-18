@@ -1011,6 +1011,40 @@ class DatabaseView(PGChildNodeView):
 
         return False, ''
 
+    def _check_db_connections(self, sid, did, database):
+        """
+        Check the no. of connections of a specific database and if it has
+        multiple connections then don't release else release.
+        :param sid: Server Id.
+        :param did: Database Id.
+        :param database: Database Name.
+        :return: Return error if any.
+        """
+        connections = self.manager.connections
+
+        # Categorizing connections on the basis of current database connected
+        db_connections = [
+            conn for conn in connections
+            if
+            connections[conn].db == database and connections[conn].connected()
+        ]
+
+        # Extracting the other connections such as QT, ERD, or PSQL
+        # connections of current database
+        query_tool_connections = [
+            conn for conn in db_connections if conn.startswith("CONN:")
+        ]
+
+        # If there are active connections such as QT, ERD, or PSQL
+        # during a normal delete, prevent release; otherwise,
+        # allow release for a forceful delete.
+        if self.cmd != 'delete' and query_tool_connections:
+            return True, (f'Error: Database "{database}" is being accessed by '
+                          f'other users. There are {len(db_connections)} '
+                          f'other sessions using the database.')
+
+        return self._release_conn_before_delete(sid, did)
+
     @staticmethod
     def _get_req_data(did):
         """
@@ -1056,9 +1090,10 @@ class DatabaseView(PGChildNodeView):
                     )
                 )
             else:
-                is_error, errmsg = self._release_conn_before_delete(sid, did)
+                is_error, errmsg = self._check_db_connections(sid, did, res)
                 if is_error:
-                    return errmsg
+                    return internal_server_error(
+                        errormsg=underscore_escape(errmsg))
 
                 sql = render_template(
                     "/".join([self.template_path, self._DELETE_SQL]),
