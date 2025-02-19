@@ -88,6 +88,7 @@ export function WorkspaceProvider({children}) {
 
   const hasOpenTabs = (forWs)=>{
     const wsConfig = config.find((i)=>i.workspace == forWs);
+    // If enableOnNoTabs is set and it is true then no need to check for tabs.
     if (wsConfig?.enableOnNoTabs) {
       return true;
     }
@@ -95,7 +96,7 @@ export function WorkspaceProvider({children}) {
     if(wsConfig) {
       return Boolean(pgAdmin.Browser.docker[wsConfig.docker]?.layoutObj?.getLayout()?.dockbox?.children?.[0]?.tabs?.length);
     }
-    return false;
+    return true;
   };
 
   const getLayoutObj = (forWs)=>{

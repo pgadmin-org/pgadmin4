@@ -26,6 +26,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #8068 <https://github.com/pgadmin-org/pgadmin4/issues/8068>`_ -  Added support for Python 3.13
 
 Bug fixes
 *********
@@ -38,3 +39,4 @@ Bug fixes
   | `Issue #8418 <https://github.com/pgadmin-org/pgadmin4/issues/8418>`_ -  Fixed an issue where the User Management and Change Password dialogs were hidden when selecting a menu while a workspace other than 'Default' was active.
   | `Issue #8430 <https://github.com/pgadmin-org/pgadmin4/issues/8430>`_ -  Fixed an issue where the column order displayed was incorrect for exclusion constraints with multiple columns.
   | `Issue #8435 <https://github.com/pgadmin-org/pgadmin4/issues/8435>`_ -  Ensure the saved passwords are decrypted with the correct encryption key for external authentication in server mode.
+  | `Issue #8460 <https://github.com/pgadmin-org/pgadmin4/issues/8460>`_ -  Fixed an issue where deleting rows in the query tool would delete all rows in the table when 'Select All Remaining Rows' was used.
