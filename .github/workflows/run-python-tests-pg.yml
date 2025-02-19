@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        pgver: [12, 13, 14, 15, 16]
+        os: [macos-latest, ubuntu-22.04, windows-latest]
+        pgver: [13, 14, 15, 16, 17]
 
     runs-on: ${{ matrix.os }}
 
@@ -29,13 +29,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup the PGDG APT repo on Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
       - name: Install platform dependencies on Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
           sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent
@@ -68,7 +68,7 @@ jobs:
         shell: cmd
 
       - name: Create the tablespace directory on Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo mkdir -p /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
           sudo chown postgres:postgres /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
@@ -86,7 +86,7 @@ jobs:
         shell: cmd
 
       - name: Start PostgreSQL on Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo su -c "echo local all all trust > /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
           sudo sed -i "s/port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
@@ -116,7 +116,7 @@ jobs:
           psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
       - name: Install Python dependencies on Linux and macOS
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04' }}
         run: make install-python-testing
 
       - name: Install Python dependencies on Windows
@@ -131,7 +131,7 @@ jobs:
         shell: cmd
 
       - name: Create the test configuration on Linux and macOS
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04' }}
         run: |
           cat <<EOF > web/config_local.py
           from config import *
@@ -181,7 +181,7 @@ jobs:
                 "name": "PostgreSQL ${{ matrix.pgver }}",
                 "comment": "PostgreSQL ${{ matrix.pgver }} Server",
                 "db_username": "postgres",
-                "host": "${{ matrix.os == 'macos-latest' && '/tmp' || matrix.os == 'ubuntu-latest' && '/var/run/postgresql' || '127.0.0.1' }}",
+                "host": "${{ matrix.os == 'macos-latest' && '/tmp' || matrix.os == 'ubuntu-22.04' && '/var/run/postgresql' || '127.0.0.1' }}",
                 "db_password": "postgres",
                 "db_port": 59${{ matrix.pgver }},
                 "maintenance_db": "postgres",
@@ -278,7 +278,7 @@ jobs:
         shell: cmd
 
       - name: Run the tests on Linux and macOS
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04' }}
         run: |
           . venv/bin/activate
           make check-python

@@ -2,10 +2,11 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+
 
 export default function reactAspenOverride(theme) {
   return {
@@ -47,7 +48,7 @@ export default function reactAspenOverride(theme) {
         top: '0px' + ' !important',
 
         '>div': {
-          scrollbarGutter: 'stable',
+          scrollbarGutter: 'auto',
           overflow: 'overlay' + ' !important',
         },
       },
@@ -136,6 +137,7 @@ export default function reactAspenOverride(theme) {
 
       'span.file-label': {
         display: 'flex',
+        gap: '2px',
         alignItems: 'center',
         padding: '0 2px 0 2px',
         border: '1px solid transparent',
@@ -153,12 +155,20 @@ export default function reactAspenOverride(theme) {
         flexGrow: 1,
         userSelect: 'none',
         color: theme.otherVars.tree.textFg,
-        marginLeft: '3px',
         cursor: 'pointer !important',
         whiteSpace: 'nowrap',
         '&:hover, &.pseudo-active': {
           color: theme.otherVars.tree.fgHover,
         },
+      },
+      'div.file-tag': {
+        color: 'var(--tag-color)',
+        border: '1px solid color-mix(in srgb, var(--tag-color) 90%, #fff)',
+        padding: '0px 4px',
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: 'color-mix(in srgb, color-mix(in srgb, var(--tag-color) 10%, #fff) 50%, transparent);',
+        lineHeight: 1.2,
+        whiteSpace: 'nowrap'
       },
 
       i: {
@@ -221,10 +231,5 @@ export default function reactAspenOverride(theme) {
         })
       ),
     },
-
-    '.children-count': {
-      marginLeft: '3px',
-    },
-
   };
 }

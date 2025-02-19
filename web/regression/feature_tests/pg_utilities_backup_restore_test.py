@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -282,8 +282,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         if default_binary_path is not None:
             def get_server_version_string():
                 server_version = {170000: '17', 160000: '16', 150000: '15',
-                                  140000: '14', 130000: '13', 120000: '12',
-                                  110000: '11'}
+                                  140000: '14', 130000: '13'}
                 for k, v in server_version.items():
                     if k <= self.server_information['server_version']:
                         return v

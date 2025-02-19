@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -111,8 +111,18 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
   });
 
   term.onKey(function (ev) {
-    socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
+    socket.emit('socket_input', checkInputKey(ev));
   });
+}
+
+/* This function will check input key from the mentioned excludedKeys and if those 
+keys are pressed, it will return event's key else it will return event's domEvent key */
+function checkInputKey(ev){
+  const excludedKeys = ['Enter', 'Escape', 'Tab', 'Backspace', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  if(excludedKeys.includes(ev.domEvent.key)) {
+    return {'input': ev.key, 'key_name': ev.domEvent.code};
+  }
+  return {'input': ev.domEvent.key, 'key_name': ev.domEvent.code};
 }
 
 function psql_Addon(term) {

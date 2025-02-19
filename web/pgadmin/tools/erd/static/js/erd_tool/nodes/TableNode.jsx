@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -44,6 +44,7 @@ export class TableNodeModel extends DefaultNodeModel {
       is_promise: Boolean(otherInfo.data?.then || (otherInfo.metadata?.data_failed && !otherInfo.data)),
     };
     this._data = null;
+    this._constraintCols = {};
     if(otherInfo.data?.then) {
       otherInfo.data.then((data)=>{
         /* Once the data is available, it is no more a promise */
@@ -53,6 +54,7 @@ export class TableNodeModel extends DefaultNodeModel {
           data_failed: false,
           is_promise: false,
         };
+        this.generateOnetoOneData(data);
         this.fireEvent(this._metadata, 'dataAvaiable');
         this.fireEvent({}, 'nodeUpdated');
         this.fireEvent({}, 'selectionChanged');
@@ -69,6 +71,7 @@ export class TableNodeModel extends DefaultNodeModel {
         columns: [],
         ...otherInfo.data,
       };
+      this.generateOnetoOneData(otherInfo.data);
     }
   }
 
@@ -132,6 +135,7 @@ export class TableNodeModel extends DefaultNodeModel {
 
   setData(data) {
     this._data = data;
+    this.generateOnetoOneData(data);
     this.fireEvent({}, 'nodeUpdated');
   }
 
@@ -164,6 +168,34 @@ export class TableNodeModel extends DefaultNodeModel {
       },
     };
   }
+
+  setConstraintCols(colsData) {
+    this._constraintCols = colsData;
+  }
+
+  getConstraintCols() {
+    return this._constraintCols;
+  }
+
+  generateOnetoOneData = (tableData) => {
+    if (tableData){
+      let ukCols = [], pkCols = [];
+      (tableData.unique_constraint||[]).forEach((uk)=>{
+        if(uk.columns.length === 1){
+          ukCols.push(...uk.columns.map((c)=>c.column));
+        }
+      });
+      (tableData.primary_key||[]).forEach((pk)=>{
+        if(pk.columns.length === 1){
+          pkCols.push(...pk.columns.map((c)=>c.column));
+        }
+      });
+      this.setConstraintCols({
+        ukCols,
+        pkCols
+      });
+    }
+  };
 }
 
 function RowIcon({icon}) {
@@ -239,7 +271,7 @@ export class TableNodeWidget extends React.Component {
       show_details: true,
     };
 
-    this.props.node.registerListener({
+    this.tableNodeEventListener = this.props.node.registerListener({
       toggleDetails: (event) => {
         this.setState({show_details: event.show_details});
       },
@@ -254,6 +286,10 @@ export class TableNodeWidget extends React.Component {
         this.setState({});
       }
     });
+  }
+
+  componentWillUnmount() {
+    this.props.node.deregisterListener(this.tableNodeEventListener);
   }
 
   generateColumn(col, localFkCols, localUkCols) {

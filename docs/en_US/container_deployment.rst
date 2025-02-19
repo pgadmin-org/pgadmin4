@@ -53,11 +53,11 @@ The default binary paths set in the container are as follows:
 .. code-block:: bash
 
     DEFAULT_BINARY_PATHS = {
+        'pg-17': '/usr/local/pgsql-17',
         'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
-        'pg-13': '/usr/local/pgsql-13',
-        'pg-12': '/usr/local/pgsql-12'
+        'pg-13': '/usr/local/pgsql-13'
     }
 
 this may be changed in the :ref:`preferences`.
@@ -141,6 +141,15 @@ of the `Servers JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_e
 Override the default file path for the preferences customization at the container creation. See the
 /pgadmin4/preferences.json mapped file below for more information. See the format
 of the `Preferences JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/preferences.html#json-format>`_.
+
+**PGADMIN_CUSTOM_CONFIG_DISTRO_FILE**
+
+*Default: /pgadmin4/config_distro.py*
+
+Override the default file path for the pgadmin configurations file.This can be used while provisioning
+container with read only root file system to achieve a more secure pgadmin4 deployment for kubernetes.
+Note that if you are externally mapping this file, then environment variables passed using *PGADMIN_CONFIG_*
+suffix will be ignored.
 
 **PGPASS_FILE**
 

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -205,11 +205,11 @@ export default class BgProcessManager {
   }
 
   openProcessesPanel() {
-    let processPanel = this.pgBrowser.docker.find(BROWSER_PANELS.PROCESSES);
+    let processPanel = this.pgBrowser.docker.default_workspace.find(BROWSER_PANELS.PROCESSES);
     if(!processPanel) {
-      pgAdmin.Browser.docker.openTab(processesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
+      pgAdmin.Browser.docker.default_workspace.openTab(processesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
     } else {
-      this.pgBrowser.docker.focus(BROWSER_PANELS.PROCESSES);
+      this.pgBrowser.docker.default_workspace.focus(BROWSER_PANELS.PROCESSES);
     }
   }
 

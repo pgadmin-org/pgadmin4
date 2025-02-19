@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -5,7 +14,6 @@ import { isMac } from '../keyboard_shortcuts';
 import _ from 'lodash';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
-
 
 const Root = styled('div')(({theme}) => ({
   '& .ShortcutTitle-title': {

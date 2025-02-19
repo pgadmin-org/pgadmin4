@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,6 +11,7 @@ export default function rcdockOverride(theme) {
   return {
     '.dock-layout': {
       height: '100%',
+      width: '100%',
       ...theme.mixins.panelBorder.top,
       '& .dock-ink-bar': {
         height: '2px',

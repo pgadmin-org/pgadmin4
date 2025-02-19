@@ -22,7 +22,7 @@ jobs:
     # Only run if the project key is set
     if: vars.SONARQUBE_PROJECT_KEY != null
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4

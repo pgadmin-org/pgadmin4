@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ export default class SearchObjectModule {
     const nodeData = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
     const panelTitle = gettext('Search Objects - ') + getPanelTitle(pgBrowser, treeItem);
     const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-    pgAdmin.Browser.docker.openDialog({
+    pgAdmin.Browser.docker.default_workspace.openDialog({
       id: panelId,
       title: panelTitle,
       manualClose: false,

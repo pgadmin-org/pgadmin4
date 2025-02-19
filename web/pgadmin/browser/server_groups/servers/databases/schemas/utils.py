@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -22,7 +22,8 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.constants import DATATYPE_TIME_WITH_TIMEZONE,\
     DATATYPE_TIME_WITHOUT_TIMEZONE,\
     DATATYPE_TIMESTAMP_WITH_TIMEZONE,\
-    DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE
+    DATATYPE_TIMESTAMP_WITHOUT_TIMEZONE,\
+    DATA_TYPE_WITH_LENGTH
 
 
 class SchemaChildModule(CollectionNodeModule):
@@ -173,7 +174,7 @@ class DataTypeReader:
                 # Check if the type will have length and precision or not
                 if row['elemoid']:
                     length, precision, typeval = self.get_length_precision(
-                        row['elemoid'])
+                        row['elemoid'], row['typname'])
 
                 min_val, max_val = DataTypeReader._types_length_checks(
                     length, typeval, precision)
@@ -192,21 +193,16 @@ class DataTypeReader:
         return True, res
 
     @staticmethod
-    def get_length_precision(elemoid_or_name):
+    def get_length_precision(elemoid_or_name, typname=None):
         precision = False
         length = False
         typeval = ''
 
         # Check against PGOID/typename for specific type
         if elemoid_or_name:
-            if elemoid_or_name in (1560, 'bit',
-                                   1561, 'bit[]',
-                                   1562, 'varbit', 'bit varying',
-                                   1563, 'varbit[]', 'bit varying[]',
-                                   1042, 'bpchar', 'character',
-                                   1043, 'varchar', 'character varying',
-                                   1014, 'bpchar[]', 'character[]',
-                                   1015, 'varchar[]', 'character varying[]'):
+            if (elemoid_or_name in DATA_TYPE_WITH_LENGTH or
+                typname is not None and
+                    typname in DATA_TYPE_WITH_LENGTH):
                 typeval = 'L'
             elif elemoid_or_name in (1083, 'time',
                                      DATATYPE_TIME_WITHOUT_TIMEZONE,
@@ -267,7 +263,8 @@ class DataTypeReader:
             name == DATATYPE_TIMESTAMP_WITH_TIMEZONE or
             name == 'bit' or
             name == 'bit varying' or
-            name == 'varbit'
+            name == 'varbit' or name == 'vector' or name == 'halfvec' or
+            name == 'sparsevec'
         ):
             _prec = 0
             _len = typmod

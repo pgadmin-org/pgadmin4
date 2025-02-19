@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ import getApiInstance, { parseApiError } from '../../../../static/js/api_instanc
 import SectionContainer from '../components/SectionContainer';
 import RefreshButton from '../components/RefreshButtons';
 import { getExpandCell, getSwitchCell } from '../../../../static/js/components/PgReactTableStyled';
-import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 import PGDOutgoingSchema from './schema_ui/pgd_outgoing.ui';

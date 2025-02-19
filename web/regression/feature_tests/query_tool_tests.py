@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -151,8 +151,7 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
             {'page_info': '2001 to 2500', 'cell_rownum': '2001'}
         ]):
             page_info = self.page.find_by_css_selector(
-                QueryToolLocators.pagination_inputs +
-                f' span:nth-of-type(1)')
+                QueryToolLocators.pagination_inputs + ' span:nth-of-type(1)')
 
             self.assertEqual(page_info.text,
                              f"Showing rows: {page['page_info']}")

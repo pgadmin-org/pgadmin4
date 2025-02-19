@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -203,7 +203,7 @@ class ServerType():
                     bin_path['binaryPath'].strip() != '':
                 return bin_path['binaryPath']
 
-            if bin_path['isDefault']:
+            if bin_path['isDefault'] and bin_path['binaryPath'] != '':
                 default_path = bin_path['binaryPath']
 
         return default_path

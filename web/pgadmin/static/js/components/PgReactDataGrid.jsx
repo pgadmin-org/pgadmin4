@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
         height: '100%',
       },
       '&.rdg-cell-copied[aria-selected=false][role="gridcell"]': {
-        backgroundColor: 'unset',
+        backgroundColor: 'inherit',
       }
     },
     '& .rdg-header-row .rdg-cell': {

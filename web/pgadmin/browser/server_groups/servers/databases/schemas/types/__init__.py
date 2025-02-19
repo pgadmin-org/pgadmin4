@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -28,6 +28,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.utils.constants import DATA_TYPE_WITH_LENGTH
 
 
 class TypeModule(SchemaChildModule):
@@ -436,7 +437,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             properties_list.append(typelist)
 
             is_tlength, is_precision, _ = \
-                self.get_length_precision(row.get('elemoid', None))
+                self.get_length_precision(row.get('elemoid', None),
+                                          row.get('typname', None))
 
             # Split length, precision from type name for grid
             t_len, t_prec = DataTypeReader.parse_length_precision(
@@ -469,7 +471,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return: formatted response
         """
         is_tlength, is_precision, _ = \
-            self.get_length_precision(data.get('elemoid', None))
+            self.get_length_precision(data.get('elemoid', None),
+                                      data.get('typname', None))
 
         # Split length, precision from type name for grid
         t_len, t_prec = DataTypeReader.parse_length_precision(
@@ -676,8 +679,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             for row in rset['rows']:
                 # Check against PGOID for specific type
                 if row['elemoid']:
-                    if row['elemoid'] in (1560, 1561, 1562, 1563, 1042, 1043,
-                                          1014, 1015):
+                    if row['elemoid'] in DATA_TYPE_WITH_LENGTH or \
+                            row['typname'] in DATA_TYPE_WITH_LENGTH:
                         typeval = 'L'
                     elif row['elemoid'] in (1083, 1114, 1115, 1183, 1184, 1185,
                                             1186, 1187, 1266, 1270):

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -43,6 +43,7 @@ define('app', [
   initializeModules(pgAdmin);
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
+  pgAdmin.Browser.docker = {};
 
   // Add menus from back end.
   pgAdmin.Browser.utils.addBackendMenus(pgAdmin.Browser);

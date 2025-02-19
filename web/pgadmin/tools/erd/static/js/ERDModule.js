@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
-import { PgAdminContext } from '../../../../static/js/BrowserComponent';
+import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 
 export function setPanelTitle(docker, panelId, panelTitle) {
   docker.setTitle(panelId, panelTitle);
@@ -147,7 +147,7 @@ export default class ERDModule {
     const root = ReactDOM.createRoot(container);
     root.render(
       <Theme>
-        <PgAdminContext.Provider value={pgAdmin}>
+        <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
             <ERDTool
@@ -155,10 +155,10 @@ export default class ERDModule {
               pgWindow={pgWindow}
               pgAdmin={this.pgAdmin}
               panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
-              panelDocker={pgWindow.pgAdmin.Browser.docker}
+              panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
             />
           </ModalProvider>
-        </PgAdminContext.Provider>
+        </PgAdminProvider>
       </Theme>
     );
   }

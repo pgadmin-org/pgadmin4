@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -42,6 +42,8 @@ export default function(basicSettings) {
         main: '#EE7A55',
         light: '#010B15',
         contrastText: '#010B15',
+        hoverMain: '#fff',
+        hoverBorderColor: '#fff',
       },
       warning: {
         main: '#F4D35E',

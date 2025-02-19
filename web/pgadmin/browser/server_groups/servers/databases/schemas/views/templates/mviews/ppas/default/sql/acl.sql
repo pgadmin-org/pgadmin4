@@ -14,6 +14,7 @@ FROM
         CASE d.privilege_type
           WHEN 'DELETE' THEN 'd'
           WHEN 'INSERT' THEN 'a'
+          WHEN 'MAINTAIN' THEN 'm'
           WHEN 'REFERENCES' THEN 'x'
           WHEN 'SELECT' THEN 'r'
           WHEN 'TRIGGER' THEN 't'

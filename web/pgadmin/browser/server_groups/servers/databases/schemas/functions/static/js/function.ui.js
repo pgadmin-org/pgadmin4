@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -327,19 +327,17 @@ export default class FunctionSchema extends BaseUISchema {
       group: gettext('Options'),
       disabled: obj.inCatalog() ? true : obj.isLessThan95ORNonSPL,
       deps: ['lanname'],
-      depChange: (state, source) => (
-        (source[source.length - 1] !== 'lanname') ? undefined : (
-          obj.isLessThan95ORNonSPL(state)
-        ) ? {
+      depChange: (state, source) => {
+        if (source[source.length - 1] === 'lanname' && obj.isLessThan95ORNonSPL(state)) {
+          return {
             provolatile: null,
             proisstrict: false,
             procost: null,
             proleakproof: false,
             proparallel: null,
-          } : (
-            obj.isLessThan95ORNonSPL(state) ? { proparallel: null } : undefined
-          )
-      ),
+          };
+        }
+      },
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
       group: gettext('Options'), type: 'switch',

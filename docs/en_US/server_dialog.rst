@@ -206,8 +206,8 @@ Use the fields in the *Advanced* tab to configure a connection:
   should be generated as a transient authorization token instead of providing a
   password when connecting in `PAM authentication <https://www.postgresql.org/docs/current/auth-pam.html>`_ scenarios.
   You can pass server hostname, port and DB username to the password exec command as variable by providing placeholders
-  like ``%HOST%``, ``%PORT%`` and ``%USERNAME%`` which will be replace with the server connection information.
-  Example: ``/path/to/script --hostnmae %HOST% --port %PORT% --username %USERNAME%``
+  like ``%HOSTNAME%``, ``%PORT%`` and ``%USERNAME%`` which will be replace with the server connection information.
+  Example: ``/path/to/script --hostname %HOSTNAME% --port %PORT% --username %USERNAME%``
 * Use the *Password exec expiration* field to specify a maximum age, in seconds,
   of the password generated with a *Password exec command*. If not specified,
   the password will not expire until your pgAdmin session does.
@@ -233,3 +233,18 @@ Use the fields in the *Advanced* tab to configure a connection:
 .. toctree::
 
     clear_saved_passwords
+
+
+Click the *Tags* tab to continue.
+
+.. image:: images/server_tags.png
+    :alt: Server dialog tags tab
+    :align: center
+
+Use the table in the *Tags* tab to add tags. The tags will be shown on the right side of
+a server node label in the object explorer tree.
+
+Click on the *+* button to add a new tag. Some of the parameters are:
+
+* *Text* field to specify the tag name.
+* *Color* field to select the accent color of the tag.

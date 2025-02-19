@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -51,15 +51,7 @@ export function menuSearch(param, props) {
 
   const mainMenus = pgAdmin.Browser.MainMenus;
   mainMenus.forEach((menu) => {
-    let subMenus = [];
-    if(menu.name == 'object') {
-      let selectedNode = pgAdmin.Browser.tree.selected();
-      if(selectedNode) {
-        subMenus = menu.getMenuItems();
-      }
-    } else {
-      subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
-    }
+    const subMenus = menu.getMenuItems();
     iterItem(Object.values(subMenus), getMenuName(menu));
   });
 

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ import DebuggerComponent from '../../../pgadmin/tools/debugger/static/js/compone
 import FunctionArguments from '../../../pgadmin/tools/debugger/static/js/debugger_ui';
 import Debugger from '../../../pgadmin/tools/debugger/static/js/DebuggerModule';
 import Theme from '../../../pgadmin/static/js/Theme';
-import { PgAdminContext } from '../../../pgadmin/static/js/BrowserComponent';
+import { PgAdminProvider } from '../../../pgadmin/static/js/PgAdminProvider';
 
 
 describe('Debugger Component', () => {
@@ -59,7 +59,7 @@ describe('Debugger Component', () => {
     await act(async () => {
       render(
         <Theme>
-          <PgAdminContext.Provider value={pgAdmin}>
+          <PgAdminProvider value={pgAdmin}>
             <DebuggerComponent
               pgAdmin={pgAdmin}
               panel={document.getElementById('debugger-main-container')}
@@ -67,7 +67,7 @@ describe('Debugger Component', () => {
               layout={''}
               params={params}
             />
-          </PgAdminContext.Provider>
+          </PgAdminProvider>
         </Theme>
       );
     });

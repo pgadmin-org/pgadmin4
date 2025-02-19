@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -380,7 +380,7 @@ def get_binary_path_versions(binary_path: str) -> dict:
             # if path doesn't exist raise exception
             if not os.path.isdir(binary_path):
                 current_app.logger.warning('Invalid binary path.')
-                raise Exception()
+                raise FileNotFoundError()
             # Get the output of the '--version' command
             cmd = subprocess.run(
                 [full_path, '--version'],
@@ -390,8 +390,6 @@ def get_binary_path_versions(binary_path: str) -> dict:
             )
             if cmd.returncode == 0:
                 ret[utility] = cmd.stdout.split(") ", 1)[1].strip()
-            else:
-                raise Exception()
         except Exception as _:
             continue
 
@@ -492,7 +490,7 @@ def dump_database_servers(output_file, selected_servers,
     servers_dumped = 0
 
     # Dump servers
-    servers = Server.query.filter_by(user_id=user_id).all()
+    servers = Server.query.filter_by(user_id=user_id, is_adhoc=0).all()
     server_dict = {}
     for server in servers:
         if selected_servers is None or (
@@ -528,6 +526,7 @@ def dump_database_servers(output_file, selected_servers,
                       server.kerberos_conn),
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
+            add_value(attr_dict, "Tags", server.tags)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True
@@ -765,6 +764,8 @@ def load_database_servers(input_file, selected_servers,
             new_server.shared_username = obj.get("SharedUsername", None)
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            new_server.tags = obj.get("Tags", None)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True

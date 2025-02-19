@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -68,7 +68,6 @@ class GoogleCredSchema extends BaseUISchema{
                   obj.fieldOptions.verification_ack();
                 }
               }).catch((err) => {
-                // FIXME:: Show error message.
                 console.error(
                   err instanceof Error ?
                     err : Error(gettext('Something went wrong'))
@@ -505,7 +504,7 @@ class GoogleClusterSchema extends BaseUISchema {
   }
 
   validate(data, setErr) {
-    if ( !isEmptyString(data.name) && (!/^(?=[a-z])[a-z0-9\-]*$/.test(data.name) || data.name.length > 97)) {
+    if ( !isEmptyString(data.name) && (!/^(?=[a-z])[a-z0-9-]*$/.test(data.name) || data.name.length > 97)) {
       setErr('name',gettext('Name must only contain lowercase letters, numbers, and hyphens.Should start with a letter and must be 97 characters or less'));
       return true;
     }

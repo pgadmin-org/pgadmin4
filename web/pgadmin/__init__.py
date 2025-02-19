@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -36,6 +36,7 @@ from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
 from jinja2 import select_autoescape
+from flask_wtf.csrf import CSRFError
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
@@ -45,7 +46,8 @@ from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
 from datetime import timedelta, datetime
 from pgadmin.setup import get_version, set_version, check_db_tables
-from pgadmin.utils.ajax import internal_server_error, make_json_response
+from pgadmin.utils.ajax import internal_server_error, make_json_response, \
+    unauthorized
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
@@ -309,7 +311,7 @@ def create_app(app_name=None):
                 if user is not None:
                     user_id = user.id
             user_language = Preferences.raw_value(
-                'misc', 'user_language', 'user_language', user_id
+                'misc', 'user_language', 'user_interface', user_id
             )
             if user_language is not None:
                 language = user_language
@@ -399,78 +401,82 @@ def create_app(app_name=None):
             backup_db_file()
 
     def run_migration_for_sqlite():
-        with app.app_context():
-            # Run migration for the first time i.e. create database
-            # If version not available, user must have aborted. Tables are not
-            # created and so its an empty db
-            if not os.path.exists(SQLITE_PATH) or get_version() == -1:
-                # If running in cli mode then don't try to upgrade, just raise
-                # the exception
-                if not cli_mode:
-                    upgrade_db()
-                else:
-                    if not os.path.exists(SQLITE_PATH):
-                        raise FileNotFoundError(
-                            'SQLite database file "' + SQLITE_PATH +
-                            '" does not exists.')
-                    raise RuntimeError(
-                        'The configuration database file is not valid.')
+        # Run migration for the first time i.e. create database
+        # If version not available, user must have aborted. Tables are not
+        # created and so its an empty db
+        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
+            # If running in cli mode then don't try to upgrade, just raise
+            # the exception
+            if not cli_mode:
+                upgrade_db()
             else:
-                schema_version = get_version()
+                if not os.path.exists(SQLITE_PATH):
+                    raise FileNotFoundError(
+                        'SQLite database file "' + SQLITE_PATH +
+                        '" does not exists.')
+                raise RuntimeError(
+                    'The configuration database file is not valid.')
+        else:
+            schema_version = get_version()
 
-                # Run migration if current schema version is greater than the
-                # schema version stored in version table
-                if CURRENT_SCHEMA_VERSION > schema_version:
-                    # Take a backup of the old database file.
-                    try:
-                        prev_database_file_name = \
-                            "{0}.prev.bak".format(SQLITE_PATH)
-                        shutil.copyfile(SQLITE_PATH, prev_database_file_name)
-                    except Exception as e:
-                        app.logger.error(e)
+            # Run migration if current schema version is greater than the
+            # schema version stored in version table
+            if CURRENT_SCHEMA_VERSION > schema_version:
+                # Take a backup of the old database file.
+                try:
+                    prev_database_file_name = \
+                        "{0}.prev.bak".format(SQLITE_PATH)
+                    shutil.copyfile(SQLITE_PATH, prev_database_file_name)
+                except Exception as e:
+                    app.logger.error(e)
 
-                    upgrade_db()
-                else:
-                    # check all tables are present in the db.
-                    is_db_error, invalid_tb_names = check_db_tables()
-                    if is_db_error:
-                        app.logger.error(
-                            'Table(s) {0} are missing in the'
-                            ' database'.format(invalid_tb_names))
-                        backup_db_file()
+                upgrade_db()
+            else:
+                # check all tables are present in the db.
+                is_db_error, invalid_tb_names = check_db_tables()
+                if is_db_error:
+                    app.logger.error(
+                        'Table(s) {0} are missing in the'
+                        ' database'.format(invalid_tb_names))
+                    backup_db_file()
 
-                # Update schema version to the latest
-                if CURRENT_SCHEMA_VERSION > schema_version:
-                    set_version(CURRENT_SCHEMA_VERSION)
-                    db.session.commit()
+            # Update schema version to the latest
+            if CURRENT_SCHEMA_VERSION > schema_version:
+                set_version(CURRENT_SCHEMA_VERSION)
+                db.session.commit()
 
-            if os.name != 'nt':
-                os.chmod(config.SQLITE_PATH, 0o600)
+        if os.name != 'nt':
+            os.chmod(config.SQLITE_PATH, 0o600)
 
     def run_migration_for_others():
-        with app.app_context():
-            # Run migration for the first time i.e. create database
-            # If version not available, user must have aborted. Tables are not
-            # created and so its an empty db
-            if get_version() == -1:
+        # Run migration for the first time i.e. create database
+        # If version not available, user must have aborted. Tables are not
+        # created and so its an empty db
+        if get_version() == -1:
+            db_upgrade(app)
+        else:
+            schema_version = get_version()
+
+            # Run migration if current schema version is greater than
+            # the schema version stored in version table.
+            if CURRENT_SCHEMA_VERSION > schema_version:
                 db_upgrade(app)
-            else:
-                schema_version = get_version()
+                # Update schema version to the latest
+                set_version(CURRENT_SCHEMA_VERSION)
+                db.session.commit()
 
-                # Run migration if current schema version is greater than
-                # the schema version stored in version table.
-                if CURRENT_SCHEMA_VERSION > schema_version:
-                    db_upgrade(app)
-                    # Update schema version to the latest
-                    set_version(CURRENT_SCHEMA_VERSION)
-                    db.session.commit()
+    from pgadmin.browser.server_groups.servers.utils import (
+        delete_adhoc_servers)
+    with app.app_context():
+        # Run the migration as per specified by the user.
+        if config.CONFIG_DATABASE_URI is not None and \
+                len(config.CONFIG_DATABASE_URI) > 0:
+            run_migration_for_others()
+        else:
+            run_migration_for_sqlite()
 
-    # Run the migration as per specified by the user.
-    if config.CONFIG_DATABASE_URI is not None and \
-            len(config.CONFIG_DATABASE_URI) > 0:
-        run_migration_for_others()
-    else:
-        run_migration_for_sqlite()
+        # Delete all the adhoc(temporary) servers from the pgAdmin database.
+        delete_adhoc_servers()
 
     Mail(app)
 
@@ -829,8 +835,9 @@ def create_app(app_name=None):
         # but the user session may still be active. Logout the user
         # to get the key again when login
         if config.SERVER_MODE and current_user.is_authenticated and \
-            app.PGADMIN_EXTERNAL_AUTH_SOURCE not in [
-                KERBEROS, OAUTH2, WEBSERVER] and \
+            'auth_source_manager' in session and \
+            session['auth_source_manager']['current_source'] not in \
+            [KERBEROS, OAUTH2, WEBSERVER] and \
                 current_app.keyManager.get() is None and \
                 request.endpoint not in ('security.login', 'security.logout'):
             logout_user()
@@ -917,7 +924,14 @@ def create_app(app_name=None):
         current_app.logger.error(e, exc_info=True)
         return e
 
-    # Intialize the key manager
+    # Send unauthorized response if CSRF errors occurs.
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(error):
+        err_msg = str(error.description) + \
+            gettext(' You need to refresh the page.')
+        return unauthorized(errormsg=err_msg)
+
+    # Initialize the key manager
     app.keyManager = KeyManager()
 
     ##########################################################################

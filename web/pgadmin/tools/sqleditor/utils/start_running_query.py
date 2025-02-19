@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -28,7 +28,6 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
-from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class StartRunningQuery:
@@ -82,26 +81,15 @@ class StartRunningQuery:
 
             # Connect to the Server if not connected.
             if connect and not conn.connected():
-                view = SchemaDiffRegistry.get_node_view('server')
-                response = view.connect(transaction_object.sgid,
-                                        transaction_object.sid, True)
-                if response.status_code == 428:
+                from pgadmin.tools.sqleditor.utils import \
+                    query_tool_connection_check
+
+                _, _, _, _, _, response = \
+                    query_tool_connection_check(trans_id)
+                # This is required for asking user to enter password
+                # when password is not saved for the server
+                if response is not None:
                     return response
-                else:
-                    conn = manager.connection(
-                        did=transaction_object.did,
-                        conn_id=self.connection_id,
-                        auto_reconnect=False,
-                        use_binary_placeholder=True,
-                        array_to_string=True,
-                        **({"database": transaction_object.dbname} if hasattr(
-                            transaction_object, 'dbname') else {}))
-
-                status, msg = conn.connect()
-                if not status:
-                    self.logger.error(msg)
-                    return internal_server_error(errormsg=str(msg))
-
             effective_sql_statement = apply_explain_plan_wrapper_if_needed(
                 manager, sql)
 

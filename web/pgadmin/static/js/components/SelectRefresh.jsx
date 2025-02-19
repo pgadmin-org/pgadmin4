@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React, { useState } from 'react';
 import { Box} from '@mui/material';
 import {InputSelect, FormInput} from './FormComponents';

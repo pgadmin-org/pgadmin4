@@ -3,7 +3,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ import { QueryToolEventsContext } from '../QueryToolComponent';
 import gettext from 'sources/gettext';
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import PropTypes from 'prop-types';
-
+import { getEnterKeyHandler } from '../../../../../../static/js/utils';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -128,9 +128,10 @@ export function StatusBar({eol, handleEndOfLineChange}) {
 
       <Box className='StatusBar-padding StatusBar-mlAuto' style={{display:'flex'}}>
         <Box className="StatusBar-padding StatusBar-divider">
-          <Tooltip title="Select EOL Sequence" disableInteractive enterDelay={2500}>
+          <Tooltip title="Select EOL Sequence" enterDelay={2500}>
             <span
               onClick={toggleMenu}
+              onKeyDown={getEnterKeyHandler(toggleMenu)}
               ref={eolMenuRef}
               name="menu-eoloptions"
               style={{

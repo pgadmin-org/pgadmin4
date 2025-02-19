@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
 import _ from 'lodash';
-import { ConstraintsSchema } from '../../../static/js/table.ui';
+import { ConstraintsSchema, getPrivilegesForTableAndLikeObjects } from '../../../static/js/table.ui';
 import { PartitionKeysSchema, PartitionsSchema } from '../../../static/js/partition.utils.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../../static/js/privilege.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../static/js/node_ajax';
@@ -429,7 +429,7 @@ export default class PartitionTableSchema extends BaseUISchema {
     },
     {
       id: 'relacl', label: gettext('Privileges'), type: 'collection',
-      group: gettext('Security'), schema: this.getPrivilegeRoleSchema(['a','r','w','d','D','x','t']),
+      group: gettext('Security'), schema: this.getPrivilegeRoleSchema(getPrivilegesForTableAndLikeObjects(this.getServerVersion())),
       mode: ['edit', 'create'], canAdd: true, canDelete: true,
       uniqueCol : ['grantee'],
     },{

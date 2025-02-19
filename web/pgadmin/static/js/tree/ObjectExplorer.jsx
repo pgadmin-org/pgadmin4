@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {Tree} from './tree';
 import * as pgadminUtils from '../utils';
@@ -8,7 +17,7 @@ import { FileTreeX, TreeModelX } from '../components/PgTree';
 import ContextMenu from '../components/ContextMenu';
 import { generateNodeUrl } from '../../../browser/static/js/node_ajax';
 import { copyToClipboard } from '../clipboard';
-import { usePgAdmin } from '../BrowserComponent';
+import { usePgAdmin } from '../PgAdminProvider';
 
 function postTreeReady(b) {
   const draggableTypes = [

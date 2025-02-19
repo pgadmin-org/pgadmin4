@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -21,6 +21,8 @@ def validate_email(email, email_config=None):
                 config.CHECK_EMAIL_DELIVERABILITY
             email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'] = \
                 config.ALLOW_SPECIAL_EMAIL_DOMAINS
+            email_config["GLOBALLY_DELIVERABLE"] = \
+                config.GLOBALLY_DELIVERABLE
 
         # Allow special email domains
         if isinstance(email_config['ALLOW_SPECIAL_EMAIL_DOMAINS'], str):
@@ -34,6 +36,9 @@ def validate_email(email, email_config=None):
             ]
         except Exception:
             pass
+
+        email_validator.GLOBALLY_DELIVERABLE = \
+            email_config["GLOBALLY_DELIVERABLE"]
 
         # Validate.
         _ = email_validate(

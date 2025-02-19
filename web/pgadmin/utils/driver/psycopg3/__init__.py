@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -76,7 +76,7 @@ class Driver(BaseDriver):
                     session['__pgsql_server_managers'].copy()
                 for server in \
                     Server.query.filter_by(
-                        user_id=current_user.id):
+                        user_id=current_user.id, is_adhoc=0):
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
                     if server.id in session_managers:

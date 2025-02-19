@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -16,7 +16,6 @@ import BgProcessManager from '../../../pgadmin/misc/bgprocess/static/js/BgProces
 import pgAdmin from 'sources/pgadmin';
 import Processes from '../../../pgadmin/misc/bgprocess/static/js/Processes';
 import { withBrowser } from '../genericFunctions';
-
 
 const processData = {
   acknowledge: null,

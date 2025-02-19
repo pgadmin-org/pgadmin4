@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import React, { useState } from 'react';
 import BaseUISchema from '../../../../../../static/js/SchemaView/base_schema.ui';
 import gettext from 'sources/gettext';
@@ -8,6 +16,7 @@ import { flattenSelectOptions } from '../../../../../../static/js/components/For
 import PropTypes from 'prop-types';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
 import SchemaView from '../../../../../../static/js/SchemaView';
+import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 
 class NewConnectionSchema extends BaseUISchema {
   constructor(api, params, connectServer) {
@@ -213,6 +222,8 @@ export default function NewConnectionDialog({onClose, onSave}) {
 
   const [connecting, setConnecting] = useState(false);
   const queryToolCtx = React.useContext(QueryToolContext);
+  const pgAdmin = usePgAdmin();
+
   const connectServer = async (sid, user, formData, connectCallback) => {
     setConnecting(true);
     try {
@@ -230,20 +241,24 @@ export default function NewConnectionDialog({onClose, onSave}) {
       setConnecting(false);
       connectCallback?.(respData.data);
     } catch (error) {
-      queryToolCtx.modal.showModal(gettext('Connect to server'), (closeModal)=>{
-        return (
-          <ConnectServerContent
-            closeModal={()=>{
-              setConnecting(false);
-              closeModal();
-            }}
-            data={error.response?.data?.result}
-            onOK={(formData)=>{
-              connectServer(sid, null, formData, connectCallback);
-            }}
-          />
-        );
-      });
+      if(!error.response) {
+        pgAdmin.Browser.notifier.pgNotifier('error', error, 'Connection error', gettext('Connection to pgAdmin server has been lost.'));
+      } else {
+        queryToolCtx.modal.showModal(gettext('Connect to server'), (closeModal)=>{
+          return (
+            <ConnectServerContent
+              closeModal={()=>{
+                setConnecting(false);
+                closeModal();
+              }}
+              data={error.response?.data?.result}
+              onOK={(formData)=>{
+                connectServer(sid, null, formData, connectCallback);
+              }}
+            />
+          );
+        });
+      }
     }
   };
   const schema = React.useRef(null);

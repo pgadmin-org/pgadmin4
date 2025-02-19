@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import { Box, Tooltip, CircularProgress } from '@mui/material';
-import { ConnectedIcon, DisonnectedIcon } from '../../../../../../static/js/components/ExternalIcon';
+import { ConnectedIcon, DisconnectedIcon } from '../../../../../../static/js/components/ExternalIcon';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -45,7 +45,7 @@ function ConnectionStatusIcon({status}) {
   } else if(status == STATUS.CONNECTED || status == STATUS.FAILED) {
     return <ConnectedIcon />;
   } else {
-    return <DisonnectedIcon />;
+    return <DisconnectedIcon />;
   }
 }
 

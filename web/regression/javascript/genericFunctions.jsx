@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,17 +13,17 @@ import SchemaView from '../../pgadmin/static/js/SchemaView';
 import pgWindow from 'sources/window';
 import fakePgAdmin from './fake_pgadmin';
 import Theme from '../../pgadmin/static/js/Theme';
-import { PgAdminContext } from '../../pgadmin/static/js/BrowserComponent';
 import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PgAdminProvider } from '../../pgadmin/static/js/PgAdminProvider';
 
 export function withBrowser(WrappedComp) {
   /* eslint-disable react/display-name */
   return (props)=>{
     return <Theme>
-      <PgAdminContext.Provider value={fakePgAdmin}>
+      <PgAdminProvider value={fakePgAdmin}>
         <WrappedComp {...props}/>
-      </PgAdminContext.Provider>
+      </PgAdminProvider>
     </Theme>;
   };
 }

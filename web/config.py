@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # config.py - Core application configuration settings
@@ -402,7 +402,8 @@ CHECK_EMAIL_DELIVERABILITY = False
 SECURITY_EMAIL_VALIDATOR_ARGS = \
     {"check_deliverability": CHECK_EMAIL_DELIVERABILITY}
 ALLOW_SPECIAL_EMAIL_DOMAINS = []
-
+# Disables global deliverable check while email validation
+GLOBALLY_DELIVERABLE = True
 ##########################################################################
 # Upgrade checks
 ##########################################################################
@@ -458,14 +459,12 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg": "",
-    "pg-12": "",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
     "ppas": "",
-    "ppas-12": "",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",
@@ -480,14 +479,12 @@ DEFAULT_BINARY_PATHS = {
 
 FIXED_BINARY_PATHS = {
     "pg": "",
-    "pg-12": "",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
     "pg-16": "",
     "pg-17": "",
     "ppas": "",
-    "ppas-12": "",
     "ppas-13": "",
     "ppas-14": "",
     "ppas-15": "",
@@ -939,6 +936,11 @@ SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 # This setting is applicable only for server mode.
 #############################################################################
 ENABLE_SERVER_PASS_EXEC_CMD = False
+
+#############################################################################
+# Maximum number of Tags allowed on a server node
+##############################################################################
+MAX_SERVER_TAGS_ALLOWED = 5
 
 #############################################################################
 # Number of records to fetch in one batch for server logs.

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ import { FILTER_NAME, SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { InputCheckbox } from '../../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid';
-import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 
 
 const StyledBox = styled(Box)(({theme}) => ({

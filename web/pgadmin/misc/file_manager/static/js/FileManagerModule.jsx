@@ -3,7 +3,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -111,11 +111,11 @@ export default class FileManagerModule {
     }
   }
 
-  show(params, onOK, onCancel, modalObj) {
+  async show(params, onOK, onCancel, modalObj) {
     let {name: browser} = getBrowser();
     if(browser == 'Electron') {
       try {
-        this.showNative(params, onOK, onCancel);
+        await this.showNative(params, onOK, onCancel);
       } catch {
         // Fall back to internal
         this.showInternal(params, onOK, onCancel, modalObj);

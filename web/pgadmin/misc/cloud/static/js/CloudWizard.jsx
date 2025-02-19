@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -81,9 +81,9 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         onClose();
       }
     };
-    pgAdmin.Browser.docker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+    pgAdmin.Browser.docker.default_workspace.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
     return ()=>{
-      pgAdmin.Browser.docker.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+      pgAdmin.Browser.docker.default_workspace.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
     };
   }, []);
 

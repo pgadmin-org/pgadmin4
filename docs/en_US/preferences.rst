@@ -6,7 +6,14 @@
 ***************************
 
 Use options on the *Preferences* dialog to customize the behavior of the client.
-To open the *Preferences* dialog, select *Preferences* from the *File* menu.
+To open the *Preferences* dialog, select *Preferences* from the *File* menu or
+click on the *Settings* button at the bottom left corner in case of Workspace
+layout.
+
+.. image:: images/preferences_menu.png
+    :alt: Preferences menu
+    :align: center
+
 The left pane of the *Preferences* dialog displays a tree control; each node of
 the tree control provides access to options that are related to the node under
 which they are displayed.
@@ -266,21 +273,28 @@ The Miscellaneous Node
 
 Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 
-.. image:: images/preferences_misc_user_language.png
-    :alt: Preferences dialog user language section
+.. image:: images/preferences_misc_user_interface.png
+    :alt: Preferences dialog user interface section
     :align: center
 
-* Use the *User language* drop-down listbox to select the display language for
+* Use the *Language* drop-down listbox to select the display language for
   the client.
 
-.. image:: images/preferences_misc_themes.png
-    :alt: Preferences dialog themes section
-    :align: center
+* Use the *Layout* drop-down listbox to select the layout for the client.
+  pgAdmin offers two options: the Classic layout, a longstanding and familiar
+  design, and the Workspace layout, which provides distraction free dedicated
+  areas for the Query Tool, PSQL, and Schema Diff tools. 'Workspace' layout is
+  the default layout, but user can change it to 'Classic'.
+
+* When the *Open the Query Tool/PSQL in their respective workspaces* switch is set to *True*
+  then all Query Tool/PSQL tabs will open in their respective workspaces. By default,
+  this setting is False, meaning that Query Tool/PSQL tabs will open in the currently
+  active workspace (either the default or the workspace selected at the time of opening).
 
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
-  Currently we support Standard, Dark and High Contrast and System theme. Selecting System option will follow
+  Currently we support Light, Dark, High Contrast and System theme. Selecting System option will follow
   your computer's settings.
 
 The Paths Node

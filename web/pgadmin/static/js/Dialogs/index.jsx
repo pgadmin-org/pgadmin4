@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -188,8 +188,8 @@ export function showChangeServerPassword() {
     isPgPassFileUsed = arguments[4];
 
   const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
+  const onClose = ()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);};
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: title,
     content: (
@@ -229,56 +229,53 @@ export function showChangeServerPassword() {
 }
 
 export function showChangeUserPassword(url) {
-  const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
-    id: panelId,
-    title: gettext('Change pgAdmin User Password'),
-    content: (
-      <ChangePasswordContent
-        getInitData={()=>{
-          const api = getApiInstance();
-          return new Promise((resolve, reject)=>{
-            api.get(url)
-              .then((res)=>{
-                resolve(res.data);
-              })
-              .catch((err)=>{
-                reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-              });
-          });
-        }}
-        onClose={()=>{
-          onClose();
-        }}
-        onSave={(_isNew, data)=>{
-          const api = getApiInstance();
-          return new Promise((resolve, reject)=>{
-            const formData =  {
-              'password': data.password,
-              'new_password': data.newPassword,
-              'new_password_confirm': data.confirmPassword,
-              'csrf_token': data.csrf_token
-            };
-
-            api({
-              method: 'POST',
-              url: url,
-              data: formData,
-            }).then((res)=>{
-              resolve(res.data.info);
-              onClose();
-              pgAdmin.Browser.notifier.success(res.data.info);
-            }).catch((err)=>{
+  const title = gettext('Change pgAdmin User Password');
+  pgAdmin.Browser.notifier.showModal(title, (onClose) => {
+    return <ChangePasswordContent
+      getInitData={()=>{
+        const api = getApiInstance();
+        return new Promise((resolve, reject)=>{
+          api.get(url)
+            .then((res)=>{
+              resolve(res.data);
+            })
+            .catch((err)=>{
               reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
             });
+        });
+      }}
+      onClose={()=>{
+        onClose();
+      }}
+      onSave={(_isNew, data)=>{
+        const api = getApiInstance();
+        return new Promise((resolve, reject)=>{
+          const formData =  {
+            'password': data.password,
+            'new_password': data.newPassword,
+            'new_password_confirm': data.confirmPassword,
+            'csrf_token': data.csrf_token
+          };
+
+          api({
+            method: 'POST',
+            url: url,
+            data: formData,
+          }).then((res)=>{
+            resolve(res.data.info);
+            onClose();
+            pgAdmin.Browser.notifier.success(res.data.info);
+          }).catch((err)=>{
+            reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
-        }}
-        hasCsrfToken={true}
-        showUser={false}
-      />
-    )
-  }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
+        });
+      }}
+      hasCsrfToken={true}
+      showUser={false}
+    />;
+  },
+  { isFullScreen: false, isResizeable: true, showFullScreen: false, isFullWidth: true,
+    dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md});
 }
 
 export function showNamedRestorePoint() {
@@ -288,8 +285,8 @@ export function showNamedRestorePoint() {
     itemNodeData = arguments[3];
 
   const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
-  const onClose = ()=>{pgAdmin.Browser.docker.close(panelId);};
-  pgAdmin.Browser.docker.openDialog({
+  const onClose = ()=>{pgAdmin.Browser.docker.default_workspace.close(panelId);};
+  pgAdmin.Browser.docker.default_workspace.openDialog({
     id: panelId,
     title: title,
     content: (

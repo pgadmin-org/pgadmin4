@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -419,6 +419,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             self.trigger_template_path = \
                 'triggers/sql/{0}/#{1}#'.format(self.manager.server_type,
                                                 self.manager.version)
+
+            self.allowed_privileges = ["a", "r", "w", "d", "D", "x", "t"]
+            if self.manager.version >= 170000:
+                self.allowed_privileges = \
+                    ["a", "r", "w", "d", "D", "x", "t", "m"]
 
             return f(*args, **kwargs)
 
@@ -914,7 +919,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         # Parse Privileges
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'],
-                                              ["a", "r", "w", "x"])
+                                              self.allowed_privileges)
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -991,7 +996,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             return internal_server_error(errormsg=str(e))
 
     @staticmethod
-    def _parse_privileges(data):
+    def _parse_privileges(data, allowed_privileges):
         """
         Parser privilege data as per type.
         :param data: Data.
@@ -999,13 +1004,13 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         if 'relacl' in data and 'added' in data['relacl']:
             data['relacl']['added'] = parse_priv_to_db(
-                data['relacl']['added'], ["a", "r", "w", "x"])
+                data['relacl']['added'], allowed_privileges)
         if 'relacl' in data and 'changed' in data['relacl']:
             data['relacl']['changed'] = parse_priv_to_db(
-                data['relacl']['changed'], ["a", "r", "w", "x"])
+                data['relacl']['changed'], allowed_privileges)
         if 'relacl' in data and 'deleted' in data['relacl']:
             data['relacl']['deleted'] = parse_priv_to_db(
-                data['relacl']['deleted'], ["a", "r", "w", "x"])
+                data['relacl']['deleted'], allowed_privileges)
 
     @staticmethod
     def _check_old_col_ops(old_col_frmt_options, option, col):
@@ -1120,7 +1125,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 data['schema'] = old_data['basensp']
 
             # Parse Privileges
-            ForeignTableView._parse_privileges(data)
+            ForeignTableView._parse_privileges(data, self.allowed_privileges)
 
             # If ftsrvname is changed while comparing two schemas
             # then we need to drop foreign table and recreate it
@@ -1175,7 +1180,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # Parse Privileges
             if 'relacl' in data:
                 data['relacl'] = parse_priv_to_db(data['relacl'],
-                                                  ["a", "r", "w", "x"])
+                                                  self.allowed_privileges)
 
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]), data=data,

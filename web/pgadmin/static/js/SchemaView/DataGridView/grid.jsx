@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 
-import { usePgAdmin } from 'sources/BrowserComponent';
+import { usePgAdmin } from 'sources/PgAdminProvider';
 import {
   PgReactTable, PgReactTableBody, PgReactTableHeader,
   PgReactTableRow, 

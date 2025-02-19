@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -1145,7 +1145,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 difference={}
             )
 
-            required_create_keys = ['columns']
+            required_create_keys = ['columns', 'indconstraint']
 
             create_req = IndexesView._check_for_create_req(
                 required_create_keys,

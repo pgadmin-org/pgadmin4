@@ -1,4 +1,4 @@
-SELECT setval(E'public."Seq1_$%{}[]()&*^!@""''`\\/#"', 7, true);
+SELECT setval(E'public."Seq1_$%{}[]()&*^!@""''`\\/#"', 7, false);
 
 ALTER SEQUENCE IF EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     INCREMENT 12

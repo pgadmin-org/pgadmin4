@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -187,7 +187,7 @@ export default class MainMenuFactory {
         const mi = getNewMenuItem(i);
         if(!mi) return;
 
-        if(i.category??'common' != 'common') {
+        if((i.category??'common') != 'common') {
           const cmi = getMenuCategory(i.category);
           if(cmi) {
             cmi.addMenuItems([...applySeparators(mi)]);

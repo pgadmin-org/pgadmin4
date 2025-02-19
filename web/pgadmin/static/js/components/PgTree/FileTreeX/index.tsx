@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import * as React from 'react';
 import {
   FileTree,
@@ -228,6 +236,8 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       this.activeFileDec.removeTarget(this.activeFile);
       this.activeFile = null;
     }
+
+    this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'deselected', fileH);
   };
 
   private readonly setPseudoActiveFile = async (fileOrDirOrPath: FileOrDir | string): Promise<void> => {

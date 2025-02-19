@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
@@ -11,10 +11,12 @@ import _ from 'lodash';
 import gettext from 'sources/gettext';
 import { hasTrojanSource } from 'anti-trojan-source';
 import convert from 'convert-units';
+import Papa from 'papaparse';
 import getApiInstance from './api_instance';
 import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { isMac } from './keyboard_shortcuts';
+import { WORKSPACES } from '../../browser/static/js/constants';
 
 export function parseShortcutValue(obj) {
   let shortcut = '';
@@ -45,6 +47,16 @@ export function parseKeyEventValue(e) {
 export function isShortcutValue(obj) {
   if(!obj) return false;
   return [obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k));
+}
+
+
+export function getEnterKeyHandler(clickHandler) {
+  return (e)=>{
+    if(e.code === 'Enter'){
+      e.preventDefault();
+      clickHandler(e);
+    }
+  };
 }
 
 // Convert shortcut obj to codemirror key format
@@ -250,74 +262,17 @@ export function sprintf(i_str) {
   }
 }
 
-// Modified ref: http://stackoverflow.com/a/1293163/2343 to suite pgAdmin.
 // This will parse a delimited string into an array of arrays.
 export function CSVToArray(strData, strDelimiter, quoteChar){
-  strDelimiter = strDelimiter || ',';
-  quoteChar = quoteChar || '"';
 
-  // Create a regular expression to parse the CSV values.
-  let objPattern = new RegExp(
-    (
-    // Delimiters.
-      '(\\' + strDelimiter + '|\\r?\\n|\\r|^)' +
-            // Quoted fields.
-            (quoteChar == '"' ? '(?:"([^"]*(?:""[^"]*)*)"|' : '(?:\'([^\']*(?:\'\'[^\']*)*)\'|') +
-            // Standard fields.
-            (quoteChar == '"' ? '([^"\\' + strDelimiter + '\\r\\n]*))': '([^\'\\' + strDelimiter + '\\r\\n]*))')
-    ),
-    'gi'
-  );
+  // Use papaparse to parse the CSV data
+  const parsedResult = Papa.parse(strData, {
+    delimiter: strDelimiter,
+    quoteChar: quoteChar,
+  });
 
-  // Create an array to hold our data. Give the array
-  // a default empty first row.
-  let arrData = [[]];
-
-  // The regex doesn't handle and skips start value if
-  // string starts with delimiter
-  if(strData.startsWith(strDelimiter)) {
-    arrData[ arrData.length - 1 ].push(null);
-  }
-
-  // Create an array to hold our individual pattern
-  // matching groups.
-  let arrMatches = null;
-
-  // Keep looping over the regular expression matches
-  // until we can no longer find a match.
-  while ((arrMatches = objPattern.exec( strData ))){
-    // Get the delimiter that was found.
-    let strMatchedDelimiter = arrMatches[ 1 ];
-
-    // Check to see if the given delimiter has a length
-    // (is not the start of string) and if it matches
-    // field delimiter. If id does not, then we know
-    // that this delimiter is a row delimiter.
-    if (strMatchedDelimiter.length && strMatchedDelimiter !== strDelimiter){
-      // Since we have reached a new row of data,
-      // add an empty row to our data array.
-      arrData.push( [] );
-    }
-
-    let strMatchedValue;
-
-    // Now that we have our delimiter out of the way,
-    // let's check to see which kind of value we
-    // captured (quoted or unquoted).
-    if (arrMatches[ 2 ]){
-      // We found a quoted value. When we capture
-      // this value, unescape any quotes.
-      strMatchedValue = arrMatches[ 2 ].replace(new RegExp( quoteChar+quoteChar, 'g' ), quoteChar);
-    } else {
-      // We found a non-quoted value.
-      strMatchedValue = arrMatches[ 3 ];
-    }
-    // Now that we have our value string, let's add
-    // it to the data array.
-    arrData[ arrData.length - 1 ].push( strMatchedValue );
-  }
   // Return the parsed data.
-  return arrData;
+  return parsedResult.data;
 }
 
 export function hasBinariesConfiguration(pgBrowser, serverInformation) {
@@ -378,7 +333,7 @@ export function evalFunc(obj, func, ...param) {
 
 export function getBrowser() {
   if(navigator.userAgent.indexOf('Electron') >= 0) {
-    return {name: 'Electron', version: navigator.userAgent.match(/Electron\/([\d\.]+\d+)/)[1]};
+    return {name: 'Electron', version: /Electron\/([\d.]+\d+)/.exec(navigator.userAgent)[1]};
   }
 
   let ua=navigator.userAgent,tem,M=(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i).exec(ua) || [];
@@ -387,7 +342,7 @@ export function getBrowser() {
     return {name:'IE', version:(tem[1]||'')};
   }
   if(ua.indexOf('Electron') >= 0) {
-    return {name: 'Electron', version: ua.match(/Electron\/([\d\.]+\d+)/)[1]};
+    return {name: 'Electron', version: /Electron\/([\d.]+\d+)/.exec(ua)[1]};
   }
 
   if(M[1]==='Chrome') {
@@ -606,34 +561,6 @@ export function fullHexColor(shortHex) {
   return shortHex;
 }
 
-export function gettextForTranslation(translations, ...replaceArgs) {
-  const text = replaceArgs[0];
-  let rawTranslation = translations[text] ? translations[text] : text;
-
-  if(arguments.length == 2) {
-    return rawTranslation;
-  }
-
-  try {
-    return rawTranslation.split('%s')
-      .map(function(w, i) {
-        if(i > 0) {
-          if(i < replaceArgs.length) {
-            return [replaceArgs[i], w].join('');
-          } else {
-            return ['%s', w].join('');
-          }
-        } else {
-          return w;
-        }
-      })
-      .join('');
-  } catch(e) {
-    console.error(e);
-    return rawTranslation;
-  }
-}
-
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
 const requestAnimationFrame =
   window.requestAnimationFrame ||
@@ -682,6 +609,10 @@ export function getChartColor(index, theme='light', colorPalette=CHART_THEME_COL
   const palette = colorPalette[theme];
   // loop back if out of index;
   return palette[index % palette.length];
+}
+
+export function getRandomColor() {
+  return '#' + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, '0');
 }
 
 // Using this function instead of 'btoa' directly.
@@ -754,6 +685,10 @@ export function getPlatform() {
   } else {
     return 'Unknown';
   }
+}
+
+export function isDefaultWorkspace() {
+  return pgAdmin.Browser?.docker?.currentWorkspace == WORKSPACES.DEFAULT;
 }
 
 /**

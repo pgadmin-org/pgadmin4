@@ -2,23 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
-
 
 import { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessConstants';
 import BgProcessManager from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
 import pgAdmin from 'sources/pgadmin';
 import * as BgProcessNotify from '../../../pgadmin/misc/bgprocess/static/js/BgProcessNotify';
 describe('BgProcessNotify', ()=>{
-
-
-
-
-
 
   beforeEach(()=>{
 

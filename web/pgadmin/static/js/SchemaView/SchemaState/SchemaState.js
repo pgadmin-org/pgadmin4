@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -288,14 +288,14 @@ export class SchemaState extends DepListener {
     this.dataStore.setState(_data);
   }
 
-  accessPath(path=[], key) {
+  accessPath(path, key) {
     return this.__pathGenerator.cached(
       _.isUndefined(key) ? path : path.concat(key)
     );
   }
 
   value(path) {
-    if (!path || !path.length) return this.data;
+    if (!path?.length) return this.data;
     return _.get(this.data, path);
   }
 

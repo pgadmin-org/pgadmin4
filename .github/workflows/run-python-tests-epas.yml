@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, windows-latest]
-        pgver: [12, 13, 14, 15, 16]
+        pgver: [13, 14, 15, 16, 17]
 
     runs-on: ${{ matrix.os }}
 
@@ -42,15 +42,18 @@ jobs:
       - name: Setup the EDB APT repo on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
-          sudo su -c 'echo "deb [arch=amd64] https://apt.enterprisedb.com/$(lsb_release -cs)-edb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/edb-$(lsb_release -cs).list'
-          sudo su -c 'echo "machine apt.enterprisedb.com login ${{ secrets.EDB_REPO_USERNAME }} password ${{ secrets.EDB_REPO_PASSWORD }}" > /etc/apt/auth.conf.d/edb.conf'
-          sudo wget -q -O - https://apt.enterprisedb.com/edb-deb.gpg.key | sudo apt-key add -
+          curl -1sLf 'https://downloads.enterprisedb.com/${{ secrets.CLOUDSMITH_TOKEN }}/enterprise/setup.deb.sh' | sudo -E bash
 
       - name: Install platform dependencies on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+
+      - name: Install pgagent on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: |
+          sudo apt install -y edb-as${{ matrix.pgver }}-pgagent
 
       - name: Install platform dependencies on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -79,7 +82,7 @@ jobs:
         shell: cmd
 
       - name: Add edb_job_scheduler into config file.
-        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver == 16 }}
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver >= 16 }}
         run: |
           sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/edb_job_scheduler,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo su -c "echo \"edb_job_scheduler.database_list = 'test_dbms_job_scheduler'\" >> /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf"
@@ -98,8 +101,10 @@ jobs:
             >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
             sleep 2
           done
-          
-          psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+
+      - name: Create pgagent extension on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
 
       - name: Install Python dependencies on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}

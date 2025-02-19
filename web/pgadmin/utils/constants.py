@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -28,6 +28,7 @@ PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
 PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
 PREF_LABEL_REFRESH_RATES = gettext('Refresh rates')
 PREF_LABEL_GRAPH_VISUALISER = gettext('Graph Visualiser')
+PREF_LABEL_USER_INTERFACE = gettext('User Interface')
 
 PGADMIN_STRING_SEPARATOR = '_$PGADMIN$_'
 PGADMIN_NODE = 'pgadmin.node.%s'
@@ -76,9 +77,6 @@ SUPPORTED_AUTH_SOURCES = [INTERNAL,
 
 BINARY_PATHS = {
     "as_bin_paths": [
-        {"version": "120000", "next_major_version": "130000",
-         "serverType": gettext("EDB Advanced Server 12"), "binaryPath": None,
-         "isDefault": False},
         {"version": "130000", "next_major_version": "140000",
          "serverType": gettext("EDB Advanced Server 13"), "binaryPath": None,
          "isDefault": False},
@@ -96,9 +94,6 @@ BINARY_PATHS = {
          "isDefault": False}
     ],
     "pg_bin_paths": [
-        {"version": "120000", "next_major_version": "130000",
-         "serverType": gettext("PostgreSQL 12"), "binaryPath": None,
-         "isDefault": False},
         {"version": "130000", "next_major_version": "140000",
          "serverType": gettext("PostgreSQL 13"), "binaryPath": None,
          "isDefault": False},
@@ -132,7 +127,6 @@ ACCESS_DENIED_MESSAGE = gettext(
     "Access denied: You’re having limited access. You’re not allowed to "
     "Rename, Delete or Create any files/folders")
 
-
 KEY_RING_SERVICE_NAME = 'pgAdmin4'
 KEY_RING_USER_NAME = 'pgadmin4-master-password'
 KEY_RING_USERNAME_FORMAT = KEY_RING_SERVICE_NAME + '-{0}-{1}'
@@ -154,3 +148,14 @@ DBMS_JOB_SCHEDULER_ID = 999999
 IP_ADDRESS_STRING = '{}/{}'
 TWO_PARAM_STRING = '{0}/{1}'
 SERVER_NOT_FOUND = gettext("Could not find the specified server.")
+SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
+
+DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
+                         1562, 'varbit', 'bit varying',
+                         1563, 'varbit[]', 'bit varying[]',
+                         1042, 'bpchar', 'character',
+                         1043, 'varchar', 'character varying',
+                         1014, 'bpchar[]', 'character[]',
+                         1015, 'varchar[]', 'character varying[]',
+                         'vector', 'vector[]', 'halfvec', 'halfvec[]',
+                         'sparsevec', 'sparsevec[]']

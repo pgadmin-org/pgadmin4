@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -50,14 +50,6 @@ const Root = styled('div')(({theme}) => ({
   '& .Form-optionIcon': {
     ...theme.mixins.nodeIcon,
   },
-  // '& .Form-label': {
-  //   margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
-  //   display: 'flex',
-  //   wordBreak: 'break-word'
-  // },
-  // '& .Form-labelError': {
-  //   color: theme.palette.error.main,
-  // },
   '& .Form-sql': {
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,
@@ -1288,6 +1280,7 @@ const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
   '& .FormFooter-message': {
     color: theme.palette.text.primary,
     marginLeft: theme.spacing(0.5),
+    whiteSpace: 'pre-line'
   },
   '& .FormFooter-messageCenter': {
     color: theme.palette.text.primary,

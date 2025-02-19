@@ -236,6 +236,77 @@
       "store_object_id": true,
       "expected_sql_file": "create_before_insert_event_at_statement.sql",
       "expected_msql_file": "create_before_insert_event_at_statement_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on after insert event with transition",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_insert_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_insert": true,
+        "tgnewtable": "inserted"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_insert_event_trigger_with_transition.sql",
+      "expected_msql_file": "create_after_insert_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter(disable) trigger on after inset event with transition",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_after_insert_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "D"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_after_insert_event_trigger_with_transition.sql",
+      "expected_msql_file": "alter_after_insert_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on after delete event with transition",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_delete_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "is_constraint_trigger": false,
+        "evnt_delete": true,
+        "tgoldtable": "oldtab"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_delete_event_trigger_with_transition.sql",
+      "expected_msql_file": "create_after_delete_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter trigger on after delete event with transition always enable",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_after_delete_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "A"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_after_delete_event_trigger_with_transition.sql",
+      "expected_msql_file": "alter_after_delete_event_trigger_with_transition_msql.sql"
     }
   ]
 }

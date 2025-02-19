@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -22,6 +22,7 @@ from pgadmin.model import User
 from user_agents import parse
 import platform
 import re
+import sys
 
 MODULE_NAME = 'about'
 
@@ -75,6 +76,7 @@ def index():
     info['version'] = config.APP_VERSION
     info['admin'] = admin
     info['current_user'] = current_user.email
+    info['python_version'] = sys.version.split(" ", maxsplit=1)[0]
 
     if admin:
         settings = ""

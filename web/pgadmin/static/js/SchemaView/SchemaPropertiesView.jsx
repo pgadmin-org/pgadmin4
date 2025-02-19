@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import PropTypes from 'prop-types';
 
-import { usePgAdmin } from 'sources/BrowserComponent';
+import { usePgAdmin } from 'sources/PgAdminProvider';
 import gettext from 'sources/gettext';
 import { PgIconButton, PgButtonGroup } from 'sources/components/Buttons';
 import CustomPropTypes from 'sources/custom_prop_types';
@@ -91,7 +91,7 @@ export default function SchemaPropertiesView({
                       {
                         group.controls.map(
                           (item, idx) => <FieldControl
-                            item={item} key={idx} schemaId={schema._id}
+                            item={item} key={`${item.controlProps.id}-${idx}`} schemaId={schema._id}
                           />
                         )
                       }

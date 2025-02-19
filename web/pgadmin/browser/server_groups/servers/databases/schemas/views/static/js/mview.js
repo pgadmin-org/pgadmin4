@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -127,12 +127,6 @@ define('pgadmin.node.mview', [
           data: {concurrent: true, with_data: true}, priority: 3,
           applies: ['object', 'context'], callback: 'refresh_mview',
           label: gettext('With data (concurrently)'),
-        },{
-          name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
-          category: 'refresh_mview', enable: 'is_version_supported',
-          data: {concurrent: true, with_data: false}, priority: 4,
-          applies: ['object', 'context'], callback: 'refresh_mview',
-          label: gettext('With no data (concurrently)'),
         }]);
       },
       getSchema: function(treeNodeInfo, itemNodeData) {

@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:
@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:
@@ -21,7 +21,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/tools"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:
@@ -30,7 +30,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/web/regression"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:
@@ -39,7 +39,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/runtime"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:
@@ -48,7 +48,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/web"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "Dependencies"
     commit-message:

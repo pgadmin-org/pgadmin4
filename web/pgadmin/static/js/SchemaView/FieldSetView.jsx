@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -56,10 +56,10 @@ export default function FieldSetView({
     <FieldSet title={label} className={controlClassName}>
       {fieldGroups.map(
         (fieldGroup, gidx) => (
-          <React.Fragment key={gidx}>
+          <React.Fragment key={`${fieldGroup.id}-${gidx}`}>
             {fieldGroup.controls.map(
               (item, idx) => <FieldControl
-                item={item} key={idx} schemaId={schema._id} />
+                item={item} key={`${item.controlProps.id}-${idx}`} schemaId={schema._id} />
             )}
           </React.Fragment>
         )

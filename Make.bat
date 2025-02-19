@@ -52,7 +52,7 @@ REM Main build sequence Ends
 
 :SET_ENVIRONMENT
     ECHO Configuring the environment...
-    IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python312"
+    IF "%PGADMIN_PYTHON_DIR%" == ""   SET "PGADMIN_PYTHON_DIR=C:\Python313"
     IF "%PGADMIN_KRB5_DIR%" == ""     SET "PGADMIN_KRB5_DIR=C:\Program Files\MIT\Kerberos"
     IF "%PGADMIN_POSTGRES_DIR%" == "" SET "PGADMIN_POSTGRES_DIR=C:\Program Files\PostgreSQL\17"
     IF "%PGADMIN_INNOTOOL_DIR%" == "" SET "PGADMIN_INNOTOOL_DIR=C:\Program Files (x86)\Inno Setup 6"
@@ -284,6 +284,7 @@ REM Main build sequence Ends
 
     REM WGET
     FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
+    SET ELECTRON_VERSION="33.3.2"
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -441,7 +441,8 @@ def fetch_length_precision(data):
     precision = False
     if 'elemoid' in data:
         length, precision, _ = \
-            DataTypeReader.get_length_precision(data['elemoid'])
+            DataTypeReader.get_length_precision(data['elemoid'],
+                                                data['typname'])
 
     # Set length and precision to None
     data['attlen'] = None

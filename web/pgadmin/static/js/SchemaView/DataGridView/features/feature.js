@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -31,12 +31,9 @@ export default class Feature {
     this.schemaState = schemaState;
   }
 
-  generateColumns(/* { pgAdmin, columns, columnVisibility, options } */) {}
-  onTable(/* { table, options, classList } */) {}
-  onRow(/* {
-    index, row, rowRef, classList, attributes,
-    expandedRowContents, rowOptions, tableOptions
-  } */) {}
+  generateColumns() {/*This is intentional (SonarQube)*/}
+  onTable() {/*This is intentional (SonarQube)*/}
+  onRow() {/*This is intentional (SonarQube)*/}
 }
 
 function isValidFeatureClass(cls) {

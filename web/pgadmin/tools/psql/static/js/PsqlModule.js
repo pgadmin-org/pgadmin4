@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'pgadmin.browser';
 import PsqlComponent from './components/PsqlComponent';
-import { PgAdminContext } from '../../../../static/js/BrowserComponent';
+import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 import getApiInstance from '../../../../static/js/api_instance';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -143,14 +143,13 @@ export default class Psql {
 
     const [panelUrl, db_label] = this.getPanelUrls(transId, parentData);
 
-    const escapedTitle = _.escape(panelTitle);
     const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
-      {title: escapedTitle, db: db_label},
+      {title: panelTitle, db: db_label},
       {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
@@ -187,12 +186,12 @@ export default class Psql {
     const root = ReactDOM.createRoot(container);
     root.render(
       <Theme>
-        <PgAdminContext.Provider value={pgAdmin}>
+        <PgAdminProvider value={pgAdmin}>
           <ModalProvider>
             <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
             <PsqlComponent params={params} pgAdmin={pgAdmin} />
           </ModalProvider>
-        </PgAdminContext.Provider>
+        </PgAdminProvider>
       </Theme>
     );
   }

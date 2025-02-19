@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { fullHexColor } from '../utils';
 
 export function withColorPicker(Component) {
-   
+
   const HOCComponent = ({value, currObj, onChange, onSave, options, ...props})=>{
     const pickrOptions = {
       showPalette: true,
@@ -74,10 +74,11 @@ export function withColorPicker(Component) {
             defaultRepresentation: pickrOptions.colorFormat,
             disabled: pickrOptions.disabled,
             save: pickrOptions.allowSave,
+            input: pickrOptions.input,
           },
         },
       }).on('init', instance => {
-        setColor(value);
+        setColor(value, true);
         pickrOptions.disabled && instance.disable();
 
         const { lastColor } = instance.getRoot().preview;

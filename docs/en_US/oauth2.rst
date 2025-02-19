@@ -34,12 +34,12 @@ and modify the values for the following parameters:
     "OAUTH2_AUTHORIZATION_URL", "Endpoint for user authorization"
     "OAUTH2_SERVER_METADATA_URL", "Server metadata url for your OAuth2 provider"
     "OAUTH2_API_BASE_URL", "Oauth2 base URL endpoint to make requests simple, ex: *https://api.github.com/*"
-    "OAUTH2_USERINFO_ENDPOINT", "User Endpoint, ex: *user* (for github) and *userinfo* (for google)"
+    "OAUTH2_USERINFO_ENDPOINT", "User Endpoint, ex: *user* (for github, or *user/emails* if the user's email address is private) and *userinfo* (for google),"
     "OAUTH2_SCOPE", "Oauth scope, ex: 'openid email profile'. Note that an 'email' claim is required in the resulting profile."
     "OAUTH2_ICON", "The Font-awesome icon to be placed on the oauth2 button,  ex: fa-github"
     "OAUTH2_BUTTON_COLOR", "Oauth2 button color"
     "OAUTH2_USERNAME_CLAIM", "The claim which is used for the username. If the value is empty
-    the email is used as username, but if a value is provided, the claim has to exist. Ex: *oid* (for AzureAD)"
+    the email is used as username, but if a value is provided, the claim has to exist. Ex: *oid* (for AzureAD), *email* (for Github)"
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."

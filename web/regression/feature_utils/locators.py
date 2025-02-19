@@ -1,7 +1,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -63,8 +63,10 @@ class NavMenuLocators:
 
     specified_sub_node_of_pref_tree_node = \
         "//*[@id='treeContainer']//div//span[text()='{1}']"
+
     insert_bracket_pair_switch_btn = \
-        "//label[text()='Insert bracket pairs?']//following::div[1]//span"
+        ("//div[label[text()='Insert bracket pairs?']]/"
+         "following-sibling::div//input")
 
     copy_sql_to_query_tool_switch_btn = \
         "//label[text()='Copy SQL from main window to query tool?']" \

@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import pgAdmin from 'sources/pgadmin';
@@ -98,18 +107,18 @@ describe('BgProcessManager', ()=>{
 
   it('openProcessesPanel', ()=>{
     const panel = {};
-    jest.spyOn(pgBrowser.docker, 'openTab').mockReturnValue(panel);
+    jest.spyOn(pgBrowser.docker.default_workspace, 'openTab').mockReturnValue(panel);
 
     /* panel open */
-    jest.spyOn(pgBrowser.docker, 'find').mockReturnValue(panel);
-    jest.spyOn(pgBrowser.docker, 'focus');
+    jest.spyOn(pgBrowser.docker.default_workspace, 'find').mockReturnValue(panel);
+    jest.spyOn(pgBrowser.docker.default_workspace, 'focus');
     obj.openProcessesPanel();
-    expect(pgBrowser.docker.focus).toHaveBeenCalled();
-    expect(pgBrowser.docker.openTab).not.toHaveBeenCalled();
+    expect(pgBrowser.docker.default_workspace.focus).toHaveBeenCalled();
+    expect(pgBrowser.docker.default_workspace.openTab).not.toHaveBeenCalled();
 
     /* panel closed */
-    jest.spyOn(pgBrowser.docker, 'find').mockReturnValue(null);
+    jest.spyOn(pgBrowser.docker.default_workspace, 'find').mockReturnValue(null);
     obj.openProcessesPanel();
-    expect(pgBrowser.docker.openTab).toHaveBeenCalled();
+    expect(pgBrowser.docker.default_workspace.openTab).toHaveBeenCalled();
   });
 });

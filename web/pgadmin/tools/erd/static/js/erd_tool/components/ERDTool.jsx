@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ export default class ERDTool extends React.Component {
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
-      'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
+      'onNoteClose', 'onOneToOneClick', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
       'onChangeColors', 'onDropNode', 'onNotationChange', 'closePanel'
     ]);
 
@@ -220,6 +220,7 @@ export default class ERDTool extends React.Component {
     this.eventBus.registerListener(ERD_EVENTS.CLONE_NODE, this.onCloneNode);
     this.eventBus.registerListener(ERD_EVENTS.DELETE_NODE, this.onDeleteNode);
     this.eventBus.registerListener(ERD_EVENTS.SHOW_NOTE, this.onNoteClick);
+    this.eventBus.registerListener(ERD_EVENTS.ONE_TO_ONE, this.onOneToOneClick);
     this.eventBus.registerListener(ERD_EVENTS.ONE_TO_MANY, this.onOneToManyClick);
     this.eventBus.registerListener(ERD_EVENTS.MANY_TO_MANY, this.onManyToManyClick);
     this.eventBus.registerListener(ERD_EVENTS.AUTO_DISTRIBUTE, this.onAutoDistribute);
@@ -264,6 +265,9 @@ export default class ERDTool extends React.Component {
       }],
       [this.state.preferences.add_edit_note, ()=>{
         this.eventBus.fireEvent(ERD_EVENTS.SHOW_NOTE);
+      }],
+      [this.state.preferences.one_to_one, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ONE_TO_ONE);
       }],
       [this.state.preferences.one_to_many, ()=>{
         this.eventBus.fireEvent(ERD_EVENTS.ONE_TO_MANY);
@@ -397,7 +401,7 @@ export default class ERDTool extends React.Component {
           serverInfo, callback
         });
       };
-    } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog') {
+    } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog' || dialogName === 'onetoone_dialog') {
       return (title, attributes, callback)=>{
         this.erdDialogs.showRelationDialog(dialogName, {
           title, attributes, tableNodes: this.diagram.getModel().getNodesDict(),
@@ -429,6 +433,17 @@ export default class ERDTool extends React.Component {
         if(this.diagram.anyDuplicateNodeName(newData, oldData)) {
           return gettext('Table name already exists');
         }
+        // If a column that is part of a foreign key is removed, the foreign key constraint should also be removed.
+        _.differenceWith(oldData.columns, newData.columns, function(existing, incoming) {
+          return existing.attnum == incoming.attnum;
+        }).forEach(colm=>{
+          newData.foreign_key?.forEach((theFkRow, index)=>{
+            let fkCols = theFkRow.columns[0];
+            if (fkCols.local_column === colm.name) {
+              newData.foreign_key.splice(index,1);
+            }
+          });
+        });
         node.setData(newData);
         this.diagram.syncTableLinks(node, oldData);
         this.diagram.repaint();
@@ -499,7 +514,7 @@ export default class ERDTool extends React.Component {
   }
 
   onDeleteNode() {
-    pgAdmin.Browser.notifier.confirm(
+    pgAdmin.Browser.notifier.confirmDelete(
       gettext('Delete ?'),
       gettext('You have selected %s tables and %s links.', this.diagram.getSelectedNodes().length, this.diagram.getSelectedLinks().length)
         + '<br />' + gettext('Are you sure you want to delete ?'),
@@ -516,7 +531,9 @@ export default class ERDTool extends React.Component {
         }
         this.diagram.repaint();
       },
-      () => {/*This is intentional (SonarQube)*/}
+      () => {/*This is intentional (SonarQube)*/},
+      gettext('Delete'),
+      gettext('Cancel'),
     );
   }
 
@@ -770,6 +787,14 @@ export default class ERDTool extends React.Component {
           }
         });
     }, 1000);
+  }
+
+  onOneToOneClick() {
+    let dialog = this.getDialog('onetoone_dialog');
+    let initData = {local_table_uid: this.diagram.getSelectedNodes()[0].getID()};
+    dialog(gettext('One to one relation'), initData, (newData)=>{
+      this.diagram.addOneToManyLink(newData);
+    });
   }
 
   onOneToManyClick() {

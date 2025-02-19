@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -270,6 +270,9 @@ define('pgadmin.node.database', [
                 t.deselect(item);
               },
               function() { return true;},
+              gettext('Disconnect'),
+              gettext('Cancel'),
+              'disconnect'
             );
           }
 
@@ -557,11 +560,14 @@ define('pgadmin.node.database', [
         if (notify) {
           pgAdmin.Browser.notifier.confirm(
             gettext('Disconnect from database'),
-            gettext('Are you sure you want to disconnect from database - %s?', d.label),
+            gettext('Are you sure you want to disconnect from the database - <b>%s</b>?', d.label),
             function() {
               disconnect();
             },
-            function() { return true; }
+            function() { return true; },
+            gettext('Disconnect'),
+            gettext('Cancel'),
+            'disconnect'
           );
         } else {
           disconnect();

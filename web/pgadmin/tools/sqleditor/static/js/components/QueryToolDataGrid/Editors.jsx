@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ import JSONBigNumber from 'json-bignumber';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
-import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 

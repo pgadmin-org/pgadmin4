@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -175,10 +175,14 @@ class Notifier {
     this.modal.alert(title, text, onOkClick, okLabel);
   }
 
-  confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'), extras=null) {
+  confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'), okIcon='default') {
     /* Use this if you want to use pgAdmin global notifier.
     Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
-    this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, extras);
+    this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, okIcon);
+  }
+
+  confirmDelete(title, text, onDeleteClick, onCancelClick, okLabel = gettext('Delete'), cancelLabel = gettext('Cancel')){
+    this.modal.confirmDelete(title, text, onDeleteClick, onCancelClick, okLabel, cancelLabel);
   }
 
   showModal(title, content, modalOptions) {

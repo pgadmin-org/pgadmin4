@@ -36,12 +36,14 @@ if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI_FILE}" ]; then
 fi
 file_env PGADMIN_DEFAULT_PASSWORD
 
+# TO enable custom path for config_distro, pass config distro path via environment variable.
+export CONFIG_DISTRO_FILE_PATH="${PGADMIN_CUSTOM_CONFIG_DISTRO_FILE:-/pgadmin4/config_distro.py}"
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
-# Only update the file on first launch. The empty file is created during the
+# Only update the file on first launch. The empty file is created only in default path during the
 # container build so it can have the required ownership.
-if [ "$(wc -m /pgadmin4/config_distro.py | awk '{ print $1 }')" = "0" ]; then
-    cat << EOF > /pgadmin4/config_distro.py
+if [ ! -e "${CONFIG_DISTRO_FILE_PATH}" ] || [ "$(wc -m "${CONFIG_DISTRO_FILE_PATH}" 2>/dev/null | awk '{ print $1 }')" = "0" ]; then
+    cat << EOF > "${CONFIG_DISTRO_FILE_PATH}"
 CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
@@ -51,8 +53,7 @@ DEFAULT_BINARY_PATHS = {
         'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
-        'pg-13': '/usr/local/pgsql-13',
-        'pg-12': '/usr/local/pgsql-12'
+        'pg-13': '/usr/local/pgsql-13'
 }
 EOF
 
@@ -61,7 +62,7 @@ EOF
     for var in $(env | grep "^PGADMIN_CONFIG_" | cut -d "=" -f 1); do
         # shellcheck disable=SC2086
         # shellcheck disable=SC2046
-        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> /pgadmin4/config_distro.py
+        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> "${CONFIG_DISTRO_FILE_PATH}"
     done
 fi
 
@@ -86,11 +87,16 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
     if [ -n "${PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS}" ]; then
         ALLOW_SPECIAL_EMAIL_DOMAINS=${PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS}
     fi
-     email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}}"
-    echo "email config is ${email_config}"
+    GLOBALLY_DELIVERABLE="True"
+    if [ -n "${PGADMIN_CONFIG_GLOBALLY_DELIVERABLE}" ]; then
+        GLOBALLY_DELIVERABLE=${PGADMIN_CONFIG_GLOBALLY_DELIVERABLE}
+    fi
+     email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}, 'GLOBALLY_DELIVERABLE': ${GLOBALLY_DELIVERABLE}}"
+     echo "email config is ${email_config}"
      is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${email_config}); print(val)")
      if echo "${is_valid_email}" | grep "False" > /dev/null; then
          echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
+         echo "Validation output: ${is_valid_email}"
          exit 1
      fi
     # Switch back to root directory for further process

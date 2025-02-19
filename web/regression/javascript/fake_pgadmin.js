@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,10 +17,12 @@ const Browser = {
   Events: new EventBus(),
   get_preferences_for_module: ()=>({}),
   docker: {
-    eventBus: new EventBus(),
-    find: ()=>{},
-    openTab: ()=>{},
-    focus: ()=>{},
+    default_workspace: {
+      eventBus: new EventBus(),
+      find: ()=>{},
+      openTab: ()=>{},
+      focus: ()=>{},
+    }
   },
   onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
   utils: {

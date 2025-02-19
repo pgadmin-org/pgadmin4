@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -148,6 +148,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             # Supported ACL for table
             self.acl = ['a', 'r', 'w', 'd', 'D', 'x', 't']
+            if ver >= 170000:
+                self.acl = ['a', 'r', 'w', 'd', 'D', 'x', 't', 'm']
 
             # Supported ACL for columns
             self.column_acl = ['a', 'r', 'w', 'x']

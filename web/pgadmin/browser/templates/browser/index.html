@@ -15,15 +15,17 @@ function parseConsoleArgs(args) {
   return retData?.join(' ');
 }
 
-for (const method of ['log', 'error']) {
-  const nativeMethod = window.console[method];
-  window.console[method] = function () {
-    nativeMethod.apply(this, arguments);
-    setTimeout(()=>{
-      window.electronUI?.log(`--------------[UI ${method}]---------------
-      ${parseConsoleArgs(arguments)}
-      ------------[UI End]----------------`);
-    });
+if(window.electronUI) {
+  for (const method of ['log', 'error']) {
+    const nativeMethod = window.console[method];
+    window.console[method] = function () {
+      nativeMethod.apply(this, arguments);
+      setTimeout(()=>{
+        window.electronUI?.log(`--------------[UI ${method}]---------------
+        ${parseConsoleArgs(arguments)}
+        ------------[UI End]----------------`);
+      });
+    }
   }
 }
 try {

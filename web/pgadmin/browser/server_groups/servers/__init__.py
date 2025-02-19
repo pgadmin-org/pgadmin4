@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -33,10 +33,12 @@ from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
-    is_valid_ipaddress, get_replication_type
+    (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
+     check_ssl_fields)
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED
 from sqlalchemy import or_
+from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path
@@ -224,7 +226,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         hide_shared_server = get_preferences()
         servers = Server.query.filter(
             or_(Server.user_id == current_user.id, Server.shared),
-            Server.servergroup_id == gid)
+            Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
         servers = self.get_servers(servers, hide_shared_server, gid)
@@ -278,7 +280,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 is_kerberos_conn=bool(server.kerberos_conn),
                 gss_authenticated=manager.gss_authenticated,
                 cloud_status=server.cloud_status,
-                description=server.comment
+                description=server.comment,
+                tags=server.tags
             )
 
     @property
@@ -462,73 +465,6 @@ class ServerNode(PGChildNodeView):
         'clear_saved_password': [{'put': 'clear_saved_password'}],
         'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}],
     })
-    SSL_MODES = ['prefer', 'require', 'verify-ca', 'verify-full']
-
-    def check_ssl_fields(self, data):
-        """
-        This function will allow us to check and set defaults for
-        SSL fields
-
-        Args:
-            data: Response data
-
-        Returns:
-            Flag and Data
-        """
-        flag = False
-
-        if 'sslmode' in data and data['sslmode'] in self.SSL_MODES:
-            flag = True
-            ssl_fields = [
-                'sslcert', 'sslkey', 'sslrootcert', 'sslcrl', 'sslcompression'
-            ]
-            # Required SSL fields for SERVER mode from user
-            required_ssl_fields_server_mode = ['sslcert', 'sslkey']
-
-            for field in ssl_fields:
-                if field in data:
-                    continue
-                elif config.SERVER_MODE and \
-                        field in required_ssl_fields_server_mode:
-                    # In Server mode,
-                    # we will set dummy SSL certificate file path which will
-                    # prevent using default SSL certificates from web servers
-
-                    # Set file manager directory from preference
-                    import os
-                    file_extn = '.key' if field.endswith('key') else '.crt'
-                    dummy_ssl_file = os.path.join(
-                        '<STORAGE_DIR>', '.postgresql',
-                        'postgresql' + file_extn
-                    )
-                    data[field] = dummy_ssl_file
-                    # For Desktop mode, we will allow to default
-
-        return flag, data
-
-    def convert_connection_parameter(self, params):
-        """
-        This function is used to convert the connection parameter based
-        on the instance type.
-        """
-        conn_params = None
-        # if params is of type list then it is coming from the frontend,
-        # and we have to convert it into the dict and store it into the
-        # database
-        if isinstance(params, list):
-            conn_params = {}
-            for item in params:
-                conn_params[item['name']] = item['value']
-        # if params is of type dict then it is coming from the database,
-        # and we have to convert it into the list of params to show on GUI.
-        elif isinstance(params, dict):
-            conn_params = []
-            for key, value in params.items():
-                if value is not None:
-                    conn_params.append(
-                        {'name': key, 'keyword': key, 'value': value})
-
-        return conn_params
 
     def update_connection_parameter(self, data, server):
         """
@@ -550,6 +486,44 @@ class ServerNode(PGChildNodeView):
 
             data['connection_params'] = existing_conn_params
 
+    @staticmethod
+    def update_tags(data, server):
+        """
+        This function is used to update tags
+        """
+        old_tags = getattr(server, 'tags', [])
+        # add old_text for comparison
+        old_tags = [{**tag, 'old_text': tag['text']}
+                    for tag in old_tags] if old_tags is not None else []
+        new_tags_info = data.get('tags', None)
+
+        def update_tag(tags, changed):
+            for i, item in enumerate(tags):
+                if item['old_text'] == changed['old_text']:
+                    item = {**item, **changed}
+                    tags[i] = item
+                    break
+
+        if new_tags_info:
+            deleted_ids = [t['old_text']
+                           for t in new_tags_info.get('deleted', [])]
+            if len(deleted_ids) > 0:
+                old_tags = [
+                    t for t in old_tags if t['old_text'] not in deleted_ids
+                ]
+
+            for item in new_tags_info.get('changed', []):
+                update_tag(old_tags, item)
+
+            for item in new_tags_info.get('added', []):
+                old_tags.append(item)
+
+            # remove the old_text key
+            data['tags'] = [
+                {k: v for k, v in tag.items()
+                 if k != 'old_text'} for tag in old_tags
+            ]
+
     @pga_login_required
     def nodes(self, gid):
         res = []
@@ -560,7 +534,7 @@ class ServerNode(PGChildNodeView):
         servers = Server.query.filter(
             or_(Server.user_id == current_user.id,
                 Server.shared),
-            Server.servergroup_id == gid)
+            Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
 
@@ -609,7 +583,8 @@ class ServerNode(PGChildNodeView):
                     shared=server.shared,
                     is_kerberos_conn=bool(server.kerberos_conn),
                     gss_authenticated=manager.gss_authenticated,
-                    description=server.comment
+                    description=server.comment,
+                    tags=server.tags
                 )
             )
 
@@ -678,7 +653,8 @@ class ServerNode(PGChildNodeView):
                 shared=server.shared,
                 username=server.username,
                 is_kerberos_conn=bool(server.kerberos_conn),
-                gss_authenticated=manager.gss_authenticated
+                gss_authenticated=manager.gss_authenticated,
+                tags=server.tags
             ),
         )
 
@@ -783,7 +759,8 @@ class ServerNode(PGChildNodeView):
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
             'connection_params': 'connection_params',
-            'prepare_threshold': 'prepare_threshold'
+            'prepare_threshold': 'prepare_threshold',
+            'tags': 'tags'
         }
 
         disp_lbl = {
@@ -800,14 +777,12 @@ class ServerNode(PGChildNodeView):
             request.data
         )
 
-        old_server_name = ''
-        if 'name' in data:
-            old_server_name = server.name
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server)
+        self.update_tags(data, server)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \
@@ -837,6 +812,10 @@ class ServerNode(PGChildNodeView):
                 success=0,
                 errormsg=gettext('No parameters were changed.')
             )
+
+        # tags is JSON type, sqlalchemy sometimes will not detect change
+        if 'tags' in data:
+            flag_modified(server, 'tags')
 
         try:
             db.session.commit()
@@ -872,7 +851,8 @@ class ServerNode(PGChildNodeView):
                 username=server.username,
                 role=server.role,
                 is_password_saved=bool(server.save_password),
-                description=server.comment
+                description=server.comment,
+                tags=server.tags
             )
         )
 
@@ -930,9 +910,9 @@ class ServerNode(PGChildNodeView):
         Return list of attributes of all servers.
         """
         servers = Server.query.filter(
-            or_(Server.user_id == current_user.id,
-                Server.shared),
-            Server.servergroup_id == gid).order_by(Server.name)
+            or_(Server.user_id == current_user.id, Server.shared),
+            Server.servergroup_id == gid,
+            Server.is_adhoc == 0).order_by(Server.name)
         sg = ServerGroup.query.filter_by(
             id=gid
         ).first()
@@ -1012,7 +992,7 @@ class ServerNode(PGChildNodeView):
         tunnel_authentication = False
         tunnel_keep_alive = 0
         connection_params = \
-            self.convert_connection_parameter(server.connection_params)
+            convert_connection_parameter(server.connection_params)
 
         if server.use_ssh_tunnel:
             use_ssh_tunnel = bool(server.use_ssh_tunnel)
@@ -1022,6 +1002,10 @@ class ServerNode(PGChildNodeView):
             tunnel_authentication = bool(server.tunnel_authentication)
             tunnel_keep_alive = server.tunnel_keep_alive
 
+        tags = None
+        if server.tags is not None:
+            tags = [{**tag, 'old_text': tag['text']}
+                    for tag in server.tags]
         response = {
             'id': server.id,
             'name': server.name,
@@ -1064,7 +1048,8 @@ class ServerNode(PGChildNodeView):
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
             'connection_string': display_connection_str,
-            'prepare_threshold': server.prepare_threshold
+            'prepare_threshold': server.prepare_threshold,
+            'tags': tags,
         }
 
         return ajax_response(response)
@@ -1129,7 +1114,7 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        connection_params = self.convert_connection_parameter(
+        connection_params = convert_connection_parameter(
             data.get('connection_params', []))
 
         if 'hostaddr' in connection_params and \
@@ -1141,7 +1126,7 @@ class ServerNode(PGChildNodeView):
             )
 
         # To check ssl configuration
-        _, connection_params = self.check_ssl_fields(connection_params)
+        _, connection_params = check_ssl_fields(connection_params)
         # set the connection params again in the data
         if 'connection_params' in data:
             data['connection_params'] = connection_params
@@ -1180,7 +1165,8 @@ class ServerNode(PGChildNodeView):
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
                 connection_params=connection_params,
-                prepare_threshold=data.get('prepare_threshold', None)
+                prepare_threshold=data.get('prepare_threshold', None),
+                tags=data.get('tags', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -1273,7 +1259,8 @@ class ServerNode(PGChildNodeView):
                     manager and manager.gss_authenticated else False,
                     is_password_saved=bool(server.save_password),
                     is_tunnel_password_saved=tunnel_password_saved,
-                    user_id=server.user_id
+                    user_id=server.user_id,
+                    tags=data.get('tags', None)
                 )
             )
 
@@ -1377,7 +1364,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid, is_qt=False):
+    def connect(self, gid, sid, is_qt=False, server=None):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1397,8 +1384,12 @@ class ServerNode(PGChildNodeView):
             'Connection Request for server#{0}'.format(sid)
         )
 
-        # Fetch Server Details
-        server = Server.query.filter_by(id=sid).first()
+        # In case of Workspace layout ad-hoc server maybe pass to this
+        # function in that case no need to fetch the server detail based on
+        # sid.
+        if server is None:
+            server = Server.query.filter_by(id=sid).first()
+
         shared_server = None
         if server.shared and server.user_id != current_user.id:
             shared_server = ServerModule.get_shared_server(server, gid)
@@ -1449,7 +1440,6 @@ class ServerNode(PGChildNodeView):
             manager.update(server)
         conn = manager.connection()
 
-        crypt_key = None
         # Get enc key
         crypt_key_present, crypt_key = get_crypt_key()
         if not crypt_key_present:
@@ -1515,8 +1505,7 @@ class ServerNode(PGChildNodeView):
         # not provided, or password has not been saved earlier.
         if prompt_password or prompt_tunnel_password:
             return self.get_response_for_password(
-                server, 428, prompt_password, prompt_tunnel_password
-            )
+                server, 428, prompt_password, prompt_tunnel_password)
 
         try:
             status, errmsg = conn.connect(
@@ -1527,7 +1516,8 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             return self.get_response_for_password(
-                server, 401, True, True, getattr(e, 'message', str(e)))
+                server, 401, True, True,
+                getattr(e, 'message', str(e)))
 
         if not status:
             current_app.logger.error(
@@ -1538,8 +1528,7 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, True, True, errmsg
-            )
+                server, 401, True, True, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
@@ -1595,6 +1584,8 @@ class ServerNode(PGChildNodeView):
                 success=1,
                 info=gettext("Server connected."),
                 data={
+                    "sid": server.id,
+                    "did": manager.did,
                     'icon': server_icon_and_background(True, manager, server),
                     'connected': True,
                     'server_type': manager.server_type,
@@ -2009,6 +2000,7 @@ class ServerNode(PGChildNodeView):
             )
         else:
             data = {
+                "sid": server.id,
                 "server_label": server.name,
                 "username": server.username,
                 "errmsg": errmsg,
@@ -2017,7 +2009,7 @@ class ServerNode(PGChildNodeView):
                 "allow_save_password":
                     True if config.ALLOW_SAVE_PASSWORD and
                     'allow_save_password' in session and
-                    session['allow_save_password'] else False,
+                    session['allow_save_password'] else False
             }
             return make_json_response(
                 success=0,

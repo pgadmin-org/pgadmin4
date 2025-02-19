@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,6 +11,7 @@ from flask import render_template
 from collections import OrderedDict
 
 from pgadmin.tools.sqleditor.utils.constant_definition import TX_STATUS_IDLE
+from pgadmin.utils.exception import ExecuteError
 
 ignore_type_cast_list = ['character', 'character[]', 'bit', 'bit[]']
 
@@ -190,35 +191,32 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
         elif of_type == 'deleted':
             delete_all = changed_data.get('delete_all', False)
             list_of_sql[of_type] = []
-            is_first = True
-            rows_to_delete = []
-            keys = []
-            no_of_keys = 0
-            if not delete_all:
-                for each_row in changed_data[of_type]:
-                    rows_to_delete.append(changed_data[of_type][each_row])
-                    # Fetch the keys for SQL generation
-                    if is_first:
-                        # We need to covert dict_keys to normal list in
-                        # Python3
-                        # In Python2, it's already a list & We will also
-                        # fetch column names using index
-                        keys = list(
-                            changed_data[of_type][each_row].keys()
-                        )
-                        no_of_keys = len(keys)
-                        is_first = False
-                # Map index with column name for each row
-                for row in rows_to_delete:
-                    for k, v in row.items():
-                        # Set primary key with label & delete index based
-                        # mapped key
-                        try:
-                            row[changed_data['columns']
-                                            [int(k)]['name']] = v
-                        except ValueError:
-                            continue
-                        del row[k]
+            _, primary_keys = command_obj.get_primary_keys()
+            keys = list(primary_keys.keys())
+            no_of_keys = len(keys)
+            if delete_all:
+                # for delete all, we'll need all the row primary key
+                # values.
+                status, result = \
+                    conn.async_fetchmany_2darray(records=-1)
+
+                if not status:
+                    raise ExecuteError(result)
+
+                columns_info = conn.get_column_info()
+
+                rows_to_delete = [
+                    dict([
+                        (col['name'], r[col['pos']])
+                        for col in filter(lambda c: c['name'] in keys,
+                                          changed_data['columns'])
+                    ])
+                    for r in result
+                ]
+            else:
+                rows_to_delete = [
+                    r for _, r in changed_data[of_type].items()
+                ]
 
             sql = render_template(
                 "/".join([command_obj.sql_path, 'delete.sql']),

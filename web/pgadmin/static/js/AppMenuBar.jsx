@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
-import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { useForceUpdate } from './custom_hooks';
 
 

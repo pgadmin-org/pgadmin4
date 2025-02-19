@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -18,11 +18,16 @@ import threading
 import math
 
 import json
+
+from sqlalchemy import or_
+
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
 from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
 from flask import request
 from flask_babel import gettext
+from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
+    import query_tool_connection_check
 from pgadmin.user_login_check import pga_login_required
 from flask_security import current_user
 from pgadmin.misc.file_manager import Filemanager
@@ -62,6 +67,9 @@ from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
+from pgadmin.browser.server_groups.servers.utils import \
+    convert_connection_parameter
+from pgadmin.misc.workspaces import check_and_delete_adhoc_server
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -253,6 +261,18 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     else:
         sql_grid_data = session['gridData']
 
+    # if server disconnected and server password not saved, once re-connected
+    # it will check for the old transaction object and restore the filter_sql
+    # and data_sorting keys of the filter dialog into the
+    # newly created command object.
+    if str(trans_id) in sql_grid_data:
+        old_trans_obj = pickle.loads(
+            sql_grid_data[str(trans_id)]['command_obj'])
+        if old_trans_obj.did == did and old_trans_obj.obj_id == obj_id:
+            command_obj.set_filter(old_trans_obj._row_filter)
+            command_obj.set_data_sorting(
+                dict(data_sorting=old_trans_obj._data_sorting), True)
+
     # Use pickle to store the command object which will be used later by the
     # sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -329,16 +349,23 @@ def panel(trans_id):
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+    params['title'] = underscore_escape(params['title'])
+    params['selectedNodeInfo'] = underscore_escape(params['selectedNodeInfo'])
     if 'database_name' in params:
         params['database_name'] = underscore_escape(params['database_name'])
 
     return render_template(
         "sqleditor/index.html",
-        title=underscore_unescape(params['title']),
+        title=underscore_escape(params['title']),
         params=json.dumps(params),
     )
 
 
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
+    '<did>',
+    methods=["POST"], endpoint='initialize_sqleditor_with_did'
+)
 @blueprint.route(
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
     '<int:did>',
@@ -696,6 +723,9 @@ def close_sqleditor_session(trans_id):
                 if conn.connected():
                     conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
                     manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+                    # Check if all the connections of the adhoc server is
+                    # closed then delete the server from the pgadmin database.
+                    check_and_delete_adhoc_server(cmd_obj.sid)
 
         # Close the auto complete connection
         if hasattr(cmd_obj, 'conn_id_ac') and cmd_obj.conn_id_ac is not None:
@@ -808,13 +838,14 @@ def start_view_data(trans_id):
 
     # Connect to the Server if not connected.
     if not default_conn.connected():
-        view = SchemaDiffRegistry.get_node_view('server')
-        response = view.connect(trans_obj.sgid,
-                                trans_obj.sid, True)
-        if response.status_code == 428:
+        # This will check if view/edit data tool connection is lost or not,
+        # if lost then it will reconnect
+        status, error_msg, conn, trans_obj, session_obj, response = \
+            query_tool_connection_check(trans_id)
+        # This is required for asking user to enter password
+        # when password is not saved for the server
+        if response is not None:
             return response
-        else:
-            conn = manager.connection(did=trans_obj.did)
 
         status, msg = default_conn.connect()
         if not status:
@@ -2325,7 +2356,9 @@ def get_new_connection_data(sgid=None, sid=None):
         server_groups = ServerGroup.query.all()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
-        servers = Server.query.all()
+        servers = Server.query.filter(
+            or_(Server.user_id == current_user.id, Server.shared),
+            Server.is_adhoc == 0)
 
         for server in servers:
             manager = driver.connection_manager(server.id)
@@ -2338,6 +2371,11 @@ def get_new_connection_data(sgid=None, sid=None):
                                                     server),
                 'fgcolor': server.fgcolor,
                 'bgcolor': server.bgcolor,
+                'host': server.host,
+                'port': server.port,
+                'service': server.service,
+                'connection_params':
+                    convert_connection_parameter(server.connection_params),
                 'connected': connected})
 
         msg = "Success"

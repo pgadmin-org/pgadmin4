@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -240,6 +240,24 @@ class ERDModule(PgAdminModule):
                 'key': {
                     'key_code': 78,
                     'char': 'n'
+                }
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
+            'one_to_one',
+            gettext('One to one link'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': False,
+                'control': True,
+                'key': {
+                    'key_code': 66,
+                    'char': 'b'
                 }
             },
             category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,

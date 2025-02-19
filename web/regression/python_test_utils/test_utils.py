@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -959,6 +959,23 @@ def configure_preferences(default_binary_path=None):
     conn.close()
 
 
+def change_layout_for_feature_test():
+    """
+    This function is used to change the layout in the preferences from
+    'Workspace' to 'Classic'.
+    """
+    misc_pref = Preferences.module('misc')
+    pref_layout = misc_pref.preference('layout')
+
+    conn = sqlite3.connect(config.TEST_SQLITE_PATH)
+    cur = conn.cursor()
+    cur.execute('INSERT INTO user_preferences(pid, uid, value) VALUES (?,?,?)',
+                (pref_layout.pid, 1, 'classic')
+                )
+    conn.commit()
+    conn.close()
+
+
 def reset_layout_db(user_id=None):
     retry = 3
     while retry > 0:
@@ -1860,7 +1877,7 @@ def module_patch(*args):
 
             # module was imported, let's use it in the patch
             patch = mock.patch(*args)
-            patch.getter = lambda: imported
+            patch.getter = lambda imported_module=imported:imported_module
             patch.attribute = '.'.join(components[i:])
             return patch
         except Exception:

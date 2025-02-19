@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -354,7 +354,7 @@ class PgadminPage:
             self.click_element(self.find_by_css_selector(
                 "li[data-label='Remove Server']"))
             self.driver.switch_to.default_content()
-            self.click_modal('Yes')
+            self.click_modal('Delete')
             time.sleep(1)
         else:
             print(server_config['name'] + " server is not removed",

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -271,7 +271,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               maximizable: true,
               tabs: [
-                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} handleEndOfLineChange={handleEndOfLineChange}/>}),
+                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} setQtStatePartial={setQtStatePartial}/>}),
                 LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
                   cached: undefined}),
               ],
@@ -365,7 +365,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       role: selectedConn.role,
       password: password,
       dbname: selectedConn.database_name
-    } : JSON.stringify(qtState.params.sql_filter))
+    } : qtState.params.sql_filter)
       .then(()=>{
         setQtStatePartial({
           connected: true,

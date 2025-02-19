@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -23,6 +23,14 @@ import { getNodeForeignKeySchema } from '../../constraints/foreign_key/static/js
 import { getNodeExclusionConstraintSchema } from '../../constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import pgAdmin from 'sources/pgadmin';
+
+export function getPrivilegesForTableAndLikeObjects(server_version) {
+  if (server_version && server_version >= 170000) {
+    return ['a', 'r', 'w', 'd', 'D', 'x', 't', 'm'];
+  }
+
+  return ['a', 'r', 'w', 'd', 'D', 'x', 't'];
+}
 
 export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   const spcname = () => getNodeListByName(
@@ -713,7 +721,7 @@ export default class TableSchema extends BaseUISchema {
               /* Create PK if none */
               return {primary_key: [
                 obj.constraintsObj.primaryKeyObj.getNewData({
-                  columns: [{column: columnData.name, 
+                  columns: [{column: columnData.name,
                   }],
                 })
               ]};
@@ -1022,7 +1030,7 @@ export default class TableSchema extends BaseUISchema {
     },
     {
       id: 'relacl', label: gettext('Privileges'), type: 'collection',
-      group: 'security_group', schema: this.getPrivilegeRoleSchema(['a','r','w','d','D','x','t']),
+      group: 'security_group', schema: this.getPrivilegeRoleSchema(getPrivilegesForTableAndLikeObjects(this.getServerVersion())),
       mode: ['edit', 'create'], canAdd: true, canDelete: true,
       uniqueCol : ['grantee'],
     },{

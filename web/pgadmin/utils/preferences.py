@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -134,7 +134,6 @@ class _Preference():
         except Exception as e:
             current_app.logger.exception(e)
             return self.default
-        return res.value
 
     def _get_format_data(self, res):
         """
@@ -149,10 +148,11 @@ class _Preference():
                 if 'value' in opt and opt['value'] == res.value:
                     return True, res.value
 
-            if self.control_props and self.control_props['creatable']:
+            if self.control_props and 'creatable' in self.control_props and \
+                    self.control_props['creatable']:
                 return True, res.value
 
-            if self.select and self.select['tags']:
+            if self.select and 'tags' in self.select and self.select['tags']:
                 return True, res.value
             return True, self.default
         if self._type == 'select':

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ function TableRow({index, style, schema, row, measureElement}) {
       </PgReactTableRowContent>
       <PgReactTableRowExpandContent row={row}>
         <FormView
-          accessPath={['data', index]}
+          accessPath={['data', row.index]}
           schema={schema}
           viewHelperProps={{ mode: 'properties' }}
         />
@@ -155,7 +155,7 @@ export function Table({
   // Render the UI for your table
   const tableRef = useRef();
   let flatData = [];
-  let fetchMoreOnBottomReached = undefined;
+  let fetchMoreOnBottomReached;
   let totalFetched = 0;
   let totalDBRowCount = 0;
 

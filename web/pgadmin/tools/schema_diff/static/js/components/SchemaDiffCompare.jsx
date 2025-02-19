@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponen
 import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
-import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 
 
 function generateFinalScript(script_array, scriptHeader, script_body) {

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ function showFilterDialog(pgBrowser, item, queryToolMod, transId,
   let helpUrl = url_for('help.static', {'filename': 'viewdata_filter.html'});
 
   let okCallback = function() {
-    queryToolMod.launch(transId, gridUrl, false, queryToolTitle, {sql_filter: schema.sessData.filter_sql});
+    queryToolMod.launch(transId, gridUrl, false, queryToolTitle, {sql_filter: JSON.stringify(schema.sessData.filter_sql)});
   };
 
   pgBrowser.Events.trigger('pgadmin:utility:show', item,

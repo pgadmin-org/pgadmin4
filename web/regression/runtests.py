@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -306,7 +306,9 @@ def setup_webdriver_specification(arguments):
         driver_local = webdriver.Chrome(options=options)
 
     # maximize browser window
-    driver_local.maximize_window()
+    # commenting this as github actions are failing
+    # https://issues.chromium.org/issues/394760806
+    # driver_local.maximize_window()
     return driver_local
 
 

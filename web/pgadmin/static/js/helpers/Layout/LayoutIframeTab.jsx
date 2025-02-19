@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -61,8 +61,8 @@ export default function LayoutIframeTab({target, src, children}) {
         if(r) setIframeTarget(r.querySelector('#'+target));
       }} container={document.querySelector('#layout-portal')}>
         {src ?
-          <iframe src={src} title=" " id={target} style={{position: 'fixed', border: 0}} />:
-          <Frame src={src} id={target} style={{position: 'fixed', border: 0}}>
+          <iframe src={src} title=" " id={target} style={{position: 'fixed', border: 0, zIndex: 1}} />:
+          <Frame src={src} id={target} style={{position: 'fixed', border: 0, zIndex: 1}}>
             {children}
           </Frame>
         }

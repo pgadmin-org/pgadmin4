@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,10 +17,9 @@ export const FieldControl = ({schemaId, item}) => {
   return useMemo(() =>
     <Control {...props}>
       {
-        children &&
-          children.map(
-            (child, idx) => <FieldControl key={idx} item={child}/>
-          )
+        children?.map(
+          (child, idx) => <FieldControl key={`${child.controlProps.id}-${idx}`} item={child}/>
+        )
       }
     </Control>, [schemaId, Control, props, children]
   );

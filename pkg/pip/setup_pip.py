@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,6 @@
 import builtins
 import os
 import sys
-import platform
 from codecs import open
 from importlib.machinery import SourceFileLoader
 
@@ -41,17 +40,7 @@ kerberos_extras = []
 # gssapi in it's own list
 for index, req in enumerate(all_requires):
     if 'psycopg[c]' in req:
-        # Starting from Psycopg 3.1.20, ARM64 macOS binary packages are no
-        # longer available for macOS versions before 14.0.
-        _req = req.replace('psycopg[c]', 'psycopg[binary]')
-        req = "psycopg[binary] == 3.1.19; sys_platform == 'darwin' and" \
-              " platform_machine == 'arm64' and platform_release < '23.0' \n"\
-              + _req + ";  (sys_platform == 'darwin' and" \
-                       " platform_machine == 'arm64' and" \
-                       " platform_release >= '23.0') or" \
-                       " (sys_platform == 'darwin' and" \
-                       " platform_machine != 'arm64'" \
-                       ") or sys_platform != 'darwin'"
+        req = req.replace('psycopg[c]', 'psycopg[binary]')
 
     if 'gssapi' in req:
         kerberos_extras.append(req)
@@ -91,11 +80,12 @@ setup(
         'Development Status :: 5 - Production/Stable',
 
         # Supported programming languages
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11'
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13'
     ],
 
     keywords='pgadmin4,postgresql,postgres',

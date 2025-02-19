@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React from 'react';
 import QueryToolSvg from '../../img/fonticon/query_tool.svg?svgr';
 import ViewDataSvg from '../../img/fonticon/view_data.svg?svgr';
@@ -23,9 +32,9 @@ import ExecuteQuerySvg from '../../img/execute_query.svg?svgr';
 import MagicSvg from '../../img/magic.svg?svgr';
 import MsAzure from '../../img/ms_azure.svg?svgr';
 import GoogleCloud from '../../img/google-cloud-1.svg?svgr';
-import TerminalSvg from '../../img/fonticon/terminal.svg?svgr';
 import RowFilterSvg from '../../img/fonticon/row_filter.svg?svgr';
 import SvgIcon from '@mui/material/SvgIcon';
+import SchemaDiffSvg from '../../img/fonticon/compare.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <SvgIcon component={Icon} inheritViewBox {...props}/>;
@@ -62,8 +71,8 @@ ClearIcon.propTypes = {style: PropTypes.object};
 export const ConnectedIcon = ({style})=><ExternalIcon Icon={ConnectedSvg} style={{height: '1rem', ...style}} data-label="ConnectedIcon" />;
 ConnectedIcon.propTypes = {style: PropTypes.object};
 
-export const DisonnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} data-label="DisonnectedIcon" />;
-DisonnectedIcon.propTypes = {style: PropTypes.object};
+export const DisconnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} data-label="DisconnectedIcon" />;
+DisconnectedIcon.propTypes = {style: PropTypes.object};
 
 export const RegexIcon = ({style})=><ExternalIcon Icon={RegexSvg} style={style} data-label="RegexIcon" />;
 RegexIcon.propTypes = {style: PropTypes.object};
@@ -76,9 +85,6 @@ ExpandDialogIcon.propTypes = {style: PropTypes.object};
 
 export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} data-label="MinimizeDialogIcon" />;
 MinimizeDialogIcon.propTypes = {style: PropTypes.object};
-
-export const TerminalIcon = ({style})=><ExternalIcon Icon={TerminalSvg} style={{height: '1.5rem', transform: 'scale(0.95)', ...style}} data-label="TerminalIcon" />;
-TerminalIcon.propTypes = {style: PropTypes.object};
 
 export const RowFilterIcon = ({style})=><ExternalIcon Icon={RowFilterSvg} style={{height: '1rem', ...style}} data-label="RowFilterIcon" />;
 RowFilterIcon.propTypes = {style: PropTypes.object};
@@ -109,3 +115,6 @@ MagicIcon.propTypes = {style: PropTypes.object};
 
 export const MSAzureIcon = ({style})=><ExternalIcon Icon={MsAzure} style={{height: '6rem', width: '7rem', ...style}} data-label="MSAzureIcon" />;
 MSAzureIcon.propTypes = {style: PropTypes.object};
+
+export const SchemaDiffIcon = ({style})=><ExternalIcon Icon={SchemaDiffSvg} style={{height: '2rem', ...style}} data-label="SchemaDiffIcon" />;
+SchemaDiffIcon.propTypes = {style: PropTypes.object};

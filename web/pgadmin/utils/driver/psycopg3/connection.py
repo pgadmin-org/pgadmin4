@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -1350,7 +1350,9 @@ WHERE db.datname = current_database()""")
                 result = []
                 try:
                     if records == -1:
-                        result = cur.fetchall(_tupples=True)
+                        result = cur.fetchwindow(
+                            from_rownum=0, to_rownum=cur.get_rowcount() - 1,
+                            _tupples=True)
                     elif records is None:
                         result = cur.fetchwindow(from_rownum=from_rownum,
                                                  to_rownum=to_rownum,
@@ -1680,8 +1682,8 @@ Failed to reset the connection to the server due to following error:
         elif hasattr(exception_obj, 'diag') and \
             hasattr(exception_obj.diag, 'message_detail') and\
                 exception_obj.diag.message_detail is not None:
-            errmsg = exception_obj.diag.message_detail + \
-                exception_obj.diag.message_primary
+            errmsg = exception_obj.diag.message_primary + '\n' + \
+                exception_obj.diag.message_detail
         else:
             errmsg = str(exception_obj)
 

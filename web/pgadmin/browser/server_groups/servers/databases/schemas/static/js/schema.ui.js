@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ export default class PGSchema extends BaseUISchema {
         type: 'nested-tab',
         group: gettext('Default privileges'),
         mode: ['create','edit'],
-        schema: new DefaultPrivSchema(pgSchemaObj.getPrivilegeRoleSchema)
+        schema: new DefaultPrivSchema(pgSchemaObj.getPrivilegeRoleSchema, pgSchemaObj.fieldOptions.nodeInfo)
       }
     ];
   }

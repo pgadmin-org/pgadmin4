@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
-import { usePgAdmin } from '../../static/js/BrowserComponent';
+import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -197,7 +197,7 @@ export default function CollectionNodeProperties({
     };
 
     if (confirm) {
-      pgAdmin.Browser.notifier.confirm(title, msg, dropNodeProperties, null);
+      pgAdmin.Browser.notifier.confirmDelete(title, msg, dropNodeProperties, () => {}, gettext('Delete'), gettext('Cancel'));
     } else {
       dropNodeProperties();
     }

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ export function prepareData(val, createMode=false) {
   return val;
 }
 
-export const flatternObject = (obj, base=[]) => Object.keys(obj).sort().reduce(
+export const flatternObject = (obj, base=[]) => Object.keys(obj).sort((a, b)=>a.localeCompare(b)).reduce(
   (r, k) => {
     r = r.concat(k);
     const value = obj[k];

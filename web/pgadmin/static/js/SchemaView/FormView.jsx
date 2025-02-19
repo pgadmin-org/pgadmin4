@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -230,7 +230,7 @@ export default function FormView({
                   {
                     group.controls.map(
                       (item, idx) => <FieldControl
-                        item={item} key={idx} schemaId={schema._id} />
+                        item={item} key={`${item.controlProps.id}-${idx}`} schemaId={schema._id} />
                     )
                   }
                 </TabPanel>
@@ -282,10 +282,10 @@ export default function FormView({
             className={contentClassName.join(' ')}>
             {
               finalGroups.map((group, idx) =>
-                <React.Fragment key={idx}>{
+                <React.Fragment key={`${group.id}-${idx}`}>{
                   group.controls.map(
                     (item, idx) => <FieldControl
-                      item={item} key={idx} schemaId={schema._id}
+                      item={item} key={`${item.controlProps.id}-${idx}`} schemaId={schema._id}
                     />
                   )
                 }</React.Fragment>

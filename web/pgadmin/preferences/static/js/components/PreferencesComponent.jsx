@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2024, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -15,6 +15,8 @@ import React, { useEffect, useMemo } from 'react';
 import { FileType } from 'react-aspen';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
+import CloseIcon from '@mui/icons-material/CloseRounded';
+import HTMLReactParser from 'html-react-parser/lib/index';
 import SchemaView from '../../../../static/js/SchemaView';
 import getApiInstance from '../../../../static/js/api_instance';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
@@ -85,6 +87,16 @@ const StyledBox = styled(Box)(({theme}) => ({
         marginLeft: '0.5em'
       },
     },
+
+  },
+  '& .Alert-footer': {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder.top,
+  },
+  '& .Alert-margin': {
+    marginLeft: '0.25rem',
   },
 }));
 
@@ -287,6 +299,8 @@ export default function PreferencesComponent({ ...props }) {
         preferencesValues[element.id] = { 'warning': _val[0], 'alert': _val[1] };
       } else if (subNode.label == gettext('Results grid') && node.label == gettext('Query Tool')) {
         setResultsOptions(element, subNode, preferencesValues, type);
+      } else if (subNode.label == gettext('User Interface') && node.label == gettext('Miscellaneous')) {
+        setWorkspaceOptions(element, subNode, preferencesValues, type);
       } else {
         element.type = type;
         preferencesValues[element.id] = element.value;
@@ -311,6 +325,23 @@ export default function PreferencesComponent({ ...props }) {
       });
       element.disabled = (state) => {
         return state[size_control_id] != 'by_data';
+      };
+    }
+    element.type = type;
+    preferencesValues[element.id] = element.value;
+  }
+
+  function setWorkspaceOptions(element, subNode, preferencesValues, type) {
+    if (element.name== 'open_in_res_workspace') {
+      let layout_control_id = null;
+      subNode.preferences.forEach((_el) => {
+        if(_el.name == 'layout') {
+          layout_control_id = _el.id;
+        }
+
+      });
+      element.disabled = (state) => {
+        return state[layout_control_id] != 'workspace';
       };
     }
     element.type = type;
@@ -533,7 +564,28 @@ export default function PreferencesComponent({ ...props }) {
     }
 
     if (_data.length > 0) {
-      save(_data, data);
+      // Check whether layout is changed from Workspace to Classic.
+      let layoutPref = _data.find(x => x.name === 'layout');
+      // If layout is changed then raise the warning to close all the connections.
+      if (!_.isUndefined(layoutPref) && layoutPref.value == 'classic') {
+        pgAdmin.Browser.notifier.confirm(
+          gettext('Layout changed'),
+          `${gettext('Switching from Workspace to Classic layout will disconnect all server connections and refresh the entire page.')}
+           ${gettext('To avoid losing unsaved data, click Cancel to manually review and close your connections.')}
+           ${gettext('Note that if you choose Cancel, any changes to your preferences will not be saved.')}<br><br>
+           ${gettext('Do you want to continue?')}`,
+          function () {
+            save(_data, data, true);
+          },
+          function () {
+            return true;
+          },
+          gettext('Continue'),
+          gettext('Cancel')
+        );
+      } else {
+        save(_data, data);
+      }
     }
 
   }
@@ -546,62 +598,80 @@ export default function PreferencesComponent({ ...props }) {
     return requires_refresh;
   }
 
-  function save(save_data, data) {
+  function save(save_data, data, layout_changed=false) {
     api({
       url: url_for('preferences.index'),
       method: 'PUT',
       data: save_data,
     }).then(() => {
-      let requiresTreeRefresh = save_data.some((s)=>{
-        return (
-          s.name=='show_system_objects' || s.name=='show_empty_coll_nodes' ||
-          s.name.startsWith('show_node_') || s.name=='hide_shared_server' ||
-          s.name=='show_user_defined_templates'
-        );
-      });
-      let requires_refresh = false;
-      for (const [key] of Object.entries(data.current)) {
-        let pref = preferencesStore.getPreferenceForId(Number(key));
-        requires_refresh = checkRefreshRequired(pref, requires_refresh);
-      }
+      // If layout is changed then only refresh the object explorer.
+      if (layout_changed) {
+        api({
+          url: url_for('workspace.layout_changed'),
+          method: 'DELETE',
+          data: save_data,
+        }).then(() => {
+          pgAdmin.Browser.tree.destroy().then(
+            () => {
+              pgAdmin.Browser.Events.trigger(
+                'pgadmin-browser:tree:destroyed', undefined, undefined
+              );
+              return true;
+            }
+          );
+        });
+      } else {
+        let requiresTreeRefresh = save_data.some((s)=>{
+          return (
+            s.name=='show_system_objects' || s.name=='show_empty_coll_nodes' ||
+            s.name.startsWith('show_node_') || s.name=='hide_shared_server' ||
+            s.name=='show_user_defined_templates'
+          );
+        });
+        let requires_refresh = false;
+        for (const [key] of Object.entries(data.current)) {
+          let pref = preferencesStore.getPreferenceForId(Number(key));
+          requires_refresh = checkRefreshRequired(pref, requires_refresh);
+        }
 
-      if (requiresTreeRefresh) {
-        pgAdmin.Browser.notifier.confirm(
-          gettext('Object explorer refresh required'),
-          gettext(
-            'An object explorer refresh is required. Do you wish to refresh it now?'
-          ),
-          function () {
-            pgAdmin.Browser.tree.destroy().then(
-              () => {
-                pgAdmin.Browser.Events.trigger(
-                  'pgadmin-browser:tree:destroyed', undefined, undefined
-                );
-                return true;
-              }
-            );
-          },
-          function () {
-            return true;
-          },
-          gettext('Refresh'),
-          gettext('Later')
-        );
-      }
+        if (requiresTreeRefresh) {
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Object explorer refresh required'),
+            gettext(
+              'An object explorer refresh is required. Do you wish to refresh it now?'
+            ),
+            function () {
+              pgAdmin.Browser.tree.destroy().then(
+                () => {
+                  pgAdmin.Browser.Events.trigger(
+                    'pgadmin-browser:tree:destroyed', undefined, undefined
+                  );
+                  return true;
+                }
+              );
+            },
+            function () {
+              return true;
+            },
+            gettext('Refresh'),
+            gettext('Later')
+          );
+        }
 
-      if (requires_refresh) {
-        pgAdmin.Browser.notifier.confirm(
-          gettext('Refresh required'),
-          gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
-          function () {
-            /* If user clicks Yes */
-            reloadPgAdmin();
-            return true;
-          },
-          function () { props.closeModal();},
-          gettext('Refresh'),
-          gettext('Later')
-        );
+        if (requires_refresh) {
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Refresh required'),
+            gettext('A page refresh is required. Do you wish to refresh the page now?'),
+            function () {
+              /* If user clicks Yes */
+              reloadPgAdmin();
+              return true;
+            },
+            function () { props.closeModal();},
+            gettext('Refresh'),
+            gettext('Later')
+          );
+        }
       }
       // Refresh preferences cache
       preferencesStore.cache();
@@ -616,36 +686,31 @@ export default function PreferencesComponent({ ...props }) {
   };
 
   const reset = () => {
-    pgAdmin.Browser.notifier.confirm(
+    const text = `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
+${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
+<li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`;
+
+    pgAdmin.Browser.notifier.showModal(
       gettext('Reset all preferences'),
-      `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
-       ${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
-       <li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`,
-      function () {},
-      function () {},
-      '',
-      'Cancel',
-      function (closeModal) {
-        return [
-          {
-            type: 'default',
-            icon: <SaveSharpIcon />,
-            label: gettext('Save & Reload'),
-            onclick: () => {
-              resetPrefsToDefault(true);
-              closeModal();
-            }
-          }, {
-            type: 'primary',
-            icon: <SaveSharpIcon />,
-            label: gettext('Save & Reload Later'),
-            onclick: () => {
-              resetPrefsToDefault(false);
-              closeModal();
-            }
-          }
-        ];
-      }
+      (closeModal)=>{
+        const onClick = (reset) => {
+          resetPrefsToDefault(reset);
+          closeModal();
+        };
+        return(
+          <StyledBox display="flex" flexDirection="column" height="100%">
+            <Box flexGrow="1" p={2}>
+              {HTMLReactParser(text)}
+            </Box>
+            <Box className='Alert-footer'>
+              <DefaultButton className='Alert-margin' startIcon={<CloseIcon />} onClick={()=> closeModal()}>{'Cancel'}</DefaultButton>
+              <DefaultButton className='Alert-margin' startIcon={<SaveSharpIcon />} onClick={() => onClick(true)} >{gettext('Save & Reload')}</DefaultButton>
+              <PrimaryButton className='Alert-margin' startIcon={ <SaveSharpIcon />} onClick={()=>onClick(false)}>{gettext('Save & Reload Later')}</PrimaryButton>
+            </Box>
+          </StyledBox>
+        );
+      },
+      { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: true},
     );
   };
 

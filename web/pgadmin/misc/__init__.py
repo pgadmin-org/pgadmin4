@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2024, The pgAdmin Development Team
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,13 +10,12 @@
 """A blueprint module providing utility functions for the application."""
 
 from pgadmin.utils import driver
-from flask import render_template, Response, request, current_app
-from flask.helpers import url_for
+from flask import request, current_app
 from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pathlib import Path
-from pgadmin.utils import PgAdminModule, replace_binary_path, \
-    get_binary_path_versions
+from pgadmin.utils import PgAdminModule, get_binary_path_versions
+from pgadmin.utils.constants import PREF_LABEL_USER_INTERFACE
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
@@ -52,9 +51,9 @@ class MiscModule(PgAdminModule):
 
         # Register options for the User language settings
         self.preference.register(
-            'user_language', 'user_language',
-            gettext("User language"), 'options', 'en',
-            category_label=gettext('User language'),
+            'user_interface', 'user_language',
+            gettext("Language"), 'options', 'en',
+            category_label=PREF_LABEL_USER_INTERFACE,
             options=lang_options,
             control_props={
                 'allowClear': False,
@@ -75,9 +74,9 @@ class MiscModule(PgAdminModule):
             })
 
         self.preference.register(
-            'themes', 'theme',
+            'user_interface', 'theme',
             gettext("Theme"), 'options', 'light',
-            category_label=gettext('Themes'),
+            category_label=PREF_LABEL_USER_INTERFACE,
             options=theme_options,
             control_props={
                 'allowClear': False,
@@ -86,6 +85,38 @@ class MiscModule(PgAdminModule):
             help_str=gettext(
                 'Click the save button to apply the theme. Below is the '
                 'preview of the theme.'
+            )
+        )
+        self.preference.register(
+            'user_interface', 'layout',
+            gettext("Layout"), 'options', 'workspace',
+            category_label=PREF_LABEL_USER_INTERFACE,
+            options=[{'label': gettext('Classic'), 'value': 'classic'},
+                     {'label': gettext('Workspace'), 'value': 'workspace'}],
+            control_props={
+                'allowClear': False,
+                'creatable': False,
+            },
+            help_str=gettext(
+                'Choose the layout that suits you best. pgAdmin offers two '
+                'options: the Classic layout, a longstanding and familiar '
+                'design, and the Workspace layout, which provides distraction '
+                'free dedicated areas for the Query Tool, PSQL, and Schema '
+                'Diff tools.'
+            )
+        )
+        self.preference.register(
+            'user_interface', 'open_in_res_workspace',
+            gettext("Open the Query Tool/PSQL in their respective workspaces"),
+            'boolean', False,
+            category_label=PREF_LABEL_USER_INTERFACE,
+            help_str=gettext(
+                'This setting applies only when the layout is set to '
+                'Workspace Layout. When set to True, all Query Tool/PSQL '
+                'tabs will open in their respective workspaces. By default, '
+                'this setting is False, meaning that Query Tool/PSQL tabs '
+                'will open in the currently active workspace (either the '
+                'default or the workspace selected at the time of opening)'
             )
         )
 
@@ -120,6 +151,9 @@ class MiscModule(PgAdminModule):
         self.submodules.append(module)
 
         from .statistics import blueprint as module
+        self.submodules.append(module)
+
+        from .workspaces import blueprint as module
         self.submodules.append(module)
 
         super().register(app, options)
