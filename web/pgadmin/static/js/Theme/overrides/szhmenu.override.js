@@ -11,7 +11,7 @@ export default function szhMenuOverride(theme) {
   return {
     '& .szh-menu': {
       padding: '4px 0px',
-      zIndex: 1005,
+      zIndex: 1081,
       backgroundColor: theme.palette.background.default,
       color: theme.palette.text.primary,
       border: `1px solid ${theme.otherVars.borderColor}`
