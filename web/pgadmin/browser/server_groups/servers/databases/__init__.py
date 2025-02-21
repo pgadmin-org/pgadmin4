@@ -360,18 +360,29 @@ class DatabaseView(PGChildNodeView):
                 ['%s'] * len(server_node_res.db_res.split(','))
             )
             params = tuple(server_node_res.db_res.split(','))
-        SQL = render_template(
-            "/".join([self.template_path, self._NODES_SQL]),
-            last_system_oid=last_system_oid,
-            db_restrictions=db_disp_res,
-        )
+        # if db_alias present, server is using pg_bouncer connection,
+        # hence pass the did. It will retrieve current database
+        if server_node_res and server_node_res.db_alias:
+            SQL = render_template(
+                "/".join([self.template_path, self._NODES_SQL]),
+                last_system_oid=last_system_oid,
+                db_restrictions=db_disp_res,
+                did=server_node_res.did)
+        else:
+            SQL = render_template(
+                "/".join([self.template_path, self._NODES_SQL]),
+                last_system_oid=last_system_oid,
+                db_restrictions=db_disp_res)
         status, rset = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=rset)
 
         for row in rset['rows']:
-            dbname = row['name']
+            # if db_alias then update db name to alias db_alias
+            # instead of actual
+            dbname = server_node_res.db_alias if server_node_res.db_alias \
+                else row['name']
             row['is_sys_obj'] = (
                 row['did'] <= self._DATABASE_LAST_SYSTEM_OID or
                 self.datistemplate)
@@ -392,7 +403,7 @@ class DatabaseView(PGChildNodeView):
                 self.blueprint.generate_browser_node(
                     row['did'],
                     sid,
-                    row['name'],
+                    label=dbname,
                     icon=icon,
                     connected=connected,
                     tablespace=row['spcname'],

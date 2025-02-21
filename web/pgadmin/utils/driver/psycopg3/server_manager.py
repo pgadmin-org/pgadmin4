@@ -72,6 +72,7 @@ class ServerManager(object):
         self.host = server.host
         self.port = server.port
         self.db = server.maintenance_db
+        self.db_alias = server.db_alias
         self.shared = server.shared
         self.did = None
         self.user = server.username
@@ -209,7 +210,7 @@ class ServerManager(object):
         else:
             conn_str = CONN_STRING.format(conn_id)
             if did is None:
-                database = self.db
+                database = self.db if self.db else self.db_alias
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
             elif conn_id and conn_str in self.connections:
