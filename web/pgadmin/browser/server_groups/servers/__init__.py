@@ -738,6 +738,7 @@ class ServerNode(PGChildNodeView):
             'host': 'host',
             'port': 'port',
             'db': 'maintenance_db',
+            'db_alias': 'db_alias',
             'username': 'username',
             'gid': 'servergroup_id',
             'comment': 'comment',
@@ -767,6 +768,7 @@ class ServerNode(PGChildNodeView):
             'name': gettext('name'),
             'port': gettext('Port'),
             'db': gettext('Maintenance database'),
+            'db_alias': gettext('Database Alias'),
             'username': gettext('Username'),
             'comment': gettext('Comments'),
             'role': gettext('Role')
@@ -1014,6 +1016,7 @@ class ServerNode(PGChildNodeView):
             'host': server.host,
             'port': server.port,
             'db': server.maintenance_db,
+            'db_alias': server.db_alias,
             'shared': server.shared if config.SERVER_MODE else None,
             'shared_username': server.shared_username
             if config.SERVER_MODE else None,
@@ -1141,6 +1144,7 @@ class ServerNode(PGChildNodeView):
                 host=data.get('host', None),
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
+                db_alias=data.get('db_alias', None),
                 username=data.get('username'),
                 save_password=1 if data.get('save_password', False) and
                 config.ALLOW_SAVE_PASSWORD else 0,

@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 42
+SCHEMA_VERSION = 43
 
 ##########################################################################
 #
@@ -162,6 +162,7 @@ class Server(db.Model):
         db.CheckConstraint('port >= 1 AND port <= 65534'),
         nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=True)
+    db_alias = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(

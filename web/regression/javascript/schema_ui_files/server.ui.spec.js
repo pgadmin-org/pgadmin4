@@ -55,6 +55,7 @@ describe('ServerSchema', ()=>{
     expect(setError).toHaveBeenCalledWith('username', 'Username must be specified.');
 
     state.username = 'postgres';
+    state.db = 'postgres';
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('port', 'Port must be specified.');
 
