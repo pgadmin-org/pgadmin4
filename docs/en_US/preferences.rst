@@ -474,6 +474,9 @@ Use the fields on the *Options* panel to manage editor preferences.
   editor will prompt the user to saved unsaved data when exiting the data
   editor.
 
+* When the *Open the file in a new tab?* switch is set to *True*, the
+  editor will open the new file in new tab of the Query Tool.
+
 * When the *Prompt to save unsaved query changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved query modifications when exiting
   the Query Tool.

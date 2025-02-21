@@ -61,7 +61,9 @@ export default class FileManagerModule {
     if(!title) {
       if(params.dialog_type == 'create_file') {
         title = gettext('Save File');
-      } else if(params.dialog_type == 'select_file') {
+      } else if(params.dialog_type == 'open_file'){
+        title = gettext('Open File');
+      }else if(params.dialog_type == 'select_file') {
         title = gettext('Select File');
       } else {
         title = gettext('Storage Manager');

@@ -74,6 +74,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
+  const openInNewTabMenuRef = React.useRef(null);
   const editMenuRef = React.useRef(null);
   const autoCommitMenuRef = React.useRef(null);
   const explainMenuRef = React.useRef(null);
@@ -138,9 +139,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
 
   const openFile = useCallback(()=>{
     confirmDiscard(()=>{
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, Boolean(checkedMenuItems['open_in_new_tab']));
     }, true);
-  }, [buttonsDisabled['save']]);
+  }, [buttonsDisabled['save'], checkedMenuItems]);
 
   const saveFile = useCallback((saveAs=false)=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, saveAs);
@@ -337,6 +338,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           explain_summary: queryToolPref.explain_summary,
           explain_settings: queryToolPref.explain_settings,
           explain_wal: queryToolPref.explain_wal,
+          open_in_new_tab: queryToolPref.open_in_new_tab,
         });
       }
     }
@@ -501,6 +503,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Open File')} icon={<FolderRoundedIcon />} disabled={!queryToolCtx.params.is_query_tool}
             shortcut={queryToolPref.btn_open_file} onClick={openFile} />
+          <PgIconButton title={gettext('Open in a new tab')} icon={<KeyboardArrowDownIcon />} splitButton disabled={!queryToolCtx.params.is_query_tool}
+            name="menu-openfileintab" ref={openInNewTabMenuRef} onClick={toggleMenu}
+          />
+        </PgButtonGroup>
+        <PgButtonGroup size="small">
           <PgIconButton title={gettext('Save File')} icon={<SaveRoundedIcon />}
             shortcut={queryToolPref.btn_save_file} disabled={buttonsDisabled['save'] || !queryToolCtx.params.is_query_tool}
             onClick={()=>{saveFile(false);}} />
@@ -563,12 +570,21 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         </PgButtonGroup>
       </StyledBox>
       <PgMenu
+        anchorRef={openInNewTabMenuRef}
+        open={openMenuName=='menu-openfileintab'}
+        onClose={onMenuClose}
+        label={gettext('Open file Menu')}
+      >
+        <PgMenuItem hasCheck value="open_in_new_tab" checked={checkedMenuItems['open_in_new_tab']}
+          onClick={checkMenuClick}>{gettext('Open in a new tab?')}</PgMenuItem>
+      </PgMenu>
+      <PgMenu
         anchorRef={saveAsMenuRef}
         open={openMenuName=='menu-saveas'}
         onClose={onMenuClose}
-        label={gettext('File Menu')}
+        label={gettext('Save As')}
       >
-        <PgMenuItem onClick={()=>{saveFile(true);}}>{gettext('Save as')}</PgMenuItem>
+        <PgMenuItem onClick={()=>{saveFile(true);}}>{gettext('Save As')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={editMenuRef}

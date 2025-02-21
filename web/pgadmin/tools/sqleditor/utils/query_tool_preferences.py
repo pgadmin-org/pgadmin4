@@ -133,6 +133,16 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.open_file_in_new_tab = self.preference.register(
+        'Options', 'open_in_new_tab',
+        gettext("Open the file in a new tab?"), 'boolean',
+        True,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext(
+            'Specifies whether or not to open the file in a new tab.'
+        )
+    )
+
     self.view_edit_promotion_warning = self.preference.register(
         'Options', 'view_edit_promotion_warning',
         gettext("Show View/Edit Data Promotion Warning?"),

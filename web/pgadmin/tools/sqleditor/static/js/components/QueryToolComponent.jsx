@@ -261,6 +261,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
   }, pollTime);
 
+
   let defaultLayout = {
     dockbox: {
       mode: 'vertical',
@@ -377,6 +378,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
           let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
           pgAdmin.Browser.notifier.success(_.escape(msg));
+        }
+        // Open the file if filename passed on the parameters.
+        if(qtState.params.fileName){
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, params.fileName, params.storage);
         }
       }).catch((error)=>{
         if(error.response?.request?.responseText?.search('Ticket expired') !== -1) {
@@ -577,14 +582,20 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };
     const events = [
-      [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, ()=>{
+      [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, (openInNewTab=false)=>{
         let fileParams = {
           'supported_types': ['sql', '*'], // file types allowed
-          'dialog_type': 'select_file', // open select file dialog
+          'dialog_type': 'open_file', // open select file dialog
         };
-        pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName, storage);
-        }, null, modal);
+        if(openInNewTab){
+          pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
+            onNewQueryToolClick(null, fileName, storage);
+          }, null, modal, openInNewTab);
+        }else{
+          pgAdmin.Tools.FileManager.show(fileParams,(fileName, storage)=>{
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName, storage);
+          }, null, modal);
+        }
       }],
       [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
         if(!isSaveAs && qtState.current_file) {
@@ -783,8 +794,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     });
   }, [qtState.preferences.browser, qtState.connection_list, qtState.params]);
 
-
-  const onNewQueryToolClick = ()=>{
+  const onNewQueryToolClick = (event, fileName, storage)=>{
     const transId = commonUtils.getRandomInt(1, 9999999);
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let parentData = {
@@ -807,6 +817,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     showQueryTool.launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, gridUrl, title, {
       user: selectedConn.user,
       role: selectedConn.role,
+      fileName: fileName,
+      storage: storage
     });
   };
 
@@ -982,6 +994,8 @@ QueryToolComponent.propTypes = {
     server_name: PropTypes.string,
     database_name: PropTypes.string,
     layout: PropTypes.string,
+    fileName: PropTypes.string,
+    storage: PropTypes.string,
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,

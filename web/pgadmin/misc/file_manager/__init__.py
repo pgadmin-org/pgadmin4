@@ -380,6 +380,12 @@ class Filemanager():
                 True,
                 gettext("Select Folder")
             ),
+            'open_file': (
+                ['open_file'],
+                True,
+                False,
+                gettext("Select File")
+            ),
             'create_file': (
                 ['select_file', 'rename', 'create'],
                 True,

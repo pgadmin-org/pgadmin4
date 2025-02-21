@@ -645,7 +645,8 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     } else if(selectedRowIdx.current >= 0 && row) {
       let selectedfileType = row?.file_type;
       if(((selectedfileType == 'dir' || selectedfileType == 'drive') && fmUtilsObj.hasCapability('select_folder'))
-      || (selectedfileType != 'dir' && selectedfileType != 'drive' && fmUtilsObj.hasCapability('select_file'))) {
+      || (selectedfileType != 'dir' && selectedfileType != 'drive' && fmUtilsObj.hasCapability('select_file'))
+      || (selectedfileType != 'dir' && selectedfileType != 'drive' && fmUtilsObj.hasCapability('open_file'))) {
         disabled = false;
       }
     }
@@ -695,6 +696,8 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     okBtnText = gettext('Select');
     if(params.dialog_type == 'create_file' || params.dialog_type == 'create_folder') {
       okBtnText = gettext('Create');
+    }else if(params.dialog_type == 'open_file'){
+      okBtnText = gettext('Open');
     }
   }
 
