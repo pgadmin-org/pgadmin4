@@ -2,7 +2,7 @@
 Version 9.1
 ***********
 
-Release date: 2025-03-06
+Release date: 2025-03-13
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v9.0.
 
@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #1235 <https://github.com/pgadmin-org/pgadmin4/issues/1235>`_ -  Added an option to open the file in a new tab within the query tool.
   | `Issue #5128 <https://github.com/pgadmin-org/pgadmin4/issues/5128>`_ -  Add support for one to one relationship in the ERD tool.
   | `Issue #8436 <https://github.com/pgadmin-org/pgadmin4/issues/8436>`_ -  Enable the ability to close the 'Welcome' tab in the Query Tool/PSQL Workspace.
 
@@ -39,4 +40,5 @@ Bug fixes
   | `Issue #8418 <https://github.com/pgadmin-org/pgadmin4/issues/8418>`_ -  Fixed an issue where the User Management and Change Password dialogs were hidden when selecting a menu while a workspace other than 'Default' was active.
   | `Issue #8430 <https://github.com/pgadmin-org/pgadmin4/issues/8430>`_ -  Fixed an issue where the column order displayed was incorrect for exclusion constraints with multiple columns.
   | `Issue #8435 <https://github.com/pgadmin-org/pgadmin4/issues/8435>`_ -  Ensure the saved passwords are decrypted with the correct encryption key for external authentication in server mode.
+  | `Issue #8439 <https://github.com/pgadmin-org/pgadmin4/issues/8439>`_ -  Fixed an issue where drop-down menus were hidden behind the dock.
   | `Issue #8460 <https://github.com/pgadmin-org/pgadmin4/issues/8460>`_ -  Fixed an issue where deleting rows in the query tool would delete all rows in the table when 'Select All Remaining Rows' was used.
