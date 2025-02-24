@@ -148,6 +148,7 @@ export default class ServerSchema extends BaseUISchema {
       host: '',
       port: 5432,
       db: 'postgres',
+      db_alias: undefined,
       username: current_user.name,
       role: null,
       connect_now: true,
@@ -315,8 +316,17 @@ export default class ServerSchema extends BaseUISchema {
         }
       },{
         id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, disabled: obj.isShared,
-        noEmpty: true,
+        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
+        disabled: function(state) {
+          return !(isEmptyString(state.db_alias) && obj.isShared);
+        },
+      },{
+        id: 'db_alias', label: gettext('Database alias'), type: 'text', group: gettext('Connection'),
+        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
+        disabled: function(state) {
+          return !isEmptyString(state.db);
+        },
+        helpMessage: gettext('Specify the database alias to connect to the server using pg_bouncer.')
       },{
         id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'],
@@ -545,8 +555,20 @@ export default class ServerSchema extends BaseUISchema {
       } else {
         setError('port', null);
       }
+
+      if(isEmptyString(state.db)) {
+        errmsg = gettext('Maintainence database or Database alias must be specified.');
+        if(isEmptyString(state.db_alias)) {
+          setError('db', errmsg);
+          return true;
+        } else {
+          setError('db', null);
+        }
+      } else {
+        setError('db', null);
+      }
     } else {
-      _.each(['host', 'db', 'username', 'port'], (item) => {
+      _.each(['host', 'db', 'db_alias', 'username', 'port'], (item) => {
         setError(item, null);
       });
     }
