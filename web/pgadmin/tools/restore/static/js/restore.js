@@ -81,7 +81,8 @@ define('tools.restore', [
         ()=>getRestoreDisableOptionSchema({nodeInfo: treeNodeInfo}),
         ()=>getRestoreMiscellaneousSchema({nodeInfo: treeNodeInfo}),
         {
-          role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData)
+          role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+          nodeType: itemNodeData._type,
         },
         treeNodeInfo,
         pgBrowser

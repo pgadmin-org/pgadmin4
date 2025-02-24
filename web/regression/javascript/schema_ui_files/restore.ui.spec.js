@@ -23,6 +23,7 @@ describe('RestoreSchema', ()=>{
     {
       role: ()=>[],
       encoding: ()=>[],
+      nodeType: '',
     },
     {server: {version: 11000}},
     pgAdmin.pgBrowser

@@ -788,13 +788,17 @@ function getFinalTheme(baseTheme) {
       MuiTab: {
         styleOverrides: {
           root: {
-            '&.MuiTab-textColorPrimary':{
+            '&:not(.Mui-disabled).MuiTab-textColorPrimary':{
               color: baseTheme.palette.text.primary,
             },
             '&.Mui-selected': {
               color: baseTheme.otherVars.activeColor,
             },
-          }
+          },
+          icon: {
+            fontSize: '1rem',
+            marginRight: '2px',
+          },
         }
       },
       MuiBackdrop: {
