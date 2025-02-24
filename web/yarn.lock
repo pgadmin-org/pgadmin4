@@ -12862,13 +12862,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"re-resizable@npm:6.10.3":
-  version: 6.10.3
-  resolution: "re-resizable@npm:6.10.3"
+"re-resizable@npm:6.11.0":
+  version: 6.11.0
+  resolution: "re-resizable@npm:6.11.0"
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: b0334713d66de1271716e3023f021a7fc288edf6588291ead1254cc738dc137bb33bae83da6e7703893030c3f1d9f9e11bc2ef5b661451ff1d2c69d232f48593
+  checksum: 7ffa57d7d78bd2f8a295ba241232851e28fcf18ed65cf18fd5e7d4fe349d1e4c986e84f73264e3a05f4d6d329a53b49033a76940adddac8ffc728cff0cc9f819
   languageName: node
   linkType: hard
 
@@ -13118,17 +13118,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-rnd@npm:^10.4.14":
-  version: 10.4.14
-  resolution: "react-rnd@npm:10.4.14"
+"react-rnd@npm:^10.5.1":
+  version: 10.5.1
+  resolution: "react-rnd@npm:10.5.1"
   dependencies:
-    re-resizable: 6.10.3
+    re-resizable: 6.11.0
     react-draggable: 4.4.6
     tslib: 2.6.2
   peerDependencies:
     react: ">=16.3.0"
     react-dom: ">=16.3.0"
-  checksum: 9d82ca5c9d1de16247d36b0d03220fe1bd72f143653538b004baf7c49bab2ae9a00162e07cbe070d851c9251d5a0834186005c5196d40ff0b79cbf25e000a12e
+  checksum: 2d2df010af595c69104fca7045d824f8f574b73902587e123933f7dcc05d6421177f375ac147ee084a538832fc76155d1af96bdb7a35216bed3a77729841e657
   languageName: node
   linkType: hard
 
@@ -13737,7 +13737,7 @@ __metadata:
     react-leaflet: ^4.2.1
     react-new-window: ^1.0.1
     react-resize-detector: ^12.0.2
-    react-rnd: ^10.4.14
+    react-rnd: ^10.5.1
     react-select: ^5.7.2
     react-timer-hook: ^3.0.5
     react-virtualized-auto-sizer: ^1.0.6
