@@ -80,7 +80,7 @@
         "new_role_name": "CURRENT_ROLE"
       },
       "server_min_version": 140000,
-      "skip_msg": "CURRENT_ROLE are not supported by PPAS/PG 13.0 and below.",
+      "skip_msg": "CURRENT_ROLE are not supported by EPAS/PG 13.0 and below.",
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -196,7 +196,7 @@
         "new_role_name": "CURRENT_ROLE"
       },
       "server_min_version": 140000,
-      "skip_msg": "CURRENT_ROLE are not supported by PPAS/PG 13.0 and below.",
+      "skip_msg": "CURRENT_ROLE are not supported by EPAS/PG 13.0 and below.",
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {

@@ -36,6 +36,8 @@ export default function Privilege({value, onChange, controlProps}) {
     'c': 'CONNECT',
     'a': 'INSERT',
     'r': 'SELECT',
+    'R': 'READ',
+    'W': 'WRITE',
     'w': 'UPDATE',
     'd': 'DELETE',
     'D': 'TRUNCATE',

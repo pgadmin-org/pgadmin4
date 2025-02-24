@@ -22,7 +22,8 @@ node_info_dict = {
     "did": [],  # database
     "lrid": [],  # role
     "tsid": [],  # tablespace
-    "scid": []  # schema
+    "scid": [],  # schema
+    "oid": []  # directory
 }
 
 global parent_node_dict
@@ -31,5 +32,6 @@ parent_node_dict = {
     "database": [],
     "tablespace": [],
     "role": [],
-    "schema": []
+    "schema": [],
+    "directory": []
 }

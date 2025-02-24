@@ -5,7 +5,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Identity columns are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "description": "Create Table API Test",
@@ -111,7 +111,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 110000,
-        "skip_msg": "Hash Partition are not supported by PPAS/PG 11.0 and below."
+        "skip_msg": "Hash Partition are not supported by EPAS/PG 11.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -150,7 +150,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -204,7 +204,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -241,7 +241,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -297,7 +297,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 110000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -344,7 +344,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -383,7 +383,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "is_partitioned": true,
@@ -434,7 +434,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Identity columns are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "table_name": "abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz123",
@@ -493,7 +493,7 @@
       "is_positive_test": false,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Identity columns are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "table_name": "",
@@ -553,7 +553,7 @@
       "is_positive_test": false,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Identity columns are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Identity columns are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {
         "description": "Create Table API Test",
@@ -1164,7 +1164,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "range",
         "mode": "create"
       },
@@ -1184,7 +1184,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "range",
         "mode": "multilevel"
       },
@@ -1204,7 +1204,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "list",
         "mode": "create"
       },
@@ -1224,7 +1224,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "list",
         "mode": "multilevel"
       },
@@ -1244,7 +1244,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "range",
         "mode": "detach"
       },
@@ -1264,7 +1264,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "list",
         "mode": "detach"
       },
@@ -1284,7 +1284,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "range",
         "mode": "attach"
       },
@@ -1304,7 +1304,7 @@
       "inventory_data": {
         "is_partition": true,
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below.",
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below.",
         "partition_type": "list",
         "mode": "attach"
       },
@@ -2145,7 +2145,7 @@
       "is_positive_test": true,
       "inventory_data": {
         "server_min_version": 100000,
-        "skip_msg": "Partitioned table are not supported by PPAS/PG 10.0 and below."
+        "skip_msg": "Partitioned table are not supported by EPAS/PG 10.0 and below."
       },
       "test_data": {},
       "mocking_required": false,
