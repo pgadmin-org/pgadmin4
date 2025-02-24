@@ -326,6 +326,7 @@ export default class ServerSchema extends BaseUISchema {
         disabled: function(state) {
           return !isEmptyString(state.db);
         },
+        helpMessage: gettext('Specify the database alias to connect to the server using pg_bouncer.')
       },{
         id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'],

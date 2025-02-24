@@ -27,8 +27,9 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('server', sa.Column('db_alias', sa.String(length=256)))
-
+    with op.batch_alter_table(
+            "server", table_kwargs={'sqlite_autoincrement': True}) as batch_op:
+        batch_op.add_column(sa.Column('db_alias', sa.String(length=256), nullable=True))
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

@@ -768,7 +768,7 @@ class ServerNode(PGChildNodeView):
             'name': gettext('name'),
             'port': gettext('Port'),
             'db': gettext('Maintenance database'),
-            'db_alias': gettext('Database Alias '),
+            'db_alias': gettext('Database Alias'),
             'username': gettext('Username'),
             'comment': gettext('Comments'),
             'role': gettext('Role')
