@@ -32,6 +32,7 @@ import {
 } from './hooks';
 import { registerView, View } from './registry';
 import { createFieldControls, listenDepChanges } from './utils';
+import FormViewTab from './FormViewTab';
 
 const ErrorMessageBox = () => {
   const [key, setKey] = useState(0);
@@ -181,14 +182,8 @@ export default function FormView({
               action={(ref) => ref?.updateIndicator()}
             >{
                 finalGroups.map((tabGroup, idx) =>
-                  <Tab
-                    key={tabGroup.id}
-                    label={tabGroup.label}
-                    data-test={tabGroup.id}
-                    className={
-                      tabGroup.hasError &&
-                      tabValue != idx ? 'tab-with-error' : ''
-                    }
+                  <FormViewTab
+                    key={tabGroup.id} tabGroup={tabGroup} idx={idx} tabValue={tabValue}
                   />
                 )
               }{hasSQLTab &&

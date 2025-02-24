@@ -24,6 +24,27 @@ RESTORE_JOB_URL = '/restore/job/{0}'
 class RestoreCreateJobTest(BaseTestGenerator):
     """Test the RestoreCreateJob class"""
     scenarios = [
+        ('When restore object with plain format',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='plain',
+                 database='postgres'
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['psql'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When restore object with default options',
          dict(
              class_params=dict(
