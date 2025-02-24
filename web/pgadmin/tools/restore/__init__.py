@@ -141,18 +141,18 @@ def _get_create_req_data():
         data = json.loads(request.data)
 
     try:
-        _file = filename_with_file_manager_path(data['file'])
+        filepath = filename_with_file_manager_path(data['file'])
     except Exception as e:
         return True, internal_server_error(errormsg=str(e)), data, None
 
-    if _file is None:
+    if filepath is None:
         return True, make_json_response(
             status=410,
             success=0,
             errormsg=_("File could not be found.")
-        ), data, _file
+        ), data, filepath
 
-    return False, '', data, _file
+    return False, '', data, filepath
 
 
 def _connect_server(sid):
@@ -263,7 +263,7 @@ def set_multiple(key, param, data, args, driver, conn, with_schema=True):
     return False
 
 
-def _set_args_param_values(data, manager, server, driver, conn, _file):
+def get_restore_util_args(data, manager, server, driver, conn, filepath):
     """
     add args to the list.
     :param data: Data.
@@ -271,7 +271,7 @@ def _set_args_param_values(data, manager, server, driver, conn, _file):
     :param server: Server.
     :param driver: Driver.
     :param conn: Connection.
-    :param _file: File.
+    :param filepath: File.
     :return: args list.
     """
     args = []
@@ -347,9 +347,56 @@ def _set_args_param_values(data, manager, server, driver, conn, _file):
                      False)
         set_multiple('indexes', '--index', data, args, driver, conn, False)
 
-    args.append(fs_short_path(_file))
+    args.append(fs_short_path(filepath))
 
     return args
+
+
+def get_sql_util_args(data, manager, server, filepath):
+    """
+    add args to the list.
+    :param data: Data.
+    :param manager: Manager.
+    :param server: Server.
+    :param driver: Driver.
+    :param conn: Connection.
+    :param filepath: File.
+    :return: args list.
+    """
+    args = [
+        '--host',
+        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
+        '--port',
+        str(manager.local_bind_port) if manager.use_ssh_tunnel
+        else str(server.port),
+        '--username', server.username, '--dbname',
+        data['database'],
+        '--file', fs_short_path(filepath)
+    ]
+
+    return args
+
+
+def use_restore_utility(data, manager, server, driver, conn, filepath):
+    utility = manager.utility('restore')
+    ret_val = does_utility_exist(utility)
+    if ret_val:
+        return ret_val, None, None
+
+    args = get_restore_util_args(data, manager, server, driver, conn, filepath)
+
+    return None, utility, args
+
+
+def use_sql_utility(data, manager, server, filepath):
+    utility = manager.utility('sql')
+    ret_val = does_utility_exist(utility)
+    if ret_val:
+        return ret_val, None, None
+
+    args = get_sql_util_args(data, manager, server, filepath)
+
+    return None, utility, args
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
@@ -364,7 +411,7 @@ def create_restore_job(sid):
     Returns:
         None
     """
-    is_error, errmsg, data, _file = _get_create_req_data()
+    is_error, errmsg, data, filepath = _get_create_req_data()
     if is_error:
         return errmsg
 
@@ -372,15 +419,18 @@ def create_restore_job(sid):
     if is_error:
         return errmsg
 
-    utility = manager.utility('restore')
-    ret_val = does_utility_exist(utility)
-    if ret_val:
+    if data['format'] == 'plain':
+        error_msg, utility, args = use_sql_utility(
+            data, manager, server, filepath)
+    else:
+        error_msg, utility, args = use_restore_utility(
+            data, manager, server, driver, conn, filepath)
+
+    if error_msg is not None:
         return make_json_response(
             success=0,
-            errormsg=ret_val
+            errormsg=error_msg
         )
-
-    args = _set_args_param_values(data, manager, server, driver, conn, _file)
 
     try:
         p = BatchProcess(
