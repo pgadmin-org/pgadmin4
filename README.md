@@ -15,33 +15,51 @@ and ReactJS, HTML5 with CSS for the client side processing and UI.
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
 subdirectory contains an Electron based runtime application intended to allow this,
-which will execute the Python server and display the UI.
+which will fork a Python server process and display the UI.
 
-## Building the Runtime
+## Prerequisites
+1. Install Node.js 20 and above (https://nodejs.org/en/download)
+2. yarn (https://yarnpkg.com/getting-started/install)
+3. Python 3.8 and above (https://www.python.org/downloads/)
+4. PostgreSQL server (https://www.postgresql.org/download)
 
-To build the runtime, the following packages must be installed:
+Start by enabling Corepack, if it isn't already;
+this will add the yarn binary to your PATH:
+```bash
+corepack enable
+```
 
-* NodeJS 16+
-* Yarn
+# Building the Web Assets
 
-Change into the runtime directory, and run *yarn install*. This will install the
-dependencies required.
+pgAdmin is dependent on a number of third party Javascript libraries. These,
+along with it's own Javascript code, CSS code and images must be
+compiled into a "bundle" which is transferred to the browser for execution
+and rendering. This is far more efficient than simply requesting each
+asset as it's needed by the client.
 
-In order to use the runtime in a development environment, you'll need to copy
-*dev_config.json.in* file to *dev_config.json*, and edit the paths to the Python
-executable and *pgAdmin.py* file, otherwise the runtime will use the default
-paths it would expect to find in the standard package for your platform.
-
-You can then execute the runtime by running something like:
+To create the bundle, you will need the 'yarn' package management tool to be
+installed. Then, you can run the following commands on a *nix system to
+download the required packages and build the bundle:
 
 ```bash
-yarn run start
+(venv) $ cd $PGADMIN4_SRC
+(venv) $ make install-node
+(venv) $ make bundle
+```
+
+On Windows systems (where "make" is not available), the following commands
+can be used:
+
+```
+C:\> cd $PGADMIN4_SRC\web
+C:\$PGADMIN4_SRC\web> yarn install
+C:\$PGADMIN4_SRC\web> yarn run bundle
 ```
 
 # Configuring the Python Environment
 
 In order to run the Python code, a suitable runtime environment is required.
-Python version 3.7 and later are currently supported. It is recommended that a
+Python version 3.8 and later are currently supported. It is recommended that a
 Python Virtual Environment is setup for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
@@ -88,36 +106,44 @@ simple - adapt as required for your distribution:
    configuration may look like:
 
     ```python
-    from config import *
+   import os
+   import logging
 
-    # Debug mode
-    DEBUG = True
+   # Change pgAdmin data directory
+   DATA_DIR = '/Users/myuser/.pgadmin_dev'
 
-    # App mode
-    SERVER_MODE = True
+   #Change pgAdmin server and port
+   DEFAULT_SERVER = '127.0.0.1'
+   DEFAULT_SERVER_PORT = 5051
 
-    # Enable the test module
-    MODULE_BLACKLIST.remove('test')
+   # Switch between server and desktop mode
+   SERVER_MODE = True
 
-    # Log
-    CONSOLE_LOG_LEVEL = DEBUG
-    FILE_LOG_LEVEL = DEBUG
+   #Change pgAdmin config DB path in case external DB is used.
+   CONFIG_DATABASE_URI="postgresql://postgres:postgres@localhost:5436/pgadmin"
 
-    DEFAULT_SERVER = '127.0.0.1'
+   #Setup SMTP
+   MAIL_SERVER = 'smtp.gmail.com'
+   MAIL_PORT = 465
+   MAIL_USE_SSL = True
+   MAIL_USERNAME = 'user@gmail.com'
+   MAIL_PASSWORD = 'xxxxxxxxxx'
 
-    UPGRADE_CHECK_ENABLED = True
+   # Change log level
+   CONSOLE_LOG_LEVEL = logging.INFO
+   FILE_LOG_LEVEL = logging.INFO
 
-    # Use a different config DB for each server mode.
-    if SERVER_MODE == False:
-        SQLITE_PATH = os.path.join(
-            DATA_DIR,
-            'pgadmin4-desktop.db'
-        )
-    else:
-        SQLITE_PATH = os.path.join(
-            DATA_DIR,
-            'pgadmin4-server.db'
-        )
+   # Use a different config DB for each server mode.
+   if SERVER_MODE == False:
+     SQLITE_PATH = os.path.join(
+         DATA_DIR,
+         'pgadmin4-desktop.db'
+     )
+   else:
+     SQLITE_PATH = os.path.join(
+         DATA_DIR,
+         'pgadmin4-server.db'
+     )
    ```
 
    This configuration allows easy switching between server and desktop modes
@@ -137,9 +163,9 @@ simple - adapt as required for your distribution:
    (venv) $ python3 $PGADMIN4_SRC/web/pgAdmin4.py
    ```
 
-   Whilst it is possible to automatically run setup in desktop mode by running
-   the runtime, that will not work in server mode as the runtime doesn't allow
-   command line interaction with the setup program.
+Whilst it is possible to automatically run setup in desktop mode by running
+the runtime, that will not work in server mode as the runtime doesn't allow
+command line interaction with the setup program.
 
 At this point you will be able to run pgAdmin 4 from the command line in either
 server or desktop mode, and access it from a web browser using the URL shown in
@@ -147,49 +173,6 @@ the terminal once pgAdmin has started up.
 
 Setup of an environment on Windows is somewhat more complicated unfortunately,
 please see *pkg/win32/README.txt* for complete details.
-
-# Building the Web Assets
-
-pgAdmin is dependent on a number of third party Javascript libraries. These,
-along with it's own Javascript code, SCSS/CSS code and images must be
-compiled into a "bundle" which is transferred to the browser for execution
-and rendering. This is far more efficient than simply requesting each
-asset as it's needed by the client.
-
-To create the bundle, you will need the 'yarn' package management tool to be
-installed. Then, you can run the following commands on a *nix system to
-download the required packages and build the bundle:
-
-```bash
-(venv) $ cd $PGADMIN4_SRC
-(venv) $ make install-node
-(venv) $ make bundle
-```
-
-On Windows systems (where "make" is not available), the following commands
-can be used:
-
-```
-C:\> cd $PGADMIN4_SRC\web
-C:\$PGADMIN4_SRC\web> yarn install
-C:\$PGADMIN4_SRC\web> yarn run bundle
-```
-
-# Creating pgAdmin themes
-
-To create a pgAdmin theme, you need to create a directory under
-*web/pgadmin/static/scss/resources*.
-Copy the sample file *_theme.variables.scss.sample* to the new directory and
-rename it to *_theme.variables.scss*. Change the desired hexadecimal values of
-the colors and bundle pgAdmin. You can also add a preview image in the theme
-directory with the name as *\<dir name>_preview.png*. It is recommended that the
-preview image should not be larger in size as it may take time to load on slow
-networks. Run the *yarn run bundle* and you're good to go. No other changes are
-required, pgAdmin bundle will read the directory and create other required
-entries to make them available in preferences.
-
-The name of the theme is derived from the directory name. Underscores (_) and
-hyphens (-) will be replaced with spaces and the result will be camel cased.
 
 # Building the documentation
 
@@ -209,6 +192,21 @@ The docs can then be built using the Makefile in *$PGADMIN4_SRC*, e.g.
 ```
 
 The output can be found in *$PGADMIN4_SRC/docs/en_US/_build/html/index.html*
+
+## Building the Runtime
+Change into the runtime directory, and run *yarn install*. This will install the
+dependencies required.
+
+In order to use the runtime in a development environment, you'll need to copy
+*dev_config.json.in* file to *dev_config.json*, and edit the paths to the Python
+executable and *pgAdmin.py* file, otherwise the runtime will use the default
+paths it would expect to find in the standard package for your platform.
+
+You can then execute the runtime by running something like:
+
+```bash
+yarn run start
+```
 
 # Building packages
 
