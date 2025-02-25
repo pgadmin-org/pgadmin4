@@ -2,7 +2,7 @@
 Version 9.1
 ***********
 
-Release date: 2025-03-13
+Release date: 2025-02-28
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v9.0.
 
@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 17.0
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 17.2
 
 
 New features

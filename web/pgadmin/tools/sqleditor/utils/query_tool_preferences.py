@@ -136,7 +136,7 @@ def register_query_tool_preferences(self):
     self.open_file_in_new_tab = self.preference.register(
         'Options', 'open_in_new_tab',
         gettext("Open the file in a new tab?"), 'boolean',
-        True,
+        False,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
             'Specifies whether or not to open the file in a new tab.'
