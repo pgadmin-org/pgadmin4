@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #8034 <https://github.com/pgadmin-org/pgadmin4/issues/8034>`_ -  Added support for creating Directory nodes in EPAS.
 
 Housekeeping
 ************

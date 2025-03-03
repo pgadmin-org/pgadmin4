@@ -200,20 +200,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.13.5
-  resolution: "@types/node@npm:22.13.5"
+  version: 22.13.8
+  resolution: "@types/node@npm:22.13.8"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 8789d9bc3efd212819fd03f7bbd429901b076703e9852ccf4950c8c7cd300d5d5a05f273d0936cbaf28194485d2bd0c265a1a25390720e353a53359526c28fb3
+  checksum: 6c07f95d88f1e286ec4517b35c8b53075e6076855fc52536c1ffad0e6b9091ec9ac2a0dd681b47e57da9196868c69342711a51ef1545f157aa893b5c546b8a36
   languageName: node
   linkType: hard
 
 "@types/node@npm:^20.9.0":
-  version: 20.17.19
-  resolution: "@types/node@npm:20.17.19"
+  version: 20.17.22
+  resolution: "@types/node@npm:20.17.22"
   dependencies:
     undici-types: ~6.19.2
-  checksum: 4eb29628e293d47494c1fe8eaacbaf9f1317cc2ada176a74753d0ea6e3ff6cb5f3e97ba3baa1435d9934950f0fec5693272f2805387f2e70c119038ee7608c20
+  checksum: 4a4293c394f144166af1b1b345bbb64625259f265c893056613e716da4f7d3f560ab80481fd20462d82264baa6e16e0fc2a2f82c0ccda0c40b6043060604da6e
   languageName: node
   linkType: hard
 
@@ -338,14 +338,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.7.9":
-  version: 1.7.9
-  resolution: "axios@npm:1.7.9"
+"axios@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "axios@npm:1.8.1"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: cb8ce291818effda09240cb60f114d5625909b345e10f389a945320e06acf0bc949d0f8422d25720f5dd421362abee302c99f5e97edec4c156c8939814b23d19
+  checksum: 3c434b86bb690046b5861134e9cee9b273467f0d82b64b9074f7da5004855826833736a1c6a9c05bf9af225ddd52b3da857a99d59e6736490b18e2cbc1ccb67e
   languageName: node
   linkType: hard
 
@@ -647,16 +647,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:33.3.2":
-  version: 33.3.2
-  resolution: "electron@npm:33.3.2"
+"electron@npm:34.3.0":
+  version: 34.3.0
+  resolution: "electron@npm:34.3.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^20.9.0
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: ba3b8cfa0d4dd39e176bf89ec5466045b2f6c59f011de9aae19d3ab17a5d91f2701b5b9244b5877ef49aa41542cc9e72e117c8ea28079485e9be41eb4fcecddf
+  checksum: 678d185ce7244d1549a1e81a80998d0e8cb961d8e99c3c07a7d99ab4e320044dee08e3ecdc8eaf5ada61120b8823bbe210dd80fc2580df8d9e9ee82c71bfed34
   languageName: node
   linkType: hard
 
@@ -1547,8 +1547,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "pgadmin4@workspace:."
   dependencies:
-    axios: ^1.7.9
-    electron: 33.3.2
+    axios: ^1.8.1
+    electron: 34.3.0
     electron-context-menu: ^4.0.5
     electron-store: ^10.0.0
     eslint: ^9.21.0
@@ -1807,9 +1807,9 @@ __metadata:
   linkType: hard
 
 "type-fest@npm:^4.18.2, type-fest@npm:^4.20.0":
-  version: 4.35.0
-  resolution: "type-fest@npm:4.35.0"
-  checksum: 14581e7b02bb43caa4893eec321a993378218c2672715d28c6f85a97756cf59864f4d90f8a794cf1929e861470debc8e682bf5c9575522872b520611b4bb14a0
+  version: 4.36.0
+  resolution: "type-fest@npm:4.36.0"
+  checksum: 9d01b057ed66ac7ea360bf05b6052040c68fd0fe21140ffd1c8570629583d9176669d09212c55c6ce8eccbe214d6b6c8b5a9f784adac04d321d0c73539145986
   languageName: node
   linkType: hard
 

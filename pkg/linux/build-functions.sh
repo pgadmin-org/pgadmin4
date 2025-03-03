@@ -141,7 +141,6 @@ _build_runtime() {
     fi
 
     ELECTRON_VERSION="$(npm info electron version)"
-    ELECTRON_VERSION="33.3.2"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
