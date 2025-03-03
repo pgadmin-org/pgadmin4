@@ -1,0 +1,1 @@
+ALTER DIRECTORY "Dir1_$%{}[]()&*^!@""'`\/#" OWNER TO enterprisedb;

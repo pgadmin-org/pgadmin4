@@ -14,54 +14,54 @@ from pgadmin.utils import server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from . import utils as resource_groups_utils
+from . import utils as directories_utils
 
 
-class ResourceGroupsDeleteTestCase(BaseTestGenerator):
-    """This class will delete the resource groups"""
+class DirectoriesDeleteTestCase(BaseTestGenerator):
+    """This class will delete the directories"""
     scenarios = [
-        ('Delete multiple resource groups',
-         dict(url='/browser/resource_group/obj/'))
+        ('Delete multiple directories',
+         dict(url='/browser/directory/obj/'))
     ]
 
     def setUp(self):
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         server_response = server_utils.connect_server(self, self.server_id)
-        if not server_response["info"] == "Server connected.":
-            raise Exception("Could not connect to server to add resource "
-                            "groups.")
+        if server_response["info"] != "Server connected.":
+            raise Exception("Could not connect to server to add directory.")
         if "type" in server_response["data"]:
             if server_response["data"]["type"] == "pg":
-                message = "Resource groups are not supported by PG."
+                message = "directories are not supported by PG."
                 self.skipTest(message)
             else:
-                if server_response["data"]["version"] < 90400:
-                    message = "Resource groups are not supported by EPAS " \
-                              "9.3 and below."
+                if server_response["data"]["version"] < 130000:
+                    message = "directories are not supported by EPAS 12 " \
+                              "and below."
                     self.skipTest(message)
-        self.resource_groups = ["test_resource_group_delete%s" %
+        self.directory_names = ["test_directory_delete%s" %
                                 str(uuid.uuid4())[1:8],
-                                "test_resource_group_delete%s" %
+                                "test_directory_delete%s" %
                                 str(uuid.uuid4())[1:8]]
-        self.resource_group_ids = [
-            resource_groups_utils.create_resource_groups(
-                self.server, self.resource_groups[0]),
-            resource_groups_utils.create_resource_groups(
-                self.server, self.resource_groups[1])]
+        self.directory_paths = ["/home/test_dir", "/home/test_dir1"]
+        self.directory_ids = [
+            directories_utils.create_directories(
+                self.server, self.directory_names[0], self.directory_paths[0]),
+            directories_utils.create_directories(
+                self.server, self.directory_names[1], self.directory_paths[1])]
 
     def runTest(self):
-        """This function will delete resource groups."""
-        resource_grp_response = resource_groups_utils.verify_resource_group(
-            self.server, self.resource_groups[0])
-        if not resource_grp_response:
-            raise Exception("Could not find the resource group to fetch.")
+        """This function will delete directories."""
+        directory_response = directories_utils.verify_directory(
+            self.server, self.directory_names[0])
+        if not directory_response:
+            raise Exception("Could not find the directory to fetch.")
 
-        resource_grp_response = resource_groups_utils.verify_resource_group(
-            self.server, self.resource_groups[1])
-        if not resource_grp_response:
-            raise Exception("Could not find the resource group to fetch.")
+        directory_response = directories_utils.verify_directory(
+            self.server, self.directory_names[1])
+        if not directory_response:
+            raise Exception("Could not find the directory to fetch.")
 
-        data = {'ids': self.resource_group_ids}
+        data = {'ids': self.directory_ids}
         response = self.tester.delete(
             "{0}{1}/{2}/".format(self.url,
                                  utils.SERVER_GROUP,
@@ -73,20 +73,24 @@ class ResourceGroupsDeleteTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
-        """This function delete the resource group from the database."""
+        """This function delete the directory from the database."""
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
                                              self.server['port'],
                                              self.server['sslmode'])
-        resource_groups_utils.delete_resource_group(connection,
-                                                    self.resource_groups[0])
+        directories_utils.delete_directories(
+            connection,
+            self.directory_names[0]
+        )
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
                                              self.server['db_password'],
                                              self.server['host'],
                                              self.server['port'],
                                              self.server['sslmode'])
-        resource_groups_utils.delete_resource_group(connection,
-                                                    self.resource_groups[1])
+        directories_utils.delete_directories(
+            connection,
+            self.directory_names[1]
+        )

@@ -81,7 +81,7 @@ define('pgadmin.browser.utils',
      'coll-role', 'role', 'coll-resource_group', 'resource_group',
      'coll-database', 'coll-pga_job', 'coll-pga_schedule', 'coll-pga_jobstep',
      'pga_job', 'pga_schedule', 'pga_jobstep',
-     'coll-replica_node', 'replica_node'
+     'coll-replica_node', 'replica_node','coll-directory','directory'
   ];
 
   pgBrowser.utils = {

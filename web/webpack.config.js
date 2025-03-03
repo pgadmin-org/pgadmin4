@@ -179,6 +179,7 @@ module.exports = [{
             'pure|pgadmin.node.publication',
             'pure|pgadmin.node.subscription',
             'pure|pgadmin.node.tablespace',
+            'pure|pgadmin.node.directory',
             'pure|pgadmin.node.resource_group',
             'pure|pgadmin.node.event_trigger',
             'pure|pgadmin.node.extension',

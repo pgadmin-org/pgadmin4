@@ -35,7 +35,7 @@ class ResourceGroupsPutTestCase(BaseTestGenerator):
                 self.skipTest(message)
             else:
                 if server_response["data"]["version"] < 90400:
-                    message = "Resource groups are not supported by PPAS 9.3" \
+                    message = "Resource groups are not supported by EPAS 9.3" \
                               " and below."
                     self.skipTest(message)
         self.resource_group_name = "test_resource_group_put%s" % \

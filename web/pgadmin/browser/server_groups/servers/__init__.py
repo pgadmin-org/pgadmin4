@@ -331,6 +331,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .tablespaces import blueprint as module
         self.submodules.append(module)
 
+        from .directories import blueprint as module
+        self.submodules.append(module)
+
         from .replica_nodes import blueprint as module
         self.submodules.append(module)
 

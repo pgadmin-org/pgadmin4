@@ -21,3 +21,4 @@ database, right-click on the *Databases* node, and select *Create Database...*
    replica_nodes_dialog
    pgd_replication_group_dialog
    role_reassign_dialog
+   directory_dialog
