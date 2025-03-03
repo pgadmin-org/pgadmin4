@@ -13,7 +13,7 @@ ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
 {% if data.fillfactor and data.fillfactor != o_data.fillfactor %}
 ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
     SET (FILLFACTOR={{ data.fillfactor }});
-{% elif data.fillfactor is defined and data.fillfactor == '' %}
+{% elif data.fillfactor is defined and (data.fillfactor == '' or data.fillfactor != o_data.fillfactor) %}
 ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
     RESET (FILLFACTOR);
 {% endif %}

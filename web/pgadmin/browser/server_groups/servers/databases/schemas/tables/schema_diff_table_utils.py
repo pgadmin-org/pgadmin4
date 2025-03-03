@@ -219,7 +219,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                              'unique_constraint': ['col_count',
                                                    'condeferrable',
                                                    'condeffered',
-                                                   'columns'],
+                                                   'columns', 'indnullsnotdistinct'],
                              'check_constraint': ['consrc'],
                              'exclude_constraint': ['amname',
                                                     'indconstraint',
