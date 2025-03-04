@@ -16,6 +16,7 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { setupMenu } from './menu.js';
 import contextMenu from 'electron-context-menu';
+import { CancelError, download } from 'electron-dl';
 
 const configStore = new Store({
   defaults: {
@@ -124,6 +125,28 @@ function reloadApp() {
   };
   currWin.webContents.on('will-prevent-unload', preventUnload);
   currWin.webContents.reload();
+}
+
+async function desktopFileDownload(payload) {
+  const currWin = BrowserWindow.getFocusedWindow();
+  try {
+    await download(currWin, payload.downloadUrl, {
+      filename: payload.fileName,
+      saveAs: payload.prompt_for_download_location,
+      onProgress: (progress) => {
+        currWin.webContents.send('download-progress', progress);
+      },
+      onCompleted: (item) => {
+        currWin.webContents.send('download-complete', item);
+        if (payload.automatically_open_downloaded_file)
+          shell.openPath(item.path);
+      },
+    });
+  } catch (error) {
+    if (!(error instanceof CancelError)) {
+      misc.writeServerLog(error);
+    }
+  }
 }
 
 // This functions is used to start the pgAdmin4 server by spawning a
@@ -369,6 +392,7 @@ ipcMain.on('log', (text) => ()=>{
   misc.writeServerLog(text);
 });
 ipcMain.on('reloadApp', reloadApp);
+ipcMain.on('onFileDownload', (_, payload) => desktopFileDownload(payload));
 ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
   try {
     await misc.getAvailablePort(fixedPort);
