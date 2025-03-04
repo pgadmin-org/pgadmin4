@@ -173,6 +173,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     },
     is_new_tab: window.location == window.parent?.location,
     is_visible: true,
+    manual_panel_close: true,
     current_file: null,
     obtaining_conn: true,
     connected: false,
@@ -499,7 +500,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           'trans_id': qtState.params.trans_id,
         }), {
           keepalive: true,
-          method: 'DELETE',
+          method: 'DELETE'
         }
       )
         .then(()=>{/* Success */})
@@ -898,6 +899,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     mainContainerRef: containerRef,
     editor_disabled: qtState.editor_disabled,
     eol: qtState.eol,
+    connection_list: qtState.connection_list,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,

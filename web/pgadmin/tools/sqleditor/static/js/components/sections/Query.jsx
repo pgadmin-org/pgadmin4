@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useContext, useCallback, useEffect, useMemo } from 'react';
+import React, {useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -136,7 +136,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       cmObj.setCursor(errorLineNo, endMarker);
     }
   };
-
   const triggerExecution = (explainObject, macroSQL, executeCursor=false)=>{
     if(queryToolCtx.params.is_query_tool) {
       let external = null;
@@ -233,6 +232,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.execCommand(cmd);
       }
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_TO_EDITOR, (text)=>{
       editor.current?.setValue(text);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
@@ -241,6 +241,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.setCursor(editor.current.lineCount(), 0);
       }, 250);
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
       editor.current?.focus();
       let key = {
@@ -254,6 +255,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
       editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
@@ -261,6 +263,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
       let selection = true, sql = editor.current?.getSelection();
       let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
@@ -317,6 +320,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current.setCursor(lastCursorPos.current.line, lastCursorPos.current.ch);
       }
     };
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS, lastFocus);
     setTimeout(()=>{
       (queryToolCtx.params.is_query_tool|| queryToolCtx.preferences.view_edit_promotion_warning) && editor.current.focus();
@@ -403,8 +407,30 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, [lastCursorPos.current.line, lastCursorPos.current.ch+1]);
   }, 100), []);
 
+  const debounceTimeout = useRef(null); 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
+
+    const debouncedSave = () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      // Set a new timeout
+      debounceTimeout.current = setTimeout(() => {
+        let data = {
+          'tool_name': 'sqleditor',
+          'trans_id': queryToolCtx.params.trans_id,
+          'tool_data': editor.current.getValue(),
+          'connection_info': _.find(queryToolCtx.connection_list, c => c.is_selected)
+        };
+        pgAdmin.pgAdminProviderEventBus.fireEvent('SAVE_TOOL_DATA', data);
+      }, 500);};
+
+    const save_the_workspace = preferencesStore?.getPreferencesForModule('misc')?.save_the_workspace;
+    if(save_the_workspace && editor.current.isDirty()){
+      debouncedSave();
+    }
+
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
       if(queryToolCtx.preferences.sqleditor.view_edit_promotion_warning){
         checkViewEditDataPromotion();

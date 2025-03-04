@@ -124,6 +124,19 @@ class MiscModule(PgAdminModule):
             )
         )
 
+        self.preference.register(
+            'user_interface', 'save_the_workspace',
+            gettext("Save the workspaces and data?"),
+            'boolean', True,
+            category_label=PREF_LABEL_USER_INTERFACE,
+            help_str=gettext(
+                'Turning on this setting will save the information about the'
+                ' tools that are opened and data within it. Data will be '
+                'restored in case of abrupt shutdown/refresh of the '
+                'application'
+            )
+        )
+
         if not config.SERVER_MODE:
             self.preference.register(
                 'file_downloads', 'automatically_open_downloaded_file',

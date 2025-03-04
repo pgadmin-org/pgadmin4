@@ -32,9 +32,9 @@ class TableDdlFeatureTest(BaseFeatureTest):
             secrets.choice(range(1000, 3000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
-        self.page.expand_tables_node("Server", self.server['name'],
-                                     self.server['db_password'], self.test_db,
-                                     'public')
+        self.assertTrue(self.page.expand_tables_node(
+            "Server", self.server['name'], self.server['db_password'],
+            self.test_db,'public'), 'Table node nmot exoanded')
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
 

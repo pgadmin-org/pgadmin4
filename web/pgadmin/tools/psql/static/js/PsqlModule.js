@@ -150,7 +150,7 @@ export default class Psql {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
-      {title: panelTitle, db: db_label},
+      {title: panelTitle, db: db_label, server_name: parentData.server.label, 'user': parentData.server.user.name },
       {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
@@ -196,7 +196,5 @@ export default class Psql {
       </Theme>
     );
   }
-
-
 
 }

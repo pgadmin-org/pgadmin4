@@ -218,7 +218,7 @@ export default class SQLEditor {
     let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
     let open_new_tab = browser_preferences.new_browser_tab_open;
     const [icon, tooltip] = panelTitleFunc.getQueryToolIcon(panel_title, is_query_tool);
-    let selectedNodeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(
+    let selectedNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(
       pgAdmin.Browser.tree.selected()
     );
 
@@ -239,7 +239,7 @@ export default class SQLEditor {
       panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
     }
 
-    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : params.selectedNodeInfo;
+    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : null;
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);

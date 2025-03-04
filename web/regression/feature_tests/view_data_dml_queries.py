@@ -115,10 +115,9 @@ CREATE TABLE public.nonintpkey
         try:
             self.page.wait_for_spinner_to_disappear()
             self.page.add_server(self.server)
-            self.page.expand_tables_node("Server", self.server['name'],
-                                         self.server['db_password'],
-                                         self.test_db,
-                                         'public')
+            self.assertTrue(self.page.expand_tables_node(
+                "Server", self.server['name'], self.server['db_password'],
+                self.test_db, 'public'),'Table node not expanded')
 
             self._load_config_data('table_insert_update_cases')
             data_local = config_data

@@ -7,15 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 import PropTypes from 'prop-types';
-
 import React, { useContext, useState, useEffect } from 'react';
-
 import { Box, Grid, Typography } from '@mui/material';
-
 import { InputSelect } from '../../../../../static/js/components/FormComponents';
 import { SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
-
 
 export function InputComponent({ label, serverList, databaseList, schemaList, diff_type, selectedSid = null, selectedDid=null, selectedScid=null, onServerSchemaChange }) {
   const [selectedServer, setSelectedServer] = useState(selectedSid);
@@ -25,10 +21,18 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
   const [disableDBSelection, setDisableDBSelection] = useState(selectedSid == null);
   const [disableSchemaSelection, setDisableSchemaSelection] = useState(selectedDid == null);
 
-  useEffect(() => {
-    setSelectedDatabase(selectedDid);
-    if (selectedDid) setDisableSchemaSelection(false);
-  }, [selectedSid, selectedDid, selectedScid]);
+
+  useEffect(()=>{
+    changeServer(selectedSid);
+  },[selectedSid]);
+
+  useEffect(()=>{
+    changeDatabase(selectedDid);
+  },[selectedDid]);
+
+  useEffect(()=>{
+    changeSchema(selectedScid);
+  },[selectedScid]);
 
   const changeServer = (selectedOption) => {
     setDisableDBSelection(false);
@@ -42,6 +46,7 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
     }
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_SELECT_SERVER, { selectedOption, diff_type, serverList });
   };
+
 
   const changeDatabase = (selectedDB) => {
     setSelectedDatabase(selectedDB);
