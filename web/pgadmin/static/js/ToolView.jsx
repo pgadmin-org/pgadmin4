@@ -13,6 +13,9 @@ import { usePgAdmin } from './PgAdminProvider';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
+import { LAYOUT_EVENTS } from './helpers/Layout';
+import getApiInstance from './api_instance';
+import url_for from 'sources/url_for';
 
 function ToolForm({actionUrl, params}) {
   const formRef = useRef(null);
@@ -56,6 +59,19 @@ export default function ToolView({dockerObj}) {
         // Handler here will return which layout instance the tool should go in
         // case of workspace layout.
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
+        const dergisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
+          if(panelId == closePanelId){
+            let api = getApiInstance();
+            api.delete(
+              url_for('settings.delete_pgadmin_state'), {data:{'panelId': panelId}}
+            ).then(()=> { /* Sona qube */}).catch(function(error) {
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+            });
+            dergisterRemove();
+          }
+        });
+
+
         handler.focus();
         handler.docker.openTab({
           id: panelId,

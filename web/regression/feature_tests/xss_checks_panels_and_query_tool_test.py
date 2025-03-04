@@ -91,9 +91,9 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             self.server, self.test_db, self.test_table_name)
 
     def _tables_node_expandable(self):
-        self.page.expand_tables_node("Server", self.server['name'],
-                                     self.server['db_password'], self.test_db,
-                                     'public')
+        self.assertTrue(self.page.expand_tables_node(
+            "Server", self.server['name'],self.server['db_password'],
+            self.test_db, 'public'), 'Table node not expanded')
 
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))

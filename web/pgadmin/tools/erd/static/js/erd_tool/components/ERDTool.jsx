@@ -156,6 +156,21 @@ export default class ERDTool extends React.Component {
     this.forceClose = this.closePanel;
   }
 
+  saveERDToolData = () => {
+    setTimeout(() => {
+      let data = {
+        'tool_name': 'ERD',
+        'trans_id': this.props.params.trans_id,
+        'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int),
+        'connection_info': this.props.params
+      };
+      getApiInstance().post(
+        url_for('settings.save_pgadmin_state'),
+        JSON.stringify(data),
+      ).catch((error)=>{console.error(error);});
+    }, 500);
+  };
+
   registerModelEvents() {
     let diagramEvents = {
       'offsetUpdated': (event)=>{
@@ -352,7 +367,15 @@ export default class ERDTool extends React.Component {
     done = await this.loadPrequisiteData();
     if(!done) return;
 
-    if(this.props.params.gen) {
+
+    if(this.props.params.sql_id){
+      let sqlValue = localStorage.getItem(this.props.params.sql_id);
+      localStorage.removeItem(this.props.params.sql_id);
+      if (sqlValue) {
+        this.diagram.deserialize((JSON.parse(sqlValue)));
+      }
+    }
+    else if(this.props.params.gen) {
       await this.loadTablesData();
     }
   }
@@ -360,6 +383,10 @@ export default class ERDTool extends React.Component {
   componentDidUpdate() {
     if(this.state.dirty) {
       this.setTitle(this.state.current_file, true);
+      const save_the_workspace = this.preferencesStore.getPreferencesForModule('misc')?.save_the_workspace;
+      if(save_the_workspace){
+        this.saveERDToolData();
+      }
     }
   }
 
@@ -958,6 +985,7 @@ ERDTool.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     gen: PropTypes.bool.isRequired,
+    sql_id: PropTypes.string,
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
