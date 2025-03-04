@@ -46,7 +46,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
-from pgadmin.browser.utils import underscore_unescape, underscore_escape
+from pgadmin.browser.utils import underscore_escape
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
@@ -71,6 +71,7 @@ from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
+from pgadmin.settings import delete_tool_data
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -146,7 +147,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_new_connection_user',
             'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
-            'sqleditor.connect_server',
+            'sqleditor.connect_server'
         ]
 
     def on_logout(self):
@@ -652,6 +653,7 @@ def close(trans_id):
             # session variable.
             grid_data.pop(str(trans_id), None)
             session['gridData'] = grid_data
+
         except Exception as e:
             current_app.logger.error(e)
             return internal_server_error(errormsg=str(e))
