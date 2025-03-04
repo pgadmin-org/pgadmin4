@@ -12,9 +12,13 @@ import _ from 'lodash';
 import { checkMasterPassword, showQuickSearch } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
-import getApiInstance from '../../../static/js/api_instance';
+import getApiInstance, {parseApiError} from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
+import * as showQueryTool from '../../../tools/sqleditor/static/js/show_query_tool';
+import {relaunchPsqlTool} from '../../../tools/psql/static/js/show_psql_tool';
+import {relaunchErdTool} from '../../../tools/erd/static/js/show_erd_tool';
+import { relaunchSchemaDiff } from '../../../tools/schema_diff/static/js/showSchemaDiffTool';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -206,6 +210,11 @@ define('pgadmin.browser', [
     uiloaded: function() {
       this.set_master_password('');
       this.check_version_update();
+      const prefStore = usePreferences.getState();
+      let save_the_workspace = prefStore.getPreferencesForModule('misc').save_the_workspace;
+      if(save_the_workspace){
+        this.restore_pgadmin_state();
+      }
     },
     check_corrupted_db_file: function() {
       getApiInstance().get(
@@ -290,6 +299,41 @@ define('pgadmin.browser', [
         // Suppress any errors
       });
     },
+
+    restore_pgadmin_state: async function () {
+      getApiInstance().get(
+        url_for('settings.get_pgadmin_state')
+      ).then((res)=> {
+        if(res.data.success && res.data.data.result.length > 0){
+          //let oldIds = []
+          _.each(res.data.data.result, function(tool_data){
+            if (tool_data.tool_name == 'sqleditor'){
+              showQueryTool.relaunchSqlTool(tool_data);
+            }else if(tool_data.tool_name == 'psql'){
+              relaunchPsqlTool(tool_data);
+            }else if(tool_data.tool_name == 'ERD'){
+              relaunchErdTool(tool_data);
+            }else if(tool_data.tool_name == 'schema_diff'){
+              relaunchSchemaDiff(tool_data);
+            }
+          });
+
+          // call clear query data for which query tool has been launched.
+          try {
+            getApiInstance().delete(url_for('settings.delete_pgadmin_state'), {
+            });
+          } catch (error) {
+            console.error(error);
+            pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));
+          }
+
+        }
+      }).catch(function(error) {
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      });
+      
+    },
+
 
     bind_beforeunload: function() {
       window.addEventListener('beforeunload', function(e) {
