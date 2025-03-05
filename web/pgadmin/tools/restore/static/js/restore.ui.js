@@ -344,7 +344,7 @@ export default class RestoreSchema extends BaseUISchema {
     this.treeNodeInfo = treeNodeInfo;
     this.pgBrowser = pgBrowser;
 
-    this.formaOptions = this.getFormatOptions();
+    this.formatOptions = this.getFormatOptions();
   }
 
   get idAttribute() {
@@ -381,7 +381,7 @@ export default class RestoreSchema extends BaseUISchema {
       label: gettext('Format'),
       disabled: false,type: 'select',
       controlProps: { allowClear: false, width: '100%' },
-      options: this.formaOptions,
+      options: this.formatOptions,
       depChange: (state) => {
         if(state.format == 'plain') {
           return {

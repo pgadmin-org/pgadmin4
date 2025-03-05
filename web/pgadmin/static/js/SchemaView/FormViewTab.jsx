@@ -15,14 +15,14 @@ import PropTypes from 'prop-types';
 
 export default function FormViewTab({tabGroup, idx, tabValue, ...props}) {
   const accessPath = [tabGroup.id];
-  const [, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const subscriberManager = useSchemaStateSubscriber(setRefreshKey);
   const schemaState = useContext(SchemaStateContext);
   const options = useFieldOptions(accessPath, schemaState, subscriberManager);
 
   return (
     <Tab
-      key={tabGroup.id}
+      key={refreshKey}
       label={tabGroup.label}
       data-test={tabGroup.id}
       iconPosition='start'

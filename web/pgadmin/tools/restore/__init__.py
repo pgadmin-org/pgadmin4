@@ -265,7 +265,7 @@ def set_multiple(key, param, data, args, driver, conn, with_schema=True):
 
 def get_restore_util_args(data, manager, server, driver, conn, filepath):
     """
-    add args to the list.
+    return the args for the command
     :param data: Data.
     :param manager: Manager.
     :param server: Server.
@@ -354,12 +354,10 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
 
 def get_sql_util_args(data, manager, server, filepath):
     """
-    add args to the list.
+    return the args for the command
     :param data: Data.
     :param manager: Manager.
     :param server: Server.
-    :param driver: Driver.
-    :param conn: Connection.
     :param filepath: File.
     :return: args list.
     """
