@@ -1550,6 +1550,7 @@ __metadata:
     axios: ^1.8.1
     electron: 34.3.0
     electron-context-menu: ^4.0.5
+    electron-dl: ^4.0.0
     electron-store: ^10.0.0
     eslint: ^9.21.0
   languageName: unknown

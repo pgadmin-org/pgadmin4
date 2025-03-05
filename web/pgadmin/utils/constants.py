@@ -29,6 +29,7 @@ PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
 PREF_LABEL_REFRESH_RATES = gettext('Refresh rates')
 PREF_LABEL_GRAPH_VISUALISER = gettext('Graph Visualiser')
 PREF_LABEL_USER_INTERFACE = gettext('User Interface')
+PREF_LABEL_FILE_DOWNLOADS = gettext('File Downloads')
 
 PGADMIN_STRING_SEPARATOR = '_$PGADMIN$_'
 PGADMIN_NODE = 'pgadmin.node.%s'

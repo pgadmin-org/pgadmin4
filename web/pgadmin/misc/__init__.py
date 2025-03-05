@@ -15,7 +15,8 @@ from flask_babel import gettext
 from pgadmin.user_login_check import pga_login_required
 from pathlib import Path
 from pgadmin.utils import PgAdminModule, get_binary_path_versions
-from pgadmin.utils.constants import PREF_LABEL_USER_INTERFACE
+from pgadmin.utils.constants import PREF_LABEL_USER_INTERFACE, \
+    PREF_LABEL_FILE_DOWNLOADS
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
@@ -119,6 +120,32 @@ class MiscModule(PgAdminModule):
                 'default or the workspace selected at the time of opening)'
             )
         )
+
+        if not config.SERVER_MODE:
+            self.preference.register(
+                'file_downloads', 'automatically_open_downloaded_file',
+                gettext("Automatically open downloaded file?"),
+                'boolean', False,
+                category_label=PREF_LABEL_FILE_DOWNLOADS,
+                help_str=gettext(
+                    '''This setting is applicable and visible only in
+                    desktop mode. When set to True, the downloaded file
+                    will automatically open in the system's default
+                    application associated with that file type.'''
+                )
+            )
+            self.preference.register(
+                'file_downloads', 'prompt_for_download_location',
+                gettext("Prompt for the download location?"),
+                'boolean', True,
+                category_label=PREF_LABEL_FILE_DOWNLOADS,
+                help_str=gettext(
+                    'This setting is applicable and visible only '
+                    'in desktop mode. When set to True, a prompt '
+                    'will appear after clicking the download button, '
+                    'allowing you to choose the download location'
+                )
+            )
 
     def get_exposed_url_endpoints(self):
         """

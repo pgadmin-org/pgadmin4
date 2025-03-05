@@ -26,7 +26,7 @@ import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
   LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
-import { getChartColor } from '../../../../../../static/js/utils';
+import { downloadUrlData, getChartColor } from '../../../../../../static/js/utils';
 
 const StyledBox = styled(Box)(({theme}) => ({
   width: '100%',
@@ -377,11 +377,10 @@ export function GraphVisualiser({initColumns}) {
   };
 
   // Download button callback
-  const onDownloadGraph = ()=> {
-    let a = document.createElement('a');
-    a.href = chartObjRef.current.toBase64Image();
-    a.download = 'graph_visualiser-' + new Date().getTime() + '.png';
-    a.click();
+  const onDownloadGraph = async ()=> {
+    let downloadUrl = chartObjRef.current.toBase64Image(),
+      fileName = 'graph_visualiser-' + new Date().getTime() + '.png';
+    downloadUrlData(downloadUrl, fileName);
   };
 
   // This plugin is used to set the background color of the canvas. Very useful
