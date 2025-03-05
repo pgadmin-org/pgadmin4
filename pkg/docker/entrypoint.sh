@@ -74,6 +74,8 @@ fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE
 function load_server_json_file() {
+    export PGADMIN_SERVER_JSON_FILE="${PGADMIN_SERVER_JSON_FILE:-/pgadmin4/servers.json}"
+
     EXTRA_ARGS=""
 
     if [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "true" ]; then
@@ -130,7 +132,6 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
     # Importing pgadmin4 (from this script) is enough
     /venv/bin/python3 run_pgadmin.py
 
-    export PGADMIN_SERVER_JSON_FILE="${PGADMIN_SERVER_JSON_FILE:-/pgadmin4/servers.json}"
     export PGADMIN_PREFERENCES_JSON_FILE="${PGADMIN_PREFERENCES_JSON_FILE:-/pgadmin4/preferences.json}"
 
     # Pre-load any required servers
