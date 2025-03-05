@@ -343,10 +343,35 @@ export default class RestoreSchema extends BaseUISchema {
     this.getRestoreMiscellaneousSchema = restoreMiscellaneousSchema;
     this.treeNodeInfo = treeNodeInfo;
     this.pgBrowser = pgBrowser;
+
+    this.formatOptions = this.getFormatOptions();
   }
 
   get idAttribute() {
     return 'id';
+  }
+
+  isPlainFormat(state) {
+    return state.format == 'plain';
+  }
+
+  getFormatOptions() {
+    const options = [{
+      label: gettext('Custom or tar'),
+      value: 'custom',
+    }, {
+      label: gettext('Directory'),
+      value: 'directory',
+    }];
+
+    if(this.fieldOptions.nodeType == 'database') {
+      options.splice(1, 0, {
+        label: gettext('Plain'),
+        value: 'plain',
+      });
+    }
+
+    return options;
   }
 
   get baseFields() {
@@ -356,14 +381,15 @@ export default class RestoreSchema extends BaseUISchema {
       label: gettext('Format'),
       disabled: false,type: 'select',
       controlProps: { allowClear: false, width: '100%' },
-      options: [{
-        label: gettext('Custom or tar'),
-        value: 'custom',
-      },
-      {
-        label: gettext('Directory'),
-        value: 'directory',
-      }],
+      options: this.formatOptions,
+      depChange: (state) => {
+        if(state.format == 'plain') {
+          return {
+            no_of_jobs: undefined,
+            role: undefined,
+          };
+        }
+      }
     }, {
       id: 'file',
       label: gettext('Filename'),
@@ -378,11 +404,12 @@ export default class RestoreSchema extends BaseUISchema {
         };
       },
       disabled: false,
-      deps: ['format']
+      deps: ['format'],
     }, {
       id: 'no_of_jobs',
       label: gettext('Number of jobs'),
       type: 'int',
+      disabled: obj.isPlainFormat,
     }, {
       id: 'role',
       label: gettext('Role name'),
@@ -392,35 +419,45 @@ export default class RestoreSchema extends BaseUISchema {
       controlProps: {
         allowClear: false,
       },
+      disabled: obj.isPlainFormat,
+    }, {
+      id: 'data-options', type: 'group', label: gettext('Data Options'),
+      disabled: function(state) {
+        return obj.isPlainFormat(state);
+      }, deps: ['format']
     }, {
       type: 'nested-fieldset',
       label: gettext('Sections'),
-      group: gettext('Data Options'),
+      group: 'data-options',
       schema:obj.getSectionSchema(),
-      visible: true
+      visible: true,
     }, {
       type: 'nested-fieldset',
       label: gettext('Type of objects'),
-      group: gettext('Data Options'),
+      group: 'data-options',
       schema:obj.getRestoreTypeObjSchema(),
-      visible: true
+      visible: true,
     }, {
       type: 'nested-fieldset',
       label: gettext('Do not save'),
-      group: gettext('Data Options'),
+      group: 'data-options',
       schema:obj.getRestoreSaveOptSchema(),
-      visible: true
+      visible: true,
+    }, {
+      id: 'query-options', type: 'group', label: gettext('Query Options'),
+      disabled: function(state) {
+        return obj.isPlainFormat(state);
+      }, deps: ['format']
     }, {
       id: 'include_create_database',
       label: gettext('Include CREATE DATABASE statement'),
       type: 'switch',
-      disabled: false,
-      group: gettext('Query Options')
+      group: 'query-options'
     }, {
       id: 'clean',
       label: gettext('Clean before restore'),
       type: 'switch',
-      group: gettext('Query Options'),
+      group: 'query-options',
       inlineGroup: 'clean',
       disabled: function(state) {
         if(obj.selectedNodeType === 'function' || obj.selectedNodeType === 'trigger_function') {
@@ -432,7 +469,7 @@ export default class RestoreSchema extends BaseUISchema {
       id: 'if_exists',
       label: gettext('Include IF EXISTS clause'),
       type: 'switch',
-      group: gettext('Query Options'),
+      group: 'query-options',
       inlineGroup: 'clean',
       deps: ['clean'],
       disabled: function(state) {
@@ -447,29 +484,39 @@ export default class RestoreSchema extends BaseUISchema {
       label: gettext('Single transaction'),
       type: 'switch',
       disabled: false,
-      group: gettext('Query Options'),
+      group: 'query-options',
+    }, {
+      id: 'table-options', type: 'group', label: gettext('Table Options'),
+      disabled: function(state) {
+        return obj.isPlainFormat(state);
+      }, deps: ['format']
     }, {
       id: 'enable_row_security',
       label: gettext('Enable row security'),
       type: 'switch',
       disabled: false,
-      group: gettext('Table Options'),
+      group: 'table-options',
     }, {
       id: 'no_data_fail_table',
       label: gettext('No data for failed tables'),
       type: 'switch',
       disabled: false,
-      group: gettext('Table Options'),
+      group: 'table-options',
+    }, {
+      id: 'options', type: 'group', label: gettext('Options'),
+      disabled: function(state) {
+        return obj.isPlainFormat(state);
+      }, deps: ['format']
     }, {
       type: 'nested-fieldset',
       label: gettext('Disable'),
-      group: gettext('Options'),
+      group: 'options',
       schema:obj.getRestoreDisableOptionSchema(),
       visible: true
     }, {
       type: 'nested-fieldset',
       label: gettext('Miscellaneous / Behavior'),
-      group: gettext('Options'),
+      group: 'options',
       schema:obj.getRestoreMiscellaneousSchema(),
       visible: true
     }];
