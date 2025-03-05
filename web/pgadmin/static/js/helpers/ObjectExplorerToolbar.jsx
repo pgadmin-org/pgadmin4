@@ -73,8 +73,10 @@ export default function ObjectExplorerToolbar() {
     <Box display="flex" alignItems="center" gap="2px">
       <PgButtonGroup size="small">
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} shortcut={browserPref?.sub_menu_query_tool} />
-        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context']} shortcut={browserPref?.sub_menu_view_data} />
-        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context']} />
+        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context'] ?? 
+          {label :'All Rows'}}
+        shortcut={browserPref?.sub_menu_view_data} />
+        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context'] ?? { label :'Filtered Rows...'}} />
         <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} shortcut={browserPref?.sub_menu_search_objects} />
         {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} menuItem={menus['psql']} />}
       </PgButtonGroup>
