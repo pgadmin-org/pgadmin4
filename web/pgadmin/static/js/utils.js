@@ -369,14 +369,16 @@ export function checkTrojanSource(content, isPasteEvent) {
   }
 }
 
-export function downloadBlob(blob, fileName) {
-  if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
+export async function downloadBlob(blob, fileName) {
+  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
+  const urlCreator = window.URL || window.webkitURL;
+  const downloadUrl = urlCreator.createObjectURL(blob);
+  if (getBrowser().name == 'IE' && window.navigator.msSaveBlob) {
     // IE10+ : (has Blob, but not a[download] or URL)
     window.navigator.msSaveBlob(blob, fileName);
+  } else if (getBrowser().name == 'Electron') {
+    await window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
   } else {
-    const urlCreator = window.URL || window.webkitURL;
-    const downloadUrl = urlCreator.createObjectURL(blob);
-
     const link = document.createElement('a');
     link.setAttribute('href', downloadUrl);
     link.setAttribute('download', fileName);
@@ -385,6 +387,19 @@ export function downloadBlob(blob, fileName) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+}
+
+export async function downloadUrlData(downloadUrl, fileName) {
+  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
+  if (getBrowser().name == 'Electron') {
+    window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
+  } else {
+    let link = document.createElement('a');
+    link.setAttribute('href', downloadUrl);
+    link.setAttribute('download', fileName);
+    link.click();
+    link.remove();
   }
 }
 

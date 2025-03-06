@@ -22,7 +22,7 @@ import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout'
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
 import { QuerySources } from './QueryHistory';
-import { getBrowser } from '../../../../../../static/js/utils';
+import { downloadFile } from '../../../../../../static/js/utils';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -478,22 +478,7 @@ export class ResultSetUtils {
         }
       } else {
         this.hasQueryCommitted = false;
-        let respBlob = new Blob([respData], {type : 'text/csv'}),
-          urlCreator = window.URL || window.webkitURL,
-          download_url = urlCreator.createObjectURL(respBlob),
-          link = document.createElement('a');
-
-        document.body.appendChild(link);
-
-        if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
-        // IE10+ : (has Blob, but not a[download] or URL)
-          window.navigator.msSaveBlob(respBlob, fileName);
-        } else {
-          link.setAttribute('href', download_url);
-          link.setAttribute('download', fileName);
-          link.click();
-        }
-        document.body.removeChild(link);
+        downloadFile(respData, fileName, 'text/csv');
       }
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
     } catch (error) {
