@@ -153,16 +153,16 @@ describe('FileManger', ()=>{
 
     it('Change Shared Storage', async ()=>{
       networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
-      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});   
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl;
-      const user = userEvent.setup(); 
+      const user = userEvent.setup();
       await act(async ()=>{
         ctrl = await ctrlMount({});
       });
-    
+
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));
       await user.click(ctrl.container.querySelector('[data-label="Shared Storage"]'));
-      expect(ctrl.container.querySelector('button[data-label="Shared Storage"]')).not.toBeNull();
+      expect(ctrl.container.querySelector('button[aria-label="Shared Storage"]')).not.toBeNull();
     });
 
     it('Change Storage to My Storage', async ()=>{
@@ -176,7 +176,7 @@ describe('FileManger', ()=>{
 
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));
       await user.click(ctrl.container.querySelector('[data-label="My Storage"]'));
-      expect(ctrl.container.querySelector('button[data-label="My Storage"]')).not.toBeNull();
+      expect(ctrl.container.querySelector('button[aria-label="My Storage"]')).not.toBeNull();
     });
 
     describe('getComparator', ()=>{

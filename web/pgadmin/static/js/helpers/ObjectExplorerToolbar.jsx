@@ -18,7 +18,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import usePreferences from '../../../preferences/static/js/store';
-
+import gettext from 'sources/gettext';
 
 function ToolbarButton({menuItem, ...props}) {
   return (
@@ -74,9 +74,9 @@ export default function ObjectExplorerToolbar() {
       <PgButtonGroup size="small">
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} shortcut={browserPref?.sub_menu_query_tool} />
         <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context'] ?? 
-          {label :'All Rows'}}
+          {label :gettext('All Rows')}}
         shortcut={browserPref?.sub_menu_view_data} />
-        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context'] ?? { label :'Filtered Rows...'}} />
+        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context'] ?? { label : gettext('Filtered Rows...')}} />
         <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} shortcut={browserPref?.sub_menu_search_objects} />
         {!_.isUndefined(menus['psql']) && <ToolbarButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} menuItem={menus['psql']} />}
       </PgButtonGroup>
