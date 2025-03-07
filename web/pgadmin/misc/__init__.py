@@ -156,6 +156,20 @@ class MiscModule(PgAdminModule):
         from .workspaces import blueprint as module
         self.submodules.append(module)
 
+        def autovacuum_sessions():
+            import threading
+
+            with app.app_context():
+                cleanup_session_files()
+
+            # repeat every five minutes until exit
+            # https://github.com/python/cpython/issues/98230
+            t = threading.Timer(5 * 60, autovacuum_sessions)
+            t.daemon = True
+            t.start()
+
+        app.register_before_app_start(autovacuum_sessions)
+
         super().register(app, options)
 
 

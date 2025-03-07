@@ -42,6 +42,7 @@ from pgadmin.model import db, Version, User, \
 from pgadmin import create_app
 from pgadmin.utils import clear_database_servers, dump_database_servers, \
     load_database_servers, _handle_error
+from pgadmin.utils.session import cleanup_session_files
 from pgadmin.setup import db_upgrade, create_app_data_directory
 from typing import Optional, List
 from typing_extensions import Annotated
@@ -634,6 +635,16 @@ def setup_db(app: Annotated[str, typer.Argument(
         run_migration_for_others()
     else:
         run_migration_for_sqlite()
+
+
+class ManageSessions:
+
+    @app.command()
+    def cleanup_session_files():
+        """Delete expired session files."""
+        app = create_app(config.APP_NAME + '-cli')
+        with app.app_context():
+            cleanup_session_files()
 
 
 def main():
