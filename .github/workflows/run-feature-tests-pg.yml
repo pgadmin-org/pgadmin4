@@ -32,6 +32,18 @@ jobs:
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
+      - name: Uninstall PostgreSQL if already present
+        run: |
+          if [ -n "$(ls /etc/postgresql/*/*/postgresql.conf 2>/dev/null)" ]; then
+            # Extract the major version from pg_config
+            installed_pg_version=$( pg_config --version | cut -d ' ' -f 2 | cut -d '.' -f 1 )
+            echo "Installed PostgreSQL version: $installed_pg_version"
+            if [ $installed_pg_version != ${{ matrix.pgver }} ]; then
+              sudo pg_dropcluster $installed_pg_version main --stop
+              sudo apt-get -y remove "postgresql-${installed_pg_version}"
+            fi
+          fi
+
       - name: Install platform dependencies
         run: |
           sudo apt update
