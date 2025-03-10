@@ -687,7 +687,7 @@ The following is an typical example for preferences.json :
                 "browser:display:show_system_objects":  true,
                 "browser:display:show_user_defined_templates": true,
                 "browser:display:confirm_on_refresh_close": false,
-                "misc:themes:theme": "dark",
+                "misc:user_interface:theme": "dark",
 
             }
     }
