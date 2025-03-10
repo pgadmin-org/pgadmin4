@@ -24,6 +24,28 @@ RESTORE_JOB_URL = '/restore/job/{0}'
 class RestoreCreateJobTest(BaseTestGenerator):
     """Test the RestoreCreateJob class"""
     scenarios = [
+        ('When restore object with plain format',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='plain',
+                 database='postgres'
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd='psql',
+             expected_cmd_opts=['--file'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When restore object with default options',
          dict(
              class_params=dict(
@@ -46,6 +68,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  database='postgres'
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--verbose'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -72,6 +95,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  database='postgres'
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--verbose', '--format=d'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -103,6 +127,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=True
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--verbose', '--jobs', '2',
                                 '--section=pre-data', '--section=data',
                                 '--section=post-data'],
@@ -136,6 +161,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  dns_owner=True
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--verbose', '--data-only'],
              not_expected_cmd_opts=[],
              # Below options should be enabled once we fix the issue #3368
@@ -167,6 +193,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_data=False
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--no-owner',
                                 '--no-tablespaces',
                                 '--no-privileges'],
@@ -200,6 +227,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_data=False
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--no-comments', '--no-publications',
                                 '--no-subscriptions', '--no-security-labels'],
              not_expected_cmd_opts=[],
@@ -231,6 +259,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  dns_table_access_method=True
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--no-table-access-method'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
@@ -262,6 +291,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  if_exists=True,
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--create', '--clean',
                                 '--single-transaction', '--if-exists'],
              not_expected_cmd_opts=[],
@@ -291,6 +321,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=False
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--enable-row-security',
                                 '--no-data-for-failed-tables'],
              not_expected_cmd_opts=[],
@@ -318,6 +349,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=False
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--disable-triggers'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -344,6 +376,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  exit_on_error=True,
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--exit-on-error',
                                 '--use-set-session-authorization'],
              not_expected_cmd_opts=[],
@@ -370,6 +403,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  exclude_schema="sch*"
              ),
              url=RESTORE_JOB_URL,
+             expected_cmd='pg_restore',
              expected_cmd_opts=['--exclude-schema', 'sch*'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -459,6 +493,11 @@ class RestoreCreateJobTest(BaseTestGenerator):
         self.assertTrue(restore_message_mock.called)
         self.assertTrue(batch_process_mock.called)
 
+        if self.expected_cmd:
+            self.assertIn(
+                self.expected_cmd,
+                batch_process_mock.call_args_list[0][1]['cmd']
+            )
         if self.expected_cmd_opts:
             for opt in self.expected_cmd_opts:
                 self.assertIn(
