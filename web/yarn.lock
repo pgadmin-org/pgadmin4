@@ -13072,12 +13072,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-timer-hook@npm:^3.0.5":
-  version: 3.0.8
-  resolution: "react-timer-hook@npm:3.0.8"
+"react-timer-hook@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-timer-hook@npm:4.0.1"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 5790ea221aac34d41c000080aaa3fd6436f1ef6af86a7caf411eeeafd35a13953dd2e040be54ee59276007e3b46a5e2cf43b30b8d2d5b6b283f23006c0340f91
+  checksum: bc060bf6499821d5ff4a045506c2573a7cdccc275ea0ea0e4b365b2c27b42418dd091b9d9b804d917d1c3f5918a04c040425e28c8c70f2eebd20c962cc38e180
   languageName: node
   linkType: hard
 
@@ -13659,7 +13659,7 @@ __metadata:
     react-resize-detector: ^12.0.2
     react-rnd: ^10.5.1
     react-select: ^5.7.2
-    react-timer-hook: ^3.0.5
+    react-timer-hook: ^4.0.1
     react-virtualized-auto-sizer: ^1.0.6
     resize-observer-polyfill: ^1.5.1
     shim-loader: ^1.0.1
