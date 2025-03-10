@@ -284,7 +284,8 @@ Use the fields on the *File Downloads* panel to manage file downloads related pr
   application associated with that file type.
 
 * When the *Prompt for the download location?* switch is set to *True*
-  a save file prompt will be shown after downloading a file.
+  a prompt will appear after clicking the download button, allowing you
+  to choose the download location.
 
 **Note:** File Downloads related settings are applicable and visible only in desktop mode.
 
