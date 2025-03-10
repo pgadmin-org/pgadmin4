@@ -78,7 +78,7 @@ function load_server_json_file() {
 
     EXTRA_ARGS=""
 
-    if [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "true" ]; then
+    if [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "True" ]; then
         EXTRA_ARGS="--replace"
     fi
 
@@ -159,7 +159,7 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
         fi
     fi
 # If already initialised and PGADMIN_REPLACE_SERVERS_ON_STARTUP is set to true, then load the server json file.
-elif [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "true" ]; then
+elif [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "True" ]; then
     load_server_json_file
 fi
 
