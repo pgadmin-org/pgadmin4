@@ -4344,21 +4344,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:^10.2.4":
-  version: 10.4.20
-  resolution: "autoprefixer@npm:10.4.20"
+"autoprefixer@npm:^10.4.21":
+  version: 10.4.21
+  resolution: "autoprefixer@npm:10.4.21"
   dependencies:
-    browserslist: ^4.23.3
-    caniuse-lite: ^1.0.30001646
+    browserslist: ^4.24.4
+    caniuse-lite: ^1.0.30001702
     fraction.js: ^4.3.7
     normalize-range: ^0.1.2
-    picocolors: ^1.0.1
+    picocolors: ^1.1.1
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: 187cec2ec356631932b212f76dc64f4419c117fdb2fb9eeeb40867d38ba5ca5ba734e6ceefc9e3af4eec8258e60accdf5cbf2b7708798598fde35cdc3de562d6
+  checksum: 11770ce635a0520e457eaf2ff89056cd57094796a9f5d6d9375513388a5a016cd947333dcfd213b822fdd8a0b43ce68ae4958e79c6f077c41d87444c8cca0235
   languageName: node
   linkType: hard
 
@@ -5164,10 +5164,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001646, caniuse-lite@npm:^1.0.30001688":
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001688":
   version: 1.0.30001701
   resolution: "caniuse-lite@npm:1.0.30001701"
   checksum: 1abcb27ea3296dacdaa669cfe8e094432165f0541bf49ef7a88c2758d0cec5f9a839ea948f7f48c0c63c633d98f6f6c55ccf97ffebea2caaf465389500df5422
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001702":
+  version: 1.0.30001703
+  resolution: "caniuse-lite@npm:1.0.30001703"
+  checksum: f3c19e357df7f5ff480a8a24a61213d1442bf3df9e2f9563a47f4c95e9c08ea7d3c8faa965bc84dcc57c569542584c965b30d552d9b35e421f352c974980de17
   languageName: node
   linkType: hard
 
@@ -11829,7 +11836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picocolors@npm:^1.0.0, picocolors@npm:^1.0.1, picocolors@npm:^1.1.1":
+"picocolors@npm:^1.0.0, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
   checksum: e1cf46bf84886c79055fdfa9dcb3e4711ad259949e3565154b004b260cd356c5d54b31a1437ce9782624bf766272fe6b0154f5f0c744fb7af5d454d2b60db045
@@ -13587,7 +13594,7 @@ __metadata:
     ajv: ^8.8.2
     anti-trojan-source: ^1.4.0
     aspen-decorations: ^1.0.2
-    autoprefixer: ^10.2.4
+    autoprefixer: ^10.4.21
     axios: ^1.8.1
     axios-mock-adapter: ^2.1.0
     babel-loader: ^10.0.0
