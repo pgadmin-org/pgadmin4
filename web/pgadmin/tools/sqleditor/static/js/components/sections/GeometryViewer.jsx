@@ -461,9 +461,7 @@ export function GeometryViewer({rows, columns, column}) {
         zoomControl={false}
         preferCanvas={true}
         className='GeometryViewer-mapContainer'
-        whenCreated={(map)=>{
-          mapRef.current = map;
-        }}
+        ref={mapRef}
       >
         <TheMap data={data}/>
       </MapContainer>
