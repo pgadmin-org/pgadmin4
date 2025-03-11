@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { MESSAGE_TYPE, NotifierMessage } from '../../../../static/js/components/FormComponents';
 import { BgProcessManagerProcessState } from './BgProcessConstants';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
-import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import { useInterval } from '../../../../static/js/custom_hooks';
 import getApiInstance from '../../../../static/js/api_instance';
@@ -165,8 +165,8 @@ export default function ProcessDetails({data}) {
             pgAdmin.Tools.FileManager.openStorageManager(data.current_storage_dir);
           }} style={{marginRight: '4px'}} />}
           <DefaultButton disabled={process_state != BgProcessManagerProcessState.PROCESS_STARTED || data.server_id != null}
-            startIcon={<HighlightOffRoundedIcon />} className='ProcessDetails-terminateBtn' onClick={onStopProcess}>
-              Stop Process
+            startIcon={<BlockRoundedIcon />} className='ProcessDetails-terminateBtn' onClick={onStopProcess}>
+              End Process
           </DefaultButton>
         </Box>
       </Box>
