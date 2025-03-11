@@ -25,6 +25,7 @@ from pgadmin.utils.ajax import precondition_required, make_json_response, \
 from pgadmin.utils.heartbeat import log_server_heartbeat, \
     get_server_heartbeat, stop_server_heartbeat
 import config
+import threading
 import time
 import json
 import os
@@ -183,6 +184,19 @@ class MiscModule(PgAdminModule):
         from .workspaces import blueprint as module
         self.submodules.append(module)
 
+        def autovacuum_sessions():
+            try:
+                with app.app_context():
+                    cleanup_session_files()
+            finally:
+                # repeat every five minutes until exit
+                # https://github.com/python/cpython/issues/98230
+                t = threading.Timer(5 * 60, autovacuum_sessions)
+                t.daemon = True
+                t.start()
+
+        app.register_before_app_start(autovacuum_sessions)
+
         super().register(app, options)
 
 
@@ -213,8 +227,6 @@ def ping():
 @pgCSRFProtect.exempt
 def cleanup():
     driver.ping()
-    # Cleanup session files.
-    cleanup_session_files()
     return ""
 
 
