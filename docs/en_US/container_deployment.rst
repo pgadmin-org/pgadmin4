@@ -134,6 +134,14 @@ Override the default file path for the server definition list. See the
 /pgadmin4/servers.json mapped file below for more information. See the format
 of the `Servers JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
 
+**PGADMIN_REPLACE_SERVERS_ON_STARTUP**
+
+*Default: null*
+
+By default, the server definitions are only loaded on first launch, i.e. when initializing the configuration database. See PGADMIN_SERVER_JSON_FILE above.
+
+If this variable is set to True, the server definitions will be replaced on every launch. This can be used to declaratively manage the server definitions.
+
 **PGADMIN_PREFERENCES_JSON_FILE**
 
 *Default: /pgadmin4/preferences.json*
