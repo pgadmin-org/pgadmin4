@@ -273,6 +273,24 @@ The Miscellaneous Node
 
 Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 
+.. image:: images/preferences_misc_file_downloads.png
+    :alt: Preferences dialog file downloads section
+    :align: center
+
+Use the fields on the *File Downloads* panel to manage file downloads related preferences.
+
+* When the *Automatically open downloaded files?* switch is set to *True*
+  the downloaded file will automatically open in the system's default
+  application associated with that file type.
+
+* When the *Prompt for the download location?* switch is set to *True*
+  a prompt will appear after clicking the download button, allowing you
+  to choose the download location.
+
+**Note:** File Downloads related settings are applicable and visible only in desktop mode.
+
+Use the fields on the *User Interface* panel to set the user interface related preferences.
+
 .. image:: images/preferences_misc_user_interface.png
     :alt: Preferences dialog user interface section
     :align: center
@@ -669,7 +687,7 @@ The following is an typical example for preferences.json :
                 "browser:display:show_system_objects":  true,
                 "browser:display:show_user_defined_templates": true,
                 "browser:display:confirm_on_refresh_close": false,
-                "misc:themes:theme": "dark",
+                "misc:user_interface:theme": "dark",
 
             }
     }

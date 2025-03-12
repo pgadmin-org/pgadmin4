@@ -17,8 +17,8 @@ import url_for from 'sources/url_for';
 import Graphs from './Graphs';
 import { Box, Tab, Tabs } from '@mui/material';
 import { PgIconButton } from '../../../static/js/components/Buttons';
-import CancelIcon from '@mui/icons-material/Cancel';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import ServerLog from './ServerLog.ui';
@@ -40,7 +40,7 @@ import Replication from './Replication';
 import { getExpandCell } from '../../../static/js/components/PgReactTableStyled';
 import CodeMirror from '../../../static/js/components/ReactCodeMirror';
 import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
-import { getBrowser } from '../../../static/js/utils';
+import { downloadFile } from '../../../static/js/utils';
 import RefreshButton from './components/RefreshButtons';
 
 function parseData(data) {
@@ -81,9 +81,6 @@ const Root = styled('div')(({theme}) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        '& .Dashboard-terminateButton': {
-          color: theme.palette.error.main
-        },
         '& .Dashboard-download': {
           '& .Dashboard-downloadButton': {
             width: '40px',
@@ -133,7 +130,7 @@ function getTerminateCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
       <PgIconButton
         size="xs"
         noBorder
-        icon={<CancelIcon />}
+        icon={<BlockRoundedIcon />}
         className='Dashboard-terminateButton'
         onClick={() => {
           if (
@@ -198,7 +195,7 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
       <PgIconButton
         size="xs"
         noBorder
-        icon={<StopCircleOutlinedIcon/>}
+        icon={<StopRoundedIcon/>}
         onClick={() => {
           if (!canTakeAction(row, 'cancel'))
             return;
@@ -453,22 +450,7 @@ function Dashboard({
     let fileName = 'data-' + new Date().getTime() + extension;
 
     try {
-      let respBlob = new Blob([respData], {type : 'text/'+type}),
-        urlCreator = window.URL || window.webkitURL,
-        download_url = urlCreator.createObjectURL(respBlob),
-        link = document.createElement('a');
-
-      document.body.appendChild(link);
-
-      if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
-        // IE10: (has Blob, but not a[download] or URL)
-        window.navigator.msSaveBlob(respBlob, fileName);
-      } else {
-        link.setAttribute('href', download_url);
-        link.setAttribute('download', fileName);
-        link.click();
-      }
-      document.body.removeChild(link);
+      downloadFile(respData, fileName, `text/${type}`);
     } catch {
       setSsMsg(gettext('Failed to download the logs.'));
     }

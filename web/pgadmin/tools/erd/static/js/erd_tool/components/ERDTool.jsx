@@ -37,6 +37,7 @@ import pgAdmin from 'sources/pgadmin';
 import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
+import { downloadUrlData } from '../../../../../../static/js/utils';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -760,11 +761,7 @@ export default class ERDTool extends React.Component {
       }
       toPng(this.canvasEle, {width, height})
         .then((dataUrl)=>{
-          let link = document.createElement('a');
-          link.setAttribute('href', dataUrl);
-          link.setAttribute('download', this.getCurrentProjectName() + '.png');
-          link.click();
-          link.remove();
+          downloadUrlData(dataUrl, `${this.getCurrentProjectName()}.png`);
         }).catch((err)=>{
           console.error(err);
           let msg = gettext('Unknown error. Check console logs');

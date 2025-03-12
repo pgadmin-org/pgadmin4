@@ -176,23 +176,30 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     shortcutTitle = <ShortcutTitle title={title} accesskey={accesskey} shortcut={shortcut}/>;
   }
 
-  /* Tooltip does not work for disabled items */
   if(props.disabled) {
     if(color == 'primary') {
       return (
-        <PrimaryButton ref={ref} style={style}
-          className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
-          {icon}
-        </PrimaryButton>
+        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+          <span>
+            <PrimaryButton ref={ref} style={style}
+              className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
+              accessKey={accesskey} data-label={title || ''} {...props}>
+              {icon}
+            </PrimaryButton>
+          </span>
+        </Tooltip>
       );
     } else {
       return (
-        <DefaultButton ref={ref} style={style}
-          className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
-          {icon}
-        </DefaultButton>
+        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+          <span>
+            <DefaultButton ref={ref} style={style}
+              className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
+              accessKey={accesskey} data-label={title || ''} {...props}>
+              {icon}
+            </DefaultButton>
+          </span>
+        </Tooltip>
       );
     }
   } else if(color == 'primary') {

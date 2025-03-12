@@ -24,4 +24,5 @@ contextBridge.exposeInMainWorld('electronUI', {
   showSaveDialog: (options) => ipcRenderer.invoke('showSaveDialog', options),
   log: (text)=> ipcRenderer.send('log', text),
   reloadApp: ()=>{ipcRenderer.send('reloadApp');},
+  onFileDownload: (payload) => ipcRenderer.send('onFileDownload', payload),
 });
