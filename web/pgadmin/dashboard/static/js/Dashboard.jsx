@@ -17,8 +17,8 @@ import url_for from 'sources/url_for';
 import Graphs from './Graphs';
 import { Box, Tab, Tabs } from '@mui/material';
 import { PgIconButton } from '../../../static/js/components/Buttons';
-import CancelIcon from '@mui/icons-material/Cancel';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
+import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import ServerLog from './ServerLog.ui';
@@ -81,9 +81,6 @@ const Root = styled('div')(({theme}) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        '& .Dashboard-terminateButton': {
-          color: theme.palette.error.main
-        },
         '& .Dashboard-download': {
           '& .Dashboard-downloadButton': {
             width: '40px',
@@ -133,7 +130,7 @@ function getTerminateCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
       <PgIconButton
         size="xs"
         noBorder
-        icon={<CancelIcon />}
+        icon={<BlockRoundedIcon />}
         className='Dashboard-terminateButton'
         onClick={() => {
           if (
@@ -198,7 +195,7 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
       <PgIconButton
         size="xs"
         noBorder
-        icon={<StopCircleOutlinedIcon/>}
+        icon={<StopRoundedIcon/>}
         onClick={() => {
           if (!canTakeAction(row, 'cancel'))
             return;
