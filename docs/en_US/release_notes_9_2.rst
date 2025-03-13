@@ -33,6 +33,8 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8006 <https://github.com/pgadmin-org/pgadmin4/issues/8006>`_ -  Removed the pre-install script from the Red Hat build function as it was causing a No such file or directory warning during the update.
+  | `Issue #8355 <https://github.com/pgadmin-org/pgadmin4/issues/8355>`_ -  Change session files garbage collection strategy.
   | `Issue #8437 <https://github.com/pgadmin-org/pgadmin4/issues/8437>`_ -  Fixed an issue where the PSQL terminal displays keyname for non alphanumeric keys.
   | `Issue #8462 <https://github.com/pgadmin-org/pgadmin4/issues/8462>`_ -  Fixed an issue where geometries in the geometry viewer will render partially when the container was resized.
   | `Issue #8473 <https://github.com/pgadmin-org/pgadmin4/issues/8473>`_ -  Change the stop/terminate icon at all the places for better UX.

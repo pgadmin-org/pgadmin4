@@ -116,6 +116,10 @@ const StyledButton = styled(Button)(({theme, color}) => ({
       minWidth: '30px',
     }
   },
+  '&.Buttons-dashBoardStopRound':{
+    paddingLeft : '0px',
+    paddingBottom : '5px'
+  }
 
 }));
 

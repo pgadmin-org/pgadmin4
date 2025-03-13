@@ -193,7 +193,8 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
 
     return (
       <PgIconButton
-        size="xs"
+        size="md"
+        className='Buttons-dashBoardStopRound'
         noBorder
         icon={<StopRoundedIcon/>}
         onClick={() => {
