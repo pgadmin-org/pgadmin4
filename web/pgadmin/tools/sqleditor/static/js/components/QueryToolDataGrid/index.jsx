@@ -116,7 +116,7 @@ function CustomRow(props) {
   };
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
-      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} />
+      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} rangeSelectionMode={true}/>
     </RowInfoContext.Provider>
   );
 }
@@ -305,9 +305,9 @@ function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelec
   } else if(rowKey in (dataChangeStore?.deleted || {})) {
     rownum = rownum+'-';
   }
-  return (<div className='QueryTool-rowNumCell' onClick={()=>{
+  return (<div className='QueryTool-rowNumCell' onClick={(e)=>{
     onSelectedColumnsChange(new Set());
-    onRowSelectionChange({ type: 'ROW', row: row, checked: !isRowSelected, isShiftClick: false});
+    onRowSelectionChange({ type: 'ROW', row: row, checked: !isRowSelected, isShiftClick: (e.nativeEvent).shiftKey});
   }} onKeyDown={()=>{/* already taken care by parent */}}>
     {rownum}
   </div>);
