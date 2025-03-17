@@ -119,7 +119,7 @@ export function CustomRow({inTest=false, ...props}) {
 
   return (
     <Row {...props} onKeyDown={handleKeyDown} onCellClick={onCellClick} onCellDoubleClick={onCellDoubleClick}
-      selectCell={(row, column)=>props.selectCell(row, column)} aria-selected={isRowSelected} rangeSelectionMode={true}/>
+      selectCell={(row, column)=>props.selectCell(row, column)} aria-selected={isRowSelected}/>
   );
 }
 CustomRow.propTypes = {
@@ -158,7 +158,6 @@ export default function PgReactDataGrid({gridRef, className, hasSelectColumn=tru
           renderSortStatus,
           noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>{noRowsIcon}{noRowsText || gettext('No rows found.')}</Box>,
         }}
-        enableRangeSelection={true}
         {...props}
       />
     </GridContextUtils.Provider>

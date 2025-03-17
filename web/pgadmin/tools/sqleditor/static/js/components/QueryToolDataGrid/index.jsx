@@ -116,7 +116,7 @@ function CustomRow(props) {
   };
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
-      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} rangeSelectionMode={true}/>
+      <Row ref={rowRef} onKeyDown={handleKeyDown} {...props} />
     </RowInfoContext.Provider>
   );
 }
