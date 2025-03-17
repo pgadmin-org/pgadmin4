@@ -77,15 +77,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/eslint-plugin@npm:^7.24.7":
-  version: 7.25.9
-  resolution: "@babel/eslint-plugin@npm:7.25.9"
+"@babel/eslint-plugin@npm:^7.26.10":
+  version: 7.26.10
+  resolution: "@babel/eslint-plugin@npm:7.26.10"
   dependencies:
     eslint-rule-composer: ^0.3.0
   peerDependencies:
     "@babel/eslint-parser": ^7.11.0
     eslint: ^7.5.0 || ^8.0.0 || ^9.0.0
-  checksum: 42234bef7bec27ae64a46fbd8c6f5196e715522a6073c34c6dd9ea3bbcd2e092ad6dbdf0705d5796c509028a8ffa0f6235d8d8281d6b1c88811a8c8df33e2200
+  checksum: c2f41629a30c9379480588cf0e92e08d4c41920b3eff4bdb3dacd53739b311259d6e99d86cb66add347ff1c6f8fa4b5abb65b036a8e5c59e765745d3ab76bc3f
   languageName: node
   linkType: hard
 
@@ -13561,7 +13561,7 @@ __metadata:
   dependencies:
     "@babel/core": ^7.10.2
     "@babel/eslint-parser": ^7.26.5
-    "@babel/eslint-plugin": ^7.24.7
+    "@babel/eslint-plugin": ^7.26.10
     "@babel/plugin-proposal-class-properties": ^7.10.4
     "@babel/plugin-proposal-object-rest-spread": ^7.10.1
     "@babel/plugin-syntax-jsx": ^7.16.0
