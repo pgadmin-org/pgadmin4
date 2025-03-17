@@ -12,7 +12,7 @@
   },
   "packageManager": "yarn@3.8.7",
   "devDependencies": {
-    "electron": "35.0.1",
+    "electron": "35.0.2",
     "eslint": "^9.22.0"
   },
   "dependencies": {
