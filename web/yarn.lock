@@ -13692,7 +13692,7 @@ __metadata:
     terser-webpack-plugin: ^5.3.12
     typescript: ^5.4.5
     typescript-eslint: ^8.8.0
-    uplot: ^1.6.24
+    uplot: ^1.6.32
     uplot-react: ^1.1.4
     url-loader: ^4.1.1
     valid-filename: ^4.0.0
@@ -15492,10 +15492,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uplot@npm:^1.6.24":
-  version: 1.6.31
-  resolution: "uplot@npm:1.6.31"
-  checksum: 5ef8d5a01122b77eef2f8c83ea2b5630f9e43f979758f76bb4032b895797afdfe666d0ec588150db0bec7494068ee62b3944cb1b74fcd588f717fda48879a6c8
+"uplot@npm:^1.6.32":
+  version: 1.6.32
+  resolution: "uplot@npm:1.6.32"
+  checksum: f0b1432a4ef9260df85aff17f50c863a496a31546ba1c56a26eeff8ad85f7b998e8d5bf1af7504ee7ed1c367be19a35edad27a039534508d36a46f2227ff022f
   languageName: node
   linkType: hard
 
