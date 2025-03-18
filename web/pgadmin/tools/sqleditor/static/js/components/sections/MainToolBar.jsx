@@ -34,6 +34,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -56,6 +57,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
+  const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
   const [highlightFilter, setHighlightFilter] = useState(false);
   const [limit, setLimit] = useState('-1');
@@ -237,7 +239,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
               eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
             }}
           />
-        ));
+        ), {id: modalId});
         return;
       } else {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
@@ -258,7 +260,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onCommitClick();
         }}
       />
-    ));
+    ), {id: modalId});
   };
   useEffect(()=>{
     if(isInTxn()) {

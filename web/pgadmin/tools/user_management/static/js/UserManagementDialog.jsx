@@ -457,12 +457,11 @@ UserManagementDialog.propTypes = {
 
 export function showUserManagement() {
   const title = gettext('User Management');
-
   pgAdmin.Browser.notifier.showModal(title, (onClose) => {
     return <UserManagementDialog
       onClose={()=>{onClose();}}
     />;
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: false, isFullWidth: true,
-    dialogWidth: pgAdmin.Browser.stdW.lg, dialogHeight: pgAdmin.Browser.stdH.md});
+    dialogWidth: pgAdmin.Browser.stdW.lg, dialogHeight: pgAdmin.Browser.stdH.md, id: 'id-user-management'});
 }

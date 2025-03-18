@@ -378,7 +378,7 @@ export default class ERDTool extends React.Component {
             bodyObj.onSaveDiagram(false, true);
           }}
         />
-      ));
+      ), {id: 'id-erd-close-confirmation'});
       return false;
     } else {
       this.forceClose();

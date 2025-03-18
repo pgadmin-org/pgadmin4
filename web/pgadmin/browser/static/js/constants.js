@@ -46,6 +46,7 @@ export const BROWSER_PANELS = {
   WELCOME_PSQL_TOOL: 'id-welcome-psql'
 };
 
+
 export const WORKSPACES = {
   DEFAULT: 'default_workspace',
   QUERY_TOOL: 'query_tool_workspace',
