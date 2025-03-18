@@ -156,10 +156,10 @@ define('pgadmin.browser.utils',
         {% endif %}
         {% if is_admin %}
         {
-          label: '{{ _('Users') }}',
+          label: '{{ _('User Management') }}',
           type: 'normal',
           callback: ()=>{
-            pgAdmin.UserManagement.show_users()
+            pgAdmin.UserManagement.launchUserManagement()
           }
         },
         {
