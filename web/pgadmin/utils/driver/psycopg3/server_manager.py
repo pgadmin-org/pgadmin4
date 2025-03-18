@@ -116,6 +116,7 @@ class ServerManager(object):
         self.connection_params = server.connection_params
         self.create_connection_string(self.db, self.user)
         self.prepare_threshold = server.prepare_threshold
+        self.post_connection_sql = server.post_connection_sql
 
         for con in self.connections:
             self.connections[con]._release()

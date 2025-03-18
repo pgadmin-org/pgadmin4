@@ -600,9 +600,11 @@ WHERE db.datname = current_database()""")
 
         self._set_server_type_and_password(kwargs, manager)
 
+        ret_msg = self.execute_post_connection_sql(cur, manager)
+
         manager.update_session()
 
-        return True, None
+        return True, ret_msg
 
     def _set_user_info(self, cur, manager, **kwargs):
         """
@@ -668,6 +670,18 @@ WHERE db.datname = current_database()""")
                     manager.server_type = st.stype
                     manager.server_cls = st
                     break
+
+    def execute_post_connection_sql(self, cur, manager):
+        # Execute post connection SQL if provided in the server dialog
+        errmsg = None
+        if manager.post_connection_sql and manager.post_connection_sql != '':
+            status = self._execute(cur, manager.post_connection_sql)
+            if status is not None:
+                errmsg = gettext(("Failed to execute the post connection SQL "
+                                  "with below error message:\n{msg}").format(
+                    msg=status))
+                current_app.logger.error(errmsg)
+        return errmsg
 
     def __cursor(self, server_cursor=False, scrollable=False):
 

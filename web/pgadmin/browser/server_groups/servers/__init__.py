@@ -763,7 +763,8 @@ class ServerNode(PGChildNodeView):
             'kerberos_conn': 'kerberos_conn',
             'connection_params': 'connection_params',
             'prepare_threshold': 'prepare_threshold',
-            'tags': 'tags'
+            'tags': 'tags',
+            'post_connection_sql': 'post_connection_sql'
         }
 
         disp_lbl = {
@@ -1053,6 +1054,7 @@ class ServerNode(PGChildNodeView):
             'connection_string': display_connection_str,
             'prepare_threshold': server.prepare_threshold,
             'tags': tags,
+            'post_connection_sql': server.post_connection_sql,
         }
 
         return ajax_response(response)
@@ -1169,7 +1171,8 @@ class ServerNode(PGChildNodeView):
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
                 connection_params=connection_params,
                 prepare_threshold=data.get('prepare_threshold', None),
-                tags=data.get('tags', None)
+                tags=data.get('tags', None),
+                post_connection_sql=data.get('post_connection_sql', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -1585,6 +1588,7 @@ class ServerNode(PGChildNodeView):
 
             return make_json_response(
                 success=1,
+                errormsg=errmsg,
                 info=gettext("Server connected."),
                 data={
                     "sid": server.id,
