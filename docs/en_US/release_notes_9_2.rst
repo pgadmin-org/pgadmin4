@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #4194 <https://github.com/pgadmin-org/pgadmin4/issues/4194>`_ -  Added support to automatically open a file after it is downloaded in the desktop mode.
+  | `Issue #4503 <https://github.com/pgadmin-org/pgadmin4/issues/4503>`_ -  Added support for post-connection SQL execution, which will be run automatically on each connection made to any database of the server.
   | `Issue #5871 <https://github.com/pgadmin-org/pgadmin4/issues/5871>`_ -  Add support for restoring plain SQL database dumps.
   | `Issue #8034 <https://github.com/pgadmin-org/pgadmin4/issues/8034>`_ -  Added support for creating Directory nodes in EPAS.
   | `Issue #8449 <https://github.com/pgadmin-org/pgadmin4/issues/8449>`_ -  Change icon buttons to show tooltip even when disabled.
@@ -34,6 +35,7 @@ Bug fixes
 *********
 
   | `Issue #8006 <https://github.com/pgadmin-org/pgadmin4/issues/8006>`_ -  Removed the pre-install script from the Red Hat build function as it was causing a No such file or directory warning during the update.
+  | `Issue #8316 <https://github.com/pgadmin-org/pgadmin4/issues/8316>`_ -  Ensure that modal dialogs are not triggered more than once to avoid duplicates.
   | `Issue #8355 <https://github.com/pgadmin-org/pgadmin4/issues/8355>`_ -  Change session files garbage collection strategy.
   | `Issue #8437 <https://github.com/pgadmin-org/pgadmin4/issues/8437>`_ -  Fixed an issue where the PSQL terminal displays keyname for non alphanumeric keys.
   | `Issue #8462 <https://github.com/pgadmin-org/pgadmin4/issues/8462>`_ -  Fixed an issue where geometries in the geometry viewer will render partially when the container was resized.

@@ -490,6 +490,14 @@ export default class ServerSchema extends BaseUISchema {
         helpMessage: gettext('If it is set to 0, every query is prepared the first time it is executed. If it is set to blank, prepared statements are disabled on the connection.')
       },
       {
+        id: 'post_connection_sql', label: gettext('Post Connection SQL'),
+        group: gettext('Post Connection SQL'),
+        mode: ['properties', 'edit', 'create'],
+        type: 'sql', isFullTab: true,
+        readonly: obj.isConnected,
+        helpMessage: gettext('Any query specified in the control below will be executed with autocommit mode enabled for each connection to any database on this server.'),
+      },
+      {
         id: 'tags', label: gettext('Tags'),
         type: 'collection', group: gettext('Tags'),
         schema: this.tagsSchema, mode: ['edit', 'create'], uniqueCol: ['text'],

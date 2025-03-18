@@ -697,6 +697,13 @@ define('pgadmin.node.server', [
              To make sure all the menus for database is in the right state */
             pgBrowser.enable_disable_menus(_item);
 
+            /* Below code is added to show the error message if
+               connection is successful, but there is an error to
+               run the post connection sql queries. */
+            if (res?.errormsg) {
+              pgAdmin.Browser.notifier.error(res.errormsg, null);
+            }
+
             // We're not reconnecting
             if (!_wasConnected) {
               _tree.setInode(_item);

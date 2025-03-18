@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 42
+SCHEMA_VERSION = 43
 
 ##########################################################################
 #
@@ -215,6 +215,7 @@ class Server(db.Model):
         db.CheckConstraint('is_adhoc >= 0 AND is_adhoc <= 1'),
         nullable=False, default=0
     )
+    post_connection_sql = db.Column(db.String(), nullable=True)
 
     def clone(self):
         d = dict(self.__dict__)
