@@ -31,7 +31,7 @@ import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
-import { MODAL_DIALOGS } from '../../../../../../browser/static/js/constants';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',

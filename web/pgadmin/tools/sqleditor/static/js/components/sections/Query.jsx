@@ -24,7 +24,7 @@ import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
-import { MODAL_DIALOGS } from '../../../../../../browser/static/js/constants';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 
 async function registerAutocomplete(editor, api, transId) {

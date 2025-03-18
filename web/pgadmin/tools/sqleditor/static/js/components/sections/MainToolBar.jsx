@@ -34,7 +34,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
-import { MODAL_DIALOGS } from '../../../../../../browser/static/js/constants';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
