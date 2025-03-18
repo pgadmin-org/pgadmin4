@@ -31,6 +31,9 @@ let startPageUrl = null;
 let serverCheckUrl = null;
 let pgAdminMainScreen = null;
 
+let configureWindow = null,
+  viewLogWindow = null;
+
 let serverPort = 5050;
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,7 +80,8 @@ contextMenu({
 Menu.setApplicationMenu(null);
 
 function openConfigure() {
-  const win = new BrowserWindow({
+  if (configureWindow === null){ 
+  configureWindow = new BrowserWindow({
     show: false,
     width: 600,
     height: 580,
@@ -88,10 +92,11 @@ function openConfigure() {
       preload: path.join(__dirname, 'other_preload.js'),
     },
   });
-  win.loadFile('./src/html/configure.html');
-  win.once('ready-to-show', ()=>{
-    win.show();
+  configureWindow.loadFile('./src/html/configure.html');
+  configureWindow.once('ready-to-show', ()=>{
+    configureWindow.show();
   });
+}
 }
 
 function showErrorDialog(intervalID) {
@@ -304,21 +309,23 @@ function launchPgAdminWindow() {
 
   setupMenu(pgAdminMainScreen, {
     'view_logs': ()=>{
-      const win = new BrowserWindow({
-        show: false,
-        width: 800,
-        height: 460,
-        position: 'center',
-        resizable: false,
-        icon: '../../assets/pgAdmin4.png',
-        webPreferences: {
-          preload: path.join(__dirname, 'other_preload.js'),
-        },
-      });
-      win.loadFile('./src/html/view_log.html');
-      win.once('ready-to-show', ()=>{
-        win.show();
-      });
+      if(viewLogWindow === null){
+        viewLogWindow = new BrowserWindow({
+          show: false,
+          width: 800,
+          height: 460,
+          position: 'center',
+          resizable: false,
+          icon: '../../assets/pgAdmin4.png',
+          webPreferences: {
+            preload: path.join(__dirname, 'other_preload.js'),
+          },
+        });
+        viewLogWindow.loadFile('./src/html/view_log.html');
+        viewLogWindow.once('ready-to-show', ()=>{
+          viewLogWindow.show();
+        });
+      }
     },
     'configure': openConfigure,
     'reloadApp': reloadApp,

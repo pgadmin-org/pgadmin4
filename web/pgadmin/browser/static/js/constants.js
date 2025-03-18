@@ -46,6 +46,10 @@ export const BROWSER_PANELS = {
   WELCOME_PSQL_TOOL: 'id-welcome-psql'
 };
 
+export const MODAL_DIALOGS = {
+  QT_CONFIRMATIONS: 'id-qt-close-confirmation',
+};
+
 export const WORKSPACES = {
   DEFAULT: 'default_workspace',
   QUERY_TOOL: 'query_tool_workspace',

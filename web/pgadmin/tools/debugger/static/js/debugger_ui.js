@@ -11,7 +11,6 @@ import React from 'react';
 
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
-
 import DebuggerArgumentComponent from './components/DebuggerArgumentComponent';
 
 export default class FunctionArguments {
@@ -28,6 +27,6 @@ export default class FunctionArguments {
     // Render Debugger argument component
     pgAdmin.Browser.notifier.showModal(gettext('Debugger'), (closeModal) => {
       return <DebuggerArgumentComponent closeModal={closeModal} debuggerInfo={debugInfo} restartDebug={restartDebug} isEdbProc={isEdbProc} transId={transId} pgTreeInfo={treeInfo} pgData={d}></DebuggerArgumentComponent>;
-    }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md });
+    }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md, id:'id-debugger'});
   }
 }

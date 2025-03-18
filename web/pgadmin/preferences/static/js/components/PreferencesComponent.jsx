@@ -689,7 +689,6 @@ export default function PreferencesComponent({ ...props }) {
     const text = `${gettext('All preferences will be reset to their default values.')}<br><br>${gettext('Do you want to proceed?')}<br><br>
 ${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type:disc">${gettext('The object explorer tree will be refreshed automatically to reflect the changes.')}</li>
 <li style="list-style-type:disc">${gettext('If the application language changes, a reload of the application will be required. You can choose to reload later at your convenience.')}</li></ul>`;
-
     pgAdmin.Browser.notifier.showModal(
       gettext('Reset all preferences'),
       (closeModal)=>{
@@ -710,7 +709,7 @@ ${gettext('Note:')}<br> <ul style="padding-left:20px"><li style="list-style-type
           </StyledBox>
         );
       },
-      { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: true},
+      { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: true, id: 'id-reset-preferences'},
     );
   };
 
