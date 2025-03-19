@@ -301,8 +301,9 @@ export default function Editor({
 
     const fontSize = calcFontSize(pref.sql_font_size);
     newConfigExtn.push(EditorView.theme({
-      '.cm-content': {
+      '& .cm-content': {
         fontSize: fontSize,
+        fontFamily: pref.sql_font_family,
       },
       '.cm-gutters': {
         fontSize: fontSize,
