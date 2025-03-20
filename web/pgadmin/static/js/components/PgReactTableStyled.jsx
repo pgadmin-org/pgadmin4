@@ -441,11 +441,11 @@ export function getCheckboxHeaderCell({title}) {
   return Cell;
 }
 
-export function getEditCell({isDisabled, title}) {
+export function getEditCell({isDisabled, title, onClick}) {
   const Cell = ({ row }) => {
     return <PgIconButton data-test="expand-row" title={title} icon={<EditRoundedIcon fontSize="small" />} className='pgrt-cell-button'
       onClick={()=>{
-        row.toggleExpanded();
+        onClick ? onClick(row) : row.toggleExpanded();
       }} disabled={isDisabled?.(row)}
     />;
   };
