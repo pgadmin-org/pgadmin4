@@ -41,3 +41,5 @@ Bug fixes
   | `Issue #8462 <https://github.com/pgadmin-org/pgadmin4/issues/8462>`_ -  Fixed an issue where geometries in the geometry viewer will render partially when the container was resized.
   | `Issue #8473 <https://github.com/pgadmin-org/pgadmin4/issues/8473>`_ -  Change the stop/terminate icon at all the places for better UX.
   | `Issue #8479 <https://github.com/pgadmin-org/pgadmin4/issues/8479>`_ -  Fixed an issue where the Schema Diff was not displaying the difference query when a table had a UNIQUE NULLS NOT DISTINCT constraint.
+  | `Issue #8514 <https://github.com/pgadmin-org/pgadmin4/issues/8514>`_ -  Ensure the newly added parameters in the server dialog are incorporated into the Import/Export Servers functionality.
+  | `Issue #8546 <https://github.com/pgadmin-org/pgadmin4/issues/8546>`_ -  Fixed an issue where updating the grantee was not correctly applying the privileges.
