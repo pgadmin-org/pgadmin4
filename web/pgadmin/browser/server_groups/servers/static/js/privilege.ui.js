@@ -51,6 +51,9 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
           allowClear: false,
         }
       }),
+      disabled: function (state) {
+        return !obj.isNew(state);
+      },
       noEmpty: true,
     },
     {
