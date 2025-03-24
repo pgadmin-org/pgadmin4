@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #0392 <https://github.com/pgadmin-org/pgadmin4/issues/0392>`_ -  Added an ability to configure the font family for SQL editors.
   | `Issue #4194 <https://github.com/pgadmin-org/pgadmin4/issues/4194>`_ -  Added support to automatically open a file after it is downloaded in the desktop mode.
   | `Issue #4503 <https://github.com/pgadmin-org/pgadmin4/issues/4503>`_ -  Added support for post-connection SQL execution, which will be run automatically on each connection made to any database of the server.
   | `Issue #5871 <https://github.com/pgadmin-org/pgadmin4/issues/5871>`_ -  Add support for restoring plain SQL database dumps.
