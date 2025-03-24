@@ -358,7 +358,7 @@ def upgrade_check():
                 # It stuck on rendering the browser.html, while working in the
                 # broken network.
                 if os.path.exists(config.CA_FILE) and sys.version_info >= (
-                    3, 13):
+                        3, 13):
                     # Use SSL context for Python 3.13+
                     context = ssl.create_default_context(cafile=config.CA_FILE)
                     response = urlopen(url, data=data, timeout=5,
