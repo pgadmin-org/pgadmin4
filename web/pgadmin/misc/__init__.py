@@ -357,9 +357,16 @@ def upgrade_check():
                 # Do not wait for more than 5 seconds.
                 # It stuck on rendering the browser.html, while working in the
                 # broken network.
-                if os.path.exists(config.CA_FILE):
-                    response = urlopen_with_ssl(
-                        url, data, 5, config.CA_FILE)
+                if os.path.exists(config.CA_FILE) and sys.version_info >= (
+                    3, 13):
+                    # Use SSL context for Python 3.13+
+                    context = ssl.create_default_context(cafile=config.CA_FILE)
+                    response = urlopen(url, data=data, timeout=5,
+                                       context=context)
+                elif os.path.exists(config.CA_FILE):
+                    # Use cafile parameter for older versions
+                    response = urlopen(url, data=data, timeout=5,
+                                       cafile=config.CA_FILE)
                 else:
                     response = urlopen(url, data, 5)
                 current_app.logger.debug(
