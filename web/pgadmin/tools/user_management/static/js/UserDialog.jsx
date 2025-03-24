@@ -6,6 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+
 import React, { useMemo } from 'react';
 import SchemaView from '../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../static/js/SchemaView/base_schema.ui';
@@ -46,7 +47,7 @@ class UserSchema extends BaseUISchema {
   }
 
   isUserNameEnabled(state) {
-    return !(this.authOnlyInternal || state.auth_source == AUTH_METHODS['INTERNAL']);
+    return this.isNew(state) && state.auth_source != AUTH_METHODS['INTERNAL'];
   }
 
   isNotCurrentUser(state) {
@@ -81,7 +82,7 @@ class UserSchema extends BaseUISchema {
         id: 'username', label: gettext('Username'), type: 'text',
         deps: ['auth_source'],
         depChange: (state) => {
-          if (obj.isUserNameEnabled(state) && obj.isNew(state) && !isEmptyString(obj.username)) {
+          if (!obj.isUserNameEnabled(state)) {
             return { username: undefined };
           }
         },
@@ -95,7 +96,7 @@ class UserSchema extends BaseUISchema {
           if (obj.isNew(state)) {
             return false;
           } else {
-            return obj.isNotCurrentUser(state) && state.auth_source == AUTH_METHODS['INTERNAL'];
+            return !obj.isNotCurrentUser(state) || state.auth_source == AUTH_METHODS['INTERNAL'];
           }
         }
       }, {
@@ -124,13 +125,13 @@ class UserSchema extends BaseUISchema {
         deps: ['auth_source'], controlProps: {
           autoComplete: 'new-password',
         },
-        visible: obj.isNotCurrentUser,
+        visible: (state)=>obj.isNotCurrentUser(state) && state.auth_source == AUTH_METHODS['INTERNAL'],
       }, {
         id: 'confirmPassword', label: gettext('Confirm password'), type: 'password',
         deps: ['auth_source'], controlProps: {
           autoComplete: 'new-password',
         },
-        visible: obj.isNotCurrentUser,
+        visible: (state)=>obj.isNotCurrentUser(state) && state.auth_source == AUTH_METHODS['INTERNAL'],
       }, {
         id: 'locked', label: gettext('Locked'), type: 'switch',
         readonly: (state) => {
@@ -210,7 +211,7 @@ export default function UserDialog({user, options, onClose}) {
       try {
         api.post(url_for('user_management.save'), changeData)
           .then(()=>{
-            pgAdmin.Browser.notifier.success('Users Saved Successfully');
+            pgAdmin.Browser.notifier.success(gettext('Users Saved Successfully'));
             resolve();
             onClose(null, true);
           })
@@ -218,7 +219,7 @@ export default function UserDialog({user, options, onClose}) {
             reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
           });
       } catch (error) {
-        reject(parseApiError(error));
+        reject(Error(parseApiError(error)));
       }
     });
   };

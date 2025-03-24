@@ -1,5 +1,14 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React, { useEffect, useMemo, useRef } from 'react';
-import { getDeleteCell, getEditCell } from '../../../../static/js/components/PgReactTableStyled';
+import { getDeleteCell, getEditCell, getSwitchCell } from '../../../../static/js/components/PgReactTableStyled';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
@@ -80,7 +89,7 @@ export default function Users() {
 
   const onDeleteClick = (row) => {
     const deleteRow = async () => {
-      setLoading('Deleting user...');
+      setLoading(gettext('Deleting user...'));
       try {
         await api.delete(url_for('user_management.save_id', { id: row.original.id }));
         pgAdmin.Browser.notifier.success(gettext('User deleted successfully.'));
@@ -93,15 +102,16 @@ export default function Users() {
 
     pgAdmin.Browser.notifier.confirm(gettext('Delete User'), gettext('Are you sure you want to delete the user %s?', row.original.username),
       async () => {
-        setLoading('Deleting user...');
+        setLoading(gettext('Deleting user...'));
         try {
           const resp = await api.get(url_for('user_management.shared_servers', {'uid': row['id']}));
-          if (resp.data?.data?.shared_servers > 0) {
+          const noOfSharedServers = resp.data?.data?.shared_servers ?? 0;
+          if (noOfSharedServers > 0) {
             const resp = await api.get(url_for('user_management.admin_users', {'uid': row['id']}));
             showChangeOwnership(
               gettext('Change ownership'),
-              resp?.data?.data?.result?.data,
-              resp?.data?.data?.shared_servers,
+              resp.data?.data?.result?.data,
+              noOfSharedServers,
               {'id': row.original['id'], 'name': !isEmptyString(row.original['email']) ? row.original['email'] : row.original['username']},
               ()=> {
                 pgAdmin.Browser.notifier.confirm(
@@ -221,7 +231,7 @@ export default function Users() {
       size: 50,
       minSize: 50,
       enableFilters: true,
-      cell: ({ getValue }) => (getValue() ? gettext('Yes') : gettext('No')),
+      cell: getSwitchCell(),
     },
     {
       header: gettext('Locked'),
@@ -231,7 +241,7 @@ export default function Users() {
       size: 50,
       minSize: 50,
       enableFilters: true,
-      cell: ({ getValue }) => (getValue() ? gettext('Yes') : gettext('No')),
+      cell: getSwitchCell(),
     }];
   }, []);
 
