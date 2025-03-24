@@ -53,10 +53,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/config-helpers@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@eslint/config-helpers@npm:0.1.0"
-  checksum: 1136dcda37cf7b259a81686c71f31d457caa42d91a4a9cdac4677c5fc7a958410ac3cbef3b92971c7463fa8182fa1619e4f4743de94dd603c128303feee37fc8
+"@eslint/config-helpers@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@eslint/config-helpers@npm:0.2.0"
+  checksum: 36e857165f1d4661ce1dd31e739135e49b3fc0cf1dcbd64e07e53475441640ab0b7abefa3e9718a598c570ee05a91b2f91cd74c008fa30fc3db8b05d07645fb2
   languageName: node
   linkType: hard
 
@@ -69,9 +69,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/eslintrc@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "@eslint/eslintrc@npm:3.3.0"
+"@eslint/eslintrc@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "@eslint/eslintrc@npm:3.3.1"
   dependencies:
     ajv: ^6.12.4
     debug: ^4.3.2
@@ -82,14 +82,14 @@ __metadata:
     js-yaml: ^4.1.0
     minimatch: ^3.1.2
     strip-json-comments: ^3.1.1
-  checksum: 1d8a4205c2db0c46dee8251800725f6c7dfd0b1594813ddcc41f2091a53223cd78334a6664efe348118cc0963c1176d4fa873b1673c853fc76031aaa1fc49b98
+  checksum: 8241f998f0857abf5a615072273b90b1244d75c1c45d217c6a8eb444c6e12bbb5506b4879c14fb262eb72b7d8e3d2f0542da2db1a7f414a12496ebb790fb4d62
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.22.0":
-  version: 9.22.0
-  resolution: "@eslint/js@npm:9.22.0"
-  checksum: 3eb6ed01c31f185b1822b78a872af5b87daa4aaf2ed753ce81c0c7227c852a09e1c7356103259f35f09e77d9e116c796cec6958702044d057f0c179b53b783ec
+"@eslint/js@npm:9.23.0":
+  version: 9.23.0
+  resolution: "@eslint/js@npm:9.23.0"
+  checksum: 5ce796f9fd4cb7b8995062bd7697bf4406560089af039fe1f548b9d0948570763fa6d9f848f87fb13558ab85d4d88152d94d82fb9f6cf091b0dc4b4d6e15cfba
   languageName: node
   linkType: hard
 
@@ -177,9 +177,9 @@ __metadata:
   linkType: hard
 
 "@types/estree@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "@types/estree@npm:1.0.6"
-  checksum: 8825d6e729e16445d9a1dd2fb1db2edc5ed400799064cd4d028150701031af012ba30d6d03fe9df40f4d7a437d0de6d2b256020152b7b09bde9f2e420afdffd9
+  version: 1.0.7
+  resolution: "@types/estree@npm:1.0.7"
+  checksum: d9312b7075bdd08f3c9e1bb477102f5458aaa42a8eec31a169481ce314ca99ac716645cff4fca81ea65a2294b0276a0de63159d1baca0f8e7b5050a92de950ad
   languageName: node
   linkType: hard
 
@@ -207,11 +207,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^22.7.7":
-  version: 22.13.10
-  resolution: "@types/node@npm:22.13.10"
+  version: 22.13.13
+  resolution: "@types/node@npm:22.13.13"
   dependencies:
     undici-types: ~6.20.0
-  checksum: 1cd6b899df728732c60c0defad63e26ca18d87a3b81bd75666fe9aed6cdf9e488433976b22ffcabfdeef9d351cf8ff94853b0686e6708ef62065482ccf5b0a6e
+  checksum: 763c120725c4817227d3043095fd1e764744b2f3632e3e3c8242e1620a8e6fe1c9eeae38074dee3e39af6b890de142c3b6067f9b31e36635c44f3f5f4f2bb8cf
   languageName: node
   linkType: hard
 
@@ -336,14 +336,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.8.3":
-  version: 1.8.3
-  resolution: "axios@npm:1.8.3"
+"axios@npm:^1.8.4":
+  version: 1.8.4
+  resolution: "axios@npm:1.8.4"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 85fc8ad7d968e43ea9da5513310637d29654b181411012ee14cc0a4b3662782e6c81ac25eea40b5684f86ed2d8a01fa6fc20b9b48c4da14ef4eaee848fea43bc
+  checksum: e901dc1730bdcd769839b3d93ae6d6457a53d79b19a0eb623ebfea333441259ab51e63ca118baa47a5156567401466ac739f31087b4ee5e6770ab2e227484538
   languageName: node
   linkType: hard
 
@@ -645,16 +645,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:35.0.2":
-  version: 35.0.2
-  resolution: "electron@npm:35.0.2"
+"electron@npm:35.0.3":
+  version: 35.0.3
+  resolution: "electron@npm:35.0.3"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^22.7.7
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: e0bd4e5299f09a860815b72ca7e4087147c762a79e3fed8f431e40f6369d244b65f554d6882f9ef379891929368a7010a062a3ca54676ab1cedb023caec9e102
+  checksum: 90f4b6cb8b664c28b679f4a07523baf639c1213692ecae12423dff533e18390571303e2d74e122bbe5f1ecdfe66623e5523daa85bd3bd8c84f2ec9d81d82d50b
   languageName: node
   linkType: hard
 
@@ -775,17 +775,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.22.0":
-  version: 9.22.0
-  resolution: "eslint@npm:9.22.0"
+"eslint@npm:^9.23.0":
+  version: 9.23.0
+  resolution: "eslint@npm:9.23.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.2.0
     "@eslint-community/regexpp": ^4.12.1
     "@eslint/config-array": ^0.19.2
-    "@eslint/config-helpers": ^0.1.0
+    "@eslint/config-helpers": ^0.2.0
     "@eslint/core": ^0.12.0
-    "@eslint/eslintrc": ^3.3.0
-    "@eslint/js": 9.22.0
+    "@eslint/eslintrc": ^3.3.1
+    "@eslint/js": 9.23.0
     "@eslint/plugin-kit": ^0.2.7
     "@humanfs/node": ^0.16.6
     "@humanwhocodes/module-importer": ^1.0.1
@@ -821,7 +821,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: fca0b7fed5b7b254ffe173d35f3c2ba39fc2ca88a734530936fef99d974edd4a0d7aa7a1f79fa755f0a4c05e1f417ee0f86367c3209ee81e9a2ee01b7bc3838d
+  checksum: 5ace40f8e508f296bfa9d3f70a78a5082b7c9d230de0e53c0dc35f7b20bb2a9c0ce99eefaa6fa01766058f2eebaa86b8fc69ab7e0fb76b6b85b6e29af88063bb
   languageName: node
   linkType: hard
 
@@ -1384,9 +1384,9 @@ __metadata:
   linkType: hard
 
 "mime-db@npm:^1.28.0":
-  version: 1.53.0
-  resolution: "mime-db@npm:1.53.0"
-  checksum: 3fd9380bdc0b085d0b56b580e4f89ca4fc3b823722310d795c248f0806b9a80afd5d8f4347f015ad943b9ecfa7cc0b71dffa0db96fa776d01a13474821a2c7fb
+  version: 1.54.0
+  resolution: "mime-db@npm:1.54.0"
+  checksum: e99aaf2f23f5bd607deb08c83faba5dd25cf2fec90a7cc5b92d8260867ee08dab65312e1a589e60093dc7796d41e5fae013268418482f1db4c7d52d0a0960ac9
   languageName: node
   linkType: hard
 
@@ -1546,12 +1546,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "pgadmin4@workspace:."
   dependencies:
-    axios: ^1.8.3
-    electron: 35.0.2
+    axios: ^1.8.4
+    electron: 35.0.3
     electron-context-menu: ^4.0.5
     electron-dl: ^4.0.0
     electron-store: ^10.0.0
-    eslint: ^9.22.0
+    eslint: ^9.23.0
   languageName: unknown
   linkType: soft
 
@@ -1807,9 +1807,9 @@ __metadata:
   linkType: hard
 
 "type-fest@npm:^4.18.2, type-fest@npm:^4.20.0":
-  version: 4.37.0
-  resolution: "type-fest@npm:4.37.0"
-  checksum: 303f34778e675054fe0d300afaa1ded7985c16c72630d9946c1cb3c949f6dc0b014196a5473f248597d9edb6778788e4c47966f9dcbfce324a31d9845c282a74
+  version: 4.38.0
+  resolution: "type-fest@npm:4.38.0"
+  checksum: 85fd7f3feff42bab6eac99f9f056d67932c36f834da87d68b0e89c040671415a902848c81be4d0f02919d157d7eae70dccf42c42dd2e2000d80e3ae1b97a9101
   languageName: node
   linkType: hard
 
