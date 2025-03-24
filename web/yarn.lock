@@ -7855,13 +7855,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-stdin@npm:=8.0.0":
-  version: 8.0.0
-  resolution: "get-stdin@npm:8.0.0"
-  checksum: 40128b6cd25781ddbd233344f1a1e4006d4284906191ed0a7d55ec2c1a3e44d650f280b2c9eeab79c03ac3037da80257476c0e4e5af38ddfb902d6ff06282d77
-  languageName: node
-  linkType: hard
-
 "get-stream@npm:3.0.0, get-stream@npm:^3.0.0":
   version: 3.0.0
   resolution: "get-stream@npm:3.0.0"
@@ -13707,7 +13700,7 @@ __metadata:
     snapsvg-cjs: ^0.0.6
     socket.io-client: ^4.5.0
     split.js: ^1.5.10
-    sql-formatter: ^15.4.0
+    sql-formatter: ^15.5.1
     style-loader: ^4.0.0
     stylis: ^4.3.4
     svgo: ^3.3.2
@@ -14366,16 +14359,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sql-formatter@npm:^15.4.0":
-  version: 15.4.11
-  resolution: "sql-formatter@npm:15.4.11"
+"sql-formatter@npm:^15.5.1":
+  version: 15.5.1
+  resolution: "sql-formatter@npm:15.5.1"
   dependencies:
     argparse: ^2.0.1
-    get-stdin: =8.0.0
     nearley: ^2.20.1
   bin:
     sql-formatter: bin/sql-formatter-cli.cjs
-  checksum: e3dfc3aac0117dc3edf5f425884bf41075c285126b18205f8edef270fd98b60b08fdceb2af9a6edf79eace4cc86a3bd723cec2e3e70257c5801253d8bceed934
+  checksum: 6bb601691bcb2316078d6788e2f16d9e1857dc1414ac4bfe80eefa16da63ce56573a227c9eaed89af179c8a3a96904b665dc7f4c01d21954ce2b899ee68fe202
   languageName: node
   linkType: hard
 
