@@ -7998,10 +7998,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^15.13.0":
-  version: 15.15.0
-  resolution: "globals@npm:15.15.0"
-  checksum: a2a92199a112db00562a2f85eeef2a7e3943e171f7f7d9b17dfa9231e35fd612588f3c199d1509ab1757273467e413b08c80424cf6e399e96acdaf93deb3ee88
+"globals@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "globals@npm:16.0.0"
+  checksum: 41df1cb6f86c36dfdf8fb6c270247105c85cc3aec8d8238c5e691b0d2aad9eed8ff390d1035f4b5a27ee24bf75b095c7b84717e9d2050d2122e61f37d9c6131a
   languageName: node
   linkType: hard
 
@@ -13653,7 +13653,7 @@ __metadata:
     eslint-plugin-react: ^7.37.3
     eslint-plugin-unused-imports: ^4.1.4
     exports-loader: ^5.0.0
-    globals: ^15.13.0
+    globals: ^16.0.0
     hotkeys-js: ^3.13.3
     html-react-parser: ^5.2.0
     html-to-image: 1.11.11
