@@ -57,6 +57,7 @@ export default class SchemaDiff {
       label: gettext('Schema Diff'),
       enable: true,
       below: true,
+      permission: 'tools_schema_diff',
     }]);
   }
 

@@ -66,6 +66,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Backup of global objects.'),
         },
+        permission: 'tools_backup',
       }, {
         name: 'backup_server',
         module: this,
@@ -78,6 +79,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Server Backup.'),
         },
+        permission: 'tools_backup',
       }, {
         name: 'backup_global_ctx',
         module: this,
@@ -91,6 +93,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database or schema or table from the object explorer to take Backup.'),
         },
+        permission: 'tools_backup',
       }, {
         name: 'backup_server_ctx',
         module: this,
@@ -104,6 +107,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Server Backup.'),
         },
+        permission: 'tools_backup',
       }, {
         name: 'backup_object',
         module: this,
@@ -118,6 +122,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database or schema or table from the object explorer to take Backup.'),
         },
+        permission: 'tools_backup',
       }];
 
       for (let node_val of menuUtils.backupSupportedNodes) {

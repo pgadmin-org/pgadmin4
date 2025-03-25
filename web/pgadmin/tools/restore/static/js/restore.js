@@ -49,6 +49,7 @@ define('tools.restore', [
         data: {
           data_disabled: gettext('Please select any schema or table from the object explorer to Restore data.'),
         },
+        permission: 'tools_restore',
       }];
 
       for (let sup_node_val of menuUtils.restoreSupportedNodes) {
@@ -63,6 +64,7 @@ define('tools.restore', [
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.restoreSupportedNodes
           ),
+          permission: 'tools_restore',
         });
       }
 

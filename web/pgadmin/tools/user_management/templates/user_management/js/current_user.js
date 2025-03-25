@@ -16,6 +16,7 @@ define('pgadmin.user_management.current_user', [], function() {
         'allow_save_password': {{ allow_save_password }},
         'allow_save_tunnel_password': {{ allow_save_tunnel_password }},
         'auth_sources': {{ auth_sources }},
-        'current_auth_source': '{{ current_auth_source }}'
+        'current_auth_source': '{{ current_auth_source }}',
+        'permissions': {{ permissions }}
     }
 });

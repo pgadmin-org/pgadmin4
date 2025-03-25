@@ -59,6 +59,7 @@ export default class ERDModule {
       data: {
         data_disabled: gettext('The selected tree node does not support this option.'),
       },
+      permission: 'tools_erd_tool',
     }]);
     return this;
   }

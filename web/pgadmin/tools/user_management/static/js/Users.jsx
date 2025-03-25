@@ -10,7 +10,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { getDeleteCell, getEditCell, getSwitchCell } from '../../../../static/js/components/PgReactTableStyled';
 import gettext from 'sources/gettext';
-import pgAdmin from 'sources/pgadmin';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import PgTable from 'sources/components/PgTable';
 import url_for from 'sources/url_for';
@@ -24,8 +23,9 @@ import PropTypes from 'prop-types';
 import { PgButtonGroup, PgIconButton } from '../../../../static/js/components/Buttons';
 import { showChangeOwnership } from '../../../../static/js/Dialogs';
 import { isEmptyString } from '../../../../static/js/validators';
+import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 
-function CustomHeader({updateUsers, options}) {
+function CustomHeader({updateUsers, options, pgAdmin}) {
   return (
     <Box>
       <PgButtonGroup>
@@ -77,15 +77,15 @@ function CustomHeader({updateUsers, options}) {
 CustomHeader.propTypes = {
   updateUsers: PropTypes.func,
   options: PropTypes.object,
+  pgAdmin: PropTypes.object,
 };
 
-export default function Users() {
+export default function Users({roles}) {
   const authSources = useRef([]);
-  const roles = useRef([]);
   const [loading, setLoading] = React.useState('');
   const [tableData, setTableData] = React.useState([]);
-  const [selectedRows, setSelectedRows] = React.useState({});
   const api = getApiInstance();
+  const pgAdmin = usePgAdmin();
 
   const onDeleteClick = (row) => {
     const deleteRow = async () => {
@@ -144,6 +144,7 @@ export default function Users() {
     const user = row.original;
     const panelTitle = gettext('Edit User - %s', user.username);
     const panelId = BROWSER_PANELS.USER_MANAGEMENT + '-edit-' + user.id;
+
     pgAdmin.Browser.docker.default_workspace.openDialog({
       id: panelId,
       title: panelTitle,
@@ -152,7 +153,7 @@ export default function Users() {
           <UserDialog
             options={{
               authSources: authSources.current.map((s) => ({ label: s.label, value: s.value })),
-              roles: roles.current.map((r) => ({ label: r.name, value: r.id })),
+              roles: roles.map((r) => ({ label: r.name, value: r.id })),
             }}
             user={user}
             onClose={(_e, reload) => {
@@ -216,7 +217,7 @@ export default function Users() {
     },
     {
       header: gettext('Role'),
-      accessorFn: (row) => roles.current.find((r)=>r.id == row.role).name,
+      accessorFn: (row) => roles.find((r)=>r.id == row.role)?.name,
       enableSorting: true,
       enableResizing: true,
       size: 100,
@@ -243,7 +244,7 @@ export default function Users() {
       enableFilters: true,
       cell: getSwitchCell(),
     }];
-  }, []);
+  }, [roles]);
 
   const updateList = async () => {
     setLoading(gettext('Fetching users...'));
@@ -259,12 +260,8 @@ export default function Users() {
   const initialize = async () => {
     setLoading(gettext('Loading...'));
     try {
-      const res = await Promise.all([
-        api.get(url_for('user_management.auth_sources')),
-        api.get(url_for('user_management.roles')),
-      ]);
-      authSources.current = res[0].data;
-      roles.current = res[1].data;
+      const res = await api.get(url_for('user_management.auth_sources'));
+      authSources.current = res.data;
       updateList();
     } catch (error) {
       setLoading('');
@@ -284,8 +281,6 @@ export default function Users() {
         columns={columns}
         data={tableData}
         sortOptions={[{ id: 'username', desc: true }]}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
         caveTable={false}
         tableNoBorder={false}
         tableProps={{
@@ -295,9 +290,13 @@ export default function Users() {
         }}
         customHeader={<CustomHeader updateUsers={updateList} options={{
           authSources: authSources.current.map((s) => ({ label: s.label, value: s.value })),
-          roles: roles.current.map((r) => ({ label: r.name, value: r.id })),
-        }} />}
+          roles: roles.map((r) => ({ label: r.name, value: r.id })),
+        }} pgAdmin={pgAdmin} />}
       ></PgTable>
     </Box>
   );
 }
+
+Users.propTypes = {
+  roles: PropTypes.array,
+};

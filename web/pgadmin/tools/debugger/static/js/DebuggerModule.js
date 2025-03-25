@@ -66,6 +66,7 @@ export default class DebuggerModule {
           object: 'function',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'global_debugger',
         node: 'function',
@@ -80,6 +81,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'procedure_direct_debugger',
         node: 'procedure',
@@ -93,6 +95,7 @@ export default class DebuggerModule {
           object: 'procedure',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'procedure_indirect_debugger',
         node: 'procedure',
@@ -107,6 +110,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'trigger_function_indirect_debugger',
         node: 'trigger_function',
@@ -121,6 +125,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'trigger_indirect_debugger',
         node: 'trigger',
@@ -135,6 +140,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'package_function_direct_debugger',
         node: 'edbfunc',
@@ -148,6 +154,7 @@ export default class DebuggerModule {
           object: 'edbfunc',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'package_function_global_debugger',
         node: 'edbfunc',
@@ -162,6 +169,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'package_procedure_direct_debugger',
         node: 'edbproc',
@@ -175,6 +183,7 @@ export default class DebuggerModule {
           object: 'edbproc',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }, {
         name: 'package_procedure_global_debugger',
         node: 'edbproc',
@@ -189,6 +198,7 @@ export default class DebuggerModule {
           debug_type: 'indirect',
         },
         enable: 'canDebug',
+        permission: 'tools_debugger',
       }
     ]);
   }

@@ -104,6 +104,7 @@ export default class SQLEditor {
         applies: 'tools',
         data_disabled: gettext('Please select a database from the object explorer to access Query Tool.'),
       },
+      permission: 'tools_query_tool',
     }];
 
     // Create context menu
