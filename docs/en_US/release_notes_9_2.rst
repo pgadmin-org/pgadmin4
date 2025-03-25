@@ -27,6 +27,7 @@ New features
   | `Issue #8034 <https://github.com/pgadmin-org/pgadmin4/issues/8034>`_ -  Added support for creating Directory nodes in EPAS.
   | `Issue #8449 <https://github.com/pgadmin-org/pgadmin4/issues/8449>`_ -  Change icon buttons to show tooltip even when disabled.
   | `Issue #8540 <https://github.com/pgadmin-org/pgadmin4/issues/8540>`_ -  Add an option to load/replace the servers.json file on each container startup.
+  | `Issue #8574 <https://github.com/pgadmin-org/pgadmin4/issues/8574>`_ -  Open user management in a separate tab instead of a dialog to enhance UI/UX.
 
 Housekeeping
 ************
@@ -44,3 +45,4 @@ Bug fixes
   | `Issue #8479 <https://github.com/pgadmin-org/pgadmin4/issues/8479>`_ -  Fixed an issue where the Schema Diff was not displaying the difference query when a table had a UNIQUE NULLS NOT DISTINCT constraint.
   | `Issue #8514 <https://github.com/pgadmin-org/pgadmin4/issues/8514>`_ -  Ensure the newly added parameters in the server dialog are incorporated into the Import/Export Servers functionality.
   | `Issue #8546 <https://github.com/pgadmin-org/pgadmin4/issues/8546>`_ -  Fixed an issue where updating the grantee was not correctly applying the privileges.
+  | `Issue #8577 <https://github.com/pgadmin-org/pgadmin4/issues/8577>`_ -  Fixed an issue where the upgrade_check API returned an unexpected keyword argument 'cafile' due to changes in the urllib package supporting Python v3.13.

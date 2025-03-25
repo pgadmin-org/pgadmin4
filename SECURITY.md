@@ -45,10 +45,10 @@ To help us quickly understand and address the issue, please include the followin
 
 
 ### **What to Expect**
-- **Acknowledgement**: You will receive an acknowledgment of your report within **48 hours**.
+- **Acknowledgement**: You will receive an acknowledgement of your report within **48 hours**.
 - **Timeline**: We will provide a timeline for investigating and addressing the issue.
 - **Updates**: You will receive regular updates on the progress of the vulnerability resolution.
-- **CVE ID**: If the vulnerability is confirmed, we can help you apply for a CVE ID to formally recognize the issue.
+- **CVE ID**: If the vulnerability is confirmed, we will request a CVE ID to acknowledge the issue officially and include it in the release notes.
 
 
 ### **Out of Scope**
@@ -79,4 +79,4 @@ We deeply appreciate the efforts of security researchers and users who help us i
 
 ## Contact
 
-For any questions or concerns regarding security, please contact us at `security@yourproject.com`.
+For any questions or concerns regarding security, please contact us at `security@pgadmin.org`.
