@@ -67,7 +67,7 @@ class UserManagementModule(PgAdminModule):
             current_app.login_manager.login_view,
             'user_management.auth_sources', 'user_management.change_owner',
             'user_management.shared_servers', 'user_management.admin_users',
-            'user_management.save'
+            'user_management.save', 'user_management.save_id'
         ]
 
 
@@ -168,7 +168,8 @@ def user(uid):
                                'active': u.active,
                                'role': u.roles[0].id,
                                'auth_source': u.auth_source,
-                               'locked': u.locked
+                               'locked': u.locked,
+                               'canDrop': u.id != current_user.id
                                })
 
         res = users_data
@@ -337,7 +338,6 @@ def admin_users(uid=None):
 
     return make_json_response(
         success=1,
-        info=_("No shared servers found"),
         data={
             'status': 'success',
             'msg': 'Admin user list',
@@ -398,36 +398,32 @@ def auth_sources():
 
 
 @blueprint.route('/save', methods=['POST'], endpoint='save')
+@blueprint.route('/save/<int:id>', methods=['DELETE'], endpoint='save_id')
 @roles_required('Administrator')
-def save():
+def save(id=None):
     """
     This function is used to add/update/delete users.
     """
+    if request.method == 'DELETE':
+        status, res = delete_user(id)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return ajax_response(
+            status=200
+        )
+
     data = request.form if request.form else json.loads(
         request.data
     )
 
-    try:
-        # Delete Users
-        if 'deleted' in data:
-            for item in data['deleted']:
-                status, res = delete_user(item['id'])
-                if not status:
-                    return internal_server_error(errormsg=res)
-        # Create Users
-        if 'added' in data:
-            for item in data['added']:
-                status, res = create_user(item)
-                if not status:
-                    return internal_server_error(errormsg=res)
-        # Modify Users
-        if 'changed' in data:
-            for item in data['changed']:
-                status, res = update_user(item['id'], item)
-                if not status:
-                    return internal_server_error(errormsg=res)
-    except Exception as e:
-        return internal_server_error(errormsg=str(e))
+    if 'id' not in data:
+        status, res = create_user(data)
+    else:
+        status, res = update_user(data['id'], data)
+
+    if not status:
+        return internal_server_error(errormsg=res)
 
     return ajax_response(
         status=200
@@ -468,8 +464,24 @@ def validate_password(data, new_data):
             raise InternalServerError(_("Passwords do not match."))
 
 
+def validate_unique_user(data):
+    if 'username' not in data:
+        return
+
+    exist_users = User.query.filter_by(
+        username=data['username'],
+        auth_source=data['auth_source']
+    ).count()
+
+    if exist_users != 0:
+        raise InternalServerError(_("User email/username must be unique "
+                                    "for an authentication source."))
+
+
 def validate_user(data):
     new_data = dict()
+
+    validate_unique_user(data)
 
     validate_password(data, new_data)
 
@@ -508,20 +520,12 @@ def _create_new_user(new_data):
     :param new_data: Data from user creation.
     :return: Return new created user.
     """
-    auth_source = new_data['auth_source'] if 'auth_source' in new_data \
-        else INTERNAL
-    username = new_data['username'] if \
-        'username' in new_data and auth_source != \
-        INTERNAL else new_data['email']
-    email = new_data['email'] if 'email' in new_data else None
-    password = new_data['password'] if 'password' in new_data else None
-
-    usr = User(username=username,
-               email=email,
+    usr = User(username=new_data['username'],
+               email=new_data['email'],
                roles=new_data['roles'],
                active=new_data['active'],
-               password=password,
-               auth_source=auth_source)
+               password=new_data['password'],
+               auth_source=new_data['auth_source'])
     db.session.add(usr)
     db.session.commit()
     # Add default server group for new user.
@@ -544,8 +548,18 @@ def create_user(data):
         else:
             return False, _("Missing field: '{0}'").format(f)
 
+    data['auth_source'] = data['auth_source'] if 'auth_source' in data \
+        else INTERNAL
+    data['username'] = data['username'] if \
+        'username' in data and data['auth_source'] != \
+        INTERNAL else data['email']
+    data['email'] = data['email'] if 'email' in data else None
+    data['password'] = data['password'] if 'password' in data else None
+
     try:
         new_data = validate_user(data)
+        new_data['password'] = new_data['password']\
+            if 'password' in new_data else None
 
         if 'roles' in new_data:
             new_data['roles'] = [Role.query.get(new_data['roles'])]
@@ -588,7 +602,7 @@ def update_user(uid, data):
         if 'roles' in new_data:
             new_data['roles'] = [Role.query.get(new_data['roles'])]
     except Exception as e:
-        return False, str(e.description)
+        return False, str(e)
 
     try:
         for k, v in new_data.items():

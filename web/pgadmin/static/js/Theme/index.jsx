@@ -206,6 +206,12 @@ basicSettings = createTheme(basicSettings, {
           height: '100%',
           boxSizing: 'border-box',
         },
+        adornedStart: {
+          paddingLeft: basicSettings.spacing(0.75),
+        },
+        inputAdornedStart: {
+          paddingLeft: '2px',
+        },
         adornedEnd: {
           paddingRight: basicSettings.spacing(0.75),
         },
@@ -523,7 +529,7 @@ function getFinalTheme(baseTheme) {
           },
           inputSizeSmall: {
             height: '16px', // + 12px of padding = 28px;
-          }
+          },
         }
       },
       MuiSelect: {

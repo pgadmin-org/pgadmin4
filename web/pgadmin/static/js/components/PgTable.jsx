@@ -37,6 +37,7 @@ import gettext from 'sources/gettext';
 import EmptyPanelMessage from './EmptyPanelMessage';
 import { InputText } from './FormComponents';
 import { PgReactTable, PgReactTableBody, PgReactTableCell, PgReactTableHeader, PgReactTableRow, PgReactTableRowContent, PgReactTableRowExpandContent, getCheckboxCell, getCheckboxHeaderCell } from './PgReactTableStyled';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 
 const ROW_HEIGHT = 30;
@@ -334,6 +335,7 @@ export default function PgTable({ caveTable = true, tableNoBorder = true, tableN
               onChange={(val) => {
                 setSearchVal(val);
               }}
+              startAdornment={<SearchRoundedIcon />}
             />
           </Box>
         </Box>}
