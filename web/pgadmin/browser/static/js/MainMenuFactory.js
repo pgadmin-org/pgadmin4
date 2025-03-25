@@ -11,6 +11,7 @@ import pgAdmin from 'sources/pgadmin';
 import Menu, { MenuItem } from '../../../static/js/helpers/Menu';
 import getApiInstance from '../../../static/js/api_instance';
 import url_for from 'sources/url_for';
+import withCheckPermission from './withCheckPermission';
 
 const MAIN_MENUS = [
   { label: gettext('File'), name: 'file', id: 'mnu_file', index: 0, addSeprator: true, hasDynamicMenuItems: false },
@@ -71,7 +72,7 @@ export default class MainMenuFactory {
   }
 
   static createMenuItem(options) {
-    return new MenuItem({...options, callback: () => {
+    const callback = () => {
       // Some callbacks registered in 'callbacks' check and call specifiec callback function
       if (options.module && 'callbacks' in options.module && options.module.callbacks[options.callback]) {
         options.module.callbacks[options.callback].apply(options.module, [options.data, pgAdmin.Browser.tree?.selected()]);
@@ -89,7 +90,8 @@ export default class MainMenuFactory {
           pgAdmin.Browser.notifier.error(gettext('Error in opening window'));
         });
       }
-    }}, (menu, item)=> {
+    };
+    return new MenuItem({...options, callback: withCheckPermission(options, callback)}, (menu, item)=> {
       pgAdmin.Browser.Events.trigger('pgadmin:enable-disable-menu-items', menu, item);
       window.electronUI?.enableDisableMenuItems(menu?.serialize(), item?.serialize());
     });

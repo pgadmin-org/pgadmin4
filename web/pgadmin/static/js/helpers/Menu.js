@@ -122,6 +122,7 @@ export class MenuItem {
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
       'category', 'target', 'url', 'node', 'single',
       'checked', 'below', 'menu_items', 'is_checkbox', 'action', 'applies', 'is_native_only', 'type',
+      'permission',
     ];
     let defaults = {
       url: '#',
@@ -169,16 +170,12 @@ export class MenuItem {
     return this.menu_items;
   }
 
-  contextMenuCallback(self) {
-    self.callback();
-  }
-
   getContextItem(label, is_disabled, sub_ctx_item) {
     let self = this;
     return {
       name: label,
       disabled: is_disabled,
-      callback: () => { this.contextMenuCallback(self); },
+      callback: self.callback.bind(self),
       ...(sub_ctx_item && Object.keys(sub_ctx_item).length > 0) && { items: sub_ctx_item }
     };
   }

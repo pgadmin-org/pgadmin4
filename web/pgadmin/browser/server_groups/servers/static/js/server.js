@@ -81,7 +81,7 @@ define('pgadmin.node.server', [
           name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 1, label: gettext('Server...'),
-          data: {action: 'create'}, enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate', permission: 'object_register_server'
         },{
           name: 'disconnect_all_servers', node: 'server_group', module: this,
           applies: ['object','context'], callback: 'disconnect_all_servers',
@@ -91,7 +91,7 @@ define('pgadmin.node.server', [
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 3, label: gettext('Server...'),
-          data: {action: 'create'}, enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate', permission: 'object_register_server'
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',

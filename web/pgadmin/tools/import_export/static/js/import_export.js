@@ -51,6 +51,7 @@ define([
         data: {
           data_disabled: gettext('Please select any table from the object explorer to Import/Export data.'),
         },
+        permission: 'tools_import_export_data',
       }]);
     },
     getUISchema: function(treeItem) {

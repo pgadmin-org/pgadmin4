@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 43
+SCHEMA_VERSION = 44
 
 ##########################################################################
 #
@@ -57,6 +57,29 @@ roles_users = db.Table(
     db.Column('user_id', db.Integer(), db.ForeignKey(USER_ID)),
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
+
+
+class PgAdminDbArrayString(types.TypeDecorator):
+    cache_ok = True
+    impl = types.String
+
+    def process_bind_param(self, value, dialect):
+        try:
+            if len(value) == 0:
+                return None
+
+            return ",".join(value)
+        except Exception as _:
+            return None
+
+    def process_result_value(self, value, dialect):
+        try:
+            if value == '':
+                return []
+
+            return value.split(',')
+        except Exception as _:
+            return []
 
 
 class PgAdminDbBinaryString(types.TypeDecorator):
@@ -92,6 +115,28 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     description = db.Column(db.String(256), nullable=False)
+    # permissions needs to be an array, use custom type to support
+    # both SQLite and PostgreSQL
+    permissions = db.Column(PgAdminDbArrayString())
+
+    def get_permissions(self):
+        from pgadmin.tools.user_management.PgPermissions \
+            import AllPermissionTypes
+        if self.name == 'Administrator':
+            return filter(lambda x: not x.startswith('_'),
+                          AllPermissionTypes.__dict__.keys())
+
+        return super().get_permissions()
+
+
+# We override the default UserMixin to change behaviour of has_permission
+# Administrator has all permissions
+class CustomUserMixin(UserMixin):
+    def has_permission(self, permission: str) -> bool:
+        if 'Administrator' in self.roles:
+            return True
+
+        return super().has_permission(permission)
 
 
 class User(db.Model, UserMixin):

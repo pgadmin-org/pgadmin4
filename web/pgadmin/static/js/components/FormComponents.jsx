@@ -1280,7 +1280,8 @@ const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
   '& .FormFooter-message': {
     color: theme.palette.text.primary,
     marginLeft: theme.spacing(0.5),
-    whiteSpace: 'pre-line'
+    whiteSpace: 'pre-line',
+    userSelect: 'text'
   },
   '& .FormFooter-messageCenter': {
     color: theme.palette.text.primary,
