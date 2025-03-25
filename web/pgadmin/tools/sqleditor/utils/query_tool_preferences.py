@@ -390,6 +390,18 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.sql_font_family = self.preference.register(
+        'Editor', 'sql_font_family',
+        gettext("Font family"), 'text', 'Source Code Pro',
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'Specify the font family to be used for all SQL editors. '
+            'The specified font should already be installed on your system. '
+            'If the font is not found, the editor will fall back to the '
+            'default font, Source Code Pro.'
+        )
+    )
+
     self.display_connection_status = self.preference.register(
         'display', 'connection_status',
         gettext("Connection status"), 'boolean', True,

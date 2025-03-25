@@ -4,7 +4,7 @@
 `Directory Dialog`:index:
 *************************
 
-Use the Directory dialog to Create an alias for a file system directory path.
+Use the Directory dialog to create an alias for a file system directory path.
 To create directories, you must have the CREATE ANY DIRECTORY system privilege.
 When you create a directory, you are automatically granted READ and WRITE privileges
 on the directory, and you can grant READ and WRITE privileges to other users and roles.

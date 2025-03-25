@@ -17,7 +17,7 @@ import FormatIndentDecreaseIcon from '@mui/icons-material/FormatIndentDecrease';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 import RotateLeftRoundedIcon from '@mui/icons-material/RotateLeftRounded';
 
@@ -180,7 +180,7 @@ export function ToolBar() {
           }} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
-        <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopCircleOutlinedIcon style={{height: '2rem'}} />} disabled={buttonsDisabled[MENUS.STOP]} onClick={() => { stop(); }}
+        <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopRoundedIcon style={{height: '2rem'}} />} disabled={buttonsDisabled[MENUS.STOP]} onClick={() => { stop(); }}
           shortcut={preferences?.btn_stop} />
       </PgButtonGroup>
       <PgButtonGroup size="small">

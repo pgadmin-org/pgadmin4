@@ -24,6 +24,7 @@ import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 
 async function registerAutocomplete(editor, api, transId) {
@@ -65,6 +66,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const pgAdmin = usePgAdmin();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
+  const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
       startMarker = 0,
@@ -343,7 +345,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
             eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);
           }}
         />
-      ));
+      ), {id:modalId});
     };
 
     const formatSQL = ()=>{

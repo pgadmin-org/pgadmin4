@@ -67,7 +67,7 @@ export function showServerPassword() {
         }}
       />
     );
-  });
+  }, {id: 'id-connect-server'});
 }
 
 function masterPassCallbacks(masterpass_callback_queue) {
@@ -176,7 +176,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
           }}
         />
       );
-    });
+    }, {id: 'id-master-password'});
   }
 }
 
@@ -275,7 +275,7 @@ export function showChangeUserPassword(url) {
     />;
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: false, isFullWidth: true,
-    dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md});
+    dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md, id: 'id-change-password'});
 }
 
 export function showNamedRestorePoint() {
@@ -351,7 +351,7 @@ export function showChangeOwnership() {
     />;
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true,
-    dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md});
+    dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md, id: 'id-change-owner' });
 }
 
 export function showUrlDialog() {
@@ -388,6 +388,6 @@ export function showQuickSearch() {
   pgAdmin.Browser.notifier.showModal(gettext('Quick Search'), (closeModal) => {
     return <QuickSearch closeModal={closeModal}/>;
   },
-  { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: false}
+  { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: false, id: 'id-quick-search'}
   );
 }

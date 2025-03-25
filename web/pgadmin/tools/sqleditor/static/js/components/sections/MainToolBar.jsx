@@ -13,7 +13,7 @@ import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/compone
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import StopRoundedIcon from '@mui/icons-material/StopRounded';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import { FilterIcon, CommitIcon, RollbackIcon, ExecuteQueryIcon } from '../../../../../../static/js/components/ExternalIcon';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
@@ -34,6 +34,7 @@ import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 import CloseRunningDialog from '../dialogs/CloseRunningDialog';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -56,6 +57,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const queryToolConnCtx = useContext(QueryToolConnectionContext);
+  const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
   const [highlightFilter, setHighlightFilter] = useState(false);
   const [limit, setLimit] = useState('-1');
@@ -237,7 +239,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
               eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
             }}
           />
-        ));
+        ), {id: modalId});
         return;
       } else {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL);
@@ -258,7 +260,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onCommitClick();
         }}
       />
-    ));
+    ), {id: modalId});
   };
   useEffect(()=>{
     if(isInTxn()) {
@@ -535,7 +537,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           {label: gettext('100 rows'), value: '100'},
         ]} value={limit} onChange={onLimitChange} disabled={buttonsDisabled['limit'] || queryToolCtx.params.is_query_tool} />
         <PgButtonGroup size="small">
-          <PgIconButton title={gettext('Cancel query')} icon={<StopCircleOutlinedIcon style={{height: 'unset'}} />}
+          <PgIconButton title={gettext('Cancel query')} icon={<StopRoundedIcon style={{height: 'unset'}} />}
             onClick={cancelQuery} disabled={buttonsDisabled['cancel']} shortcut={queryToolPref.btn_cancel_query} />
           <PgIconButton title={gettext('Execute script')} icon={<PlayArrowRoundedIcon style={{height: 'unset'}} />}
             onClick={executeScript} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_script}/>

@@ -14,7 +14,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
 import { PgButtonGroup, PgIconButton } from '../../../../static/js/components/Buttons';
-import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
+import BlockRoundedIcon from '@mui/icons-material/BlockRounded';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HelpIcon from '@mui/icons-material/HelpRounded';
@@ -76,7 +76,7 @@ function CancelCell({row}) {
     <PgIconButton
       size="xs"
       noBorder
-      icon={<StopCircleOutlinedIcon />}
+      icon={<BlockRoundedIcon />}
       className='Processes-stopButton'
       disabled={row.original.process_state != BgProcessManagerProcessState.PROCESS_STARTED
         || row.original.server_id != null}
@@ -84,8 +84,8 @@ function CancelCell({row}) {
         e.preventDefault();
         pgAdmin.Browser.BgProcessManager.stopProcess(row.original.id);
       }}
-      aria-label="Stop Process"
-      title={gettext('Stop Process')}
+      aria-label="End Process"
+      title={gettext('End Process')}
     ></PgIconButton>
   );
 }

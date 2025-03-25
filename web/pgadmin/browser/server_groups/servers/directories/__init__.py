@@ -316,26 +316,9 @@ class DirectoryView(PGChildNodeView):
                 "/".join([self.template_path, self._ALTER_SQL]),
                 data=data, conn=self.conn
             )
-
-            # Checking if we are not executing empty query
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return jsonify(
-                        node=self.blueprint.generate_browser_node(
-                            dr_id,
-                            sid,
-                            data['name'],
-                            icon="icon-directory"
-                        ),
-                        success=0,
-                        errormsg=gettext(
-                            'Directory created successfully.'
-                        ),
-                        info=gettext(
-                            res
-                        )
-                    )
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
