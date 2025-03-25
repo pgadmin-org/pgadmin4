@@ -326,16 +326,6 @@ def validate_binary_path():
     return make_json_response(data=gettext(version_str), status=200)
 
 
-def urlopen_with_ssl(url, data, timeout, cafile):
-    context = ssl.create_default_context(cafile=cafile)
-    if sys.version_info >= (3, 13):
-        # Use SSL context for Python 3.13+
-        return urlopen(url, data=data, timeout=timeout, context=context)
-    else:
-        # Use cafile parameter for older versions
-        return urlopen(url, data=data, timeout=timeout, cafile=cafile)
-
-
 @blueprint.route("/upgrade_check", endpoint="upgrade_check",
                  methods=['GET'])
 @pga_login_required
