@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell, screen } from 'electron';
 import axios from 'axios';
 import Store from 'electron-store';
 import fs from 'fs';
@@ -78,6 +78,23 @@ contextMenu({
 });
 
 Menu.setApplicationMenu(null);
+
+// Check if the given position is within the display bounds.
+// pgAdmin tried to open the window on the display where the it
+// was last closed.
+function isWithinDisplayBounds(pos) {
+  const displays = screen.getAllDisplays()
+  return displays.reduce((result, display) => {
+    const area = display.workArea
+    return (
+      result ||
+      (pos.x >= area.x &&
+        pos.y >= area.y &&
+        pos.x < area.x + area.width &&
+        pos.y < area.y + area.height)
+    )
+  }, false)
+}
 
 function openConfigure() {
   if (configureWindow === null){ 
@@ -332,7 +349,12 @@ function launchPgAdminWindow() {
   });
 
   pgAdminMainScreen.loadURL(startPageUrl);
-  pgAdminMainScreen.setBounds(configStore.get('bounds'));
+
+  const bounds = configStore.get('bounds');
+
+  (bounds && isWithinDisplayBounds({x: bounds.x, y: bounds.y})) ? pgAdminMainScreen.setBounds(bounds) :
+    pgAdminMainScreen.setBounds({x: 0, y: 0, width: 1024, height: 768});
+
   pgAdminMainScreen.show();
 
   pgAdminMainScreen.webContents.setWindowOpenHandler(({url})=>{
