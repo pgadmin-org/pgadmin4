@@ -100,7 +100,7 @@ export default function Users() {
       setLoading('');
     };
 
-    pgAdmin.Browser.notifier.confirm(gettext('Delete User'), gettext('Are you sure you want to delete the user %s?', row.original.username),
+    pgAdmin.Browser.notifier.confirmDelete(gettext('Delete User?'), gettext('Are you sure you want to delete the user %s?', `<strong>${row.original.username}</strong>`),
       async () => {
         setLoading(gettext('Deleting user...'));
         try {

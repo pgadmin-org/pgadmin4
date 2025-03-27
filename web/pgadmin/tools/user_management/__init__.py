@@ -558,6 +558,7 @@ def create_user(data):
 
     try:
         new_data = validate_user(data)
+        new_data['email'] = new_data['email'] if 'email' in new_data else None
         new_data['password'] = new_data['password']\
             if 'password' in new_data else None
 
@@ -565,7 +566,7 @@ def create_user(data):
             new_data['roles'] = [Role.query.get(new_data['roles'])]
 
     except Exception as e:
-        return False, str(e.description)
+        return False, str(e)
 
     try:
         _create_new_user(new_data)

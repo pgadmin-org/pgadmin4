@@ -417,9 +417,9 @@ Use the fields on the *Editor* panel to change settings of the query editor.
 * When the *Code folding?* switch is set to *False*, the editor will disable
   code folding. Disabling will improve editor performance with large files.
 
-* Use the *Font family* field to specify the font family that will be used in
-  all SQL text boxes and editors. If the font is not found, the default font
-  of *Source Code Pro* will be used.
+* Use the *Font family* field to be used for all SQL editors. The specified
+  font should already be installed on your system. If the font is not found,
+  the editor will fall back to the default font, Source Code Pro.
 
 * Use the *Font size* field to specify the font size that will be used in text
   boxes and editors.
