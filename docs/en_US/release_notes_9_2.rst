@@ -37,7 +37,6 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #8006 <https://github.com/pgadmin-org/pgadmin4/issues/8006>`_ -  Removed the pre-install script from the Red Hat build function as it was causing a No such file or directory warning during the update.
   | `Issue #8316 <https://github.com/pgadmin-org/pgadmin4/issues/8316>`_ -  Ensure that modal dialogs are not triggered more than once to avoid duplicates.
   | `Issue #8355 <https://github.com/pgadmin-org/pgadmin4/issues/8355>`_ -  Change session files garbage collection strategy.
   | `Issue #8362 <https://github.com/pgadmin-org/pgadmin4/issues/8362>`_ -  Fixed an issue where pgAdmin should fallback to main screen if the last opened screen is disconnected.

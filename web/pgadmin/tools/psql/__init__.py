@@ -274,8 +274,7 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
             except OSError as e:
                 # If the process is killed, bad file descriptor exception may
                 # occur. Handle it gracefully
-                if p.poll() is not None:
-                    raise e
+                pass
 
 
 def pty_handel_io(connection_data, data, sid):
