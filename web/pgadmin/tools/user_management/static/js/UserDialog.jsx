@@ -35,17 +35,6 @@ class UserSchema extends BaseUISchema {
       current_user['auth_sources'].includes(AUTH_METHODS['INTERNAL']));
   }
 
-  deleteUser(deleteRow) {
-    this.pgAdmin.Browser.notifier.confirm(
-      gettext('Delete user?'),
-      gettext('Are you sure you wish to delete this user?'),
-      deleteRow,
-      function() {
-        return true;
-      }
-    );
-  }
-
   isUserNameEnabled(state) {
     return this.isNew(state) && state.auth_source != AUTH_METHODS['INTERNAL'];
   }

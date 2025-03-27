@@ -38,6 +38,7 @@ basicSettings = createTheme(basicSettings, {
     fontSize: 14,
     htmlFontSize: 14,
     fontFamilyIcon: '"Font Awesome 5 Free"',
+    fontFamilySourceCode: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     fontFamily: [
       'Roboto',
       '"Helvetica Neue"',
@@ -367,7 +368,7 @@ function getFinalTheme(baseTheme) {
       flexGrow: 1,
     },
     fontSourceCode: {
-      fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      fontFamily: basicSettings.typography.fontFamilySourceCode,
     }
   };
 
