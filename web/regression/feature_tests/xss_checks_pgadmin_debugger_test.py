@@ -127,6 +127,8 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                 self.page.driver.find_elements(By.XPATH, "//button")[2]
             )
 
+            time.sleep(5)
+
             wait.until(EC.presence_of_element_located(
                 (By.XPATH, "//div[@id='id-results']//td "
                            "[contains(.,'Hello, pgAdmin4')]"))
