@@ -44,6 +44,8 @@ Bug fixes
   | `Issue #8462 <https://github.com/pgadmin-org/pgadmin4/issues/8462>`_ -  Fixed an issue where geometries in the geometry viewer will render partially when the container was resized.
   | `Issue #8473 <https://github.com/pgadmin-org/pgadmin4/issues/8473>`_ -  Change the stop/terminate icon at all the places for better UX.
   | `Issue #8479 <https://github.com/pgadmin-org/pgadmin4/issues/8479>`_ -  Fixed an issue where the Schema Diff was not displaying the difference query when a table had a UNIQUE NULLS NOT DISTINCT constraint.
+  | `Issue #8483 <https://github.com/pgadmin-org/pgadmin4/issues/8483>`_ -  Fixed an issue where the query tool data grid did not respect the default value for columns of domain type when the domain had a default value.
   | `Issue #8514 <https://github.com/pgadmin-org/pgadmin4/issues/8514>`_ -  Ensure the newly added parameters in the server dialog are incorporated into the Import/Export Servers functionality.
   | `Issue #8546 <https://github.com/pgadmin-org/pgadmin4/issues/8546>`_ -  Fixed an issue where updating the grantee was not correctly applying the privileges.
   | `Issue #8577 <https://github.com/pgadmin-org/pgadmin4/issues/8577>`_ -  Fixed an issue where the upgrade_check API returned an unexpected keyword argument 'cafile' due to changes in the urllib package supporting Python v3.13.
+  | `Issue #8597 <https://github.com/pgadmin-org/pgadmin4/issues/8597>`_ -  Fixed an issue where delete/rename was done on wrong file after sorting in Storage Manager.
