@@ -439,21 +439,23 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     type: null, idx: null
   });
 
+  // apply sort
   const sortedItems = useMemo(()=>(
     [...items].sort(getComparator(sortColumns[0]))
   ), [items, sortColumns]);
 
-  const filteredItems = useMemo(()=>{
+  // apply filter on sorted
+  const finalItems = useMemo(()=>{
     return sortedItems.filter((i)=>i.Filename?.toLowerCase().includes(search?.toLocaleLowerCase()));
   }, [items, sortColumns, search]);
 
   const itemsText = useMemo(()=>{
     let suffix = items.length == 1 ? 'item' : 'items';
-    if(items.length == filteredItems.length) {
+    if(items.length == finalItems.length) {
       return `${items.length} ${suffix}`;
     }
-    return `${filteredItems.length} of ${items.length} ${suffix}`;
-  }, [items, filteredItems]);
+    return `${finalItems.length} of ${items.length} ${suffix}`;
+  }, [items, finalItems]);
 
   const changeDir = async(storage) => {
     setSelectedSS(storage);
@@ -478,7 +480,9 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     setLoaderText('');
   };
 
-  const completeOperation = async (oldRow, newRow, rowIdx, selectedSS, func)=>{
+  const completeOperation = async (oldRow, newRow, selectedSS, func)=>{
+    // We need to find the index in actual items list not final items list
+    const rowIdx = oldRow ? items.findIndex((i)=>i.Filename == oldRow?.Filename && i.Path == oldRow?.Path) : 0;
     setOperation({});
     if(oldRow?.Filename == newRow.Filename) {
       setItems((prev)=>[
@@ -519,7 +523,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
   const onDownload = async ()=>{
     setLoaderText('Downloading...');
     try {
-      await fmUtilsObj.downloadFile(filteredItems[selectedRowIdx.current], selectedSS);
+      await fmUtilsObj.downloadFile(finalItems[selectedRowIdx.current], selectedSS);
     } catch (error) {
       setErrorMsg(parseApiError(error));
       console.error(error);
@@ -534,10 +538,10 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
     setOperation({
       type: 'add',
       idx: 0,
-      onComplete: async (row, rowIdx)=>{
+      onComplete: async (row)=>{
         setErrorMsg('');
         setLoaderText('Creating folder...');
-        await completeOperation(null, row, rowIdx, selectedSS, fmUtilsObj.addFolder.bind(fmUtilsObj));
+        await completeOperation(null, row, selectedSS, fmUtilsObj.addFolder.bind(fmUtilsObj));
         setLoaderText('');
       }
     });
@@ -554,8 +558,8 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
       onComplete: async (row, rowIdx)=>{
         setErrorMsg('');
         setLoaderText('Renaming...');
-        let oldRow = items[rowIdx];
-        await completeOperation(oldRow, row, rowIdx, selectedSS,fmUtilsObj.renameItem.bind(fmUtilsObj));
+        let oldRow = finalItems[rowIdx];
+        await completeOperation(oldRow, row, selectedSS, fmUtilsObj.renameItem.bind(fmUtilsObj));
         setLoaderText('');
       }
     });
@@ -570,10 +574,14 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
       setConfirmFile([null, null]);
       setLoaderText('Deleting...');
       try {
-        await fmUtilsObj.deleteItem(items[selectedRowIdx.current],selectedSS);
+        // selectedRowIdx is index in finalItems, so we need to find the index in actual items list
+        const oldRow = finalItems[selectedRowIdx.current];
+        const itemsRowIdx = items.findIndex((i)=>i.Filename == oldRow?.Filename && i.Path == oldRow?.Path);
+
+        await fmUtilsObj.deleteItem(oldRow, selectedSS);
         setItems((prev)=>[
-          ...prev.slice(0, selectedRowIdx.current),
-          ...prev.slice(selectedRowIdx.current+1),
+          ...prev.slice(0, itemsRowIdx),
+          ...prev.slice(itemsRowIdx+1),
         ]);
       } catch (error) {
         setErrorMsg(parseApiError(error));
@@ -613,33 +621,33 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
         }]);
         return;
       }
-    } else if(selectedRowIdx?.current >= 0 && filteredItems[selectedRowIdx?.current]) {
-      onOkPath = filteredItems[selectedRowIdx?.current]['Path'];
+    } else if(selectedRowIdx?.current >= 0 && finalItems[selectedRowIdx?.current]) {
+      onOkPath = finalItems[selectedRowIdx?.current]['Path'];
     }
     await fmUtilsObj.setLastVisitedDir(fmUtilsObj.currPath, selectedSS);
     onOK?.(onOkPath, selectedSS);
     closeModal();
-  }, [filteredItems, saveAs, fileType]);
+  }, [finalItems, saveAs, fileType]);
   const onItemEnter = useCallback(async (row)=>{
     if(row.file_type == 'dir' || row.file_type == 'drive') {
       await openDir(row.Path, selectedSS);
     } else if(params.dialog_type == 'select_file') {
       onOkClick();
     }
-  }, [filteredItems]);
+  }, [finalItems]);
   const onItemSelect = useCallback((idx)=>{
     selectedRowIdx.current = idx;
     fewBtnDisableCheck();
-  }, [filteredItems]);
+  }, [finalItems]);
   const onItemClick = useCallback((idx)=>{
-    let row = filteredItems[selectedRowIdx.current];
+    let row = finalItems[selectedRowIdx.current];
     if(params.dialog_type == 'create_file' && row?.file_type != 'dir' && row?.file_type != 'drive') {
-      setSaveAs(filteredItems[idx]?.Filename);
+      setSaveAs(finalItems[idx]?.Filename);
     }
-  }, [filteredItems]);
+  }, [finalItems]);
   const fewBtnDisableCheck = ()=>{
     let disabled = true;
-    let row = filteredItems[selectedRowIdx.current];
+    let row = finalItems[selectedRowIdx.current];
     if(params.dialog_type == 'create_file') {
       disabled = !saveAs?.trim();
     } else if(selectedRowIdx.current >= 0 && row) {
@@ -688,7 +696,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
 
   useEffect(()=>{
     fewBtnDisableCheck();
-  }, [saveAs, filteredItems.length]);
+  }, [saveAs, finalItems.length]);
 
   const isNoneSelected = _.isUndefined(selectedRow);
   let okBtnText = params.btn_primary;
@@ -812,10 +820,10 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
                   }
                 }}/>}
             {viewMode == 'list' &&
-            <ListView key={fmUtilsObj.currPath} items={filteredItems} operation={operation} onItemEnter={onItemEnter}
+            <ListView key={fmUtilsObj.currPath} items={finalItems} operation={operation} onItemEnter={onItemEnter}
               onItemSelect={onItemSelect} onItemClick={onItemClick} sortColumns={sortColumns} onSortColumnsChange={setSortColumns}/>}
             {viewMode == 'grid' &&
-            <GridView key={fmUtilsObj.currPath} items={filteredItems} operation={operation} onItemEnter={onItemEnter}
+            <GridView key={fmUtilsObj.currPath} items={finalItems} operation={operation} onItemEnter={onItemEnter}
               onItemSelect={onItemSelect} />}
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={_.escape(errorMsg)} closable onClose={()=>setErrorMsg('')}  />
             {params.dialog_type == 'create_file' &&
