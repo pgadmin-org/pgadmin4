@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 43
+SCHEMA_VERSION = 44
 
 ##########################################################################
 #
@@ -178,6 +178,7 @@ class Server(db.Model):
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
+    db_res_type = db.Column(db.String(32), default='databases')
     passexec_cmd = db.Column(db.Text(), nullable=True)
     passexec_expiration = db.Column(db.Integer(), nullable=True)
     bgcolor = db.Column(db.String(10), nullable=True)

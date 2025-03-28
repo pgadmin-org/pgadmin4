@@ -81,6 +81,7 @@ class ServerManager(object):
         self.db_info = dict()
         self.server_types = None
         self.db_res = server.db_res
+        self.db_res_type = server.db_res_type
         self.name = server.name
         self.passexec = \
             PasswordExec(server.passexec_cmd, server.host, server.port,
