@@ -23,6 +23,7 @@ import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
 import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { getSwitchCell } from '../../static/js/components/PgReactTableStyled';
+import { parseApiError } from '../../static/js/api_instance';
 
 const StyledBox = styled(Box)(({theme}) => ({
   height: '100%',
@@ -272,9 +273,11 @@ export default function CollectionNodeProperties({
           setLoaderText('');
         })
         .catch((err) => {
+          setData([]);
+          setLoaderText('');
           pgAdmin.Browser.notifier.alert(
             gettext('Failed to retrieve data from the server.'),
-            gettext(err.message)
+            parseApiError(err)
           );
         });
       setIsStale(false);

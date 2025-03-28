@@ -34,9 +34,9 @@ from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
     (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
-     check_ssl_fields)
+     check_ssl_fields, get_db_restriction)
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
-    SERVER_CONNECTION_CLOSED
+    SERVER_CONNECTION_CLOSED, RESTRICTION_TYPE_SQL
 from sqlalchemy import or_
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
@@ -746,6 +746,7 @@ class ServerNode(PGChildNodeView):
             'comment': 'comment',
             'role': 'role',
             'db_res': 'db_res',
+            'db_res_type': 'db_res_type',
             'passexec_cmd': 'passexec_cmd',
             'passexec_expiration': 'passexec_expiration',
             'bgcolor': 'bgcolor',
@@ -776,12 +777,11 @@ class ServerNode(PGChildNodeView):
             'role': gettext('Role')
         }
 
-        idx = 0
         data = request.form if request.form else json.loads(
             request.data
         )
 
-        if 'db_res' in data:
+        if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
@@ -948,7 +948,7 @@ class ServerNode(PGChildNodeView):
                 'connected': connected,
                 'version': manager.ver,
                 'server_type': manager.server_type if connected else 'pg',
-                'db_res': server.db_res.split(',') if server.db_res else None
+                'db_res': get_db_restriction(server.db_res_type, server.db_res)
             })
 
         return ajax_response(
@@ -1031,7 +1031,8 @@ class ServerNode(PGChildNodeView):
             'server_type': manager.server_type if connected else 'pg',
             'bgcolor': server.bgcolor,
             'fgcolor': server.fgcolor,
-            'db_res': server.db_res.split(',') if server.db_res else None,
+            'db_res': get_db_restriction(server.db_res_type, server.db_res),
+            'db_res_type': server.db_res_type,
             'passexec_cmd':
                 server.passexec_cmd if server.passexec_cmd else None,
             'passexec_expiration':
@@ -1137,6 +1138,12 @@ class ServerNode(PGChildNodeView):
             data['connection_params'] = connection_params
 
         server = None
+        db_restriction = None
+        if 'db_res' in data and isinstance(data['db_res'], list):
+            db_restriction = ','.join(data['db_res'])
+        elif 'db_res' in data and 'db_res_type' in data and \
+                data['db_res_type'] == RESTRICTION_TYPE_SQL:
+            db_restriction = data['db_res']
 
         try:
             server = Server(
@@ -1151,8 +1158,8 @@ class ServerNode(PGChildNodeView):
                 config.ALLOW_SAVE_PASSWORD else 0,
                 comment=data.get('comment', None),
                 role=data.get('role', None),
-                db_res=','.join(data['db_res']) if 'db_res' in data and
-                isinstance(data['db_res'], list) else None,
+                db_res=db_restriction,
+                db_res_type=data.get('db_res_type', None),
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
