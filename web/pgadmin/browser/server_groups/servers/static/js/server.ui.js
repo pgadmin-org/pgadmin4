@@ -155,7 +155,8 @@ export default class ServerSchema extends BaseUISchema {
       connect_now: true,
       password: undefined,
       save_password: false,
-      db_res: [],
+      db_res: undefined,
+      db_res_type: 'databases',
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
@@ -468,11 +469,41 @@ export default class ServerSchema extends BaseUISchema {
         readonly: obj.isConnected,
       },
       {
-        id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
-        options: [],
+        id: 'db_res_type', label: gettext('DB restriction type'), type: 'toggle',
+        mode: ['properties', 'edit', 'create'], group: gettext('Advanced'),
+        options: [
+          {'label': gettext('Databases'), value: 'databases'},
+          {'label': gettext('SQL'), value: 'sql'},
+        ],
+        readonly: obj.isConnectedOrShared,
+        depChange: ()=>{
+          return {
+            db_res: null,
+          };
+        }
+      },
+      {
+        id: 'db_res', label: gettext('DB restriction'), group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnectedOrShared,
-        controlProps: {
-          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the databases to be restrict...'
+        deps: ['db_res_type'],
+        type: (state) => {
+          if (state.db_res_type == 'databases') {
+            return {
+              type: 'select',
+              options: [],
+              controlProps: {
+                multiple: true,
+                allowClear: false,
+                creatable: true,
+                noDropdown: true,
+                placeholder: 'Specify the databases to be restrict...'
+              }
+            };
+          } else {
+            return {
+              type: 'sql',
+            };
+          }
         },
       },
       {

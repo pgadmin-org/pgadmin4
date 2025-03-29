@@ -240,6 +240,45 @@
       "expected_data": {
         "status_code": 200
       }
+    },
+    {
+      "name": "Add server with post connection sql",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "post_connection_sql": "set timezone to 'Asia/Kolkata'"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with DB Restriction (Database names)",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "db_res": ["dev", "qa"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with DB Restriction (SQL)",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "db_res": "SELECT datname FROM pg_database\nWHERE datistemplate = false AND datname ILIKE '%myprefix_%'\nORDER BY datname"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
     }
   ],
   "is_password_saved": [

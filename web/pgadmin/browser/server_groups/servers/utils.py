@@ -14,9 +14,10 @@ import keyring
 from flask_login import current_user
 from werkzeug.exceptions import InternalServerError
 from flask import render_template
-from pgadmin.utils.constants import KEY_RING_USERNAME_FORMAT, \
-    KEY_RING_SERVICE_NAME, KEY_RING_TUNNEL_FORMAT, \
-    KEY_RING_DESKTOP_USER, SSL_MODES
+from pgadmin.utils.constants import (
+    KEY_RING_USERNAME_FORMAT, KEY_RING_SERVICE_NAME, KEY_RING_TUNNEL_FORMAT,
+    KEY_RING_DESKTOP_USER, SSL_MODES, RESTRICTION_TYPE_DATABASES,
+    RESTRICTION_TYPE_SQL)
 from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.model import db, Server
 from flask import current_app
@@ -680,3 +681,35 @@ def delete_adhoc_servers(sid=None):
     except Exception:
         db.session.rollback()
         raise
+
+
+def get_db_restriction(res_type, restriction):
+    """
+    This function is used to return the database restriction based on
+    restriction type.
+    """
+    if restriction and res_type == RESTRICTION_TYPE_DATABASES:
+        return restriction.split(',')
+    elif restriction and res_type == RESTRICTION_TYPE_SQL:
+        return restriction
+    return None
+
+
+def get_db_disp_restriction(manager_obj):
+    """
+    This function is used to return db disp restriction aand params
+    to run the query.
+    """
+    db_disp_res = None
+    params = None
+    if (manager_obj and manager_obj.db_res and
+            manager_obj.db_res_type == RESTRICTION_TYPE_DATABASES):
+        db_disp_res = ", ".join(
+            ['%s'] * len(manager_obj.db_res.split(','))
+        )
+        params = tuple(manager_obj.db_res.split(','))
+    elif (manager_obj and manager_obj.db_res and
+            manager_obj.db_res_type == RESTRICTION_TYPE_SQL):
+        db_disp_res = manager_obj.db_res
+
+    return db_disp_res, params
