@@ -110,7 +110,7 @@
     "date-fns": "^4.1.0",
     "diff-arrays-of-objects": "^1.1.8",
     "hotkeys-js": "^3.13.3",
-    "html-to-image": "1.11.11",
+    "html-to-image": "1.11.13",
     "immutability-helper": "^3.0.0",
     "insert-if": "^1.1.0",
     "ip-address": "^10.0.1",
