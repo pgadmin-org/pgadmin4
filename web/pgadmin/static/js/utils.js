@@ -602,7 +602,7 @@ export function measureText(text, font) {
     measureText.ele.style.cssText = `position: absolute; visibility: hidden; white-space: nowrap; font: ${font}`;
     document.body.appendChild(measureText.ele);
   }
-  measureText.ele.innerHTML = text;
+  measureText.ele.textContent = text;
   const dim = measureText.ele.getBoundingClientRect();
   return {width: dim.width, height: dim.height};
 }
