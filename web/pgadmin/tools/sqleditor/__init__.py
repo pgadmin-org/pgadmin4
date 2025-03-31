@@ -2156,7 +2156,8 @@ def start_query_download_tool(trans_id):
                 sql = value
             if key == 'query_commited':
                 query_commited = (
-                    eval(value) if isinstance(value, str) else value
+                    value.lower() in ('true', '1') if isinstance(
+                        value, str) else value
                 )
         if not sql:
             sql = trans_obj.get_sql(sync_conn)

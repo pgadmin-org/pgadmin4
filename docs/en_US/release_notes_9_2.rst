@@ -50,3 +50,4 @@ Bug fixes
   | `Issue #8577 <https://github.com/pgadmin-org/pgadmin4/issues/8577>`_ -  Fixed an issue where the upgrade_check API returned an unexpected keyword argument 'cafile' due to changes in the urllib package supporting Python v3.13.
   | `Issue #8597 <https://github.com/pgadmin-org/pgadmin4/issues/8597>`_ -  Fixed an issue where delete/rename was done on wrong file after sorting in Storage Manager.
   | `Issue #8602 <https://github.com/pgadmin-org/pgadmin4/issues/8602>`_ -  Fixed an XSS vulnerability issue in the Query Tool and View/Edit Data (CVE-2025-2946).
+  | `Issue #8603 <https://github.com/pgadmin-org/pgadmin4/issues/8603>`_ -  Fixed a remote code execution issue in the Query Tool and Cloud Deployment (CVE-2025-2945).
