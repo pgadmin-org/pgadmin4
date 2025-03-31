@@ -78,7 +78,6 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                 By.CSS_SELECTOR, "div[data-label='Debugging']")
         ).perform()
 
-        # time.sleep(2)
         wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "li[data-label='Debug']")))
 
@@ -87,7 +86,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
         # We need to check if debugger plugin is installed or not
         try:
-            wait = WebDriverWait(self.page.driver, 2)
+            wait = WebDriverWait(self.page.driver, 10)
             is_error = wait.until(EC.presence_of_element_located(
                 (By.XPATH, "//div[contains(@class,'MuiDialogTitle-root')]"
                            "//div[text()='Debugger Error']")
@@ -121,13 +120,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                 (By.XPATH, "//span[contains(.,'Hello, pgAdmin4')]"))
             )
 
-            time.sleep(5)
-
             self.page.click_element(
                 self.page.driver.find_elements(By.XPATH, "//button")[2]
             )
-
-            time.sleep(5)
 
             wait.until(EC.presence_of_element_located(
                 (By.XPATH, "//div[@id='id-results']//td "
