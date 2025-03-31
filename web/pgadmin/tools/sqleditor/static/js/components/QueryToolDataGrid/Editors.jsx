@@ -315,6 +315,10 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
     return false;
   };
   const onKeyDown = (e)=>{
+    // Handle "Ctrl + A" or "Cmd + A".
+    if ((e.ctrlKey || e.metaKey) && e.keyCode === 65) {
+      e.stopPropagation();
+    }
     if(e.code === 'Tab' || e.code === 'Enter') {
       e.preventDefault();
       if(!onBlur()) {
