@@ -83,38 +83,41 @@ Menu.setApplicationMenu(null);
 // pgAdmin tried to open the window on the display where the it
 // was last closed.
 function isWithinDisplayBounds(pos) {
-  const displays = screen.getAllDisplays()
+  const displays = screen.getAllDisplays();
   return displays.reduce((result, display) => {
-    const area = display.workArea
+    const area = display.workArea;
     return (
       result ||
       (pos.x >= area.x &&
         pos.y >= area.y &&
         pos.x < area.x + area.width &&
         pos.y < area.y + area.height)
-    )
-  }, false)
+    );
+  }, false);
 }
 
 function openConfigure() {
-  if (configureWindow === null){ 
-  configureWindow = new BrowserWindow({
-    show: false,
-    width: 600,
-    height: 580,
-    position: 'center',
-    resizable: false,
-    parent: pgAdminMainScreen,
-    icon: '../../assets/pgAdmin4.png',
-    webPreferences: {
-      preload: path.join(__dirname, 'other_preload.js'),
-    },
-  });
-  configureWindow.loadFile('./src/html/configure.html');
-  configureWindow.once('ready-to-show', ()=>{
+  if (configureWindow === null || configureWindow?.isDestroyed()) { 
+    configureWindow = new BrowserWindow({
+      show: false,
+      width: 600,
+      height: 580,
+      position: 'center',
+      resizable: false,
+      parent: pgAdminMainScreen,
+      icon: '../../assets/pgAdmin4.png',
+      webPreferences: {
+        preload: path.join(__dirname, 'other_preload.js'),
+      },
+    });
+    configureWindow.loadFile('./src/html/configure.html');
+    configureWindow.once('ready-to-show', ()=>{
+      configureWindow.show();
+    });
+  } else {
+    configureWindow.hide();
     configureWindow.show();
-  });
-}
+  }
 }
 
 function showErrorDialog(intervalID) {
@@ -327,7 +330,7 @@ function launchPgAdminWindow() {
 
   setupMenu(pgAdminMainScreen, {
     'view_logs': ()=>{
-      if(viewLogWindow === null){
+      if(viewLogWindow === null || viewLogWindow?.isDestroyed()) {
         viewLogWindow = new BrowserWindow({
           show: false,
           width: 800,
@@ -344,6 +347,9 @@ function launchPgAdminWindow() {
         viewLogWindow.once('ready-to-show', ()=>{
           viewLogWindow.show();
         });
+      } else {
+        viewLogWindow.hide();
+        viewLogWindow.show();
       }
     },
     'configure': openConfigure,

@@ -1147,7 +1147,7 @@ export function ResultSet() {
           eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE);
         }}
       />
-    ), {modalId:modalId});
+    ), {id: modalId});
   };
   useEffect(()=>{
     let isDirty = _.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted);

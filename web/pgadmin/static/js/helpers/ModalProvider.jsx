@@ -98,7 +98,7 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
     return (
       <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} okIcon={okIcon}/>
     );
-  }, {modalId: modalId});
+  }, {id: modalId});
 }
 
 function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = gettext('Delete'), cancelLabel = gettext('Cancel')) {
