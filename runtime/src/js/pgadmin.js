@@ -104,6 +104,7 @@ function openConfigure() {
     height: 580,
     position: 'center',
     resizable: false,
+    parent: pgAdminMainScreen,
     icon: '../../assets/pgAdmin4.png',
     webPreferences: {
       preload: path.join(__dirname, 'other_preload.js'),
@@ -333,6 +334,7 @@ function launchPgAdminWindow() {
           height: 460,
           position: 'center',
           resizable: false,
+          parent: pgAdminMainScreen,
           icon: '../../assets/pgAdmin4.png',
           webPreferences: {
             preload: path.join(__dirname, 'other_preload.js'),
