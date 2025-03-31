@@ -251,6 +251,10 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     if(e.keyCode == 13 && !e.shiftKey) {
       onOK();
     }
+    // Handle "Ctrl + A" or "Cmd + A".
+    if ((e.ctrlKey || e.metaKey) && e.keyCode === 65) {
+      e.stopPropagation();
+    }
   };
 
   return (
