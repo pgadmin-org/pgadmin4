@@ -1233,10 +1233,6 @@ def execute_debugger_query(trans_id, query_type):
         if not status:
             return internal_server_error(errormsg=result)
 
-        if result == BUSY:
-            return make_json_response(
-                data={'status': 'Busy', 'result': []}
-            )
         return make_json_response(
             data={'status': status, 'result': result}
         )

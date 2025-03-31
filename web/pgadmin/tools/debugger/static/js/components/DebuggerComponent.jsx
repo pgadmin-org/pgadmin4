@@ -276,6 +276,9 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           }
           // Call function to create and update Stack information ....
           getStackInformation(transId);
+          if (params.directDebugger.debug_type) {
+            pollEndExecutionResult(transId);
+          }
         } else if (res.data.data.status === 'NotConnected') {
           pgAdmin.Browser.notifier.alert(
             gettext('Debugger Error'),
@@ -701,7 +704,9 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         method: 'GET',
       })
         .then(function (res) {
-          if (res.data.data.status) {
+          if (isBusy(res)) {
+            continueDebugger();
+          } else if (res.data.data.status) {
             pollResult(params.transId);
           } else {
             pgAdmin.Browser.notifier.alert(
