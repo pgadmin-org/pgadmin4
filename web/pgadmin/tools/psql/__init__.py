@@ -271,7 +271,7 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
                                                    timeout)
 
                 read_terminal_data(parent, data_ready, max_read_bytes, sid)
-            except OSError as e:
+            except OSError:
                 # If the process is killed, bad file descriptor exception may
                 # occur. Handle it gracefully
                 pass
@@ -311,14 +311,15 @@ def start_process(data):
 
             _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
-            if psql_utility is None:
+            if psql_utility is None or not os.path.exists(psql_utility):
                 sio.emit('pty-output',
                          {
                              'result': gettext(
-                                 'PSQL utility not found. Specify the binary '
-                                 'path in the preferences for the appropriate '
-                                 'server version, or select "Set as default" '
-                                 'to use an existing binary path.'),
+                                 'PSQL utility not found. Specify the valid '
+                                 'binary path in the preferences for the '
+                                 'appropriate server version, or select '
+                                 '"Set as default" to use an existing binary '
+                                 'path.'),
                              'error': True},
                          namespace='/pty', room=request.sid)
                 return
