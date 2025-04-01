@@ -1,2 +1,0 @@
-ALTER INDEX IF EXISTS public."Idx3_$%{}[]()&*^!@""'`\/#"
-    ALTER COLUMN 2 SET STATISTICS 1000;

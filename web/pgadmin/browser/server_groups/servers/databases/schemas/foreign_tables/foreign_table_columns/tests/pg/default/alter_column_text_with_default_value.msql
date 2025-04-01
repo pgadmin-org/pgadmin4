@@ -1,2 +1,0 @@
-ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
-    ALTER COLUMN "col_2_$%{}[]()&*^!@""'`\/#" SET DEFAULT 'changed default value';

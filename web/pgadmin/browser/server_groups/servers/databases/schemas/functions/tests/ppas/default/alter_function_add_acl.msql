@@ -1,3 +1,0 @@
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC;
-
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO enterprisedb;

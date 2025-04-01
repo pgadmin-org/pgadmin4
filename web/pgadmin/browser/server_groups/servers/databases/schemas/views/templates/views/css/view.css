@@ -1,8 +1,0 @@
-.icon-view{
-  background-image: url('{{ url_for('NODE-view.static', filename='img/view.svg') }}') !important;
-  background-repeat: no-repeat;
-  background-size: 20px !important;
-  align-content: center;
-  vertical-align: middle;
-  height: 1.3em;
-}

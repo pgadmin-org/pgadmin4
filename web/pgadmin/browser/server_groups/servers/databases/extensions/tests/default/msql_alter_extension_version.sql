@@ -1,2 +1,0 @@
-ALTER EXTENSION adminpack
-    UPDATE TO "1.1";

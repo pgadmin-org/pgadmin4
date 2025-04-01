@@ -1,2 +1,0 @@
-ALTER TYPE public."enum_type_$%{}[]()&*^!@""'`\/#"
-    ADD VALUE 'd' AFTER 'c';

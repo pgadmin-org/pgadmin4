@@ -1,3 +1,0 @@
-{% macro BOOL_TEXT(bool_val) %}
-{% if bool_val %}true{% else %}false{% endif %}
-{% endmacro %}

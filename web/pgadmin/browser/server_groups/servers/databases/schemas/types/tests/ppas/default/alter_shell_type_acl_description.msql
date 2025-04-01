@@ -1,2 +1,0 @@
-COMMENT ON TYPE public."shell_type_$%{}[]()&*^!@""'`\/#"
-    IS 'this is test';

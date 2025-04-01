@@ -1,4 +1,0 @@
-<p>Your password has been changed.</p>
-{% if security.recoverable %}
-<p>If you did not change your password, <a href="{{ url_for('browser.forgot_password', _external=True) }}">click here to reset it</a>.</p>
-{% endif %}
