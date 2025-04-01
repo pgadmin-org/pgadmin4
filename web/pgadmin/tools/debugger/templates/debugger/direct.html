@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ _('Debugger - ') + title }}{% endblock %}
+{% block init_script %}
+
+try {
+  require(
+    ['sources/generated/debugger', 'sources/pgadmin'],
+    function(pgDirectDebug, pgAdmin) {
+      var pgDebug = window.pgAdmin.Tools.Debugger;
+      pgDebug.load(document.getElementById('debugger-main-container'), {{ uniqueId }}, {{ debug_type }}, '{{ function_name_with_arguments }}', '{{layout|safe}}');
+    },
+    function() {
+      console.log(arguments);
+    });
+} catch (err) {
+  console.log(err);
+}
+{% endblock %}
+{% block body %}
+<style>
+    #debugger-main-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #debugger-main-container:not(:empty) + .pg-sp-container {
+        display: none;
+    }
+</style>
+{% if is_desktop_mode and is_linux %}
+<style>
+    body
+</style>
+{% endif %}
+<div id="debugger-main-container" tabindex="0">
+    <div class="pg-sp-container">
+        <div class="pg-sp-content">
+            <div class="row">
+                <div class="col-12 pg-sp-icon"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css_link %}
+{% for stylesheet in stylesheets %}
+<link type="text/css" rel="stylesheet" href="{{ stylesheet }}"/>
+{% endfor %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}

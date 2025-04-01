@@ -1,0 +1,34 @@
+{# List of allowed privileges of Schema, table sequence, function and view #}
+{#
+    Format for allowed privileges are:
+    "node_name": {
+        "type": "name",
+        "acl": [...]
+    }
+#}
+{
+    "schema": {
+        "type": "SCHEMA",
+        "acl": ["a", "r", "w", "d", "D", "x", "t", "U", "X"]
+    },
+    "table": {
+        "type": "TABLE",
+        "acl": ["a", "r", "w", "d", "D", "x", "t", "m"]
+    },
+    "foreign_table": {
+        "type": "FOREIGN TABLE",
+        "acl": ["a", "r", "w", "d", "D", "x", "t", "m"]
+    },
+    "sequence": {
+        "type": "SEQUENCE",
+        "acl": ["r", "w", "U"]
+    },
+    "function": {
+        "type": "FUNCTION",
+        "acl": ["X"]
+    },
+    "procedure": {
+        "type": "PROCEDURE",
+        "acl": ["X"]
+    }
+}

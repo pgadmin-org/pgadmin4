@@ -1,0 +1,20 @@
+-- Type: composite_type_$%{}[]()&*^!@"'`\/#
+
+-- DROP TYPE IF EXISTS public."composite_type_$%{}[]()&*^!@""'`\/#";
+
+CREATE TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" AS
+(
+	mname2 character varying(50) COLLATE pg_catalog."C",
+	mname3 text[] COLLATE pg_catalog."C",
+	mname4 bigint
+);
+
+ALTER TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
+    OWNER TO <OWNER>;
+
+COMMENT ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
+    IS 'this is test';
+
+GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+
+GRANT USAGE ON TYPE public."composite_type_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

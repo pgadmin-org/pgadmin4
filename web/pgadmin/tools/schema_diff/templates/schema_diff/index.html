@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block init_script %}
+try {
+  require(
+    ['sources/generated/browser_nodes', 'sources/generated/schema_diff'],
+    function() {
+        var pgSchemaDiff = window.pgAdmin.Tools.SchemaDiff;
+        pgSchemaDiff.load(document.getElementById('schema-diff-main-container'),{{trans_id}});
+    },
+    function() {
+      console.log(arguments);
+    });
+} catch (err) {
+  console.log(err);
+}
+{% endblock %}
+{% block css_link %}
+<style>
+  #schema-diff-main-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #schema-diff-main-container:not(:empty) + .pg-sp-container {
+        display: none;
+    }
+</style>
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+{% block title %}{{editor_title}}{% endblock %}
+{% block body %}
+<div id="schema-diff-main-container" tabindex="0">
+  <div class="pg-sp-container">
+    <div class="pg-sp-content">
+        <div class="row">
+            <div class="col-12 pg-sp-icon"></div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

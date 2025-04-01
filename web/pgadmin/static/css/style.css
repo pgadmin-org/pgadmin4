@@ -1,0 +1,18 @@
+@import 'node_modules/@fortawesome/fontawesome-free/css/all.css';
+@import 'node_modules/leaflet/dist/leaflet.css';
+
+@import 'node_modules/@xterm/xterm/css/xterm.css';
+
+@import 'node_modules/jsoneditor/dist/jsoneditor.min.css';
+@import 'node_modules/react-checkbox-tree/lib/react-checkbox-tree.css';
+
+@import 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css';
+
+@import 'node_modules/uplot/dist/uPlot.min.css';
+
+@import 'node_modules/rc-dock/dist/rc-dock.css';
+@import 'node_modules/@szhsin/react-menu/dist/index.css';
+
+@import 'node_modules/react-data-grid/lib/styles.css';
+
+@import './pgadmin.css';

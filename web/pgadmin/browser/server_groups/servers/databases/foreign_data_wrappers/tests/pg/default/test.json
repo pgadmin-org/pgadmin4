@@ -1,0 +1,134 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "Fdw1_$%{}[]()&*^!@\"'`\\/#",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "expected_sql_file": "create_fdw.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW add comment",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "description": "a comment"
+      },
+      "expected_sql_file": "alter_fdw_comment.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW add option 1",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwoptions": {
+          "added": [{
+            "fdwoption": "opt1",
+            "fdwvalue": "val1"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_opt1.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW add option 2",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwoptions": {
+          "added": [{
+            "fdwoption": "opt2",
+            "fdwvalue": "val2"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_opt2.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW change option 2 value",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwoptions": {
+          "changed": [{
+            "fdwoption": "opt2",
+            "fdwvalue": "valopt2"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_change_opt2.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW remove option 2",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwoptions": {
+          "deleted": [{
+            "fdwoption": "opt2",
+            "fdwvalue": "valopt2"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_opt1.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW add validator",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwvalue": "pg_catalog.postgresql_fdw_validator"
+      },
+      "expected_sql_file": "alter_fdw_validator.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW rename",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "Fdw2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_fdw_rename.sql"
+    },{
+      "type": "alter",
+      "name": "Alter FDW add privileges",
+      "endpoint": "NODE-foreign_data_wrapper.obj_id",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "fdwacl": {
+          "added":[{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges":[
+              {
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+              }]
+          },{
+            "grantee": "postgres",
+            "grantor": "postgres",
+            "privileges":[{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": true
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_fdw_privileges.sql"
+    },{
+      "type": "delete",
+      "name": "Drop FDW",
+      "endpoint": "NODE-foreign_data_wrapper.delete_id",
+      "data": {
+        "name": "Fdw2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

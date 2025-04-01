@@ -1,0 +1,321 @@
+#define MyAppName "pgAdmin 4"
+#define MyAppVersion MYAPP_VERSION
+#define MyAppPublisher "The pgAdmin Development Team"
+#define MyAppURL "www.pgadmin.org"
+#define MyAppExeName "pgAdmin4.exe"
+#define MyAppID "C14F64E7-DCB9-4DE1-8560-16F08FCFF64E"
+#define MyAppFullVersion MYAPP_FULLVERSION
+#define MyAppArchitecturesMode "x64"
+#define MyAppVCDist MYAPP_VCDIST
+#define MyAppInvalidPath "Please provide a valid path."
+#define MinimumWindowsVer "6.2.9200"
+#define CheckOldInstallerVersion "v8"
+
+[Setup]
+AppId={#MyAppName}{#MyAppVersion}
+AppName={#MyAppName}
+AppVersion={#MyAppFullVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+DisableWelcomePage=no
+DisableProgramGroupPage=auto
+LicenseFile=Resources\license.rtf
+OutputBaseFilename=pgadmin4-setup
+SetupIconFile=Resources\pgAdmin4.ico
+Compression=lzma
+SolidCompression=yes
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
+ChangesEnvironment=yes
+UninstallDisplayIcon={app}\runtime\{#MyAppExeName}
+ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
+AllowNoIcons=yes
+WizardImageFile=sidebar.bmp
+MinVersion={#MinimumWindowsVer}
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+;This section will override the standard error message by default which is called internally and  we don't have a control over this.
+[Messages]
+InvalidPath={#MyAppInvalidPath}
+
+;This section would be used for customized error message display.
+[CustomMessages]
+english.NewerVersionExists=A newer version of {#MyAppName}
+english.InvalidPath={#MyAppInvalidPath}
+
+[Icons]
+Name: {group}\{#MyAppName}; Filename: {app}\runtime\{#MyAppExeName}; IconFilename: {app}\pgAdmin4.ico; WorkingDir: {app}\runtime;
+
+[Files]
+Source: "..\..\win-build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs;
+
+[Run]
+Filename: "{app}\installer\{#MyAppVCDist}"; StatusMsg: "VC runtime redistributable package"; Parameters: "/passive /verysilent /norestart"; Check: InstallVC;
+
+[Registry]
+Root: HKA; Subkey: "Software\{#MyAppName}"; Flags: uninsdeletekeyifempty
+Root: HKA; Subkey: "Software\{#MyAppName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\{#MyAppName}"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
+Root: HKA; Subkey: "Software\{#MyAppName}"; ValueType: string; ValueName: "Version"; ValueData: "{#MyAppFullVersion}"
+
+[Code]
+var
+  UpgradeMode: Boolean;
+
+// Procedure to split a string into an array of integers
+procedure Explode(var Dest: TArrayOfInteger; Text: String; Separator: String);
+var
+  i, p: Integer;
+begin
+  i := 0;
+  repeat
+    SetArrayLength(Dest, i+1);
+    p := Pos(Separator,Text);
+    if p > 0 then begin
+      Dest[i] := StrToInt(Copy(Text, 1, p-1));
+      Text := Copy(Text, p + Length(Separator), Length(Text));
+      i := i + 1;
+    end else begin
+      Dest[i] := StrToInt(Text);
+      Text := '';
+    end;
+  until Length(Text)=0;
+end;
+
+// Function compares version strings numerically:
+//     * when v1 = v2, result = 0
+//     * when v1 < v2, result = -1
+//     * when v1 > v2, result = 1
+//
+// Supports version numbers with trailing zeroes, for example 1.02.05.
+// Supports comparison of two version number of different lengths,
+// for example CompareVersions('1.2', '2.0.3')
+// When any of the parameters is '' (empty string) it considers version
+// number as 0
+function CompareVersions(v1: String; v2: String): Integer;
+var
+  v1parts: TArrayOfInteger;
+  v2parts: TArrayOfInteger;
+  i: Integer;
+begin
+  if v1 = '' then
+  begin
+    v1 := '0';
+  end;
+
+  if v2 = '' then
+  begin
+    v2 := '0';
+  end;
+
+  Explode(v1parts, v1, '.');
+  Explode(v2parts, v2, '.');
+
+  if (GetArrayLength(v1parts) > GetArrayLength(v2parts)) then
+  begin
+    SetArrayLength(v2parts, GetArrayLength(v1parts))
+  end else if (GetArrayLength(v2parts) > GetArrayLength(v1parts)) then
+  begin
+    SetArrayLength(v1parts, GetArrayLength(v2parts))
+  end;
+
+  for i := 0 to GetArrayLength(v1parts) - 1 do
+  begin
+    if v1parts[i] > v2parts[i] then
+    begin
+      { v1 is greater }
+      Result := 1;
+      exit;
+    end else if v1parts[i] < v2parts[i] then
+    begin
+      { v2 is greater }
+      Result := -1;
+      exit;
+    end;
+  end;
+
+  { Are Equal }
+  Result := 0;
+end;
+
+// This function is invoked only when the V8 version is already installed.
+// It retrieves the path of the uninstaller to remove the installed V8 version.
+function GetUninstallerPath(): String;
+var
+  sUnInstRegKey: String;
+  sUnInstPath: String;
+begin
+  sUnInstRegKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppName}{#CheckOldInstallerVersion}_is1';
+  sUnInstPath := '';
+  RegQueryStringValue(HKA, sUnInstRegKey, 'UninstallString', sUnInstPath);
+  Result := sUnInstPath;
+end;
+
+// This function is invoked only when the V8 version is already installed.
+// It is used to uninstall the installed V8 version.
+// Return Values:
+// 1 - Uninstaller path is empty.
+// 2 - Error executing the Uninstaller.
+// 3 - Successfully executed the Uninstaller
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallerPath: String;
+  iResultCode: Integer;
+begin
+  // default return value
+  Result := 0;
+
+  // get the uninstall path of the old app
+  sUnInstallerPath := GetUninstallerPath();
+  if sUnInstallerPath <> '' then begin
+    sUnInstallerPath := RemoveQuotes(sUnInstallerPath);
+    if Exec(sUnInstallerPath, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+function CheckPgAdminAlreadyInstalled: Boolean;
+var
+  Version: String;
+begin
+  if RegKeyExists(HKA,'Software\{#MyAppName}\{#CheckOldInstallerVersion}') then
+  begin
+    if UnInstallOldVersion() < 3 then
+    begin
+      Result := False;
+    end;
+  end;
+
+  if RegValueExists(HKA,'Software\{#MyAppName}', 'Version') then
+  begin
+    UpgradeMode := True;
+    RegQueryStringValue(HKA,'Software\{#MyAppName}', 'Version', Version);
+    if CompareVersions(Version, '{#MyAppFullVersion}') = 1 then
+    begin
+      MsgBox(ExpandConstant('{cm:NewerVersionExists}' + '(v' + Version + ') is already installed' ), mbInformation, MB_OK);
+      Result := False;
+    end
+    else
+    begin
+      Result := True;
+    end;
+  end;
+
+  if  ( not (UpgradeMode) ) then
+  begin
+    // This is required as it will be passed on to the InitializeSetup function
+    Result := True;
+  end;
+end;
+
+// Find current version before installation
+function InitializeSetup: Boolean;
+begin
+    Result := CheckPgAdminAlreadyInstalled;
+end;
+
+function IsUpgradeMode(): Boolean;
+begin
+  Result := UpgradeMode;
+end;
+
+function InstallVC: Boolean;
+begin
+  Result := True;
+end;
+
+// This function would be called during upgrade mode
+// In upgrade mode - delete web/* and exclude config_local.py
+procedure DelWebfolder(Path: string);
+var
+  FindRec: TFindRec;
+  FilePath: string;
+begin
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          FilePath := Path + '\' + FindRec.Name;
+          if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
+          begin
+            if CompareText(FindRec.Name, 'config_local.py') <> 0 then
+            begin
+              DeleteFile(FilePath);
+            end
+          end
+          else
+            begin
+              DelWebfolder(FilePath);
+              RemoveDir(FilePath);
+            end;
+          end;
+        until not FindNext(FindRec);
+      finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
+// This function would be called during upgrade mode
+// In upgrade mode - delete python/* for example
+procedure DelFolder(Path: string);
+var
+  FindRec: TFindRec;
+  FilePath: string;
+begin
+  if FindFirst(Path + '\*', FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then
+        begin
+          FilePath := Path + '\' + FindRec.Name;
+          if FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
+          begin
+            DeleteFile(FilePath);
+          end
+          else
+            begin
+              DelFolder(FilePath);
+              RemoveDir(FilePath);
+            end;
+          end;
+        until not FindNext(FindRec);
+      finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
+//procedure CurPageChanged(CurPageID: Integer);
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  Ret: Boolean;
+begin
+  Ret := True;
+  case CurPageID of
+    wpReady:
+	begin
+      if (IsUpgradeMode) then
+      begin
+        DelWebfolder(ExpandConstant('{app}\web'));
+        DelFolder(ExpandConstant('{app}\python'));
+      end;
+	end;
+  end;
+
+  Result := Ret;
+end;
+
+// End of program

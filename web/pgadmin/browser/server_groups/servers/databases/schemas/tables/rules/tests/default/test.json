@@ -1,0 +1,191 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table For Rule",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_emp_rule",
+        "columns": [{
+          "name": "emp_id",
+          "cltype": "integer",
+          "is_primary_key": true
+        }, {
+          "name": "name",
+          "cltype": "text"
+        }, {
+          "name": "salary",
+          "cltype": "bigint"
+        }],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Rule for insert event",
+      "endpoint": "NODE-rule.obj",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql",
+      "data": {
+        "name": "test_insert_rule_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "INSERT",
+        "condition": "new.salary > 5000",
+        "statements": "UPDATE test_emp_rule SET salary = 5000\n  WHERE test_emp_rule.emp_id = new.emp_id"
+      },
+      "expected_sql_file": "create_insert_event_rule.sql",
+      "expected_msql_file": "create_insert_event_rule_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule for insert event",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "name": "test_insert_rule1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "INSERT",
+        "do_instead": true,
+        "comment": "This is a insert rule",
+        "condition": "new.salary > 8000",
+        "statements": "UPDATE test_emp_rule SET salary = 8000\n\tWHERE test_emp_rule.emp_id = new.emp_id"
+      },
+      "expected_sql_file": "alter_insert_event_rule.sql",
+      "expected_msql_file": "alter_insert_event_rule_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule insert to update event with complex commands",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "statements": "UPDATE test_emp_rule SET salary = 8000\n\tWHERE test_emp_rule.emp_id = new.emp_id;\nINSERT INTO test_emp_rule(emp_id, name, salary)\nSELECT 1, 'xyz', 2000 WHERE 1=2;"
+      },
+      "expected_sql_file": "alter_insert_event_rule_complex.sql",
+      "expected_msql_file": "alter_insert_event_rule_complex_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule for insert event to statements NOTHING",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "statements": "NOTHING"
+      },
+      "expected_sql_file": "alter_insert_event_rule_nothing.sql",
+      "expected_msql_file": "alter_insert_event_rule_nothing_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule for insert with NOTHING to Update",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "event": "UPDATE"
+      },
+      "expected_sql_file": "alter_insert_event_rule_nothing_update.sql",
+      "expected_msql_file": "alter_insert_event_rule_nothing_update_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Rule",
+      "endpoint": "NODE-rule.delete_id",
+      "data": {
+        "name": "test_insert_rule1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Rule for update event",
+      "endpoint": "NODE-rule.obj",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql",
+      "data": {
+        "name": "test_update_rule_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "UPDATE",
+        "condition": "old.name = 'Joe'",
+        "statements": "UPDATE test_emp_rule SET salary = new.salary\n  WHERE test_emp_rule.name = 'Sam'"
+      },
+      "expected_sql_file": "create_update_event_rule.sql",
+      "expected_msql_file": "create_update_event_rule_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule for update event",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "name": "test_update_rule1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "UPDATE",
+        "do_instead": true,
+        "comment": "This is a update rule",
+        "condition": "old.name = 'Sam'",
+        "statements": "UPDATE test_emp_rule SET salary = new.salary\n\tWHERE test_emp_rule.name = 'Joe'"
+      },
+      "expected_sql_file": "alter_update_event_rule.sql",
+      "expected_msql_file": "alter_update_event_rule_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Rule",
+      "endpoint": "NODE-rule.delete_id",
+      "data": {
+        "name": "test_update_rule1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Rule for delete event",
+      "endpoint": "NODE-rule.obj",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql",
+      "data": {
+        "name": "test_delete_rule_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "Delete"
+      },
+      "expected_sql_file": "create_delete_event_rule.sql",
+      "expected_msql_file": "create_delete_event_rule_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rule for delete event",
+      "endpoint": "NODE-rule.obj_id",
+      "sql_endpoint": "NODE-rule.sql_id",
+      "msql_endpoint": "NODE-rule.msql_id",
+      "data": {
+        "name": "test_delete_rule1_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "public",
+        "view": "test_emp_rule",
+        "event": "Delete",
+        "do_instead": true,
+        "comment": "This is a delete rule",
+        "statements": "DELETE FROM test_emp_rule\n  WHERE test_emp_rule.name = old.name;"
+      },
+      "expected_sql_file": "alter_delete_event_rule.sql",
+      "expected_msql_file": "alter_delete_event_rule_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Rule",
+      "endpoint": "NODE-rule.delete_id",
+      "data": {
+        "name": "test_delete_rule1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

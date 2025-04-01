@@ -1,0 +1,666 @@
+{
+  "pgagent_create_schedule": [
+    {
+      "name": "Create schedule: With exception in pgAgent job.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscjobid": "jscjobid",
+        "jscenabled": true,
+        "jscdesc": "",
+        "jscname": "pgagent_schedule_name",
+        "jscexceptions": [
+          {
+            "jexdate": "2050-01-01",
+            "jextime": "14:00"
+          }
+        ],
+        "jscstart": "2050-01-01 12:14:21 +05:30",
+        "jscend": "2050-03-01 12:14:21 +05:30",
+        "jscminutes": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jschours": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "jscweekdays": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jscmonthdays": [
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jscmonths": [
+          false,
+          false,
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: With existing pgAgent job while server is down.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "jscjobid": "jscjobid",
+        "jscenabled": true,
+        "jscdesc": "",
+        "jscname": "pgagent_schedule_name",
+        "jscstart": "2050-01-01 12:14:21 +05:30",
+        "jscend": "2050-03-01 12:14:21 +05:30",
+        "jscminutes": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jschours": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "jscweekdays": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jscmonthdays": [
+          false,
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jscmonths": [
+          false,
+          false,
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_delete_schedule": [
+    {
+      "name": "Delete schedule: With existing pgAgent job.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete multiple schedules: With existing pgAgent job.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgagent_put_schedule": [
+    {
+      "name": "Update schedule: With start and end time.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscdesc": "Test Schedule",
+        "jscstart": "2050-01-01 12:00:00 +05:30",
+        "jscend": "2050-01-20 12:00:00 +05:30"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update schedule: With repeat.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscmonthdays": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jscweekdays": [
+          true,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false
+        ],
+        "jscmonths": [
+          true,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "jschours": [
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update schedule: Add exception.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscexceptions": {
+          "added": [
+            {
+              "jexdate": "2050-01-01",
+              "jextime": "12:00:00"
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update schedule: Change exception date and time.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscexceptions": {
+          "changed": [
+            {
+              "jexdate": "2050-01-31",
+              "jextime": "20:00:00"
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update schedule: Delete exception.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscexceptions": {
+          "deleted": [
+            {
+              "jexdate": "2050-01-01",
+              "jextime": "12:00:00"
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "pgagent_get_schedule": [
+    {
+      "name": "Get schedule: With existing pgAgent job.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get schedules: With multiple existing pgAgent jobs.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get schedule: With existing pgAgent job while server down.",
+      "url": "/browser/pga_schedule/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "pgagent_get_nodes_schedule": [
+    {
+      "name": "Get schedule node: With existing pgAgent job.",
+      "url": "/browser/pga_schedule/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get schedules nodes: With multiple existing pgAgent jobs.",
+      "url": "/browser/pga_schedule/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "pgagent_msql_schedule": [
+    {
+      "name": "Get schedule msql: For existing pgAgent job.",
+      "url": "/browser/pga_schedule/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jscdesc": "Msql api Test comment",
+        "jscstart": "2039-12-24 12:46:41 +05:30"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

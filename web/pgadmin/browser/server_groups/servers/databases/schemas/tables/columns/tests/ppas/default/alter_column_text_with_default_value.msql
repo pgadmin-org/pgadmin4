@@ -1,0 +1,13 @@
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    RENAME "col__1_$%{}[]()&*^!@""'`\/#" TO "col__1_$%{}[]&*^!@""'`\/#";
+
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col__1_$%{}[]&*^!@""'`\/#" SET DEFAULT 'changed default value'::text;
+
+ALTER TABLE testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col__1_$%{}[]&*^!@""'`\/#" DROP NOT NULL;
+
+COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."col__1_$%{}[]&*^!@""'`\/#"
+    IS 'test comment modify';
+
+GRANT SELECT("col__1_$%{}[]&*^!@""'`\/#") ON testschema."table_2_$%{}[]()&*^!@""'`\/#" TO PUBLIC;

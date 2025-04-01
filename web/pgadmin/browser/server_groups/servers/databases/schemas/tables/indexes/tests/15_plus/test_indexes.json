@@ -1,0 +1,368 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table for indexes",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_table_for_indexes",
+        "columns": [{
+          "name": "id",
+          "cltype": "bigint",
+          "is_primary_key": true
+        }, {
+          "name": "name",
+          "cltype": "text"
+        }],
+        "is_partitioned": false,
+        "spcname": "pg_default",
+        "schema": "public"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create btree index with ASC and NULLS LAST -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }, {
+          "colname":"name",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_asc_null_last.sql",
+      "expected_msql_file": "create_btree_asc_null_last_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create btree index with ASC and NULLS FIRST -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":false,
+          "nulls":true,
+          "is_sort_nulls_applicable":true
+        }, {
+          "colname":"name",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":true,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_asc_null_first.sql",
+      "expected_msql_file": "create_btree_asc_null_first_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create btree index with DESC and NULLS LAST -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":true,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }, {
+          "colname":"name",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":true,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_desc_null_last.sql",
+      "expected_msql_file": "create_btree_desc_null_last_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create btree index with DESC and NULLS FIRST -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":true,
+          "nulls":true,
+          "is_sort_nulls_applicable":true
+        }, {
+          "colname":"name",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":true,
+          "nulls":true,
+          "is_sort_nulls_applicable":true
+        }],
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "indisclustered":false,
+        "isconcurrent":false
+      },
+      "expected_sql_file": "create_btree_desc_null_first.sql",
+      "expected_msql_file": "create_btree_desc_null_first_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter index name, fill factor, comment and clustered -- 15 Plus",
+      "endpoint": "NODE-index.obj_id",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql_id",
+      "data": {
+        "name": "Idx1_$%{}[]()&*^!@\"'`\\/#",
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisclustered":true
+      },
+      "expected_sql_file": "alter_name_fillfactor_comment.sql",
+      "expected_msql_file": "alter_name_fillfactor_comment_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter reset fill factor and cluster -- 15 Plus",
+      "endpoint": "NODE-index.obj_id",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql_id",
+      "data": {
+        "fillfactor": "",
+        "indisclustered": false
+      },
+      "expected_sql_file": "alter_reset_fillfactor_cluster.sql",
+      "expected_msql_file": "alter_reset_fillfactor_cluster_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create btree index with expression and ASC and NULLS LAST -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx3_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }, {
+          "is_exp": true,
+          "colname":"lower(name)",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_expr_asc_null_last.sql",
+      "expected_msql_file": "create_btree_expr_asc_null_last_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter index statistics of expression -- 15 Plus",
+      "endpoint": "NODE-index.obj_id",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql_id",
+      "data": {
+        "name": "Idx3_$%{}[]()&*^!@\"'`\\/#",
+        "columns":{
+          "changed": [{
+          "is_exp": true,
+            "col_num": 2,
+          "colname":"lower(name)",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true,
+            "statistics": 1000
+          }]
+        }
+      },
+      "expected_sql_file": "alter_expr_statistics.sql",
+      "expected_msql_file": "alter_expr_statistics_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx3_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create hash index -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name": "Idx_$%{}[]()&*^!@\"'`\\/#",
+        "spcname": "pg_default",
+        "amname": "hash",
+        "columns": [{
+          "colname": "id",
+          "collspcname": "",
+          "op_class": "",
+          "sort_order": false,
+          "nulls": false,
+          "is_sort_nulls_applicable": false
+        }],
+        "indisunique": false,
+        "indisclustered": false,
+        "isconcurrent": false
+      },
+      "expected_sql_file": "create_hash_index.sql",
+      "expected_msql_file": "create_hash_index_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop hash index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Table",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "test_table_for_indexes"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create unnamed hash index -- 15 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "spcname": "pg_default",
+        "amname": "hash",
+        "columns": [{
+          "colname": "id",
+          "collspcname": "",
+          "op_class": "",
+          "sort_order": false,
+          "nulls": false,
+          "is_sort_nulls_applicable": false
+        }],
+        "indisunique": false,
+        "isconcurrent": false
+      },
+      "expected_msql_file": "create_unnamed_hash_index_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop hash index -- 15 Plus",
+      "endpoint": "NODE-index.delete_id"
+    }
+  ]
+}

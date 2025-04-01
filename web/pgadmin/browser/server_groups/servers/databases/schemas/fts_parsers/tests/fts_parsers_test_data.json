@@ -1,0 +1,248 @@
+{
+  "get_fts_parsers_nodes_and_node": [
+    {
+      "name": "Get FTS Parsers nodes",
+      "url": "/browser/fts_parser/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Parsers nodes",
+      "url": "/browser/fts_parser/nodes/",
+      "error_fetching_fts_parser": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts Parsers nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get FTS Dictionary node",
+      "url": "/browser/fts_parser/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching FTS Parsers node",
+      "url": "/browser/fts_parser/nodes/",
+      "error_fetching_fts_parser": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts Parsers nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching FTS Parsers node",
+      "url": "/browser/fts_parser/nodes/",
+      "error_fetching_fts_parser": true,
+      "set_wrong_fts_parsers_value": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get FTS Parsers nodes list",
+      "url": "/browser/fts_parser/obj/",
+      "is_positive_test": true,
+      "node": false,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers nodes list",
+      "url": "/browser/fts_parser/obj/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "node": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts Parsers nodes list')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "dependency_dependent_fts_parsers": [
+    {
+      "name": "Get FTS Parsers dependency",
+      "url": "/browser/fts_parser/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get FTS Parsers dependent",
+      "url": "/browser/fts_parser/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "head_line_functions_fts_parsers": [
+    {
+      "name": "Get FTS Parsers headline function",
+      "url": "/browser/fts_parser/headline_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers headline function",
+      "url": "/browser/fts_parser/headline_functions/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts parser headline functions')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "lextype_functions_fts_parsers": [
+    {
+      "name": "Get FTS Parsers lectype function",
+      "url": "/browser/fts_parser/lextype_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers lextype function",
+      "url": "/browser/fts_parser/lextype_functions/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts parser lextype functions')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "end_functions_fts_parsers": [
+    {
+      "name": "Get FTS Parsers end function",
+      "url": "/browser/fts_parser/end_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers end function",
+      "url": "/browser/fts_parser/end_functions/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts parser end functions')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "token_functions_fts_parsers": [
+    {
+      "name": "Get FTS Parsers token function",
+      "url": "/browser/fts_parser/token_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers token function",
+      "url": "/browser/fts_parser/token_functions/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts parser token functions')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "start_functions_fts_parsers": [
+    {
+      "name": "Get FTS Parsers start function",
+      "url": "/browser/fts_parser/start_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while Get FTS Parsers start function",
+      "url": "/browser/fts_parser/start_functions/",
+      "is_positive_test": false,
+      "error_fetching_fts_parser": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching fts parser start functions')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ]
+}

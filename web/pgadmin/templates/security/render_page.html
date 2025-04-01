@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ config.APP_NAME }}{% endblock %}
+{% set other_props = {
+    'messages': get_flashed_messages(with_categories=true)
+} %}
+{% block body %}
+<style>
+    #root:not(:empty) + .pg-sp-container {
+        display: none;
+    }
+</style>
+<div id="root" style="height: 100%"></div>
+<div class="pg-sp-container">
+    <div class="pg-sp-content">
+        <div class="pg-sp-icon"></div>
+    </div>
+</div>
+{% endblock %}
+{% block init_script %}
+try {
+    require(
+        ['security.pages'],
+        function() {
+            window.renderSecurityPage('{{page_name}}', {{page_props|tojson|safe}},
+                {{other_props|tojson|safe}});
+        }, function() {
+            console.log(arguments);
+        }
+    );
+} catch (err) {
+    console.log(err);
+}
+{% endblock %}

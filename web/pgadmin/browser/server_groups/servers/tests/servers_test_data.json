@@ -1,0 +1,1160 @@
+{
+  "add_server": [
+    {
+      "name": "Add server with service id",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "service": "TestDB"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Test default server url",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with connect timeout",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "connect_timeout": 5
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server using SSH tunnel with password",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "ssh_tunnel": true,
+      "with_password": true,
+      "save_password": false,
+      "test_data": {
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_identity_file": "pkey_rsa",
+        "tunnel_keep_alive": 5
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server using SSH tunnel with identity file",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "ssh_tunnel": true,
+      "with_password": false,
+      "save_password": false,
+      "test_data": {
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_identity_file": "pkey_rsa",
+        "tunnel_keep_alive": 0
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server using SSH tunnel with password and saved it",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "ssh_tunnel": true,
+      "with_password": true,
+      "save_password": true,
+      "test_data": {
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 0,
+        "tunnel_password": "123456",
+        "tunnel_keep_alive": 0
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server using SSH tunnel with identity file and save the password",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "ssh_tunnel": true,
+      "with_password": false,
+      "save_password": true,
+      "test_data": {
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_identity_file": "pkey_rsa",
+        "tunnel_password": "123456",
+        "tunnel_keep_alive": 0
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with password and save password to true",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "with_pwd": true,
+      "with_save": true,
+      "owner_server": true,
+      "test_data": {
+        "service": "TestDB"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with password and save password to false",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "with_pwd": true,
+      "with_save": false,
+      "owner_server": true,
+      "test_data": {
+        "service": "TestDB"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server without password and save password to true",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "with_pwd": false,
+      "with_save": true,
+      "owner_server": true,
+      "test_data": {
+        "service": "TestDB"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with connect now",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "service": "TestDB"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with ssl",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "sslcert": "postgres.crt",
+        "sslkey": "postgres.key",
+        "sslrootcert": "root.crt",
+        "sslmode": "prefer",
+        "sslcompression": true,
+        "sslcrl": "postgres.crl"
+
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with background/foreground color",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "fgcolor":"#FF9900",
+        "bgcolor": "#00FF00"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Add server with tags",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "tags": [
+          {"text":  "tag1", "color":  "#000"}
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "is_password_saved": [
+    {
+      "name": "Connect server with 'save password",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_password_saved": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "message": "Server connected."
+      }
+    }
+  ],
+  "get_server": [
+    {
+      "name": "Get a server URL",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Reload a server configuration",
+      "url": "/browser/server/reload/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server URL using wrong server id",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "incorrect_server_id": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get a server Node dependants",
+      "url": "/browser/server/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server Node dependency",
+      "url": "/browser/server/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server Node sql",
+      "url": "/browser/server/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server Node msql",
+      "url": "/browser/server/msql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server Node statistics",
+      "url": "/browser/server/stats/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a server pgpass details",
+      "url": "/browser/server/check_pgpass/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "get_shared_server": [
+    {
+      "name": "Get a shared server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "shared": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get a all shared server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "shared": true,
+      "no_server_id": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get the all available shared server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "no_server_id": true,
+      "shared": true,
+      "server_list": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "get_all_server": [
+    {
+      "name": "Get the all children of server",
+      "url": "/browser/server/children/",
+      "is_positive_test": true,
+      "children": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get the all available servers",
+      "url": "/browser/server/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get the all available server of server group",
+      "url": "/browser/server/nodes/",
+      "is_positive_test": true,
+      "server_list": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get the all available server of server group",
+      "url": "/browser/server/nodes/",
+      "is_positive_test": true,
+      "server_list": true,
+      "servers": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get the all connected servers",
+      "url": "/browser/server/nodes/",
+      "is_positive_test": true,
+      "server_list": true,
+      "servers": true,
+      "connected": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "connect_server": [
+    {
+      "name": "Get a server connection",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "connect to a server using password",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "connect": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "connect to a server using password (invalid user)",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "connect": true,
+      "invalid_user": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.browser.server_groups.servers.User",
+        "return_value": "None"
+      },
+      "expected_data": {
+        "status_code": 401
+      }
+    },
+    {
+      "name": "connect to a server using password (invalid server username)",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "connect": true,
+      "invalid_server_username": true,
+      "mocking_required": true,
+      "mock_data": {
+        "id": 1,
+        "name": "test_mock_server",
+        "username": "None",
+        "shared": true,
+        "service": false,
+        "user_id": "",
+        "function_name": "pgadmin.browser.server_groups.servers.Server",
+        "return_value": "None"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Fail check recovery state on connected server",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "recovery_state": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while get recovery_state for server.')"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Disconnect server test",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "disconnect": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Disconnect server when wrong server id passed",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "disconnect": true,
+      "wrong_server_id": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400
+      }
+    },
+    {
+      "name": "Reload a server configuration",
+      "url": "/browser/server/reload/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while creating server restore point",
+      "url": "/browser/server/restore_point/",
+      "is_positive_test": true,
+      "restore_point": true,
+      "test_data": {
+        "Named restore point created": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "connect_ssh_mock": [
+    {
+      "name": "Try to connect server using ssh tunnel password",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "connect": true,
+      "ssh_tunnel_connect": true,
+      "mocking_required": false,
+      "mock_data": {
+        "id": 1,
+        "name": "test_mock_server",
+        "username": "postgre1",
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_password": "user123",
+        "tunnel_identity_file": "pkey_rsa",
+        "tunnel_keep_alive": 0,
+        "service": null,
+        "server_info": {
+          "id": 1,
+          "name": "test_mock_server",
+          "username": "postgres",
+          "passfile": false
+        },
+        "user_info": {
+          "id": 1,
+          "username": "postgres",
+          "password": "1234"
+        },
+        "manager": {
+          "server_type": "pg",
+          "password": "my_postgres",
+          "sversion": 150000,
+          "connection_connect_return_value": "psycopg.OperationalError()"
+        }
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Try to connect server without ssh tunnel password",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "connect": true,
+      "ssh_tunnel_connect": true,
+      "mocking_required": false,
+      "mock_data": {
+        "id": 1,
+        "name": "test_mock_server",
+        "username": "postgre1",
+        "use_ssh_tunnel": 1,
+        "tunnel_host": "127.0.0.1",
+        "tunnel_port": 22,
+        "tunnel_username": "user",
+        "tunnel_authentication": 1,
+        "tunnel_password": "",
+        "tunnel_identity_file": "pkey_rsa",
+        "tunnel_keep_alive": 0,
+        "service": null,
+        "server_info": {
+          "id": 1,
+          "name": "test_mock_server",
+          "username": "postgres",
+          "passfile": false
+        },
+        "user_info": {
+          "id": 1,
+          "username": "postgres",
+          "password": "1234"
+        },
+        "manager": {
+          "server_type": "pg",
+          "password": "my_postgres",
+          "sversion": 150000,
+          "connection_connect_return_value": "OperationalError()"
+        }
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "wal_replay_server": [
+    {
+      "name": "Pause the wal replay recovery control",
+      "url": "/browser/server/wal_replay/",
+      "is_positive_test": true,
+      "mocking_required": true,
+      "pause": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Resume the wal replay recovery control",
+      "url": "/browser/server/wal_replay/",
+      "is_positive_test": true,
+      "mocking_required": true,
+      "pause": false,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while wal replay pause",
+      "url": "/browser/server/wal_replay/",
+      "is_positive_test": false,
+      "pause": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while wal replay resume",
+      "url": "/browser/server/wal_replay/",
+      "is_positive_test": false,
+      "pause": false,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "delete_server": [
+    {
+      "name": "Delete a server URL",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Disconnect server test",
+      "url": "/browser/server/connect/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a server to delete",
+      "url": "/browser/server/obj/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(True, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "server not found while deleting a server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "invalid_server_id": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "update_server": [
+    {
+      "name": "update a server name",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "sslcompression": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a server details without data",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Update server with wrong server id",
+      "url": "/browser/server/obj/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "update a server , make server shared",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "shared": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear saved password",
+      "url": "/browser/server/clear_saved_password/",
+      "is_positive_test": true,
+      "clear_save_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear saved password with wrong server id",
+      "url": "/browser/server/clear_saved_password/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear ssh tunnel password",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": true,
+      "clear_save_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear ssh tunnel password with wrong server id",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "error while clearing a ssh password",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": false,
+      "error_clearing_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update ssl properties of server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "sslcert": "postgres_01.crt",
+        "sslkey": "postgres_01.key",
+        "sslrootcert": "root_01.crt",
+        "sslmode": "allow",
+        "sslcompression": false,
+        "sslcrl": "postgres.crl"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "remove ssl properties from server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "sslcert": "",
+        "sslkey": "",
+        "sslrootcert": "",
+        "sslmode": "prefer",
+        "sslcompression": false,
+        "sslcrl": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Update server with background/foreground color",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "fgcolor":"#B6D7A8",
+        "bgcolor": "#0C343D"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_shared_server": [
+    {
+      "name": "update a server name",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "sslcompression": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a server details without data",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Update server with wrong server id",
+      "url": "/browser/server/obj/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "update a server , make server shared",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "owner_server": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "shared": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear saved password when login user is not owner of server",
+      "url": "/browser/server/clear_saved_password/",
+      "is_positive_test": true,
+      "clear_save_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear saved password with wrong server id",
+      "url": "/browser/server/clear_saved_password/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear ssh tunnel password",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": true,
+      "clear_save_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Clear ssh tunnel password with wrong server id",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": false,
+      "clear_save_password": true,
+      "wrong_server_id": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "error while clearing a ssh password",
+      "url": "/browser/server/clear_sshtunnel_password/",
+      "is_positive_test": false,
+      "error_clearing_password": true,
+      "test_data": {
+        "comment": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER",
+        "is_password_saved": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "delete_multiple_server": [
+    {
+      "name": "Delete multiple server",
+      "url": "/browser/server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "change_password": [
+    {
+      "name": "Change password",
+      "url": "/browser/server/change_password/",
+      "is_positive_test": true,
+      "mocking_required": true,
+      "mock_data": {
+        "server_info": {
+          "sid": 1,
+          "name": "test_mock_server",
+          "username": "postgres",
+          "password": "post123",
+          "passfile": false
+        },
+        "user_info": {
+          "id": 1,
+          "username": "postgres",
+          "password": "1234"
+        },
+        "manager": {
+          "server_type": "pg",
+          "password": "my_postgres",
+          "sversion": 150000,
+          "connection_execute_scalar_return_value": "(True, {'rows': []})"
+        }
+      },
+      "test_data": {
+        "form_data" : {
+          "user_name": "my_postgres",
+          "password": "my_postgres",
+          "newPassword": "my_postgres1",
+          "confirmPassword": "my_postgres1"
+        }
+      },
+      "expected_data": {
+        "status_code": 200,
+        "update_session": true
+      }
+    }
+  ]
+}

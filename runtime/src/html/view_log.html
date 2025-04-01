@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>pgAdmin 4 Log</title>
+  <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
+</head>
+<style>
+  .header {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .content .form-input {
+    flex-grow: 1;
+  }
+</style>
+<body>
+  <div class="content">
+    <div class="header" id="server_log_label">Server Log:</div>
+    <textarea class="form-input" id="server_log" style="min-width: 750px; min-height: 300px;resize: none;" readonly></textarea>
+  </div>
+  <div class="footer">
+    <div class="mr-auto" id="status-text"></div>
+    <div class="ml-auto">
+      <button id="btnReload" class="btn btn-primary">Reload</button>
+    </div>
+  </div>
+  <script>
+    window.onload = async function() {
+      document.getElementById('status-text').innerHTML = '';
+      document.getElementById('server_log_label').innerHTML = 'Server Log: ' + '(' + await window.electronUI.getServerLogFile() + ')';
+      document.getElementById('server_log').innerHTML = await window.electronUI.readServerLog();
+      document.getElementById('btnReload').addEventListener('click', function() {
+        document.getElementById('server_log').innerHTML = 'Loading logs...';
+        setTimeout(async function() {
+          document.getElementById('server_log').innerHTML = await window.electronUI.readServerLog();
+        }, 500);
+        document.getElementById('status-text').innerHTML = 'Logs reloaded successfully';
+      });
+    }
+  </script>
+</body>
+</html>

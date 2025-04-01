@@ -1,0 +1,2 @@
+REVOKE ADMIN OPTION FOR test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";
+GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;

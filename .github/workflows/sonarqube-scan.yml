@@ -1,0 +1,58 @@
+# This workflow requires the following configuration in Github
+#
+# Variables:
+#   SONARQUBE_PROJECT_KEY - The project key in SonarQube
+#
+# Secrets:
+#   SONARQUBE_TOKEN - SonarQube API token
+#   SONARQUBE_HOST - The URL of the SonarQube host
+
+name: SonarQube scan
+
+on:
+  push:
+    branches: [ "master" ]
+
+concurrency:
+  group: sonarqube
+  cancel-in-progress: false
+
+jobs:
+  run-sonarqube-scan:
+    # Only run if the project key is set
+    if: vars.SONARQUBE_PROJECT_KEY != null
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create the scan properties file
+        run: |
+          cat <<EOF > sonar-project.properties
+          sonar.projectKey=${{ vars.SONARQUBE_PROJECT_KEY }}
+          sonar.projectName=pgAdmin 4
+          sonar.projectVersion=%VERSION%
+
+          # Ignore templates and SQL scripts as they confuse the scanner
+          sonar.exclusions=**/templates/**/*, **/*.sql
+          
+          # Let SonarQube know where tests can be found
+          sonar.test.inclusions=**/tests/**, web/regression
+          
+          # Python compatibility
+          sonar.python.version=3.7, 3.8, 3.9, 3.10, 3.11
+          EOF
+          
+          APP_RELEASE=`grep "^APP_RELEASE" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+          APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+          APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
+          sed -i "s/%VERSION%/${APP_LONG_VERSION}/g" sonar-project.properties
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST }}

@@ -1,0 +1,574 @@
+{
+  "types_create": [
+    {
+      "name": "Create types: With valid data.",
+      "url": "/browser/type/obj/",
+      "server_min_version": "10000",
+      "skip_msg": "Nested Table types are supported for PPAS & version > 9.6",
+      "is_positive_test": true,
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create Nested types: With valid data for Advanced Server.",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typeowner": "db_user",
+            "schema": "schema_name",
+             "typtype":"N",
+        "type": "numeric",
+        "tlength": 2,
+        "precision": 1,
+        "typacl":[],
+        "seclabels":[],
+        "server_min_version": 10000,
+      "skip_msg": "Nested Table types are supported for PPAS & version > 9.6"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+        {
+      "name": "Create Varray types: With valid data for Advanced Server.",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "name": "type_name_add",
+            "is_sys_type": false,
+            "typeowner": "db_user",
+            "schema": "schema_name",
+             "typtype":"V",
+        "type": "integer",
+        "maxsize": 10,
+        "typacl":[],
+        "seclabels":[],
+        "server_min_version": 10000,
+      "skip_msg": "Varray types are supported for PPAS & version > 9.6"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while creating types - missing parameter",
+      "url": "/browser/type/obj/",
+      "is_positive_test": false,
+      "missing_parameter": true,
+      "test_data": {
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while creating types - internal server error",
+      "url": "/browser/type/obj/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "test_data": {
+         "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while creating types - Error in db",
+      "url": "/browser/type/obj/",
+      "is_positive_test": false,
+      "error_in_db": true,
+      "test_data": {
+         "name": "type_name_add",
+            "is_sys_type": false,
+            "typtype": "c",
+            "typeowner": "db_user",
+            "schema": "schema_name",
+            "composite": [{"member_name": "one", "type": "bigint",
+                           "is_tlength": false, "is_precision": false},
+                          {"member_name": "two", "type": "\"char\"[]",
+                           "is_tlength": false, "is_precision": false}],
+            "enum": [], "typacl": [], "seclabels": []
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_delete": [
+    {
+      "name": "delete type",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while deleting a type - internal server error",
+      "url": "/browser/type/obj/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while deleting a type')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "delete type using wrong type id",
+      "url": "/browser/type/obj/",
+      "wrong_type_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while deleting a type - Error in db",
+      "url": "/browser/type/obj/",
+      "error_in_db": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while deleting a type')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_delete_multiple": [
+    {
+      "name": "Delete multiple type",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "types_get_nodes_and_node": [
+    {
+      "name": "Get type nodes",
+      "url": "/browser/type/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching type nodes",
+      "url": "/browser/type/nodes/",
+      "error_fetching_type": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching type nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get type node",
+      "url": "/browser/type/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching type node",
+      "url": "/browser/type/nodes/",
+      "error_fetching_type": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching type node')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Fetching type node with wrong id",
+      "url": "/browser/type/nodes/",
+      "wrong_id": true,
+      "is_positive_test": false,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "types_dependency_dependent": [
+    {
+      "name": "Get types dependency",
+      "url": "/browser/type/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get types dependent",
+      "url": "/browser/type/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "types_update": [
+    {
+      "name": "Update type",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+        "description": "This is type update comment",
+        "id": "PLACE_HOLDER"
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while updating a type",
+      "url": "/browser/type/obj/",
+      "internal_server_error": true,
+      "test_data": {
+        "description": "This is type update comment",
+        "id": "PLACE_HOLDER"
+      },
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while updating type')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get": [
+    {
+      "name": "Get type",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a type",
+      "url": "/browser/type/obj/",
+      "error_fetching_type": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a type')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Fetch type using wrong type id",
+      "url": "/browser/type/obj/",
+      "wrong_type_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get type list",
+      "url": "/browser/type/obj/",
+      "is_positive_test": true,
+      "type_list": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching type list",
+      "url": "/browser/type/obj/",
+      "error_fetching_type": true,
+      "is_positive_test": false,
+      "type_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching type')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get_types": [
+    {
+      "name": "Get types",
+      "url": "/browser/type/get_types/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while getting types",
+      "url": "/browser/type/get_types/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "type_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching types')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get_subtypes": [
+    {
+      "name": "Get subtypes",
+      "url": "/browser/type/get_stypes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while getting subtypes",
+      "url": "/browser/type/get_stypes/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "type_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching subtypes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get_subtypes_opclass": [
+    {
+      "name": "Get subtypes opclass",
+      "url": "/browser/type/get_subopclass/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "types_get_collations": [
+    {
+      "name": "Get collations",
+      "url": "/browser/type/get_collations/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while getting collations",
+      "url": "/browser/type/get_collations/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching collation')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get_external_functions": [
+    {
+      "name": "Get external functions",
+      "url": "/browser/type/get_external_functions/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while getting external functions",
+      "url": "/browser/type/get_external_functions/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching external function')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "types_get_sql": [
+    {
+      "name": "Get Types SQL",
+      "url": "/browser/type/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a created type sql",
+      "url": "/browser/type/sql/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a type sql')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching a created type sql - wrong type id",
+      "url": "/browser/type/sql/",
+      "wrong_type_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "types_get_msql": [
+    {
+      "name": "Get Types MSQL",
+      "url": "/browser/type/msql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }],
+  "types_get_subtype_diff": [
+    {
+      "name": "Get Types subtype diff",
+      "url": "/browser/type/get_stypediff/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }]
+}

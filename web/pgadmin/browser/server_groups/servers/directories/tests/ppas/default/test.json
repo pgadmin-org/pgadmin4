@@ -1,0 +1,36 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Directories",
+      "endpoint": "NODE-directory.obj",
+      "sql_endpoint": "NODE-directory.sql_id",
+      "msql_endpoint": "NODE-directory.msql",
+      "data": {
+        "name": "Dir1_$%{}[]()&*^!@\"'`\\/#",
+        "diruser": "enterprisedb",
+        "path": "/home/test_dir"
+      },
+      "expected_sql_file": "create_directory.sql",
+      "expected_msql_file": "create_directory.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Directory owner",
+      "endpoint": "NODE-directory.obj_id",
+      "sql_endpoint": "NODE-directory.sql_id",
+      "msql_endpoint": "NODE-directory.msql_id",
+      "data": {
+        "diruser": "enterprisedb"
+      },
+      "expected_sql_file": "alter_directory_owner.sql",
+      "expected_msql_file": "alter_directory_owner.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Directories",
+      "endpoint": "NODE-directory.obj_id",
+      "data": {}
+    }
+  ]
+}

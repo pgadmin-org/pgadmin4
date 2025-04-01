@@ -1,0 +1,31 @@
+# .coveragerc to control coverage.py
+# This is default coverage configuration file require to run coverage.py
+# Any paths mentioned for coverage command are indented(default:4 spaces)
+
+[run]
+# Mention paths in 'source' to measure code coverage(Full project path)
+source =
+    $PGADMIN4_SRC/web/pgadmin/
+
+# Mention patterns in 'omit' to omit code from the coverage measurement
+# Here, omit code which contains pattern '/tests/', 'feature_tests' etc.
+omit =
+    */tests/*
+    */feature_tests/*
+
+# Here exclude the lines from the code coverage report
+[report]
+exclude_lines=
+    import*
+    except*
+
+# Mention patterns in 'include' to include code for the coverage measurement
+# Here, code coverage will show report only for modules mentioned in the
+# 'include'
+include =
+    # For all modules
+    */web/pgadmin/*
+    # For 'databases'
+    # */web/pgadmin/browser/server_groups/servers/databases/*
+    # For 'tables'
+    # */web/pgadmin/browser/server_groups/servers/databases/schemas/tables/*

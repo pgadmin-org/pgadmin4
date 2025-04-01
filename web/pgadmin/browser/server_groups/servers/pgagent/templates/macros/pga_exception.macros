@@ -1,0 +1,24 @@
+{##################################################}
+{# This will be specific macro for pga_exception. #}
+{##################################################}
+{% macro INSERT(jscid, data, conn) -%}
+-- Inserting a schedule exception{% if jscid %} (schedule: {{ jscid|qtLiteral(conn)}}){% endif %}
+
+INSERT INTO pgagent.pga_exception (
+    jexscid, jexdate, jextime
+) VALUES (
+    {% if jscid %}{{ jscid|qtLiteral(conn) }}{% else %}scid{% endif %}, {% if data.jexdate %}to_date({{ data.jexdate|qtLiteral(conn) }}, 'YYYY-MM-DD')::date{% else %}NULL::date{% endif %}, {% if data.jextime %}{{ data.jextime|qtLiteral(conn) }}::time without time zone{% else %}NULL::time without time zone{% endif %}
+
+);
+{%- endmacro %}
+{% macro UPDATE(jscid, data, conn) -%}
+-- Updating an existing schedule exception (id: {{ data.jexid|qtLiteral(conn) }}, schedule: {{ jscid|qtLiteral(conn) }})
+UPDATE pgagent.pga_exception SET
+    {% if 'jexdate' in data %}jexdate={% if data.jexdate %}to_date({{ data.jexdate|qtLiteral(conn) }}, 'YYYY-MM-DD')::date{% else %}NULL::date{% endif %}{% endif %}{% if 'jextime' in data%}{% if 'jexdate' in data %}, {% endif %}jextime={% if data.jextime %}{{ data.jextime|qtLiteral(conn) }}::time without time zone{% else %}NULL::time without time zone{% endif %}{% endif %}
+
+WHERE jexid={{ data.jexid|qtLiteral(conn) }}::integer AND jexscid={{ jscid|qtLiteral(conn) }}::integer;
+{%- endmacro %}
+{% macro DELETE(jscid, data, conn) -%}
+-- Deleting a schedule exception (id: {{ data.jexid|qtLiteral(conn) }}, schedule: {{ jscid|qtLiteral(conn) }})
+DELETE FROM pgagent.pga_exception WHERE jexid={{ data.jexid|qtLiteral(conn) }}::integer AND jexscid={{ jscid|qtLiteral(conn) }}::integer;
+{%- endmacro %}

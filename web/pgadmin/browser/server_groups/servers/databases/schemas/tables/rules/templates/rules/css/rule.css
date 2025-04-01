@@ -1,0 +1,18 @@
+.icon-rule{
+  background-image: url('{{ url_for('NODE-rule.static', filename='img/rule.svg') }}') !important;
+  background-size: 20px !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+
+.icon-rule-bad{
+  background-image: url('{{ url_for('NODE-rule.static', filename='img/rule-bad.svg') }}') !important;
+  background-size: 20px !important;
+  background-repeat: no-repeat;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

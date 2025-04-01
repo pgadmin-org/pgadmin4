@@ -1,0 +1,13 @@
+CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(IN i1 integer)
+    LANGUAGE 'plpgsql'
+
+    SET application_name='pgadmin'
+AS $BODY$
+begin
+select 1;
+end;
+$BODY$;
+
+REVOKE ALL ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) FROM enterprisedb;
+
+GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="{{ request.cookies.get('PGADMIN_LANGUAGE') or 'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- To set pgAdmin4 shortcut icon in browser -->
+    <link rel="shortcut icon" href="{{ url_for('redirects.favicon') }}"/>
+    <style>
+        .pg-sp-container {
+            position: absolute;
+            min-width: 100%;
+            min-height: 100%;
+            background: #090d1199;
+            z-index: 1056;
+            top: 0;
+        }
+        .pg-sp-container .pg-sp-content {
+            position: absolute;
+            width: 100%;
+            top: 40%;
+        }
+        .pg-sp-icon {
+          background: url("data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='utf-8'?%3e%3csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 38 38' style='enable-background:new 0 0 38 38;' xml:space='preserve'%3e%3cstyle type='text/css'%3e .st0%7bfill:none;stroke:%23ebeef3;stroke-width:2;%7d .st1%7bfill:none;stroke:%23326690;stroke-width:2;%7d %3c/style%3e%3cg%3e%3cg transform='translate(1 1)'%3e%3ccircle class='st0' cx='18' cy='18' r='18'/%3e%3cpath class='st1' d='M36,18c0-9.9-8.1-18-18-18 '%3e%3canimateTransform accumulate='none' additive='replace' attributeName='transform' calcMode='linear' dur='0.7s' fill='remove' from='0 18 18' repeatCount='indefinite' restart='always' to='360 18 18' type='rotate'%3e%3c/animateTransform%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/svg%3e") center center no-repeat;
+          height: 75px;
+          width: 100%;
+          text-align: center;
+        }
+        .pg-sp-text {
+          font-size: 20px;
+          text-align: center;
+          color: #fff;
+        }
+    </style>
+
+    <!-- Base template stylesheets -->
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/generated/style.css')}}"/>
+
+     <!--View specified stylesheets-->
+    {% block css_link %}{% endblock %}
+
+    <script type="application/javascript">
+        /* This is used to change publicPath of webpack at runtime */
+        window.resourceBasePath = "{{ url_for('static', filename='js') }}/generated/";
+    </script>
+    <script type="application/javascript"
+        src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
+    <!-- Base template scripts -->
+    <script type="application/javascript">
+            require.config({
+                baseUrl: '',
+{% if config.APP_VERSION_PARAM is not none and config.APP_VERSION_PARAM != '' %}
+                urlArgs: '{{config.APP_VERSION_PARAM}}={{config.APP_VERSION_INT}}',
+{% endif %}
+                waitSeconds: 0,
+                shim: {},
+                paths: {
+                    sources: "{{ url_for('static', filename='js') }}",
+                    datagrid: "{{ url_for('static', filename='js/generated/datagrid') }}",
+                    sqleditor: "{{ url_for('static', filename='js/generated/sqleditor') }}",
+                    'pgadmin.browser.utils': "{{ url_for('browser.index') }}" + "js/utils",
+                    'pgadmin.browser.endpoints': "{{ url_for('browser.index') }}" + "js/endpoints",
+                    'pgadmin.browser.messages': "{{ url_for('browser.index') }}" + "js/messages",
+                    'pgadmin.server.supported_servers': "{{ url_for('browser.index') }}" + "server/supported_servers",
+                    'pgadmin.user_management.current_user': "{{ url_for('user_management.index') }}" + "current_user",
+                    'translations': "{{ url_for('tools.index') }}" + "translations",
+                    'security.pages': "{{ url_for('static', filename='js/generated/security.pages') }}"
+                }
+            });
+
+    </script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.react.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.sqleditor.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+
+</head>
+<body>
+<style>
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 0.875rem;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  font-family: "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+</style>
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+{% block body %}{% endblock %}
+<script type="application/javascript">
+            {% block init_script %}{% endblock %}
+</script>
+
+</body>
+</html>

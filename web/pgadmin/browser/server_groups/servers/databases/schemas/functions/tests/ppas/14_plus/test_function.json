@@ -1,0 +1,410 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create function with all options.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proretset": false,
+        "proisstrict": true,
+        "prosecdef": true,
+        "proiswindow": true,
+        "proparallel": "u",
+        "procost": "100",
+        "prorows": "0",
+        "proleakproof": true,
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function.sql",
+      "expected_msql_file": "create_function.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function comment",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "description": "Some comment"
+      },
+      "expected_sql_file": "alter_function_comment.sql",
+      "expected_msql_file": "alter_function_comment.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create function for alter.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proparallel": "u",
+        "prosecdef": true,
+        "arguments": [],
+        "procost": "100",
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_for_alter.sql",
+      "expected_msql_file": "create_function_for_alter.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function rename.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function3_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_function_rename.sql",
+      "expected_msql_file": "alter_function_rename.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function code and add parameters.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "prosrc": "begin\nselect '2';\nend\n",
+        "variables": {
+          "added": [
+            {
+              "name": "application_name",
+              "value": "appname"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_add_parameter.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function delete parameters.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "variables": {
+          "deleted": [
+            {
+              "name": "application_name",
+              "value": true
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_delete_parameter.sql",
+      "expected_msql_file": "alter_function_delete_parameter.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create function for acl.",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proparallel": "u",
+        "prosecdef": true,
+        "arguments": [],
+        "procost": "100",
+        "prosrc": "begin\nselect '1';\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [
+          {
+            "name": "enable_sort",
+            "value": true
+          }
+        ],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_for_alter.sql",
+      "expected_msql_file": "create_function_for_alter.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function add acl.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            },
+            {
+              "grantee": "enterprisedb",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_add_acl.sql",
+      "expected_msql_file": "alter_function_add_acl.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function remove partial privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter function change grantee in privileges.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "old_grantee": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_change_grantee_acl.sql",
+      "expected_msql_file": "alter_function_change_grantee_acl.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter function delete acl.",
+      "endpoint": "NODE-function.obj_id",
+      "msql_endpoint": "NODE-function.msql_id",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "acl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            },
+            {
+              "grantee": "enterprisedb",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_function_delete_acl.sql",
+      "expected_msql_file": "alter_function_delete_acl.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "name": "Create function (atomic).",
+      "store_object_id": "True",
+      "data": {
+        "name": "Function4_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "numeric",
+        "lanname": "sql",
+        "prorows": 0,
+        "arguments": [],
+        "prosrc": "begin atomic\n    select 1;\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [],
+        "seclabels": [],
+        "prosecdef":true,
+        "acl": [],
+        "provolatile":"v",
+        "proisstrict":true,
+        "proiswindow":true,
+        "proparallel":"u",
+        "procost":"100",
+        "proleakproof":true,
+        "schema": "public"
+      },
+      "expected_sql_file": "create_atomic_func.sql",
+      "expected_msql_file": "create_atomic_func.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "create",
+      "endpoint": "NODE-function.obj",
+      "msql_endpoint": "NODE-function.msql",
+      "sql_endpoint": "NODE-function.sql_id",
+      "name": "Create function with custom return type.",
+      "data": {
+        "name": "Function3_$%{}[]()&*^!@\"'`\\/#",
+        "funcowner": "enterprisedb",
+        "pronamespace": 2200,
+        "prorettypename": "table(val character varying)",
+        "lanname": "plpgsql",
+        "provolatile": "v",
+        "proretset": false,
+        "proisstrict": true,
+        "prosecdef": true,
+        "proiswindow": true,
+        "proparallel": "u",
+        "procost": "100",
+        "prorows": "0",
+        "proleakproof": true,
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "prosrc": "begin\n  return query select '1'::character varying;\nend",
+        "probin": "$libdir/",
+        "options": [],
+        "variables": [],
+        "seclabels": [],
+        "acl": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_function_with_custom_return.sql",
+      "expected_msql_file": "create_function_with_custom_return.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop function",
+      "endpoint": "NODE-function.delete_id",
+      "data": {
+      }
+    }
+  ]
+}

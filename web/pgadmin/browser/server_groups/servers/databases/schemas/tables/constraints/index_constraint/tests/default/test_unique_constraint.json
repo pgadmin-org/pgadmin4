@@ -1,0 +1,134 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "tablefor_unique_cons",
+        "columns": [{
+          "name": "col1",
+          "cltype": "integer",
+          "is_primary_key": false
+        }],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    }, {
+      "type": "create",
+      "name": "Create Index",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "data": {
+        "name": "uindex",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [{
+          "colname": "col1",
+          "sort_order": false,
+          "nulls": false,
+          "is_sort_nulls_applicable": true
+        }],
+        "indisunique": true,
+        "fillfactor": 20
+      }
+    }, {
+      "type": "create",
+      "name": "Create Unique Constraint",
+      "endpoint": "NODE-unique_constraint.obj",
+      "sql_endpoint": "NODE-unique_constraint.sql_id",
+      "msql_endpoint": "NODE-unique_constraint.msql",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "fillfactor": 20,
+        "columns": [{"column":"col1"}],
+        "condeferrable": true,
+        "condeferred": true
+      },
+      "expected_sql_file": "create_unique_constraint.sql",
+      "expected_msql_file": "create_unique_constraint_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Unique Constraint",
+      "endpoint": "NODE-unique_constraint.obj_id",
+      "sql_endpoint": "NODE-unique_constraint.sql_id",
+      "msql_endpoint": "NODE-unique_constraint.msql_id",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#a",
+        "fillfactor": 90,
+        "comment": "Comment for alter"
+      },
+      "expected_sql_file": "alter_unique_constraint.sql",
+      "expected_msql_file": "alter_unique_constraint_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Unique Constraint Reset Fill factor",
+      "endpoint": "NODE-unique_constraint.obj_id",
+      "sql_endpoint": "NODE-unique_constraint.sql_id",
+      "msql_endpoint": "NODE-unique_constraint.msql_id",
+      "data": {
+        "fillfactor": ""
+      },
+      "expected_sql_file": "alter_unique_reset_fillfactor.sql",
+      "expected_msql_file": "alter_unique_reset_fillfactor_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Unique Constraint",
+      "endpoint": "NODE-unique_constraint.delete_id",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Unique Constraint with Index",
+      "endpoint": "NODE-unique_constraint.obj",
+      "sql_endpoint": "NODE-unique_constraint.sql_id",
+      "msql_endpoint": "NODE-unique_constraint.msql",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "index": "uindex"
+      },
+      "expected_sql_file": "create_unique_constraint_with_index.sql",
+      "expected_msql_file": "create_unique_constraint_with_index_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Unique Constraint with Index",
+      "endpoint": "NODE-unique_constraint.obj_id",
+      "sql_endpoint": "NODE-unique_constraint.sql_id",
+      "msql_endpoint": "NODE-unique_constraint.msql_id",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#a",
+        "fillfactor": 90,
+        "comment": "Comment for alter"
+      },
+      "expected_sql_file": "alter_unique_constraint_with_index.sql",
+      "expected_msql_file": "alter_unique_constraint_with_index_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Unique Constraint",
+      "endpoint": "NODE-unique_constraint.delete_id",
+      "data": {
+        "name": "UC_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop Index",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "uindex"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop Unique Constraint Table",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "tablefor_unique_cons"
+      }
+    }
+  ]
+}

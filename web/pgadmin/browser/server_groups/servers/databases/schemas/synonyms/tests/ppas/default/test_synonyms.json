@@ -1,0 +1,237 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table for Synonyms",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "table_for_synonyms",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "enterprisedb"
+      },
+      "store_object_id": true
+    }, {
+      "type": "create",
+      "name": "Create synonyms with table as target",
+      "endpoint": "NODE-synonym.obj",
+      "sql_endpoint": "NODE-synonym.sql_id",
+      "msql_endpoint": "NODE-synonym.msql",
+      "data":
+      {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "synobjschema": "enterprisedb",
+        "schema": "enterprisedb",
+        "targettype": "r",
+        "synobjname": "table_for_synonyms"
+      },
+      "expected_sql_file": "create_synonyms_with_table.sql",
+      "expected_msql_file": "create_synonyms_with_table_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Synonym",
+      "endpoint": "NODE-synonym.delete_id",
+      "data": {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop Table for Synonyms",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "table_for_synonyms"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Sequence for Synonyms",
+      "endpoint": "NODE-sequence.obj",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "data": {
+        "name": "sequence_for_synonyms",
+        "seqowner": "enterprisedb",
+        "schema": "enterprisedb",
+        "increment": "5",
+        "start": "5",
+        "maximum": "999",
+        "minimum": "5",
+        "cache": "1",
+        "cycled": false,
+        "relacl": [],
+        "securities": []
+      }
+    }, {
+      "type": "create",
+      "name": "Create synonyms with sequence as target",
+      "endpoint": "NODE-synonym.obj",
+      "sql_endpoint": "NODE-synonym.sql_id",
+      "msql_endpoint": "NODE-synonym.msql",
+      "data":
+      {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "synobjschema": "enterprisedb",
+        "schema": "enterprisedb",
+        "targettype": "S",
+        "synobjname": "sequence_for_synonyms"
+      },
+      "expected_sql_file": "create_synonyms_with_seq.sql",
+      "expected_msql_file": "create_synonyms_with_seq_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Synonym",
+      "endpoint": "NODE-synonym.delete_id",
+      "data": {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Package for Synonyms",
+      "endpoint": "NODE-package.obj",
+      "sql_endpoint": "NODE-package.sql_id",
+      "data": {
+        "name": "package_for_synonyms",
+        "owner": "enterprisedb",
+        "description": "test comment",
+        "pkgheadsrc": "FUNCTION func1(v1 integer) RETURN integer;\nPROCEDURE proc1(v1 integer);",
+        "pkgbodysrc": "FUNCTION func1(v1 integer) RETURN integer IS BEGIN RETURN V1+10; END FUNC1;\nPROCEDURE proc1(v1 integer) IS BEGIN DBMS_OUTPUT.put_line(v1+50); END;",
+        "pkgacl": [
+          {
+            "grantee": "enterprisedb",
+            "grantor": "enterprisedb",
+            "privileges": [
+              {
+                "privilege_type": "X",
+                "privilege": true,
+                "with_grant": true
+              }
+            ]
+          }
+        ],
+        "schema": "enterprisedb"
+      }
+    }, {
+      "type": "create",
+      "name": "Create synonyms with package as target",
+      "endpoint": "NODE-synonym.obj",
+      "sql_endpoint": "NODE-synonym.sql_id",
+      "msql_endpoint": "NODE-synonym.msql",
+      "data":
+      {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "synobjschema": "enterprisedb",
+        "schema": "enterprisedb",
+        "targettype": "P",
+        "synobjname": "package_for_synonyms"
+      },
+      "expected_sql_file": "create_synonyms_with_pkg.sql",
+      "expected_msql_file": "create_synonyms_with_pkg_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Synonym",
+      "endpoint": "NODE-synonym.delete_id",
+      "data": {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Procedure for Synonyms",
+      "endpoint": "NODE-procedure.obj",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "name": "procedure_for_synonyms",
+        "funcowner":"enterprisedb",
+        "pronamespace":2200,
+        "lanname":"edbspl",
+        "arguments":[],
+        "prosrc":"BEGIN\n  SELECT 1;\nEND;",
+        "probin":"$libdir/",
+        "options":[],
+        "variables":[],
+        "seclabels":[],
+        "acl":[],
+        "schema": "public"
+      }
+    }, {
+      "type": "create",
+      "name": "Create synonyms with procedure as target",
+      "endpoint": "NODE-synonym.obj",
+      "sql_endpoint": "NODE-synonym.sql_id",
+      "msql_endpoint": "NODE-synonym.msql",
+      "data":
+      {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "synobjschema": "enterprisedb",
+        "schema": "enterprisedb",
+        "targettype": "p",
+        "synobjname": "procedure_for_synonyms"
+      },
+      "expected_sql_file": "create_synonyms_with_proc.sql",
+      "expected_msql_file": "create_synonyms_with_proc_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Synonym",
+      "endpoint": "NODE-synonym.delete_id",
+      "data": {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Function for Synonyms",
+      "endpoint": "NODE-function.obj",
+      "sql_endpoint": "NODE-function.sql_id",
+      "data": {
+        "name":"func_for_synonyms",
+        "funcowner":"enterprisedb",
+        "pronamespace":2200,
+        "prorettypename":"void",
+        "lanname":"edbspl",
+        "arguments":[],
+        "prosrc":"BEGIN\n  SELECT 1;\nEND;",
+        "probin":"$libdir/",
+        "options":[],
+        "variables":[],
+        "seclabels":[],
+        "acl":[],
+        "schema": "public"
+      }
+    }, {
+      "type": "create",
+      "name": "Create synonyms with function as target",
+      "endpoint": "NODE-synonym.obj",
+      "sql_endpoint": "NODE-synonym.sql_id",
+      "msql_endpoint": "NODE-synonym.msql",
+      "data":
+      {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "synobjschema": "enterprisedb",
+        "schema": "enterprisedb",
+        "targettype": "f",
+        "synobjname": "func_for_synonyms"
+      },
+      "expected_sql_file": "create_synonyms_with_func.sql",
+      "expected_msql_file": "create_synonyms_with_func_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Synonym",
+      "endpoint": "NODE-synonym.delete_id",
+      "data": {
+        "name": "syn_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

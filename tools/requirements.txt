@@ -1,0 +1,5 @@
+requests>=2.21.0
+requests[security]>=2.21.0
+safety>=1.9.0
+Sphinx==7.4.7
+sphinxcontrib-youtube==1.4.1

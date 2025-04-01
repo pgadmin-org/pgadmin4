@@ -1,0 +1,120 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "table_for_compound_trigger",
+        "columns": [{
+          "name": "id",
+          "cltype": "integer",
+          "is_primary_key": true
+        }, {
+          "name": "name",
+          "cltype": "text"
+        }],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    }, {
+      "type": "create",
+      "name": "Create compound trigger for insert or delete",
+      "endpoint": "NODE-compound_trigger.obj",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
+        "prosrc": "BEFORE STATEMENT IS\nBEGIN\n\tSELECT 1;\nEND;",
+        "evnt_insert": true,
+        "evnt_update": false,
+        "evnt_delete": true,
+        "columns": ["id", "name"]
+      },
+      "expected_sql_file": "create_for_insert_delete.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Compound Trigger",
+      "endpoint": "NODE-compound_trigger.delete_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create compound trigger for insert with when condition",
+      "endpoint": "NODE-compound_trigger.obj",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before each row: ' || var);\n\tvar := 'BEFORE EACH ROW';\nEND;",
+        "evnt_insert": true,
+        "evnt_update": false,
+        "evnt_delete": false,
+        "whenclause": "NEW.id < 100"
+      },
+      "expected_sql_file": "create_for_insert_with_when.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter event, comment and code",
+      "endpoint": "NODE-compound_trigger.obj_id",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nAFTER EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('After each row: ' || var);\n\tvar := 'AFTER EACH ROW';\nEND;",
+        "evnt_update": true,
+        "description": "This is test comment."
+      },
+      "expected_sql_file": "alter_event_comment_code.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Compound Trigger",
+      "endpoint": "NODE-compound_trigger.delete_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create compound trigger for insert or update on columns",
+      "endpoint": "NODE-compound_trigger.obj",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE STATEMENT IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before Statement: ' || var);\n\tvar := 'BEFORE STATEMENT';\nEND;\n\nBEFORE EACH ROW IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before each row: ' || var);\n\tvar := 'BEFORE EACH ROW';\nEND;",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "columns": ["id", "name"]
+      },
+      "expected_sql_file": "create_for_insert_update_on_columns.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Compound Trigger",
+      "endpoint": "NODE-compound_trigger.delete_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create compound trigger for all event",
+      "endpoint": "NODE-compound_trigger.obj",
+      "sql_endpoint": "NODE-compound_trigger.sql_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#",
+        "prosrc": "var varchar2(20) := 'Global_var';\n\nBEFORE STATEMENT IS\nBEGIN\n\tDBMS_OUTPUT.PUT_LINE('Before Statement: ' || var);\n\tvar := 'BEFORE STATEMENT';\nEND;",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": true,
+        "evnt_truncate": true
+      },
+      "expected_sql_file": "create_for_all_event.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Compound Trigger",
+      "endpoint": "NODE-compound_trigger.delete_id",
+      "data": {
+        "name": "test_compound_trigger_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+REVOKE test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";

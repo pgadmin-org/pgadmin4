@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Fatal Error</title>
+  <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
+</head>
+<style>
+  .header {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: red;
+  }
+  .content .form-input {
+    flex-grow: 1;
+  }
+</style>
+<body>
+  <div class="content">
+    <div class="header" id="server_error_label">The pgAdmin 4 server could not be contacted:</div>
+    <textarea class="form-input" id="server_error_log" style="min-width: 750px; min-height: 300px;resize: none;" readonly></textarea>
+  </div>
+  <div class="footer">
+    <div class="mr-auto" id="status-text"></div>
+    <div class="ml-auto">
+      <button id="btnConfigure" class="btn btn-primary">Configure...</button>
+    </div>
+  </div>
+  <script>
+    window.onload = async function() {
+      document.getElementById('server_error_label').innerHTML = 'The pgAdmin 4 server could not be contacted:';
+      document.getElementById('server_error_log').innerHTML = await window.electronUI.readServerLog();
+      document.getElementById('btnConfigure').addEventListener('click', function() {
+        window.electronUI.openConfigure();
+      });
+    }
+  </script>
+</body>
+</html>

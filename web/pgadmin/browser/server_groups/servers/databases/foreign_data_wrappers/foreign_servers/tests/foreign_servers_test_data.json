@@ -1,0 +1,344 @@
+{
+  "foreign_server_create": [
+    {
+      "name": "Create foreign server: With valid data.",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while creating foreign server: With invalid data.",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": false,
+      "error_fdw_id": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while creating foreign server: With insufficient data.",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": false,
+      "missing_parameter": true,
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Error while creating foreign server: internal server error.",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+         "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while creating foreign server: error in db.",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": false,
+      "error_in_db": true,
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while creating a foreign server')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "foreign_server_delete": [
+    {
+      "name": "Delete foreign server",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while deleting a foreign server - Internal server error",
+      "url": "/browser/foreign_server/obj/",
+      "internal_server_error": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+         "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while deleting a foreign server - wrong foreign server id",
+      "url": "/browser/foreign_server/obj/",
+      "wrong_foreign_server_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "foreign_server_multiple_delete": [
+   {
+      "name": "Delete multiple foreign server",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "foreign_server_dependent_dependency": [
+    {
+      "name": "Get foreign server dependents",
+      "url": "/browser/foreign_server/dependent/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Get foreign server dependencies",
+      "url": "/browser/foreign_server/dependency/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "foreign_server_get_nodes": [
+    {
+      "name": "Get foreign server nodes",
+      "url": "/browser/foreign_server/nodes/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error fetching foreign server nodes",
+      "url": "/browser/foreign_server/nodes/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching foreign server nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Get foreign server node",
+      "url": "/browser/foreign_server/nodes/",
+      "is_positive_test": true,
+      "node": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error fetching foreign server node",
+      "url": "/browser/foreign_server/nodes/",
+      "is_positive_test": false,
+      "node": true,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching foreign server nodes')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "foreign_server_update": [
+    {
+      "name": "Update foreign server",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "test_data": {
+        "description": "This is foreign server update comment",
+        "id": "PLACE_HOLDER"
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while updating a foreign server - Internal server error",
+      "url": "/browser/foreign_server/obj/",
+      "error_in_db": true,
+      "test_data": {
+        "description": "This is foreign server update comment",
+        "id": "PLACE_HOLDER"
+      },
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error while fetching a foreign server')]"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "foreign_server_get": [
+    {
+      "name": "Get foreign server properties",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a foreign server properties",
+      "url": "/browser/foreign_server/obj/",
+      "error_fetching_fsrv": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a foreign server')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error while fetching foreign server with wrong ID",
+      "url": "/browser/foreign_server/obj/",
+      "wrong_fsrv_id": true,
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Get foreign server list",
+      "url": "/browser/foreign_server/obj/",
+      "is_positive_test": true,
+      "foreign_server_list": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error while fetching a foreign server list",
+      "url": "/browser/foreign_server/obj/",
+      "error_fetching_fsrv": true,
+      "is_positive_test": false,
+      "foreign_server_list": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a foreign server')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "foreign_server_get_sql": [
+    {
+      "name": "Get Foreign server SQL",
+      "url": "/browser/foreign_server/sql/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Error - Get Foreign server SQL - Internal server error",
+      "url": "/browser/foreign_server/sql/",
+      "is_positive_test": false,
+      "internal_server_error": true,
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching a foreign server')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Error - Get Foreign server SQL using wrong fsrv id",
+      "url": "/browser/foreign_server/sql/",
+      "wrong_foreign_server_id": true,
+      "is_positive_test": false,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    }
+  ],
+  "foreign_server_get_msql": [
+    {
+      "name": "Get foreign server msql",
+      "is_positive_test": true,
+       "url": "/browser/foreign_server/msql/",
+      "test_data": {
+        "name": "modifying name",
+        "comment": "Comments to test update"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,539 @@
+@import url("classic.css"); /* make sure to sync this with the base theme's css filename */
+
+html{
+    background-color: #fff;
+
+}
+
+body {
+    font-weight: 400;
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    -webkit-font-smoothing: antialiased;
+    background-color: #fff;
+    height: 100vh;
+}
+
+div.body {
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-size: 1.1rem;
+    max-width: 100%;
+    color: #222222;
+    -webkit-font-smoothing: antialiased;
+    border:none;
+    background-color: #fff;
+}
+
+div.related a:hover {
+    color: #ebeef3 !important;
+    text-decoration: underline !important;
+}
+
+a {
+    color: #295C85;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #295C85;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #326690;
+    text-decoration: underline;
+}
+
+div.body dd, div.body blockquote {
+    line-height: 1.4em;
+}
+
+div.body p{
+    line-height: 1.4em;
+}
+
+div.body ul li{
+    line-height: 1.4em;
+}
+
+div.body p strong{
+    font-weight: 600;
+}
+
+div.body li em, div.body p em{
+    font-weight: 400;
+}
+
+div.toctree-wrapper ul li.toctree-l1 a cite{
+    font-weight: 500;
+    font-style: normal;
+    font-size: 1.1rem;
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    -webkit-font-smoothing: antialiased;
+    background-color: #fff;
+}
+
+div.toctree-wrapper ul li.toctree-l1 a cite:hover{
+    color: #326690;
+}
+
+div.toctree-wrapper ul li.toctree-l1:before {
+    padding-right: 5px;
+    font-size: 1.4rem;
+}
+
+div.toctree-wrapper ul li.toctree-l1 ul{
+    padding-left: 40px;
+}
+
+div.toctree-wrapper ul li.toctree-l1 ul li.toctree-l2 ul li.toctree-l3 ul li.toctree-l4 ul li.toctree-l5{
+    list-style:none;
+}
+
+div.toctree-wrapper ul li.toctree-l1 ul li.toctree-l2 ul li.toctree-l3 ul li.toctree-l4 ul li.toctree-l5:before{
+    padding-right: 5px;
+    font-size: 1.4rem;
+}
+
+div.toctree-wrapper ul li a:hover {
+   text-decoration: underline;
+   color: #326690;
+}
+
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    color: #326690;
+    border-bottom: none;
+    margin: 0px 0px 0px 0px;
+    padding: 20px 0 0px 0px;
+    background-color: #fff;
+}
+
+div.body h1 cite{
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    border:none;
+    color: #326690;
+    padding:0px;
+    background-color: #fff;
+}
+
+div.body h1{
+    font-size: 150%;
+    font-weight: 400;
+}
+
+div.related {
+    color: #fff;
+    background-color: #295C85;
+    background-position: top left;
+}
+
+div.related[role=navigation] ~ div.related[role=navigation] {
+    display: none;
+}
+
+
+div.related a {
+    color: #fff;
+}
+
+div.footer div.related ul {
+    line-height: 0.85em;
+}
+
+div.footer div.related a {
+    text-decoration: none;
+}
+
+div.footer div.related a:hover {
+    text-decoration: underline;
+}
+
+div.document{
+    background-color: #ebeef3;
+}
+
+div.footer {
+    color: #f5f7f9;
+    padding: 5px 0;
+    background-color: #295C85;
+    top: calc(100% - 24px);
+    font-size: 1em;
+}
+
+.line-block {
+    margin-top: 0em;
+}
+
+div.line-block div {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.section ul{
+    padding-left: 20px;
+}
+
+div.section blockquote {
+
+    margin: 10px 10px 10px 10px;
+}
+
+div.section ul.simple li{
+    padding-bottom: 15px;
+    text-align: left;
+}
+
+div.section ul li strong{
+    font-weight: 400;
+}
+
+div.section h2{
+    padding-bottom: 0px;
+}
+
+a.headerlink{
+    color: #fff;
+}
+
+
+/* Table CSS */
+
+table.docutils td, table.docutils th {
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    -webkit-font-smoothing: antialiased;
+    padding: 10px 8px 10px 0px;
+    line-height: 160%;
+}
+
+body.table tr td ul li a:before{
+    padding-right: 5px;
+    font-size: 1.4rem;
+}
+
+table.docutils th{
+    border-bottom: 1px solid #858da0;
+    font-weight: 500;
+
+}
+
+table.docutils td{
+    border-bottom: 1px solid #bac0cc;
+}
+
+table.docutils td strong{
+    font-weight: 400;
+}
+
+th {
+    background-color: #fff;
+}
+
+/* Sidebar */
+
+div#sidebarbutton{
+    border-left: none !important;
+    left: 11px;
+    color: #838ea0 !important;
+    height: 17px !important;
+    margin-left: 230px;
+    width: 17px;
+    background-color: #295C85;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    padding-top: 0px;
+    margin-top:5px;
+}
+
+div#sidebarbutton span{
+    vertical-align: text-top;
+    margin: -4px 0px 0px 4px!important;
+    color: #f5f7f9;
+}
+
+div#sidebarbutton:hover{
+    color: #f5f7f9 !important;
+    background-color: #326690 !important;
+}
+
+div.sphinxsidebar p a img.logo{
+    width: 190px;
+    height: 38px;
+}
+
+div.sphinxsidebar form div:first-child{
+    float: left;
+}
+
+div.sphinxsidebar {
+    line-height: 1.2rem;
+    font-size: 0.85rem;
+    color: #858da0;
+    background-color: #ebeef3;
+}
+
+div.sphinxsidebar h3 a {
+    color: #295C85;
+}
+
+div.sphinxsidebar ul ul, div.sphinxsidebar ul.want-points {
+    padding-left: 15px;
+    padding-right: 0px;
+    margin-left: 0;
+    margin-right: 0;
+    list-style: none;
+}
+
+div.sphinxsidebar ul {
+    margin: 10px 10px 10px 0px;
+}
+
+div.sphinxsidebar ul li.toctree-l1 a cite {
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    color: #295C85;
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    border:none;
+    padding:0px;
+    background-color: #f5f7f9;
+}
+
+div.sphinxsidebar ul li.current > a.current,
+div.sphinxsidebar ul li.current > a.current cite {
+    font-weight: bold;
+}
+
+div.sphinxsidebar ul li.toctree-l1 a cite:hover{
+    color: #326690;
+}
+
+div.sphinxsidebar h3, div.sphinxsidebarwrapper h3, div.sphinxsidebar h4 {
+    font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    color: #326690;
+    font-size: 1.2rem;
+    width: 200px;
+}
+
+div.sphinxsidebar a{
+    color: #295C85;
+}
+
+div.sphinxsidebar a:visited{
+    color: #295C85;
+}
+
+div.sphinxsidebar a:hover{
+    color: #326690;
+    text-decoration: underline;
+}
+
+div.sphinxsidebar input {
+    border: 1px solid #858da0;
+    font-size: 1em;
+    border-radius: 3px;
+    font-weight: 400;
+}
+div.sphinxsidebar #searchbox{
+ margin:20px 0px 20px 0px;
+}
+
+div.sphinxsidebar #searchbox input[type="text"] {
+    width: 150px;
+    border: 1px solid #858da0;
+    border-radius: 3px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding: 4px;
+    font-weight: 400;
+}
+
+div.sphinxsidebar #searchbox input[type="submit"]{
+    background-color: #326690;
+    color: #fff;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 3px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding: 5px 8px 5px 8px;
+    border: none;
+    margin-left: -1px;
+}
+
+div.sphinxsidebarwrapper ul li ul li a:before{
+    content: "●";
+    padding-right: 5px;
+    font-size: 0.60rem;
+    vertical-align: baseline;
+}
+
+div.sphinxsidebar #searchbox input[type="submit"]:hover{
+    background-color: #295C85;
+}
+
+div.sphinxsidebarwrapper {
+    padding: 5px 5px 15px 10px;
+    -webkit-font-smoothing: antialiased;
+    width: 200px !important;
+}
+
+div.sphinxsidebarwrapper ul li.toctree-l1 ul li.toctree-l2 a:before{
+    content: "●";
+    padding-right: 5px;
+    font-size: 0.85rem;
+    vertical-align: baseline;
+}
+
+div.sphinxsidebarwrapper ul li.toctree-l1 a:before{
+    content: "●";
+    padding-right: 5px;
+    font-size: 0.85rem;
+}
+
+div.body form input[type="text"]{
+    border: 1px solid #858da0;
+    border-radius: 3px;
+    padding: 10px;
+    width: 200px;
+}
+
+div.body form input[type="submit"]{
+    -webkit-font-smoothing: antialiased;
+    background-color: #326690;
+    font-weight: 400;
+    color: #fff;
+    font-size: 0.90rem;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 9px 11px 9px 11px;
+    border: none;
+}
+
+div.body form input[type="submit"]:hover{
+    background-color: #295C85;
+}
+
+/* Code block */
+code {
+    background-color: #e6ecf1;
+    padding: 0px;
+    font-size: 1.2em;
+}
+
+pre {
+    -webkit-font-smoothing: antialiased;
+    padding: 15px 0px 15px 15px;
+    background-color: #effbfc;
+    line-height: 140%;
+    border-top: 1px solid #40809054;
+    border-right: 1px solid #40809054;
+    border-bottom: 1px solid #40809054;
+    border-left:5px solid #40809085;
+    font-size: 100%;
+    color: #295C85;
+
+}
+
+span.pre{
+    background-color: #e6ecf1;
+    padding:0px;
+    font-size: 85%;
+    color: #295C85;
+    font-style: normal;
+    border-radius:3px;
+}
+
+a.internal span {
+    text-decoration: none;
+    color: #295c85;
+}
+
+a.external {
+    text-decoration: none;
+    color: #295c85;
+}
+
+a.reference:hover {
+    text-decoration: underline;
+}
+
+a.internal span:hover {
+    text-decoration: underline;
+}
+
+i, cite, em, var, address, dfn {
+    font-style: italic;
+}
+
+div.note em {
+    background-color: transparent;
+}
+
+em {
+    background-color: #fff;
+}
+
+li.nav-item i,
+li.nav-item cite,
+li.nav-item em,
+li.nav-item var,
+li.nav-item address,
+li.nav-item dfn
+{
+    color: #fff;
+    background-color: #295C85;
+    padding: initial;
+    font-style: normal;
+}
+
+ol.arabic {
+    padding-left: 20px;
+}
+
+ol.arabic li {
+    padding-bottom: 15px;
+}
+
+/* Index */
+div.genindex-jumpbox {
+    margin: 1.4em 0.4em 0.4em 0em;
+    color: #b9c1cc;
+    border-top: 1px solid #d2d7df;
+    border-bottom: 1px solid #d2d7df;
+    padding: 0.8em;
+}
+
+div.genindex-jumpbox a strong{
+    font-weight: 400;
+}
+
+div.genindex-jumpbox a{
+    padding: 0.90em;
+    font-size: 1rem;
+}
+
+div.genindex-jumpbox a:hover{
+    color: #fff;
+    background-color: #326690;
+    text-decoration: none;
+    font-weight: 500;
+
+}
+
+/* Search */
+ul.search li {
+    padding: 5px 0px 5px 0px;
+    background-image: none !important;
+}
+
+/* Notes */
+
+div.topic {
+    background-color: #f3f5f9;
+}

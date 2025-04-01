@@ -1,0 +1,278 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Materialised Views",
+      "endpoint": "NODE-mview.obj",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql",
+      "data": {
+        "spcname": "pg_default",
+        "schema": "public",
+        "owner": "postgres",
+        "datacl": [],
+        "seclabels": [],
+        "name": "testmview_$%{}[]()&*^!/@`#",
+        "comment": "comment1",
+        "definition": "SELECT 1 AS col1"
+      },
+      "expected_sql_file": "create_mview.sql",
+      "expected_msql_file": "create_mview_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (Adding privileges)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "datacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview.sql",
+      "expected_msql_file": "alter_mview_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (Remove all privileges)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "datacl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_drop_all_priv.sql",
+      "expected_msql_file": "alter_mview_drop_all_priv_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (change grantee in privileges)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "datacl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_change_grantee_priv.sql",
+      "expected_msql_file": "alter_mview_change_grantee_priv_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (change definition)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "definition": "SELECT 12 AS col1;"
+      },
+      "expected_sql_file": "alter_mview_definition.sql",
+      "expected_msql_file": "alter_mview_definition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (Fillfactor)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "fillfactor": "18",
+        "with_data": true
+      },
+      "expected_sql_file": "alter_mview_add_fillfactor.sql",
+      "expected_msql_file": "alter_mview_add_fillfactor_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (add table parameters)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "autovacuum_custom": true,
+        "autovacuum_enabled": "t",
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_analyze_scale_factor",
+              "value": 0.2
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_add_table_parameter.sql",
+      "expected_msql_file": "alter_mview_add_table_parameter_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Materialised Views (remove table parameters)",
+      "endpoint": "NODE-mview.obj_id",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql_id",
+      "data": {
+        "autovacuum_custom": true,
+        "autovacuum_enabled": "x",
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_analyze_scale_factor",
+              "value": null
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_mview_remove_table_parameter.sql",
+      "expected_msql_file": "alter_mview_remove_table_parameter_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Materialised Views with access method",
+      "endpoint": "NODE-mview.obj",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql",
+      "data": {
+        "spcname": "pg_default",
+        "schema": "public",
+        "owner": "postgres",
+        "datacl": [],
+        "seclabels": [],
+        "name": "testmview_am_$%{}[]()&*^!/@`#",
+        "comment": "comment1",
+        "definition": "SELECT 1 AS col1",
+        "amname": "heap"
+      },
+      "expected_msql_file": "create_mview_with_am_msql.sql"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM enterprisedb;
+
+GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC;

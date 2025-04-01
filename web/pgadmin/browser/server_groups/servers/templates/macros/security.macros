@@ -1,0 +1,6 @@
+{% macro APPLY(conn, type, name, provider, label) -%}
+SECURITY LABEL{% if provider and provider != '' %} FOR {{ conn|qtIdent(provider) }}{% endif %} ON {{ type }} {{ conn|qtIdent(name) }} IS {{ label|qtLiteral(conn) }};
+{%- endmacro %}
+{% macro DROP(conn, type, name, provider) -%}
+SECURITY LABEL FOR {{ conn|qtIdent(provider) }} ON {{ type }} {{ conn|qtIdent(name) }} IS NULL;
+{%- endmacro %}

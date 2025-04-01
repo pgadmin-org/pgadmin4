@@ -1,0 +1,10 @@
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    RENAME "col_1_$%{}[]()&*^!@""'`\/#" TO "new_col_1_$%{}[]()&*^!@""'`\/#";
+
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#" OPTIONS (ADD column_name 'test');
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "new_col_1_$%{}[]()&*^!@""'`\/#" TYPE real;
+
+COMMENT ON COLUMN public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for alter';

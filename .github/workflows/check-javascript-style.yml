@@ -1,0 +1,35 @@
+name: Check Javascript style
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  check-javascript-style:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 3
+
+      - name: Install Node modules
+        run: |
+          cd web
+          yarn install
+
+      - name: Run the linter
+        run: |
+          cd web
+          yarn run linter

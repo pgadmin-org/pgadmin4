@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container-fluid change_pass">
+    <div class="row align-items-center h-100">
+        <div class="col-md-5"></div>
+        <div class="col-md-5">
+            <div class="panel-header h4"><i class="app-icon pg-icon-blue" aria-hidden="true"></i> {{ _('%(appname)s', appname=config.APP_NAME) }}</div>
+            <div class="panel-body">
+                <div class="d-block text-color pb-3 h5">{{ _('Login Failed.') }}</div>
+                <div><a href="{{ login_url }}">Click here</a> to Login again.</div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</div>
+{% endblock %}

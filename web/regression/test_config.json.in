@@ -1,0 +1,120 @@
+{
+  "headless_chrome": false,
+  "default_browser": "Chrome",
+  "pgAdmin4_login_credentials": {
+    "new_password": "NEWPASSWORD",
+    "login_password": "PASSWORD",
+    "login_username": "USER@EXAMPLE.COM"
+  },
+  "pgAdmin4_test_user_credentials": {
+    "new_password": "NEWPASSWORD",
+    "login_password": "PASSWORD",
+    "login_username": "USER2@EXAMPLE.COM"
+  },
+  "pgAdmin4_test_non_admin_credentials": {
+    "new_password": "NEWPASSWORD",
+    "login_password": "PASSWORD",
+    "login_username": "USER@EXAMPLE.COM"
+  },
+  "pgAdmin4_ldap_credentials": {
+    "login_password": "PASSWORD",
+    "login_username": "USERNAME"
+  },
+  "ldap_config": [
+    {
+    "ldap": {
+      "name": "Ldap scenario name",
+      "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": false,
+      "bind_user": "",
+      "bind_password": "",
+      "base_dn": "BASE-DN",
+      "search_base_dn": "SEARCH-BASE-DN",
+      "username_atr": "UID",
+      "search_filter": "(objectclass=*)",
+      "use_starttls": false,
+      "ca_cert_file": "",
+      "cert_file": "",
+      "key_file": ""
+    },
+    "ldap_with_ssl": {
+      "name": "Ldap scenario name",
+      "uri": "ldaps://IP-ADDRESS/HOSTNAME:636",
+      "anonymous_bind": false,
+      "bind_user": "",
+      "bind_password": "",
+      "base_dn": "BASE-DN",
+      "search_base_dn": "SEARCH-BASE-DN",
+      "username_atr": "UID",
+      "search_filter": "(objectclass=*)",
+      "use_starttls": false,
+      "ca_cert_file": "",
+      "cert_file": "",
+      "key_file": ""
+    },
+    "ldap_with_tls": {
+      "name": "Ldap scenario name",
+      "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": false,
+      "bind_user": "",
+      "bind_password": "",
+      "base_dn": "",
+      "search_base_dn": "SEARCH-BASE-DN",
+      "username_atr": "UID",
+      "search_filter": "(objectclass=*)",
+      "use_starttls": true,
+      "ca_cert_file": "",
+      "cert_file": "",
+      "key_file": ""
+    },
+    "ldap_with_dedicated_user": {
+      "name": "Ldap scenario name",
+      "uri": "ldap://IP-ADDRESS/HOSTNAME:389",
+      "anonymous_bind": true,
+      "bind_user": "",
+      "bind_password": "",
+      "base_dn": "",
+      "search_base_dn": "SEARCH-BASE-DN",
+      "username_atr": "UID",
+      "search_filter": "(objectclass=*)",
+      "use_starttls": true,
+      "ca_cert_file": "",
+      "cert_file": "",
+      "key_file": ""
+    }
+  }],
+  "selenoid_config": {
+    "pgAdmin_default_server":"IP address of machine where source code is going to be executed",
+    "pgAdmin_max_up_time": 90,
+    "max_parallel_sessions": "3",
+    "selenoid_url": "http://<IP address of Selenoid Installed machine>:4444/wd/hub",
+    "browsers_list":[
+        {"name": "Chrome", "version": null},
+        {"name": "Firefox", "version": null}
+    ]
+  },
+  "server_group": 1,
+  "server_credentials": [
+    {
+      "name": "PostgreSQL 9.4",
+      "comment": "PostgreSQL 9.4 Server (EDB Installer)",
+      "db_username": "postgres",
+      "host": "localhost",
+      "db_password": "PASSWORD",
+      "db_port": 5432,
+      "maintenance_db": "postgres",
+      "sslmode": "prefer",
+      "tablespace_path": "",
+      "enabled": true,
+      "default_binary_paths": {
+        "pg": "/opt/PostgreSQL/9.4/bin/",
+        "ppas": "/opt/edb/as10/bin/"
+      }
+    }
+  ],
+  "server_update_data": [
+    {
+      "comment": "This is test update comment"
+    }
+  ]
+}

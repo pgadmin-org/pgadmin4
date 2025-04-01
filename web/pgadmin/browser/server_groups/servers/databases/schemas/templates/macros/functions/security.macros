@@ -1,0 +1,9 @@
+{#################################################}
+{# Macros for Security Labels (functions module) #}
+{#################################################}
+{% macro SET(conn, type, name, provider, label, schema, func_args) -%}
+SECURITY LABEL{% if provider and provider != '' %} FOR {{ conn|qtIdent(provider) }}{% endif %} ON {{ type }} {{ conn|qtIdent(schema, name) }}({{func_args}}) IS {{ label|qtLiteral(conn) }};
+{%- endmacro %}
+{% macro UNSET(conn, type, name, provider, schema, func_args) -%}
+SECURITY LABEL FOR {{ provider }} ON {{ type }} {{ conn|qtIdent(schema, name) }}({{func_args}}) IS NULL;
+{%- endmacro %}

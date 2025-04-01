@@ -1,0 +1,620 @@
+{
+  "foreign_key_create": [
+    {
+      "name": "Create: Valid foreign key with autoindex = false.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_foreignkey_add_",
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Valid foreign key without name with autoindex = true & convalidated=true.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": true,
+        "convalidated": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Invalid foreign key without columns parameter",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_foreignkey_add_",
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "Could not find required parameter (columns).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Foreign key without name & valid data while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Foreign key with name in data while server is down .",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_foreignkey_add_",
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Foreign key with valid data while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_foreignkey_add_",
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Foreign key without name while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "columns": [
+          {
+            "local_column": "id",
+            "references": "<foreign_table_id>",
+            "referenced": "id"
+          }
+        ],
+        "confupdtype": "a",
+        "confdeltype": "a",
+        "autoindex": false
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "foreign_key_delete": [
+    {
+      "name": "Delete: Delete existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete multiple existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Delete non-existing foreign key.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "foreign_key_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete existing foreign key while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Delete existing foreign key while server down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_key_dependencies_dependents": [
+    {
+      "name": "Get foreign key dependents: With existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get foreign key dependencies: With existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "foreign_key_get": [
+    {
+      "name": "Get foreign key details: For existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get foreign key details: For non-existing foreign key.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "foreign_key_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the foreign key.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get foreign key details: For existing foreign key while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {"name": "Get foreign constraint details: For existing multiple foreign keys.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "foreign_key_get_nodes": [
+    {
+      "name": "Get foreign key node: For existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get foreign key node: For existing foreign key convalidated = true.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"ALTER TABLE %s.%s ADD FOREIGN KEY (id) REFERENCES %s.%s (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION NOT VALID\" % (schema_name, local_table_name, schema_name,foreign_table_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get foreign key nodes: For existing multiple foreign keys",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "foreign_key_msql": [
+    {
+      "name": "Get foreign key msql: Modifying comment existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "Modify Name for Exclusion Constraint",
+        "comment": "Testing msql api"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "foreign_key_put": [
+    {
+      "name": "Put: Update existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for foreign key."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing foreign key convalidated = true.",
+      "is_positive_test": true,
+          "inventory_data": {
+        "query": "\"ALTER TABLE %s.%s ADD FOREIGN KEY (id) REFERENCES %s.%s (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION NOT VALID\" % (schema_name, local_table_name, schema_name,foreign_table_name)"
+      },
+      "test_data": {
+        "comment": "This is test comment for foreign key."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing foreign key while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing foreign key while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "foreign_key_sql": [
+    {
+      "name": "Get foreign key sql: With existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get foreign key sql: With non-existing foreign key.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+         "foreign_key_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the foreign key.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get foreign key sql: With existing foreign key while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "foreign_constraint_validate": [
+    {
+      "name": "Validate foreign key: For existing foreign key.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Validate foreign key: For existing foreign key while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Validate foreign key: For existing foreign key while server down-2.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "foreign_key_get_coveringindex": [
+    {
+      "name": "Get foreign key: Get covering index details.",
+      "is_positive_test": true,
+      "inventory_data": { },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

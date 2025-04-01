@@ -1,0 +1,429 @@
+{
+  "dbms_create_job": [
+    {
+      "name": "Create job when type is self contained and PLSQL_BLOCK",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_self_with_psql",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a self contained psql job.",
+        "jsjobtype": "s",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2054-02-28 00:00:00 +05:30",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"],
+        "jsjobprname": "",
+        "jsjobscname": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create job when type is self contained and STORED_PROCEDURE without arguments",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_self_with_proc_noargs",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a self contained stored procedure job with no args.",
+        "jsjobtype": "s",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": "public.test_proc_without_args",
+        "jsprcode": null,
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2054-02-28 00:00:00 +05:30",
+        "jsscfreq": "YEARLY",
+        "jsscdate": "20540113",
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": [],
+        "jsjobprname": "",
+        "jsjobscname": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create job when type is pre-defined and program is PLSQL",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_pre_with_psql",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a pre-defined job with PLSQL program.",
+        "jsjobtype": "p",
+        "jsjobprname": "prg_with_psql",
+        "jsjobscname": "yearly_sch",
+        "jsprtype": null,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": null,
+        "jsscstart": null,
+        "jsscend": null,
+        "jsscfreq": null,
+        "jsscdate": null,
+        "jsscweekdays": null,
+        "jsscmonthdays": null,
+        "jsscmonths": null,
+        "jsschours": null,
+        "jsscminutes": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create job when type is pre-defined and program is Stored Procedure without args",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_pre_with_proc_noargs",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a pre-defined job with Stored Procedure without args",
+        "jsjobtype": "p",
+        "jsjobprname": "prg_with_proc_noargs",
+        "jsjobscname": "yearly_sch",
+        "jsprtype": null,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": null,
+        "jsscstart": null,
+        "jsscend": null,
+        "jsscfreq": null,
+        "jsscdate": null,
+        "jsscweekdays": null,
+        "jsscmonthdays": null,
+        "jsscmonths": null,
+        "jsschours": null,
+        "jsscminutes": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create job when type is pre-defined and program is Stored Procedure with args",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_pre_with_proc_args",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a pre-defined job with program is Stored Procedure with args.",
+        "jsjobtype": "p",
+        "jsjobprname": "prg_with_proc_args",
+        "jsjobscname": "yearly_sch",
+        "jsprtype": null,
+        "jsprnoofargs": [],
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": null,
+        "jsscstart": null,
+        "jsscend": null,
+        "jsscfreq": null,
+        "jsscdate": null,
+        "jsscweekdays": null,
+        "jsscmonthdays": null,
+        "jsscmonths": null,
+        "jsschours": null,
+        "jsscminutes": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create job: while server is down",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": false,
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_with_psql",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a self contained psql job.",
+        "jsjobtype": "s",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2054-02-28 00:00:00 +05:30",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"],
+        "jsjobprname": "",
+        "jsjobscname": ""
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_update_job": [
+    {
+      "name": "Set job argument value",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsjobname": "job_with_update_args",
+        "jsprarguments": {
+          "changed": [{"argid":0,"argtype":"bigint","argmode":"IN","argname":"salary","argdefval":"10000","argval":"5000"}]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_delete_job": [
+    {
+      "name": "Delete job: With existing DBMS job.",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete multiple jobs: With existing DBMS jobs.",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "dbms_get_job": [
+    {
+      "name": "Get job: With existing DBMS job.",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get jobs: With multiple existing DBMS jobs.",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get job: while server down.",
+      "url": "/browser/dbms_job/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "dbms_msql_job": [
+    {
+      "name": "Get job msql: For existing PLSQL job.",
+      "url": "/browser/dbms_job/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_self_with_psql",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a self contained psql job.",
+        "jsjobtype": "s",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2054-02-28 00:00:00 +05:30",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"],
+        "jsjobprname": "",
+        "jsjobscname": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get job msql: For existing STORED_PROCEDURE job.",
+      "url": "/browser/dbms_job/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsjobid": null,
+        "jsjobname": "job_self_with_proc_noargs",
+        "jsjobenabled": true,
+        "jsjobdesc": "This is a self contained stored procedure job with no args.",
+        "jsjobtype": "s",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprproc": "public.test_proc_without_args",
+        "jsprcode": null,
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2054-02-28 00:00:00 +05:30",
+        "jsscfreq": "YEARLY",
+        "jsscdate": "20250113",
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": [],
+        "jsjobprname": "",
+        "jsjobscname": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "dbms_enable_job": [
+    {
+      "name": "Enable existing job",
+      "url": "/browser/dbms_job/enable_disable/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_enable_job": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_disable_job": [
+    {
+      "name": "Disable existing job",
+      "url": "/browser/dbms_job/enable_disable/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_enable_job": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}

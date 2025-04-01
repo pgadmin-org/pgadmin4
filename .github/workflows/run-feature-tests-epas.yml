@@ -1,0 +1,183 @@
+name: Run feature tests on EPAS
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  run-feature-tests-epas:
+    # Only run if the tests are enabled
+    # TODO: Figure out a way to test for the presence of the secrets instead
+    if: vars.ENABLE_EPAS_TESTS == 'true'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        pgver: [13, 14, 15, 16, 17]
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup the EDB APT repo on Linux
+        run: |
+          curl -1sLf 'https://downloads.enterprisedb.com/${{ secrets.CLOUDSMITH_TOKEN }}/enterprise/setup.deb.sh' | sudo -E bash
+
+      - name: Install platform dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+
+      - name: Install pgagent on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: |
+          sudo apt install -y edb-as${{ matrix.pgver }}-pgagent
+
+      - name: Create the tablespace directory
+        run: |
+          sudo mkdir -p /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
+          sudo chown enterprisedb:enterprisedb /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
+
+      - name: Start EDB PostgreSQL
+        run: |
+          # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
+          sudo su -c "echo local all all trust > /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo sed -i "s/port = 544[0-9]/port = 58${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${{ matrix.pgver }}-main.epas_stat_tmp"
+          sudo systemctl restart edb-as@${{ matrix.pgver }}-main
+
+          until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${{ matrix.pgver }}/bin/pg_isready -p 58${{ matrix.pgver }}" 2>/dev/null; do
+            >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
+            sleep 2
+          done
+
+      - name: Create pgagent extension on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+
+      - name: Install Python dependencies
+        run: make install-python-testing
+
+      - name: Create the test configuration
+        run: |
+          cat <<EOF > web/config_local.py
+          from config import *
+
+          # Debug mode
+          DEBUG = True
+
+          # App mode
+          SERVER_MODE = False
+
+          # Log
+          CONSOLE_LOG_LEVEL = DEBUG
+          FILE_LOG_LEVEL = DEBUG
+
+          DEFAULT_SERVER = '127.0.0.1'
+
+          UPGRADE_CHECK_ENABLED = False
+
+          LOG_FILE = "$(pwd)/var/pgadmin4.log"
+          SESSION_DB_PATH = "$(pwd)/var/sessions"
+          STORAGE_DIR = "$(pwd)/var/storage"
+          SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          TEST_SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          AZURE_CREDENTIAL_CACHE_DIR = "$(pwd)/var/azurecredentialcache"
+          EOF
+
+          cat <<EOF > web/regression/test_config.json
+          {
+            "headless_chrome": false,
+            "default_browser": "Chrome",
+            "pgAdmin4_login_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_user_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER2@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_non_admin_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER@EXAMPLE.COM"
+            },
+            "server_group": 1,
+            "server_credentials": [
+              {
+                "name": "EPAS ${{ matrix.pgver }}",
+                "comment": "EPAS ${{ matrix.pgver }} Server",
+                "db_username": "enterprisedb",
+                "host": "/var/run/edb-as",
+                "db_password": "",
+                "db_port": 58${{ matrix.pgver }},
+                "maintenance_db": "postgres",
+                "sslmode": "prefer",
+                "tablespace_path": "/var/lib/edb-as/tablespaces/${{ matrix.pgver }}",
+                "enabled": true,
+                "default_binary_paths": {
+                  "pg": "",
+                  "ppas": "/usr/lib/edb-as/${{ matrix.pgver }}/bin"
+                }
+              }
+            ],
+            "server_update_data": [
+              {
+                "comment": "This is test update comment"
+              }
+            ]
+          }
+          EOF
+
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 3
+
+      - name: Build the JS bundle
+        run: |
+          cd web
+          yarn install
+          yarn run bundle
+
+      - name: Run the tests
+        run: |
+          . venv/bin/activate
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          export DISPLAY=:99
+          cd web
+          python regression/runtests.py --pkg feature_tests
+
+      - name: Archive server log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log-pg${{ matrix.pgver }}
+          path: var/pgadmin4.log
+
+      - name: Archive regression log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-log-pg${{ matrix.pgver }}
+          path: web/regression/regression.log
+
+      - name: Archive screenshots
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-pg${{ matrix.pgver }}
+          path: web/regression/screenshots
+          if-no-files-found: ignore

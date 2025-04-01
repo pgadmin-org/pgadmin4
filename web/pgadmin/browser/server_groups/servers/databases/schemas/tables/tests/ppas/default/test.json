@@ -1,0 +1,1949 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table without primary key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "test comment",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col3",
+            "cltype": "boolean",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col4",
+            "cltype": "character varying",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "max_val_attlen": 2147483647,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 30,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col5",
+            "cltype": "numeric",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "min_val_attprecision": 0,
+            "max_val_attlen": 1000,
+            "max_val_attprecision": 1000,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 20,
+            "attprecision": 10,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col6",
+            "cltype": "timestamp with time zone",
+            "attacl": [],
+            "min_val_attlen": 0,
+            "max_val_attlen": 6,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 5,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_without_primary_key.sql",
+      "expected_msql_file": "create_table_without_primary_key_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table to change column data types",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
+        "columns": {
+          "changed": [
+            {
+              "attnum": 1,
+              "cltype": "bigint"
+            },
+            {
+              "attnum": 2,
+              "min_val_attlen": 1,
+              "max_val_attlen": 2147483647,
+              "cltype": "character varying"
+            },
+            {
+              "attnum": 6,
+              "attlen": null,
+              "cltype": "time without time zone"
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_change_col_data_type.sql",
+      "expected_msql_file": "alter_table_change_col_data_type_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add pk",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
+        "columns": {
+          "changed": [
+            {
+              "attnum": 1,
+              "attnotnull": true,
+              "is_primary_key": true
+            }
+          ]
+        },
+        "primary_key": {
+          "added": [
+            {
+              "columns": [
+                {
+                  "column": "col1"
+                }
+              ],
+              "include": []
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_add_pk_not_null_constraint.sql",
+      "expected_msql_file": "alter_table_add_pk_not_null_constraint_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add null constraint, rename column",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
+        "columns": {
+          "changed": [
+            {
+              "attnum": 1,
+              "name": "col1_rename",
+              "is_primary_key": false
+            },
+            {
+              "attnum": 4,
+              "attnotnull": true
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_add_null_constraint_rename_col.sql",
+      "expected_msql_file": "alter_table_add_null_constraint_rename_col_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table add pk",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "simple_table_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with primary key",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "test comment",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "col1_$%{}[]()&*^!@\\\"'`\\\\/#"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1_$%{}[]()&*^!@\\\"'`\\\\/#",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": true,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2_$%{}[]()&*^!@\\\"'`\\\\/#",
+            "cltype": "json",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_pk.sql",
+      "expected_msql_file": "create_table_with_pk_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add columns",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
+        "columns": {
+          "added": [
+            {
+              "name": "col3_$%{}[]()&*^!@\\\"'`\\\\/#",
+              "cltype": "numeric",
+              "attacl": [],
+              "min_val_attlen": 1,
+              "min_val_attprecision": 0,
+              "max_val_attlen": 1000,
+              "max_val_attprecision": 1000,
+              "is_primary_key": false,
+              "attnotnull": false,
+              "attlen": 10,
+              "attprecision": 5,
+              "attidentity": "a",
+              "colconstype": "n",
+              "attoptions": [],
+              "seclabels": []
+            },
+            {
+              "name": "col4_$%{}[]()&*^!@\\\"'`\\\\/#",
+              "cltype": "text",
+              "attacl": [],
+              "is_primary_key": false,
+              "attnotnull": false,
+              "attlen": null,
+              "attprecision": null,
+              "attidentity": "a",
+              "colconstype": "n",
+              "attoptions": [],
+              "seclabels": []
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_add_cols.sql",
+      "expected_msql_file": "alter_table_add_cols_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table delete columns",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
+        "columns": {
+          "deleted": [
+            {
+              "attoptions": [],
+              "attacl": [],
+              "seclabels": [],
+              "name": "col2_$%{}[]()&*^!@\\\"'`\\\\/#",
+              "atttypid": 114,
+              "attnum": 2,
+              "cltype": "json",
+              "collspcname": "",
+              "description": null,
+              "edit_types": [
+                "json",
+                "jsonb"
+              ],
+              "is_primary_key": false,
+              "attstattarget": -1,
+              "attnotnull": true,
+              "attlen": null,
+              "attprecision": null,
+              "attidentity": "a",
+              "colconstype": "n",
+              "attndims": 0,
+              "atttypmod": -1,
+              "attstorage": "x",
+              "defval": null,
+              "typname": "json",
+              "displaytypname": "json",
+              "elemoid": 114,
+              "typnspname": "pg_catalog",
+              "defaultstorage": "x",
+              "indkey": "1",
+              "isdup": false,
+              "is_fk": false,
+              "is_sys_column": false,
+              "relname": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
+              "is_view_only": false,
+              "is_pk": false,
+              "old_attidentity": "a"
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_delete_cols.sql",
+      "expected_msql_file": "alter_table_delete_cols_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table delete columns",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with pk & check constraint",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "create table comment",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [
+          {
+            "name": "custom_pk",
+            "comment": "custom pk created",
+            "fillfactor": "11",
+            "condeferrable": true,
+            "condeferred": true,
+            "columns": [
+              {
+                "column": "col1_$%{}[]()&*^!@\\\"'`\\\\/#"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1_$%{}[]()&*^!@\\\"'`\\\\/#",
+            "cltype": "time with time zone",
+            "attacl": [],
+            "min_val_attlen": 0,
+            "max_val_attlen": 6,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 5,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2",
+            "cltype": "character",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "max_val_attlen": 2147483647,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 12,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [
+          {
+            "name": "chk_const",
+            "consrc": "col2  != null",
+            "convalidated": false,
+            "comment": "chk const comment"
+          }
+        ],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_pk_chk.sql",
+      "expected_msql_file": "create_table_with_pk_chk_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add unique constraint",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "unique_constraint": {
+          "added": [
+            {
+              "name": "unique",
+              "fillfactor": "13",
+              "columns": [
+                {
+                  "column": "col1_$%{}[]()&*^!@\\\"'`\\\\/#"
+                }
+              ],
+              "include": []
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_table_add_unique_const.sql",
+      "expected_msql_file": "alter_table_add_unique_const_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table delete constraints",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "check_constraint": {
+          "deleted": [
+            {
+              "name": "chk_const",
+              "consrc": "col2 <> NULL::bpchar",
+              "connoinherit": false,
+              "convalidated": false,
+              "relname": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
+              "nspname": "public",
+              "comment": "chk const comment",
+              "conislocal": true
+            }
+          ]
+        },
+        "unique_constraint": {
+          "deleted": [
+            {
+              "columns": [
+                {
+                  "column": "col1_$%{}[]()&*^!@\\\"\"'`\\\\/#"
+                }
+              ],
+              "name": "unique",
+              "comment": null,
+              "spcname": "pg_default",
+              "fillfactor": "13",
+              "condeferrable": false,
+              "condeferred": false,
+              "include": [],
+              "col_count": 1,
+              "conislocal": true
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_table_delete_constraints.sql",
+      "expected_msql_file": "alter_table_delete_constraints_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with pk & chk constraints",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table for FK reference",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "fk_reference_tbl",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "bigint"
+          }
+        ],
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "id"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "unique_constraint": [
+          {
+            "name": "",
+            "columns": [
+              {
+                "column": "name"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Table with fk constraint",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "test comment",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col3",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [
+          {
+            "name": "fk_test",
+            "comment": "fk comment",
+            "condeferrable": true,
+            "confmatchtype": true,
+            "columns": [
+              {
+                "local_column": "col1",
+                "references": "<fk_reference_tbl>",
+                "referenced": "id"
+              }
+            ],
+            "confupdtype": "a",
+            "confdeltype": "a",
+            "autoindex": false,
+            "coveringindex": null
+          }
+        ],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false
+      },
+      "store_object_id": true,
+      "preprocess_data": true,
+      "expected_sql_file": "create_table_with_fk.sql",
+      "expected_msql_file": "create_table_with_fk_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add one more fk",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "foreign_key": {
+          "added": [
+            {
+              "name": "fk2",
+              "columns": [
+                {
+                  "local_column": "col2",
+                  "references": "<fk_reference_tbl>",
+                  "referenced": "name"
+                }
+              ],
+              "confupdtype": "a",
+              "confdeltype": "a",
+              "autoindex": false,
+              "coveringindex": null
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "preprocess_data": true,
+      "expected_sql_file": "alter_table_add_another_fk.sql",
+      "expected_msql_file": "alter_table_add_another_fk_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add exclude constraint",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#",
+        "exclude_constraint": {
+          "added": [
+            {
+              "name": "ex_constr",
+              "amname": "btree",
+              "columns": [
+                {
+                  "column": "col1",
+                  "is_exp": false,
+                  "order": false,
+                  "nulls_order": false,
+                  "operator": "=",
+                  "is_sort_nulls_applicable": false
+                }
+              ],
+              "include": []
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "preprocess_data": true,
+      "expected_sql_file": "alter_table_add_exclude_constraint.sql",
+      "expected_msql_file": "alter_table_add_exclude_constraint_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with fk constraints",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with custom auto-vacuum",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_custom_autovaccum_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "custom auto vacuum",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "t",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "character varying[]",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "max_val_attlen": 2147483647,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": 10,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2",
+            "cltype": "date",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor",
+            "value": 0.2
+          },
+          {
+            "name": "autovacuum_analyze_threshold",
+            "value": 55
+          },
+          {
+            "name": "autovacuum_freeze_max_age",
+            "value": 20000000
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay",
+            "value": 25
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit",
+            "value": 10
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor",
+            "value": 0.3
+          },
+          {
+            "name": "autovacuum_vacuum_threshold",
+            "value": 60
+          },
+          {
+            "name": "autovacuum_freeze_min_age",
+            "value": 500000
+          },
+          {
+            "name": "autovacuum_freeze_table_age",
+            "value": 1300000
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": true
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_custom_autovacuum.sql",
+      "expected_msql_file": "create_table_with_custom_autovacuum_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table add toast table",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_custom_autovaccum_$%{}[]()&*^!@\"'`\\/#",
+        "autovacuum_enabled": "x",
+        "toast_autovacuum": true,
+        "toast_autovacuum_enabled": "f",
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_analyze_threshold",
+              "value": 60
+            },
+            {
+              "name": "autovacuum_vacuum_cost_limit",
+              "value": 100
+            }
+          ]
+        },
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_freeze_max_age",
+              "value": 2000000
+            },
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 50
+            },
+            {
+              "name": "autovacuum_vacuum_cost_limit",
+              "value": 13
+            },
+            {
+              "name": "autovacuum_vacuum_threshold",
+              "value": 70
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_with_toast_table.sql",
+      "expected_msql_file": "alter_table_with_toast_table_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with fk constraints",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_custom_autovaccum_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with advanced options",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "relhasoids": true,
+        "description": "test comment",
+        "relpersistence": true,
+        "fillfactor": "50",
+        "parallel_workers": "",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "double precision",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "col2",
+            "cltype": "numrange",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": true,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "rlspolicy": true
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_advanced_options.sql",
+      "expected_msql_file": "create_table_with_advanced_options_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Table update grants",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#",
+        "rlspolicy": false,
+        "forcerlspolicy": false,
+        "relacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "store_object_id": true,
+      "expected_sql_file": "alter_table_update_grants.sql",
+      "expected_msql_file": "alter_table_update_grants_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with advanced options",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table for like table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "like_tbl",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          }
+        ],
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "id"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "unique_constraint": [
+          {
+            "name": "",
+            "columns": [
+              {
+                "column": "name"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Table using like table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "test ",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": false,
+        "schema": "public",
+        "columns": [],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": true,
+        "like_constraints": true,
+        "like_indexes": true,
+        "like_storage": true,
+        "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
+        "like_relation": "public.like_tbl"
+      },
+      "store_object_id": true,
+      "preprocess_data": true,
+      "expected_sql_file": "create_table_with_lik_tbl.sql",
+      "expected_msql_file": "create_table_with_lik_tbl_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with advanced options",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Table with list partition",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_patition_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "partition table",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "cust_active",
+            "values_in": "'ACTIVE'",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "partition_type": "list",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "status",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "arr",
+            "cltype": "numeric",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "min_val_attprecision": 0,
+            "max_val_attlen": 1000,
+            "max_val_attprecision": 1000,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "status"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_partition.sql",
+      "expected_msql_file": "create_table_with_partition_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Table with range partition",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_range_patition_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "cust_arr_small PARTITION",
+            "values_from": "20",
+            "values_to": "25",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "partition_type": "range",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "status",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "arr",
+            "cltype": "numeric",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "min_val_attprecision": 0,
+            "max_val_attlen": 1000,
+            "max_val_attprecision": 1000,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "arr"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_range_partition.sql",
+      "expected_msql_file": "create_table_with_range_partition_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Table with range partition with collate and opclass",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "partition table",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "cust_arr_small",
+            "values_from": "'20'",
+            "values_to": "'25'",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "partition_type": "range",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "status",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "arr",
+            "cltype": "numeric",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "min_val_attprecision": 0,
+            "max_val_attlen": 1000,
+            "max_val_attprecision": 1000,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "status",
+            "collationame": "\"C\"",
+            "op_class": "text_pattern_ops"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_partition_table_with_collate.sql",
+      "expected_msql_file": "create_partition_table_with_collate_msql.sql"
+    }
+  ]
+}

@@ -1,0 +1,763 @@
+{
+  "cast_create": [
+    {
+      "name": "Create cast: With valid source & target type of implicit_type.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create cast: With valid source & target type of explict_type.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "EXPLICIT",
+        "encoding": "UTF8",
+        "name": "timestamp with time zone->bigint",
+        "srctyp": "timestamp with time zone",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create cast: With invalid source type.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money123",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "ERROR:  type \"money123\" does not exist",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create cast: With insufficient parameters missing target type.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (trgtyp)",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create cast: With valid data while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create cast: With valid data while exception.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "Exception('Mocked Exception Message')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Exception Message",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "cast_create_get_functions": [
+    {
+      "name": "From create cast dialogue, get available cast functions for valid source & target type",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "integer->bigint",
+        "srctyp": "integer",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "From create cast dialogue, get available cast functions when server is down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "integer->bigint",
+        "srctyp": "integer",
+        "trgtyp": "bigint"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+
+
+  "cast_create_get_type": [
+    {
+      "name": "From create cast dialogue get available cast types",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "From create cast dialogue get available cast types while server is down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+
+  "cast_delete": [
+    {
+      "name": "Delete existing cast using cast id",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "EXPLICIT",
+        "encoding": "UTF8",
+        "name": "timestamp with time zone->bigint",
+        "srctyp": "timestamp with time zone",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete non-existing cast using cast id",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete existing cast using cast id while server down",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "cast_delete_multiple": [
+    {
+      "name": "Delete multiple existing casts using cast ids",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "EXPLICIT",
+        "encoding": "UTF8",
+        "name": "timestamp with time zone->bigint",
+        "srctyp": "timestamp with time zone",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete multiple existing casts using cast ids while server down",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+       "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+
+    },
+    {
+      "name": "Delete multiple existing casts using cast ids while exception",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+       "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "Exception('Mocked Exception Message')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Exception Message",
+        "test_result_data": {}
+      }
+
+    }
+  ],
+
+    "cast_get": [
+    {
+      "name": "Get cast details: With existing cast id.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get casts list: With existing db id.",
+      "is_positive_test": true,
+
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get cast details: With non existing db id",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get cast details: With existing cast id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+       "is_list": false
+    },
+    {
+      "name": "Get casts list: With existing db id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+       "is_list": true
+    }
+  ],
+
+   "cast_get_dependencies_dependants": [
+    {
+      "name": "Get cast dependents with existing cast id",
+      "is_positive_test": true,
+      "inventory_data": {"castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+       "is_dependant": true
+    },
+    {
+      "name": "Get cast dependencies with existing cast id",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+       "is_dependant": true
+    }
+  ],
+
+  "cast_get_node": [
+    {
+      "name": "Get cast node details: With existing cast id.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get casts nodes list: With existing db id.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+       "is_list": true
+    },
+    {
+      "name": "Get cast node details: With non existing db id",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get cast node details: With existing cast id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+         "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get casts list: With existing db id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+       "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+         "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+
+  "cast_get_sql": [
+    {
+      "name": "Get cast sql for existing cast id",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+         "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get cast sql for non-existing cast id",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+       "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": " ",
+         "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get cast sql for existing cast id while server is down",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+       "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get cast sql for existing cast id while exception",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+       "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "Exception('Mocked Exception Message')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Exception Message",
+        "test_result_data": {}
+      }
+    }
+  ],
+
+
+  "cast_put": [
+    {
+      "name": "Update existing cast with valid parameter Value ",
+      "is_positive_test": true,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {
+        "description": "This is cast update comment"
+      },
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update existing cast with invalid parameter value  ",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {
+        "trgtyp": "bigint344"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update existing cast with valid parameter value while server is down",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update non-existing cast with valid parameter value",
+      "is_positive_test": false,
+      "inventory_data": {
+        "castcontext": "IMPLICIT",
+        "encoding": "UTF8",
+        "name": "money->bigint",
+        "srctyp": "money",
+        "trgtyp": "bigint"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+
+    }
+  ]
+}

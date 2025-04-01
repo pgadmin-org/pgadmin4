@@ -1,0 +1,18 @@
+{##########################################}
+{# Macros for schema and its child nodes  #}
+{##########################################}
+{% macro SET(conn, type, role, param, privs, with_grant_privs, schema) -%}
+{% if privs %}
+GRANT {{ privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ role }};
+{% endif %}
+{% if with_grant_privs %}
+{% if privs %}
+{# This empty if is to add new line in between #}
+
+{% endif %}
+GRANT {{ with_grant_privs|join(', ') }} ON {{ type }} {{ conn|qtIdent(schema, param) }} TO {{ role }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro UNSETALL(conn, type, role, param, schema) -%}
+REVOKE ALL ON {{ type }} {{ conn|qtIdent(schema, param) }} FROM {{ role }};
+{%- endmacro %}

@@ -1,0 +1,251 @@
+{
+  "role_reassign": [
+    {
+      "name": "Reassign own role - Internal server error",
+      "is_positive_test": false,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connect",
+        "return_value": "(False, 'Mocked Internal Server Error while checking db connect.')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Reassign own role",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "new_role_name": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Reassign own role (SESSION_USER)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "new_role_name": "SESSION_USER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Reassign own role (CURRENT_USER)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "new_role_name": "CURRENT_USER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Reassign own role (CURRENT_ROLE)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "new_role_name": "CURRENT_ROLE"
+      },
+      "server_min_version": 140000,
+      "skip_msg": "CURRENT_ROLE are not supported by EPAS/PG 13.0 and below.",
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Drop own role",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "drop",
+        "drop_with_cascade": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Drop own role (cascade)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "drop",
+        "drop_with_cascade": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+    "role_reassign_sql": [
+    {
+      "name": "Reassign own role - sql",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "old_role_name": "role_user_1",
+        "new_role_name": "role_user_2",
+        "role_op": "reassign"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "REASSIGN OWNED BY role_user_1 TO role_user_2"
+        }
+      }
+    },
+    {
+      "name": "Reassign own role - sql (SESSION_USER)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "old_role_name": "role_user_1",
+        "new_role_name": "SESSION_USER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "REASSIGN OWNED BY role_user_1 TO SESSION_USER"
+        }
+      }
+    },
+    {
+      "name": "Reassign own role - sql (CURRENT_USER)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "old_role_name": "role_user_1",
+        "new_role_name": "CURRENT_USER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "REASSIGN OWNED BY role_user_1 TO CURRENT_USER"
+        }
+      }
+    },
+    {
+      "name": "Reassign own role - sql (CURRENT_ROLE)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "role_op": "reassign",
+        "old_role_name": "role_user_1",
+        "new_role_name": "CURRENT_ROLE"
+      },
+      "server_min_version": 140000,
+      "skip_msg": "CURRENT_ROLE are not supported by EPAS/PG 13.0 and below.",
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "REASSIGN OWNED BY role_user_1 TO CURRENT_ROLE"
+        }
+      }
+    },
+    {
+      "name": "Drop own role - sql (default)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "old_role_name": "role_user_1",
+        "role_op": "drop",
+        "drop_with_cascade": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "DROP OWNED BY role_user_1"
+        }
+      }
+    },
+    {
+      "name": "Drop own role - sql (cascade)",
+      "is_positive_test": true,
+      "test_data": {
+        "did": null,
+        "new_role_id": null,
+        "old_role_name": "role_user_1",
+        "role_op": "drop",
+        "drop_with_cascade": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "result": "DROP OWNED BY role_user_1 CASCADE"
+        }
+      }
+    }
+  ]
+}

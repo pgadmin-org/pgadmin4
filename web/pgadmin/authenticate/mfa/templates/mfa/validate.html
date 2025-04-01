@@ -1,0 +1,10 @@
+{% set page_name = 'mfa_validate' %}
+{% set page_props = {
+    'actionUrl': url_for('mfa.validate'),
+    'views': views,
+    'logoutUrl': logout_url,
+    'sendEmailUrl': send_email_url,
+    'csrfHeader': current_app.config.get("WTF_CSRF_HEADERS")[0],
+    'csrfToken': csrf_token()
+} %}
+{% extends "security/render_page.html" %}

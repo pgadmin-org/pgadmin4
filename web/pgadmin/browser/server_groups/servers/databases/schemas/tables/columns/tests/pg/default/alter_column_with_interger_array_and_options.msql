@@ -1,0 +1,3 @@
+ALTER TABLE IF EXISTS testschema."table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col__3_$%{}[]()&*^!@""'`\/#"
+    SET (n_distinct=2);

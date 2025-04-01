@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 38 38" style="enable-background:new 0 0 38 38;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#EBEEF3;stroke-width:5;}
+	.st1{fill:none;stroke:#326690;stroke-width:5;}
+</style>
+<g>
+	<g transform="translate(1 1)">
+		<circle class="st0" cx="18" cy="18" r="16"/>
+		<path class="st1" d="M34,18c0-8.8-7.2-16-16-16		">
+<animateTransform  accumulate="none" additive="replace" attributeName="transform" calcMode="linear" dur="0.7s" fill="remove" from="0 18 18" repeatCount="indefinite" restart="always" to="360 18 18" type="rotate">
+				</animateTransform>
+		</path>
+	</g>
+</g>
+</svg>

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.APP_NAME }}{% endblock %}
+
+{% block init_script %}
+function parseConsoleArgs(args) {
+  const retData = Array.from(args).map(arg => {
+    try {
+      if(arg.stack) return arg.stack;
+      return JSON.stringify(arg);
+    } catch (e) {
+      return arg
+    }
+  });
+  return retData?.join(' ');
+}
+
+if(window.electronUI) {
+  for (const method of ['log', 'error']) {
+    const nativeMethod = window.console[method];
+    window.console[method] = function () {
+      nativeMethod.apply(this, arguments);
+      setTimeout(()=>{
+        window.electronUI?.log(`--------------[UI ${method}]---------------
+        ${parseConsoleArgs(arguments)}
+        ------------[UI End]----------------`);
+      });
+    }
+  }
+}
+try {
+require(
+['sources/generated/app.bundle', 'sources/generated/browser_nodes'],
+function() {
+},
+function() {
+/* TODO:: Show proper error dialog */
+console.log(arguments);
+});
+} catch (err) {
+/* Show proper error dialog */
+console.log(err);
+}
+/*
+ * Show loading spinner till every js module is loaded completely
+ * Referenced url:
+ * http://stackoverflow.com/questions/15581563/requirejs-load-script-progress
+ * Little bit tweaked as per need
+ */
+require.onResourceLoad = function (context, map, depMaps) {
+  var loadingStatusEl = panel = document.getElementById('pg-spinner');
+  if (loadingStatusEl) {
+    if (!context) {
+      // we will call onResourceLoad(false) by ourselves when requirejs
+      // is not loading anything d-none the indicator and exit
+      setTimeout(function() {
+        if (panel != null) {
+            try{
+                $(panel).remove();
+            }
+            catch(e){
+                panel.outerHTML = "";
+                delete panel;
+            }
+          return;
+        }
+      }, 500);
+    }
+
+    // show indicator when any module is loaded and
+    // shedule requirejs status (loading/idle) check
+    panel.style.display = "";
+    clearTimeout(panel.ttimer);
+    panel.ttimer = setTimeout(function () {
+      var context = require.s.contexts._;
+      var inited = true;
+      for (name in context.registry) {
+        var m = context.registry[name];
+        if (m.inited !== true) {
+          inited = false;
+          break;
+        }
+      }
+
+      // here the "inited" variable will be true, if requirejs is "idle",
+      // false if "loading"
+      if (inited) {
+        // will fire if module loads in 400ms. TODO: reset this timer
+        // for slow module loading
+        require.onResourceLoad(false);
+      }
+    }, 400)
+  }
+};
+
+{% endblock %}
+
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+
+{% block body %}
+<div id="pg-spinner" class="pg-sp-container">
+  <div class="pg-sp-content">
+    <div class="row"><div class="col-12 pg-sp-icon"></div></div>
+    <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
+  </div>
+</div>
+<div id="root" style="height: 100%"></div>
+
+{% endblock %}

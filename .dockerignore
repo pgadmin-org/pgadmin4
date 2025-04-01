@@ -1,0 +1,13 @@
+web/node_modules
+web/*.log
+web/regression
+web/**/tests/
+web/**/*.pyc
+web/**/__pycache__
+.DS_Store
+web/pgadmin/messages.pot
+web/pgadmin/translations/??/LC_MESSAGES/messages.po
+Dockerfile
+docs/en_US/_build/**/*
+src-build/**/*
+dist/**/*

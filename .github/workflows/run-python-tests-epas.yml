@@ -1,0 +1,296 @@
+# This workflow requires the following configuration in Github
+#
+# Vars:
+#   ENABLE_EPAS_TESTS - Set to true to enable this test
+#
+# Secrets:
+#   EDB_REPO_USERNAME - Username for accessing EDB Repos 1.0
+#   EDB_REPO_PASSWORD - Password for accessing EDB Repos 1.0
+#   EDB_SBP_URL - URL to the EDB StackBuilder Plus catalog
+
+name: Run Python tests on EPAS
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  run-python-tests-epas:
+    # Only run if the tests are enabled
+    # TODO: Figure out a way to test for the presence of the secrets instead
+    if: vars.ENABLE_EPAS_TESTS == 'true'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+        pgver: [13, 14, 15, 16, 17]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup the EDB APT repo on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          curl -1sLf 'https://downloads.enterprisedb.com/${{ secrets.CLOUDSMITH_TOKEN }}/enterprise/setup.deb.sh' | sudo -E bash
+
+      - name: Install platform dependencies on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+
+      - name: Install pgagent on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: |
+          sudo apt install -y edb-as${{ matrix.pgver }}-pgagent
+
+      - name: Install platform dependencies on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          FOR /f "delims=" %%F IN ('python tools\get_sb_package.py "${{ secrets.EDB_SBP_URL }}" "edb_as${{ matrix.pgver }}_dbserver" "windows-x64"') DO SET INSTALLER_EXE=%%F
+          ECHO Running %INSTALLER_EXE%...
+          %INSTALLER_EXE% --prefix C:\EPAS\${{ matrix.pgver }} --datadir C:\EPAS\${{ matrix.pgver }}\data --serverport 58${{ matrix.pgver }} --superpassword enterprisedb --create_samples no --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components stackbuilderplus${{ matrix.pgver < 15 && ',pgadmin4' || '' }}
+          
+          choco install -y mitkerberos
+          
+          REM Ignore error 3010 (reboot required)
+          IF %ERRORLEVEL% EQU 3010 cmd /c "exit /b 0"
+        shell: cmd
+
+      - name: Create the tablespace directory on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          sudo mkdir -p /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
+          sudo chown enterprisedb:enterprisedb /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
+
+      - name: Create the tablespace directory on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          mkdir "C:\EPAS\${{ matrix.pgver }}\tablespaces"
+          icacls "C:\EPAS\${{ matrix.pgver }}\tablespaces" /grant "NETWORK SERVICE":(OI)(CI)F /T
+        shell: cmd
+
+      - name: Add edb_job_scheduler into config file.
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver >= 16 }}
+        run: |
+          sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/edb_job_scheduler,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su -c "echo \"edb_job_scheduler.database_list = 'test_dbms_job_scheduler'\" >> /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf"
+
+      - name: Start PostgreSQL on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
+          sudo su -c "echo local all all trust > /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo sed -i "s/port = 544[0-9]/port = 58${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${{ matrix.pgver }}-main.epas_stat_tmp"
+          sudo systemctl restart edb-as@${{ matrix.pgver }}-main
+          
+          until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${{ matrix.pgver }}/bin/pg_isready -p 58${{ matrix.pgver }}" 2>/dev/null; do
+            >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
+            sleep 2
+          done
+
+      - name: Create pgagent extension on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+
+      - name: Install Python dependencies on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: make install-python-testing
+
+      - name: Install Python dependencies on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          SET LIB=C:\EPAS\${{ matrix.pgver }}\lib;%LIB%
+          SET INCLUDE=C:\EPAS\${{ matrix.pgver }}\include;%INCLUDE%
+          python -m venv venv
+          call venv\Scripts\activate.bat
+          python -m pip install --upgrade pip
+          pip install wheel sphinx sphinxcontrib-youtube -r web\regression\requirements.txt
+        shell: cmd
+
+      - name: Create the test configuration on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          cat <<EOF > web/config_local.py
+          from config import *
+          
+          # Debug mode
+          DEBUG = True
+          
+          # App mode
+          SERVER_MODE = False
+          
+          # Log
+          CONSOLE_LOG_LEVEL = DEBUG
+          FILE_LOG_LEVEL = DEBUG
+          
+          DEFAULT_SERVER = '127.0.0.1'
+          
+          UPGRADE_CHECK_ENABLED = False
+          
+          LOG_FILE = "$(pwd)/var/pgadmin4.log"
+          SESSION_DB_PATH = "$(pwd)/var/sessions"
+          STORAGE_DIR = "$(pwd)/var/storage"
+          SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          TEST_SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          AZURE_CREDENTIAL_CACHE_DIR = "$(pwd)/var/azurecredentialcache"
+          EOF
+          
+          cat <<EOF > web/regression/test_config.json
+          {
+            "pgAdmin4_login_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_user_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER2@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_non_admin_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER@EXAMPLE.COM"
+            },
+            "server_group": 1,
+            "server_credentials": [
+              {
+                "name": "EPAS ${{ matrix.pgver }}",
+                "comment": "EPAS ${{ matrix.pgver }} Server",
+                "db_username": "enterprisedb",
+                "host": "/var/run/edb-as",
+                "db_password": "",
+                "db_port": 58${{ matrix.pgver }},
+                "maintenance_db": "postgres",
+                "sslmode": "prefer",
+                "tablespace_path": "/var/lib/edb-as/tablespaces/${{ matrix.pgver }}",
+                "enabled": true,
+                "default_binary_paths": {
+                  "pg": "",
+                  "ppas": "/usr/lib/edb-as/${{ matrix.pgver }}/bin"
+                }
+              }
+            ],
+            "server_update_data": [
+              {
+                "comment": "This is test update comment"
+              }
+            ]
+          }
+          EOF
+
+      - name: Create the test configuration on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          FOR /f "delims=" %%D IN ('python -c "import os; print(os.getcwd().replace('\\', '\\\\'))"') DO SET WORKING_DIR=%%D
+          
+          > web\config_local.py (
+            @echo.from config import *
+            @echo.
+            @echo.# Debug mode
+            @echo.DEBUG = True
+            @echo.
+            @echo.# App mode
+            @echo.SERVER_MODE = False
+            @echo.
+            @echo.# Log
+            @echo.CONSOLE_LOG_LEVEL = DEBUG
+            @echo.FILE_LOG_LEVEL = DEBUG
+            @echo.
+            @echo.DEFAULT_SERVER = '127.0.0.1'
+            @echo.
+            @echo.UPGRADE_CHECK_ENABLED = False
+            @echo.
+            @echo.LOG_FILE = "%WORKING_DIR%\\var\\pgadmin4.log"
+            @echo.SESSION_DB_PATH = "%WORKING_DIR%\\var\\sessions"
+            @echo.STORAGE_DIR = "%WORKING_DIR%\\var\\storage"
+            @echo.SQLITE_PATH = "%WORKING_DIR%\\var\\pgadmin4.db"
+            @echo.TEST_SQLITE_PATH = "%WORKING_DIR%\\var\\test_pgadmin4.db"
+            @echo.AZURE_CREDENTIAL_CACHE_DIR = "%WORKING_DIR%\\var\\azurecredentialcache"
+          )
+          
+          > web\regression\test_config.json (
+            @echo.{
+            @echo.  "pgAdmin4_login_credentials": {
+            @echo.    "new_password": "NEWPASSWORD",
+            @echo.    "login_password": "PASSWORD",
+            @echo.    "login_username": "USER@EXAMPLE.COM"
+            @echo.  },
+            @echo.  "pgAdmin4_test_user_credentials": {
+            @echo.    "new_password": "NEWPASSWORD",
+            @echo.    "login_password": "PASSWORD",
+            @echo.    "login_username": "USER2@EXAMPLE.COM"
+            @echo.  },
+            @echo.  "pgAdmin4_test_non_admin_credentials": {
+            @echo.    "new_password": "NEWPASSWORD",
+            @echo.    "login_password": "PASSWORD",
+            @echo.    "login_username": "USER@EXAMPLE.COM"
+            @echo.  },
+            @echo.  "server_group": 1,
+            @echo.  "server_credentials": [
+            @echo.    {
+            @echo.      "name": "EPAS ${{ matrix.pgver }}",
+            @echo.      "comment": "EPAS ${{ matrix.pgver }} Server",
+            @echo.      "db_username": "enterprisedb",
+            @echo.      "host": "127.0.0.1",
+            @echo.      "db_password": "enterprisedb",
+            @echo.      "db_port": 58${{ matrix.pgver }},
+            @echo.      "maintenance_db": "postgres",
+            @echo.      "sslmode": "prefer",
+            @echo.      "tablespace_path": "C:\\EPAS\\${{ matrix.pgver }}\\tablespaces",
+            @echo.      "enabled": true,
+            @echo.      "default_binary_paths": {
+            @echo.        "pg": "",
+            @echo.        "ppas": "C:\\EPAS\\${{ matrix.pgver }}\\bin"
+            @echo.      }
+            @echo.    }
+            @echo.  ],
+            @echo.  "server_update_data": [
+            @echo.    {
+            @echo.      "comment": "This is test update comment"
+            @echo.    }
+            @echo.  ]
+            @echo.}
+          )
+        shell: cmd
+
+      - name: Run the tests on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
+        run: |
+          . venv/bin/activate
+          make check-python
+
+      - name: Run the tests on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          call venv\Scripts\activate.bat
+          python web\regression\runtests.py --exclude feature_tests
+        shell: cmd
+
+      - name: Archive server log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log-epas-${{ matrix.os }}-pg${{ matrix.pgver }}
+          path: var/pgadmin4.log
+
+      - name: Archive regression log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-log-epas-${{ matrix.os }}-pg${{ matrix.pgver }}
+          path: web/regression/regression.log

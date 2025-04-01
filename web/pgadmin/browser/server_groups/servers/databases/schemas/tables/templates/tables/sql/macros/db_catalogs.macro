@@ -1,0 +1,5 @@
+{% macro VALID_CATALOGS(server_type) -%}
+AND n.nspname NOT LIKE 'pg\_%' {% if server_type == 'ppas' %}
+AND n.nspname NOT IN ('information_schema', 'pgagent', 'sys') {% else %}
+AND n.nspname NOT IN ('information_schema') {% endif %}
+{%- endmacro %}

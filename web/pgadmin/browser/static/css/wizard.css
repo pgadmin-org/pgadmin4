@@ -1,0 +1,75 @@
+/** CSS for Wizard **/
+
+.wizard_dlg {
+  height: 100%;
+  width: 100%;
+  overflow-y: hidden;
+}
+
+.pgadmin-wizard {
+  width: 100%;
+  height: 100%;
+}
+
+.wizard-right-panel {
+  overflow-y: auto;
+  height: 100%;
+  top: 0;
+  right: 0;
+  position: absolute;
+  bottom: 0;
+}
+
+.wizard-left-panel {
+  position: absolute;
+  top: 0;
+  display: flex;
+  bottom: 0;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+}
+
+.wizard-left-panel img {
+  width: 140px;
+}
+
+/* Wizard Footer CSS */
+.pgadmin-wizard .footer .row {
+  margin: 0 -6px 3px -6px;
+}
+
+/* Wizard Status bar CSS */
+.pgadmin-wizard .wizard-description {
+  padding: 0.5rem 0rem;
+}
+
+/* In wizard select2 dropdown doesn't popup.
+ * wizard is greater than the z-index
+ * of select2 dropdown. To make select2
+ * visible, set z-index of select2
+ * higher value than wizard's
+ */
+.select2-container--open {
+  z-index: 10000;
+}
+
+.wizard-content h3 {
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+}
+
+.wizard {
+    width: 100%;
+}
+
+.step {
+    height: inherit;
+    width: initial;
+}
+
+.wizard-footer {
+    border-top: 1px solid #dde0e6 !important;
+    padding: 0.5rem;
+}

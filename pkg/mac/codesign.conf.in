@@ -1,0 +1,5 @@
+# In order to enable codesigning of the Mac Appbundle, copy this file to
+# codesign.conf, and edit the values below to reflect your developer ID.
+
+DEVELOPER_ID="Developer ID Application: My Name (12345ABCD)"
+

@@ -1,0 +1,54 @@
+{% if file_name is not defined %}
+{% set file_name=node_type %}
+{% endif %}
+.icon-{{file_name}}, .cm-autocomplete-option-{{file_name}} .cm-completionIcon {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % file_name )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.pgadmin-node-select option[node="{{file_name}}"] {
+  background-image: url('{{ url_for('NODE-%s.static' % node_type, filename='img/%s.svg' % file_name )}}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  background-position: center left;
+}
+
+.icon-at {
+  background-image: url('../../../../static/img/at.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-key {
+  background-image: url('../../../../static/img/key.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-join {
+  background-image: url('../../../../static/img/join.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-spinner {
+  background-image: url('../../../../static/img/spinner.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}

@@ -1,0 +1,36 @@
+.icon-coll-partition {
+  background-image: url('{{ url_for('NODE-partition.static', filename='img/coll-partition.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-partition {
+  background-image: url('{{ url_for('NODE-partition.static', filename='img/partition.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-partition_table {
+  background-image: url('{{ url_for('NODE-partition.static', filename='img/partition_table.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-sub_partition_table {
+  background-image: url('{{ url_for('NODE-partition.static', filename='img/sub_partition_table.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  border-radius: 10px;
+  height: 1.3em;
+}

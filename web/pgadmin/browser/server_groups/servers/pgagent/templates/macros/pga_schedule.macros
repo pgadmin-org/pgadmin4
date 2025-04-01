@@ -1,0 +1,108 @@
+{#################################################}
+{# This will be specific macro for pga_schedule. #}
+{#################################################}
+{% import 'macros/pga_exception.macros' as EXCEPTIONS %}
+{% macro INSERT(jid, data, conn) -%}
+-- Inserting a schedule{% if jid %} (jobid: {{ jid|qtLiteral(conn) }}){% endif %}
+
+INSERT INTO pgagent.pga_schedule(
+    jscjobid, jscname, jscdesc, jscenabled,
+    jscstart, {% if data.jscend %}jscend,{% endif %}
+    jscminutes, jschours, jscweekdays, jscmonthdays, jscmonths
+) VALUES (
+    {% if jid %}{{ jid|qtLiteral(conn) }}{% else %}jid{% endif %}, {{ data.jscname|qtLiteral(conn) }}::text, {{ data.jscdesc|qtLiteral(conn) }}::text, {% if data.jscenabled %}true{% else %}false{% endif %},
+    {{ data.jscstart|qtLiteral(conn) }}::timestamp with time zone, {% if data.jscend %}{{ data.jscend|qtLiteral(conn) }}::timestamp with time zone,{% endif %}
+
+    -- Minutes
+    {{ data.jscminutes|qtLiteral(conn) }}::boolean[],
+    -- Hours
+    {{ data.jschours|qtLiteral(conn) }}::boolean[],
+    -- Week days
+    {{ data.jscweekdays|qtLiteral(conn) }}::boolean[],
+    -- Month days
+    {{ data.jscmonthdays|qtLiteral(conn) }}::boolean[],
+    -- Months
+    {{ data.jscmonths|qtLiteral(conn) }}::boolean[]
+) RETURNING jscid INTO scid;{% if 'jscexceptions' in data %}
+{% for exc in data.jscexceptions %}
+
+{{ EXCEPTIONS.INSERT(None, exc, conn) }}{% endfor %}{% endif %}
+{%- endmacro %}
+{% macro UPDATE(jid, jscid, data, conn) -%}
+{% if 'jscname' in data or 'jscenabled' in data or 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %}
+
+-- Updating the schedule (id: {{ jscid|qtLiteral(conn) }}, jobid: {{ jid|qtLiteral(conn) }})
+UPDATE pgagent.pga_schedule
+SET{% if 'jscname' in data %}
+
+    jscname={{ data.jscname|qtLiteral(conn) }}::text{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data or 'jscenabled' in data %},{% endif %}{% endif %}{% if 'jscenabled' in data %}
+
+    jscenabled={% if data.jscenabled %}true{% else %}false{% endif %}{% if 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscdesc' in data %}
+
+    jscdesc={% if data.jscdesc %}{{ data.jscdesc|qtLiteral(conn) }}::text{% else %}''::text{% endif %}{% if 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscstart' in data %}
+
+    jscstart={{ data.jscstart|qtLiteral(conn) }}::timestamptz{% if 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscend' in data %}
+
+    jscend={% if data.jscend %}{{ data.jscend|qtLiteral(conn) }}::timestamptz{% else %}NULL::timestamptz{% endif %}{% if 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscmonths' in data %}
+
+    jscmonths={{ data.jscmonths|qtLiteral(conn) }}::boolean[]{% if 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscminutes' in data %}
+
+    jscminutes={{ data.jscminutes|qtLiteral(conn) }}::boolean[]{% if 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscmonthdays' in data %}
+
+    jscmonthdays={{ data.jscmonthdays|qtLiteral(conn) }}::boolean[]{% if 'jschours' in data or 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jschours' in data %}
+
+    jschours={{ data.jschours|qtLiteral(conn) }}::boolean[]{% if 'jscweekdays' in data %},{% endif %}{% endif %}{% if 'jscweekdays' in data %}
+
+    jscweekdays={{ data.jscweekdays|qtLiteral(conn) }}::boolean[]{% endif %}
+
+WHERE jscid={{ jscid|qtLiteral(conn) }}::integer AND jscjobid={{ jid|qtLiteral(conn) }}::integer;{% endif %}{% if 'jscexceptions' in data %}
+{% if 'added' in data.jscexceptions and data.jscexceptions.added|length > 0 %}
+
+{% for exc in data.jscexceptions.added %}
+{{ EXCEPTIONS.INSERT(jscid, exc, conn) }}
+{% endfor %}
+{% endif %}
+{% if 'deleted' in data.jscexceptions and data.jscexceptions.deleted|length > 0 %}
+
+{% for exc in data.jscexceptions.deleted %}
+{{ EXCEPTIONS.DELETE(jscid, exc, conn) }}
+{% endfor %}
+{% endif %}
+{% if 'changed' in data.jscexceptions and data.jscexceptions.changed|length > 0 %}
+
+{% for exc in data.jscexceptions.changed %}
+{{ EXCEPTIONS.UPDATE(jscid, exc, conn) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{%- endmacro %}
+{% macro DELETE(jid, jscid, conn) -%}
+-- Removing the existing schedule (id: {{ jscid|qtLiteral(conn) }}, jobid: {{ jid|qtLiteral(conn) }})
+DELETE FROM pgagent.pga_schedule WHERE jscid={{ jscid|qtLiteral(conn) }}::integer AND jscjobid={{ jid|qtLiteral(conn) }}::integer;
+{%- endmacro %}
+{% macro FETCH_CURRENT() -%}
+SELECT jscid FROM pgagent.pga_schedule WHERE xmin::text = (txid_current() % (2^32)::bigint)::text;
+{%- endmacro %}
+{% macro PROPERTIES(jid, jscid, conn) -%}
+SELECT
+    jscid,  jscjobid, jscname, jscdesc, jscenabled, jscstart, jscend,
+    jscminutes, jschours, jscweekdays, jscmonthdays, jscmonths,
+    jexid, jexdate, jextime
+FROM
+    pgagent.pga_schedule s
+    LEFT JOIN (
+        SELECT
+            jexscid, array_agg(jexid) AS jexid, array_agg(to_char(jexdate, 'YYYY-MM-DD')) AS jexdate,
+            array_agg(jextime) AS jextime
+        FROM
+            (SELECT * FROM pgagent.pga_exception ORDER BY jexid) ex
+        GROUP BY
+            jexscid
+    ) e ON s.jscid = e.jexscid
+WHERE
+{% if jscid %}
+   s.jscid = {{ jscid|qtLiteral(conn) }}::integer AND
+{% endif %}
+   s.jscjobid = {{ jid|qtLiteral(conn) }}::integer
+ORDER BY jscname;
+{%- endmacro %}

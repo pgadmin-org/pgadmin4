@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>pgAdmin 4</title>
+    <style>
+        body, html {
+          height: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+          font-size: 14px;
+          margin: 0 10px;
+          background-color: #e9f8ff;
+        }
+
+        .bg {
+          background-image: url("../../assets/welcome_logo.svg");
+          height: 100%;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
+          overflow: hidden;
+          display: flex;
+          -webkit-app-region: drag;
+        }
+
+        .loader-text {
+          margin-top: auto;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 10px;
+        }
+        @media screen and (forced-colors: active) {
+          body {
+            forced-color-adjust: none !important;
+          }
+        }
+    </style>
+
+    <!-- Disable/block all password saving in nw.js -->
+    <script type="text/javascript">
+      chrome.passwordsPrivate.getSavedPasswordList(function(passwords) {
+        passwords.forEach((p, i) => {
+          chrome.passwordsPrivate.removeSavedPassword(i);
+        });
+      });
+      chrome.privacy.services.passwordSavingEnabled.set({ value: false });
+    </script>
+
+    <script type="text/javascript">
+      let platform = require("os").platform;
+    </script>
+  </head>
+  <body>
+    <div class="bg">
+      <span id="loader-text-status" class="loader-text">Waiting for pgAdmin 4 to start...</span>
+    </div>
+  </body>
+</html>

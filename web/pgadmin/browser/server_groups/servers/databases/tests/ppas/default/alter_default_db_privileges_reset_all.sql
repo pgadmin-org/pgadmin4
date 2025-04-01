@@ -1,0 +1,13 @@
+-- Database: <TEST_DB_NAME>
+
+-- DROP DATABASE IF EXISTS <TEST_DB_NAME>;
+
+CREATE DATABASE <TEST_DB_NAME>
+    WITH
+    OWNER = enterprisedb
+    ENCODING = 'UTF8'
+    LC_COLLATE = '<LC_COLLATE>'
+    LC_CTYPE = '<LC_CTYPE>'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;

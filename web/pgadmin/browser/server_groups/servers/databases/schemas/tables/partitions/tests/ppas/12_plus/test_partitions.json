@@ -1,0 +1,139 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "test_table_$%{}[]()&*^!@\"\"'`\\/#",
+        "relowner": "enterprisedb",
+        "relacl": [],
+        "description": "comment_01",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [],
+        "partition_type": "range",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "m_col",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": true,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "m_col"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_partition.sql",
+      "expected_msql_file": "create_table_with_partition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert Table - Add Partition",
+      "endpoint": "NODE-table.obj_id",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql_id",
+      "data": {
+        "partitions": {
+          "added": [
+            {
+              "is_attach": false,
+              "partition_name": "test_part_$%{}[]()&*^!@\"\"\"\"'`\\/#",
+              "values_from": "0",
+              "values_to": "1000",
+              "is_sub_partitioned": false,
+              "sub_partition_type": "range",
+              "sub_partition_keys": []
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_table_add_partition.sql",
+      "expected_msql_file": "alter_table_add_partition_msql.sql",
+      "store_object_id": true
+    }
+  ]
+}

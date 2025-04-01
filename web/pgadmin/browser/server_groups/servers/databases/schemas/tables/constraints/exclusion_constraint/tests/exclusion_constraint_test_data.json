@@ -1,0 +1,545 @@
+{
+  "exclusion_constraint_create": [
+    {
+      "name": "Create: Valid exclusion constraint.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_exclusionconstraint_add_",
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Valid exclusion constraint without name.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Invalid exclusion constraint without columns parameter",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_exclusionconstraint_add_",
+                "spcname": "pg_default",
+                "amname": "btree",
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "Could not find required parameter (columns).",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Exclusion constraint without name & valid data while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Exclusion constraint without name in data while server is down .",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+                "name": "test_exclusionconstraint_add_",
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Exclusion constraint with valid data while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_exclusionconstraint_add_",
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Exclusion constraint without name while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+                "spcname": "pg_default",
+                "amname": "btree",
+                "columns": [
+                    {"column": "id", "sort_order": false, "nulls": false,
+                     "operator": "="}],
+                "indconstraint": "(1=2)",
+                "include": ["name"]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "exclusion_constraint_delete": [
+    {
+      "name": "Delete: Existing exclusion constraint.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },"is_list": false
+    },
+    {
+      "name": "Delete: Multiple existing exclusion constraint.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },"is_list": true
+    },
+    {
+      "name": "Delete: Non-existing exclusion constraint.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "exclusion_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },"is_list": false
+    },
+    {
+      "name": "Delete: Existing exclusion constraint while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },"is_list": false
+    },
+    {
+      "name": "Delete: Delete existing exclusion constraint while server down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },"is_list": false
+    }
+  ],
+  "exclusion_constraint_dependencies_dependents": [
+    {
+      "name": "Get dependents: With existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get exclusion constraint dependencies: With existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "exclusion_constraint_get": [
+    {
+      "name": "Get exclusion constraint details: For existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {"name": "Get exclusion constraint details: For existing multiple constraint ids.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get exclusion constraint details: For Non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "exclusion_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the exclusion constraint in the table.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get exclusion constraint details: For existing constraint id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "exclusion_constraint_get_nodes": [
+    {
+      "name": "Get exclusion constraint node: For existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get exclusion constraint nodes: For existing multiple constraint ids",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get exclusion constraint node: With non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "exclusion_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the exclusion constraint.",
+        "test_result_data": {
+        }
+      },
+      "is_list": false
+    }
+  ],
+  "exclusion_constraint_msql": [
+    {
+      "name": "Get exclusion constraint msql: Modifying comment existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "Modify Name for Exclusion Constraint",
+        "comment": "Testing msql api",
+        "fillFactor": 22
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "exclusion_constraint_put": [
+    {
+      "name": "Put: Update existing exclusion constraint.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing existing exclusion constraint while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Put: Update existing existing exclusion constraint while server is down-3.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "comment": "This is test comment for index"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "exclusion_constraint_sql": [
+    {
+      "name": "Get exclusion constraint sql: With existing constraint id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get exclusion constraint sql: With non-existing constraint id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+        "exclusion_constraint_id": 1
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the exclusion constraint.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get exclusion constraint sql: With existing constraint id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+    "exclusion_constraint_get_statistics": [
+    {
+      "name": "Get exclusion constraint statistics: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get exclusion constraint statistics: With existing index id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

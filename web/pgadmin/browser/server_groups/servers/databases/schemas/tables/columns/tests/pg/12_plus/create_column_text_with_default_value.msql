@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col__1_$%{}[]()&*^!@""'`\/#" text DEFAULT 'xyz';
+
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."col__1_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment';
