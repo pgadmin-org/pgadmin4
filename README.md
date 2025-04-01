@@ -99,11 +99,49 @@ simple - adapt as required for your distribution:
    (venv) $ pip install -r $PGADMIN4_SRC/web/regression/requirements.txt
    ```
 
-5. Create a local configuration file for pgAdmin. Edit
+5. Create a local Postgres database, if necessary.
+
+   If you already have a running Postgres instance, you can skip this step. If not,
+   the easiest way to create one would be using [Docker](https://www.docker.com). First,
+   pull the latest Postgres docker image:
+
+   ```bash
+   docker pull postgres
+   ```
+
+   Next, start a Docker container using the image using the following command line:
+
+   ```bash
+   docker run --name postgres -e POSTGRES_PASSWORD=postgres -p:5432:5432 -d postgres
+   ```
+
+   Feel free to use any friendly value for the `--name` parameter, and change the password
+   if desired.
+
+   Next, run the `psql` client. If you don't have the Postgres client tools installed, you
+   can simply run them from within the container:
+
+   ```bash
+   docker exec -it postgres sh -c "psql -h localhost -p 5432 -U postgres"
+   ```
+
+   You should see a `postgres=#` prompt, where you can now create a database for pgAdmin to use:
+
+   ```SQL
+   CREATE DATABASE pgadmin;
+   ```
+
+   You can now `exit` psql and continue to step 6.
+
+
+6. Create a local configuration file for pgAdmin. Edit
    $PGADMIN4_SRC/web/config_local.py and add any desired configuration options
    (use the config.py file as a reference - any settings duplicated in
-   config_local.py will override those in config.py). A typical development
-   configuration may look like:
+   config_local.py will override those in config.py). If you created a Postgres docker
+   container in Step 5, note the port on the `CONFIG_DATABASE_URI` connection string
+   will need to match, as well as the password specified on the command line.
+
+   A typical development configuration may look like:
 
     ```python
    import os
@@ -120,7 +158,7 @@ simple - adapt as required for your distribution:
    SERVER_MODE = True
 
    #Change pgAdmin config DB path in case external DB is used.
-   CONFIG_DATABASE_URI="postgresql://postgres:postgres@localhost:5436/pgadmin"
+   CONFIG_DATABASE_URI="postgresql://postgres:postgres@localhost:5432/pgadmin"
 
    #Setup SMTP
    MAIL_SERVER = 'smtp.gmail.com'
@@ -149,12 +187,12 @@ simple - adapt as required for your distribution:
    This configuration allows easy switching between server and desktop modes
    for testing.
 
-6. The initial setup of the configuration database is interactive in server
+7. The initial setup of the configuration database is interactive in server
    mode, and non-interactive in desktop mode. You can run it either by
    running:
 
    ```bash
-   (venv) $ python3 $PGADMIN4_SRC/web/setup.py
+   (venv) $ python3 $PGADMIN4_SRC/web/setup.py setup-db
    ```
 
    or by starting pgAdmin 4:
