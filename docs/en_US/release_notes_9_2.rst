@@ -51,3 +51,4 @@ Bug fixes
   | `Issue #8597 <https://github.com/pgadmin-org/pgadmin4/issues/8597>`_ -  Fixed an issue where delete/rename was done on wrong file after sorting in Storage Manager.
   | `Issue #8602 <https://github.com/pgadmin-org/pgadmin4/issues/8602>`_ -  Fixed an XSS vulnerability issue in the Query Tool and View/Edit Data (CVE-2025-2946).
   | `Issue #8603 <https://github.com/pgadmin-org/pgadmin4/issues/8603>`_ -  Fixed a remote code execution issue in the Query Tool and Cloud Deployment (CVE-2025-2945).
+  | `Issue #8623 <https://github.com/pgadmin-org/pgadmin4/issues/8623>`_ -  Fixed an issue where query tool is crashing on macOS 15.4 due to a locale issue.

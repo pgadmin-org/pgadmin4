@@ -516,8 +516,8 @@ def utils():
     if current_app.PGADMIN_RUNTIME:
         import locale
         try:
-            locale_info = locale.getdefaultlocale()
-            if len(locale_info) > 0:
+            locale_info = locale.getlocale()
+            if len(locale_info) > 0 and locale_info[0] != 'C':
                 default_locale = locale_info[0].replace('_', '-')
         except Exception:
             current_app.logger.debug('Failed to get the default locale.')
