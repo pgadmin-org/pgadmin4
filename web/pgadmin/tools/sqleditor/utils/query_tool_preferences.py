@@ -390,6 +390,16 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.sql_font_ligatures = self.preference.register(
+        'Editor', 'sql_font_ligatures',
+        gettext("Font ligatures?"), 'boolean',
+        False, category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'If set to true, ligatures will be enabled in SQL text boxes '
+            'and editors provided the configured font family supports them.'
+        )
+    )
+
     self.sql_font_family = self.preference.register(
         'Editor', 'sql_font_family',
         gettext("Font family"), 'text', 'Source Code Pro',
