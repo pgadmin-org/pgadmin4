@@ -41,6 +41,7 @@ MODULE_NAME = 'debugger'
 # Constants
 PLDBG_EXTN = 'pldbgapi'
 ASYNC_OK = 1
+BUSY = 3
 DEBUGGER_SQL_PATH = 'debugger/sql'
 DEBUGGER_SQL_V1_PATH = 'debugger/sql/v1'
 DEBUGGER_SQL_V3_PATH = 'debugger/sql/v3'
@@ -263,6 +264,9 @@ def index():
 
 
 def execute_dict_search_path(conn, sql, search_path):
+    if conn.transaction_status() == 1:
+        return True, BUSY
+
     sql_search = SET_SEARCH_PATH.format(search_path)
     status, res = conn.execute_void(sql_search)
 
@@ -276,6 +280,9 @@ def execute_dict_search_path(conn, sql, search_path):
 
 
 def execute_async_search_path(conn, sql, search_path):
+    if conn.transaction_status() == 1:
+        return True, BUSY
+
     sql_search = SET_SEARCH_PATH.format(search_path)
     status, res = conn.execute_void(sql_search)
 
@@ -1214,24 +1221,35 @@ def execute_debugger_query(trans_id, query_type):
         status, result = execute_async_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
 
+        if result == BUSY:
+            return make_json_response(
+                data={'status': 'Busy', 'result': []}
+            )
+
         if result and 'select() failed waiting for target' in result:
             status = True
             result = None
 
         if not status:
             return internal_server_error(errormsg=result)
+
         return make_json_response(
             data={'status': status, 'result': result}
         )
-
     status, result = execute_dict_search_path(
         conn, sql, de_inst.debugger_data['search_path'])
+
     if not status:
         return internal_server_error(errormsg=result)
     if query_type == 'abort_target':
         return make_json_response(
             info=gettext('Debugging aborted successfully.'),
             data={'status': 'Success', 'result': result}
+        )
+
+    if result == BUSY:
+        return make_json_response(
+            data={'status': 'Busy', 'result': []}
         )
 
     return make_json_response(
@@ -1356,6 +1374,11 @@ def start_execution(trans_id, port_num):
     if not status_port:
         return internal_server_error(errormsg=res_port)
 
+    if res_port == BUSY:
+        return make_json_response(
+            data={'status': 'Busy', 'result': []}
+        )
+
     de_inst.debugger_data['restart_debug'] = 0
     de_inst.debugger_data['frame_id'] = 0
     de_inst.debugger_data['exe_conn_id'] = exe_conn_id
@@ -1430,6 +1453,11 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     if not status:
         return internal_server_error(errormsg=res_stack)
 
+    if res_stack == BUSY:
+        return make_json_response(
+            data={'status': 'Busy', 'result': []}
+        )
+
     # For multilevel function debugging, we need to fetch current selected
     # frame's function oid for setting the breakpoint. For single function
     # the frame id will be 0.
@@ -1450,9 +1478,16 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
 
         status, result = execute_dict_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
-        result = result['rows']
+
         if not status:
             return internal_server_error(errormsg=result)
+
+        if result == BUSY:
+            return make_json_response(
+                data={'status': 'Busy', 'result': []}
+            )
+
+        result = result['rows']
     else:
         status = False
         result = SERVER_CONNECTION_CLOSED
@@ -1536,6 +1571,11 @@ def clear_all_breakpoint(trans_id):
                 conn, sql, de_inst.debugger_data['search_path'])
             if not status:
                 return internal_server_error(errormsg=result)
+
+            if result == BUSY:
+                return make_json_response(
+                    data={'status': 'Busy', 'result': []}
+                )
             result = result['rows']
     else:
         return make_json_response(data={'status': False})
@@ -1598,6 +1638,11 @@ def deposit_parameter_value(trans_id):
                 conn, sql, de_inst.debugger_data['search_path'])
             if not status:
                 return internal_server_error(errormsg=result)
+
+            if result == BUSY:
+                return make_json_response(
+                    data={'status': 'Busy', 'result': []}
+                )
 
             # Check if value deposited successfully or not and depending on
             # the result, return the message information.
@@ -1670,6 +1715,12 @@ def select_frame(trans_id, frame_id):
 
         status, result = execute_dict_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
+
+        if result == BUSY:
+            return make_json_response(
+                data={'status': 'Busy', 'result': []}
+            )
+
         if not status:
             return internal_server_error(errormsg=result)
     else:
