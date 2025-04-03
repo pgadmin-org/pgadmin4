@@ -14,6 +14,7 @@ export default function cmOverride(theme) {
       height: '100%',
       color: editor.fg,
       backgroundColor: editor.bg,
+      letterSpacing: '0px',
 
       '&.cm-focused': {
         outline: 'none',

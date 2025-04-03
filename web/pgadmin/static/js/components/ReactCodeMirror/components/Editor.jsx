@@ -305,6 +305,7 @@ export default function Editor({
     newConfigExtn.push(EditorView.theme({
       '& .cm-scroller .cm-content': {
         fontSize: fontSize,
+        fontVariantLigatures: pref.sql_font_ligatures ? 'normal' : 'none',
         fontFamily: `${pref.sql_font_family}, ${theme.typography.fontFamilySourceCode}`,
       },
       '.cm-gutters': {
