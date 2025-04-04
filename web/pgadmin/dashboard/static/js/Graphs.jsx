@@ -164,9 +164,6 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
     });
 
     let path = getStatsUrl(sid, did, getFor);
-    if (!pageVisible){
-      return;
-    }
     axios.get(path)
       .then((resp)=>{
         let data = resp.data;
