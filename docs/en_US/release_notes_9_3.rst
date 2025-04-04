@@ -31,3 +31,4 @@ Bug fixes
 *********
 
   | `Issue #8443 <https://github.com/pgadmin-org/pgadmin4/issues/8443>`_ -  Fixed an issue where the debugger hangs when stepping into nested function/procedure.
+  | `Issue #8556 <https://github.com/pgadmin-org/pgadmin4/issues/8556>`_ -  Ensure that graph data is updated even when the Dashboard tab is inactive.
