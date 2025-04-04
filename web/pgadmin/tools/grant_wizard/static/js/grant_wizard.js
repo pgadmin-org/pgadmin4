@@ -49,6 +49,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database, schema or schema objects from the object explorer to access Grant Wizard Tool.'),
         },
+        permission: 'tools_grant_wizard',
       }];
 
       // Add supported menus into the menus list
