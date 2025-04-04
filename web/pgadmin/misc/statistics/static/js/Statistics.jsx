@@ -21,6 +21,7 @@ import { toPrettySize } from '../../../../static/js/utils';
 import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
+import { parseApiError } from '../../../../static/js/api_instance';
 
 const Root = styled('div')(({theme}) => ({
   height : '100%',
@@ -193,7 +194,7 @@ function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
             } else {
               pgAdmin.Browser.notifier.alert(
                 gettext('Failed to retrieve data from the server.'),
-                gettext(err.message)
+                parseApiError(err)
               );
               setMsg(gettext('Failed to retrieve data from the server.'));
             }

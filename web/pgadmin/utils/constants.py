@@ -160,3 +160,6 @@ DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
                          1015, 'varchar[]', 'character varying[]',
                          'vector', 'vector[]', 'halfvec', 'halfvec[]',
                          'sparsevec', 'sparsevec[]']
+
+RESTRICTION_TYPE_DATABASES = 'databases'
+RESTRICTION_TYPE_SQL = 'sql'

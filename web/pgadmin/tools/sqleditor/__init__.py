@@ -68,7 +68,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
 from pgadmin.browser.server_groups.servers.utils import \
-    convert_connection_parameter
+    convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
 
 MODULE_NAME = 'sqleditor'
@@ -2426,15 +2426,8 @@ def get_new_connection_database(sgid, sid=None):
             if sid:
                 template_path = 'databases/sql/#{0}#'.format(manager.version)
                 last_system_oid = 0
-                server_node_res = manager
 
-                db_disp_res = None
-                params = None
-                if server_node_res and server_node_res.db_res:
-                    db_disp_res = ", ".join(
-                        ['%s'] * len(server_node_res.db_res.split(','))
-                    )
-                    params = tuple(server_node_res.db_res.split(','))
+                db_disp_res, params = get_db_disp_restriction(manager)
                 sql = render_template(
                     "/".join([template_path, _NODES_SQL]),
                     last_system_oid=last_system_oid,

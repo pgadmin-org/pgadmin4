@@ -195,11 +195,19 @@ Click the *Advanced* tab to continue.
 
 Use the fields in the *Advanced* tab to configure a connection:
 
-* Use the *DB restriction* field to provide a SQL restriction that will be used
-  against the pg_database table to limit the databases that you see. For
-  example, you might enter: *live_db test_db* so that only live_db and test_db
-  are shown in the pgAdmin browser. Separate entries with a comma or tab as you
-  type.
+* Specify the type of the database restriction that will be used to filter
+  out the databases for restriction in the *DB restriction type* field:
+
+    * Select the *Databases* option to specify the name of the databases
+      that will be used against the pg_database table to limit the databases
+      that you see. This is the default.
+    * Select the *SQL* option to provide a SQL restriction that will be used
+      against the pg_database table to limit the databases that you see.
+
+* Use the *DB restriction* field to provide a SQL restriction OR Database names
+  that will be used against the pg_database table to limit the databases that you see.
+  For example, you might enter: *live_db test_db* so that only live_db and test_db
+  are shown in the pgAdmin object explorer.
 * Use the *Password exec command* field to specify a shell command to be executed
   to retrieve a password to be used for SQL authentication. The ``stdout`` of the
   command will be used as the SQL password. This may be useful when the password
