@@ -31,4 +31,5 @@ Bug fixes
 *********
 
   | `Issue #8443 <https://github.com/pgadmin-org/pgadmin4/issues/8443>`_ -  Fixed an issue where the debugger hangs when stepping into nested function/procedure.
+  | `Issue #8497 <https://github.com/pgadmin-org/pgadmin4/issues/8497>`_ -  Fixed an issue where the scroll position in the Object Explorer was not retained when switching workspaces.
   | `Issue #8556 <https://github.com/pgadmin-org/pgadmin4/issues/8556>`_ -  Ensure that graph data is updated even when the Dashboard tab is inactive.
