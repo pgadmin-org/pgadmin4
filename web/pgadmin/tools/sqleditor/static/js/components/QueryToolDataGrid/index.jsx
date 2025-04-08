@@ -109,7 +109,7 @@ function CustomRow(props) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
   const handleKeyDown = (e)=>{
-    dataGridExtras.handleShortcuts(e);
+    if (e.target.role == 'gridcell') dataGridExtras.handleShortcuts(e);
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
       props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
