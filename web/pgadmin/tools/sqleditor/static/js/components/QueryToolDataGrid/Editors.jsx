@@ -251,10 +251,6 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     if(e.keyCode == 13 && !e.shiftKey) {
       onOK();
     }
-    // Handle "Ctrl + A" or "Cmd + A".
-    if ((e.ctrlKey || e.metaKey) && e.keyCode === 65) {
-      e.stopPropagation();
-    }
   };
 
   return (
@@ -315,10 +311,6 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
     return false;
   };
   const onKeyDown = (e)=>{
-    // Handle "Ctrl + A" or "Cmd + A".
-    if ((e.ctrlKey || e.metaKey) && e.keyCode === 65) {
-      e.stopPropagation();
-    }
     if(e.code === 'Tab' || e.code === 'Enter') {
       e.preventDefault();
       if(!onBlur()) {
