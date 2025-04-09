@@ -30,6 +30,8 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5266 <https://github.com/pgadmin-org/pgadmin4/issues/5266>`_ -  Fixed an issue where shift + click on rows/columns for range selection did not work in the query tool data output window.
   | `Issue #8443 <https://github.com/pgadmin-org/pgadmin4/issues/8443>`_ -  Fixed an issue where the debugger hangs when stepping into nested function/procedure.
   | `Issue #8497 <https://github.com/pgadmin-org/pgadmin4/issues/8497>`_ -  Fixed an issue where the scroll position in the Object Explorer was not retained when switching workspaces.
   | `Issue #8556 <https://github.com/pgadmin-org/pgadmin4/issues/8556>`_ -  Ensure that graph data is updated even when the Dashboard tab is inactive.
+  | `Issue #8572 <https://github.com/pgadmin-org/pgadmin4/issues/8572>`_ -  Fixed an issue where Ctrl/Cmd+A in cell editor would select all rows.
