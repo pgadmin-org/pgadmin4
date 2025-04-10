@@ -16,7 +16,7 @@ import ReactDOM from 'react-dom/client';
 import ERDTool from './erd_tool/components/ERDTool';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
@@ -59,6 +59,7 @@ export default class ERDModule {
       data: {
         data_disabled: gettext('The selected tree node does not support this option.'),
       },
+      permission: AllPermissionTypes.TOOLS_ERD_TOOL,
     }]);
     return this;
   }

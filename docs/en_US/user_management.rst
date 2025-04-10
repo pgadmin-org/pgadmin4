@@ -12,7 +12,7 @@ When you authenticate with pgAdmin, the server definitions associated with that
 login role are made available in the tree control.
 
 Users Tab
-*******************
+*********
 An administrative user can use the *Users* tab to:
 
 * manage pgAdmin users
@@ -21,7 +21,7 @@ An administrative user can use the *Users* tab to:
 * deactivate user
 * unlock a locked user
 
-.. image:: images/user.png
+.. image:: images/users.png
     :alt: pgAdmin user management window
     :align: center
 
@@ -78,6 +78,60 @@ users, but otherwise have the same capabilities as those with the *User* role.
 * Click the *Help* button (?) to access online help.
 
 
+Roles Tab
+*********
+An administrative user can use the *Roles* tab to:
+
+* manage pgAdmin roles
+* delete roles
+
+.. image:: images/roles.png
+  :alt: pgAdmin roles management window
+  :align: center
+
+Use the *Search* field to specify criteria and review a list of roles
+that match the specified criteria. You can enter a value that matches
+the following criteria types: *Role Name* or *Description*.
+
+To add a role, click the Add (+) button at the top left corner. It will open a
+dialog where you can fill in details for the new role.
+
+.. image:: images/add_role.png
+  :alt: pgAdmin roles management window add new role
+  :align: center
+
+Provide information about the new pgAdmin role in the row:
+
+* Use the *Name* field to specify a unique name for the role.
+* Use the *Description* field to provide a brief description of the role.
+
+To delete a role, click the trash icon to the left of the row and confirm deletion
+in the *Delete role?* dialog. If the role is associated with any users or resources,
+you may need to reassign those associations before deletion.
+
+Roles allow administrators to group privileges and assign them to users more efficiently.
+This helps in managing permissions and access control within the pgAdmin client.
+
+* Click the *Refresh* button to get the latest roles list.
+* Click the *Help* button (?) to access online help.
+
+
+Permissions Tab
+***************
+An administrative user can use the *Permissions* tab to manage pgAdmin permissions for 
+a role.
+
+.. image:: images/permissions.png
+  :alt: pgAdmin permissions management window
+  :align: center
+
+* Filter permissions using the *Search* field by entering names that match the list.
+* Administrators can select permissions from the list of available permissions, and
+  choose to grant or revoke these permissions for specific roles.
+* The permissions are applied to the selected role immediately.
+
+
+
 Using 'setup.py' command line script
 ####################################
 
@@ -108,10 +162,11 @@ email and password. role and active will be optional fields.
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password
 
-    # to specify a role, admin and non-admin users:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
-    /path/to/python /path/to/setup.py add-user user1@gmail.com password --nonadmin
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -132,10 +187,11 @@ followed by email, password and authentication source. email, role and status wi
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --nonadmin
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --role Users
 
     # to specify user's status
 
@@ -152,10 +208,11 @@ email address. password, role and active are updatable fields.
 
     /path/to/python /path/to/setup.py update-user user1@gmail.com --password new-password
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -172,17 +229,18 @@ followed by username and auth source. email, password, role and active are updat
 
     # to change email address:
 
-    /path/to/python /path/to/setup.py update-external-user ldap ldapuser --email newemail@gmail.com
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --email newemail@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --role Users
 
     # to change user's status
 
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --active
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --inactive
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --active
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --inactive
 
 Delete User
 ***********

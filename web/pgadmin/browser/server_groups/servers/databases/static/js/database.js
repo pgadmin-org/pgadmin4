@@ -14,6 +14,7 @@ import DatabaseSchema from './database.ui';
 import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
+import { AllPermissionTypes } from '../../../../../static/js/constants';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for',
@@ -122,7 +123,8 @@ define('pgadmin.node.database', [
           priority: 5, label: gettext('ERD For Database'),
           enable: (node) => {
             return node.allowConn;
-          }
+          },
+          permission: AllPermissionTypes.TOOLS_ERD_TOOL,
         }]);
 
         _.bindAll(this, 'connection_lost');

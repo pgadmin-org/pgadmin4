@@ -116,3 +116,21 @@ export const WEEKDAYS = [
   ];
 
 export const PGAGENT_MONTHDAYS = [...MONTHDAYS].concat([{label: gettext('Last day'), value: 'Last Day'}]);
+
+export const AllPermissionTypes = {
+  OBJECT_REGISTER_SERVER: 'object_register_server',
+  TOOLS_ERD_TOOL: 'tools_erd_tool',
+  TOOLS_QUERY_TOOL: 'tools_query_tool',
+  TOOLS_DEBUGGER: 'tools_debugger',
+  TOOLS_PSQL_TOOL: 'tools_psql_tool',
+  TOOLS_BACKUP: 'tools_backup',
+  TOOLS_RESTORE: 'tools_restore',
+  TOOLS_IMPORT_EXPORT_DATA: 'tools_import_export_data',
+  TOOLS_IMPORT_EXPORT_SERVERS: 'tools_import_export_servers',
+  TOOLS_SEARCH_OBJECTS: 'tools_search_objects',
+  TOOLS_MAINTENANCE: 'tools_maintenance',
+  TOOLS_SCHEMA_DIFF: 'tools_schema_diff',
+  TOOLS_GRANT_WIZARD: 'tools_grant_wizard',
+  STORAGE_ADD_FOLDER: 'storage_add_folder',
+  STORAGE_REMOVE_FOLDER: 'storage_remove_folder'
+};

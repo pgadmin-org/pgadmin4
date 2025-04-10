@@ -35,6 +35,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS, \
     MY_STORAGE
 from pgadmin.settings.utils import get_file_type_setting
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # Checks if platform is Windows
 if _platform == "win32":
@@ -346,6 +347,20 @@ class Filemanager():
         return last_dir
 
     @staticmethod
+    def check_capability_permission(capability):
+        """
+        Check if the user has permission for the capability
+        """
+        if capability == 'create':
+            return current_user.has_permission(
+                AllPermissionTypes.storage_add_folder)
+        elif capability == 'delete':
+            return current_user.has_permission(
+                AllPermissionTypes.storage_remove_folder)
+
+        return True
+
+    @staticmethod
     def create_new_transaction(params):
         """
         It will also create a unique transaction id and
@@ -366,16 +381,20 @@ class Filemanager():
         show_volumes = isinstance(storage_dir, list) or not storage_dir
         supp_types = allow_upload_files = params.get('supported_types', [])
 
+        allow_folder_create = ['create'] if \
+            Filemanager.check_capability_permission('create') else []
+        allow_folder_delete = ['delete'] if \
+            Filemanager.check_capability_permission('delete') else []
         # tuples with (capabilities, files_only, folders_only, title)
         capability_map = {
             'select_file': (
-                ['select_file', 'rename', 'upload', 'delete'],
+                ['select_file', 'rename', 'upload'] + allow_folder_delete,
                 True,
                 False,
                 gettext("Select File")
             ),
             'select_folder': (
-                ['select_folder', 'rename', 'create'],
+                ['select_folder', 'rename'] + allow_folder_create,
                 False,
                 True,
                 gettext("Select Folder")
@@ -387,14 +406,14 @@ class Filemanager():
                 gettext("Select File")
             ),
             'create_file': (
-                ['select_file', 'rename', 'create'],
+                ['select_file', 'rename'] + allow_folder_create,
                 True,
                 False,
                 gettext("Create File")
             ),
             'storage_dialog': (
-                ['select_folder', 'select_file', 'download',
-                 'rename', 'delete', 'upload', 'create'],
+                ['select_folder', 'select_file', 'download', 'rename',
+                 'upload'] + allow_folder_delete + allow_folder_create,
                 True,
                 False,
                 gettext("Storage Manager")
@@ -767,7 +786,9 @@ class Filemanager():
         stored in the session
         """
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
-        return False if capability not in trans_data['capabilities'] else True
+        # capability
+        return False if capability not in trans_data['capabilities'] \
+            else Filemanager.check_capability_permission(capability)
 
     def getfolder(self, path=None, file_type="", show_hidden=False):
         """

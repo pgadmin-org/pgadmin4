@@ -13,7 +13,7 @@ import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
 from flask_babel import gettext
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from pgadmin.utils.menu import MenuItem
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 import config
 from config import PG_DEFAULT_DRIVER
@@ -1081,6 +1082,7 @@ class ServerNode(PGChildNodeView):
         display_conn_string = make_conninfo(**con_info_ord)
         return display_conn_string
 
+    @permissions_required(AllPermissionTypes.object_register_server)
     @pga_login_required
     def create(self, gid):
         """Add a server node to the settings database"""

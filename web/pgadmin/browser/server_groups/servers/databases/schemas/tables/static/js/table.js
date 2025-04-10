@@ -9,6 +9,7 @@
 import { getNodeTableSchema } from './table.ui';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../static/js/api_instance';
+import { AllPermissionTypes } from '../../../../../../../static/js/constants';
 
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
@@ -127,7 +128,8 @@ define('pgadmin.node.table', [
           priority: 5, label: gettext('ERD For Table'),
           enable: (_, item) => {
             return !('catalog' in pgAdmin.Browser.tree.getTreeNodeHierarchy(item));
-          }
+          },
+          permission: AllPermissionTypes.TOOLS_ERD_TOOL,
         }
         ]);
         pgBrowser.Events.on(

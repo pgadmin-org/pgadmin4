@@ -11,6 +11,7 @@
 
 from flask import request
 from flask_babel import gettext
+from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 
 from pgadmin.utils import PgAdminModule
@@ -18,6 +19,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request,\
     internal_server_error
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.search_objects.utils import SearchObjectsHelper
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'search_objects'
 
@@ -67,6 +69,7 @@ def types(sid, did):
 
 
 @blueprint.route("search/<int:sid>/<int:did>", endpoint='search')
+@permissions_required(AllPermissionTypes.tools_search_objects)
 @pga_login_required
 def search(sid, did):
     """

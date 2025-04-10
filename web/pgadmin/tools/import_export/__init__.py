@@ -14,7 +14,7 @@ import copy
 
 from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, IS_WIN, \
@@ -25,6 +25,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 from pgadmin.settings import get_setting, store_setting
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'import_export'
 
@@ -227,6 +228,7 @@ def _save_import_export_settings(settings):
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
+@permissions_required(AllPermissionTypes.tools_import_export_data)
 @pga_login_required
 def create_import_export_job(sid):
     """

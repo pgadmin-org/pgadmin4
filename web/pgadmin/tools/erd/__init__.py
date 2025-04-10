@@ -12,6 +12,7 @@ import json
 
 from flask import url_for, request, Response
 from flask import render_template, current_app as app
+from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from werkzeug.user_agent import UserAgent
@@ -32,6 +33,7 @@ from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
 from .utils import ERDHelper
 from pgadmin.utils.exception import ConnectionLost
 from pgadmin.authenticate import socket_login_required
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from ... import socketio
 
 MODULE_NAME = 'erd'
@@ -451,6 +453,7 @@ blueprint = ERDModule(MODULE_NAME, __name__, static_url_path='/static')
     methods=["POST"],
     endpoint='panel'
 )
+@permissions_required(AllPermissionTypes.tools_erd_tool)
 @pga_login_required
 def panel(trans_id):
     """

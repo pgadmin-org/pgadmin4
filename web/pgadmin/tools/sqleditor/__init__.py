@@ -29,7 +29,7 @@ from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
     import query_tool_connection_check
 from pgadmin.user_login_check import pga_login_required
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.tools.sqleditor.command import QueryToolCommand, ObjectRegistry, \
     SQLFilter
@@ -67,6 +67,7 @@ from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
@@ -295,6 +296,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     methods=["POST"],
     endpoint='panel'
 )
+@pga_login_required
 def panel(trans_id):
     """
     This method calls index.html to render the data grid.
@@ -375,6 +377,7 @@ def panel(trans_id):
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>',
     methods=["POST"], endpoint='initialize_sqleditor'
 )
+@permissions_required(AllPermissionTypes.tools_query_tool)
 @pga_login_required
 def initialize_sqleditor(trans_id, sgid, sid, did=None):
     """

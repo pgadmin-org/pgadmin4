@@ -42,4 +42,6 @@ module.exports = {
   'user_management.auth_sources': '/user_management/auth_sources',
   'user_management.roles': '/user_management/roles',
   'user_management.users': '/user_management/users',
+  'user_management.all_permissions': '/user_management/all_permissions',
+  'user_management.save_permissions': '/user_management/save_permissions',
 };

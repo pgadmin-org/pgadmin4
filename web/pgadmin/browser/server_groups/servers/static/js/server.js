@@ -12,6 +12,7 @@ import ServerSchema from './server.ui';
 import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../static/js/api_instance';
+import { AllPermissionTypes } from '../../../../static/js/constants';
 
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for',
@@ -81,7 +82,7 @@ define('pgadmin.node.server', [
           name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 1, label: gettext('Server...'),
-          data: {action: 'create'}, enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate', permission: AllPermissionTypes.OBJECT_REGISTER_SERVER
         },{
           name: 'disconnect_all_servers', node: 'server_group', module: this,
           applies: ['object','context'], callback: 'disconnect_all_servers',
@@ -91,7 +92,7 @@ define('pgadmin.node.server', [
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 3, label: gettext('Server...'),
-          data: {action: 'create'}, enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate', permission: AllPermissionTypes.OBJECT_REGISTER_SERVER
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
@@ -167,7 +168,7 @@ define('pgadmin.node.server', [
           name: 'copy_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           label: gettext('Copy Server...'), data: {action: 'copy'},
-          priority: 4,
+          priority: 4, permission: AllPermissionTypes.OBJECT_REGISTER_SERVER,
         }]);
 
         _.bindAll(this, 'connection_lost');

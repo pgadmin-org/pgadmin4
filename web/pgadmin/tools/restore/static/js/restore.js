@@ -12,6 +12,7 @@ import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import RestoreSchema, {getRestoreSaveOptSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from './restore.ui';
 import pgAdmin from 'sources/pgadmin';
+import { AllPermissionTypes } from '../../../../browser/static/js/constants';
 
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
@@ -49,6 +50,7 @@ define('tools.restore', [
         data: {
           data_disabled: gettext('Please select any schema or table from the object explorer to Restore data.'),
         },
+        permission: AllPermissionTypes.TOOLS_RESTORE,
       }];
 
       for (let sup_node_val of menuUtils.restoreSupportedNodes) {
@@ -63,6 +65,7 @@ define('tools.restore', [
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.restoreSupportedNodes
           ),
+          permission: AllPermissionTypes.TOOLS_RESTORE,
         });
       }
 

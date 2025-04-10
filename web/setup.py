@@ -37,7 +37,7 @@ if 'SERVER_MODE' in globals():
 else:
     builtins.SERVER_MODE = None
 
-from pgadmin.model import db, Version, User, \
+from pgadmin.model import db, Version, User, Role, \
     SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
 from pgadmin.utils import clear_database_servers, dump_database_servers, \
@@ -148,13 +148,27 @@ class AuthType(str, Enum):
     internal = INTERNAL
 
 
+class ManageRoles:
+    @staticmethod
+    def get_role(role: str):
+        app = create_app(config.APP_NAME + '-cli')
+        usr = None
+        with app.test_request_context():
+            usr = Role.query.filter_by(name=role).first()
+
+            if not usr:
+                return None
+            return usr.id
+
+
 class ManageUsers:
 
     @app.command()
     @update_sqlite_path
     def add_user(email: str, password: str,
-                 role: Annotated[Optional[bool], typer.Option(
-                     "--admin/--nonadmin")] = False,
+                 admin: Annotated[Optional[bool],
+                                  typer.Option("--admin")] = False,
+                 role: Optional[str] = None,
                  active: Annotated[Optional[bool],
                                    typer.Option("--active/--inactive")] = True,
                  console: Optional[bool] = True,
@@ -165,7 +179,7 @@ class ManageUsers:
 
         data = {
             'email': email,
-            'role': 1 if role else 2,
+            'role': 'Administrator' if admin else role,
             'active': active,
             'auth_source': INTERNAL,
             'newPassword': password,
@@ -178,9 +192,9 @@ class ManageUsers:
     def add_external_user(username: str,
                           auth_source: AuthExtTypes = AuthExtTypes.oauth2,
                           email: Optional[str] = None,
-                          role: Annotated[Optional[bool],
-                                          typer.Option(
-                                              "--admin/--nonadmin")] = False,
+                          admin: Annotated[Optional[bool],
+                                           typer.Option("--admin")] = False,
+                          role: Optional[str] = None,
                           active: Annotated[Optional[bool],
                                             typer.Option(
                                                 "--active/--inactive")] = True,
@@ -194,7 +208,7 @@ class ManageUsers:
         data = {
             'username': username,
             'email': email,
-            'role': 1 if role else 2,
+            'role': 'Administrator' if admin else role,
             'active': active,
             'auth_source': auth_source
         }
@@ -231,9 +245,9 @@ class ManageUsers:
     @update_sqlite_path
     def update_user(email: str,
                     password: Optional[str] = None,
-                    role: Annotated[Optional[bool],
-                                    typer.Option("--admin/--nonadmin"
-                                                 )] = None,
+                    admin: Annotated[Optional[bool], typer.Option(
+                        "--admin")] = False,
+                    role: Optional[str] = None,
                     active: Annotated[Optional[bool],
                                       typer.Option("--active/--inactive"
                                                    )] = None,
@@ -254,12 +268,21 @@ class ManageUsers:
             data['confirmPassword'] = password
 
         if role is not None:
-            data['role'] = 1 if role else 2
+            data['role'] = role
+        if admin:
+            data['role'] = 'Administrator'
         if active is not None:
             data['active'] = active
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
+            rid = ManageRoles.get_role(data['role'])
+            if rid is None:
+                print("Role '{0}' does not exists.".format(data['role']))
+                exit()
+
+            data['role'] = rid
+
             uid = ManageUsers.get_user(username=email,
                                        auth_source=INTERNAL)
             if not uid:
@@ -308,7 +331,7 @@ class ManageUsers:
                          'username': u.username,
                          'email': u.email,
                          'active': u.active,
-                         'role': u.roles[0].id,
+                         'role': u.roles[0].name,
                          'auth_source': u.auth_source,
                          'locked': u.locked
                          }
@@ -323,9 +346,9 @@ class ManageUsers:
     def update_external_user(username: str,
                              auth_source: AuthExtTypes = AuthExtTypes.oauth2,
                              email: Optional[str] = None,
-                             role: Annotated[Optional[bool],
-                                             typer.Option("--admin/--nonadmin"
-                                                          )] = None,
+                             admin: Annotated[Optional[bool], typer.Option(
+                                 "--admin")] = False,
+                             role: Optional[str] = None,
                              active: Annotated[
                                  Optional[bool],
                                  typer.Option("--active/--inactive")] = None,
@@ -340,12 +363,21 @@ class ManageUsers:
         if email:
             data['email'] = email
         if role is not None:
-            data['role'] = 1 if role else 2
+            data['role'] = role
+        if admin:
+            data['role'] = 'Administrator'
         if active is not None:
             data['active'] = active
 
         app = create_app(config.APP_NAME + '-cli')
         with app.test_request_context():
+            rid = ManageRoles.get_role(data['role'])
+            if rid is None:
+                print("Role '{0}' does not exists.".format(data['role']))
+                exit()
+
+            data['role'] = rid
+
             uid = ManageUsers.get_user(username=username,
                                        auth_source=auth_source)
             if not uid:
@@ -367,6 +399,14 @@ class ManageUsers:
         with app.test_request_context():
             username = data['username'] if 'username' in data else \
                 data['email']
+
+            rid = ManageRoles.get_role(data['role'])
+            if rid is None:
+                print("Role '{0}' does not exists.".format(data['role']))
+                exit()
+
+            data['role'] = rid
+
             uid = ManageUsers.get_user(username=username,
                                        auth_source=data['auth_source'])
             if uid:
@@ -379,7 +419,10 @@ class ManageUsers:
 
             status, msg = create_user(data)
             if status:
-                ManageUsers.display_user(data, console, json)
+                _user = ManageUsers.get_users_from_db(
+                    username=data['email'],
+                    auth_source=data['auth_source'],
+                    console=console)
             else:
                 print(SOMETHING_WENT_WRONG + str(msg))
 
@@ -412,10 +455,7 @@ class ManageUsers:
                     if 'email' in _data:
                         table.add_row("Email", _data['email'])
                     table.add_row("auth_source", _data['auth_source'])
-                    table.add_row("role",
-                                  "Admin" if _data['role'] and
-                                  _data['role'] != 2 else
-                                  "Non-admin")
+                    table.add_row("role", _data['role'])
                     table.add_row("active",
                                   'True' if _data['active'] else 'False')
                     console.print(table)

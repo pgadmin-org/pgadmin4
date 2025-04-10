@@ -30,6 +30,20 @@ def upgrade():
                   sa.Column('db_res_type', sa.String(length=32),
                             server_default=RESTRICTION_TYPE_DATABASES))
 
+    # For adding custom role permissions
+    op.add_column('role', sa.Column('permissions', sa.Text()))
+
+    # get metadata from current connection
+    meta = sa.MetaData()
+    # define table representation
+    meta.reflect(op.get_bind(), only=('role',))
+    role_table = sa.Table('role', meta)
+
+    from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
+    op.execute(
+        role_table.update().where(role_table.c.name == 'User')
+        .values(permissions=",".join(AllPermissionTypes.list())))
+
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

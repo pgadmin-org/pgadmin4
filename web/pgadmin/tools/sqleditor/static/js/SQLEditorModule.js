@@ -23,7 +23,7 @@ import ReactDOM from 'react-dom/client';
 import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
-import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
@@ -104,6 +104,7 @@ export default class SQLEditor {
         applies: 'tools',
         data_disabled: gettext('Please select a database from the object explorer to access Query Tool.'),
       },
+      permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
     }];
 
     // Create context menu
@@ -121,6 +122,7 @@ export default class SQLEditor {
         category: 'view_data',
         priority: 101,
         label: gettext('All Rows'),
+        permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
       }, {
         name: 'view_first_100_rows_context_' + supportedNode,
         node: supportedNode,
@@ -134,6 +136,7 @@ export default class SQLEditor {
         category: 'view_data',
         priority: 102,
         label: gettext('First 100 Rows'),
+        permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
       }, {
         name: 'view_last_100_rows_context_' + supportedNode,
         node: supportedNode,
@@ -147,6 +150,7 @@ export default class SQLEditor {
         category: 'view_data',
         priority: 103,
         label: gettext('Last 100 Rows'),
+        permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
       }, {
         name: 'view_filtered_rows_context_' + supportedNode,
         node: supportedNode,
@@ -160,6 +164,7 @@ export default class SQLEditor {
         category: 'view_data',
         priority: 104,
         label: gettext('Filtered Rows...'),
+        permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
       });
     }
 

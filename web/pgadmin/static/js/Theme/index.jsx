@@ -644,12 +644,12 @@ function getFinalTheme(baseTheme) {
         styleOverrides: {
           root: {
             padding: '0px',
-            color: baseTheme.otherVars.inputBorderColor,
+            color: baseTheme.custom.checkbox.borderColor,
           },
 
           colorPrimary: {
             '&.Mui-disabled': {
-              color: baseTheme.palette.checkbox.disabled
+              color: baseTheme.custom.checkbox.disabled
             }
           }
         }
@@ -658,12 +658,12 @@ function getFinalTheme(baseTheme) {
         styleOverrides: {
           root: {
             padding: '0px',
-            color: baseTheme.otherVars.inputBorderColor,
+            color: baseTheme.custom.checkbox.borderColor,
           },
 
           colorPrimary: {
             '&.Mui-disabled': {
-              color: baseTheme.palette.checkbox.disabled
+              color: baseTheme.custom.checkbox.disabled
             }
           }
         }

@@ -15,7 +15,7 @@ from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
 # This unused import is required as API test cases will fail if we remove it,
 # Have to identify the cause and then remove it.
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
@@ -25,6 +25,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # set template path for sql scripts
 MODULE_NAME = 'restore'
@@ -115,19 +116,6 @@ class RestoreMessage(IProcessDesc):
 @pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
-
-
-@blueprint.route("/restore.js")
-@pga_login_required
-def script():
-    """render own javascript"""
-    return Response(
-        response=render_template(
-            "restore/js/restore.js", _=_
-        ),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
 
 
 def _get_create_req_data():
@@ -398,6 +386,7 @@ def use_sql_utility(data, manager, server, filepath):
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
+@permissions_required(AllPermissionTypes.tools_restore)
 @pga_login_required
 def create_restore_job(sid):
     """
