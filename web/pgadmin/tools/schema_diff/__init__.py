@@ -31,7 +31,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
 from sqlalchemy import or_
 from pgadmin.authenticate import socket_login_required
 from pgadmin import socketio
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'schema_diff'
 COMPARE_MSG = gettext("Comparing objects...")

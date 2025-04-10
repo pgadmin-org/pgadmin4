@@ -27,7 +27,7 @@ from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
     load_database_servers, validate_json_data, filename_with_file_manager_path
 from urllib.parse import unquote
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'import_export_servers'
 

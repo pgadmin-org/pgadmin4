@@ -23,7 +23,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'maintenance'
 

@@ -7,11 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
-import { useEffect } from 'react';
 import { Box, FormLabel } from '@mui/material';
 import SectionContainer from '../../../../dashboard/static/js/components/SectionContainer';
 import { InputCheckbox, InputSelect, InputText } from '../../../../static/js/components/FormComponents';
@@ -150,6 +149,7 @@ export default function Permissions({roles, updateRolePermissions}) {
     return allPermissions.filter(perm => perm.label.toLowerCase().includes(searchVal.toLowerCase()));
   }, [allPermissions, searchVal]);
 
+  // Convert the permissions array to section based dict
   const sections = useMemo(()=>{
     return filteredAllPermissions.reduce((acc, perm) => {
       let section = perm.category;

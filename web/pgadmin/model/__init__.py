@@ -120,11 +120,10 @@ class Role(db.Model, RoleMixin):
     permissions = db.Column(PgAdminDbArrayString())
 
     def get_permissions(self):
-        from pgadmin.tools.user_management.PgPermissions \
+        from pgadmin.tools.user_management.PgAdminPermissions \
             import AllPermissionTypes
         if self.name == 'Administrator':
-            return filter(lambda x: not x.startswith('_'),
-                          AllPermissionTypes.__dict__.keys())
+            return AllPermissionTypes.list()
 
         return super().get_permissions()
 

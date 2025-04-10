@@ -10,6 +10,7 @@
 import getApiInstance from 'sources/api_instance';
 import MaintenanceSchema, {getVacuumSchema} from './maintenance.ui';
 import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
+import { AllPermissionTypes } from '../../../../browser/static/js/constants';
 
 define([
   'sources/gettext', 'sources/url_for', 'sources/pgadmin', 'pgadmin.browser',
@@ -51,7 +52,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database from the object explorer to do Maintenance.'),
         },
-        permission: 'tools_maintenance',
+        permission: AllPermissionTypes.TOOLS_MAINTENANCE,
       }];
 
       // Add supported menus into the menus list

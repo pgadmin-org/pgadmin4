@@ -41,8 +41,8 @@ describe('Roles', () => {
 
     it('init', async () => {
       let ctrl;
-      await act(async () => {
-        ctrl = await render(<RolesWithBrowser roles={[
+      await act(() => {
+        ctrl = render(<RolesWithBrowser roles={[
           { id: 1, name: 'Administrator' },
           { id: 2, name: 'User' },
         ]}/>);
@@ -52,8 +52,8 @@ describe('Roles', () => {
 
     it('renders role list', async () => {
       let ctrl;
-      await act(async () => {
-        ctrl = await render(<RolesWithBrowser roles={[
+      await act(() => {
+        ctrl = render(<RolesWithBrowser roles={[
           { id: 1, name: 'Administrator' },
           { id: 2, name: 'User' },
         ]}/>);

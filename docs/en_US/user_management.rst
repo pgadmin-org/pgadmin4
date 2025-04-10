@@ -102,7 +102,7 @@ dialog where you can fill in details for the new role.
 
 Provide information about the new pgAdmin role in the row:
 
-* Use the *Role Name* field to specify a unique name for the role.
+* Use the *Name* field to specify a unique name for the role.
 * Use the *Description* field to provide a brief description of the role.
 
 To delete a role, click the trash icon to the left of the row and confirm deletion
@@ -162,10 +162,11 @@ email and password. role and active will be optional fields.
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password
 
-    # to specify a role, admin and non-admin users:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
-    /path/to/python /path/to/setup.py add-user user1@gmail.com password --nonadmin
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -186,10 +187,11 @@ followed by email, password and authentication source. email, role and status wi
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --nonadmin
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --role Users
 
     # to specify user's status
 
@@ -206,10 +208,11 @@ email address. password, role and active are updatable fields.
 
     /path/to/python /path/to/setup.py update-user user1@gmail.com --password new-password
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -226,17 +229,18 @@ followed by username and auth source. email, password, role and active are updat
 
     # to change email address:
 
-    /path/to/python /path/to/setup.py update-external-user ldap ldapuser --email newemail@gmail.com
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --email newemail@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --role Users
 
     # to change user's status
 
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --active
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --inactive
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --active
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --inactive
 
 Delete User
 ***********

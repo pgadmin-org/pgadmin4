@@ -44,8 +44,8 @@ describe('Users', ()=>{
 
     it('init', async ()=>{
       let ctrl;
-      await act(async ()=>{
-        ctrl = await render(<UsersWithBrowser roles={[
+      await act(()=>{
+        ctrl = render(<UsersWithBrowser roles={[
           { id: 1, name: 'Administrator' },
           { id: 2, name: 'User' },
         ]}/>);

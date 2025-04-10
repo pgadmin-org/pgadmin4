@@ -67,7 +67,7 @@ from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
@@ -296,7 +296,6 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     methods=["POST"],
     endpoint='panel'
 )
-@permissions_required(AllPermissionTypes.tools_query_tool)
 @pga_login_required
 def panel(trans_id):
     """
@@ -378,6 +377,7 @@ def panel(trans_id):
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>',
     methods=["POST"], endpoint='initialize_sqleditor'
 )
+@permissions_required(AllPermissionTypes.tools_query_tool)
 @pga_login_required
 def initialize_sqleditor(trans_id, sgid, sid, did=None):
     """

@@ -35,7 +35,7 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     SERVER_CONNECTION_CLOSED
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'

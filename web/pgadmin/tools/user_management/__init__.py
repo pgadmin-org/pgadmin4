@@ -33,14 +33,14 @@ from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting, roles_users, SharedServer
 from pgadmin.utils.paths import create_users_storage_directory
-from pgadmin.tools.user_management.PgPermissions import PgPermissions
+from pgadmin.tools.user_management.PgAdminPermissions import PgAdminPermissions
 from sqlalchemy import func
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'
 server_info = {}
 
-permissions_obj = PgPermissions()
+permissions_obj = PgAdminPermissions()
 
 
 class UserManagementModule(PgAdminModule):
@@ -407,8 +407,9 @@ def delete_role(rid):
             return make_json_response(
                 success=0,
                 status=400,
-                errormsg=_('To continue, please reassign users currently '
-                           'assigned the \'{0}\' role.').format(r.name)
+                errormsg=_(
+                    'To proceed, ensure that all users assigned '
+                    'the \'{0}\' role have been reassigned.'.format(r.name))
             )
 
     try:

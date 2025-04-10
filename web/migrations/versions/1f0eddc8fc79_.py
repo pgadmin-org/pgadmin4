@@ -39,10 +39,10 @@ def upgrade():
     meta.reflect(op.get_bind(), only=('role',))
     role_table = sa.Table('role', meta)
 
-    from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+    from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
     op.execute(
         role_table.update().where(role_table.c.name == 'User')
-        .values(permissions=",".join(AllPermissionTypes.__dict__.keys())))
+        .values(permissions=",".join(AllPermissionTypes.list())))
 
 
 def downgrade():

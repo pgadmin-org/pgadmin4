@@ -24,7 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from pgadmin.utils.menu import MenuItem
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 import config
 from config import PG_DEFAULT_DRIVER

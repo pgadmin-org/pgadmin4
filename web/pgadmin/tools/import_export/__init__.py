@@ -25,7 +25,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 from pgadmin.settings import get_setting, store_setting
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'import_export'
 

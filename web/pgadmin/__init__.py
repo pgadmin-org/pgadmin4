@@ -350,7 +350,7 @@ def create_app(app_name=None):
         (gettext("Incorrect username or password."), "error")
     app.config['SECURITY_PASSWORD_LENGTH_MIN'] = config.PASSWORD_LENGTH_MIN
     app.config['SECURITY_MSG_UNAUTHORIZED'] = \
-        (gettext("You do not have permission to this resource."), "error")
+        (gettext("Unauthorised access, permission denied."), "error")
 
     # Create database connection object and mailer
     db.init_app(app)

@@ -29,7 +29,7 @@ from flask_security import current_user, permissions_required
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
 from pgadmin.tools.grant_wizard import get_data
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'

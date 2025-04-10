@@ -35,7 +35,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS, \
     MY_STORAGE
 from pgadmin.settings.utils import get_file_type_setting
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # Checks if platform is Windows
 if _platform == "win32":

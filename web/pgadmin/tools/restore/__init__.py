@@ -25,7 +25,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # set template path for sql scripts
 MODULE_NAME = 'restore'

@@ -33,7 +33,7 @@ from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
 from .utils import ERDHelper
 from pgadmin.utils.exception import ConnectionLost
 from pgadmin.authenticate import socket_login_required
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from ... import socketio
 
 MODULE_NAME = 'erd'

@@ -19,7 +19,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request,\
     internal_server_error
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.search_objects.utils import SearchObjectsHelper
-from pgadmin.tools.user_management.PgPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'search_objects'
 

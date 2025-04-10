@@ -1,3 +1,12 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+
 from flask_babel import gettext
 
 
@@ -6,17 +15,22 @@ class AllPermissionTypes:
     tools_erd_tool = 'tools_erd_tool'
     tools_query_tool = 'tools_query_tool'
     tools_debugger = 'tools_debugger'
+    tools_psql_tool = 'tools_psql_tool'
     tools_backup = 'tools_backup'
     tools_restore = 'tools_restore'
     tools_import_export_data = 'tools_import_export_data'
     tools_import_export_servers = 'tools_import_export_servers'
     tools_search_objects = 'tools_search_objects'
-    tools_storage_manager = 'tools_storage_manager'
     tools_maintenance = 'tools_maintenance'
     tools_schema_diff = 'tools_schema_diff'
     tools_grant_wizard = 'tools_grant_wizard'
     storage_add_folder = 'storage_add_folder'
     storage_remove_folder = 'storage_remove_folder'
+
+    @staticmethod
+    def list():
+        return filter(lambda x: not x.startswith('_'),
+                      AllPermissionTypes.__dict__.keys())
 
 
 class AllPermissionCategories:
@@ -25,14 +39,14 @@ class AllPermissionCategories:
     storage_manager = 'Storage Manager'
 
 
-class PgPermissions:
+class PgAdminPermissions:
     _all_permissions = []
 
     def __init__(self):
         self.add_permission(
             AllPermissionCategories.object_explorer,
             AllPermissionTypes.object_register_server,
-            gettext("Register a new server")
+            gettext("Register/remove server")
         )
         self.add_permission(
             AllPermissionCategories.tools,
@@ -43,6 +57,11 @@ class PgPermissions:
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_debugger,
             gettext("Debugger")
+        )
+        self.add_permission(
+            AllPermissionCategories.tools,
+            AllPermissionTypes.tools_psql_tool,
+            gettext("PSQL tool")
         )
         self.add_permission(
             AllPermissionCategories.tools,
@@ -72,7 +91,7 @@ class PgPermissions:
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_maintenance,
-            gettext("Perform maintenance")
+            gettext("Maintenance")
         )
         self.add_permission(
             AllPermissionCategories.tools,
