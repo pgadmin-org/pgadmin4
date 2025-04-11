@@ -10,6 +10,7 @@
 """This is the main application entry point for pgAdmin 4. If running on
 a webserver, this will provide the WSGI interface, otherwise, we're going
 to start a web server."""
+ 
 
 import sys
 if sys.version_info <= (3, 9):
@@ -20,6 +21,9 @@ if sys.version_info < (3, 8):
                        'or later.')
 import builtins
 import os
+
+##
+import webbrowser
 
 # We need to include the root directory in sys.path to ensure that we can
 # find everything we need when running in the standalone runtime.
@@ -173,6 +177,7 @@ def main():
              config.EFFECTIVE_SERVER_PORT)
         )
         sys.stdout.flush()
+        webbrowser.open(f"http://{config.DEFAULT_SERVER}:{config.EFFECTIVE_SERVER_PORT}")
     else:
         # For unknown reason the runtime does not pass the environment
         # variables (i.e. PYTHONHOME, and PYTHONPATH), to the Python
