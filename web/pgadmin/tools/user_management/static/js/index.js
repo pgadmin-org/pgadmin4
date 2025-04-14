@@ -42,7 +42,7 @@ class UserManagement {
 
   // This is a callback function to show user management tab.
   launchUserManagement() {
-    let handler = pgAdmin.Browser.getDockerHandler?.(BROWSER_PANELS.USER_MANAGEMENT);
+    let handler = pgAdmin.Browser.getDockerHandler?.(BROWSER_PANELS.USER_MANAGEMENT, pgAdmin.Browser.docker.default_workspace);
     handler.focus();
     handler.docker.openTab({
       id: BROWSER_PANELS.USER_MANAGEMENT,
