@@ -36,5 +36,7 @@ Bug fixes
   | `Issue #8556 <https://github.com/pgadmin-org/pgadmin4/issues/8556>`_ -  Ensure that graph data is updated even when the Dashboard tab is inactive.
   | `Issue #8572 <https://github.com/pgadmin-org/pgadmin4/issues/8572>`_ -  Fixed an issue where Ctrl/Cmd+A in cell editor would select all rows.
   | `Issue #8613 <https://github.com/pgadmin-org/pgadmin4/issues/8613>`_ -  Fixed an issue where drag and drop function with no parameters does not work.
+  | `Issue #8628 <https://github.com/pgadmin-org/pgadmin4/issues/8628>`_ -  Change the shortcut for canceling a running query as it conflicts with the shortcut to open a new query tool.
   | `Issue #8630 <https://github.com/pgadmin-org/pgadmin4/issues/8630>`_ -  Fixed an issue where filtering on a view caused an error.
   | `Issue #8632 <https://github.com/pgadmin-org/pgadmin4/issues/8632>`_ -  Fixed an issue where the query tool went blank when converting history dates to the appropriate locale format.
+  | `Issue #8651 <https://github.com/pgadmin-org/pgadmin4/issues/8651>`_ -  Fixed an issue where the user management tab is not opening in the classic layout.
