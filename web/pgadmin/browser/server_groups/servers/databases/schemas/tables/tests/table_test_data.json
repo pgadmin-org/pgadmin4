@@ -2157,5 +2157,52 @@
       },
       "is_list": false
     }
+  ],
+  "table_create_geometry": [
+    {
+      "name": "Create: Add Table with geometry columns",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "description": "Create Table API Test",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "n",
+            "attidentity": "a"
+          },
+          {
+            "name": "geom",
+            "cltype": "geometry",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": true,
+            "attlen": null,
+            "attprecision": null,
+            "attoptions": [],
+            "seclabels": [],
+            "colconstype": "n",
+            "attidentity": "a",
+            "geometry": "Point",
+            "srid": "2154"
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
   ]
 }

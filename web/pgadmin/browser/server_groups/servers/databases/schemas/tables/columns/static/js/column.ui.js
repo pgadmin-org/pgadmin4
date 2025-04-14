@@ -24,11 +24,14 @@ export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {
       cacheLevel: 'table',
     }),
     ()=>getNodeAjaxOptions('get_collations', pgBrowser.Nodes['collation'], treeNodeInfo, itemNodeData),
+    ()=>getNodeAjaxOptions('get_geometry_types', pgBrowser.Nodes['table'], treeNodeInfo, itemNodeData, {
+      cacheLevel: 'table',
+    }),
   );
 }
 
 export default class ColumnSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions, inErd=false) {
+  constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions, geometryTypes, inErd=false) {
     super({
       name: undefined,
       attowner: undefined,
@@ -60,12 +63,15 @@ export default class ColumnSchema extends BaseUISchema {
       seqcycle: undefined,
       colconstype: 'n',
       genexpr: undefined,
+      srid: null,
+      geometry: null,
     });
 
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
     this.nodeInfo = nodeInfo;
     this.cltypeOptions = cltypeOptions;
     this.collspcnameOptions = collspcnameOptions;
+    this.geometryTypes = geometryTypes;
     this.inErd = inErd;
 
     this.datatypes = [];
@@ -277,6 +283,36 @@ export default class ColumnSchema extends BaseUISchema {
           return _.isUndefined(this.nodeInfo['table'] || this.nodeInfo['view'] || this.nodeInfo['mview']);
         }
         return false;
+      },
+    },{
+      id:'geometry', label: gettext('Geometry Type'), deps: ['cltype'],
+      group: gettext('Definition'), type: 'select', options: this.geometryTypes,
+      disabled: (state) => {
+        return !(state.cltype == 'geometry' || state.cltype == 'geography');
+      },
+      depChange: (state) => {
+        let cltype = state.cltype;
+        if (cltype != 'geometry' && cltype != 'geography') {
+          return {
+            ...state,
+            geometry: null
+          };
+        }
+      }
+    },{
+      id:'srid', label: gettext('SRID'), deps: ['cltype'],
+      group: gettext('Definition'), type: 'int',
+      depChange: (state) => {
+        let cltype = state.cltype;
+        if (cltype != 'geometry' && cltype != 'geography') {
+          return {
+            ...state,
+            srid: null
+          };
+        }
+      },
+      disabled: function(state) {
+        return !(state.cltype == 'geometry' || state.cltype == 'geography');
       },
     },{
       id: 'attlen', label: gettext('Length/Precision'),

@@ -588,10 +588,16 @@ def prequisite(trans_id, sgid, sid, did):
     if not status:
         return internal_server_error(errormsg=schemas)
 
+    status, types = helper.get_geometry_types()
+
+    if not status:
+        return internal_server_error(errormsg=types)
+
     return make_json_response(
         data={
             'col_types': col_types,
-            'schemas': schemas['rows']
+            'schemas': schemas['rows'],
+            'geometry_types': types
         },
         status=200
     )
