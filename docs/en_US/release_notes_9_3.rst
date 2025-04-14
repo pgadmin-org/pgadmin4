@@ -35,4 +35,6 @@ Bug fixes
   | `Issue #8497 <https://github.com/pgadmin-org/pgadmin4/issues/8497>`_ -  Fixed an issue where the scroll position in the Object Explorer was not retained when switching workspaces.
   | `Issue #8556 <https://github.com/pgadmin-org/pgadmin4/issues/8556>`_ -  Ensure that graph data is updated even when the Dashboard tab is inactive.
   | `Issue #8572 <https://github.com/pgadmin-org/pgadmin4/issues/8572>`_ -  Fixed an issue where Ctrl/Cmd+A in cell editor would select all rows.
+  | `Issue #8613 <https://github.com/pgadmin-org/pgadmin4/issues/8613>`_ -  Fixed an issue where drag and drop function with no parameters does not work.
   | `Issue #8630 <https://github.com/pgadmin-org/pgadmin4/issues/8630>`_ -  Fixed an issue where filtering on a view caused an error.
+  | `Issue #8632 <https://github.com/pgadmin-org/pgadmin4/issues/8632>`_ -  Fixed an issue where the query tool went blank when converting history dates to the appropriate locale format.
