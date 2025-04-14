@@ -35,7 +35,7 @@ export default class ERDDialogs {
   showTableDialog(params) {
     let schema = getTableDialogSchema(
       params.attributes, params.isNew, params.tableNodes,
-      params.colTypes, params.schemas);
+      params.colTypes, params.schemas, params.geometryTypes);
     this.modal.showModal(params.title, (closeModal)=>{
       return (
         <SchemaView

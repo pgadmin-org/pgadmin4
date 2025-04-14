@@ -192,6 +192,25 @@ class DataTypeReader:
 
         return True, res
 
+    def get_geometry_types(self, conn):
+        types = []
+        sql = "SELECT * FROM pg_extension WHERE extname = 'postgis';"
+        status, res = conn.execute_scalar(sql)
+        if not status:
+            return status, res
+        if res:
+            sql = '''SELECT postgis_typmod_type(i) FROM
+            generate_series(4, 63) AS i;'''
+            status, rset = conn.execute_2darray(sql)
+            if not status:
+                return status, rset
+            for row in rset['rows']:
+                types.append({
+                    'label': row['postgis_typmod_type'],
+                    'value': row['postgis_typmod_type']
+                })
+        return True, types
+
     @staticmethod
     def get_length_precision(elemoid_or_name, typname=None):
         precision = False

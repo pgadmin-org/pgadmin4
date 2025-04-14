@@ -20,6 +20,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.server_groups.servers.databases.utils \
     import make_object_name
 from functools import wraps
+import re
 
 
 def get_template_path(f):
@@ -131,6 +132,8 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # Fetch length and precision
     data = fetch_length_precision(data)
+
+    data = fetch_geometry_details(data)
 
     # We need to fetch inherited tables for each table
     is_error, errmsg = _fetch_inherited_tables(
@@ -448,8 +451,6 @@ def fetch_length_precision(data):
     data['attlen'] = None
     data['attprecision'] = None
 
-    import re
-
     # If we have length & precision both
     if length and precision:
         match_obj = re.search(r'(\d+),(\d+)', fulltype)
@@ -474,3 +475,12 @@ def parse_column_variables(col_variables):
             k, v = spcoption.split('=')
             spcoptions.append({'name': k, 'value': v})
     return spcoptions
+
+
+def fetch_geometry_details(data):
+    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
+        match_obj = re.search(r'([a-zA-Z]+),(\d+)', data['cltype'])
+        if match_obj:
+            data['geometry'] = match_obj.group(1)
+            data['srid'] = match_obj.group(2)
+    return data
