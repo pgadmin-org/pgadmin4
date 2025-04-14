@@ -117,14 +117,10 @@ export const QuerySources = {
 };
 
 function getDateFormatted(date) {
-  if (pgAdmin['pgadmin_server_locale'] !== '')
-    return date.toLocaleDateString(pgAdmin['pgadmin_server_locale']);
   return date.toLocaleDateString();
 }
 
 function getTimeFormatted(time) {
-  if (pgAdmin['pgadmin_server_locale'] !== '')
-    return time.toLocaleTimeString(pgAdmin['pgadmin_server_locale']);
   return time.toLocaleTimeString();
 }
 
