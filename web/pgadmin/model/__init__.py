@@ -59,6 +59,29 @@ roles_users = db.Table(
 )
 
 
+class PgAdminDbArrayString(types.TypeDecorator):
+    cache_ok = True
+    impl = types.String
+
+    def process_bind_param(self, value, dialect):
+        try:
+            if len(value) == 0:
+                return None
+
+            return ",".join(value)
+        except Exception as _:
+            return None
+
+    def process_result_value(self, value, dialect):
+        try:
+            if value == '':
+                return []
+
+            return value.split(',')
+        except Exception as _:
+            return []
+
+
 class PgAdminDbBinaryString(types.TypeDecorator):
     """
     To make binary string storing compatible with both
@@ -92,6 +115,27 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
     description = db.Column(db.String(256), nullable=False)
+    # permissions needs to be an array, use custom type to support
+    # both SQLite and PostgreSQL
+    permissions = db.Column(PgAdminDbArrayString())
+
+    def get_permissions(self):
+        from pgadmin.tools.user_management.PgAdminPermissions \
+            import AllPermissionTypes
+        if self.name == 'Administrator':
+            return AllPermissionTypes.list()
+
+        return super().get_permissions()
+
+
+# We override the default UserMixin to change behaviour of has_permission
+# Administrator has all permissions
+class CustomUserMixin(UserMixin):
+    def has_permission(self, permission: str) -> bool:
+        if 'Administrator' in self.roles:
+            return True
+
+        return super().has_permission(permission)
 
 
 class User(db.Model, UserMixin):

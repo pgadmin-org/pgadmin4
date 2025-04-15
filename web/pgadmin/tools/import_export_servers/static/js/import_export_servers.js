@@ -38,6 +38,7 @@ export default class ImportExportServersModule {
       enable: isDefaultWorkspace,
       priority: 3,
       label: gettext('Import/Export Servers...'),
+      permission: 'tools_import_export_servers',
     }];
 
     pgAdmin.Browser.add_menus(menus);

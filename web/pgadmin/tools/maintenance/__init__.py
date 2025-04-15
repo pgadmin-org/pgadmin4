@@ -13,6 +13,7 @@ import json
 
 from flask import Response, render_template, request, current_app
 from flask_babel import gettext as _
+from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
@@ -22,6 +23,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
 from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'maintenance'
 
@@ -129,17 +131,6 @@ def index():
     )
 
 
-@blueprint.route("/js/maintenance.js")
-@pga_login_required
-def script():
-    """render the maintenance tool of vacuum javascript file"""
-    return Response(
-        response=render_template("maintenance/js/maintenance.js", _=_),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 def get_index_name(data):
     """
     Check and get index name from constraints.
@@ -160,6 +151,7 @@ def get_index_name(data):
 @blueprint.route(
     '/job/<int:sid>/<int:did>', methods=['POST'], endpoint='create_job'
 )
+@permissions_required(AllPermissionTypes.tools_maintenance)
 @pga_login_required
 def create_maintenance_job(sid, did):
     """

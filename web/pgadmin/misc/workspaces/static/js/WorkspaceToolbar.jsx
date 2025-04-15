@@ -17,10 +17,11 @@ import AccountTreeRoundedIcon from '@mui/icons-material/AccountTreeRounded';
 import { PgIconButton } from '../../../../static/js/components/Buttons';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
-import { WORKSPACES } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, WORKSPACES } from '../../../../browser/static/js/constants';
 import { useWorkspace } from './WorkspaceProvider';
 import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
 import gettext from 'sources/gettext';
+import withCheckPermission from '../../../../browser/static/js/withCheckPermission';
 
 const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
   '&.Buttons-iconButtonDefault': {
@@ -44,7 +45,7 @@ const StyledWorkspaceButton = styled(PgIconButton)(({theme}) => ({
   },
 }));
 
-function WorkspaceButton({menuItem, value, ...props}) {
+function WorkspaceButton({menuItem, value, options, ...props}) {
   const {currentWorkspace, hasOpenTabs, getLayoutObj, onWorkspaceDisabled, changeWorkspace} = useWorkspace();
   const active = value == currentWorkspace;
   const [disabled, setDisabled] = useState();
@@ -75,12 +76,16 @@ function WorkspaceButton({menuItem, value, ...props}) {
   }, [disabled]);
 
   return (
-    <StyledWorkspaceButton className={active ? 'active': ''} title={menuItem?.label??''} {...props}
+    <StyledWorkspaceButton className={active ? 'active': ''} title={menuItem?.label??''}
+      {...props}
       onClick={()=>{
         if(menuItem) {
           menuItem?.callback();
         } else {
-          changeWorkspace(value);
+          // Check permission and call.
+          withCheckPermission(options, () => {
+            changeWorkspace(value);
+          })();
         }
       }}
       disabled={disabled}
@@ -91,7 +96,8 @@ WorkspaceButton.propTypes = {
   menuItem: PropTypes.object,
   active: PropTypes.bool,
   changeWorkspace: PropTypes.func,
-  value: PropTypes.string
+  value: PropTypes.string,
+  options: PropTypes.object,
 };
 
 const Root = styled('div')(({theme}) => ({
@@ -124,9 +130,9 @@ export default function WorkspaceToolbar() {
   return (
     <Root>
       <WorkspaceButton icon={<AccountTreeRoundedIcon />} value={WORKSPACES.DEFAULT} title={gettext('Default Workspace')} tooltipPlacement="right" />
-      <WorkspaceButton icon={<QueryToolIcon />} value={WORKSPACES.QUERY_TOOL} title={gettext('Query Tool Workspace')} tooltipPlacement="right" />
-      {pgAdmin['enable_psql'] &&  <WorkspaceButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} value={WORKSPACES.PSQL_TOOL} title={gettext('PSQL Tool Workspace')} tooltipPlacement="right" />}
-      <WorkspaceButton icon={<SchemaDiffIcon />} value={WORKSPACES.SCHEMA_DIFF_TOOL} title={gettext('Schema Diff Workspace')} tooltipPlacement="right" />
+      <WorkspaceButton icon={<QueryToolIcon />} value={WORKSPACES.QUERY_TOOL} title={gettext('Query Tool Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_QUERY_TOOL}} />
+      {pgAdmin['enable_psql'] &&  <WorkspaceButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} value={WORKSPACES.PSQL_TOOL} title={gettext('PSQL Tool Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_PSQL_TOOL}} />}
+      <WorkspaceButton icon={<SchemaDiffIcon />} value={WORKSPACES.SCHEMA_DIFF_TOOL} title={gettext('Schema Diff Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_SCHEMA_DIFF}} />
       <Box marginTop="auto">
         <WorkspaceButton icon={<SettingsIcon />} menuItem={menus['settings']} title={gettext('Preferences')} tooltipPlacement="right" />
       </Box>

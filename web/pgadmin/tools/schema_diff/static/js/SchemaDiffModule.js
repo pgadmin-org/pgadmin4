@@ -19,7 +19,7 @@ import getApiInstance from '../../../../static/js/api_instance';
 import Theme from '../../../../static/js/Theme';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import SchemaDiffComponent from './components/SchemaDiffComponent';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
@@ -57,6 +57,7 @@ export default class SchemaDiff {
       label: gettext('Schema Diff'),
       enable: true,
       below: true,
+      permission: AllPermissionTypes.TOOLS_SCHEMA_DIFF,
     }]);
   }
 

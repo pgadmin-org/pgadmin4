@@ -65,15 +65,16 @@ export default function(basicSettings) {
         primary: '#d4d4d4',
         muted: '#8A8A8A',
       },
-      checkbox: {
-        disabled: '#6b6b6b'
-      },
       background: {
         paper: '#1e1e1e',
         default: '#1e1e1e',
       }
     },
     custom: {
+      checkbox: {
+        borderColor: '#4a4a4a',
+        disabled: '#6b6b6b'
+      },
       icon: {
         main: '#6b6b6b',
         contrastText: '#fff',
