@@ -2339,19 +2339,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^6.4.2":
-  version: 6.4.11
-  resolution: "@mui/icons-material@npm:6.4.11"
+"@mui/icons-material@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "@mui/icons-material@npm:7.0.2"
   dependencies:
-    "@babel/runtime": ^7.26.0
+    "@babel/runtime": ^7.27.0
   peerDependencies:
-    "@mui/material": ^6.4.11
+    "@mui/material": ^7.0.2
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 732589469552d3eda39dcfdc66414db841a1e6d437761bcc6328699ba54ee05a6b3d3eb523848185b02312e4bf4bc87d16eaeb6a36484aa01f55a4b87ef6b373
+  checksum: 7aaec454d40521dbe0cecf976247d037da33f1e32b59e72f4e15340de1b5b0f85f6341b485549daebd5691b2173753fd7cb519321e6e9c90539c27490918cc91
   languageName: node
   linkType: hard
 
@@ -13610,7 +13610,7 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@emotion/utils": ^1.0.0
     "@fortawesome/fontawesome-free": latest
-    "@mui/icons-material": ^6.4.2
+    "@mui/icons-material": ^7.0.2
     "@mui/lab": ^6.0.0-beta.16
     "@mui/material": ^6.1.10
     "@mui/x-date-pickers": ^7.28.2
