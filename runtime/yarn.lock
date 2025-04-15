@@ -654,16 +654,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:35.1.4":
-  version: 35.1.4
-  resolution: "electron@npm:35.1.4"
+"electron@npm:35.1.5":
+  version: 35.1.5
+  resolution: "electron@npm:35.1.5"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^22.7.7
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 78ac69d76823d9f2096726684f57b9d9e1bbf90a2207aaa003d69ed96eb2c7d93b0b8a6cee25a99382332606f09ea3b6b9f0868a5a6eca53429b5ff087fa1c10
+  checksum: c7eb196611ae7d62cf453273c1880976276241e964c60ad0742347cba3e55b8be822c950105f1a10596a6b9f95addae8b7c9de21bb101f4b745737d1dbd4720b
   languageName: node
   linkType: hard
 
@@ -1556,7 +1556,7 @@ __metadata:
   resolution: "pgadmin4@workspace:."
   dependencies:
     axios: ^1.8.4
-    electron: 35.1.4
+    electron: 35.1.5
     electron-context-menu: ^4.0.5
     electron-dl: ^4.0.0
     electron-store: ^10.0.0
