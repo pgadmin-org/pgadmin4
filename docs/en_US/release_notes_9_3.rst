@@ -41,4 +41,5 @@ Bug fixes
   | `Issue #8628 <https://github.com/pgadmin-org/pgadmin4/issues/8628>`_ -  Change the shortcut for canceling a running query as it conflicts with the shortcut to open a new query tool.
   | `Issue #8630 <https://github.com/pgadmin-org/pgadmin4/issues/8630>`_ -  Fixed an issue where filtering on a view caused an error.
   | `Issue #8632 <https://github.com/pgadmin-org/pgadmin4/issues/8632>`_ -  Fixed an issue where the query tool went blank when converting history dates to the appropriate locale format.
+  | `Issue #8636 <https://github.com/pgadmin-org/pgadmin4/issues/8636>`_ -  Ensure that the server list is alphabetically sorted in the Query Tool/PSQL workspace.
   | `Issue #8651 <https://github.com/pgadmin-org/pgadmin4/issues/8651>`_ -  Fixed an issue where the user management tab is not opening in the classic layout.

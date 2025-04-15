@@ -14,6 +14,7 @@ import gettext from 'sources/gettext';
 export default function withCheckPermission(options, callback) {
   // Check if the user has permission to access the menu item
   return ()=>{
+    options = options ?? {};
     // if the permission are not provided then no restrictions.
     if(!options.permission || (options.permission && current_user.permissions?.includes(options.permission))) {
       callback();
