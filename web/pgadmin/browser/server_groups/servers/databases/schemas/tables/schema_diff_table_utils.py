@@ -228,7 +228,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                              'foreign_key': ['condeferrable', 'condeferred',
                                              'confupdtype', 'confdeltype',
                                              'confmatchtype', 'convalidated',
-                                             'conislocal']
+                                             'conislocal', 'refnsp', 'reftab']
                              }
 
         for constraint in ['primary_key', 'unique_constraint',
