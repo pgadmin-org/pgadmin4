@@ -36,11 +36,6 @@ export function DataGridHeader({tableEleRef}) {
   const schemaState = useContext(SchemaStateContext);
 
   const onAddClick = useCallback(() => {
-
-    if(!canAddRow) {
-      return;
-    }
-
     const newRow = field.schema.getNewData();
 
     newRowIndex.current = addOnTop ? 0 : rows.length;
@@ -91,6 +86,7 @@ export function DataGridHeader({tableEleRef}) {
         <PgIconButton data-test="add-row" title={gettext('Add row')}
           onClick={onAddClick}
           icon={<AddIcon />} className='DataGridView-gridControlsButton'
+          disabled={!canAddRow}
         />
         }
       </Box>
