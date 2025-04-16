@@ -28,7 +28,7 @@ from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, \
-    SUPPORTED_AUTH_SOURCES
+    SUPPORTED_AUTH_SOURCES, NO_CACHE_CONTROL
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting, roles_users, SharedServer
@@ -99,7 +99,6 @@ def index():
 @pgCSRFProtect.exempt
 @pga_login_required
 def current_user_info():
-    current_user.has_permission
     return Response(
         response=render_template(
             "user_management/js/current_user.js",
@@ -127,7 +126,7 @@ def current_user_info():
                               for p in r.get_permissions()})
         ),
         headers={
-            'Cache-Control': 'no-cache, no-store, must-revalidate'
+            'Cache-Control': NO_CACHE_CONTROL
         },
         status=200,
         mimetype=MIMETYPE_APP_JS

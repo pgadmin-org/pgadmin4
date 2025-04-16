@@ -192,16 +192,6 @@ def index():
     )
 
 
-@blueprint.route("/utility.js")
-@pga_login_required
-def utility():
-    """render the required javascript"""
-    return Response(response=render_template(
-        "file_manager/js/utility.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS)
-
-
 @blueprint.route(
     "/init", methods=["POST"], endpoint='init'
 )

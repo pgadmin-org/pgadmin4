@@ -93,7 +93,7 @@ class AdHocConnectionSchema extends BaseUISchema {
       this.api.get(url_for('sqleditor.get_new_connection_servers'))
         .then(({data: respData})=>{
           // Sort the server list
-          respData.data.result.server_list.Servers.sort(function (a, b) {
+          respData.data.result.server_list.Servers?.sort(function (a, b) {
             return obj.pgAdmin.natural_sort(a.label, b.label);
           });
           let groupedOptions = [];

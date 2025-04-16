@@ -31,6 +31,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #3688 <https://github.com/pgadmin-org/pgadmin4/issues/3688>`_ -  Add Cache-Control no-cache,no-store,must-revalidate header to dynamically generated utils.js file.
   | `Issue #5266 <https://github.com/pgadmin-org/pgadmin4/issues/5266>`_ -  Fixed an issue where shift + click on rows/columns for range selection did not work in the query tool data output window.
   | `Issue #8443 <https://github.com/pgadmin-org/pgadmin4/issues/8443>`_ -  Fixed an issue where the debugger hangs when stepping into nested function/procedure.
   | `Issue #8497 <https://github.com/pgadmin-org/pgadmin4/issues/8497>`_ -  Fixed an issue where the scroll position in the Object Explorer was not retained when switching workspaces.

@@ -108,7 +108,6 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.initialize_sqleditor',
             'sqleditor.initialize_sqleditor_with_did',
             'sqleditor.filter_validate',
-            'sqleditor.filter',
             'sqleditor.panel',
             'sqleditor.close',
             'sqleditor.update_sqleditor_connection',
@@ -177,12 +176,6 @@ def index():
     return bad_request(
         errormsg=gettext('This URL cannot be requested directly.')
     )
-
-
-@blueprint.route("/filter", endpoint='filter')
-@pga_login_required
-def show_filter():
-    return render_template(MODULE_NAME + '/filter.html')
 
 
 @blueprint.route(
@@ -1977,22 +1970,6 @@ def auto_complete(trans_id):
         res = error_msg
 
     return make_json_response(data={'status': status, 'result': res})
-
-
-@blueprint.route("/sqleditor.js")
-@pga_login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template(
-            "sqleditor/js/sqleditor.js",
-            tab_size=blueprint.tab_size.get(),
-            use_spaces=blueprint.use_spaces.get(),
-            _=gettext
-        ),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
 
 
 @blueprint.route('/load_file/', methods=["PUT", "POST"], endpoint='load_file')

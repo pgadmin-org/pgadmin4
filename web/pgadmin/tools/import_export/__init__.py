@@ -142,17 +142,6 @@ def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
-@blueprint.route("/js/import_export.js")
-@pga_login_required
-def script():
-    """render the import/export javascript file"""
-    return Response(
-        response=render_template("import_export/js/import_export.js", _=_),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 def _get_ignored_column_list(data, driver, conn):
     """
     Get list of ignored columns for import/export.

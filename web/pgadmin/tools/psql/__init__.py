@@ -72,17 +72,6 @@ class PSQLModule(PgAdminModule):
 blueprint = PSQLModule('psql', __name__, static_url_path='/static')
 
 
-@blueprint.route("/psql.js")
-@pga_login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template("psql/js/psql.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 @blueprint.route('/panel/<int:trans_id>',
                  methods=["POST"],
                  endpoint="panel")

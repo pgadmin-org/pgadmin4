@@ -61,7 +61,7 @@ from pgadmin.utils.master_password import validate_master_password, \
 from pgadmin.model import User, db
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE, \
     INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER, \
-    VW_EDT_DEFAULT_PLACEHOLDER
+    VW_EDT_DEFAULT_PLACEHOLDER, NO_CACHE_CONTROL
 from pgadmin.authenticate import AuthSourceManager
 from pgadmin.utils.exception import CryptKeyMissing
 
@@ -526,7 +526,7 @@ def utils():
     shared_storage_list, \
         restricted_shared_storage_list = get_shared_storage_list()
 
-    return make_response(
+    response = make_response(
         render_template(
             'browser/js/utils.js',
             layout=layout,
@@ -562,8 +562,10 @@ def utils():
                 "Administrator") else restricted_shared_storage_list,
             enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
             max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
-        ),
-        200, {'Content-Type': MIMETYPE_APP_JS})
+        ), 200)
+    response.headers['Content-Type'] = MIMETYPE_APP_JS
+    response.headers['Cache-Control'] = NO_CACHE_CONTROL
+    return response
 
 
 @blueprint.route("/js/endpoints.js")
