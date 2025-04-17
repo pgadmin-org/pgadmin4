@@ -48,7 +48,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-postgis34
 
       - name: Install pgagent on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
@@ -105,6 +105,10 @@ jobs:
       - name: Create pgagent extension on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
         run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+      
+      - name: Create postgis extension on Linux
+        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
 
       - name: Install Python dependencies on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
