@@ -113,7 +113,7 @@ jobs:
 
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
-          psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION postgis;'
+          #psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION postgis;'
 
       - name: Start PostgreSQL on macOS
         if: ${{ matrix.os == 'macos-latest' }}
