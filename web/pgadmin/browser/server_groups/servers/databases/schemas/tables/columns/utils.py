@@ -133,8 +133,6 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     # Fetch length and precision
     data = fetch_length_precision(data)
 
-    data = fetch_geometry_details(data)
-
     # We need to fetch inherited tables for each table
     is_error, errmsg = _fetch_inherited_tables(
         tid, data, fetch_inherited_tables, template_path, conn)
@@ -451,18 +449,23 @@ def fetch_length_precision(data):
     data['attlen'] = None
     data['attprecision'] = None
 
+    match_obj = fetch_length_precision_details(fulltype, data)
+
     # If we have length & precision both
     if length and precision:
-        match_obj = re.search(r'(\d+),(\d+)', fulltype)
         if match_obj:
             data['attlen'] = match_obj.group(1)
-            data['attprecision'] = match_obj.group(2)
+            data['attprecision'] = match_obj.group(3)
     elif length:
         # If we have length only
-        match_obj = re.search(r'(\d+)', fulltype)
         if match_obj:
             data['attlen'] = match_obj.group(1)
             data['attprecision'] = None
+
+    # If we have geometry column
+    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
+        data['geometry'] = match_obj.group(2)
+        data['srid'] = match_obj.group(3)
 
     return data
 
@@ -477,10 +480,19 @@ def parse_column_variables(col_variables):
     return spcoptions
 
 
-def fetch_geometry_details(data):
-    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
-        match_obj = re.search(r'([a-zA-Z]+),(\d+)', data['cltype'])
-        if match_obj:
-            data['geometry'] = match_obj.group(1)
-            data['srid'] = match_obj.group(2)
-    return data
+def fetch_length_precision_details(fulltype, data):
+    """
+    This function will fetch length and precision details
+    from fulltype.
+
+    :param fulltype: Full type.
+    :param data: Data.
+    """
+
+    match_obj = None
+    regex = r'\((\d*)([a-zA-Z]*),?(\d*)\)'
+    if data['typname'] in ('geometry', 'geography'):
+        match_obj = re.search(regex, data['cltype'])
+    else:
+        match_obj = re.search(regex, fulltype)
+    return match_obj

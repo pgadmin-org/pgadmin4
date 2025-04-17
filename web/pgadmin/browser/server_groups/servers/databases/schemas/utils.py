@@ -18,6 +18,7 @@ from flask import render_template
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils import check_extension_exists
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.constants import DATATYPE_TIME_WITH_TIMEZONE,\
     DATATYPE_TIME_WITHOUT_TIMEZONE,\
@@ -194,8 +195,7 @@ class DataTypeReader:
 
     def get_geometry_types(self, conn):
         types = []
-        sql = "SELECT * FROM pg_extension WHERE extname = 'postgis';"
-        status, res = conn.execute_scalar(sql)
+        status, res = check_extension_exists(conn, 'postgis')
         if not status:
             return status, res
         if res:

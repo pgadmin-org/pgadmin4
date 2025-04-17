@@ -657,9 +657,7 @@ def is_postgis_present(self):
                                              self.server['port'],
                                              self.server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute('''SELECT COUNT(*) FROM pg_extension WHERE
-                            extname='postgis' ''')
-        res = pg_cursor.fetchone()
+        res = utils.check_extension_exists(pg_cursor, 'postgis')
         connection.close()
         if res and len(res) > 0 and int(res[0]) == 1:
             return True
