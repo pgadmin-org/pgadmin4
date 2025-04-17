@@ -41,10 +41,10 @@ jobs:
             # Extract the major version from pg_config
             installed_pg_version=$( pg_config --version | cut -d ' ' -f 2 | cut -d '.' -f 1 )
             echo "Installed PostgreSQL version: $installed_pg_version"
-            if [ $installed_pg_version != ${{ matrix.pgver }} ]; then
-              sudo pg_dropcluster $installed_pg_version main --stop
-              sudo apt-get -y remove "postgresql-${installed_pg_version}"
-            fi
+            #if [ $installed_pg_version != ${{ matrix.pgver }} ]; then
+            sudo pg_dropcluster $installed_pg_version main --stop
+            sudo apt-get -y remove "postgresql-${installed_pg_version}"
+            #fi
           fi
 
       - name: Install platform dependencies on Linux
@@ -113,6 +113,7 @@ jobs:
 
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
+          #psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION postgis;'
 
       - name: Start PostgreSQL on macOS
         if: ${{ matrix.os == 'macos-latest' }}

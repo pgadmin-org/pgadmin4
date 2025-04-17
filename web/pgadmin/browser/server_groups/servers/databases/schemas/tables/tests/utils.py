@@ -18,6 +18,7 @@ from regression.python_test_utils import test_utils as utils
 
 # Load test data from json file.
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+SKIP_MSG_EXTENSION = ("PostGIS extension is not installed in the database. ")
 with open(CURRENT_PATH + "/table_test_data.json") as data_file:
     test_cases = json.load(data_file)
 
@@ -593,3 +594,75 @@ def get_table_id(server, db_name, table_name):
     except Exception:
         traceback.print_exc(file=sys.stderr)
         raise
+
+
+def create_postgis_extension(self):
+    """
+    This function will create postgis extension in the database.
+    :return:
+    """
+    try:
+        connection = utils.get_db_connection(self.db_name,
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'],
+                                             self.server['sslmode'])
+        pg_cursor = connection.cursor()
+        # Check if postgis extension is available to install
+        pg_cursor.execute('''SELECT COUNT(*) FROM pg_available_extensions WHERE
+                            name ='postgis' ''')
+        res = pg_cursor.fetchone()
+        if res and len(res) > 0 and int(res[0]) == 1:
+            pg_cursor.execute('''CREATE EXTENSION IF NOT EXISTS postgis''')
+        connection.commit()
+        connection.close()
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+    return False
+
+
+def drop_postgis_extension(self):
+    """
+    This function will drop postgis extension in the database.
+    :return:
+    """
+    try:
+        connection = utils.get_db_connection(self.db_name,
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'],
+                                             self.server['sslmode'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''DROP EXTENSION IF EXISTS postgis''')
+        connection.commit()
+        connection.close()
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+
+
+def is_postgis_present(self):
+    """
+    This function will check if postgis extension is present in the
+    database.
+    :return:
+    """
+    try:
+        connection = utils.get_db_connection(self.db_name,
+                                             self.server['username'],
+                                             self.server['db_password'],
+                                             self.server['host'],
+                                             self.server['port'],
+                                             self.server['sslmode'])
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''SELECT COUNT(*) FROM pg_extension WHERE
+                            extname='postgis' ''')
+        res = pg_cursor.fetchone()
+        connection.close()
+        if res and len(res) > 0 and int(res[0]) == 1:
+            return True
+    except Exception:
+        traceback.print_exc(file=sys.stderr)
+    return False
