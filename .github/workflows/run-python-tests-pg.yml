@@ -51,7 +51,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent postgis postgresql-${{ matrix.pgver }}-postgis-3 
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent postgresql-${{ matrix.pgver }}-postgis-3 
 
       - name: Install platform dependencies on macOS
         if: ${{ matrix.os == 'macos-latest' }}
