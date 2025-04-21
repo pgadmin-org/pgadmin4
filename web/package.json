@@ -130,7 +130,7 @@
     "react-arborist": "^3.2.0",
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",
-    "react-data-grid": "https://github.com/pgadmin-org/react-data-grid.git#3dfc2ca01a046d55c1c7a45392dcec104815dc76",
+    "react-data-grid": "https://github.com/pgadmin-org/react-data-grid.git#da939d3b434e70781e6b228efebc5235e542d002",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",

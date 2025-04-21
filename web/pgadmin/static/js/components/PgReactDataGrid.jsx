@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import ReactDataGrid, { Row } from 'react-data-grid';
+import {DataGrid as ReactDataGrid, Row } from 'react-data-grid';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
