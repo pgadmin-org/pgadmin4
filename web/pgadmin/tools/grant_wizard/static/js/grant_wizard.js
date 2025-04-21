@@ -65,6 +65,7 @@ define([
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.supportedNodes
           ),
+          permission: AllPermissionTypes.TOOLS_GRANT_WIZARD,
         });
       }
       pgBrowser.add_menus(menus);

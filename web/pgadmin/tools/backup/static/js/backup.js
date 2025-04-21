@@ -138,6 +138,7 @@ define([
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.backupSupportedNodes
           ),
+          permission: AllPermissionTypes.TOOLS_BACKUP,
         });
       }
 

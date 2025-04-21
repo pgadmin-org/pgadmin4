@@ -71,6 +71,7 @@ define([
           data: {
             data_disabled: gettext('Please select any database from the object explorer to do Maintenance.'),
           },
+          permission: AllPermissionTypes.TOOLS_MAINTENANCE,
         });
       }
       pgBrowser.add_menus(menus);
