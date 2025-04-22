@@ -194,10 +194,18 @@ class DataTypeReader:
         return True, res
 
     def get_geometry_types(self, conn):
+        """
+        Returns geometry types.
+        Args:
+            conn: Connection Object
+        """
         types = []
-        extension_exists = check_extension_exists(conn, 'postgis')
+        status, res = check_extension_exists(conn, 'postgis')
 
-        if extension_exists:
+        if not status:
+            return status, res
+
+        if res:
             sql = '''SELECT postgis_typmod_type(i) FROM
             generate_series(4, 63) AS i;'''
             status, rset = conn.execute_2darray(sql)

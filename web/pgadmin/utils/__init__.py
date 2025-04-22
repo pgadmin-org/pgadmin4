@@ -991,9 +991,9 @@ def check_extension_exists(conn, extension_name):
     status, res = conn.execute_scalar(sql)
     if status:
         if res:
-            return True
+            return status, True
         else:
-            return False
+            return status, False
     else:
         # If the query fails, we assume the extension does not exist
-        return False
+        return status, res
