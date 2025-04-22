@@ -989,4 +989,11 @@ def get_safe_post_logout_redirect():
 def check_extension_exists(conn, extension_name):
     sql = f"SELECT * FROM pg_extension WHERE extname = '{extension_name}'"
     status, res = conn.execute_scalar(sql)
-    return status, res
+    if status:
+        if res:
+            return True
+        else:
+            return False
+    else:
+        # If the query fails, we assume the extension does not exist
+        return False

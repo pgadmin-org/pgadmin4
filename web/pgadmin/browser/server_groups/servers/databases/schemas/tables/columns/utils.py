@@ -449,23 +449,24 @@ def fetch_length_precision(data):
     data['attlen'] = None
     data['attprecision'] = None
 
-    match_obj = fetch_length_precision_details(fulltype, data)
+    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
+        # If we have geometry column
+        parmas = parse_params(data['cltype'])
+        data['geometry'] = parmas[0]
+        data['srid'] = parmas[1]
+    else:
+        parmas = parse_params(fulltype)
 
     # If we have length & precision both
     if length and precision:
-        if match_obj:
-            data['attlen'] = match_obj.group(1)
-            data['attprecision'] = match_obj.group(3)
+        if parmas:
+            data['attlen'] = parmas[0]
+            data['attprecision'] = parmas[1]
     elif length:
         # If we have length only
-        if match_obj:
-            data['attlen'] = match_obj.group(1)
+        if parmas:
+            data['attlen'] = parmas[0]
             data['attprecision'] = None
-
-    # If we have geometry column
-    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
-        data['geometry'] = match_obj.group(2)
-        data['srid'] = match_obj.group(3)
 
     return data
 
@@ -480,7 +481,7 @@ def parse_column_variables(col_variables):
     return spcoptions
 
 
-def fetch_length_precision_details(fulltype, data):
+def parse_params(fulltype):
     """
     This function will fetch length and precision details
     from fulltype.
@@ -489,10 +490,7 @@ def fetch_length_precision_details(fulltype, data):
     :param data: Data.
     """
 
-    match_obj = None
-    regex = r'\((\d*)([a-zA-Z]*),?(\d*)\)'
-    if data['typname'] in ('geometry', 'geography'):
-        match_obj = re.search(regex, data['cltype'])
-    else:
-        match_obj = re.search(regex, fulltype)
-    return match_obj
+    match_obj = re.search(r'\((\d*[a-zA-Z]*),?(\d*)\)', fulltype)
+    if match_obj:
+        return [match_obj.group(1), match_obj.group(2)]
+    return False
