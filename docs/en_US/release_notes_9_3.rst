@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #2256 <https://github.com/pgadmin-org/pgadmin4/issues/2256>`_ -  Add support for type constructors for PostGIS spatial types.
   | `Issue #2767 <https://github.com/pgadmin-org/pgadmin4/issues/2767>`_ -  Added ability to use SQL in the "DB Restriction" field.
   | `Issue #7310 <https://github.com/pgadmin-org/pgadmin4/issues/7310>`_ -  Add support for custom roles and role permissions management in pgAdmin.
   | `Issue #8629 <https://github.com/pgadmin-org/pgadmin4/issues/8629>`_ -  Added support for font ligatures.
@@ -44,3 +45,4 @@ Bug fixes
   | `Issue #8632 <https://github.com/pgadmin-org/pgadmin4/issues/8632>`_ -  Fixed an issue where the query tool went blank when converting history dates to the appropriate locale format.
   | `Issue #8636 <https://github.com/pgadmin-org/pgadmin4/issues/8636>`_ -  Ensure that the server list is alphabetically sorted in the Query Tool/PSQL workspace.
   | `Issue #8651 <https://github.com/pgadmin-org/pgadmin4/issues/8651>`_ -  Fixed an issue where the user management tab is not opening in the classic layout.
+  | `Issue #8652 <https://github.com/pgadmin-org/pgadmin4/issues/8652>`_ -  Allow OAuth 2 login using the username claim if the email is absent from the user profile.
