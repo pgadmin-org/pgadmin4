@@ -60,6 +60,7 @@ export default function(basicSettings) {
         '400': '#333333',
         '600': '#282828',
         '800': '#1e1e1e',
+        '900': '#8A8A8A',
       },
       text: {
         primary: '#d4d4d4',
@@ -72,7 +73,7 @@ export default function(basicSettings) {
     },
     custom: {
       checkbox: {
-        borderColor: '#4a4a4a',
+        borderColor: '#8A8A8A',
         disabled: '#6b6b6b'
       },
       icon: {
