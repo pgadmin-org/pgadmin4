@@ -399,7 +399,7 @@ export default class ERDTool extends React.Component {
         this.erdDialogs.showTableDialog({
           title, attributes, isNew, tableNodes: this.diagram.getModel().getNodesDict(),
           colTypes: this.diagram.getCache('colTypes'), schemas: this.diagram.getCache('schemas'),
-          serverInfo, callback
+          geometryTypes: this.diagram.getCache('geometryTypes'),serverInfo, callback
         });
       };
     } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog' || dialogName === 'onetoone_dialog') {
@@ -875,6 +875,7 @@ export default class ERDTool extends React.Component {
       let data = response.data.data;
       this.diagram.setCache('colTypes', data['col_types']);
       this.diagram.setCache('schemas', data['schemas']);
+      this.diagram.setCache('geometryTypes', data['geometry_types']);
       return true;
     } catch (error) {
       this.handleAxiosCatch(error);

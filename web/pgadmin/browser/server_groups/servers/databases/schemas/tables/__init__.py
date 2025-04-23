@@ -308,6 +308,9 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         'count_rows': [{'get': 'count_rows'}],
         'compare': [{'get': 'compare'}, {'get': 'compare'}],
         'get_op_class': [{'get': 'get_op_class'}, {'get': 'get_op_class'}],
+        'get_geometry_types': [
+            {'get': 'geometry_types'},
+            {'get': 'geometry_types'}],
     })
 
     @BaseTableView.check_precondition
@@ -690,6 +693,21 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if not status:
             return internal_server_error(errormsg=types)
 
+        return make_json_response(
+            data=types,
+            status=200
+        )
+
+    @BaseTableView.check_precondition
+    def geometry_types(self, gid, sid, did, scid, tid=None, clid=None):
+        """
+        Returns:
+            This function will return list of geometry types available for
+            column node for node-ajax-control
+        """
+        status, types = self.get_geometry_types(self.conn)
+        if not status:
+            return internal_server_error(errormsg=types)
         return make_json_response(
             data=types,
             status=200

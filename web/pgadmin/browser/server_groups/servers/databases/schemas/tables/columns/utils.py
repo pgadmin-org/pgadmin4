@@ -20,6 +20,7 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.server_groups.servers.databases.utils \
     import make_object_name
 from functools import wraps
+import re
 
 
 def get_template_path(f):
@@ -448,19 +449,24 @@ def fetch_length_precision(data):
     data['attlen'] = None
     data['attprecision'] = None
 
-    import re
+    if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
+        # If we have geometry column
+        parmas = parse_params(data['cltype'])
+        if parmas:
+            data['geometry'] = parmas[0]
+            data['srid'] = parmas[1]
+    else:
+        parmas = parse_params(fulltype)
 
     # If we have length & precision both
     if length and precision:
-        match_obj = re.search(r'(\d+),(\d+)', fulltype)
-        if match_obj:
-            data['attlen'] = match_obj.group(1)
-            data['attprecision'] = match_obj.group(2)
+        if parmas:
+            data['attlen'] = parmas[0]
+            data['attprecision'] = parmas[1]
     elif length:
         # If we have length only
-        match_obj = re.search(r'(\d+)', fulltype)
-        if match_obj:
-            data['attlen'] = match_obj.group(1)
+        if parmas:
+            data['attlen'] = parmas[0]
             data['attprecision'] = None
 
     return data
@@ -474,3 +480,18 @@ def parse_column_variables(col_variables):
             k, v = spcoption.split('=')
             spcoptions.append({'name': k, 'value': v})
     return spcoptions
+
+
+def parse_params(fulltype):
+    """
+    This function will fetch length and precision details
+    from fulltype.
+
+    :param fulltype: Full type.
+    :param data: Data.
+    """
+
+    match_obj = re.search(r'\((\d*[a-zA-Z]*),?(\d*)\)', fulltype)
+    if match_obj:
+        return [match_obj.group(1), match_obj.group(2)]
+    return False

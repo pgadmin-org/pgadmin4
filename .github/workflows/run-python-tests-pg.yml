@@ -51,7 +51,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent postgresql-${{ matrix.pgver }}-postgis-3
 
       - name: Install platform dependencies on macOS
         if: ${{ matrix.os == 'macos-latest' }}
@@ -113,6 +113,7 @@ jobs:
 
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
+          psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION postgis;'
 
       - name: Start PostgreSQL on macOS
         if: ${{ matrix.os == 'macos-latest' }}
