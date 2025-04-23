@@ -298,6 +298,9 @@ export default class ColumnSchema extends BaseUISchema {
             geometry: null
           };
         }
+      },
+      visible: (state) => {
+        return (state.cltype == 'geometry' || state.cltype == 'geography');
       }
     },{
       id:'srid', label: gettext('SRID'), deps: ['cltype'],
@@ -314,6 +317,9 @@ export default class ColumnSchema extends BaseUISchema {
       disabled: function(state) {
         return !(state.cltype == 'geometry' || state.cltype == 'geography');
       },
+      visible: function(state) {
+        return (state.cltype == 'geometry' || state.cltype == 'geography');
+      }
     },{
       id: 'attlen', label: gettext('Length/Precision'),
       deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, enableResizing: false,

@@ -452,8 +452,9 @@ def fetch_length_precision(data):
     if 'typname' in data and (data['typname'] in ('geometry', 'geography')):
         # If we have geometry column
         parmas = parse_params(data['cltype'])
-        data['geometry'] = parmas[0]
-        data['srid'] = parmas[1]
+        if parmas:
+            data['geometry'] = parmas[0]
+            data['srid'] = parmas[1]
     else:
         parmas = parse_params(fulltype)
 
