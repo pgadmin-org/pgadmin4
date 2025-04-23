@@ -166,11 +166,6 @@ class OAuth2Authentication(BaseAuthentication):
         ]
         email = profile_dict[email_key[0]] if (len(email_key) > 0) else None
 
-        if not email:
-            error_msg = "No email found in profile data."
-            current_app.logger.exception(error_msg)
-            return False, gettext(error_msg)
-
         username = email
         username_claim = None
         if 'OAUTH2_USERNAME_CLAIM' in self.oauth2_config[
