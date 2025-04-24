@@ -107,7 +107,7 @@ jobs:
         run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
       
       - name: Create postgis extension on Linux
-        if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
+        if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
 
       - name: Install Python dependencies on Linux

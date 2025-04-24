@@ -131,7 +131,7 @@ jobs:
                 "comment": "PostgreSQL ${{ matrix.pgver }} Server",
                 "db_username": "postgres",
                 "host": "/var/run/postgresql",
-                "db_password": "postgres",
+                "db_password": "",
                 "db_port": 59${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
