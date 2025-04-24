@@ -36,16 +36,17 @@ class ImportJobTest(BaseTestGenerator):
                  delimiter="",
                  quote="\"",
                  escape="'",
-                 database='',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'FROM'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'QUOTE \'\\"\'',
+                                    'ESCAPE \'\'\'\''],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
                  expected_exit_code=[0, None]
              ),
              export_options=dict(
@@ -56,11 +57,10 @@ class ImportJobTest(BaseTestGenerator):
                      delimiter="",
                      quote="\"",
                      escape="'",
-                     database='',
                      columns=[],
-                     icolumns=[],
-                     schema="",
-                     table=""
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
                  ),
                  url=import_export_url,
                  expected_params=dict(
@@ -70,25 +70,229 @@ class ImportJobTest(BaseTestGenerator):
                  )
              )
          )),
-        ('When importing a table with binary, encoding, delimiter, quote',
+        ('When importing a table with csv, encoding, header, null',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=True,
+                 header=True,
+                 encoding="LATIN1",
+                 delimiter="|",
+                 quote="'",
+                 escape="'",
+                 null_string='test',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'DELIMITER \'|\'',
+                                    'HEADER', 'ENCODING \'LATIN1\'',
+                                    'QUOTE \'\'\'\'', 'NULL \'test\'',
+                                    'ESCAPE \'\'\'\''],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
+                 expected_exit_code=[0, None]
+             ),
+             export_options=dict(
+                 params=dict(
+                     filename='test_import_export',
+                     format='csv',
+                     is_import=False,
+                     header=True,
+                     encoding="LATIN1",
+                     delimiter="|",
+                     quote="'",
+                     escape="'",
+                     null_string='test',
+                     columns=[],
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
+                 ),
+                 url=import_export_url,
+                 expected_params=dict(
+                     expected_cmd_opts=['--command', 'copy', 'TO'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+             )
+         )),
+        ('When importing a table with csv, default',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=True,
+                 delimiter="|",
+                 quote="'",
+                 escape="'",
+                 default_string='def_str',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             server_min_version=160000,
+             skip_msg="Default String supported by PG/EPAS 16 and above.",
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'DELIMITER \'|\'',
+                                    'QUOTE \'\'\'\'', 'DEFAULT \'def_str\'',
+                                    'ESCAPE \'\'\'\''],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
+                 expected_exit_code=[0, None]
+             ),
+             export_options=dict(
+                 params=dict(
+                     filename='test_import_export',
+                     format='csv',
+                     is_import=False,
+                     delimiter="|",
+                     quote="'",
+                     escape="'",
+                     columns=[],
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
+                 ),
+                 url=import_export_url,
+                 expected_params=dict(
+                     expected_cmd_opts=['--command', 'copy', 'TO'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+             )
+         )),
+        ('When importing a table with csv, on_error and log_verbosity',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=True,
+                 delimiter="|",
+                 quote="'",
+                 escape="'",
+                 on_error='ignore',
+                 log_verbosity='verbose',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             server_min_version=170000,
+             skip_msg="ON_ERROR and LOG_VERBOSITY supported by PG/EPAS 17 and "
+                      "above.",
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'DELIMITER \'|\'',
+                                    'QUOTE \'\'\'\'', 'ON_ERROR ignore',
+                                    'LOG_VERBOSITY verbose'],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
+                 expected_exit_code=[0, None]
+             ),
+             export_options=dict(
+                 params=dict(
+                     filename='test_import_export',
+                     format='csv',
+                     is_import=False,
+                     delimiter="|",
+                     quote="'",
+                     escape="'",
+                     columns=[],
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
+                 ),
+                 url=import_export_url,
+                 expected_params=dict(
+                     expected_cmd_opts=['--command', 'copy', 'TO'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+             )
+         )),
+        ('When importing a table with csv, on_error and log_verbosity should '
+         'not be visible if on_error = stop',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=True,
+                 delimiter="|",
+                 quote="'",
+                 escape="'",
+                 on_error='stop',
+                 log_verbosity='verbose',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             server_min_version=170000,
+             skip_msg="ON_ERROR and LOG_VERBOSITY supported by PG/EPAS 17 and "
+                      "above.",
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT csv', 'DELIMITER \'|\'',
+                                    'QUOTE \'\'\'\''],
+                 not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS', 'ON_ERROR',
+                                        'LOG_VERBOSITY'],
+                 expected_exit_code=[0, None]
+             ),
+             export_options=dict(
+                 params=dict(
+                     filename='test_import_export',
+                     format='csv',
+                     is_import=False,
+                     delimiter="|",
+                     quote="'",
+                     escape="'",
+                     columns=[],
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
+                 ),
+                 url=import_export_url,
+                 expected_params=dict(
+                     expected_cmd_opts=['--command', 'copy', 'TO'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+             )
+         )),
+        ('When importing a table with binary, encoding',
          dict(
              params=dict(
                  filename='test_import_export_bin',
                  format='binary',
                  is_import=True,
+                 header=True,
                  delimiter="",
+                 null_string='test',
+                 encoding="LATIN1",
                  quote="\"",
                  escape="'",
-                 database='',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'FROM'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'FROM','WITH',
+                                    'FORMAT binary', 'ENCODING \'LATIN1\''],
+                 not_expected_cmd_opts=['FORMAT csv', 'FORMAT text', 'HEADER',
+                                        'DELIMITER', 'QUOTE', 'ESCAPE',
+                                        'FORCE_QUOTE_COLUMNS', 'NULL',
+                                        'DEFAULT', 'FORCE_NOT_NULL',
+                                        'FORCE_NULL'],
                  expected_exit_code=[0, None]
              ),
              export_options=dict(
@@ -100,11 +304,10 @@ class ImportJobTest(BaseTestGenerator):
                      delimiter="|",
                      quote="'",
                      escape="'",
-                     database='',
                      columns=[],
-                     icolumns=[],
-                     schema="",
-                     table=""
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
                  ),
                  url=import_export_url,
                  expected_params=dict(
@@ -124,16 +327,22 @@ class ImportJobTest(BaseTestGenerator):
                  delimiter="[tab]",
                  quote="\"",
                  escape="'",
-                 database='',
+                 null_string='test',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'FROM'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'FROM', 'WITH',
+                                    'FORMAT text', 'DELIMITER E\'\\\\t\'',
+                                    'ENCODING \'ISO_8859_5\'',
+                                    'NULL \'test\''],
+                 not_expected_cmd_opts=['FORMAT binary', 'FORMAT csv',
+                                        'HEADER', 'QUOTE', 'ESCAPE',
+                                        'FORCE_QUOTE_COLUMNS', 'DEFAULT',
+                                        'FORCE_NOT_NULL', 'FORCE_NULL'],
                  expected_exit_code=[0, None]
              ),
              export_options=dict(
@@ -145,16 +354,15 @@ class ImportJobTest(BaseTestGenerator):
                      delimiter="[tab]",
                      quote="'",
                      escape="'",
-                     database='',
                      columns=[],
-                     icolumns=[],
-                     schema="",
-                     table=""
+                     not_null_columns=[],
+                     null_columns=[],
+                     force_quote_columns=[]
                  ),
                  url=import_export_url,
                  expected_params=dict(
                      expected_cmd_opts=['--command', 'copy', 'TO'],
-                     not_expected_cmd_opts=[],
+                     not_expected_cmd_opts=['FORCE_QUOTE_COLUMNS'],
                      expected_exit_code=[0, None]
                  )
              )
@@ -217,6 +425,11 @@ class ImportJobTest(BaseTestGenerator):
     def runTest(self):
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         url = self.url.format(self.server_id)
+
+        if (hasattr(self, 'server_min_version') and
+            self.server_information["server_version"] <
+                self.server_min_version):
+            self.skipTest(self.skip_msg)
 
         self.create_export()
 

@@ -23,11 +23,13 @@ from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
-from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
+from pgadmin.utils.constants import SERVER_NOT_FOUND
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'import_export'
+NOT_NULL_COLUMNS = 'not_null_columns'
+NULL_COLUMNS = 'null_columns'
 
 
 class ImportExportModule(PgAdminModule):
@@ -111,27 +113,40 @@ class IEMessage(IProcessDesc):
     @property
     def message(self):
         # Fetch the server details like hostname, port, roles etc
-        return _(
-            "Copying table data '{0}.{1}' on database '{2}' "
-            "and server '{3}'"
-        ).format(
-            self.schema, self.table, self.database,
-            self.get_server_name()
-        )
+        if self.schema is None and self.table is None:
+            return _(
+                "Copying table data using query on database '{0}' "
+                "and server '{1}'"
+            ).format(self.database, self.get_server_name())
+        else:
+            return _(
+                "Copying table data '{0}.{1}' on database '{2}' "
+                "and server '{3}'"
+            ).format(
+                self.schema, self.table, self.database,
+                self.get_server_name()
+            )
 
     @property
     def type_desc(self):
-        _type_desc = _("Import - ") if self.is_import else _("Export - ")
-        return _type_desc + _("Copying table data")
+        if self.schema is None and self.table is None:
+            return _("Export - Copying table data using query")
+        else:
+            _type_desc = _("Import - ") if self.is_import else _("Export - ")
+            return _type_desc + _("Copying table data")
 
     def details(self, cmd, args):
         # Fetch the server details like hostname, port, roles etc
+        if self.schema is None and self.table is None:
+            object_str = "{0}".format(self.database)
+        else:
+            object_str = "{0}/{1}.{2}".format(self.database, self.schema,
+                                              self.table)
         return {
             "message": self.message,
             "cmd": self._cmd,
             "server": self.get_server_name(),
-            "object": "{0}/{1}.{2}".format(self.database, self.schema,
-                                           self.table),
+            "object": object_str,
             "type": _("Import Data") if self.is_import else _("Export Data")
         }
 
@@ -142,42 +157,62 @@ def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
-def _get_ignored_column_list(data, driver, conn):
-    """
-    Get list of ignored columns for import/export.
-    :param data: Data.
-    :param driver: PG Driver.
-    :param conn: Connection.
-    :return: return ignored column list.
-    """
-    icols = None
-
-    if data['icolumns']:
-        ignore_cols = data['icolumns']
-
-        # format the ignore column list required as per copy command
-        # requirement
-        if ignore_cols and len(ignore_cols) > 0:
-            icols = ", ".join([
-                driver.qtIdent(conn, col)
-                for col in ignore_cols])
-    return icols
-
-
-def _get_required_column_list(data, driver, conn):
+def _get_force_quote_column_list(data, driver, conn):
     """
     Get list of required columns for import/export.
     :param data: Data.
+    :param key: Key.
     :param driver: PG Driver.
     :param conn: Connection.
     :return: return required column list.
     """
     cols = None
 
-    # format the column import/export list required as per copy command
-    # requirement
-    if data['columns']:
-        columns = data['columns']
+    # if export is using query then we need to check * is available in the
+    # force_quote_columns then return *.
+    if ('force_quote_columns' in data and 'is_query_export' in data and
+            data['is_query_export'] and '*' in data['force_quote_columns']):
+        cols = '*'
+    # If total columns is equal to selected columns for force quote then
+    # return '*'
+    elif ('force_quote_columns' in data and 'total_columns' in data and
+            len(data['force_quote_columns']) == data['total_columns']):
+        cols = '*'
+    elif 'force_quote_columns' in data:
+        columns = data['force_quote_columns']
+        if columns and len(columns) > 0:
+            for col in columns:
+                if cols:
+                    cols += ', '
+                else:
+                    cols = '('
+                cols += driver.qtIdent(conn, col)
+            cols += ')'
+
+    return cols
+
+
+def _get_formatted_column_list(data, key, driver, conn):
+    """
+    Get list of required columns for import/export.
+    :param data: Data.
+    :param key: Key.
+    :param driver: PG Driver.
+    :param conn: Connection.
+    :return: return required column list.
+    """
+    cols = None
+
+    # if server version is >= 17 and key is either NULL_COLUMNS or
+    # NOT_NULL_COLUMNS and total columns is equal to selected columns then
+    # return '*'
+    if (key in data and 'total_columns' in data and
+        conn.manager.version >= 170000 and
+        key in [NULL_COLUMNS, NOT_NULL_COLUMNS] and
+            len(data[key]) == data['total_columns']):
+        cols = '*'
+    elif key in data:
+        columns = data[key]
         if columns and len(columns) > 0:
             for col in columns:
                 if cols:
@@ -192,8 +227,9 @@ def _get_required_column_list(data, driver, conn):
 
 def _save_import_export_settings(settings):
     settings = {key: settings[key] for key in settings if key not in
-                ['icolumns', 'columns', 'database', 'schema', 'table',
-                 'save_btn_icon']}
+                ['columns', 'database', 'schema', 'table', 'save_btn_icon',
+                 'not_null_columns', 'null_columns', 'force_quote_columns',
+                 'total_columns', 'is_query_export']}
 
     if settings['is_import']:
         settings['import_file_name'] = settings['filename']
@@ -214,6 +250,21 @@ def _save_import_export_settings(settings):
         settings = json.dumps(settings)
 
     store_setting('import_export_setting', settings)
+
+
+def update_data_for_import_export(data):
+    """
+    This function will update the data. Remove unwanted keys based on
+    import/export type
+    """
+    keys_not_required_with_query = ['on_error', 'log_verbosity', 'freeze',
+                                    'default_string']
+    if 'is_query_export' in data and data['is_query_export']:
+        for k in keys_not_required_with_query:
+            data.pop(k, None)
+        data['is_import'] = False
+    else:
+        data.pop('query', None)
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
@@ -283,30 +334,34 @@ def create_import_export_job(sid):
     else:
         return bad_request(errormsg=_('Please specify a valid file'))
 
-    # Get required and ignored column list
-    icols = _get_ignored_column_list(data, driver, conn)
-    cols = _get_required_column_list(data, driver, conn)
+    # Get required and other columns list
+    cols = _get_formatted_column_list(data, 'columns', driver, conn)
+    not_null_cols = _get_formatted_column_list(data, NOT_NULL_COLUMNS,
+                                               driver, conn)
+    null_cols = _get_formatted_column_list(data, NULL_COLUMNS, driver,
+                                           conn)
+    quote_cols = _get_force_quote_column_list(data, driver, conn)
 
     # Save the settings
     _save_import_export_settings(new_settings)
 
+    # Remove unwanted keys from data
+    update_data_for_import_export(data)
+
     # Create the COPY FROM/TO  from template
-    query = render_template(
-        'import_export/sql/cmd.sql',
-        conn=conn,
-        data=data,
-        columns=cols,
-        ignore_column_list=icols
-    )
+    temp_path = 'import_export/sql/#{0}#/cmd.sql'.format(manager.version)
+    query = render_template(temp_path, conn=conn, data=data, columns=cols,
+                            not_null_columns=not_null_cols,
+                            null_columns=null_cols,
+                            force_quote_columns=quote_cols)
 
     args = ['--command', query]
 
     try:
-
         io_params = {
             'sid': sid,
-            'schema': data['schema'],
-            'table': data['table'],
+            'schema': data['schema'] if 'schema' in data else None,
+            'table': data['table'] if 'table' in data else None,
             'database': data['database'],
             'is_import': data['is_import'],
             'filename': data['filename'],

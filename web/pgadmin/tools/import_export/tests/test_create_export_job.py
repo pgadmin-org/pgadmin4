@@ -34,65 +34,110 @@ class ExportJobTest(BaseTestGenerator):
                  delimiter="",
                  quote="\"",
                  escape="'",
-                 database='',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'TO'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'TO', 'WITH',
+                                    'FORMAT csv', 'QUOTE \'\\"\'',
+                                    'ESCAPE \'\'\'\''],
+                 not_expected_cmd_opts=['FORMAT binary', 'FORMAT text',
+                                        'DEFAULT', 'FORCE_NOT_NULL',
+                                        'FORCE_NULL'],
                  expected_exit_code=[0, None]
              )
          )),
-        ('When exporting a table with binary, encoding, delimiter, quote',
+        ('When exporting a table with csv, Header and Null String',
+         dict(
+             params=dict(
+                 filename='test_import_export',
+                 format='csv',
+                 is_import=False,
+                 delimiter="",
+                 quote="\"",
+                 escape="'",
+                 header=True,
+                 null_string='test',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[]
+             ),
+             url=import_export_url,
+             expected_params=dict(
+                 expected_cmd_opts=['--command', 'copy', 'TO', 'WITH',
+                                    'FORMAT csv', 'QUOTE \'\\"\'',
+                                    'ESCAPE \'\'\'\'', 'HEADER',
+                                    'NULL \'test\''],
+                 not_expected_cmd_opts=['FORMAT binary', 'FORMAT text',
+                                        'DEFAULT', 'FORCE_NOT_NULL',
+                                        'FORCE_NULL'],
+                 expected_exit_code=[0, None]
+             )
+         )),
+        ('When exporting a table with binary, encoding',
          dict(
              params=dict(
                  filename='test_import_export_bin',
                  format='binary',
                  is_import=False,
+                 header=True,
                  encoding="LATIN1",
                  delimiter="|",
                  quote="'",
                  escape="'",
-                 database='',
+                 null_string='test',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=['col1', 'col2']
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'TO'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'TO', 'WITH',
+                                    'FORMAT binary', 'ENCODING \'LATIN1\''],
+                 not_expected_cmd_opts=['FORMAT csv', 'FORMAT text', 'HEADER',
+                                        'DELIMITER', 'QUOTE', 'ESCAPE',
+                                        'FORCE_QUOTE_COLUMNS', 'NULL',
+                                        'DEFAULT', 'FORCE_NOT_NULL',
+                                        'FORCE_NULL'
+                                        ],
                  expected_exit_code=[0, None]
              )
          )),
-        ('When exporting a table with text, encoding, delimiter, quote',
+        ('When exporting a table with text, encoding, delimiter, null',
          dict(
              params=dict(
                  filename='test_import_export_text',
                  format='text',
                  is_import=False,
+                 header=True,
                  encoding="ISO_8859_5",
                  delimiter="[tab]",
                  quote="\"",
                  escape="'",
-                 database='',
+                 null_string='test',
                  columns=[],
-                 icolumns=[],
-                 schema="",
-                 table=""
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=['col1', 'col2']
              ),
              url=import_export_url,
              expected_params=dict(
-                 expected_cmd_opts=['--command', 'copy', 'TO'],
-                 not_expected_cmd_opts=[],
+                 expected_cmd_opts=['--command', 'copy', 'TO', 'WITH',
+                                    'FORMAT text', 'DELIMITER E\'\\\\t\'',
+                                    'ENCODING \'ISO_8859_5\'',
+                                    'NULL \'test\''],
+                 not_expected_cmd_opts=['FORMAT binary', 'FORMAT csv',
+                                        'HEADER', 'QUOTE', 'ESCAPE',
+                                        'FORCE_QUOTE_COLUMNS', 'DEFAULT',
+                                        'FORCE_NOT_NULL', 'FORCE_NULL'],
                  expected_exit_code=[0, None]
              )
-         ))
+         )),
     ]
 
     def setUp(self):

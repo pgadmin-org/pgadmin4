@@ -54,8 +54,25 @@ define([
         },
         permission: AllPermissionTypes.TOOLS_IMPORT_EXPORT_DATA,
       }]);
+      pgBrowser.add_menus([{
+        name: 'import',
+        node: 'database',
+        module: this,
+        applies: ['tools', 'context'],
+        callback: 'callback_import_export',
+        category: 'import',
+        priority: 3,
+        label: gettext('Export Data Using Query...'),
+        enable: supportedNodes.enabled.bind(
+          null, pgBrowser.tree, ['database']
+        ),
+        data: {
+          data_disabled: gettext('Please select any database from the object explorer to Export Data using query.'),
+        },
+        permission: AllPermissionTypes.TOOLS_IMPORT_EXPORT_DATA,
+      }]);
     },
-    getUISchema: function(treeItem) {
+    getUISchema: function(treeItem, isQueryExport) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
       const selectedNode = pgBrowser.tree.selected();
       let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
@@ -72,6 +89,7 @@ define([
             });
             return columnsList;
           }),
+          isQueryExport: isQueryExport,
         }
       );
     },
@@ -89,9 +107,9 @@ define([
 
     setExtraParameters(treeInfo) {
       let extraData = {};
-      extraData['database'] = treeInfo.database._label;
-      extraData['schema'] = treeInfo.schema._label;
-      extraData['table'] = treeInfo.table._label;
+      extraData['database'] = treeInfo?.database?._label;
+      extraData['schema'] = treeInfo?.schema?._label;
+      extraData['table'] = treeInfo?.table?._label;
       extraData['save_btn_icon'] = 'done';
       return extraData;
     },
@@ -102,6 +120,7 @@ define([
     callback_import_export: function(args, item) {
       let i = item || pgBrowser.tree.selected(),
         server_data = null;
+      let isQueryExport = pgBrowser.tree.itemData(i)?._type == 'database' ? true : false;
 
       while (i) {
         let node_data = pgBrowser.tree.itemData(i);
@@ -148,7 +167,7 @@ define([
             );
           }else{
             // Open the dialog for the import/export module
-            let schema = this.getUISchema(item);
+            let schema = this.getUISchema(item, isQueryExport);
             let urlShortcut = 'import_export.create_job',
               urlBase =  url_for(urlShortcut, {
                 'sid': treeInfo.server._id,
@@ -160,10 +179,10 @@ define([
                 'filename': 'import_export_data.html',
               });
 
-            pgAdmin.Browser.Events.trigger('pgadmin:utility:show', item,
-              gettext('Import/Export data - table \'%s\'', treeInfo.table.label),{
-                schema, extraData, urlBase, sqlHelpUrl, helpUrl, actionType: 'select', saveBtnName: gettext('OK'),
-              }, pgAdmin.Browser.stdW.md
+            let title = isQueryExport ? gettext('Export Data Using Query - database \'%s\'', treeInfo.database.label) : gettext('Import/Export data - table \'%s\'', treeInfo.table.label);
+            pgAdmin.Browser.Events.trigger('pgadmin:utility:show', item, title,
+              { schema, extraData, urlBase, sqlHelpUrl, helpUrl, actionType: 'select', saveBtnName: gettext('OK'),
+              }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.lg
             );
           }
         })
