@@ -73,6 +73,6 @@ time({{ data.attlen }}) with time zone {% endif %}{% if o_data.hasSqrBracket %}[
 {% if data.attlen and data.attlen is not none %}
 ({{ data.attlen }}{% elif old_length and old_length is not none %}({{ old_length }}{% endif %}{% if data_precision and data_precision is not none %}
 , {{ data_precision }}){% elif old_precision and old_precision is not none %}, {{ old_precision }}){% else %}){% endif %}
-{% endif %}{% if o_data.hasSqrBracket %}[]{% endif %}
+{% endif %}{% if data.geometry %}({{ data.geometry }}{% elif o_data.geometry %}({{ o_data.geometry }}{% endif %}{% if data.srid %},{{ data.srid }}){% elif o_data.srid %},{{ o_data.srid }}){% endif %}{% if o_data.hasSqrBracket %}[]{% endif %}
 {% endif %}
 {% endmacro %}

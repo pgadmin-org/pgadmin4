@@ -23,7 +23,7 @@ class EmptySchema extends BaseUISchema {
   }
 }
 
-export function getTableDialogSchema(attributes, isNew, tableNodesDict, colTypes, schemas) {
+export function getTableDialogSchema(attributes, isNew, tableNodesDict, colTypes, schemas, geometryTypes) {
   let treeNodeInfo;
 
   let columnSchema = new ColumnSchema(
@@ -31,7 +31,7 @@ export function getTableDialogSchema(attributes, isNew, tableNodesDict, colTypes
     treeNodeInfo,
     ()=>colTypes,
     ()=>[],
-    ()=>[],
+    ()=>geometryTypes,
     true,
   );
 
