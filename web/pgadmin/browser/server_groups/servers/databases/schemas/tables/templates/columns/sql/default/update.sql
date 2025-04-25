@@ -9,7 +9,7 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 
 {% endif %}
 {###  Alter column type and collation ###}
-{% if (data.cltype and data.cltype != o_data.cltype) or (data.attlen is defined and data.attlen != o_data.attlen) or (data.attprecision is defined and data.attprecision != o_data.attprecision) or (data.collspcname and data.collspcname != o_data.collspcname) or data.col_type_conversion is defined %}
+{% if (data.cltype and data.cltype != o_data.cltype) or (data.geometry is defined and data.geometry != o_data.geometry) or (data.srid is defined and data.srid != o_data.srid) or (data.attlen is defined and data.attlen != o_data.attlen) or (data.attprecision is defined and data.attprecision != o_data.attprecision) or (data.collspcname and data.collspcname != o_data.collspcname) or data.col_type_conversion is defined %}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %}
 -- WARNING:
 -- The SQL statement below would normally be used to alter the datatype for the {{o_data.name}} column, however,
