@@ -984,3 +984,16 @@ def get_safe_post_logout_redirect():
         if url.startswith(item):
             return url
     return url_for('security.login')
+
+
+def check_extension_exists(conn, extension_name):
+    sql = f"SELECT * FROM pg_extension WHERE extname = '{extension_name}'"
+    status, res = conn.execute_scalar(sql)
+    if status:
+        if res:
+            return status, True
+        else:
+            return status, False
+    else:
+        # If the query fails, we assume the extension does not exist
+        return status, res

@@ -10,6 +10,7 @@
 import getApiInstance from 'sources/api_instance';
 import ImportExportSchema from './import_export.ui';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
+import { AllPermissionTypes } from '../../../../browser/static/js/constants';
 
 define([
   'sources/gettext', 'sources/url_for',
@@ -51,6 +52,7 @@ define([
         data: {
           data_disabled: gettext('Please select any table from the object explorer to Import/Export data.'),
         },
+        permission: AllPermissionTypes.TOOLS_IMPORT_EXPORT_DATA,
       }]);
     },
     getUISchema: function(treeItem) {

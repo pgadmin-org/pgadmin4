@@ -12,6 +12,7 @@ import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSche
 import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgAdmin from 'sources/pgadmin';
+import { AllPermissionTypes } from '../../../../browser/static/js/constants';
 
 // Backup dialog
 define([
@@ -66,6 +67,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Backup of global objects.'),
         },
+        permission: AllPermissionTypes.TOOLS_BACKUP,
       }, {
         name: 'backup_server',
         module: this,
@@ -78,6 +80,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Server Backup.'),
         },
+        permission: AllPermissionTypes.TOOLS_BACKUP,
       }, {
         name: 'backup_global_ctx',
         module: this,
@@ -91,6 +94,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database or schema or table from the object explorer to take Backup.'),
         },
+        permission: AllPermissionTypes.TOOLS_BACKUP,
       }, {
         name: 'backup_server_ctx',
         module: this,
@@ -104,6 +108,7 @@ define([
         data: {
           data_disabled: gettext('Please select any server from the object explorer to take Server Backup.'),
         },
+        permission: AllPermissionTypes.TOOLS_BACKUP,
       }, {
         name: 'backup_object',
         module: this,
@@ -118,6 +123,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database or schema or table from the object explorer to take Backup.'),
         },
+        permission: AllPermissionTypes.TOOLS_BACKUP,
       }];
 
       for (let node_val of menuUtils.backupSupportedNodes) {
@@ -132,6 +138,7 @@ define([
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.backupSupportedNodes
           ),
+          permission: AllPermissionTypes.TOOLS_BACKUP,
         });
       }
 

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React from 'react';
 import GrantWizard from './GrantWizard';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
 
 
 // Grant Wizard
@@ -49,6 +49,7 @@ define([
         data: {
           data_disabled: gettext('Please select any database, schema or schema objects from the object explorer to access Grant Wizard Tool.'),
         },
+        permission: AllPermissionTypes.TOOLS_GRANT_WIZARD,
       }];
 
       // Add supported menus into the menus list
@@ -64,6 +65,7 @@ define([
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.supportedNodes
           ),
+          permission: AllPermissionTypes.TOOLS_GRANT_WIZARD,
         });
       }
       pgBrowser.add_menus(menus);

@@ -768,8 +768,8 @@ def register_query_tool_preferences(self):
             'control': False,
             'ctrl_is_meta': False,
             'key': {
-                'key_code': 81,
-                'char': 'q'
+                'key_code': 67,
+                'char': 'c'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,

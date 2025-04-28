@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import _ from 'lodash';
+import { AllPermissionTypes } from './constants';
 
 define([
   'sources/gettext', 'sources/pgadmin',
@@ -53,6 +54,7 @@ define([
               name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool'),
+              permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
             }]);
 
             // show search objects same as query tool
@@ -60,6 +62,7 @@ define([
               name: 'search_objects', node: this.type, module: this,
               applies: ['context'], callback: 'show_search_objects',
               priority: 997, label: gettext('Search Objects...'),
+              permission: AllPermissionTypes.TOOLS_SEARCH_OBJECTS,
             }]);
 
             // show psql tool same as query tool.
@@ -68,6 +71,7 @@ define([
                 name: 'show_psql_tool', node: this.type, module: this,
                 applies: ['context'], callback: 'show_psql_tool',
                 priority: 998, label: gettext('PSQL Tool'),
+                permission: AllPermissionTypes.TOOLS_PSQL_TOOL,
               }]);
             }
           }

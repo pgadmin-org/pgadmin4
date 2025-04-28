@@ -10,7 +10,7 @@
 import { getRandomInt, hasBinariesConfiguration } from 'sources/utils';
 import { retrieveAncestorOfTypeServer } from 'sources/tree/tree_utils';
 import { generateTitle } from 'tools/sqleditor/static/js/sqleditor_title';
-import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import usePreferences,{ listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import 'pgadmin.browser.keyboard';
 import pgWindow from 'sources/window';
@@ -93,6 +93,7 @@ export default class Psql {
         applies: 'tools',
         data_disabled: gettext('Please select a database from the object explorer to access Pql Tool.'),
       },
+      permission: AllPermissionTypes.TOOLS_PSQL_TOOL,
     }];
 
 

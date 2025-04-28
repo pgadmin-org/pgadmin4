@@ -29,6 +29,7 @@ const StyledBox = styled(Box)(({theme}) => ({
     '& .SectionContainer-cardTitle': {
       padding: '0.25rem 0.5rem',
       fontWeight: 'bold',
+      width: '100%',
     }
   },
 }));
@@ -50,7 +51,7 @@ export default function SectionContainer({title, titleExtras, children, style}) 
 }
 
 SectionContainer.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.any.isRequired,
   titleExtras: PropTypes.node,
   children: PropTypes.node.isRequired,
   style: PropTypes.object,

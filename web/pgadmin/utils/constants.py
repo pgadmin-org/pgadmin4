@@ -15,6 +15,8 @@ MIMETYPE_APP_HTML = 'text/html'
 MIMETYPE_APP_JS = 'application/javascript'
 MIMETYPE_APP_JSON = 'application/json'
 
+NO_CACHE_CONTROL = 'no-cache, no-store, must-revalidate'
+
 # Preference labels
 PREF_LABEL_KEYBOARD_SHORTCUTS = gettext('Keyboard shortcuts')
 PREF_LABEL_DISPLAY = gettext('Display')

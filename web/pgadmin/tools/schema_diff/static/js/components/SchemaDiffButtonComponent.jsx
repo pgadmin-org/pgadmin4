@@ -24,6 +24,8 @@ import { FilterIcon } from '../../../../../static/js/components/ExternalIcon';
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../static/js/components/Menu';
 import { FILTER_NAME, MENUS, MENUS_COMPARE_CONSTANT, SCHEMA_DIFF_EVENT, IGNORE_OPTION } from '../SchemaDiffConstants';
 import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponent';
+import withCheckPermission from '../../../../../browser/static/js/withCheckPermission';
+import { AllPermissionTypes } from '../../../../../browser/static/js/constants';
 
 
 const Root = styled('div')(({theme}) => ({
@@ -152,9 +154,12 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
     onServerSchemaChange();
   };
 
-  const generateScript = () => {
+  // Check permission and call.
+  const generateScript = withCheckPermission({
+    permission: AllPermissionTypes.TOOLS_QUERY_TOOL
+  }, () => {
     eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_GENERATE_SCRIPT, { sid: targetData.sid, did: targetData.did, selectedIds: selectedRowIds, rows: rows, selectedFilters: selectedFilters });
-  };
+  });
 
   return (
     (<Root>

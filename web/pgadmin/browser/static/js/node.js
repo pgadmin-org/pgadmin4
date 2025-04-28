@@ -9,7 +9,7 @@
 
 import _ from 'lodash';
 import getApiInstance from '../../../static/js/api_instance';
-import { BROWSER_PANELS } from './constants';
+import { AllPermissionTypes, BROWSER_PANELS } from './constants';
 import React from 'react';
 import ObjectNodeProperties from '../../../misc/properties/ObjectNodeProperties';
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
@@ -161,6 +161,7 @@ define('pgadmin.browser.node', [
             function() {
               return !!(self.canDrop(...arguments));
             } : (!!self.canDrop),
+          permission: self.type == 'server' ? 'object_register_server' : undefined,
         }]);
 
         if (self.canDropCascade) {
@@ -202,6 +203,7 @@ define('pgadmin.browser.node', [
           priority: 998,
           label: gettext('Query Tool'),
           enable: enable,
+          permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
         }]);
 
         // show search objects same as query tool
@@ -210,6 +212,7 @@ define('pgadmin.browser.node', [
           applies: ['context'], callback: 'show_search_objects',
           priority: 997, label: gettext('Search Objects...'),
           icon: 'fa fa-search', enable: enable,
+          permission: AllPermissionTypes.TOOLS_SEARCH_OBJECTS,
         }]);
 
         if(pgAdmin['enable_psql']) {
@@ -218,6 +221,7 @@ define('pgadmin.browser.node', [
             name: 'show_psql_tool', node: this.type, module: this,
             applies: ['context'], callback: 'show_psql_tool',
             priority: 998, label: gettext('PSQL Tool'),
+            permission: AllPermissionTypes.TOOLS_PSQL_TOOL,
           }]);
         }
       }
@@ -247,6 +251,7 @@ define('pgadmin.browser.node', [
               data_disabled: gettext('The selected tree node does not support this option.'),
             },
             enable: self.check_user_permission,
+            permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
           }]);
         });
       }

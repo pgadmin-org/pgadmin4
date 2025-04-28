@@ -37,11 +37,14 @@ export function WorkspaceProvider({children}) {
     pgAdmin.Browser.docker.schema_diff_workspace = pgAdmin.Browser.docker.default_workspace;
   }
 
-  pgAdmin.Browser.getDockerHandler = (panelId)=>{
+  pgAdmin.Browser.getDockerHandler = (panelId, classicDocker)=>{
     let docker;
     let workspace;
     if (isClassic) {
-      return undefined;
+      return {
+        docker: classicDocker,
+        focus: ()=>{},
+      };
     }
 
     const wsConfig = config.find((i)=>panelId.indexOf(i.panel)>=0);

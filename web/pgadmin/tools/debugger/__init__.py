@@ -16,6 +16,7 @@ import copy
 
 from flask import render_template, request, current_app
 from flask_babel import gettext
+from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from werkzeug.user_agent import UserAgent
 
@@ -34,6 +35,7 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     SERVER_CONNECTION_CLOSED
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'
@@ -375,6 +377,7 @@ def check_node_type(node_type, fid, trid, conn, ppas_server,
     '/init/<node_type>/<int:sid>/<int:did>/<int:scid>/<int:fid>/<int:trid>',
     methods=['GET'], endpoint='init_for_trigger'
 )
+@permissions_required(AllPermissionTypes.tools_debugger)
 @pga_login_required
 def init_function(node_type, sid, did, scid, fid, trid=None):
     """

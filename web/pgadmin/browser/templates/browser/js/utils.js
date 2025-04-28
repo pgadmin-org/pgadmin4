@@ -63,9 +63,6 @@ define('pgadmin.browser.utils',
 
   pgAdmin['fixed_binary_paths'] = {{ current_app.config.get('FIXED_BINARY_PATHS') }};
 
-  /* GET the pgadmin server's locale */
-  pgAdmin['pgadmin_server_locale'] =  '{{pgadmin_server_locale}}';
-
    /* Server Heartbeat Timeout */
   pgAdmin['heartbeat_timeout'] =  '{{heartbeat_timeout}}';
 

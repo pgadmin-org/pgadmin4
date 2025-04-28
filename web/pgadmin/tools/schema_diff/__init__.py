@@ -15,7 +15,7 @@ import copy
 
 from flask import Response, session, url_for, request
 from flask import render_template, current_app as app
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
@@ -31,6 +31,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
 from sqlalchemy import or_
 from pgadmin.authenticate import socket_login_required
 from pgadmin import socketio
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'schema_diff'
 COMPARE_MSG = gettext("Comparing objects...")
@@ -123,6 +124,8 @@ def index():
     methods=["GET"],
     endpoint='panel'
 )
+@permissions_required(AllPermissionTypes.tools_schema_diff)
+@pga_login_required
 def panel(trans_id, editor_title):
     """
     This method calls index.html to render the schema diff.
