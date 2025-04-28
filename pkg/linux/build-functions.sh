@@ -69,7 +69,6 @@ _create_python_virtualenv() {
 
     # Make sure we have the wheel package present, as well as the latest pip
     pip3 install --upgrade pip
-    pip3 install setuptools
     pip3 install wheel
 
     # Install the requirements
