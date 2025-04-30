@@ -52,31 +52,32 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
         col_type['display_size'] = col['display_size']
         column_types[col['name']] = col_type
 
-        if not is_query_tool:
-            col_type['not_null'] = col['not_null'] = \
-                rset['rows'][key]['not_null']
+        if rset['rows']:
+            if not is_query_tool:
+                col_type['not_null'] = col['not_null'] = \
+                    rset['rows'][key]['not_null']
 
-            col_type['has_default_val'] = \
-                col['has_default_val'] = \
-                rset['rows'][key]['has_default_val']
+                col_type['has_default_val'] = \
+                    col['has_default_val'] = \
+                    rset['rows'][key]['has_default_val']
 
-            col_type['seqtypid'] = col['seqtypid'] = \
-                rset['rows'][key]['seqtypid']
+                col_type['seqtypid'] = col['seqtypid'] = \
+                    rset['rows'][key]['seqtypid']
 
-        else:
-            for row in rset['rows']:
-                if row['oid'] == col['table_column']:
-                    col_type['not_null'] = col['not_null'] = row['not_null']
+            else:
+                for row in rset['rows']:
+                    if row['oid'] == col['table_column']:
+                        col_type['not_null'] = col['not_null'] = row['not_null']
 
-                    col_type['has_default_val'] = \
-                        col['has_default_val'] = row['has_default_val']
+                        col_type['has_default_val'] = \
+                            col['has_default_val'] = row['has_default_val']
 
-                    col_type['seqtypid'] = col['seqtypid'] = row['seqtypid']
-                    break
+                        col_type['seqtypid'] = col['seqtypid'] = row['seqtypid']
+                        break
 
-                else:
-                    col_type['not_null'] = col['not_null'] = None
-                    col_type['has_default_val'] = col['has_default_val'] = None
-                    col_type['seqtypid'] = col['seqtypid'] = None
+                    else:
+                        col_type['not_null'] = col['not_null'] = None
+                        col_type['has_default_val'] = col['has_default_val'] = None
+                        col_type['seqtypid'] = col['seqtypid'] = None
 
     return column_types
