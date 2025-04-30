@@ -50,7 +50,9 @@ class BatchProcessTest(BaseTestGenerator):
                  escape="'",
                  database='postgres',
                  columns=['test_col_1', 'test_col_2'],
-                 icolumns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[],
                  schema="export_test_schema",
                  table="export_test_table",
                  storage='/'
@@ -87,7 +89,9 @@ class BatchProcessTest(BaseTestGenerator):
                  escape="'",
                  database='postgres',
                  columns=['test_col_1', 'test_col_2'],
-                 icolumns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[],
                  schema="import_test_schema",
                  table="import_test_table",
                  storage='/'

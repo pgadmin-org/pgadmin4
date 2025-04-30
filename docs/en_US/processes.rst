@@ -42,7 +42,7 @@ Process Watcher
 
 The Process Watcher logs all the activity associated with the process/task and provides
 additional information for troubleshooting
-Use the **Stop Process** button to stop the Backup process.
+Use the **End Process** button to end the process.
 
 .. note:: If you are running *pgAdmin* in *Server Mode* you can click on the |sm_icon| icon in the process watcher window to open the file location in the Storage Manager. You can use the :ref:`Storage Manager <storage_manager>` to download the backup file on the client machine .
 

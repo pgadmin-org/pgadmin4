@@ -14,6 +14,7 @@ granting user privileges, and performing VACUUM, ANALYZE and REINDEX functions.
    add_restore_point_dialog
    change_password_dialog
    grant_wizard
+   export_data_using_query
    import_export_data
    maintenance_dialog
    storage_manager
