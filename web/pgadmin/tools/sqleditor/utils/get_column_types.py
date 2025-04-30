@@ -67,17 +67,21 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
             else:
                 for row in rset['rows']:
                     if row['oid'] == col['table_column']:
-                        col_type['not_null'] = col['not_null'] = row['not_null']
+                        col_type['not_null'] = col['not_null'] = \
+                            row['not_null']
 
                         col_type['has_default_val'] = \
-                            col['has_default_val'] = row['has_default_val']
+                            col['has_default_val'] = \
+                            row['has_default_val']
 
-                        col_type['seqtypid'] = col['seqtypid'] = row['seqtypid']
+                        col_type['seqtypid'] = col['seqtypid'] = \
+                            row['seqtypid']
                         break
 
                     else:
                         col_type['not_null'] = col['not_null'] = None
-                        col_type['has_default_val'] = col['has_default_val'] = None
+                        col_type['has_default_val'] = \
+                            col['has_default_val'] = None
                         col_type['seqtypid'] = col['seqtypid'] = None
 
     return column_types
