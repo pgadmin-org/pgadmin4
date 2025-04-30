@@ -157,6 +157,22 @@ def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
+def columns_to_string(columns, driver, conn):
+    """
+    This function create the columns list as a string
+    """
+    cols = None
+    for col in columns:
+        if cols:
+            cols += ', '
+        else:
+            cols = '('
+        cols += driver.qtIdent(conn, col)
+    cols += ')'
+
+    return cols
+
+
 def _get_force_quote_column_list(data, driver, conn):
     """
     Get list of required columns for import/export.
@@ -168,26 +184,22 @@ def _get_force_quote_column_list(data, driver, conn):
     """
     cols = None
 
+    if 'force_quote_columns' not in data:
+        return cols
+
     # if export is using query then we need to check * is available in the
     # force_quote_columns then return *.
-    if ('force_quote_columns' in data and 'is_query_export' in data and
-            data['is_query_export'] and '*' in data['force_quote_columns']):
+    if ('is_query_export' in data and data['is_query_export'] and
+            '*' in data['force_quote_columns']):
         cols = '*'
     # If total columns is equal to selected columns for force quote then
     # return '*'
-    elif ('force_quote_columns' in data and 'total_columns' in data and
-            len(data['force_quote_columns']) == data['total_columns']):
+    elif ('total_columns' in data and
+          len(data['force_quote_columns']) == data['total_columns']):
         cols = '*'
-    elif 'force_quote_columns' in data:
-        columns = data['force_quote_columns']
-        if columns and len(columns) > 0:
-            for col in columns:
-                if cols:
-                    cols += ', '
-                else:
-                    cols = '('
-                cols += driver.qtIdent(conn, col)
-            cols += ')'
+    else:
+        if len(data['force_quote_columns']) > 0:
+            cols = columns_to_string(data['force_quote_columns'], driver, conn)
 
     return cols
 
@@ -202,25 +214,20 @@ def _get_formatted_column_list(data, key, driver, conn):
     :return: return required column list.
     """
     cols = None
+    if key not in data:
+        return cols
 
     # if server version is >= 17 and key is either NULL_COLUMNS or
     # NOT_NULL_COLUMNS and total columns is equal to selected columns then
     # return '*'
-    if (key in data and 'total_columns' in data and
-        conn.manager.version >= 170000 and
+    if ('total_columns' in data and conn.manager.version >= 170000 and
         key in [NULL_COLUMNS, NOT_NULL_COLUMNS] and
             len(data[key]) == data['total_columns']):
         cols = '*'
-    elif key in data:
+    else:
         columns = data[key]
-        if columns and len(columns) > 0:
-            for col in columns:
-                if cols:
-                    cols += ', '
-                else:
-                    cols = '('
-                cols += driver.qtIdent(conn, col)
-            cols += ')'
+        if len(columns) > 0:
+            cols = columns_to_string(columns, driver, conn)
 
     return cols
 

@@ -38,7 +38,7 @@ export default class ImportExportSchema extends BaseUISchema {
       ...fieldOptions,
     };
 
-    this.colums_selection_label = {e:'Columns to export', i:'Columns to import'};
+    this.colums_selection_label = {e:gettext('Columns to export'), i:gettext('Columns to import')};
     this._type = 'e';
     this.notNullColOptions = [];
     this.isQueryExport = fieldOptions?.isQueryExport;
@@ -281,7 +281,7 @@ export default class ImportExportSchema extends BaseUISchema {
         group: 'export_group',
         type: () => ({
           type: 'select',
-          label: gettext(this.colums_selection_label[this._type]),
+          label: this.colums_selection_label[this._type],
           options: obj.fieldOptions.columns,
           optionsLoaded: (options) => {
             obj.notNullColOptions = options.map((o) => {
