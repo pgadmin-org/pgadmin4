@@ -790,7 +790,11 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        conn.connect()
+        status, errmsg = conn.connect()
+        if not status:
+            current_app.logger.error(errmsg)
+            return (False, internal_server_error(errormsg=str(errmsg)),
+                    None, None, None)
 
     return True, None, conn, trans_obj, session_obj
 
@@ -817,6 +821,9 @@ def start_view_data(trans_id):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
+
+    if not status and error_msg and type(error_msg) is Response:
+        return error_msg
 
     # get the default connection as current connection which is attached to
     # trans id holds the cursor which has query result so we cannot use that
