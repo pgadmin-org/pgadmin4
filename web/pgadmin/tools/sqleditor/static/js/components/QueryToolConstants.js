@@ -100,6 +100,10 @@ export const CONNECTION_STATUS_MESSAGE = {
   [CONNECTION_STATUS.TRANSACTION_STATUS_UNKNOWN]: gettext('The connection with the server is bad.')
 };
 
+export const MODAL_DIALOGS = {
+  QT_CONFIRMATIONS: 'id-qt-close-confirmation',
+};
+
 export const PANELS = {
   QUERY: 'id-query',
   MESSAGES: 'id-messages',

@@ -81,6 +81,7 @@ class ServerManager(object):
         self.db_info = dict()
         self.server_types = None
         self.db_res = server.db_res
+        self.db_res_type = server.db_res_type
         self.name = server.name
         self.passexec = \
             PasswordExec(server.passexec_cmd, server.host, server.port,
@@ -116,6 +117,7 @@ class ServerManager(object):
         self.connection_params = server.connection_params
         self.create_connection_string(self.db, self.user)
         self.prepare_threshold = server.prepare_threshold
+        self.post_connection_sql = server.post_connection_sql
 
         for con in self.connections:
             self.connections[con]._release()

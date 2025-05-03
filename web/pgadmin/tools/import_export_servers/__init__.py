@@ -16,7 +16,7 @@ import secrets
 
 from flask import Response, render_template, request
 from flask_babel import gettext as _
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
@@ -27,7 +27,7 @@ from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
     load_database_servers, validate_json_data, filename_with_file_manager_path
 from urllib.parse import unquote
-from pgadmin.utils.paths import get_storage_directory
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 MODULE_NAME = 'import_export_servers'
 
@@ -58,18 +58,6 @@ blueprint = ImportExportServersModule(MODULE_NAME, __name__)
 @pga_login_required
 def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
-
-
-@blueprint.route("/js/import_export_servers.js")
-@pga_login_required
-def script():
-    """render the import/export javascript file"""
-    return Response(
-        response=render_template(
-            "import_export_servers/js/import_export_servers.js", _=_),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
 
 
 @blueprint.route('/get_servers', methods=['GET'], endpoint='get_servers')
@@ -169,6 +157,7 @@ def load_servers():
 
 
 @blueprint.route('/save', methods=['POST'], endpoint='save')
+@permissions_required(AllPermissionTypes.tools_import_export_servers)
 @pga_login_required
 def save():
     """

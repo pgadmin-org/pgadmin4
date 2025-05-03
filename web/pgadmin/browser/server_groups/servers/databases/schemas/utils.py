@@ -18,6 +18,7 @@ from flask import render_template
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.driver import get_driver
+from pgadmin.utils import check_extension_exists
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.constants import DATATYPE_TIME_WITH_TIMEZONE,\
     DATATYPE_TIME_WITHOUT_TIMEZONE,\
@@ -191,6 +192,31 @@ class DataTypeReader:
             return False, str(e)
 
         return True, res
+
+    def get_geometry_types(self, conn):
+        """
+        Returns geometry types.
+        Args:
+            conn: Connection Object
+        """
+        types = []
+        status, res = check_extension_exists(conn, 'postgis')
+
+        if not status:
+            return status, res
+
+        if res:
+            sql = '''SELECT postgis_typmod_type(i) FROM
+            generate_series(4, 63) AS i;'''
+            status, rset = conn.execute_2darray(sql)
+            if not status:
+                return status, rset
+            for row in rset['rows']:
+                types.append({
+                    'label': row['postgis_typmod_type'],
+                    'value': row['postgis_typmod_type']
+                })
+        return True, types
 
     @staticmethod
     def get_length_precision(elemoid_or_name, typname=None):

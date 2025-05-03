@@ -72,17 +72,6 @@ class PSQLModule(PgAdminModule):
 blueprint = PSQLModule('psql', __name__, static_url_path='/static')
 
 
-@blueprint.route("/psql.js")
-@pga_login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template("psql/js/psql.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 @blueprint.route('/panel/<int:trans_id>',
                  methods=["POST"],
                  endpoint="panel")
@@ -271,11 +260,10 @@ def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
                                                    timeout)
 
                 read_terminal_data(parent, data_ready, max_read_bytes, sid)
-            except OSError as e:
+            except OSError:
                 # If the process is killed, bad file descriptor exception may
                 # occur. Handle it gracefully
-                if p.poll() is not None:
-                    raise e
+                pass
 
 
 def pty_handel_io(connection_data, data, sid):
@@ -312,14 +300,15 @@ def start_process(data):
 
             _, manager = _get_connection(int(data['sid']), data)
             psql_utility = manager.utility('sql')
-            if psql_utility is None:
+            if psql_utility is None or not os.path.exists(psql_utility):
                 sio.emit('pty-output',
                          {
                              'result': gettext(
-                                 'PSQL utility not found. Specify the binary '
-                                 'path in the preferences for the appropriate '
-                                 'server version, or select "Set as default" '
-                                 'to use an existing binary path.'),
+                                 'PSQL utility not found. Specify the valid '
+                                 'binary path in the preferences for the '
+                                 'appropriate server version, or select '
+                                 '"Set as default" to use an existing binary '
+                                 'path.'),
                              'error': True},
                          namespace='/pty', room=request.sid)
                 return

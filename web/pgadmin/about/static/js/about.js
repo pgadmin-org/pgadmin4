@@ -43,7 +43,7 @@ class About {
     pgAdmin.Browser.notifier.showModal(gettext('About %s', pgAdmin.Browser.utils.app_name), () => {
       return <AboutComponent />;
     }, { isFullScreen: false, isResizeable: true, showFullScreen: true,
-      isFullWidth: true, dialogWidth: dlgWidth, dialogHeight: dlgHeight, minHeight: dlgHeight
+      isFullWidth: true, dialogWidth: dlgWidth, dialogHeight: dlgHeight, minHeight: dlgHeight, id:'id-about'
     });
   }
 }

@@ -13,7 +13,7 @@ import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
 from flask_babel import gettext
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.user_login_check import pga_login_required
 from psycopg.conninfo import make_conninfo, conninfo_to_dict
 
@@ -24,6 +24,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
 from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
 from pgadmin.utils.menu import MenuItem
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 import config
 from config import PG_DEFAULT_DRIVER
@@ -34,9 +35,9 @@ from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
     (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
-     check_ssl_fields)
+     check_ssl_fields, get_db_restriction)
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
-    SERVER_CONNECTION_CLOSED
+    SERVER_CONNECTION_CLOSED, RESTRICTION_TYPE_SQL
 from sqlalchemy import or_
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
@@ -746,6 +747,7 @@ class ServerNode(PGChildNodeView):
             'comment': 'comment',
             'role': 'role',
             'db_res': 'db_res',
+            'db_res_type': 'db_res_type',
             'passexec_cmd': 'passexec_cmd',
             'passexec_expiration': 'passexec_expiration',
             'bgcolor': 'bgcolor',
@@ -763,7 +765,8 @@ class ServerNode(PGChildNodeView):
             'kerberos_conn': 'kerberos_conn',
             'connection_params': 'connection_params',
             'prepare_threshold': 'prepare_threshold',
-            'tags': 'tags'
+            'tags': 'tags',
+            'post_connection_sql': 'post_connection_sql'
         }
 
         disp_lbl = {
@@ -775,12 +778,11 @@ class ServerNode(PGChildNodeView):
             'role': gettext('Role')
         }
 
-        idx = 0
         data = request.form if request.form else json.loads(
             request.data
         )
 
-        if 'db_res' in data:
+        if 'db_res' in data and isinstance(data['db_res'], list):
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
@@ -947,7 +949,7 @@ class ServerNode(PGChildNodeView):
                 'connected': connected,
                 'version': manager.ver,
                 'server_type': manager.server_type if connected else 'pg',
-                'db_res': server.db_res.split(',') if server.db_res else None
+                'db_res': get_db_restriction(server.db_res_type, server.db_res)
             })
 
         return ajax_response(
@@ -1030,7 +1032,8 @@ class ServerNode(PGChildNodeView):
             'server_type': manager.server_type if connected else 'pg',
             'bgcolor': server.bgcolor,
             'fgcolor': server.fgcolor,
-            'db_res': server.db_res.split(',') if server.db_res else None,
+            'db_res': get_db_restriction(server.db_res_type, server.db_res),
+            'db_res_type': server.db_res_type,
             'passexec_cmd':
                 server.passexec_cmd if server.passexec_cmd else None,
             'passexec_expiration':
@@ -1053,6 +1056,7 @@ class ServerNode(PGChildNodeView):
             'connection_string': display_connection_str,
             'prepare_threshold': server.prepare_threshold,
             'tags': tags,
+            'post_connection_sql': server.post_connection_sql,
         }
 
         return ajax_response(response)
@@ -1078,6 +1082,7 @@ class ServerNode(PGChildNodeView):
         display_conn_string = make_conninfo(**con_info_ord)
         return display_conn_string
 
+    @permissions_required(AllPermissionTypes.object_register_server)
     @pga_login_required
     def create(self, gid):
         """Add a server node to the settings database"""
@@ -1135,6 +1140,12 @@ class ServerNode(PGChildNodeView):
             data['connection_params'] = connection_params
 
         server = None
+        db_restriction = None
+        if 'db_res' in data and isinstance(data['db_res'], list):
+            db_restriction = ','.join(data['db_res'])
+        elif 'db_res' in data and 'db_res_type' in data and \
+                data['db_res_type'] == RESTRICTION_TYPE_SQL:
+            db_restriction = data['db_res']
 
         try:
             server = Server(
@@ -1149,8 +1160,8 @@ class ServerNode(PGChildNodeView):
                 config.ALLOW_SAVE_PASSWORD else 0,
                 comment=data.get('comment', None),
                 role=data.get('role', None),
-                db_res=','.join(data['db_res']) if 'db_res' in data and
-                isinstance(data['db_res'], list) else None,
+                db_res=db_restriction,
+                db_res_type=data.get('db_res_type', None),
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
@@ -1169,7 +1180,8 @@ class ServerNode(PGChildNodeView):
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
                 connection_params=connection_params,
                 prepare_threshold=data.get('prepare_threshold', None),
-                tags=data.get('tags', None)
+                tags=data.get('tags', None),
+                post_connection_sql=data.get('post_connection_sql', None)
             )
             db.session.add(server)
             db.session.commit()
@@ -1585,6 +1597,7 @@ class ServerNode(PGChildNodeView):
 
             return make_json_response(
                 success=1,
+                errormsg=errmsg,
                 info=gettext("Server connected."),
                 data={
                     "sid": server.id,

@@ -68,6 +68,12 @@ Requires:	${PYTHON_BINARY}, libpq5, krb5-libs
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 
+%pre
+rm -rf /usr/pgadmin4/venv
+if [ -d /usr/pgadmin4/web ]; then
+  cd /usr/pgadmin4/web && rm -rf \$(ls -A -I config_local.py)
+fi
+
 %build
 
 %install

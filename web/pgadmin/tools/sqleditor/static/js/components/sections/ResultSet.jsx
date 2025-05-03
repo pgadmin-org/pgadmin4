@@ -31,6 +31,7 @@ import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
+import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -832,6 +833,7 @@ export function ResultSet() {
   const [selectedColumns, setSelectedColumns] = useState(new Set());
   // NONE - no select, PAGE - show select all, ALL - select all.
   const [allRowsSelect, setAllRowsSelect] = useState('NONE');
+  const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
   // We'll use this track if any changes were saved.
   // It will help to decide whether results refresh is required or not on page change.
@@ -1145,7 +1147,7 @@ export function ResultSet() {
           eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE);
         }}
       />
-    ));
+    ), {id: modalId});
   };
   useEffect(()=>{
     let isDirty = _.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted);

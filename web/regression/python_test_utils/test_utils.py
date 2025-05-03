@@ -1885,3 +1885,10 @@ def module_patch(*args):
 
     # did not find a module, just return the default mock
     return mock.patch(*args)
+
+
+def check_extension_exists(cursor, extension_name):
+    cursor.execute(f"""SELECT COUNT(*) FROM pg_extension
+                   WHERE extname='{extension_name}'""")
+    res = cursor.fetchone()
+    return res

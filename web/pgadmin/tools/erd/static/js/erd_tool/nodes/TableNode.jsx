@@ -309,7 +309,11 @@ export class TableNodeWidget extends React.Component {
 
     let cltype = col.cltype;
     if(col.attlen) {
-      cltype += '('+ col.attlen + (col.attprecision ? ',' + col.attprecision : '') +')';
+      cltype += `(${col.attlen}${col.attprecision ? ','+col.attprecision :''})`;
+    }
+
+    if(col.geometry) {
+      cltype += `(${col.geometry}${col.srid ? ','+col.srid : ''})`;
     }
 
     return (

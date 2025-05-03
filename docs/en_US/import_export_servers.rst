@@ -148,41 +148,50 @@ The following example shows both a minimally defined and a fully defined server:
                 "Port": 5432,
                 "Username": "postgres",
                 "Host": "localhost",
-                "SSLMode": "prefer",
-                "MaintenanceDB": "postgres"
+                "MaintenanceDB": "postgres",
+                "ConnectionParameters": {
+                    "sslmode": "prefer",
+                    "connect_timeout": 10
+                }
             },
             "2": {
                 "Name": "Fully Defined Server",
                 "Group": "Server Group 2",
                 "Host": "host.domain.com",
-                "HostAddr": "192.168.1.2",
                 "Port": 5432,
                 "MaintenanceDB": "postgres",
                 "Username": "postgres",
                 "Role": "my_role_name",
-                "SSLMode": "require",
                 "Comment": "This server has every option configured in the JSON",
                 "DBRestriction": "live_db test_db",
-                "PassFile": "/path/to/pgpassfile",
-                "SSLCert": "/path/to/sslcert.crt",
-                "SSLKey": "/path/to/sslcert.key",
-                "SSLRootCert": "/path/to/sslroot.crt",
-                "SSLCrl": "/path/to/sslcrl.crl",
-                "SSLCompression": 1,
                 "Shared": false,
                 "SharedUsername": "postgres",
                 "BGColor": "#ff9900",
                 "FGColor": "#000000",
                 "Service": "postgresql-10",
-                "Timeout": 60,
                 "UseSSHTunnel": 1,
                 "TunnelHost": "192.168.1.253",
                 "TunnelPort": 22,
                 "TunnelUsername": "username",
-                "TunnelAuthentication": 0,
+                "TunnelAuthentication": 1,
+                "TunnelIdentityFile": "/Users/<user>/.ssh/id_rsa.pub",
+                "TunnelKeepAlive": 30,
                 "PasswordExecCommand": "echo 'test'",
-                "PasswordExecExpiration": 100
+                "PasswordExecExpiration": 100,
+                "KerberosAuthentication": true,
+                "ConnectionParameters": {
+                    "sslmode": "prefer",
+                    "connect_timeout": 10,
+                    "passfile": "/Users/<user>/.pgpass",
+                    "sslcert": "/Users/<user>/.ssh/cert"
+                },
+                "Tags": [
+                    {
+                        "color": "#EC0BB4",
+                        "text": "Development"
+                    }
+                ],
+                "PostConnectionSQL": "set timezone='America/New_York'"
             }
         }
     }
-

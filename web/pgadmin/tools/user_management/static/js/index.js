@@ -7,10 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import { showChangeUserPassword, showUrlDialog } from '../../../../static/js/Dialogs/index';
-import { showUserManagement } from './UserManagementDialog';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import Component from './Component';
 
 class UserManagement {
   static instance;
@@ -38,9 +40,20 @@ class UserManagement {
     showUrlDialog(gettext('Authentication'), url, 'mfa.html', 1000, 600);
   }
 
-  // This is a callback function to show user management dialog.
-  show_users() {
-    showUserManagement();
+  // This is a callback function to show user management tab.
+  launchUserManagement() {
+    let handler = pgAdmin.Browser.getDockerHandler?.(BROWSER_PANELS.USER_MANAGEMENT, pgAdmin.Browser.docker.default_workspace);
+    handler.focus();
+    handler.docker.openTab({
+      id: BROWSER_PANELS.USER_MANAGEMENT,
+      title: gettext('User Management'),
+      content: <Component />,
+      closable: true,
+      cache: false,
+      group: 'playground'
+    }, BROWSER_PANELS.MAIN, 'middle', true);
+
+    return true;
   }
 }
 

@@ -14,8 +14,8 @@ import { isEmptyString } from '../../../../../../static/js/validators';
 export default class DirectorySchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, treeNodeInfo, fieldOptions={}, initValues={}) {
     super({
+      diruser: undefined,
       name: undefined,
-      owner: undefined,
       path: undefined,
       diracl: [],
       ...initValues,

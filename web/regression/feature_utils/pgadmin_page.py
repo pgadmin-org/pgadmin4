@@ -486,8 +486,8 @@ class PgadminPage:
             if self.click_and_connect_server(server_name, server_password):
                 server_node_expansion_status = True
             else:
-                print("(expand_server_node)The server node is not expanded",
-                      file=sys.stderr)
+                print("(click_expand_server_node)The server node is "
+                      "not expanded", file=sys.stderr)
         return server_node_expansion_status
 
     def check_server_is_connected(self, server_name):

@@ -1,7 +1,7 @@
 .. _user_management:
 
 *******************************
-`User Management Dialog`:index:
+`User Management`:index:
 *******************************
 
 When invoking pgAdmin in desktop mode, a password is randomly generated, and
@@ -9,14 +9,19 @@ then ignored. If you install pgAdmin in server mode, you will be prompted for
 an administrator email and password for the pgAdmin client.
 
 When you authenticate with pgAdmin, the server definitions associated with that
-login role are made available in the tree control.  An administrative user can
-use the *User Management* dialog to:
+login role are made available in the tree control.
 
-* add or delete pgAdmin roles
-* assign privileges
-* manage the password associated with a role
+Users Tab
+*********
+An administrative user can use the *Users* tab to:
 
-.. image:: images/user.png
+* manage pgAdmin users
+* change users role
+* change password for a user
+* deactivate user
+* unlock a locked user
+
+.. image:: images/users.png
     :alt: pgAdmin user management window
     :align: center
 
@@ -26,7 +31,8 @@ the following criteria types: *Authentication source*, *Username*, or *Email*.
 For example, you can enter *ldap* in the search box and only the records having
 *ldap* as authentication source will be displayed in the *User Management* table.
 
-To add a user, click the Add (+) button at the top right corner.
+To add a user, click the Add (+) button at the top left corner. It will open a
+dialog where you can fill in details for the new user.
 
 .. image:: images/add_user.png
     :alt: pgAdmin user management window add new user
@@ -34,34 +40,30 @@ To add a user, click the Add (+) button at the top right corner.
 
 Provide information about the new pgAdmin role in the row:
 
-* Use the drop-down list box next to *Authentication source* field to select the
-  type of authentication that should be used for the user. If authentication
-  source is only 'internal' then *Authentication source* field
-  is disabled. Supported *Authentication source* are internal, ldap, kerberos,
-  oauth2 and webserver.
-* Click in the *Username* field, and provide a username for the user. This field
+* Use the *Authentication source* field to select the type of authentication that
+  should be used for the user. If authentication source in the pgAdmin server config
+  has 'internal' only then *Authentication source* field will be disabled. Supported
+  *Authentication source* are internal, ldap, kerberos, oauth2 and webserver.
+* Use the *Username* field to provide a username for the user. This field
   is enabled only when you select authentication source except *internal*. If you
-  select *internal* as authentication source, your email address is displayed in the
-  username field.
-* Click in the *Email* field, and provide an email address for the user.
-* Use the drop-down list box next to *Role* to select whether a user is an
-  *Administrator* or a *User*.
-
+  select *internal* as authentication source, your email address will be taken as
+  the username.
+* Use the *Email* field to provide an email address for the user. Email is a
+  mandatory field for authentication source *internal*.
+* Use the *Role* field to select whether a user is an *Administrator* or a *User*.
    * Select *Administrator* if the user will have administrative privileges
      within the pgAdmin client.
    * Select *User* to create a non-administrative user account.
-
-* Move the *Active* switch to the *No* position if the account is not currently
-  active; the default is *Yes*. Use this switch to disable account activity
-  without deleting an account.
+* Use the *Active* switch to enable or disable account activity without deleting an
+  account; by default it is enabled.
 * Use the *New password* field to provide the password associated with the user
   specified in the *Email* field. This field is disabled if you select any
   authentication source except *internal*.
 * Re-enter the password in the *Confirm password* field. This field is disabled
   if you select *ldap* as authentication source.
-* *Locked* switch is disabled by default when set to *False*. It is only enabled
-  when the user is locked by trying unsuccessful login attempts. Move the switch
-  to the *False* position if you want to unlock the account.
+* *Locked* switch cannot be changed if is turned off. It can only be changed
+  when the user is locked by trying unsuccessful login attempts. Turn off the
+  switch if you want to unlock the account.
 
 To discard a user, and revoke access to pgAdmin, click the trash icon to the
 left of the row and confirm deletion in the *Delete user?* dialog. If the user
@@ -72,9 +74,62 @@ dialog will appear to change the ownership of a shared server.
 Users with the *Administrator* role are able to add, edit and remove pgAdmin
 users, but otherwise have the same capabilities as those with the *User* role.
 
+* Click the *Refresh* button to get latest users list.
 * Click the *Help* button (?) to access online help.
-* Click the *Close* button to save work. You will be prompted to return to the
-  dialog if your selections cannot be saved.
+
+
+Roles Tab
+*********
+An administrative user can use the *Roles* tab to:
+
+* manage pgAdmin roles
+* delete roles
+
+.. image:: images/roles.png
+  :alt: pgAdmin roles management window
+  :align: center
+
+Use the *Search* field to specify criteria and review a list of roles
+that match the specified criteria. You can enter a value that matches
+the following criteria types: *Role Name* or *Description*.
+
+To add a role, click the Add (+) button at the top left corner. It will open a
+dialog where you can fill in details for the new role.
+
+.. image:: images/add_role.png
+  :alt: pgAdmin roles management window add new role
+  :align: center
+
+Provide information about the new pgAdmin role in the row:
+
+* Use the *Name* field to specify a unique name for the role.
+* Use the *Description* field to provide a brief description of the role.
+
+To delete a role, click the trash icon to the left of the row and confirm deletion
+in the *Delete role?* dialog. If the role is associated with any users or resources,
+you may need to reassign those associations before deletion.
+
+Roles allow administrators to group privileges and assign them to users more efficiently.
+This helps in managing permissions and access control within the pgAdmin client.
+
+* Click the *Refresh* button to get the latest roles list.
+* Click the *Help* button (?) to access online help.
+
+
+Permissions Tab
+***************
+An administrative user can use the *Permissions* tab to manage pgAdmin permissions for 
+a role.
+
+.. image:: images/permissions.png
+  :alt: pgAdmin permissions management window
+  :align: center
+
+* Filter permissions using the *Search* field by entering names that match the list.
+* Administrators can select permissions from the list of available permissions, and
+  choose to grant or revoke these permissions for specific roles.
+* The permissions are applied to the selected role immediately.
+
 
 
 Using 'setup.py' command line script
@@ -107,10 +162,11 @@ email and password. role and active will be optional fields.
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password
 
-    # to specify a role, admin and non-admin users:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-user user1@gmail.com password --admin
-    /path/to/python /path/to/setup.py add-user user1@gmail.com password --nonadmin
+    /path/to/python /path/to/setup.py add-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -131,10 +187,11 @@ followed by email, password and authentication source. email, role and status wi
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap --email user1@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
     /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --admin
-    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --nonadmin
+    /path/to/python /path/to/setup.py add-external-user ldapuser ldap  --role Users
 
     # to specify user's status
 
@@ -151,10 +208,11 @@ email address. password, role and active are updatable fields.
 
     /path/to/python /path/to/setup.py update-user user1@gmail.com --password new-password
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --admin
+    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role Users
 
     # to specify user's status
 
@@ -171,17 +229,18 @@ followed by username and auth source. email, password, role and active are updat
 
     # to change email address:
 
-    /path/to/python /path/to/setup.py update-external-user ldap ldapuser --email newemail@gmail.com
+    /path/to/python /path/to/setup.py update-external-user ldapuser --auth-source ldap --email newemail@gmail.com
 
-    # to specify a role, admin and non-admin user:
+    # to specify a role, either you can use --admin for Administrator role or provide the
+    # role using --role. If both are provided --admin will be used:
 
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --admin
-    /path/to/python /path/to/setup.py update-user user1@gmail.com password --role --nonadmin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --admin
+    /path/to/python /path/to/setup.py update-external-user user1@gmail.com password --role --role Users
 
     # to change user's status
 
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --active
-   /path/to/python /path/to/setup.py update-user ldap ldapuser --inactive
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --active
+   /path/to/python /path/to/setup.py update-user ldapuser --auth-source ldap --inactive
 
 Delete User
 ***********

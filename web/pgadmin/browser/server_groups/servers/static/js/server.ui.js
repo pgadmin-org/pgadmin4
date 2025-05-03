@@ -26,13 +26,15 @@ class TagsSchema extends BaseUISchema {
         id: 'text', label: gettext('Text'), cell: 'text', group: null,
         mode: ['create', 'edit'], noEmpty: true, controlProps: {
           maxLength: 30,
-        }
+        },
+        disabled : this.top.isShared(this.top.origData),
       },
       {
         id: 'color', label: gettext('Color'), cell: 'color', group: null,
         mode: ['create', 'edit'], controlProps: {
           input: true,
-        }
+        },
+        disabled : this.top.isShared(this.top.origData),
       },
     ];
   }
@@ -153,7 +155,8 @@ export default class ServerSchema extends BaseUISchema {
       connect_now: true,
       password: undefined,
       save_password: false,
-      db_res: [],
+      db_res: undefined,
+      db_res_type: 'databases',
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
@@ -192,6 +195,10 @@ export default class ServerSchema extends BaseUISchema {
 
   isConnected(state) {
     return Boolean(state.connected);
+  }
+
+  isConnectedOrShared(state) {
+    return this.isConnected(state) || this.isShared(state);
   }
 
   get baseFields() {
@@ -284,7 +291,7 @@ export default class ServerSchema extends BaseUISchema {
       },
       {
         id: 'comment', label: gettext('Comments'), type: 'multiline', group: null,
-        mode: ['properties', 'edit', 'create'],
+        mode: ['properties', 'edit', 'create'], disabled: obj.isShared,
       }, {
         id: 'connection_string', label: gettext('Connection String'), type: 'multiline',
         group: gettext('Connection'), mode: ['properties'], readonly: true,
@@ -315,7 +322,7 @@ export default class ServerSchema extends BaseUISchema {
         }
       },{
         id: 'db', label: gettext('Maintenance database'), type: 'text', group: gettext('Connection'),
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, disabled: obj.isShared,
+        mode: ['properties', 'edit', 'create'], readonly: obj.isConnectedOrShared,
         noEmpty: true,
       },{
         id: 'username', label: gettext('Username'), type: 'text', group: gettext('Connection'),
@@ -331,7 +338,7 @@ export default class ServerSchema extends BaseUISchema {
         }
       },{
         id: 'kerberos_conn', label: gettext('Kerberos authentication?'), type: 'switch',
-        group: gettext('Connection'),
+        group: gettext('Connection'), disabled: obj.isShared,
       },{
         id: 'gss_authenticated', label: gettext('GSS authenticated?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
@@ -366,7 +373,7 @@ export default class ServerSchema extends BaseUISchema {
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
       },{
         id: 'service', label: gettext('Service'), type: 'text',
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
+        mode: ['properties', 'edit', 'create'], readonly: obj.isConnectedOrShared,
         group: gettext('Connection'),
       }, {
         id: 'connection_params', label: gettext('Connection Parameters'),
@@ -462,10 +469,42 @@ export default class ServerSchema extends BaseUISchema {
         readonly: obj.isConnected,
       },
       {
-        id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
-        options: [],
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, controlProps: {
-          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the databases to be restrict...'},
+        id: 'db_res_type', label: gettext('DB restriction type'), type: 'toggle',
+        mode: ['properties', 'edit', 'create'], group: gettext('Advanced'),
+        options: [
+          {'label': gettext('Databases'), value: 'databases'},
+          {'label': gettext('SQL'), value: 'sql'},
+        ],
+        readonly: obj.isConnectedOrShared,
+        depChange: ()=>{
+          return {
+            db_res: null,
+          };
+        }
+      },
+      {
+        id: 'db_res', label: gettext('DB restriction'), group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'], readonly: obj.isConnectedOrShared,
+        deps: ['db_res_type'],
+        type: (state) => {
+          if (state.db_res_type == 'databases') {
+            return {
+              type: 'select',
+              options: [],
+              controlProps: {
+                multiple: true,
+                allowClear: false,
+                creatable: true,
+                noDropdown: true,
+                placeholder: 'Specify the databases to be restrict...'
+              }
+            };
+          } else {
+            return {
+              type: 'sql',
+            };
+          }
+        },
       },
       {
         id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
@@ -484,14 +523,22 @@ export default class ServerSchema extends BaseUISchema {
       },
       {
         id: 'prepare_threshold', label: gettext('Prepare threshold'), type: 'int',
-        group: gettext('Advanced'),
+        group: gettext('Advanced'), disabled: obj.isShared,
         mode: ['properties', 'edit', 'create'],
         helpMessageMode: ['edit', 'create'],
         helpMessage: gettext('If it is set to 0, every query is prepared the first time it is executed. If it is set to blank, prepared statements are disabled on the connection.')
       },
       {
+        id: 'post_connection_sql', label: gettext('Post Connection SQL'),
+        group: gettext('Post Connection SQL'),
+        mode: ['properties', 'edit', 'create'],
+        type: 'sql', isFullTab: true,
+        readonly: obj.isConnectedOrShared,
+        helpMessage: gettext('Any query specified in the control below will be executed with autocommit mode enabled for each connection to any database on this server.'),
+      },
+      {
         id: 'tags', label: gettext('Tags'),
-        type: 'collection', group: gettext('Tags'),
+        type: 'collection', group: gettext('Tags'), disabled: obj.isShared,
         schema: this.tagsSchema, mode: ['edit', 'create'], uniqueCol: ['text'],
         canAdd: true, canEdit: false, canDelete: true, maxCount: pgAdmin.Browser.utils.max_server_tags_allowed,
       },

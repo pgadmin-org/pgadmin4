@@ -151,7 +151,6 @@ export default function BrowserComponent({pgAdmin}) {
   let { name: browser } = useMemo(()=>getBrowser(), []);
   const [uiReady, setUiReady] = useState(false);
   const confirmOnClose = getPreferencesForModule('browser').confirm_on_refresh_close;
-
   useBeforeUnload({
     enabled: confirmOnClose,
     beforeClose: (forceClose)=>{
@@ -159,7 +158,11 @@ export default function BrowserComponent({pgAdmin}) {
         gettext('Quit pgAdmin 4'),
         gettext('Are you sure you want to quit the application?'),
         function() { forceClose(); },
-        function() { return true;},
+        function() { return true; },
+        gettext('Yes'),
+        gettext('No'),
+        'default',
+        'id-app-quit'
       );
     },
     isNewTab: true,

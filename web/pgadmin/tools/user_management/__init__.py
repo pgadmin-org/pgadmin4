@@ -27,16 +27,20 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
     make_json_response, bad_request, internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
-from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
-    SUPPORTED_AUTH_SOURCES
+from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL, \
+    SUPPORTED_AUTH_SOURCES, NO_CACHE_CONTROL
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting, roles_users, SharedServer
 from pgadmin.utils.paths import create_users_storage_directory
+from pgadmin.tools.user_management.PgAdminPermissions import PgAdminPermissions
+from sqlalchemy import func
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'
 server_info = {}
+
+permissions_obj = PgAdminPermissions()
 
 
 class UserManagementModule(PgAdminModule):
@@ -62,13 +66,21 @@ class UserManagementModule(PgAdminModule):
             list: URL endpoints for backup module
         """
         return [
-            'user_management.roles', 'user_management.role',
-            'user_management.users', 'user_management.user',
+            'user_management.roles',
+            'user_management.role',
+            'user_management.role_save',
+            'user_management.role_delete',
+            'user_management.users',
+            'user_management.user',
             current_app.login_manager.login_view,
-            'user_management.auth_sources', 'user_management.change_owner',
-            'user_management.shared_servers', 'user_management.admin_users',
-            'user_management.save'
-        ]
+            'user_management.auth_sources',
+            'user_management.change_owner',
+            'user_management.shared_servers',
+            'user_management.admin_users',
+            'user_management.save',
+            'user_management.save_id',
+            'user_management.all_permissions',
+            'user_management.save_permissions']
 
 
 # Create blueprint for BackupModule class
@@ -83,21 +95,6 @@ def index():
     return bad_request(errormsg=_("This URL cannot be called directly."))
 
 
-@blueprint.route("/user_management.js")
-@pga_login_required
-def script():
-    """render own javascript"""
-    return Response(
-        response=render_template(
-            "user_management/js/user_management.js", _=_,
-            is_admin=current_user.has_role("Administrator"),
-            user_id=current_user.id
-        ),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 @blueprint.route("/current_user.js")
 @pgCSRFProtect.exempt
 @pga_login_required
@@ -108,10 +105,10 @@ def current_user_info():
             is_admin='true' if current_user.has_role(
                 "Administrator") else 'false',
             user_id=current_user.id,
-            email=current_user.email.replace("'","\\'") if current_user.email
+            email=current_user.email.replace("'", "\\'") if current_user.email
             else current_user.email,
             name=(
-                current_user.username.split('@')[0].replace("'","\\'") if
+                current_user.username.split('@')[0].replace("'", "\\'") if
                 config.SERVER_MODE is True
                 else 'postgres'
             ),
@@ -124,8 +121,13 @@ def current_user_info():
             session.get('allow_save_password', None) else 'false',
             auth_sources=config.AUTHENTICATION_SOURCES,
             current_auth_source=session['auth_source_manager'][
-                'current_source'] if config.SERVER_MODE is True else INTERNAL
+                'current_source'] if config.SERVER_MODE is True else INTERNAL,
+            permissions=list({p for r in current_user.roles
+                              for p in r.get_permissions()})
         ),
+        headers={
+            'Cache-Control': NO_CACHE_CONTROL
+        },
         status=200,
         mimetype=MIMETYPE_APP_JS
     )
@@ -168,7 +170,8 @@ def user(uid):
                                'active': u.active,
                                'role': u.roles[0].id,
                                'auth_source': u.auth_source,
-                               'locked': u.locked
+                               'locked': u.locked,
+                               'canDrop': u.id != current_user.id
                                })
 
         res = users_data
@@ -337,7 +340,6 @@ def admin_users(uid=None):
 
     return make_json_response(
         success=1,
-        info=_("No shared servers found"),
         data={
             'status': 'success',
             'msg': 'Admin user list',
@@ -346,6 +348,81 @@ def admin_users(uid=None):
             }
         }
     )
+
+
+def create_role(data):
+    try:
+        validate_unique_role(data)
+        r = Role(name=data['name'],
+                 description=data['description'])
+        db.session.add(r)
+        db.session.commit()
+        return ajax_response(
+            status=200
+        )
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(e)
+        return internal_server_error(str(e))
+
+
+def update_role(rid, data):
+    try:
+        validate_unique_role(data)
+        r = Role.query.get(rid)
+
+        if not r:
+            return ajax_response(
+                response=_('Role not found'),
+                status=404
+            )
+
+        for key, value in data.items():
+            setattr(r, key, value)
+
+        db.session.commit()
+        return ajax_response(
+            status=200
+        )
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(e)
+        return internal_server_error(str(e))
+
+
+def delete_role(rid):
+    r = Role.query.get(rid)
+
+    if not r:
+        return ajax_response(
+            response=_('Role not found'),
+            status=404
+        )
+
+    users = User.query.all()
+
+    for u in users:
+        if u.has_role(r):
+            return make_json_response(
+                success=0,
+                status=400,
+                errormsg=_(
+                    'To proceed, ensure that all users assigned '
+                    'the \'{0}\' role have been reassigned.'.format(r.name))
+            )
+
+    try:
+        # Finally delete user
+        db.session.delete(r)
+        db.session.commit()
+
+        return ajax_response(
+            status=200
+        )
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception(e)
+        return internal_server_error(str(e))
 
 
 @blueprint.route(
@@ -366,14 +443,21 @@ def role(rid):
     if rid:
         r = Role.query.get(rid)
 
-        res = {'id': r.id, 'name': r.name}
+        res = {'id': r.id,
+               'name': r.name,
+               'description': r.description,
+               'permissions': r.permissions,
+               'is_admin': r.name == "Administrator"}
     else:
         roles = Role.query.all()
 
         roles_data = []
         for r in roles:
             roles_data.append({'id': r.id,
-                               'name': r.name})
+                               'name': r.name,
+                               'description': r.description,
+                               'permissions': r.permissions,
+                               'is_admin': r.name == "Administrator"})
 
         res = roles_data
 
@@ -381,6 +465,32 @@ def role(rid):
         response=res,
         status=200
     )
+
+
+@blueprint.route(
+    '/role/', methods=['POST'], defaults={'id': None}, endpoint='role_save'
+)
+@blueprint.route('/role/<int:id>', methods=['DELETE'], endpoint='role_delete')
+@roles_required('Administrator')
+def role_save(id):
+    """
+
+    Args:
+      id: Role id
+
+    """
+
+    if request.method == 'DELETE':
+        return delete_role(id)
+
+    data = request.form if request.form else json.loads(
+        request.data
+    )
+
+    if 'id' not in data:
+        return create_role(data)
+    else:
+        return update_role(data['id'], data)
 
 
 @blueprint.route(
@@ -398,36 +508,32 @@ def auth_sources():
 
 
 @blueprint.route('/save', methods=['POST'], endpoint='save')
+@blueprint.route('/save/<int:id>', methods=['DELETE'], endpoint='save_id')
 @roles_required('Administrator')
-def save():
+def save(id=None):
     """
     This function is used to add/update/delete users.
     """
+    if request.method == 'DELETE':
+        status, res = delete_user(id)
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return ajax_response(
+            status=200
+        )
+
     data = request.form if request.form else json.loads(
         request.data
     )
 
-    try:
-        # Delete Users
-        if 'deleted' in data:
-            for item in data['deleted']:
-                status, res = delete_user(item['id'])
-                if not status:
-                    return internal_server_error(errormsg=res)
-        # Create Users
-        if 'added' in data:
-            for item in data['added']:
-                status, res = create_user(item)
-                if not status:
-                    return internal_server_error(errormsg=res)
-        # Modify Users
-        if 'changed' in data:
-            for item in data['changed']:
-                status, res = update_user(item['id'], item)
-                if not status:
-                    return internal_server_error(errormsg=res)
-    except Exception as e:
-        return internal_server_error(errormsg=str(e))
+    if 'id' not in data:
+        status, res = create_user(data)
+    else:
+        status, res = update_user(data['id'], data)
+
+    if not status:
+        return internal_server_error(errormsg=res)
 
     return ajax_response(
         status=200
@@ -450,6 +556,18 @@ def normalise_password(password):
         normalize(normalise_form, password)
 
 
+def validate_unique_role(data):
+    if 'name' not in data:
+        return
+
+    exist_roles = Role.query.filter(
+        func.lower(Role.name) == func.lower(data['name'])
+    ).count()
+
+    if exist_roles != 0:
+        raise InternalServerError(_("Role name must be unique."))
+
+
 def validate_password(data, new_data):
     """
     Check password new and confirm password match. If both passwords are not
@@ -468,8 +586,24 @@ def validate_password(data, new_data):
             raise InternalServerError(_("Passwords do not match."))
 
 
+def validate_unique_user(data):
+    if 'username' not in data:
+        return
+
+    exist_users = User.query.filter_by(
+        username=data['username'],
+        auth_source=data['auth_source']
+    ).count()
+
+    if exist_users != 0:
+        raise InternalServerError(_("User email/username must be unique "
+                                    "for an authentication source."))
+
+
 def validate_user(data):
     new_data = dict()
+
+    validate_unique_user(data)
 
     validate_password(data, new_data)
 
@@ -508,20 +642,12 @@ def _create_new_user(new_data):
     :param new_data: Data from user creation.
     :return: Return new created user.
     """
-    auth_source = new_data['auth_source'] if 'auth_source' in new_data \
-        else INTERNAL
-    username = new_data['username'] if \
-        'username' in new_data and auth_source != \
-        INTERNAL else new_data['email']
-    email = new_data['email'] if 'email' in new_data else None
-    password = new_data['password'] if 'password' in new_data else None
-
-    usr = User(username=username,
-               email=email,
+    usr = User(username=new_data['username'],
+               email=new_data['email'],
                roles=new_data['roles'],
                active=new_data['active'],
-               password=password,
-               auth_source=auth_source)
+               password=new_data['password'],
+               auth_source=new_data['auth_source'])
     db.session.add(usr)
     db.session.commit()
     # Add default server group for new user.
@@ -544,14 +670,25 @@ def create_user(data):
         else:
             return False, _("Missing field: '{0}'").format(f)
 
+    data['auth_source'] = data['auth_source'] if 'auth_source' in data \
+        else INTERNAL
+    data['username'] = data['username'] if \
+        'username' in data and data['auth_source'] != \
+        INTERNAL else data['email']
+    data['email'] = data['email'] if 'email' in data else None
+    data['password'] = data['password'] if 'password' in data else None
+
     try:
         new_data = validate_user(data)
+        new_data['email'] = new_data['email'] if 'email' in new_data else None
+        new_data['password'] = new_data['password']\
+            if 'password' in new_data else None
 
         if 'roles' in new_data:
             new_data['roles'] = [Role.query.get(new_data['roles'])]
 
     except Exception as e:
-        return False, str(e.description)
+        return False, str(e)
 
     try:
         _create_new_user(new_data)
@@ -588,7 +725,7 @@ def update_user(uid, data):
         if 'roles' in new_data:
             new_data['roles'] = [Role.query.get(new_data['roles'])]
     except Exception as e:
-        return False, str(e.description)
+        return False, str(e)
 
     try:
         for k, v in new_data.items():
@@ -637,3 +774,41 @@ def delete_user(uid):
         return False, str(e)
 
     return True, ''
+
+
+@blueprint.route('/all_permissions',
+                 methods=['GET'],
+                 endpoint='all_permissions')
+@roles_required('Administrator')
+def get_all_permissions():
+    return ajax_response(
+        status=200,
+        response=permissions_obj.all_permissions
+    )
+
+
+@blueprint.route('/save_permissions/<int:id>',
+                 methods=['PUT'], endpoint='save_permissions')
+@roles_required('Administrator')
+def save_permissions(id):
+    data = request.form if request.form else json.loads(
+        request.data
+    )
+
+    r = Role.query.get(id)
+
+    try:
+        r.permissions = data['permissions']
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return internal_server_error(errormsg=str(e))
+
+    return ajax_response(
+        status=200,
+        response={
+            'id': r.id,
+            'name': r.name,
+            'permissions': r.permissions
+        }
+    )

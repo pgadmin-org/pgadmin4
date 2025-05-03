@@ -15,6 +15,8 @@ MIMETYPE_APP_HTML = 'text/html'
 MIMETYPE_APP_JS = 'application/javascript'
 MIMETYPE_APP_JSON = 'application/json'
 
+NO_CACHE_CONTROL = 'no-cache, no-store, must-revalidate'
+
 # Preference labels
 PREF_LABEL_KEYBOARD_SHORTCUTS = gettext('Keyboard shortcuts')
 PREF_LABEL_DISPLAY = gettext('Display')
@@ -160,3 +162,6 @@ DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
                          1015, 'varchar[]', 'character varying[]',
                          'vector', 'vector[]', 'halfvec', 'halfvec[]',
                          'sparsevec', 'sparsevec[]']
+
+RESTRICTION_TYPE_DATABASES = 'databases'
+RESTRICTION_TYPE_SQL = 'sql'

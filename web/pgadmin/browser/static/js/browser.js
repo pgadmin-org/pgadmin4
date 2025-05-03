@@ -391,6 +391,7 @@ define('pgadmin.browser', [
                 checked: _m.checked,
                 below: _m.below,
                 applies: _m.applies,
+                permission: _m.permission,
               };
             };
 

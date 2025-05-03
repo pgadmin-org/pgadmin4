@@ -38,6 +38,7 @@ basicSettings = createTheme(basicSettings, {
     fontSize: 14,
     htmlFontSize: 14,
     fontFamilyIcon: '"Font Awesome 5 Free"',
+    fontFamilySourceCode: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     fontFamily: [
       'Roboto',
       '"Helvetica Neue"',
@@ -206,6 +207,12 @@ basicSettings = createTheme(basicSettings, {
           height: '100%',
           boxSizing: 'border-box',
         },
+        adornedStart: {
+          paddingLeft: basicSettings.spacing(0.75),
+        },
+        inputAdornedStart: {
+          paddingLeft: '2px',
+        },
         adornedEnd: {
           paddingRight: basicSettings.spacing(0.75),
         },
@@ -361,7 +368,7 @@ function getFinalTheme(baseTheme) {
       flexGrow: 1,
     },
     fontSourceCode: {
-      fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      fontFamily: basicSettings.typography.fontFamilySourceCode,
     }
   };
 
@@ -523,7 +530,7 @@ function getFinalTheme(baseTheme) {
           },
           inputSizeSmall: {
             height: '16px', // + 12px of padding = 28px;
-          }
+          },
         }
       },
       MuiSelect: {
@@ -637,12 +644,12 @@ function getFinalTheme(baseTheme) {
         styleOverrides: {
           root: {
             padding: '0px',
-            color: baseTheme.otherVars.inputBorderColor,
+            color: baseTheme.custom.checkbox.borderColor,
           },
 
           colorPrimary: {
             '&.Mui-disabled': {
-              color: baseTheme.palette.checkbox.disabled
+              color: baseTheme.custom.checkbox.disabled
             }
           }
         }
@@ -651,12 +658,12 @@ function getFinalTheme(baseTheme) {
         styleOverrides: {
           root: {
             padding: '0px',
-            color: baseTheme.otherVars.inputBorderColor,
+            color: baseTheme.custom.checkbox.borderColor,
           },
 
           colorPrimary: {
             '&.Mui-disabled': {
-              color: baseTheme.palette.checkbox.disabled
+              color: baseTheme.custom.checkbox.disabled
             }
           }
         }

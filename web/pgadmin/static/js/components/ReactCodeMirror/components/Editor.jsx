@@ -53,6 +53,7 @@ import activeLineExtn from '../extensions/activeLineMarker';
 import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
 import { autoCompleteCompartment, eolCompartment, indentNewLine, eol } from '../extensions/extraStates';
 import { OS_EOL } from '../../../../../tools/sqleditor/static/js/components/QueryToolConstants';
+import { useTheme } from '@mui/material';
 
 const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px'}} />);
 const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px'}} />);
@@ -179,6 +180,7 @@ export default function Editor({
   };
 
   const preferencesStore = usePreferences();
+  const theme = useTheme();
   const editable = !disabled;
 
   const shortcuts = useRef(new Compartment());
@@ -301,8 +303,10 @@ export default function Editor({
 
     const fontSize = calcFontSize(pref.sql_font_size);
     newConfigExtn.push(EditorView.theme({
-      '.cm-content': {
+      '& .cm-scroller .cm-content': {
         fontSize: fontSize,
+        fontVariantLigatures: pref.sql_font_ligatures ? 'normal' : 'none',
+        fontFamily: `${pref.sql_font_family}, ${theme.typography.fontFamilySourceCode}`,
       },
       '.cm-gutters': {
         fontSize: fontSize,

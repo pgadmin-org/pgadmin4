@@ -37,11 +37,14 @@ export function WorkspaceProvider({children}) {
     pgAdmin.Browser.docker.schema_diff_workspace = pgAdmin.Browser.docker.default_workspace;
   }
 
-  pgAdmin.Browser.getDockerHandler = (panelId)=>{
+  pgAdmin.Browser.getDockerHandler = (panelId, classicDocker)=>{
     let docker;
     let workspace;
     if (isClassic) {
-      return undefined;
+      return {
+        docker: classicDocker,
+        focus: ()=>{},
+      };
     }
 
     const wsConfig = config.find((i)=>panelId.indexOf(i.panel)>=0);
@@ -72,9 +75,9 @@ export function WorkspaceProvider({children}) {
     pgAdmin.Browser.docker.currentWorkspace = newVal;
     if (newVal == WORKSPACES.DEFAULT) {
       setTimeout(() => {
-        pgAdmin.Browser.tree.selectNode(lastSelectedTreeItem.current);
+        pgAdmin.Browser.tree.selectNode(lastSelectedTreeItem.current, true, 'center');
         lastSelectedTreeItem.current = null;
-      }, 0);
+      }, 250);
     }  else {
       // Get the selected tree node and save it into the state variable.
       let selItem = pgAdmin.Browser.tree.selected();
@@ -92,7 +95,7 @@ export function WorkspaceProvider({children}) {
     if (wsConfig?.enableOnNoTabs) {
       return true;
     }
-    
+
     if(wsConfig) {
       return Boolean(pgAdmin.Browser.docker[wsConfig.docker]?.layoutObj?.getLayout()?.dockbox?.children?.[0]?.tabs?.length);
     }

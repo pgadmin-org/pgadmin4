@@ -84,8 +84,11 @@ class StartRunningQuery:
                 from pgadmin.tools.sqleditor.utils import \
                     query_tool_connection_check
 
-                _, _, _, _, _, response = \
+                status, errmsg, _, _, _, response = \
                     query_tool_connection_check(trans_id)
+                # If database does not exist then show error msg
+                if not status:
+                    result = errmsg
                 # This is required for asking user to enter password
                 # when password is not saved for the server
                 if response is not None:

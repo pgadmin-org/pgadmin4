@@ -13,6 +13,7 @@ import json
 from flask import Response, url_for
 from flask import render_template, request, current_app
 from flask_babel import gettext
+from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
 from urllib.parse import unquote
 
@@ -27,6 +28,7 @@ from pgadmin.utils.ajax import precondition_required
 from functools import wraps
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # set template path for sql scripts
 MODULE_NAME = 'grant_wizard'
@@ -122,19 +124,10 @@ def index():
     )
 
 
-@blueprint.route("/grant_wizard.js")
-@pga_login_required
-def script():
-    """render own javascript"""
-    return Response(response=render_template(
-        "grant_wizard/js/grant_wizard.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS)
-
-
 @blueprint.route(
     '/acl/<int:sid>/<int:did>/', methods=['GET'], endpoint='acl'
 )
+@permissions_required(AllPermissionTypes.tools_grant_wizard)
 @pga_login_required
 @check_precondition
 def acl_list(sid, did):

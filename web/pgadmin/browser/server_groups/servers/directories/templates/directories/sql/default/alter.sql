@@ -1,11 +1,6 @@
 {### SQL to alter directory ###}
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% if data %}
-{### Owner on directory ###}
-{% if data.diruser %}
-ALTER DIRECTORY {{ conn|qtIdent(data.name) }}
-  OWNER TO {{ conn|qtIdent(data.diruser) }};
-{% endif %}
 
 {###  ACL on directory ###}
 {% if data.diracl %}

@@ -136,8 +136,12 @@ class GoogleProvider(AbsProvider):
         credentials = self._get_credentials(self._scopes)
         service = discovery.build('sqladmin', 'v1beta4',
                                   credentials=credentials)
-        high_availability = \
-            'REGIONAL' if eval(args.high_availability) else 'ZONAL'
+
+        _high_availability = args.high_availability.lower() in (
+            'true', '1') if isinstance(args.high_availability, str
+                                       ) else args.high_availability
+
+        high_availability = 'REGIONAL' if _high_availability else 'ZONAL'
 
         db_password = self._database_password \
             if self._database_password is not None else args.db_password

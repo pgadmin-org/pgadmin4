@@ -69,7 +69,6 @@ _create_python_virtualenv() {
 
     # Make sure we have the wheel package present, as well as the latest pip
     pip3 install --upgrade pip
-    pip3 install setuptools
     pip3 install wheel
 
     # Install the requirements
@@ -141,11 +140,6 @@ _build_runtime() {
     fi
 
     ELECTRON_VERSION="$(npm info electron version)"
-    # Pin the electron version to "33.3.2" due to the following issue
-    # https://github.com/electron/electron/issues/45884
-    if [ "$1" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
-      ELECTRON_VERSION="33.3.2"
-    fi
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do

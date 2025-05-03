@@ -89,17 +89,6 @@ def index():
     )
 
 
-@blueprint.route("/cloud.js")
-@pga_login_required
-def script():
-    """render own javascript"""
-    res = Response(response=render_template(
-        "cloud/js/cloud.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS)
-    return res
-
-
 @blueprint.route('/clear_cloud_session/',
                  methods=['POST'], endpoint='clear_cloud_session')
 @pga_login_required

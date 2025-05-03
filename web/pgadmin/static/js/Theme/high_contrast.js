@@ -58,13 +58,11 @@ export default function(basicSettings) {
         '400': '#2D3A48',
         '600': '#1F2932',
         '800': '#010B15',
+        '900': '#8b9cac'
       },
       text: {
         primary: '#fff',
         muted: '#8b9cac',
-      },
-      checkbox: {
-        disabled: '#6b6b6b'
       },
       background: {
         paper: '#010B15',
@@ -72,6 +70,10 @@ export default function(basicSettings) {
       },
     },
     custom: {
+      checkbox: {
+        borderColor: '#8b9cac',
+        disabled: '#6b6b6b'
+      },
       icon: {
         main: '#010B15',
         contrastText: '#fff',

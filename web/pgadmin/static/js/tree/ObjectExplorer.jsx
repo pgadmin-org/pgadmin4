@@ -79,7 +79,7 @@ function postTreeReady(b) {
         dropVal = dropVal + ')';
       } else {
         dropVal = dropVal + '()';
-        curPos.from = curPos.to = dropVal.length + 1;
+        curPos.from = curPos.to = dropVal.length;
       }
 
       return {

@@ -109,7 +109,7 @@ function CustomRow(props) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
   const handleKeyDown = (e)=>{
-    dataGridExtras.handleShortcuts(e);
+    if (e.target.role == 'gridcell') dataGridExtras.handleShortcuts(e);
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
       props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
@@ -166,7 +166,7 @@ SelectAllHeaderRenderer.propTypes = {
   isCellSelected: PropTypes.bool,
 };
 
-function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange, isCellSelected}) {
+function SelectableHeaderRenderer({column, isSelected, onColumnSelected, isCellSelected}) {
   const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
@@ -175,17 +175,9 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
     dataGridExtras.onSelectedCellChange?.(null);
   }
 
-  const onClick = ()=>{
-    const newSelectedCols = new Set(selectedColumns);
-    if (newSelectedCols.has(column.idx)) {
-      newSelectedCols.delete(column.idx);
-    } else {
-      newSelectedCols.add(column.idx);
-    }
-    onSelectedColumnsChange(newSelectedCols);
+  const onClick = (e)=>{
+    onColumnSelected(column.idx, isSelected, (e.nativeEvent).shiftKey);
   };
-
-  const isSelected = selectedColumns.has(column.idx);
 
   useLayoutEffect(() => {
     if (!isCellSelected) return;
@@ -215,8 +207,8 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
 }
 SelectableHeaderRenderer.propTypes = {
   column: PropTypes.object,
-  selectedColumns: PropTypes.objectOf(Set),
-  onSelectedColumnsChange: PropTypes.func,
+  isSelected: PropTypes.bool,
+  onColumnSelected: PropTypes.func,
   isCellSelected: PropTypes.bool,
 };
 
@@ -305,9 +297,9 @@ function RowNumColFormatter({row, rowKeyGetter, rowIdx, dataChangeStore, onSelec
   } else if(rowKey in (dataChangeStore?.deleted || {})) {
     rownum = rownum+'-';
   }
-  return (<div className='QueryTool-rowNumCell' onClick={()=>{
+  return (<div className='QueryTool-rowNumCell' onClick={(e)=>{
     onSelectedColumnsChange(new Set());
-    onRowSelectionChange({ type: 'ROW', row: row, checked: !isRowSelected, isShiftClick: false});
+    onRowSelectionChange({ type: 'ROW', row: row, checked: !isRowSelected, isShiftClick: (e.nativeEvent).shiftKey});
   }} onKeyDown={()=>{/* already taken care by parent */}}>
     {rownum}
   </div>);
@@ -320,13 +312,16 @@ RowNumColFormatter.propTypes = {
   onSelectedColumnsChange: PropTypes.func,
 };
 
-function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColumnsChange, rowKeyGetter) {
+function formatColumns(columns, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChange, rowKeyGetter) {
   let retColumns = [
     ...columns,
   ];
 
-  const HeaderRenderer = (props)=>{
-    return <SelectableHeaderRenderer {...props} selectedColumns={selectedColumns} onSelectedColumnsChange={onSelectedColumnsChange}/>;
+  const HeaderRenderer = ({column, ...props})=>{
+    return <SelectableHeaderRenderer {...props} column={column} isSelected={selectedColumns.has(column.idx)} onColumnSelected={onColumnSelected}/>;
+  };
+  HeaderRenderer.propTypes = {
+    column: PropTypes.object,
   };
 
   for(const [idx, col] of retColumns.entries()) {
@@ -377,7 +372,26 @@ function getColumnWidth(column, rows, canvas, columnWidthBy) {
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
   onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, ...props}) {
   const [readyColumns, setReadyColumns] = useState([]);
+  const [lastSelectedColumn, setLastSelectedColumn] = useState(null);
   const eventBus = useContext(QueryToolEventsContext);
+  const onColumnSelected = (columnIdx, isSelected, isShiftClick)=>{
+    const newSelectedCols = new Set(selectedColumns);
+    const start = isShiftClick && lastSelectedColumn ? Math.min(columnIdx, lastSelectedColumn) : columnIdx;
+    const end = isShiftClick && lastSelectedColumn ? Math.max(columnIdx, lastSelectedColumn) : columnIdx;
+    for (let i = start; i <= end; i++) {
+      if (isSelected) {
+        newSelectedCols.delete(i);
+      }
+      else {
+        newSelectedCols.add(i);
+      }
+    }
+    
+    props.onSelectedRowsChange(new Set());
+    setLastSelectedColumn(columnIdx);
+    onSelectedColumnsChange(newSelectedCols);
+  };
+
   const onSelectedColumnsChangeWrapped = (arg)=>{
     props.onSelectedRowsChange(new Set());
     onSelectedColumnsChange(arg);
@@ -411,12 +425,12 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
   useEffect(()=>{
     let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
-    setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
+    setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
   }, [columns]);
 
   useEffect(()=>{
     setReadyColumns((prevCols)=>{
-      return formatColumns(prevCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter);
+      return formatColumns(prevCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter);
     });
   }, [dataChangeStore, selectedColumns]);
 

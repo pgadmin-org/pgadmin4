@@ -38,5 +38,10 @@ module.exports = {
   'bgprocess.detailed_status': '/misc/bgprocess/<pid>/<int:out>/<int:err>/',
   'bgprocess.list': '/misc/bgprocess/',
   'bgprocess.stop_process': '/misc/bgprocess/stop/<pid>',
-  'bgprocess.acknowledge': '/misc/bgprocess/<pid>'
+  'bgprocess.acknowledge': '/misc/bgprocess/<pid>',
+  'user_management.auth_sources': '/user_management/auth_sources',
+  'user_management.roles': '/user_management/roles',
+  'user_management.users': '/user_management/users',
+  'user_management.all_permissions': '/user_management/all_permissions',
+  'user_management.save_permissions': '/user_management/save_permissions',
 };

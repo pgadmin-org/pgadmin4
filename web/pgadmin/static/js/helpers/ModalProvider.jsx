@@ -83,7 +83,7 @@ function alert(title, text, onOkClick, okLabel = gettext('OK')) {
   });
 }
 
-function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes'), cancelLabel = gettext('No'), okIcon = 'default') {
+function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes'), cancelLabel = gettext('No'), okIcon = 'default', modalId=null) {
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
     const onCancelClickClose = () => {
@@ -98,7 +98,7 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
     return (
       <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} okIcon={okIcon}/>
     );
-  });
+  }, {id: modalId});
 }
 
 function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = gettext('Delete'), cancelLabel = gettext('Cancel')) {
@@ -127,16 +127,23 @@ function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = 
 
 export default function ModalProvider({ children }) {
   const [modals, setModals] = React.useState([]);
-
   const showModal = (title, content, modalOptions) => {
     let id = getEpoch().toString() + crypto.getRandomValues(new Uint8Array(4));
-    setModals((prev) => [...prev, {
-      id: id,
-      title: title,
-      content: content,
-      ...modalOptions,
-    }]);
+    if(modalOptions?.id){
+      id = modalOptions.id;
+    }
+    setModals((prev) => {
+      if(prev?.find(modal=> modal.id === modalOptions?.id)){
+        return prev;
+      }
+      return [...prev, {
+        id: id,
+        title: title,
+        content: content,
+        ...modalOptions,
+      }];});
   };
+
   const closeModal = (id) => {
     setModals((prev) => {
       return prev.filter((o) => o.id != id);

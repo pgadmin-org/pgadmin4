@@ -29,7 +29,7 @@ from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
     import query_tool_connection_check
 from pgadmin.user_login_check import pga_login_required
-from flask_security import current_user
+from flask_security import current_user, permissions_required
 from pgadmin.misc.file_manager import Filemanager
 from pgadmin.tools.sqleditor.command import QueryToolCommand, ObjectRegistry, \
     SQLFilter
@@ -67,8 +67,9 @@ from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
     get_explain_query_length
+from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
-    convert_connection_parameter
+    convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
 
 MODULE_NAME = 'sqleditor'
@@ -107,7 +108,6 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.initialize_sqleditor',
             'sqleditor.initialize_sqleditor_with_did',
             'sqleditor.filter_validate',
-            'sqleditor.filter',
             'sqleditor.panel',
             'sqleditor.close',
             'sqleditor.update_sqleditor_connection',
@@ -176,12 +176,6 @@ def index():
     return bad_request(
         errormsg=gettext('This URL cannot be requested directly.')
     )
-
-
-@blueprint.route("/filter", endpoint='filter')
-@pga_login_required
-def show_filter():
-    return render_template(MODULE_NAME + '/filter.html')
 
 
 @blueprint.route(
@@ -295,6 +289,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     methods=["POST"],
     endpoint='panel'
 )
+@pga_login_required
 def panel(trans_id):
     """
     This method calls index.html to render the data grid.
@@ -375,6 +370,7 @@ def panel(trans_id):
     '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>',
     methods=["POST"], endpoint='initialize_sqleditor'
 )
+@permissions_required(AllPermissionTypes.tools_query_tool)
 @pga_login_required
 def initialize_sqleditor(trans_id, sgid, sid, did=None):
     """
@@ -794,7 +790,11 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        conn.connect()
+        status, errmsg = conn.connect()
+        if not status:
+            current_app.logger.error(errmsg)
+            return (False, internal_server_error(errormsg=str(errmsg)),
+                    None, None, None)
 
     return True, None, conn, trans_obj, session_obj
 
@@ -821,6 +821,9 @@ def start_view_data(trans_id):
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
+
+    if not status and error_msg and type(error_msg) is Response:
+        return error_msg
 
     # get the default connection as current connection which is attached to
     # trans id holds the cursor which has query result so we cannot use that
@@ -1976,22 +1979,6 @@ def auto_complete(trans_id):
     return make_json_response(data={'status': status, 'result': res})
 
 
-@blueprint.route("/sqleditor.js")
-@pga_login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template(
-            "sqleditor/js/sqleditor.js",
-            tab_size=blueprint.tab_size.get(),
-            use_spaces=blueprint.use_spaces.get(),
-            _=gettext
-        ),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 @blueprint.route('/load_file/', methods=["PUT", "POST"], endpoint='load_file')
 @pga_login_required
 def load_file():
@@ -2156,7 +2143,8 @@ def start_query_download_tool(trans_id):
                 sql = value
             if key == 'query_commited':
                 query_commited = (
-                    eval(value) if isinstance(value, str) else value
+                    value.lower() in ('true', '1') if isinstance(
+                        value, str) else value
                 )
         if not sql:
             sql = trans_obj.get_sql(sync_conn)
@@ -2425,15 +2413,8 @@ def get_new_connection_database(sgid, sid=None):
             if sid:
                 template_path = 'databases/sql/#{0}#'.format(manager.version)
                 last_system_oid = 0
-                server_node_res = manager
 
-                db_disp_res = None
-                params = None
-                if server_node_res and server_node_res.db_res:
-                    db_disp_res = ", ".join(
-                        ['%s'] * len(server_node_res.db_res.split(','))
-                    )
-                    params = tuple(server_node_res.db_res.split(','))
+                db_disp_res, params = get_db_disp_restriction(manager)
                 sql = render_template(
                     "/".join([template_path, _NODES_SQL]),
                     last_system_oid=last_system_oid,

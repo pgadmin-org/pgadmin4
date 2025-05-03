@@ -55,13 +55,7 @@ export default function ToolView({dockerObj}) {
       } else {
         // Handler here will return which layout instance the tool should go in
         // case of workspace layout.
-        let handler = pgAdmin.Browser.getDockerHandler?.(panelId);
-        if(!handler) {
-          handler = {
-            docker: dockerObj,
-            focus: ()=>{},
-          };
-        }
+        let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
         handler.focus();
         handler.docker.openTab({
           id: panelId,

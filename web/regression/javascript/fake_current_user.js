@@ -9,5 +9,6 @@
 
 module.exports = {
   'id': 'pgadmin4@pgadmin.org',
-  'current_auth_source': 'internal'
+  'current_auth_source': 'internal',
+  'auth_sources': ['internal'],
 };

@@ -522,11 +522,19 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "TunnelUsername", server.tunnel_username)
             add_value(attr_dict, "TunnelAuthentication",
                       server.tunnel_authentication)
+            add_value(attr_dict, "TunnelIdentityFile",
+                      server.tunnel_identity_file)
+            add_value(attr_dict, "TunnelKeepAlive",
+                      server.tunnel_keep_alive)
             add_value(attr_dict, "KerberosAuthentication",
                       server.kerberos_conn),
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
             add_value(attr_dict, "Tags", server.tags)
+            add_value(attr_dict, "PrepareThreshold",
+                      server.prepare_threshold)
+            add_value(attr_dict, "PostConnectionSQL",
+                      server.post_connection_sql)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True
@@ -759,6 +767,12 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_authentication = \
                 obj.get("TunnelAuthentication", None)
 
+            new_server.tunnel_identity_file = \
+                obj.get("TunnelIdentityFile", None)
+
+            new_server.tunnel_keep_alive = \
+                obj.get("TunnelKeepAlive", None)
+
             new_server.shared = obj.get("Shared", None)
 
             new_server.shared_username = obj.get("SharedUsername", None)
@@ -766,6 +780,10 @@ def load_database_servers(input_file, selected_servers,
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
             new_server.tags = obj.get("Tags", None)
+
+            new_server.prepare_threshold = obj.get("PrepareThreshold", None)
+
+            new_server.post_connection_sql = obj.get("PostConnectionSQL", None)
 
             # if desktop mode or server mode with
             # ENABLE_SERVER_PASS_EXEC_CMD flag is True
@@ -966,3 +984,16 @@ def get_safe_post_logout_redirect():
         if url.startswith(item):
             return url
     return url_for('security.login')
+
+
+def check_extension_exists(conn, extension_name):
+    sql = f"SELECT * FROM pg_extension WHERE extname = '{extension_name}'"
+    status, res = conn.execute_scalar(sql)
+    if status:
+        if res:
+            return status, True
+        else:
+            return status, False
+    else:
+        # If the query fails, we assume the extension does not exist
+        return status, res
