@@ -121,7 +121,7 @@ const StyledGrid = styled(Grid)(({theme}) => ({
 }));
 
 /* Wrapper on any form component to add label, error indicator and help message */
-export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='' }) {
+export function FormInput({ children, error, className, label, helpMessage, required, testcid, lid, withContainer=true, labelGridBasis=3, controlGridBasis=9, labelTooltip='', errorMessage='' }) {
 
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
@@ -163,6 +163,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
         <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
+        {errorMessage && <FormHelperText variant="outlined" error= {true} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{HTMLReactParse(errorMessage)}</FormHelperText> }
       </Grid>
     </StyledGrid>
   );
@@ -179,7 +180,8 @@ FormInput.propTypes = {
   withContainer: PropTypes.bool,
   labelGridBasis: PropTypes.number,
   controlGridBasis: PropTypes.number,
-  labelTooltip: PropTypes.string
+  labelTooltip: PropTypes.string,
+  errorMessage: PropTypes.string
 };
 
 export function InputSQL({ value, options={}, onChange, className, controlProps, inputRef, ...props }) {
@@ -917,7 +919,7 @@ InputSelectNonSearch.propTypes = {
 };
 
 export const InputSelect = forwardRef(({
-  cid, helpid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, ...props }, ref) => {
+  cid, helpid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, onError, ...props }, ref) => {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
@@ -953,6 +955,11 @@ export const InputSelect = forwardRef(({
           }
           setFinalOptions([res || [], false]);
         }
+      })
+      .catch((err)=>{
+        let error_msg = err.response.data.errormsg;
+        onError?.(error_msg);
+        setFinalOptions([[], false]);
       });
     return () => umounted = true;
   }, [optionsReloadBasis]);
@@ -1052,14 +1059,20 @@ InputSelect.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   readonly: PropTypes.bool,
+  onError: PropTypes.func,
 };
 
 
 export function FormInputSelect({
   hasError, required, className, label, helpMessage, testcid, labelTooltip, ...props }) {
+  const [selectError, setSelectError] = useState(null);
+  const handleSelectError = (errorMessage) => {
+    setSelectError(errorMessage);
+  };
+
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
-      <InputSelect ref={props.inputRef} {...props} />
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip} errorMessage={selectError}>
+      <InputSelect ref={props.inputRef} onError={handleSelectError} {...props} />
     </FormInput>
   );
 }
