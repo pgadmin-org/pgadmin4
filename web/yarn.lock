@@ -12661,9 +12661,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-dock@npm:^3.2.9":
-  version: 3.3.0
-  resolution: "rc-dock@npm:3.3.0"
+"rc-dock@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "rc-dock@npm:3.3.1"
   dependencies:
     classnames: ^2.5.1
     lodash: ^4.17.21
@@ -12674,7 +12674,7 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 8a01203ad5c0c6ac4b7fe823d83289e2105a904526db11c0a74709975245204da8df98d75e01219cf7a2d6bdf8ee451eede0ff8c908d912233672aa468b1588a
+  checksum: 94e6db8abc38db6a0ef83f893f5a81fb416a1dd873c60c898aaf305d4c30ff666c747b0fb375ba799b140da73ddbd0acccac69b27330b9a878cd76fc276c2d13
   languageName: node
   linkType: hard
 
@@ -13682,7 +13682,7 @@ __metadata:
     postcss-loader: ^8.1.1
     process: ^0.11.10
     prop-types: ^15.7.2
-    rc-dock: ^3.2.9
+    rc-dock: ^3.3.1
     react: ^18.2.0
     react-arborist: ^3.2.0
     react-aspen: ^1.1.0
