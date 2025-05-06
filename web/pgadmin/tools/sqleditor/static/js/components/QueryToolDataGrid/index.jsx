@@ -380,7 +380,11 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     const end = isShiftClick && lastSelectedColumn ? Math.max(columnIdx, lastSelectedColumn) : columnIdx;
     for (let i = start; i <= end; i++) {
       if (isSelected) {
-        newSelectedCols.delete(i);
+        if (newSelectedCols.size == 1 || !isShiftClick) {
+          newSelectedCols.delete(i);
+        } else{
+          newSelectedCols.delete(i+1);
+        }
       }
       else {
         newSelectedCols.add(i);
