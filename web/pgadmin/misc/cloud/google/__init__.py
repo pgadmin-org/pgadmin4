@@ -159,7 +159,9 @@ def get_projects():
     """
     if 'google' in session and 'google_obj' in session['google']:
         google_obj = pickle.loads(session['google']['google_obj'])
-        projects_list = google_obj.get_projects()
+        projects_list,error = google_obj.get_projects()
+        if error:
+            return bad_request(errormsg=error)
         return make_json_response(data=projects_list)
 
 
@@ -175,8 +177,10 @@ def get_regions(project_id):
     if 'google' in session and 'google_obj' in session['google'] \
             and project_id:
         google_obj = pickle.loads(session['google']['google_obj'])
-        regions_list = google_obj.get_regions(project_id)
+        regions_list,error = google_obj.get_regions(project_id)
         session['google']['google_obj'] = pickle.dumps(google_obj, -1)
+        if error:
+            return bad_request(errormsg=error)
         return make_json_response(data=regions_list)
     else:
         return make_json_response(data=[])
@@ -216,7 +220,10 @@ def get_instance_types(project_id, region, instance_class):
         google_obj = pickle.loads(session['google']['google_obj'])
         instance_types_dict = google_obj.get_instance_types(
             project_id, region)
-        instance_types_list = instance_types_dict.get(instance_class, [])
+        instance_types_list, error = (
+            instance_types_dict.get(instance_class, []))
+        if error:
+            return bad_request(errormsg=error)
         return make_json_response(data=instance_types_list)
     else:
         return make_json_response(data=[])
@@ -232,7 +239,9 @@ def get_database_versions():
     """
     if 'google' in session and 'google_obj' in session['google']:
         google_obj = pickle.loads(session['google']['google_obj'])
-        db_version_list = google_obj.get_database_versions()
+        db_version_list, error = google_obj.get_database_versions()
+        if error:
+            return bad_request(errormsg=error)
         return make_json_response(data=db_version_list)
     else:
         return make_json_response(data=[])
@@ -431,16 +440,22 @@ class Google:
         :return:
         """
         projects = []
+        error = None
         credentials = self._get_credentials(self._scopes)
         service = discovery.build('cloudresourcemanager',
                                   self._cloud_resource_manager_api_version,
                                   credentials=credentials)
-        req = service.projects().list()
-        res = req.execute()
-        for project in res.get('projects', []):
-            projects.append({'label': project['projectId'],
-                             'value': project['projectId']})
-        return projects
+        try:
+            req = service.projects().list()
+            res = req.execute()
+            for project in res.get('projects', []):
+                projects.append({'label': project['projectId'],
+                                 'value': project['projectId']})
+        except HttpError as e:
+            error = e.reason
+        except Exception as e:
+            error = str(e)
+        return projects, error
 
     def get_regions(self, project):
         """
@@ -453,20 +468,23 @@ class Google:
         service = discovery.build('compute',
                                   self._compute_api_version,
                                   credentials=credentials)
+        error = None
         try:
             req = service.regions().list(project=project)
             res = req.execute()
-        except HttpError:
-            self._regions = []
-            return self._regions
-        for item in res.get('items', []):
-            region_name = item['name']
-            self._regions.append({'label': region_name, 'value': region_name})
-            region_zones = item.get('zones', [])
-            region_zones = list(
-                map(lambda region: region.split('/')[-1], region_zones))
-            self._availability_zones[region_name] = region_zones
-        return self._regions
+            for item in res.get('items', []):
+                region_name = item['name']
+                self._regions.append(
+                    {'label': region_name, 'value': region_name})
+                region_zones = item.get('zones', [])
+                region_zones = list(
+                    map(lambda region: region.split('/')[-1], region_zones))
+                self._availability_zones[region_name] = region_zones
+        except HttpError as e:
+            error = e.reason
+        except Exception as e:
+            error = str(e)
+        return self._regions, error
 
     def get_availability_zones(self, region):
         """
@@ -489,35 +507,47 @@ class Google:
         standard_instances = []
         shared_instances = []
         high_mem = []
+        instance_types = {}
+        error = None
         credentials = self._get_credentials(self._scopes)
         service = discovery.build('sqladmin',
                                   self._sqladmin_api_version,
                                   credentials=credentials)
-        req = service.tiers().list(project=project)
-        res = req.execute()
-        for item in res.get('items', []):
-            if region in item.get('region', []):
-                if item['tier'].find('standard') != -1:
-                    vcpu = item['tier'].split('-')[-1]
-                    mem = round(int(item['RAM']) / (1024 * 1024))
-                    label = vcpu + ' vCPU, ' + str(round(mem / 1024)) + ' GB'
-                    value = 'db-custom-' + str(vcpu) + '-' + str(mem)
-                    standard_instances.append({'label': label, 'value': value})
-                elif item['tier'].find('highmem') != -1:
-                    vcpu = item['tier'].split('-')[-1]
-                    mem = round(int(item['RAM']) / (1024 * 1024))
-                    label = vcpu + ' vCPU, ' + str(round(mem / 1024)) + ' GB'
-                    value = 'db-custom-' + str(vcpu) + '-' + str(mem)
-                    high_mem.append({'label': label, 'value': value})
-                else:
-                    label = '1 vCPU, ' + str(
-                        round((int(item['RAM']) / 1073741824), 2)) + ' GB'
-                    value = item['tier']
-                    shared_instances.append({'label': label, 'value': value})
-        instance_types = {'standard': standard_instances,
-                          'highmem': high_mem,
-                          'shared': shared_instances}
-        return instance_types
+        try:
+            req = service.tiers().list(project=project)
+            res = req.execute()
+            for item in res.get('items', []):
+                if region in item.get('region', []):
+                    if item['tier'].find('standard') != -1:
+                        vcpu = item['tier'].split('-')[-1]
+                        mem = round(int(item['RAM']) / (1024 * 1024))
+                        label = (
+                            vcpu + ' vCPU, ' + str(round(mem / 1024)) + ' GB')
+                        value = 'db-custom-' + str(vcpu) + '-' + str(mem)
+                        standard_instances.append(
+                            {'label': label, 'value': value})
+                    elif item['tier'].find('highmem') != -1:
+                        vcpu = item['tier'].split('-')[-1]
+                        mem = round(int(item['RAM']) / (1024 * 1024))
+                        label = \
+                            (vcpu + ' vCPU, ' + str(round(mem / 1024)) + ' GB')
+                        value = 'db-custom-' + str(vcpu) + '-' + str(mem)
+                        high_mem.append(
+                            {'label': label, 'value': value})
+                    else:
+                        label = '1 vCPU, ' + str(
+                            round((int(item['RAM']) / 1073741824), 2)) + ' GB'
+                        value = item['tier']
+                        shared_instances.append(
+                            {'label': label, 'value': value})
+            instance_types = {'standard': standard_instances,
+                              'highmem': high_mem,
+                              'shared': shared_instances}
+        except HttpError as e:
+            error = e.reason
+        except Exception as e:
+            error = str(e)
+        return instance_types, error
 
     def get_database_versions(self):
         """
@@ -526,17 +556,23 @@ class Google:
         """
         pg_database_versions = []
         database_versions = []
+        error = None
         credentials = self._get_credentials(self._scopes)
         service = discovery.build('sqladmin',
                                   self._sqladmin_api_version,
                                   credentials=credentials)
-        req = service.flags().list()
-        res = req.execute()
-        for item in res.get('items', []):
-            if item.get('name', '') == 'max_parallel_workers':
-                pg_database_versions = item.get('appliesTo', [])
-        for version in pg_database_versions:
-            label = (version.title().split('_')[0])[0:7] \
-                + 'SQL ' + version.split('_')[1]
-            database_versions.append({'label': label, 'value': version})
-        return database_versions
+        try:
+            req = service.flags().list()
+            res = req.execute()
+            for item in res.get('items', []):
+                if item.get('name', '') == 'max_parallel_workers':
+                    pg_database_versions = item.get('appliesTo', [])
+            for version in pg_database_versions:
+                label = (version.title().split('_')[0])[0:7] \
+                    + 'SQL ' + version.split('_')[1]
+                database_versions.append({'label': label, 'value': version})
+        except HttpError as e:
+            error = e.reason
+        except Exception as e:
+            error = str(e)
+        return database_versions, error
