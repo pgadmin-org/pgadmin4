@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Box, Grid, useTheme } from '@mui/material';
+import { Box, Grid2 as Grid, useTheme } from '@mui/material';
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import gettext from 'sources/gettext';
@@ -406,14 +406,14 @@ export default function PGDReplication({preferences, treeNodeInfo, pageVisible, 
   return (
     <Box height="100%" display="flex" flexDirection="column">
       <Grid container spacing={0.5}>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='sessions-graph' title={gettext('Replication lag (Time)')}
             datasets={replicationLagTimeData.datasets} errorMsg={errorMsg} isTest={props.isTest}>
             <StreamingChart data={replicationLagTimeData} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
               valueFormatter={(v)=>toPrettySize(v, 's')} />
           </ChartContainer>
         </Grid>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='tps-graph' title={gettext('Replication lag (Size)')} datasets={replicationLagBytesData.datasets} errorMsg={errorMsg} isTest={props.isTest}>
             <StreamingChart data={replicationLagBytesData} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
               valueFormatter={toPrettySize} />

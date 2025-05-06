@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 
@@ -693,7 +693,7 @@ export function SchemaDiffCompare({ params }) {
           direction="row"
           alignItems="center"
         >
-          <Grid item lg={7} md={7} sm={10} xs={10}>
+          <Grid size={{ lg: 7, md: 7, sm: 10, xs: 10 }}>
             <InputComponent
               label={gettext('Select Source')}
               serverList={sourceGroupServerList}
@@ -706,7 +706,7 @@ export function SchemaDiffCompare({ params }) {
               onServerSchemaChange={handleServerSchemaChange}
             ></InputComponent>
           </Grid>
-          <Grid item lg={5} md={5} sm={2} xs={2} sx={{  display: 'flex',flexDirection: 'row-reverse',paddingRight: '0.3rem'}}>
+          <Grid sx={{  display: 'flex',flexDirection: 'row-reverse',paddingRight: '0.3rem'}} size={{ lg: 5, md: 5, sm: 2, xs: 2 }}>
             <PgButtonGroup size="small">
               <PgIconButton data-test='schema-diff-help' title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
             </PgButtonGroup>
@@ -717,7 +717,7 @@ export function SchemaDiffCompare({ params }) {
           direction="row"
           alignItems="center"
         >
-          <Grid item lg={7} md={7} sm={10} xs={10}>
+          <Grid size={{ lg: 7, md: 7, sm: 10, xs: 10 }}>
             <InputComponent
               label={gettext('Select Target')}
               serverList={sourceGroupServerList}
@@ -731,7 +731,7 @@ export function SchemaDiffCompare({ params }) {
             ></InputComponent>
           </Grid>
 
-          <Grid item lg={5} md={5} sm={12} xs={12}>
+          <Grid size={{ lg: 5, md: 5, sm: 12, xs: 12 }}>
             <SchemaDiffButtonComponent
               sourceData={{
                 'sid': selectedSourceSid,

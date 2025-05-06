@@ -4,7 +4,7 @@ import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstan
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
-import { Box, Grid, List, ListItem, ListItemButton, ListSubheader } from '@mui/material';
+import { Box, Grid2 as Grid, List, ListItem, ListItemButton, ListSubheader } from '@mui/material';
 import url_for from 'sources/url_for';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import moment from 'moment';
@@ -328,14 +328,14 @@ function QueryHistoryDetails({entry}) {
       {entry.info && <Box className='QuerySources-infoHeader'>{entry.info}</Box>}
       <Box padding="0.5rem" data-label="history-detail">
         <Grid container>
-          <Grid item sm={4}>{getDateFormatted(entry.start_time) + ' ' + getTimeFormatted(entry.start_time)}</Grid>
-          <Grid item sm={4}>{entry?.row_affected > 0 && entry.row_affected}</Grid>
-          <Grid item sm={4}>{entry.total_time}</Grid>
+          <Grid size={{ sm: 4 }}>{getDateFormatted(entry.start_time) + ' ' + getTimeFormatted(entry.start_time)}</Grid>
+          <Grid size={{ sm: 4 }}>{entry?.row_affected > 0 && entry.row_affected}</Grid>
+          <Grid size={{ sm: 4 }}>{entry.total_time}</Grid>
         </Grid>
         <Grid container>
-          <Grid item sm={4}>{gettext('Date')}</Grid>
-          <Grid item sm={4}>{gettext('Rows affected')}</Grid>
-          <Grid item sm={4}>{gettext('Duration')}</Grid>
+          <Grid size={{ sm: 4 }}>{gettext('Date')}</Grid>
+          <Grid size={{ sm: 4 }}>{gettext('Rows affected')}</Grid>
+          <Grid size={{ sm: 4 }}>{gettext('Duration')}</Grid>
         </Grid>
         <Box className='QuerySources-detailsQuery'>
           <DefaultButton size="xs" className='QuerySources-copyBtn' onClick={onCopyClick}>{copyText}</DefaultButton>

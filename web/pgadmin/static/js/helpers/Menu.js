@@ -176,7 +176,7 @@ export class MenuItem {
       name: label,
       disabled: is_disabled,
       callback: self.callback.bind(self),
-      ...(sub_ctx_item && Object.keys(sub_ctx_item).length > 0) && { items: sub_ctx_item }
+      ...((sub_ctx_item && Object.keys(sub_ctx_item).length > 0) && { items: sub_ctx_item })
     };
   }
 

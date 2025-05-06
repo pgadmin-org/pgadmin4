@@ -12,7 +12,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -222,36 +222,34 @@ export function MemoryWrapper(props) {
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
 
   return (
-    (
-      <Box display="flex" flexDirection="column" height="100%">
-        <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
-          <Grid item md={6}>
-            <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-              <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
-                valueFormatter={toPrettySize}/>
-            </ChartContainer>
-          </Grid>
-          <Grid item md={6}>
-            <ChartContainer id='sm-graph' title={gettext('Swap memory')} datasets={props.swapMemoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-              <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
-                valueFormatter={toPrettySize}/>
-            </ChartContainer>
-          </Grid>
+    <Box display="flex" flexDirection="column" height="100%">
+      <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
+        <Grid size={{ md: 6 }}>
+          <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+              valueFormatter={toPrettySize}/>
+          </ChartContainer>
         </Grid>
-        <Box flexGrow={1} minHeight={0}>
-          <SectionContainer title={gettext('Process memory usage')}>
-            <PgTable
-              columns={props.tableHeader}
-              data={props.processMemoryUsageStats}
-              msg={props.errorMsg}
-              type={'panel'}
-              caveTable={false}
-              tableNoBorder={false}
-            ></PgTable>
-          </SectionContainer>
-        </Box>
+        <Grid size={{ md: 6 }}>
+          <ChartContainer id='sm-graph' title={gettext('Swap memory')} datasets={props.swapMemoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+              valueFormatter={toPrettySize}/>
+          </ChartContainer>
+        </Grid>
+      </Grid>
+      <Box flexGrow={1} minHeight={0}>
+        <SectionContainer title={gettext('Process memory usage')}>
+          <PgTable
+            columns={props.tableHeader}
+            data={props.processMemoryUsageStats}
+            msg={props.errorMsg}
+            type={'panel'}
+            caveTable={false}
+            tableNoBorder={false}
+          ></PgTable>
+        </SectionContainer>
       </Box>
-    )
+    </Box>
   );
 }
 

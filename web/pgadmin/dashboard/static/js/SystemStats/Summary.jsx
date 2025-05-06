@@ -14,7 +14,7 @@ import url_for from 'sources/url_for';
 import getApiInstance from 'sources/api_instance';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -250,26 +250,26 @@ function SummaryWrapper(props) {
   return (
     <>
       <Grid container spacing={0.5} sx={{height: 'auto', padding: '0px !important', marginBottom: '4px'}}>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <div className='Summary-tableContainer'>
             <div className='Summary-containerHeader'>{gettext('OS information')}</div>
             <SummaryTable data={props.osStats} />
           </div>
         </Grid>
-        <Grid item md={6} sx={{padding: '4px'}}>
+        <Grid sx={{padding: '4px'}} size={{ md: 6 }}>
           <ChartContainer id='hpc-graph' title={gettext('Process & handle count')} datasets={props.processHandleCount.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.processHandleCount} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} showSecondAxis={true} />
           </ChartContainer>
         </Grid>
       </Grid>
       <Grid container spacing={0.5} sx={{height: 'auto', padding: '0px !important', marginBottom: '4px'}}>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <div className='Summary-tableContainer'>
             <div className='Summary-containerHeader'>{gettext('CPU information')}</div>
             <SummaryTable data={props.cpuStats} />
           </div>
         </Grid>
-        <Grid item md={6} sm={12}>
+        <Grid size={{ md: 6, sm: 12 }}>
         </Grid>
       </Grid>
     </>

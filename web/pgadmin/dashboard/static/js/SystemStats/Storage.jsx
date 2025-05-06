@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import url_for from 'sources/url_for';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -424,7 +424,7 @@ export function StorageWrapper(props) {
         <DiskStatsTable tableHeader={props.tableHeader} data={props.diskStats} />
       </div>
       <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
-        <Grid item md={6} sm={12}>
+        <Grid size={{ md: 6, sm: 12 }}>
           <ChartContainer
             id='t-space-graph'
             title={''}
@@ -450,7 +450,7 @@ export function StorageWrapper(props) {
             />
           </ChartContainer>
         </Grid>
-        <Grid item md={6} sm={12}>
+        <Grid size={{ md: 6, sm: 12 }}>
           <ChartContainer id='ua-space-graph' title={''} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <BarChart data={{
               labels: props.diskStats.map((item, index) => getLabel(item, index)),
@@ -502,7 +502,7 @@ export function StorageWrapper(props) {
         <SectionContainer key={drive} title={drive} style={{minHeight: 'unset', height: 'auto', marginBottom: '0.5px'}}>
           <Grid container spacing={0.5} p={0.5}>
             {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
-              <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
+              <Grid key={`${type}-${innerKeyIndex}`} size={{ md: 4, sm: 6 }}>
                 <ChartContainer id={`io-graph-${type}`} title={getChartContainerTitle(type)} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
                   <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
                     valueFormatter={(v)=>{

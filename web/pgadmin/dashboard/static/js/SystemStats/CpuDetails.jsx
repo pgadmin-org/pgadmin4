@@ -6,14 +6,14 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
- 
+
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer.jsx';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid2 as Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart.jsx';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -217,14 +217,14 @@ export function CPUWrapper(props) {
     lineBorderWidth: props.lineBorderWidth,
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   return (
-    (<Box display="flex" flexDirection="column" height="100%">
+    <Box display="flex" flexDirection="column" height="100%">
       <Grid container spacing={0.5} sx={{marginBottom: '4px'}}>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='cu-graph' title={gettext('CPU usage')} datasets={props.cpuUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.cpuUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </Grid>
-        <Grid item md={6} >
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='la-graph' title={gettext('Load average')} datasets={props.loadAvgInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.loadAvgInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
@@ -243,7 +243,6 @@ export function CPUWrapper(props) {
         </SectionContainer>
       </Box>
     </Box>
-    )
   );
 }
 

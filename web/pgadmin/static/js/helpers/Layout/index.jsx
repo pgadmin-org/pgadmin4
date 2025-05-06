@@ -247,7 +247,7 @@ export class LayoutDocker {
         if(child.children) {
           flattenLayout(child, arr);
         } else {
-          arr.push(...child.tabs??[]);
+          arr.push(...(child.tabs ?? []));
         }
       });
     };

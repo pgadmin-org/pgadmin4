@@ -16,7 +16,7 @@ import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
-import { Grid, useTheme } from '@mui/material';
+import { Grid2 as Grid, useTheme } from '@mui/material';
 import { getChartColor, toPrettySize } from '../../../static/js/utils';
 
 export const X_AXIS_LENGTH = 75;
@@ -253,30 +253,30 @@ export function GraphsWrapper(props) {
   return (
     <>
       <Grid container spacing={0.5}>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')}
             datasets={props.sessionStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.sessionStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} valueFormatter={(v)=>toPrettySize(v, '')}/>
           </ChartContainer>
         </Grid>
-        <Grid item md={6}>
+        <Grid size={{ md: 6 }}>
           <ChartContainer id='tps-graph' title={gettext('Transactions per second')} datasets={props.tpsStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.tpsStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} valueFormatter={(v)=>toPrettySize(v, '')}/>
           </ChartContainer>
         </Grid>
       </Grid>
       <Grid container spacing={0.5} style={{marginTop: '4px', marginBottom: '4px'}}>
-        <Grid item md={4}>
+        <Grid size={{ md: 4 }}>
           <ChartContainer id='ti-graph' title={gettext('Tuples in')} datasets={props.tiStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.tiStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} valueFormatter={(v)=>toPrettySize(v, '')}/>
           </ChartContainer>
         </Grid>
-        <Grid item md={4}>
+        <Grid size={{ md: 4 }}>
           <ChartContainer id='to-graph' title={gettext('Tuples out')} datasets={props.toStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.toStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} valueFormatter={(v)=>toPrettySize(v, '')}/>
           </ChartContainer>
         </Grid>
-        <Grid item md={4}>
+        <Grid size={{ md: 4 }}>
           <ChartContainer id='bio-graph' title={gettext('Block I/O')} datasets={props.bioStats.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.bioStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} valueFormatter={(v)=>toPrettySize(v, '')}/>
           </ChartContainer>

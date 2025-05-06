@@ -45,9 +45,9 @@ export function clearBreakpoints(view) {
   });
 }
 
-const breakpointMarker = new class extends GutterMarker {
+const breakpointMarker = new (class extends GutterMarker {
   toDOM() { return document.createTextNode('●'); }
-};
+});
   
 const breakpointGutter = [
   breakpointField,

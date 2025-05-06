@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import { FormGroup, Grid, Typography } from '@mui/material';
+import { FormGroup, Grid2 as Grid, Typography } from '@mui/material';
 import React from 'react';
 import { InputText } from './FormComponents';
 import PropTypes from 'prop-types';
@@ -40,19 +40,19 @@ export default function QueryThresholds({ value, onChange }) {
         direction="row"
         alignItems="center"
       >
-        <Grid item lg={2} md={2} sm={2} xs={12}>
+        <Grid size={{ lg: 2, md: 2, sm: 2, xs: 12 }}>
           <Typography>{gettext('Warning')}</Typography>
         </Grid>
-        <Grid item lg={2} md={2} sm={2} xs={12}>
+        <Grid size={{ lg: 2, md: 2, sm: 2, xs: 12 }}>
           <InputText cid={warningCid} helpid={warninghelpid} type='numeric' value={value?.warning} onChange={onWarningChange} />
         </Grid>
-        <Grid item lg={2} md={2} sm={2} xs={12} sx={{ textAlign: 'center' }}>
+        <Grid sx={{ textAlign: 'center' }} size={{ lg: 2, md: 2, sm: 2, xs: 12 }}>
           <Typography>{gettext('Alert')}</Typography>
         </Grid>
-        <Grid item lg={2} md={2} sm={2} xs={12}>
+        <Grid size={{ lg: 2, md: 2, sm: 2, xs: 12 }}>
           <InputText cid={alertCid} helpid={alerthelpid} type='numeric' value={value?.alert} onChange={onAlertChange} />
         </Grid>
-        <Grid item lg={4} md={4} sm={4} xs={12} sx={{paddingLeft: 10 }}>
+        <Grid sx={{paddingLeft: 10 }} size={{ lg: 4, md: 4, sm: 4, xs: 12 }}>
           <Typography>{gettext('(in minutes)')}</Typography>
         </Grid>
       </Grid>

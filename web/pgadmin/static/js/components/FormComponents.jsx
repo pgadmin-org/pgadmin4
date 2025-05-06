@@ -12,7 +12,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } 
 import { styled } from '@mui/material/styles';
 import {
   Box, FormControl, OutlinedInput, FormHelperText, ToggleButton, ToggleButtonGroup,
-  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
+  Grid2 as Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
 } from '@mui/material';
 import ErrorRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
@@ -128,13 +128,13 @@ export function FormInput({ children, error, className, label, helpMessage, requ
   if(!withContainer) {
     return (
       (<>
-        <StyledGrid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
+        <StyledGrid size={{ lg: labelGridBasis, md: labelGridBasis, sm: 12, xs: 12}}>
           <InputLabel id={lid} htmlFor={lid ? undefined : cid} className={'Form-label ' + (error ? 'Form-labelError' : null)} required={required}>
             {label}
             <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
           </InputLabel>
         </StyledGrid>
-        <StyledGrid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
+        <StyledGrid size={{ lg: controlGridBasis, md: controlGridBasis, sm: 12, xs: 12}}>
           <FormControl error={Boolean(error)} fullWidth>
             {React.cloneElement(children, { cid, helpid })}
           </FormControl>
@@ -150,7 +150,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
   </InputLabel>;
   return (
     <StyledGrid container spacing={0} className={className} data-testid="form-input">
-      <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
+      <Grid size={{ lg: labelGridBasis, md: labelGridBasis, sm: 12, xs: 12 }}>
         {
           labelTooltip ?
             <Tooltip title={labelTooltip}>
@@ -158,7 +158,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
             </Tooltip> : labelComponent
         }
       </Grid>
-      <Grid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
+      <Grid size={{ lg: controlGridBasis, md: controlGridBasis, sm: 12, xs: 12 }}>
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
@@ -392,7 +392,7 @@ export const InputText = forwardRef(({
 
   const filteredProps = _.pickBy(props, (_v, key)=>(
     /* When used in ButtonGroup, following props should be skipped */
-    !['color', 'disableElevation', 'disableFocusRipple', 'disableRipple'].includes(key)
+    (!['color', 'disableElevation', 'disableFocusRipple', 'disableRipple'].includes(key))
   ));
 
   return (

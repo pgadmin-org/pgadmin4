@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import { Grid, FormHelperText } from '@mui/material';
+import { Grid2 as Grid, FormHelperText } from '@mui/material';
 import React, { useMemo } from 'react';
 import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';
@@ -23,10 +23,10 @@ export default function SelectThemes({onChange, helpMessage, ...props}) {
   const helpid = `h${cid}`;
   return (
     <Grid container direction="column" spacing={0.5}>
-      <Grid item lg={12} md={12} sm={12} xs={12}>
+      <Grid size={{ lg: 12, md: 12, sm: 12, xs: 12 }}>
         <InputSelect ref={props.inputRef} onChange={onChange} {...props} />
       </Grid>
-      <Grid item lg={12} md={12} sm={12} xs={12} sx={{paddingTop: 10}}>
+      <Grid sx={{paddingTop: 10}} size={{ lg: 12, md: 12, sm: 12, xs: 12 }}>
         { previewSrc && <>
           <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
           <img className='img-fluid mx-auto d-block border' src={previewSrc} alt={gettext('Preview not available...')} />
