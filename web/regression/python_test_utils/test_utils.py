@@ -955,6 +955,25 @@ def configure_preferences(default_binary_path=None):
             ('False', pref_breadcrumbs_enable.pid)
         )
 
+    # Disable workspace save feature
+    misc_pref = Preferences.module('misc')
+    save_the_workspace = misc_pref.preference('save_the_workspace')
+
+    user_pref = cur.execute(
+        select_preference_query, (save_the_workspace.pid,)
+    )
+
+    if len(user_pref.fetchall()) == 0:
+        cur.execute(
+            insert_preferences_query,
+            (save_the_workspace.pid, 1, 'False')
+        )
+    else:
+        cur.execute(
+            update_preference_query,
+            ('False', save_the_workspace.pid)
+        )
+
     conn.commit()
     conn.close()
 
