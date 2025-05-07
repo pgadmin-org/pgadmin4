@@ -66,21 +66,7 @@ document.createRange = () => {
   return range;
 };
 
-// for virtual tables, height should exist.
 Element.prototype.getBoundingClientRect = jest.fn(function () {
-  if (this.classList?.contains('pgrt')) {
-    return {
-      width: 400,
-      height: 400,
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      x: 0,
-      y: 0,
-      toJSON: () => {},
-    };
-  }
   return {
     width: 0,
     height: 0,
@@ -92,6 +78,16 @@ Element.prototype.getBoundingClientRect = jest.fn(function () {
     y: 0,
     toJSON: () => {},
   };
+});
+
+
+// for virtual tables, height and width should exist.
+// https://github.com/TanStack/virtual/issues/641#issuecomment-2851908893
+Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+  value: 800
+});
+Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+  value: 800
 });
 
 Object.defineProperty(global.SVGElement.prototype, 'getBBox', {
