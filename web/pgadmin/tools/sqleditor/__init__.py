@@ -267,6 +267,9 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
             command_obj.set_data_sorting(
                 dict(data_sorting=old_trans_obj._data_sorting), True)
 
+    # Set the value of database name, that will be used later
+    command_obj.dbname = conn.db if conn.db else None
+
     # Use pickle to store the command object which will be used later by the
     # sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -781,7 +784,9 @@ def check_transaction_status(trans_id, auto_comp=False):
             conn_id=conn_id,
             auto_reconnect=False,
             use_binary_placeholder=True,
-            array_to_string=True
+            array_to_string=True,
+            **({"database": trans_obj.dbname} if hasattr(
+                trans_obj, 'dbname') else {})
         )
     except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
         raise
@@ -790,11 +795,7 @@ def check_transaction_status(trans_id, auto_comp=False):
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
     if connect and conn and not conn.connected():
-        status, errmsg = conn.connect()
-        if not status:
-            current_app.logger.error(errmsg)
-            return (False, internal_server_error(errormsg=str(errmsg)),
-                    None, None, None)
+        conn.connect()
 
     return True, None, conn, trans_obj, session_obj
 
@@ -832,7 +833,10 @@ def start_view_data(trans_id):
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
             trans_obj.sid)
-        default_conn = manager.connection(did=trans_obj.did)
+        default_conn = manager.connection(did=trans_obj.did,
+                                          ** ({"database": trans_obj.dbname}
+                                              if hasattr(trans_obj, 'dbname')
+                                              else {}))
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
         raise
     except Exception as e:
@@ -840,7 +844,7 @@ def start_view_data(trans_id):
         return internal_server_error(errormsg=str(e))
 
     # Connect to the Server if not connected.
-    if not default_conn.connected():
+    if not conn.connected() or not default_conn.connected():
         # This will check if view/edit data tool connection is lost or not,
         # if lost then it will reconnect
         status, error_msg, conn, trans_obj, session_obj, response = \
