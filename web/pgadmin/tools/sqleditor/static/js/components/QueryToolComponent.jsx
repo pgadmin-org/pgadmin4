@@ -543,9 +543,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           <br />
           <span>{gettext('Do you want to continue and establish a new session')}</span>
         </p>,
-        function() {
-          handleParams?.connectionLostCallback?.();
-        }, null,
+        () => handleParams?.connectionLostCallback?.(),
+        () => handleParams?.cancelCallback?.(),
         gettext('Continue'),
         gettext('Cancel')
       );
