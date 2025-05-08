@@ -11,6 +11,11 @@ export default function cmOverride(theme) {
   const editor = theme.otherVars.editor;
   return {
     '.cm-editor': {
+      // CSS variables for jsoneditor's CodeMirror
+      '--jse-font-family-mono': theme.typography.fontFamilySourceCode,
+      '--jse-panel-background': editor.guttersBg,
+      '--jse-panel-color-readonly': editor.guttersFg,
+      '--jse-panel-border': 'none',
       height: '100%',
       color: editor.fg,
       backgroundColor: editor.bg,

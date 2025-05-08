@@ -114,7 +114,6 @@
     "insert-if": "^1.1.0",
     "ip-address": "^10.0.1",
     "json-bignumber": "^1.0.1",
-    "jsoneditor": "^10.1.2",
     "leaflet": "^1.9.4",
     "lodash": "4.*",
     "moment": "^2.29.4",
@@ -150,6 +149,7 @@
     "uplot": "^1.6.32",
     "uplot-react": "^1.1.4",
     "valid-filename": "^4.0.0",
+    "vanilla-jsoneditor": "^3.3.1",
     "wkx": "^0.5.0",
     "zustand": "^5.0.3"
   },

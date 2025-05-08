@@ -96,13 +96,6 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
       resize: 'both',
       overflow: 'hidden',
     },
-    '& .jsoneditor': {
-      height: 'abc',
-      border: 'none',
-      '& .ace-jsoneditor .ace_marker-layer .ace_active-line': {
-        background: theme.palette.primary.light,
-      },
-    },
   },
   '& .Editors-buttonMargin': {
     marginLeft: '0.5rem',
@@ -423,15 +416,33 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     onRowChange({ ...row, [column.key]: localVal}, true);
     onClose();
   };
+
+  const setJsonEditorSize = (eleRef) => {
+    // Logic to set the size of the editor
+    const { innerHeight, innerWidth } = window;
+    const box = eleRef.getBoundingClientRect();
+    let currentHeight = parseInt(eleRef.offsetHeight);
+    let heightDiff = parseInt(box.bottom) - innerHeight;
+    let currentWidth = parseInt(eleRef.offsetWidth);
+    let widthDiff = parseInt(box.right) - innerWidth;
+
+    if (box.bottom > innerHeight) {
+      eleRef.style.height = `${currentHeight - heightDiff - 50}px`;
+    }
+    if (box.right > innerWidth) {
+      eleRef.style.width = `${currentWidth - widthDiff - 50}px`;
+    }
+  };
   return (
     <Portal container={document.body}>
       <ResizableDiv columnIndex={column.idx}
         className='Editors-jsonEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <JsonEditor
+          setJsonEditorSize={setJsonEditorSize}
           value={localVal}
           options={{
             onChange: onChange,
-            onValidationError: (errors)=>{setHasError(Boolean(errors.length));}
+            onValidationError: (errors)=>{setHasError(Boolean(errors));}
           }}
           className={'jsoneditor-div'}
         />

@@ -44,6 +44,9 @@ export function TextFormatter({row, column}) {
   let value = row[column.key];
   if(!_.isNull(value) && !_.isUndefined(value)) {
     value = value.toString();
+    if (value.length > 200) {
+      value = `${value.substring(0, 200).replace(/\n/g,' ')}...`;
+    }
   }
   return (
     <NullAndDefaultFormatter value={value} column={column}>

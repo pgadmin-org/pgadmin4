@@ -345,6 +345,9 @@ function getColumnWidth(column, rows, canvas, columnWidthBy) {
       value = '';
     }
     value = value.toString();
+    if (value.length > 200) {
+      value = `${value.substring(0, 200)}`;
+    }
     return longest.length > value.length ? longest : value;
   };
 
