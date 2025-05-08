@@ -222,7 +222,7 @@ RUN apk add --no-cache \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
-USER pgadmin
+USER 5050
 
 # Finish up
 VOLUME /var/lib/pgadmin
