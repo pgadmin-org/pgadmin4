@@ -24,6 +24,7 @@ import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 
 export default class SchemaDiff {
   static instance;
@@ -61,7 +62,7 @@ export default class SchemaDiff {
     }]);
   }
 
-  launchSchemaDiff() {
+  launchSchemaDiff(sqlId=null) {
     let panelTitle = SchemaDiff.panelTitleCount > 1 ? gettext('Schema Diff - %s', SchemaDiff.panelTitleCount) : gettext('Schema Diff');
     SchemaDiff.panelTitleCount++;
     const trans_id = commonUtils.getRandomInt(1, 9999999);
@@ -79,7 +80,7 @@ export default class SchemaDiff {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.SCHEMA_DIFF_TOOL}_${trans_id}`,
       baseUrl,
-      {},
+      {sql_id: sqlId},
       {title: panelTitle, icon: 'pg-font-icon icon-compare', manualClose: false, renamable: true},
       Boolean(openInNewTab?.includes('schema_diff'))
     );
@@ -93,10 +94,12 @@ export default class SchemaDiff {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin, params:params }}></SchemaDiffComponent>
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+              <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin, params:params }}></SchemaDiffComponent>
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );

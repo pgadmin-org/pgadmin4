@@ -25,6 +25,7 @@ import Theme from '../../../../static/js/Theme';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -103,35 +104,63 @@ export default class Psql {
     }
   }
 
-  openPsqlTool(data, treeIdentifier) {
+  openPsqlTool(_data, treeIdentifier, tooState=null) {
+    let parentData = null;
+    let panelTitle = '';
+    if (tooState){
+      let connection_info = tooState.connection_info;  
+      parentData = {
+        server_group: {
+          _id: connection_info.sgid || 0
+        },
+        server: {
+          _id: connection_info.sid,
+          server_type: connection_info.server_type,
+          label: connection_info.server_name,
+          user: {
+            name: connection_info.user
+          }
+        },
+        database: {
+          _id: connection_info.did,
+          label: connection_info.db
+        },
+        schema: {
+          _id: connection_info.scid || null,
+    
+        },
+        table: {
+          _id: connection_info.tid || null,
+        }
+      };
 
-    const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
-    if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
-      return;
-    }
+    }else{
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
+      if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
+        return;
+      }
 
-    const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
-    if (node === undefined || !node.getData()) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('PSQL Error'),
-        gettext('No object selected.')
-      );
-      return;
-    }
+      const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
+      if (node === undefined || !node.getData()) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('PSQL Error'),
+          gettext('No object selected.')
+        );
+        return;
+      }
 
-    const parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
+      parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
+      if(_.isUndefined(parentData.server)) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('PSQL Error'),
+          gettext('Please select a server/database object.')
+        );
+        return;
+      }
 
-    if(_.isUndefined(parentData.server)) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('PSQL Error'),
-        gettext('Please select a server/database object.')
-      );
-      return;
     }
 
     const transId = getRandomInt(1, 9999999);
-
-    let panelTitle = '';
     // Set psql tab title as per prefrences setting.
     let title_data = {
       'database': parentData.database ? _.unescape(parentData.database.label) : 'postgres' ,
@@ -139,6 +168,7 @@ export default class Psql {
       'server': parentData.server.label,
       'type': 'psql_tool',
     };
+
     let tab_title_placeholder = usePreferences.getState().getPreferencesForModule('browser').psql_tab_title_placeholder;
     panelTitle = generateTitle(tab_title_placeholder, title_data);
 
@@ -180,7 +210,6 @@ export default class Psql {
     return [openUrl, pData.database._label];
   }
 
-
   async loadComponent(container, params) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
@@ -188,10 +217,12 @@ export default class Psql {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <PsqlComponent params={params} pgAdmin={pgAdmin} />
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+              <PsqlComponent params={params} pgAdmin={pgAdmin} />
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );

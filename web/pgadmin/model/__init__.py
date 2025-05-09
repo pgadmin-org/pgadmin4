@@ -392,9 +392,9 @@ class QueryHistoryModel(db.Model):
     last_updated_flag = db.Column(db.String(), nullable=False)
 
 
-class PgadminStateData(db.Model):
-    """Define the history SQL table."""
-    __tablename__ = 'pgadmin_state_data'
+class ApplicationState(db.Model):
+    """Define the application state SQL table."""
+    __tablename__ = 'application_state'
     uid = db.Column(db.Integer(), db.ForeignKey(USER_ID), nullable=False,
                     primary_key=True)
     id = db.Column(db.Integer(),nullable=False,primary_key=True)

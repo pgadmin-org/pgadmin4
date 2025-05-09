@@ -125,15 +125,15 @@ class MiscModule(PgAdminModule):
         )
 
         self.preference.register(
-            'user_interface', 'save_the_workspace',
-            gettext("Save the workspaces and data?"),
+            'user_interface', 'save_app_state',
+            gettext("Save the application state?"),
             'boolean', True,
             category_label=PREF_LABEL_USER_INTERFACE,
             help_str=gettext(
-                'Turning on this setting will save the information about the'
-                ' tools that are opened and data within it. Data will be '
-                'restored in case of abrupt shutdown/refresh of the '
-                'application'
+                'If set to True, pgAdmin will save the state of opened tools'
+                ' (such as Query Tool, PSQL, Schema Diff, and ERD), including'
+                ' any unsaved data. This data will be automatically restored'
+                ' in the event of an unexpected shutdown or browser refresh.'
             )
         )
 

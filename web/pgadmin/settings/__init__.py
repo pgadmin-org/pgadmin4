@@ -21,7 +21,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request,\
     success_return, internal_server_error
 from pgadmin.utils.menu import MenuItem
 
-from pgadmin.model import db, Setting, PgadminStateData
+from pgadmin.model import db, Setting, ApplicationState
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from .utils import get_dialog_type, get_file_type_setting
 from cryptography.fernet import Fernet
@@ -54,8 +54,9 @@ class SettingsModule(PgAdminModule):
             'settings.reset_tree_state',
             'settings.save_file_format_setting',
             'settings.get_file_format_setting',
-            'settings.save_pgadmin_state',
-            'settings.delete_pgadmin_state'
+            'settings.save_application_state',
+            'settings.get_application_state',
+            'settings.delete_application_state'
         ]
 
 
@@ -262,11 +263,11 @@ def get_file_format_setting():
 
 
 @blueprint.route(
-    '/save_pgadmin_state',
-    methods=["POST"], endpoint='save_pgadmin_state'
+    '/save_application_state',
+    methods=["POST"], endpoint='save_application_state'
 )
 @pga_login_required
-def save_pgadmin_state_data():
+def save_application_state():
     """
     Args:
         sid: server id
@@ -279,7 +280,7 @@ def save_pgadmin_state_data():
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
     try:
-        data_entry = PgadminStateData(
+        data_entry = ApplicationState(
             uid=current_user.id, id=id,connection_info=connection_info,
             tool_name=data['tool_name'], tool_data=tool_data)
 
@@ -298,15 +299,15 @@ def save_pgadmin_state_data():
 
 
 @blueprint.route(
-    '/get_pgadmin_state',
-    methods=["GET"], endpoint='get_pgadmin_state'
+    '/get_application_state',
+    methods=["GET"], endpoint='get_application_state'
 )
 @pga_login_required
-def get_pgadmin_state():
+def get_application_state():
     fernet = Fernet(current_app.config['SECRET_KEY'].encode())
     result = db.session \
-        .query(PgadminStateData) \
-        .filter(PgadminStateData.uid == current_user.id) \
+        .query(ApplicationState) \
+        .filter(ApplicationState.uid == current_user.id) \
         .all()
 
     res = []
@@ -326,10 +327,10 @@ def get_pgadmin_state():
 
 
 @blueprint.route(
-    '/delete_pgadmin_state/',
-    methods=["DELETE"], endpoint='delete_pgadmin_state')
+    '/delete_application_state/',
+    methods=["DELETE"], endpoint='delete_application_state')
 @pga_login_required
-def delete_pgadmin_state_data():
+def delete_application_state():
     trans_id = None
     if request.data:
         data = json.loads(request.data)
@@ -341,14 +342,14 @@ def delete_tool_data(trans_id):
     try:
         if trans_id:
             results = db.session \
-                .query(PgadminStateData) \
-                .filter(PgadminStateData.uid == current_user.id,
-                        PgadminStateData.id == trans_id) \
+                .query(ApplicationState) \
+                .filter(ApplicationState.uid == current_user.id,
+                        ApplicationState.id == trans_id) \
                 .all()
         else:
             results = db.session \
-                .query(PgadminStateData) \
-                .filter(PgadminStateData.uid == current_user.id) \
+                .query(ApplicationState) \
+                .filter(ApplicationState.uid == current_user.id) \
                 .all()
         for result in results:
             db.session.delete(result)
@@ -364,6 +365,6 @@ def delete_tool_data(trans_id):
         return make_json_response(
             data={
                 'status': False,
-                'msg': 'str(e)',
+                'msg': str(e),
             }
         )

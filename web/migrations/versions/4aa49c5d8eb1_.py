@@ -1,5 +1,13 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""Add ability to save the workspace/tools data to
+restore on abrupt restart/refresh of application #3319
 
 Revision ID: 4aa49c5d8eb1
 Revises: 1f0eddc8fc79
@@ -18,7 +26,7 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        'pgadmin_state_data',
+        'application_state',
         sa.Column('uid', sa.Integer(), nullable=False),
         sa.Column('id', sa.Integer()),
         sa.Column('connection_info', sa.JSON()),

@@ -120,7 +120,7 @@ def index():
 
 @blueprint.route(
     '/panel/<int:trans_id>/<path:editor_title>',
-    methods=["POST"],
+    methods=["GET"],
     endpoint='panel'
 )
 @permissions_required(AllPermissionTypes.tools_schema_diff)
@@ -148,7 +148,6 @@ def panel(trans_id, editor_title):
         for key, val in request.form.items():
             params[key] = val
 
-    print(params)
     return render_template(
         "schema_diff/index.html",
         _=gettext,

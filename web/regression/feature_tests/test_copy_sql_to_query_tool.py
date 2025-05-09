@@ -85,7 +85,9 @@ class CopySQLFeatureTest(BaseFeatureTest):
                                 self.test_table_name)
         self.assertTrue(self.page.expand_tables_node(
             "Server", self.server['name'], self.server['db_password'],
-            self.test_db, 'public'),'Tree not expanded to table')
+            self.test_db, 'public'),
+            'Tree not expanded to the table node.')
+
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
         table_node.click()
