@@ -274,6 +274,9 @@ class AuthSourceManager:
         """Authenticate through all the sources."""
         status = False
         msg = None
+        username = self.form.data['email']
+        users = User.query.filter_by(username=username).all()
+
         for src in self.auth_sources:
             source = get_auth_sources(src)
             self.set_source(source)
@@ -282,6 +285,8 @@ class AuthSourceManager:
                 source.get_source_name())
 
             status, msg = source.authenticate(self.form)
+            print(status)
+            print(msg)
 
             if status:
                 self.set_current_source(source.get_source_name())
@@ -292,6 +297,16 @@ class AuthSourceManager:
                 current_app.logger.debug(
                     "Authentication initiated via source: %s is failed." %
                     source.get_source_name())
+                current_user = User.query.filter_by(username=username,
+                                                    auth_source=src).first()
+                # get list with auth source src
+                # iterate over it and find if user present with that
+                if len(users) > 0 and current_user:
+                    print('User may be coming first time so continue with all possible')
+                    break
+                elif len(users) > 0:
+                    print('User already present with other aut source break it')
+                    break
 
         return status, msg
 

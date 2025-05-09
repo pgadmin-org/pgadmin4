@@ -20,8 +20,8 @@ import { io } from 'socketio';
 import { copyToClipboard } from '../../../../../static/js/clipboard';
 import 'pgadmin.browser.keyboard';
 import gettext from 'sources/gettext';
-import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 const Root = styled(Box)(()=>({
   width: '100%',
@@ -148,8 +148,8 @@ export default function  PsqlComponent({ params, pgAdmin }) {
   const termRef = React.useRef(null);
   const containerRef = React.useRef(null);
   const fitAddonRef = useRef(null);
-  const pgAdminProvider = usePgAdmin();
   const preferencesStore = usePreferences();
+  const {saveToolData} = useApplicationState();
 
   const initializePsqlTool = useCallback((params)=>{
     const term = new Terminal({
@@ -201,14 +201,14 @@ export default function  PsqlComponent({ params, pgAdmin }) {
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
-    const save_the_workspace = preferencesStore?.getPreferencesForModule('misc')?.save_the_workspace;
-    if(save_the_workspace){
-      pgAdminProvider.pgAdminProviderEventBus.fireEvent('SAVE_TOOL_DATA', {
-        tool_name: 'psql',
+    const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
+    if(save_app_state){
+      let data = {        tool_name: 'psql',
         trans_id: params.trans_id,
         tool_data: null,
-        connection_info: params,
-      });}
+        connection_info: params};
+      saveToolData(data);
+    }
 
     return () => {
       term.dispose();

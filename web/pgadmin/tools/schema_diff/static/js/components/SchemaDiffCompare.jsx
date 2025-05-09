@@ -34,6 +34,7 @@ import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 import { useDelayDebounce } from '../../../../../static/js/custom_hooks';
 import usePreferences from '../../../../../preferences/static/js/store';
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
@@ -119,6 +120,7 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
+  const {saveToolData} = useApplicationState();
 
   useEffect(() => {
     schemaDiffToolContext.api.get(url_for('schema_diff.servers')).then((res) => {
@@ -134,9 +136,8 @@ export function SchemaDiffCompare({ params }) {
       });
 
       setSourceGroupServerList(groupedOptions);
-      if(params.params?.tool_data){
-        let data = JSON.parse(params.params.tool_data);
-        _.each(data,(d)=>{
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
           if(d.diff_type == TYPE.SOURCE){
             setSelectedSourceSid(d.selectedSourceSid);
           }else{
@@ -171,11 +172,17 @@ export function SchemaDiffCompare({ params }) {
 
   }, []);
 
-  const save_the_workspace = usePreferences()?.getPreferencesForModule('misc')?.save_the_workspace;
-  if(save_the_workspace){
-    useDelayDebounce(save_schema_diff_state, {}, 500);
+  const save_app_state = usePreferences()?.getPreferencesForModule('misc')?.save_app_state;
+  if(save_app_state){
+    let data = {
+      'trans_id': params.transId,
+      'tool_data': [
+        { diff_type: TYPE.SOURCE, selectedSourceSid: selectedSourceSid, selectedSourceDid:selectedSourceDid, selectedSourceScid: selectedSourceScid},
+        { diff_type: TYPE.TARGET, selectedTargetSid:selectedTargetSid, selectedTargetDid:selectedTargetDid, selectedTargetScid:selectedTargetScid },
+      ],
+      'tool_name': 'schema_diff'};
+    useDelayDebounce(saveToolData, data, 500);
   }
-
 
   function checkAndSetSourceData(diff_type, selectedOption) {
     if(selectedOption == null) {
@@ -657,9 +664,8 @@ export function SchemaDiffCompare({ params }) {
       } else {
         setTargetDatabaseList(res.data.data);
       }
-      if(params.params.tool_data){
-        let data = JSON.parse(params.params.tool_data);
-        _.each(data,(d)=>{
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
           if(d.diff_type == TYPE.SOURCE){
             setSelectedSourceDid(d.selectedSourceDid);
           }else{
@@ -679,9 +685,8 @@ export function SchemaDiffCompare({ params }) {
       } else {
         setTargetSchemaList(res.data.data);
       }
-      if(params.params.tool_data){
-        let data = JSON.parse(params.params.tool_data);
-        _.each(data,(d)=>{
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
           if(d.diff_type == TYPE.SOURCE){
             setSelectedSourceScid(d.selectedSourceScid);
           }else{
@@ -718,15 +723,6 @@ export function SchemaDiffCompare({ params }) {
     return opt;
   }
 
-  function save_schema_diff_state(){
-    pgAdmin?.pgAdminProviderEventBus.fireEvent('SAVE_TOOL_DATA', {
-      'trans_id': params.transId,
-      'tool_data': [
-        { diff_type: TYPE.SOURCE, selectedSourceSid: selectedSourceSid, selectedSourceDid:selectedSourceDid, selectedSourceScid: selectedSourceScid},
-        { diff_type: TYPE.TARGET, selectedTargetSid:selectedTargetSid, selectedTargetDid:selectedTargetDid, selectedTargetScid:selectedTargetScid },
-      ],
-      'tool_name': 'schema_diff'});
-  }
   return (
     <>
       <Loader message={loaderText} style={{fontWeight: 900}}></Loader>

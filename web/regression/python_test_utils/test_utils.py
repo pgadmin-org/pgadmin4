@@ -957,21 +957,21 @@ def configure_preferences(default_binary_path=None):
 
     # Disable workspace save feature
     misc_pref = Preferences.module('misc')
-    save_the_workspace = misc_pref.preference('save_the_workspace')
+    save_app_state = misc_pref.preference('save_app_state')
 
     user_pref = cur.execute(
-        select_preference_query, (save_the_workspace.pid,)
+        select_preference_query, (save_app_state.pid,)
     )
 
     if len(user_pref.fetchall()) == 0:
         cur.execute(
             insert_preferences_query,
-            (save_the_workspace.pid, 1, 'False')
+            (save_app_state.pid, 1, 'False')
         )
     else:
         cur.execute(
             update_preference_query,
-            ('False', save_the_workspace.pid)
+            ('False', save_app_state.pid)
         )
 
     conn.commit()

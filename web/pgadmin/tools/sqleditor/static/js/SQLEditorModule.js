@@ -27,6 +27,7 @@ import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../brow
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 
 export default class SQLEditor {
   static instance;
@@ -246,11 +247,13 @@ export default class SQLEditor {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={panelDocker}
-              qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+              <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={panelDocker}
+                qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );
