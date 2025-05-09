@@ -38,6 +38,7 @@ import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
+import { retrieveDataFromLocalStorgae } from '../../../../../../settings/static/ApplicationStateProvider';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -156,21 +157,6 @@ export default class ERDTool extends React.Component {
     this.forceClose = this.closePanel;
   }
 
-  saveERDToolData = () => {
-    setTimeout(() => {
-      let data = {
-        'tool_name': 'ERD',
-        'trans_id': this.props.params.trans_id,
-        'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int),
-        'connection_info': this.props.params
-      };
-      getApiInstance().post(
-        url_for('settings.save_pgadmin_state'),
-        JSON.stringify(data),
-      ).catch((error)=>{console.error(error);});
-    }, 500);
-  };
-
   registerModelEvents() {
     let diagramEvents = {
       'offsetUpdated': (event)=>{
@@ -209,10 +195,12 @@ export default class ERDTool extends React.Component {
       'linksUpdated': () => {
         this.setState({dirty: true});
         this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
+        this.eventBus.fireEvent(ERD_EVENTS.SAVE_ERD_TOOL_DATA, {'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)});
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
         this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
+        this.eventBus.fireEvent(ERD_EVENTS.SAVE_ERD_TOOL_DATA, {'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)});
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -369,10 +357,9 @@ export default class ERDTool extends React.Component {
 
 
     if(this.props.params.sql_id){
-      let sqlValue = localStorage.getItem(this.props.params.sql_id);
-      localStorage.removeItem(this.props.params.sql_id);
+      let sqlValue = retrieveDataFromLocalStorgae(this.props.params.sql_id);
       if (sqlValue) {
-        this.diagram.deserialize((JSON.parse(sqlValue)));
+        this.diagram.deserialize(sqlValue);
       }
     }
     else if(this.props.params.gen) {
@@ -383,10 +370,6 @@ export default class ERDTool extends React.Component {
   componentDidUpdate() {
     if(this.state.dirty) {
       this.setTitle(this.state.current_file, true);
-      const save_the_workspace = this.preferencesStore.getPreferencesForModule('misc')?.save_the_workspace;
-      if(save_the_workspace){
-        this.saveERDToolData();
-      }
     }
   }
 
@@ -955,7 +938,7 @@ export default class ERDTool extends React.Component {
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
-          notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange}
+          notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange} connectionInfo={this.props.params}
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>

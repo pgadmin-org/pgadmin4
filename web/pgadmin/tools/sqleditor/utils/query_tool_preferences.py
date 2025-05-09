@@ -1012,13 +1012,3 @@ def register_query_tool_preferences(self):
                          'limit may impact performance if charts are plotted '
                          'with very high numbers of rows.')
     )
-
-    self.save_query_tool_data_interval = self.preference.register(
-        'Editor', 'save_query_tool_data_interval',
-        gettext("Save the editor data"), 'integer', 30,
-        category_label=PREF_LABEL_EDITOR,
-        help_str=gettext(
-            'Editor data saving interval in seconds.'
-            'Use -1 to disable the tree saving mechanism.'
-        )
-    )

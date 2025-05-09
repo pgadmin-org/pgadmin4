@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useContext, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -25,6 +25,8 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 import { MODAL_DIALOGS } from '../QueryToolConstants';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
 
 async function registerAutocomplete(editor, api, transId) {
@@ -64,6 +66,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
+  const {saveToolData} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
@@ -300,7 +303,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
       // Set the new EOL character in the editor.
       editor.current?.setEOL(lineSep);
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());    
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
@@ -407,28 +410,19 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, [lastCursorPos.current.line, lastCursorPos.current.ch+1]);
   }, 100), []);
 
-  const debounceTimeout = useRef(null); 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
 
-    const debouncedSave = () => {
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
-      // Set a new timeout
-      debounceTimeout.current = setTimeout(() => {
-        let data = {
-          'tool_name': 'sqleditor',
-          'trans_id': queryToolCtx.params.trans_id,
-          'tool_data': editor.current.getValue(),
-          'connection_info': _.find(queryToolCtx.connection_list, c => c.is_selected)
-        };
-        pgAdmin.pgAdminProviderEventBus.fireEvent('SAVE_TOOL_DATA', data);
-      }, 500);};
+    const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
 
-    const save_the_workspace = preferencesStore?.getPreferencesForModule('misc')?.save_the_workspace;
-    if(save_the_workspace && editor.current.isDirty()){
-      debouncedSave();
+    if(save_app_state && editor.current.isDirty()){
+      let data = {
+        'tool_name': 'sqleditor',
+        'trans_id': queryToolCtx.params.trans_id,
+        'tool_data': editor.current.getValue(),
+        'connection_info': _.find(queryToolCtx.connection_list, c => c.is_selected)
+      };
+      setqtDataToSave(data);
     }
 
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
@@ -439,6 +433,11 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
     }
   }, []);
+
+  const [qtDataToSave, setqtDataToSave] = useState(null);
+  useDelayDebounce((args) => {
+    saveToolData(args);
+  }, qtDataToSave, 500);
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {

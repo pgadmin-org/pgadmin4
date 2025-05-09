@@ -37,6 +37,7 @@ import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 import usePreferences from '../../../../../preferences/static/js/store';
+import { retrieveDataFromLocalStorgae } from '../../../../../settings/static/ApplicationStateProvider';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -333,8 +334,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           setQtStatePartial({ editor_disabled: true });
         });
     } else if (qtState.params.sql_id) {
-      let sqlValue = localStorage.getItem(qtState.params.sql_id);
-      localStorage.removeItem(qtState.params.sql_id);
+      let sqlValue = retrieveDataFromLocalStorgae(qtState.params.sql_id);
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }

@@ -21,6 +21,7 @@ import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 
 export function setPanelTitle(docker, panelId, panelTitle) {
   docker.setTitle(panelId, panelTitle);
@@ -86,27 +87,53 @@ export default class ERDModule {
   }
 
   // Callback to draw ERD Tool for objects
-  showErdTool(_data, treeIdentifier, gen=false) {
-    if (treeIdentifier === undefined) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('ERD Error'),
-        gettext('No object selected.')
-      );
-      return;
-    }
+  showErdTool(_data, treeIdentifier, gen=false, sqlId=null, tooState=null) {
+    let parentData = null;
+    let panelTitle = null;
+    if(sqlId){
+      let connection_info = tooState.connection_info;  
+      panelTitle = connection_info.title;
+      parentData = {
+        server_group: {
+          _id: connection_info.sgid || 0,
+          server_type: connection_info.server_type
+        },
+        server: {
+          _id: connection_info.sid,
+        },
+        database: {
+          _id: connection_info.did,
+        },
+        schema: {
+          _id: connection_info.scid || null,
+    
+        },
+        table: {
+          _id: connection_info.tid || null,
+        }
+      };
 
-    const parentData = this.pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
+    }else{
+      if (treeIdentifier === undefined) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('ERD Error'),
+          gettext('No object selected.')
+        );
+        return;
+      }
+      parentData = this.pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
-    if(_.isUndefined(parentData.database)) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('ERD Error'),
-        gettext('Please select a database/database object.')
-      );
-      return;
+      if(_.isUndefined(parentData.database)) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('ERD Error'),
+          gettext('Please select a database/database object.')
+        );
+        return;
+      }
+      panelTitle = getPanelTitle(this.pgBrowser, treeIdentifier);
     }
 
     const transId = getRandomInt(1, 9999999);
-    const panelTitle = getPanelTitle(this.pgBrowser, treeIdentifier);
     const panelUrl = this.getPanelUrl(transId, parentData, gen);
     const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
@@ -114,7 +141,7 @@ export default class ERDModule {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.ERD_TOOL}_${transId}`,
       panelUrl,
-      {title: _.escape(panelTitle)},
+      {sql_id: sqlId, title: _.escape(panelTitle)},
       {title: 'Untitled', icon: 'fa fa-sitemap'},
       Boolean(open_new_tab?.includes('erd_tool'))
     );
@@ -149,16 +176,18 @@ export default class ERDModule {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
-            <ERDTool
-              params={params}
-              pgWindow={pgWindow}
-              pgAdmin={this.pgAdmin}
-              panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
-              panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
-            />
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
+              <ERDTool
+                params={params}
+                pgWindow={pgWindow}
+                pgAdmin={this.pgAdmin}
+                panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
+                panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
+              />
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );

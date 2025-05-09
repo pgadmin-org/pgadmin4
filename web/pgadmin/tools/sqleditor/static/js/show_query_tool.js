@@ -114,10 +114,9 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
   launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, {});
 }
 
-export function relaunchSqlTool(state_info){
+export function relaunchSqlTool(tooState, sqlId){
   let browserPref = usePreferences.getState().getPreferencesForModule('browser');
-  let connection_info = state_info.connection_info,
-    query_data = state_info.tool_data;
+  let connection_info = tooState.connection_info;
   let parentData = {
     server_group: {
       _id: connection_info.sgid || 0,
@@ -135,14 +134,13 @@ export function relaunchSqlTool(state_info){
 
   const transId = getRandomInt(1, 9999999);
   const qtUrl = generateUrl(transId, parentData, null);
-  let sqlId = `old_qt_data${transId}`;
   const title = getTitle(pgAdmin, browserPref, parentData, false, connection_info.server_name, connection_info.database_name, connection_info.role || connection_info.user);
   launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, qtUrl, title, {
     user: connection_info.user,
     role: connection_info.role,
     sql_id: sqlId
   });
-  localStorage.setItem(sqlId, JSON.parse(query_data));
+
 }
 
 export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, params) {

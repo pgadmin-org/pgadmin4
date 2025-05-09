@@ -37,6 +37,8 @@ import { ERD_EVENTS } from '../ERDConstants';
 import { MagicIcon, SQLFileIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { useModal } from '../../../../../../static/js/helpers/ModalProvider';
 import { withColorPicker } from '../../../../../../static/js/helpers/withColorPicker';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import usePreferences from '../../../../../../preferences/static/js/store';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -48,7 +50,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.bottom,
 }));
 
-export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange}) {
+export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange, connectionInfo}) {
   const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save': true,
@@ -62,6 +64,8 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   });
   const [showDetails, setShowDetails] = useState(true);
 
+  const {saveToolData} = useApplicationState();
+  const preferencesStore = usePreferences();
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
   const sqlMenuRef = React.useRef(null);
@@ -133,6 +137,15 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.DIRTY, (isDirty)=>{
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
+      }],
+      [ERD_EVENTS.SAVE_ERD_TOOL_DATA, (data)=>{
+        const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
+        if(save_app_state){
+          saveToolData({'tool_name': 'ERD',
+            'trans_id': connectionInfo.trans_id,
+            'connection_info': connectionInfo, 
+            ...data});
+        }
       }],
     ];
     events.forEach((e)=>{
@@ -333,6 +346,7 @@ MainToolBar.propTypes = {
   textColor: PropTypes.string,
   notation: PropTypes.string,
   onNotationChange: PropTypes.func,
+  connectionInfo: PropTypes.object,
 };
 
 const ColorButton = withColorPicker(PgIconButton);

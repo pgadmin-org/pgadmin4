@@ -59,18 +59,17 @@ export default function ToolView({dockerObj}) {
         // Handler here will return which layout instance the tool should go in
         // case of workspace layout.
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
-        const dergisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
+        const deregisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
           if(panelId == closePanelId){
             let api = getApiInstance();
             api.delete(
-              url_for('settings.delete_pgadmin_state'), {data:{'panelId': panelId}}
-            ).then(()=> { /* Sona qube */}).catch(function(error) {
+              url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
+            ).then(()=> { /* Sonar Qube */}).catch(function(error) {
               pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             });
-            dergisterRemove();
+            deregisterRemove();
           }
         });
-
 
         handler.focus();
         handler.docker.openTab({

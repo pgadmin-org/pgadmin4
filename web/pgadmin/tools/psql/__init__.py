@@ -100,7 +100,6 @@ def panel(trans_id):
         app.config['sid_soid_mapping'] = dict()
 
     data = _get_database_role(params['sid'], params['did'])
-    print(data)
     params['db'] = underscore_escape(data['db_name'])
     params['role'] = underscore_escape(data['role'])
     params['o_db_name'] = underscore_escape(data['db_name'])
@@ -619,8 +618,6 @@ def _get_database_role(sid, did):
         role = manager.role if manager.role else None
         return {'db_name': db_name, 'role': role}
     except Exception as e:
-        print(str(e))
-        print(traceback.format_exc())
         return None
 
 
