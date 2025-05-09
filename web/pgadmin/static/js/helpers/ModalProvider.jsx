@@ -106,7 +106,7 @@ function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = 
     title,
     (closeModal)=>{
       const handleOkClose = (callback) => {
-        callback();
+        callback?.();
         closeModal();
       };
       return (

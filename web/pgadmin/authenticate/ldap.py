@@ -187,11 +187,11 @@ class LDAPAuthentication(BaseAuthentication):
         """Add the ldap user to the internal SQLite database."""
         if config.LDAP_AUTO_CREATE_USER:
             if config.LDAP_DN_CASE_SENSITIVE:
-                user = User.query.filter_by(username=self.username).first()
+                user = User.query.filter_by(username=self.username,
+                                            auth_source=LDAP).first()
             else:
-                user = User.query.filter(
-                    func.lower(User.username) == func.lower(
-                        self.username)).first()
+                user = User.query.filter_by(username=func.lower(self.username),
+                                            auth_source=LDAP).first()
 
             if user is None:
                 create_msg = ("Creating user {0} with email {1} "

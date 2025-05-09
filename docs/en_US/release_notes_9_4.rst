@@ -31,6 +31,7 @@ Bug fixes
 *********
 
   | `Issue #6564 <https://github.com/pgadmin-org/pgadmin4/issues/6564>`_ -  Fix the issue where an error is displayed when a table is dropped while a query is running.
+  | `Issue #8595 <https://github.com/pgadmin-org/pgadmin4/issues/8595>`_ -  Enhance contrast for selected and hovered items in the Object Explorer to improve visibility and accessibility.
   | `Issue #8607 <https://github.com/pgadmin-org/pgadmin4/issues/8607>`_ -  Fixed an issue where the query tool returns "cannot unpack non-iterable Response object" when running any query with a database name change.
   | `Issue #8668 <https://github.com/pgadmin-org/pgadmin4/issues/8668>`_ -  Implement API fetch error display for select dropdown.
   | `Issue #8713 <https://github.com/pgadmin-org/pgadmin4/issues/8713>`_ -  Fixed issues related to column range selection using shift + click.
