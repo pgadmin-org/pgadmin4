@@ -301,7 +301,7 @@ export default function SearchObjects({nodeData}) {
 
     if(!rowData.show_node) {
       setErrorMsg(
-        gettext('%s objects are disabled in the browser. You can enable them in the <a id="prefdlgid" class="pref-dialog-link">preferences dialog</a>.', rowData.type_label));
+        gettext('%s objects are disabled in the browser. You can enable them in the <a id="prefdlgid" class="pref-dialog-link">preferences</a>.', rowData.type_label));
 
       setTimeout(()=> {
         document.getElementById('prefdlgid').addEventListener('click', ()=>{

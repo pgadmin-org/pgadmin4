@@ -2290,6 +2290,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@juggle/resize-observer@npm:^3.3.1":
+  version: 3.4.0
+  resolution: "@juggle/resize-observer@npm:3.4.0"
+  checksum: 2505028c05cc2e17639fcad06218b1c4b60f932a4ebb4b41ab546ef8c157031ae377e3f560903801f6d01706dbefd4943b6c4704bf19ed86dfa1c62f1473a570
+  languageName: node
+  linkType: hard
+
 "@kurkle/color@npm:^0.3.0":
   version: 0.3.4
   resolution: "@kurkle/color@npm:0.3.4"
@@ -2595,6 +2602,13 @@ __metadata:
     "@nodelib/fs.scandir": 2.1.5
     fastq: ^1.6.0
   checksum: 190c643f156d8f8f277bf2a6078af1ffde1fd43f498f187c2db24d35b4b4b5785c02c7dc52e356497b9a1b65b13edc996de08de0b961c32844364da02986dc53
+  languageName: node
+  linkType: hard
+
+"@nozbe/microfuzz@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@nozbe/microfuzz@npm:1.0.0"
+  checksum: 619298af67ea5c2e0ad535693ce8a4153c319cbff5d9da7d7b1ce7d888eb0d34d04307aaf7fc814378aa5efa1c2e9d8c88a97276228b3b9f97ab991292b9d916
   languageName: node
   linkType: hard
 
@@ -13655,6 +13669,7 @@ __metadata:
     "@mui/icons-material": ^7.1.1
     "@mui/material": ^7.1.0
     "@mui/x-date-pickers": ^8.5.0
+    "@nozbe/microfuzz": ^1.0.0
     "@projectstorm/react-diagrams": ^7.0.4
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^8.1.0
@@ -13766,6 +13781,7 @@ __metadata:
     uplot: ^1.6.32
     uplot-react: ^1.1.4
     url-loader: ^4.1.1
+    use-resize-observer: ^9.1.0
     valid-filename: ^4.0.0
     vanilla-jsoneditor: ^3.3.1
     webfonts-loader: ^8.0.1
@@ -15699,6 +15715,18 @@ __metadata:
     "@types/react":
       optional: true
   checksum: a52155ffa7d67a5107ef2033ae2c63f5290c3e3b198de30d4d4f78cd7921e1ab1ea31eeec387defb67ef61adb672d3b8d25b54b7dcc089bacc4f885abde96e9d
+  languageName: node
+  linkType: hard
+
+"use-resize-observer@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "use-resize-observer@npm:9.1.0"
+  dependencies:
+    "@juggle/resize-observer": ^3.3.1
+  peerDependencies:
+    react: 16.8.0 - 18
+    react-dom: 16.8.0 - 18
+  checksum: 92be0ac34a3b3cf884cd55847c90792b5b44833dc258e96d650152815ad246afe45825aa223332203004d836535a927ab74f18dc0313229e2c7c69510eddf382
   languageName: node
   linkType: hard
 

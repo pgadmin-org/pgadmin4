@@ -402,7 +402,6 @@ export default class ForeignKeySchema extends BaseUISchema {
     },{
       id: 'confdeltype', label: gettext('On delete'),
       type:'select', group: gettext('Action'), mode: ['edit','create'],
-      select2:{allowClear: false},
       options: [
         {label: 'NO ACTION', value: 'a'},
         {label: 'RESTRICT', value: 'r'},

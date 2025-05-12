@@ -1366,6 +1366,7 @@ export function InputTree({hasCheckbox, treeData, onChange, ...props}){
       });
     return () => umounted = true;
   }, []);
+
   return <>{isLoading ? <Loader message={gettext('Loading')}></Loader> : <PgTreeView data={finalData} hasCheckbox={hasCheckbox} selectionChange={onChange} {...props}></PgTreeView>}</>;
 }
 

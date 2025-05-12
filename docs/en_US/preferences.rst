@@ -2,23 +2,30 @@
 .. _preferences:
 
 ***************************
-`Preferences Dialog`:index:
+`Preferences`:index:
 ***************************
 
-Use options on the *Preferences* dialog to customize the behavior of the client.
-To open the *Preferences* dialog, select *Preferences* from the *File* menu or
+Use options in the *Preferences* tab to customize the behavior of the client.
+To open the *Preferences* tab, select *Preferences* from the *File* menu or
 click on the *Settings* button at the bottom left corner in case of Workspace
 layout.
 
-.. image:: images/preferences_menu.png
-    :alt: Preferences menu
+Header
+******
+
+.. image:: images/preferences_header.png
+    :alt: Preferences browser display options
     :align: center
 
-The left pane of the *Preferences* dialog displays a tree control; each node of
+* Use the *Save* button to save any preference changes.
+* Use the *Reset all preferences* button to restore all preferences to their default values.
+* Use the *Help* button to open preferences help.
+* Quickly search all preferences using the *Search* box. It finds matches in both labels and
+  help messages.
+
+The left pane of the *Preferences* tab displays a tree control; each node of
 the tree control provides access to options that are related to the node under
 which they are displayed.
-
-* Click the *Reset all preferences* button to restore all preferences to their default values.
 
 The Browser Node
 ****************
@@ -27,7 +34,7 @@ Use preferences found in the *Browser* node of the tree control to personalize
 your workspace.
 
 .. image:: images/preferences_browser_display.png
-    :alt: Preferences dialog browser display options
+    :alt: Preferences browser display options
     :align: center
 
 Use the fields on the *Display* panel to specify general display preferences:
@@ -64,7 +71,7 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 main window navigation:
 
 .. image:: images/preferences_browser_keyboard_shortcuts.png
-    :alt: Preferences dialog browser keyboard shortcuts section
+    :alt: Preferences browser keyboard shortcuts section
     :align: center
 
 * The panel displays a list of keyboard shortcuts available for the main window;
@@ -75,7 +82,7 @@ Use the fields on the *Nodes* panel to select the object types that will be
 displayed in the *Browser* tree control:
 
 .. image:: images/preferences_browser_nodes.png
-    :alt: Preferences dialog browser nodes section
+    :alt: Preferences browser nodes section
     :align: center
 
 * The panel displays a list of database objects; slide the switch located next
@@ -87,7 +94,7 @@ Use the fields on the *Object Breadcrumbs* panel to change object breadcrumbs
 related settings:
 
 .. image:: images/preferences_browser_breadcrumbs.png
-    :alt: Preferences dialog object breadcrumbs section
+    :alt: Preferences object breadcrumbs section
     :align: center
 
 * Use *Enable object breadcrumbs?* to enable or disable object breadcrumbs
@@ -101,7 +108,7 @@ Use the fields on the *Processes* panel to change processes tab
 related settings:
 
 .. image:: images/preferences_browser_processes.png
-    :alt: Preferences dialog processes section
+    :alt: Preferences processes section
     :align: center
 
 * Change *Process details/logs retention days* to the number of days,
@@ -110,7 +117,7 @@ related settings:
 Use fields on the *Properties* panel to specify browser properties:
 
 .. image:: images/preferences_browser_properties.png
-    :alt: Preferences dialog browser properties section
+    :alt: Preferences browser properties section
     :align: center
 
 * Include a value in the *Count rows if estimated less than* field to perform a
@@ -124,7 +131,7 @@ Use fields on the *Properties* panel to specify browser properties:
 Use field on *Tab settings* panel to specify the tab related properties.
 
 .. image:: images/preferences_browser_tab_settings.png
-    :alt: Preferences dialog browser properties section
+    :alt: Preferences browser properties section
     :align: center
 
 * Use *Debugger tab title placeholder* field to customize the Debugger tab title.
@@ -144,7 +151,7 @@ The Dashboards Node
 Expand the *Dashboards* node to specify your dashboard display preferences.
 
 .. image:: images/preferences_dashboard_display.png
-    :alt: Preferences dialog dashboard display options
+    :alt: Preferences dashboard display options
     :align: center
 
 * Set the warning and alert threshold value to highlight the long-running
@@ -157,7 +164,7 @@ Expand the *Dashboards* node to specify your dashboard display preferences.
   dashboards.
 
 .. image:: images/preferences_dashboard_refresh.png
-    :alt: Preferences dialog dashboard refresh options
+    :alt: Preferences dashboard refresh options
     :align: center
 
 Use the fields on the *Refresh rates* panel to specify your refersh rates
@@ -214,7 +221,7 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 debugger window navigation:
 
 .. image:: images/preferences_debugger_keyboard_shortcuts.png
-    :alt: Preferences dialog debugger keyboard shortcuts section
+    :alt: Preferences debugger keyboard shortcuts section
     :align: center
 
 The ERD Tool Node
@@ -226,13 +233,13 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 ERD Tool window navigation:
 
 .. image:: images/preferences_erd_keyboard_shortcuts.png
-    :alt: Preferences dialog erd keyboard shortcuts section
+    :alt: Preferences erd keyboard shortcuts section
     :align: center
 
 Use the fields on the *Options* panel to manage ERD preferences.
 
 .. image:: images/preferences_erd_options.png
-    :alt: Preferences dialog erd options section
+    :alt: Preferences erd options section
     :align: center
 
 
@@ -252,12 +259,12 @@ The Graphs Node
 
 Expand the *Graphs* node to specify your Graphs display preferences.
 
-.. image:: images/preferences_dashboard_graphs.png
-    :alt: Preferences dialog dashboard graph options
-    :align: center
-
 * Use the *Chart line width* field to specify the width of the lines on the
   line chart.
+
+.. image:: images/preferences_dashboard_graphs.png
+    :alt: Preferences dashboard graph options
+    :align: center
 
 * When the *Show graph data points?* switch is set to *True*, data points will
   be visible on graph lines.
@@ -274,7 +281,7 @@ The Miscellaneous Node
 Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 
 .. image:: images/preferences_misc_file_downloads.png
-    :alt: Preferences dialog file downloads section
+    :alt: Preferences file downloads section
     :align: center
 
 Use the fields on the *File Downloads* panel to manage file downloads related preferences.
@@ -292,7 +299,7 @@ Use the fields on the *File Downloads* panel to manage file downloads related pr
 Use the fields on the *User Interface* panel to set the user interface related preferences.
 
 .. image:: images/preferences_misc_user_interface.png
-    :alt: Preferences dialog user interface section
+    :alt: Preferences user interface section
     :align: center
 
 * Use the *Language* drop-down listbox to select the display language for
@@ -331,7 +338,7 @@ Expand the *Paths* node to specify the locations of supporting utility and help
 files.
 
 .. image:: images/preferences_paths_binary.png
-    :alt: Preferences dialog binary path section
+    :alt: Preferences binary path section
     :align: center
 
 Use the fields on the *Binary paths* panel to specify the path to the directory
@@ -354,7 +361,7 @@ monitored databases:
 programs (pg_dump, pg_dumpall, pg_restore and psql) and there respective versions.
 
 .. image:: images/preferences_paths_help.png
-    :alt: Preferences dialog binary path help section
+    :alt: Preferences binary path help section
     :align: center
 
 Use the fields on the *Help* panel to specify the location of help files.
@@ -372,7 +379,7 @@ Expand the *Query Tool* node to access panels that allow you to specify your
 preferences for the Query Editor tool.
 
 .. image:: images/preferences_sql_auto_completion.png
-    :alt: Preferences dialog sqleditor auto completion option
+    :alt: Preferences sqleditor auto completion option
     :align: center
 
 Use the fields on the *Auto Completion* panel to set the auto completion options.
@@ -384,7 +391,7 @@ Use the fields on the *Auto Completion* panel to set the auto completion options
   shown in upper case.
 
 .. image:: images/preferences_sql_csv_output.png
-    :alt: Preferences dialog sqleditor csv output option
+    :alt: Preferences sqleditor csv output option
     :align: center
 
 Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
@@ -399,7 +406,7 @@ Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
   specified string in the output file. Default is set to 'NULL'.
 
 .. image:: images/preferences_sql_display.png
-    :alt: Preferences dialog sqleditor display options
+    :alt: Preferences sqleditor display options
     :align: center
 
 Use the fields on the *Display* panel to specify your preferences for the Query
@@ -415,7 +422,7 @@ Tool display.
   will show notifications on successful query execution.
 
 .. image:: images/preferences_sql_editor.png
-    :alt: Preferences dialog sqleditor editor settings
+    :alt: Preferences sqleditor editor settings
     :align: center
 
 Use the fields on the *Editor* panel to change settings of the query editor.
@@ -451,7 +458,7 @@ Use the fields on the *Editor* panel to change settings of the query editor.
   highlight matched selected text.
 
 .. image:: images/preferences_sql_explain.png
-    :alt: Preferences dialog sqleditor explain options
+    :alt: Preferences sqleditor explain options
     :align: center
 
 Use the fields on the *Explain* panel to specify the level of detail included in
@@ -480,7 +487,7 @@ a graphical EXPLAIN.
   will include extended information about the query execution plan.
 
 .. image:: images/preferences_graph_visualiser.png
-    :alt: Preferences dialog sqleditor graph visualiser section
+    :alt: Preferences sqleditor graph visualiser section
     :align: center
 
 Use the fields on the *Graph Visualiser* panel to specify the settings
@@ -490,7 +497,7 @@ related to graphs.
   be plotted on a chart.
 
 .. image:: images/preferences_sql_options.png
-    :alt: Preferences dialog sqleditor options section
+    :alt: Preferences sqleditor options section
     :align: center
 
 Use the fields on the *Options* panel to manage editor preferences.
@@ -536,7 +543,7 @@ Use the fields on the *Options* panel to manage editor preferences.
   will appear only if *Underline query at cursor?* is set to *False*.
 
 .. image:: images/preferences_sql_results_grid.png
-    :alt: Preferences dialog sql results grid section
+    :alt: Preferences sql results grid section
     :align: center
 
 Use the fields on the *Results grid* panel to specify your formatting
@@ -564,14 +571,14 @@ preferences for copied data.
   rows with alternating background colors.
 
 .. image:: images/preferences_sql_keyboard_shortcuts.png
-    :alt: Preferences dialog sql keyboard shortcuts section
+    :alt: Preferences sql keyboard shortcuts section
     :align: center
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 Query Tool window navigation.
 
 .. image:: images/preferences_sql_formatting.png
-    :alt: Preferences dialog SQL Formatting section
+    :alt: Preferences SQL Formatting section
     :align: center
 
 Use the fields on the *SQL formatting* panel to specify your preferences for
@@ -624,7 +631,7 @@ The Storage Node
 Expand the *Storage* node to specify your storage preferences.
 
 .. image:: images/preferences_storage_options.png
-    :alt: Preferences dialog storage section
+    :alt: Preferences storage section
     :align: center
 
 Use the fields on the *Options* panel to specify storage preferences.
