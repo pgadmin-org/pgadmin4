@@ -33,6 +33,7 @@ import pgWindow from 'sources/window';
 import WorkspaceToolbar from '../../misc/workspaces/static/js/WorkspaceToolbar';
 import { useWorkspace, WorkspaceProvider } from '../../misc/workspaces/static/js/WorkspaceProvider';
 import { PgAdminProvider, usePgAdmin } from './PgAdminProvider';
+import PreferencesComponent from '../../preferences/static/js/components/PreferencesComponent';
 
 
 const objectExplorerGroup  = {
@@ -43,6 +44,10 @@ const objectExplorerGroup  = {
 
 export const processesPanelData = {
   id: BROWSER_PANELS.PROCESSES, title: gettext('Processes'), content: <Processes />, closable: true, group: 'playground'
+};
+
+export const preferencesPanelData = {
+  id: BROWSER_PANELS.PREFERENCES, title: gettext('Preferences'), content: <PreferencesComponent panelId={BROWSER_PANELS.PREFERENCES} />, closable: true, manualClose: true, group: 'playground'
 };
 
 export const defaultTabsData = [
