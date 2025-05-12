@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import getApiInstance from '../api_instance';
-import { downloadFile } from '../utils';
+import { downloadTextData } from '../download_utils';
 
 function convertImageURLtoDataURI(api, image) {
   return new Promise(function(resolve, reject) {
@@ -43,6 +43,6 @@ export function downloadSvg(svg, svgName) {
   }
 
   Promise.all(image_promises).then(function() {
-    downloadFile(svgElement.outerHTML, svgName, 'image/svg+xml');
+    downloadTextData(svgElement.outerHTML, svgName, 'image/svg+xml');
   });
 }

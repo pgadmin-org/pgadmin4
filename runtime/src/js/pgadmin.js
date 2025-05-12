@@ -16,7 +16,7 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { setupMenu } from './menu.js';
 import contextMenu from 'electron-context-menu';
-import { CancelError, download } from 'electron-dl';
+import { setupDownloader } from './downloader.js';
 
 const configStore = new Store({
   defaults: {
@@ -35,6 +35,7 @@ let configureWindow = null,
   viewLogWindow = null;
 
 let serverPort = 5050;
+let baseUrl = `http://127.0.0.1:${serverPort}`;
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -153,28 +154,6 @@ function reloadApp() {
   currWin.webContents.reload();
 }
 
-async function desktopFileDownload(payload) {
-  const currWin = BrowserWindow.getFocusedWindow();
-  try {
-    await download(currWin, payload.downloadUrl, {
-      filename: payload.fileName,
-      saveAs: payload.prompt_for_download_location,
-      onProgress: (progress) => {
-        currWin.webContents.send('download-progress', progress);
-      },
-      onCompleted: (item) => {
-        currWin.webContents.send('download-complete', item);
-        if (payload.automatically_open_downloaded_file)
-          shell.openPath(item.path);
-      },
-    });
-  } catch (error) {
-    if (!(error instanceof CancelError)) {
-      misc.writeServerLog(error);
-    }
-  }
-}
-
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
@@ -192,8 +171,9 @@ function startDesktopMode() {
   process.env.PGADMIN_SERVER_MODE = 'OFF';
 
   // Start Page URL
-  startPageUrl = 'http://127.0.0.1:' + serverPort + '/?key=' + UUID;
-  serverCheckUrl = 'http://127.0.0.1:' + serverPort + '/misc/ping?key=' + UUID;
+  baseUrl = `http://127.0.0.1:${serverPort}`;
+  startPageUrl = baseUrl + '/?key=' + UUID;
+  serverCheckUrl = baseUrl + '/misc/ping?key=' + UUID;
 
   // Write Python Path, pgAdmin file path and command in log file.
   misc.writeServerLog('pgAdmin Runtime Environment');
@@ -356,6 +336,8 @@ function launchPgAdminWindow() {
     'reloadApp': reloadApp,
   });
 
+  setupDownloader();
+
   pgAdminMainScreen.loadURL(startPageUrl);
 
   const bounds = configStore.get('bounds');
@@ -429,7 +411,6 @@ ipcMain.on('log', (text) => ()=>{
   misc.writeServerLog(text);
 });
 ipcMain.on('reloadApp', reloadApp);
-ipcMain.on('onFileDownload', (_, payload) => desktopFileDownload(payload));
 ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
   try {
     await misc.getAvailablePort(fixedPort);

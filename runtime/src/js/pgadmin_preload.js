@@ -24,5 +24,9 @@ contextBridge.exposeInMainWorld('electronUI', {
   showSaveDialog: (options) => ipcRenderer.invoke('showSaveDialog', options),
   log: (text)=> ipcRenderer.send('log', text),
   reloadApp: ()=>{ipcRenderer.send('reloadApp');},
-  onFileDownload: (payload) => ipcRenderer.send('onFileDownload', payload),
+  // Download related functions
+  getDownloadPath: (...args) => ipcRenderer.invoke('get-download-path', ...args),
+  downloadDataSaveChunk: (...args) => ipcRenderer.send('download-data-save-chunk', ...args),
+  downloadDataSaveTotal: (...args) => ipcRenderer.send('download-data-save-total', ...args),
+  downloadDataSaveEnd: (...args) => ipcRenderer.send('download-data-save-end', ...args),
 });
