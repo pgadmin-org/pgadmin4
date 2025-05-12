@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import React, { useContext, useState, useEffect } from 'react';
 
-import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 import { InputSelect } from '../../../../../static/js/components/FormComponents';
 import { SchemaDiffEventsContext } from './SchemaDiffComponent';

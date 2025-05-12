@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import { Grid2 as Grid, FormHelperText } from '@mui/material';
+import { Grid, FormHelperText } from '@mui/material';
 import React, { useMemo } from 'react';
 import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';

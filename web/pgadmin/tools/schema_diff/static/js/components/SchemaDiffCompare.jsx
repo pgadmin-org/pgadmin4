@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpIcon from '@mui/icons-material/HelpRounded';
 

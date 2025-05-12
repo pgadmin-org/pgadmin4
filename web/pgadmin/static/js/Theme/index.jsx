@@ -15,7 +15,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import CustomPropTypes from '../custom_prop_types';
 import getLightTheme from './light';
 import getDarkTheme from './dark';
@@ -218,6 +218,38 @@ basicSettings = createTheme(basicSettings, {
         },
         marginDense: {
           height: '28px',
+        }
+      }
+    },
+    MuiPickersOutlinedInput: {
+      styleOverrides: {
+        multiline: {
+          padding: '0px',
+        },
+        input: {
+          padding: basicSettings.spacing(0.75, 1.5),
+          borderRadius: 'inherit',
+        },
+        inputMultiline: {
+          padding: basicSettings.spacing(0.75, 1.5),
+          resize: 'vertical',
+          height: '100%',
+          boxSizing: 'border-box',
+        },
+        adornedStart: {
+          paddingLeft: basicSettings.spacing(0.75),
+        },
+        inputAdornedStart: {
+          paddingLeft: '2px',
+        },
+        adornedEnd: {
+          paddingRight: basicSettings.spacing(0.75),
+        },
+        marginDense: {
+          height: '28px',
+        },
+        sectionsContainer: {
+          padding: '0px',
         }
       }
     },
@@ -459,6 +491,37 @@ function getFinalTheme(baseTheme) {
           },
           notchedOutline: {
             borderColor: baseTheme.otherVars.inputBorderColor,
+          }
+        }
+      },
+      MuiPickersTextField: {
+        styleOverrides: {
+          root: {
+            width: '100%',
+          }
+        }
+      },
+      MuiPickersOutlinedInput:  {
+        styleOverrides: {
+          root: {
+            lineHeight: '1.1876em',
+            fontSize: 'inherit',
+            backgroundColor: baseTheme.palette.background.default,
+            textOverflow: 'ellipsis',
+            '&.Mui-disabled': {
+              backgroundColor: baseTheme.otherVars.inputDisabledBg,
+            },
+            padding: '2px 12px',
+          },
+          notchedOutline: {
+            borderColor: baseTheme.otherVars.inputBorderColor,
+          },
+        }
+      },
+      MuiPickersSectionList: {
+        styleOverrides: {
+          root: {
+            padding: '0px',
           }
         }
       },

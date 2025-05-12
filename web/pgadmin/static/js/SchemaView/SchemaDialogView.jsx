@@ -16,7 +16,7 @@ import HelpIcon from '@mui/icons-material/HelpRounded';
 import PublishIcon from '@mui/icons-material/Publish';
 import SaveIcon from '@mui/icons-material/Save';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
