@@ -22,7 +22,7 @@ import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout'
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
 import { QuerySources } from './QueryHistory';
-import { downloadFile } from '../../../../../../static/js/utils';
+import { downloadFileStream } from '../../../../../../static/js/download';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -464,23 +464,17 @@ export class ResultSetUtils {
     });
   }
 
-  async saveResultsToFile(fileName) {
+  async saveResultsToFile(fileName, onProgress) {
     try {
-      let {data: respData} = await this.api.post(
-        url_for('sqleditor.query_tool_download', {
+      this.hasQueryCommitted = false;
+      await downloadFileStream({
+        url: url_for('sqleditor.query_tool_download', {
           'trans_id': this.transId,
         }),
-        {filename: fileName, query_commited: this.hasQueryCommitted}
-      );
-
-      if(!_.isUndefined(respData.data)) {
-        if(!respData.status) {
-          this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
-        }
-      } else {
-        this.hasQueryCommitted = false;
-        downloadFile(respData, fileName, 'text/csv');
-      }
+        options: {
+          method: 'POST',
+          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted})
+        }}, fileName, 'text/csv', onProgress);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
     } catch (error) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
@@ -997,7 +991,9 @@ export function ResultSet() {
         fileName = queryToolCtx.params.node_name + extension;
       }
       setLoaderText(gettext('Downloading results...'));
-      await rsu.current.saveResultsToFile(fileName);
+      await rsu.current.saveResultsToFile(fileName, (p)=>{
+        setLoaderText(gettext('Downloading results(%s)...', p));
+      });
       setLoaderText('');
     });
 

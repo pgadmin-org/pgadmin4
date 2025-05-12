@@ -24,5 +24,18 @@ contextBridge.exposeInMainWorld('electronUI', {
   showSaveDialog: (options) => ipcRenderer.invoke('showSaveDialog', options),
   log: (text)=> ipcRenderer.send('log', text),
   reloadApp: ()=>{ipcRenderer.send('reloadApp');},
-  onFileDownload: (payload) => ipcRenderer.send('onFileDownload', payload),
+
+  // progress bar
+  setBadge: (count) => {
+    ipcRenderer.send('set-badge', count);
+  },
+  clearBadge: () => {
+    ipcRenderer.send('clear-badge');
+  },
+  setProgress: (value) => {
+    ipcRenderer.send('set-progress', value);
+  },
+  clearProgress: () => {
+    ipcRenderer.send('clear-progress');
+  },
 });

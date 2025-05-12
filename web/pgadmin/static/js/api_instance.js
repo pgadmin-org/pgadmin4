@@ -58,12 +58,16 @@ export function parseApiError(error, withData=false) {
 }
 
 export function callFetch(url, options, headers={}) {
-  return fetch(url, {
+  return fetch(url, getFetchOptions(options, headers));
+}
+
+export function getFetchOptions(options, headers={}) {
+  return {
     ...options,
     headers: {
       'Content-type': 'application/json',
       [pgAdmin.csrf_token_header]: pgAdmin.csrf_token,
       ...headers,
     }
-  });
+  };
 }

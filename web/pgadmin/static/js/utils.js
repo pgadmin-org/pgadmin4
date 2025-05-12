@@ -369,45 +369,6 @@ export function checkTrojanSource(content, isPasteEvent) {
   }
 }
 
-export async function downloadBlob(blob, fileName) {
-  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
-  const urlCreator = window.URL || window.webkitURL;
-  const downloadUrl = urlCreator.createObjectURL(blob);
-  if (getBrowser().name == 'IE' && window.navigator.msSaveBlob) {
-    // IE10+ : (has Blob, but not a[download] or URL)
-    window.navigator.msSaveBlob(blob, fileName);
-  } else if (getBrowser().name == 'Electron') {
-    await window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
-  } else {
-    const link = document.createElement('a');
-    link.setAttribute('href', downloadUrl);
-    link.setAttribute('download', fileName);
-    link.style.setProperty('visibility ', 'hidden');
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-}
-
-export async function downloadUrlData(downloadUrl, fileName) {
-  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
-  if (getBrowser().name == 'Electron') {
-    window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
-  } else {
-    let link = document.createElement('a');
-    link.setAttribute('href', downloadUrl);
-    link.setAttribute('download', fileName);
-    link.click();
-    link.remove();
-  }
-}
-
-export function downloadFile(textData, fileName, fileType) {
-  const respBlob = new Blob([textData], {type : fileType});
-  downloadBlob(respBlob, fileName);
-}
-
 export function toPrettySize(rawSize, from='B') {
   try {
     //if the integer need to be converted to K for thousands, M for millions , B for billions only
@@ -750,4 +711,27 @@ if (!Math.ceil10) {
   Math.ceil10 = function(value, exp) {
     return decimalAdjust('ceil', value, exp);
   };
+}
+
+
+// Function to convert a stream to an array
+// This function creates a writable stream that collects data chunks
+// and stores them in an array. The stream can be used to process data
+// in a streaming manner, and the collected data can be accessed
+// after the stream is closed.
+export function streamToArray() {
+  const data = []; // Array to store the data
+
+  // Create a new writable stream
+  const stream = new WritableStream({
+    write(chunk) {
+      // 'chunk' is the data being written to the stream
+      data.push(chunk); // Add the chunk to the data array
+    },
+    close(){
+      // console.log("Stream Closed", data);
+    }
+  });
+
+  return { stream, data }; // Return both the stream and the data array
 }

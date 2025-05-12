@@ -40,7 +40,7 @@ import Replication from './Replication';
 import { getExpandCell } from '../../../static/js/components/PgReactTableStyled';
 import CodeMirror from '../../../static/js/components/ReactCodeMirror';
 import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
-import { downloadFile } from '../../../static/js/utils';
+import { downloadTextData } from '../../../static/js/download';
 import RefreshButton from './components/RefreshButtons';
 
 function parseData(data) {
@@ -451,7 +451,7 @@ function Dashboard({
     let fileName = 'data-' + new Date().getTime() + extension;
 
     try {
-      downloadFile(respData, fileName, `text/${type}`);
+      downloadTextData(respData, fileName, `text/${type}`);
     } catch {
       setSsMsg(gettext('Failed to download the logs.'));
     }
