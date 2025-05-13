@@ -783,8 +783,20 @@ define('pgadmin.browser', [
           ) {
             let _parent = this.t.parent(this.i) || null;
 
+            // if the node is a server group
+            if (_item_parent.path === '/browser') {
+              let that = this;
+              // first remove the node from the tree
+              this.t.remove(this.i).then(() => {
+                // then add in the updated node with updated item data
+                this.t.tree.create(_parent, that.new).then((new_item) => {
+                  // then we need to call update so that item.metadata is populated
+                  this.t.update(new_item, that.new);
+                });
+              });
+            }
             // If there is no parent then just update the node
-            if(this.t.isRootNode(_parent) ||
+            else if(this.t.isRootNode(_parent) ||
              (_parent && _parent.length == 0 && ctx.op == 'UPDATE')) {
               //Update node if browser has single child node.
               if(this.t.children().length === 1) {
@@ -1187,6 +1199,10 @@ define('pgadmin.browser', [
           _old._pid != _new._pid || _old.icon != _new.icon
         )) || _old._pid != _new._pid || _old._id != _new._id
       ) {
+        ctx.op = 'RECREATE';
+        traversePath();
+      // call RECREATE operation for server_groups so that the hierarchy is reordered on server group name update
+      } else if (_old._type == 'server_group' && _new._type == 'server_group') {
         ctx.op = 'RECREATE';
         traversePath();
       } else {

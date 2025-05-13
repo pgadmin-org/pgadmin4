@@ -294,9 +294,6 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
   private readonly update = async (item, itemData): Promise<void> => {
     item._metadata.data = itemData;
     await this.props.update(item.path, itemData);
-    await this.changeResolvePath(item);
-    await this.remove(item);
-    await this.create(item.parent, itemData);
     this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'updated', item);
   };
 
