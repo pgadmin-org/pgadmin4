@@ -12,7 +12,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } 
 import { styled } from '@mui/material/styles';
 import {
   Box, FormControl, OutlinedInput, FormHelperText, ToggleButton, ToggleButtonGroup,
-  Grid2 as Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
+  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio, Tooltip,
 } from '@mui/material';
 import ErrorRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
@@ -257,7 +257,7 @@ const DATE_TIME_FORMAT = {
   TIME_24: 'HH:mm:ss',
 };
 
-export function InputDateTimePicker({ value, onChange, readonly, controlProps, ...props }) {
+export function InputDateTimePicker({ value, onChange, readonly, controlProps, error, ...props }) {
   let format = '';
   let placeholder = '';
   let regExp = /[a-zA-Z]/;
@@ -308,7 +308,7 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
     ampm: controlProps.ampm ? controlProps.ampm : undefined,
     disablePast: controlProps.disablePast || false,
     onChange: handleChange,
-    slotProps: {textField: {placeholder:placeholder}}
+    slotProps: {textField: {placeholder:placeholder, error: error}}
   };
 
   if (controlProps?.pickerType === 'Date') {
@@ -330,12 +330,13 @@ InputDateTimePicker.propTypes = {
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
   controlProps: PropTypes.object,
+  error: PropTypes.bool,
 };
 
 export function FormInputDateTimePicker({ hasError, required, label, className, helpMessage, testcid, labelTooltip, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} labelTooltip={labelTooltip}>
-      <InputDateTimePicker {...props} />
+      <InputDateTimePicker error={hasError} {...props} />
     </FormInput>
   );
 }

@@ -13,7 +13,7 @@
 ###############################################################################
 
 Authlib==1.5.*
-azure-identity==1.21.0
+azure-identity==1.22.0
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.3.0
 azure-mgmt-subscription==3.1.1
@@ -41,7 +41,7 @@ ldap3==2.*
 libgravatar==1.0.*
 passlib==1.*
 psutil==7.0.*
-psycopg[c]==3.2.7
+psycopg[c]==3.2.8
 pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*

@@ -16,7 +16,7 @@ import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
-import { Grid2 as Grid, useTheme } from '@mui/material';
+import { Grid, useTheme } from '@mui/material';
 import { getChartColor, toPrettySize } from '../../../static/js/utils';
 
 export const X_AXIS_LENGTH = 75;

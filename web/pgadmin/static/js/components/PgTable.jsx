@@ -10,7 +10,7 @@
 import React, { useMemo, useRef } from 'react';
 import _ from 'lodash';
 
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   useReactTable,

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Box, Grid2 as Grid, useTheme } from '@mui/material';
+import { Box, Grid, useTheme } from '@mui/material';
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import gettext from 'sources/gettext';
