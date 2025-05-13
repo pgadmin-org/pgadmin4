@@ -14,7 +14,7 @@ import url_for from 'sources/url_for';
 import getApiInstance from 'sources/api_instance';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';

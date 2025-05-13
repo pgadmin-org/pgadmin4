@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useContext } from 'react';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 

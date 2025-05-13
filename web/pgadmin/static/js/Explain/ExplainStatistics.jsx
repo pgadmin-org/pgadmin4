@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import PropTypes from 'prop-types';

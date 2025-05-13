@@ -12,7 +12,7 @@ import React, { useEffect, useMemo } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoRounded';
 import EditIcon from '@mui/icons-material/Edit';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';

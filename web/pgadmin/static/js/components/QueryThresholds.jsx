@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import { FormGroup, Grid2 as Grid, Typography } from '@mui/material';
+import { FormGroup, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { InputText } from './FormComponents';
 import PropTypes from 'prop-types';

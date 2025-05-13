@@ -4,7 +4,7 @@ import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstan
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
-import { Box, Grid2 as Grid, List, ListItem, ListItemButton, ListSubheader } from '@mui/material';
+import { Box, Grid, List, ListItem, ListItemButton, ListSubheader } from '@mui/material';
 import url_for from 'sources/url_for';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import moment from 'moment';

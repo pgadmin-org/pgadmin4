@@ -13,7 +13,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import {getGCD, getEpoch} from 'sources/utils';
 import ChartContainer from '../components/ChartContainer.jsx';
-import { Box, Grid2 as Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart.jsx';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
