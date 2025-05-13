@@ -51,6 +51,7 @@ export class ResultSetUtils {
     this.historyQuerySource = null;
     this.hasQueryCommitted = false;
     this.queryToolCtx = queryToolCtx;
+    this.setLoaderText = null;
   }
 
   static generateURLReconnectionFlag(baseUrl, transId, shouldReconnect) {
@@ -445,23 +446,72 @@ export class ResultSetUtils {
     );
   }
 
-  saveData(reqData) {
+  saveData(reqData, shouldReconnect) {
+    // Generate the URL with the optional `connect=1` parameter.
+    const url = ResultSetUtils.generateURLReconnectionFlag('sqleditor.save', this.transId, shouldReconnect);
+
     return this.api.post(
-      url_for('sqleditor.save', {
-        'trans_id': this.transId
-      }),
+      url,
       JSON.stringify(reqData)
-    ).then(response => {
+    ).then((response) => {
       if (response.data?.data?.status) {
         // Set the commit flag to true if the save was successful
         this.hasQueryCommitted = true;
       }
       return response;
-    }).catch((error) => {
-      // Set the commit flag to false if there was an error
-      this.hasQueryCommitted = false;
-      throw error;
-    });
+    })
+      .catch(async (error) => {
+        if (error.response?.status === 428) {
+          // Handle 428: Show password dialog.
+          return new Promise((resolve, reject) => {
+            this.connectServerModal(
+              error.response?.data?.result,
+              async (formData) => {
+                try {
+                  await this.connectServer(
+                    this.queryToolCtx.params.sid,
+                    this.queryToolCtx.params.user,
+                    formData,
+                    async () => {
+                      let retryRespData = await this.saveData(reqData);
+                      // Set the commit flag to true if the save was successful
+                      this.hasQueryCommitted = true;
+                      pgAdmin.Browser.notifier.success(gettext('Server Connected.'));
+                      resolve(retryRespData);
+                    }
+                  );
+
+                } catch (retryError) {
+                  reject(retryError);
+                }
+              },
+              () => this.setLoaderText(null)
+            );
+          });
+        } else if (error.response?.status === 503) {
+          // Handle 503: Fire HANDLE_API_ERROR and wait for connectionLostCallback.
+          return new Promise((resolve, reject) => {
+            this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+              connectionLostCallback: async () => {
+                try {
+                  // Retry saveData with connect=1
+                  let retryRespData = await this.saveData(reqData, true);
+                  resolve(retryRespData);
+                } catch (retryError) {
+                  reject(retryError);
+                }
+              },
+              checkTransaction: true,
+              cancelCallback: () => this.setLoaderText(null)
+            },
+            );
+          });
+        } else {
+          // Set the commit flag to false if there was an error
+          this.hasQueryCommitted = false;
+          throw error;
+        }
+      });
   }
 
   async saveResultsToFile(fileName) {
@@ -861,6 +911,8 @@ export function ResultSet() {
 
   rsu.current.setEventBus(eventBus);
   rsu.current.setQtPref(queryToolCtx.preferences?.sqleditor);
+  // To use setLoaderText to the ResultSetUtils.
+  rsu.current.setLoaderText = setLoaderText;
 
   const isDataChanged = ()=>{
     return Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));

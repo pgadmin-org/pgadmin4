@@ -826,6 +826,9 @@ def start_view_data(trans_id):
     if not status and error_msg and type(error_msg) is Response:
         return error_msg
 
+    # Check if connect is passed in the request.
+    connect = 'connect' in request.args and request.args['connect'] == '1'
+
     # get the default connection as current connection which is attached to
     # trans id holds the cursor which has query result so we cannot use that
     # connection to execute another query otherwise we'll lose query result.
@@ -845,19 +848,21 @@ def start_view_data(trans_id):
 
     # Connect to the Server if not connected.
     if not conn.connected() or not default_conn.connected():
-        # This will check if view/edit data tool connection is lost or not,
-        # if lost then it will reconnect
-        status, error_msg, conn, trans_obj, session_obj, response = \
-            query_tool_connection_check(trans_id)
-        # This is required for asking user to enter password
-        # when password is not saved for the server
-        if response is not None:
-            return response
+        if connect:
+            # This will check if view/edit data tool connection is lost or not,
+            # if lost then it will reconnect
+            status, error_msg, conn, trans_obj, session_obj, response = \
+                query_tool_connection_check(trans_id)
+            # This is required for asking user to enter password
+            # when password is not saved for the server
+            if response is not None:
+                return response
 
         status, msg = default_conn.connect()
         if not status:
-            return make_json_response(
-                data={'status': status, 'result': "{}".format(msg)}
+            return service_unavailable(
+                gettext("Connection to the server has been lost."),
+                info="CONNECTION_LOST"
             )
 
     if status and conn is not None and \
@@ -1402,6 +1407,8 @@ def save(trans_id):
         changed_data = json.loads(request.data)
     else:
         changed_data = request.args or request.form
+    # Check if connect is passed in the request.
+    connect = 'connect' in request.args and request.args['connect'] == '1'
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -1427,10 +1434,21 @@ def save(trans_id):
                 }
             )
 
+        if connect:
+            # This will check if view/edit data tool connection is lost or not,
+            # if lost then it will reconnect
+            status, error_msg, conn, trans_obj, session_obj, response = \
+                query_tool_connection_check(trans_id)
+            # This is required for asking user to enter password
+            # when password is not saved for the server
+            if response is not None:
+                return response
+
         is_error, errmsg, conn = _check_and_connect(trans_obj)
         if is_error:
-            return make_json_response(
-                data={'status': status, 'result': "{}".format(errmsg)}
+            return service_unavailable(
+                gettext("Connection to the server has been lost."),
+                info="CONNECTION_LOST"
             )
 
         status, res, query_results, _rowid = trans_obj.save(
