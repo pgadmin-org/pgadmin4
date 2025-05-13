@@ -36,7 +36,7 @@ export class ManageTreeNodes {
     if (item) {
       item.data = {...item.data, ..._data};
       item.name = _data.label;
-      item.metadata.data = _data;
+      item.metadata = { data: _data, ...item.metadata };
     }
     res(true);
   });
@@ -81,7 +81,7 @@ export class ManageTreeNodes {
     const api = getApiInstance();
 
     if (node && node.children.length > 0) {
-      if (node.type !== FileType.File) {
+      if (node.type === FileType.File) {
         console.error(node, 'It\'s a leaf node');
         return [];
       }
