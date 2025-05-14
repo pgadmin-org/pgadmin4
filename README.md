@@ -81,7 +81,7 @@ simple - adapt as required for your distribution:
    so update that to the latest:
 
    ```bash
-   $ pip install --upgrade pip
+   (venv) $ pip install --upgrade pip
    ```
 
 4. Ensure that a PostgreSQL installation's bin/ directory is in the path (so
