@@ -31,6 +31,7 @@ Bug fixes
 *********
 
   | `Issue #6564 <https://github.com/pgadmin-org/pgadmin4/issues/6564>`_ -  Fix the issue where an error is displayed when a table is dropped while a query is running.
+  | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where the options key was not working as expected in the PSQL tool.
   | `Issue #8595 <https://github.com/pgadmin-org/pgadmin4/issues/8595>`_ -  Enhance contrast for selected and hovered items in the Object Explorer to improve visibility and accessibility.
   | `Issue #8607 <https://github.com/pgadmin-org/pgadmin4/issues/8607>`_ -  Fixed an issue where the query tool returns "cannot unpack non-iterable Response object" when running any query with a database name change.
   | `Issue #8608 <https://github.com/pgadmin-org/pgadmin4/issues/8608>`_ -  Handle result grid data changes in View/Edit Data mode by automatically reconnecting to the server if a disconnection occurs.

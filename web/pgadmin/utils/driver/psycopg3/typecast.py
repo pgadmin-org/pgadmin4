@@ -246,10 +246,12 @@ class TextLoaderpgAdmin(TextLoader):
                     return bytes(data).decode(python_encoding)
                 return data.decode(python_encoding)
             except Exception:
-                if isinstance(data, memoryview):
-                    return bytes(data).decode('UTF-8')
-                return data.decode('UTF-8')
-            else:
-                if isinstance(data, memoryview):
-                    return bytes(data).decode('ascii', errors='replace')
-                return data.decode('ascii', errors='replace')
+                try:
+                    if isinstance(data, memoryview):
+                        return bytes(data).decode('UTF-8')
+                    return data.decode('UTF-8')
+                except Exception:
+                    if isinstance(data, memoryview):
+                        return bytes(data).decode('ascii',
+                                                  errors='replace')
+                    return data.decode('ascii', errors='replace')

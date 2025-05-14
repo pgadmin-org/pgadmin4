@@ -205,9 +205,16 @@ def read_terminal_data(parent, data_ready, max_read_bytes, sid):
     if parent in data_ready:
         # Read the output from parent fd (terminal).
         output = os.read(parent, max_read_bytes)
+        try:
+            decode_data = output.decode()
+        except Exception:
+            try:
+                decode_data = output.decode('UTF-8')
+            except Exception:
+                decode_data = output.decode('UTF-8', errors='replace')
 
         sio.emit('pty-output',
-                 {'result': output.decode(),
+                 {'result': decode_data,
                   'error': False},
                  namespace='/pty', room=sid)
 
