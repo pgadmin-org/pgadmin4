@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import globals from 'globals';
 import js from '@eslint/js';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   js.configs.recommended,
@@ -34,6 +35,9 @@ export default [
         'platform': 'readonly',
       },
     },
+    'plugins': {
+      'unused-imports': unusedImports,
+    },
     'rules': {
       'indent': [
         'error',
@@ -55,6 +59,17 @@ export default [
       'no-console': ['error', { allow: ['warn', 'error'] }],
       // We need to exclude below for RegEx case
       'no-useless-escape': 0,
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          'vars': 'all',
+          'varsIgnorePattern': '^_',
+          'args': 'after-used',
+          'argsIgnorePattern': '^_',
+        },
+      ],
     },
   },
 ];

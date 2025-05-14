@@ -751,7 +751,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-store@npm:^10.0.0":
+"electron-store@npm:^10.0.1":
   version: 10.0.1
   resolution: "electron-store@npm:10.0.1"
   dependencies:
@@ -878,6 +878,19 @@ __metadata:
   version: 5.0.0
   resolution: "escape-string-regexp@npm:5.0.0"
   checksum: 20daabe197f3cb198ec28546deebcf24b3dbb1a5a269184381b3116d12f0532e06007f4bc8da25669d6a7f8efb68db0758df4cd981f57bc5b57f521a3e12c59e
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-unused-imports@npm:^4.1.4":
+  version: 4.1.4
+  resolution: "eslint-plugin-unused-imports@npm:4.1.4"
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
+    eslint: ^9.0.0 || ^8.0.0
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+  checksum: 1f4ce3e3972699345513840f3af1b783033dbc3a3e85b62ce12b3f6a89fd8c92afe46d0c00af40bacb14465445983ba0ccc326a6fd5132553061fb0e47bcba19
   languageName: node
   linkType: hard
 
@@ -1886,9 +1899,9 @@ __metadata:
     axios: ^1.9.0
     electron: 36.2.0
     electron-context-menu: ^4.0.5
-    electron-dl: ^4.0.0
-    electron-store: ^10.0.0
+    electron-store: ^10.0.1
     eslint: ^9.26.0
+    eslint-plugin-unused-imports: ^4.1.4
   languageName: unknown
   linkType: soft
 

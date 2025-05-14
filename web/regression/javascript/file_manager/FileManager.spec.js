@@ -16,7 +16,7 @@ import FileManager, { FileManagerUtils, getComparator } from '../../../pgadmin/m
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import getApiInstance from '../../../pgadmin/static/js/api_instance';
-import * as pgUtils from '../../../pgadmin/static/js/utils';
+import * as downloadUtils from '../../../pgadmin/static/js/download_utils';
 import userEvent from '@testing-library/user-event';
 
 const files = [
@@ -116,8 +116,8 @@ describe('FileManger', ()=>{
     let closeModal=jest.fn(),
       onOK=jest.fn(),
       onCancel=jest.fn(),
-      ctrlMount = async (props)=>{
-        return await render(<Theme>
+      ctrlMount = (props)=>{
+        return render(<Theme>
           <FileManager
             params={params}
             closeModal={closeModal}
@@ -135,7 +135,7 @@ describe('FileManger', ()=>{
       networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl;
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
       const user = userEvent.setup();
       await user.click(ctrl.container.querySelector('[name="menu-options"]'));
@@ -157,7 +157,7 @@ describe('FileManger', ()=>{
       let ctrl;
       const user = userEvent.setup();
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
 
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));
@@ -171,7 +171,7 @@ describe('FileManger', ()=>{
       let ctrl;
       const user = userEvent.setup();
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
 
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));
@@ -345,9 +345,9 @@ describe('FileManagerUtils', ()=>{
   });
 
   it('downloadFile', async ()=>{
-    jest.spyOn(pgUtils, 'downloadBlob').mockImplementation(() => {});
+    jest.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {});
     let row = {Filename: 'newfile1', Path: '/home/newfile1', 'storage_folder': 'my_storage'};
     await fmObj.downloadFile(row);
-    expect(pgUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
+    expect(downloadUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
   });
 });

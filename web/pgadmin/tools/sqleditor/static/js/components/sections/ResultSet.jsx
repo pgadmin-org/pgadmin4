@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState }  from 'react';
 import QueryToolDataGrid, { GRID_ROW_SELECT_KEY } from '../QueryToolDataGrid';
-import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -22,7 +22,7 @@ import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout'
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
 import { QuerySources } from './QueryHistory';
-import { downloadFile } from '../../../../../../static/js/utils';
+import { downloadFileStream } from '../../../../../../static/js/download_utils';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -31,7 +31,6 @@ import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
-import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -514,23 +513,17 @@ export class ResultSetUtils {
       });
   }
 
-  async saveResultsToFile(fileName) {
+  async saveResultsToFile(fileName, onProgress) {
     try {
-      let {data: respData} = await this.api.post(
-        url_for('sqleditor.query_tool_download', {
+      this.hasQueryCommitted = false;
+      await downloadFileStream({
+        url: url_for('sqleditor.query_tool_download', {
           'trans_id': this.transId,
         }),
-        {filename: fileName, query_commited: this.hasQueryCommitted}
-      );
-
-      if(!_.isUndefined(respData.data)) {
-        if(!respData.status) {
-          this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
-        }
-      } else {
-        this.hasQueryCommitted = false;
-        downloadFile(respData, fileName, 'text/csv');
-      }
+        options: {
+          method: 'POST',
+          body: JSON.stringify({filename: fileName, query_commited: this.hasQueryCommitted})
+        }}, fileName, 'text/csv', onProgress);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
     } catch (error) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
@@ -1049,7 +1042,9 @@ export function ResultSet() {
         fileName = queryToolCtx.params.node_name + extension;
       }
       setLoaderText(gettext('Downloading results...'));
-      await rsu.current.saveResultsToFile(fileName);
+      await rsu.current.saveResultsToFile(fileName, (p)=>{
+        setLoaderText(gettext('Downloading results(%s)...', p));
+      });
       setLoaderText('');
     });
 

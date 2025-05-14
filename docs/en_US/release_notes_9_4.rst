@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #3369 <https://github.com/pgadmin-org/pgadmin4/issues/3369>`_ -  Enabled large file downloads for desktop users within the query tool.
   | `Issue #8583 <https://github.com/pgadmin-org/pgadmin4/issues/8583>`_ -  Add all missing options to the Import/Export Data functionality, and update the syntax of the COPY command to align with the latest standards.
   | `Issue #8681 <https://github.com/pgadmin-org/pgadmin4/issues/8681>`_ -  Add support for exporting table data based on a custom query.
 

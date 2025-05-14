@@ -369,46 +369,7 @@ export function checkTrojanSource(content, isPasteEvent) {
   }
 }
 
-export async function downloadBlob(blob, fileName) {
-  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
-  const urlCreator = window.URL || window.webkitURL;
-  const downloadUrl = urlCreator.createObjectURL(blob);
-  if (getBrowser().name == 'IE' && window.navigator.msSaveBlob) {
-    // IE10+ : (has Blob, but not a[download] or URL)
-    window.navigator.msSaveBlob(blob, fileName);
-  } else if (getBrowser().name == 'Electron') {
-    await window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
-  } else {
-    const link = document.createElement('a');
-    link.setAttribute('href', downloadUrl);
-    link.setAttribute('download', fileName);
-    link.style.setProperty('visibility ', 'hidden');
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-}
-
-export async function downloadUrlData(downloadUrl, fileName) {
-  const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
-  if (getBrowser().name == 'Electron') {
-    window.electronUI.onFileDownload({downloadUrl, fileName, automatically_open_downloaded_file, prompt_for_download_location});
-  } else {
-    let link = document.createElement('a');
-    link.setAttribute('href', downloadUrl);
-    link.setAttribute('download', fileName);
-    link.click();
-    link.remove();
-  }
-}
-
-export function downloadFile(textData, fileName, fileType) {
-  const respBlob = new Blob([textData], {type : fileType});
-  downloadBlob(respBlob, fileName);
-}
-
-export function toPrettySize(rawSize, from='B') {
+export function toPrettySize(rawSize, from='B', decimalFixed=null) {
   try {
     //if the integer need to be converted to K for thousands, M for millions , B for billions only
     if (from == '') {
@@ -416,6 +377,9 @@ export function toPrettySize(rawSize, from='B') {
     }
     let conVal = convert(rawSize).from(from).toBest();
     conVal.val = Math.round(conVal.val * 100) / 100;
+    if(decimalFixed) {
+      conVal.val = conVal.val.toFixed(decimalFixed);
+    }
     return `${conVal.val} ${conVal.unit}`;
   }
   catch {
