@@ -42,9 +42,9 @@ installed. Then, you can run the following commands on a *nix system to
 download the required packages and build the bundle:
 
 ```bash
-(venv) $ cd $PGADMIN4_SRC
-(venv) $ make install-node
-(venv) $ make bundle
+$ cd $PGADMIN4_SRC
+$ make install-node
+$ make bundle
 ```
 
 On Windows systems (where "make" is not available), the following commands
