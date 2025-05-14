@@ -111,7 +111,18 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
   });
 
   term.onKey(function (ev) {
-    socket.emit('socket_input', {'input': ev.key, 'key_name': ev.domEvent.code});
+    let key = ev.key;
+    /* 
+      Using the Option/Alt key to type special characters (such as '\', '[', etc.) often does not register
+      the correct character in ev.key when using xterm.js. This is due to limitations in how browsers and
+      xterm.js handle modifier keys across platforms.
+      To address this, if the Alt/Option key is pressed and the key is a single character,
+      we use ev.domEvent.key, which more reliably represents the actual character intended by the user.
+    */
+    if (ev.domEvent.altKey && ev.domEvent.key.length === 1){
+      key = ev.domEvent.key;
+    }
+    socket.emit('socket_input', {'input': key, 'key_name': ev.domEvent.code});
   });
 }
 
