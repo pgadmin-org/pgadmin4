@@ -601,7 +601,7 @@ export default class ERDTool extends React.Component {
     this.closeOnSave = closeOnSave;
     if(this.state.current_file && !isSaveAs) {
       this.saveFile(this.state.current_file);
-    } else if (this.diagram.getNodesData().length > 0){ {
+    } else if (this.diagram.getNodesData().length > 0){
       let params = {
         'supported_types': ['*','pgerd'],
         'dialog_type': 'create_file',
@@ -609,7 +609,6 @@ export default class ERDTool extends React.Component {
         'btn_primary': 'Save',
       };
       this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
-    }
     }
   }
 

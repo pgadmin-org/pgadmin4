@@ -116,8 +116,8 @@ describe('FileManger', ()=>{
     let closeModal=jest.fn(),
       onOK=jest.fn(),
       onCancel=jest.fn(),
-      ctrlMount = async (props)=>{
-        return await render(<Theme>
+      ctrlMount = (props)=>{
+        return render(<Theme>
           <FileManager
             params={params}
             closeModal={closeModal}
@@ -135,7 +135,7 @@ describe('FileManger', ()=>{
       networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl;
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
       const user = userEvent.setup();
       await user.click(ctrl.container.querySelector('[name="menu-options"]'));
@@ -157,7 +157,7 @@ describe('FileManger', ()=>{
       let ctrl;
       const user = userEvent.setup();
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
 
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));
@@ -171,7 +171,7 @@ describe('FileManger', ()=>{
       let ctrl;
       const user = userEvent.setup();
       await act(async ()=>{
-        ctrl = await ctrlMount({});
+        ctrl = ctrlMount({});
       });
 
       await user.click(ctrl.container.querySelector('[name="menu-shared-storage"]'));

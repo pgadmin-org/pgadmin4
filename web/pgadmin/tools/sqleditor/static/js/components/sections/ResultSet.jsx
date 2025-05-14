@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import React, { useContext, useEffect, useRef, useState }  from 'react';
 import QueryToolDataGrid, { GRID_ROW_SELECT_KEY } from '../QueryToolDataGrid';
-import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import {CONNECTION_STATUS, PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -31,7 +31,6 @@ import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
-import { MODAL_DIALOGS } from '../QueryToolConstants';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',

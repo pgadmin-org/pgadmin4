@@ -35,7 +35,6 @@ let configureWindow = null,
   viewLogWindow = null;
 
 let serverPort = 5050;
-let baseUrl = `http://127.0.0.1:${serverPort}`;
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -171,9 +170,9 @@ function startDesktopMode() {
   process.env.PGADMIN_SERVER_MODE = 'OFF';
 
   // Start Page URL
-  baseUrl = `http://127.0.0.1:${serverPort}`;
-  startPageUrl = baseUrl + '/?key=' + UUID;
-  serverCheckUrl = baseUrl + '/misc/ping?key=' + UUID;
+  const baseUrl = `http://127.0.0.1:${serverPort}`;
+  startPageUrl = `${baseUrl}/?key=${UUID}`;
+  serverCheckUrl = `${baseUrl}/misc/ping?key=${UUID}`;
 
   // Write Python Path, pgAdmin file path and command in log file.
   misc.writeServerLog('pgAdmin Runtime Environment');
