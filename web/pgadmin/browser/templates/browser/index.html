@@ -3,6 +3,10 @@
 {% block title %}{{ config.APP_NAME }}{% endblock %}
 
 {% block init_script %}
+// Set language and theme on the global window object
+window.pgAdmin = window.pgAdmin || {};
+window.pgAdmin.theme = "{{ theme }}";
+
 function parseConsoleArgs(args) {
   const retData = Array.from(args).map(arg => {
     try {

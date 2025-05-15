@@ -400,12 +400,6 @@ def index():
             'pass_enc_key' in session:
         session['allow_save_password'] = False
 
-    response = Response(render_template(
-        MODULE_NAME + "/index.html",
-        username=current_user.username,
-        _=gettext
-    ))
-
     # Set the language cookie after login, so next time the user will have that
     # same option at the login time.
     misc_preference = Preferences.module('misc')
@@ -416,10 +410,21 @@ def index():
     if user_languages:
         language = user_languages.get() or 'en'
 
+    # Get the theme preference
+    user_theme = misc_preference.preference('theme')
+    theme = user_theme.get() or 'light' if user_theme else 'light'
+
     domain = dict()
     if config.COOKIE_DEFAULT_DOMAIN and\
             config.COOKIE_DEFAULT_DOMAIN != 'localhost':
         domain['domain'] = config.COOKIE_DEFAULT_DOMAIN
+
+    response = Response(render_template(
+        MODULE_NAME + "/index.html",
+        username=current_user.username,
+        theme=theme,
+        _=gettext
+    ))
 
     response.set_cookie("PGADMIN_LANGUAGE", value=language,
                         path=config.SESSION_COOKIE_PATH,
