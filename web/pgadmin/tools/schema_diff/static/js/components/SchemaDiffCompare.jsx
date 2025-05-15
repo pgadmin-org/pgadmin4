@@ -32,10 +32,7 @@ import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
-import { useDelayDebounce } from '../../../../../static/js/custom_hooks';
-import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
-
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
   _.each(Object.keys(script_array).reverse(), function (s) {
@@ -120,7 +117,7 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
-  const {saveToolData} = useApplicationState();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
 
   useEffect(() => {
     schemaDiffToolContext.api.get(url_for('schema_diff.servers')).then((res) => {
@@ -172,16 +169,13 @@ export function SchemaDiffCompare({ params }) {
 
   }, []);
 
-  const save_app_state = usePreferences()?.getPreferencesForModule('misc')?.save_app_state;
+  const save_app_state = enableSaveToolData('schema_diff');
   if(save_app_state){
-    let data = {
-      'trans_id': params.transId,
-      'tool_data': [
-        { diff_type: TYPE.SOURCE, selectedSourceSid: selectedSourceSid, selectedSourceDid:selectedSourceDid, selectedSourceScid: selectedSourceScid},
-        { diff_type: TYPE.TARGET, selectedTargetSid:selectedTargetSid, selectedTargetDid:selectedTargetDid, selectedTargetScid:selectedTargetScid },
-      ],
-      'tool_name': 'schema_diff'};
-    useDelayDebounce(saveToolData, data, 500);
+    let tool_data =  [
+      { diff_type: TYPE.SOURCE, selectedSourceSid: selectedSourceSid, selectedSourceDid:selectedSourceDid, selectedSourceScid: selectedSourceScid},
+      { diff_type: TYPE.TARGET, selectedTargetSid:selectedTargetSid, selectedTargetDid:selectedTargetDid, selectedTargetScid:selectedTargetScid },
+    ];
+    saveToolData('schema_diff', null, params.transId, tool_data);
   }
 
   function checkAndSetSourceData(diff_type, selectedOption) {

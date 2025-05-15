@@ -299,26 +299,26 @@ define('pgadmin.browser', [
     },
 
     restore_pgadmin_state: function () {
-      getApiInstance().get(
+      getApiInstance({'Content-Encoding': 'gzip'}).get(
         url_for('settings.get_application_state')
       ).then((res)=> {
         if(res.data.success && res.data.data.result.length > 0){
           _.each(res.data.data.result, function(tool_state){
             let tool_name = tool_state.tool_name;
             let tool_data = tool_state.tool_data;
-            let sql_id = `${tool_name}-${getRandomInt(1, 9999999)}`;
+            let tool_data_id = `${tool_name}-${getRandomInt(1, 9999999)}`;
 
             if (tool_name == 'sqleditor'){
-              localStorage.setItem(sql_id, tool_data);
-              showQueryTool.relaunchSqlTool(tool_state, sql_id);
+              localStorage.setItem(tool_data_id, tool_data);
+              showQueryTool.relaunchSqlTool(tool_state, tool_data_id);
             }else if(tool_name == 'psql'){
               pgAdmin.Tools.Psql.openPsqlTool(null, null, tool_state);
             }else if(tool_name == 'ERD'){
-              localStorage.setItem(sql_id, tool_data);
-              pgAdmin.Tools.ERD.showErdTool(null, null, false, sql_id, tool_state);
+              localStorage.setItem(tool_data_id, tool_data);
+              pgAdmin.Tools.ERD.showErdTool(null, null, false, tool_data_id, tool_state);
             }else if(tool_name == 'schema_diff'){
-              localStorage.setItem(sql_id, tool_data);
-              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(sql_id);
+              localStorage.setItem(tool_data_id, tool_data);
+              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(tool_data_id);
             }
           });
 

@@ -120,7 +120,7 @@ def index():
 
 @blueprint.route(
     '/panel/<int:trans_id>/<path:editor_title>',
-    methods=["GET"],
+    methods=["POST"],
     endpoint='panel'
 )
 @permissions_required(AllPermissionTypes.tools_schema_diff)

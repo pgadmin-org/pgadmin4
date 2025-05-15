@@ -78,13 +78,15 @@ export function usePrevious(value) {
 
 export function useDelayDebounce(callback, args, delay) {
   useEffect(() => {
+    if (args === undefined || args === null) return;
+    
     const delayDebounceFn = setTimeout(() => {
       if (args) {
         callback(args);
       }
     }, delay);
     return () => clearTimeout(delayDebounceFn);
-  }, [args]);
+  }, [args, callback, delay]);
 }
 
 export function useOnScreen(ref) {

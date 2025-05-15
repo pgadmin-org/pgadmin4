@@ -24,7 +24,7 @@ import EventBus from '../../../../../static/js/helpers/EventBus';
 import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
-import { retrieveDataFromLocalStorgae } from '../../../../../settings/static/ApplicationStateProvider';
+import { getToolData } from '../../../../../settings/static/ApplicationStateProvider';
 
 export const SchemaDiffEventsContext = createContext();
 export const SchemaDiffContext = createContext();
@@ -92,7 +92,7 @@ export default function SchemaDiffComponent({params}) {
     });
   }
 
-  let oldSchemaDiffData = retrieveDataFromLocalStorgae(params.params.sql_id);
+  let oldSchemaDiffData = getToolData(params.params?.tool_data_id);
   params = {...params, oldSchemaDiffData: oldSchemaDiffData};
 
   useEffect(()=>{

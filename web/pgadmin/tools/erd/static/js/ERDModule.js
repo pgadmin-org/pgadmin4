@@ -87,12 +87,13 @@ export default class ERDModule {
   }
 
   // Callback to draw ERD Tool for objects
-  showErdTool(_data, treeIdentifier, gen=false, sqlId=null, tooState=null) {
+  showErdTool(_data, treeIdentifier, gen=false, sqlId=null, toolState=null) {
     let parentData = null;
     let panelTitle = null;
     if(sqlId){
-      let connection_info = tooState.connection_info;  
+      let connection_info = toolState.connection_info;  
       panelTitle = connection_info.title;
+      
       parentData = {
         server_group: {
           _id: connection_info.sgid || 0,

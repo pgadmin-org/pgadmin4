@@ -269,19 +269,18 @@ def get_file_format_setting():
 @pga_login_required
 def save_application_state():
     """
-    Args:
-        sid: server id
-        did: database id
+    Expose an api to save the application state which stores the data from
+    query tool, ERD, schema-diff, psql
     """
     data = json.loads(request.data)
-    id = data['trans_id']
+    trans_id = data['trans_id']
     fernet = Fernet(current_app.config['SECRET_KEY'].encode())
     tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
     try:
         data_entry = ApplicationState(
-            uid=current_user.id, id=id,connection_info=connection_info,
+            uid=current_user.id, id=trans_id,connection_info=connection_info,
             tool_name=data['tool_name'], tool_data=tool_data)
 
         db.session.merge(data_entry)
@@ -304,6 +303,9 @@ def save_application_state():
 )
 @pga_login_required
 def get_application_state():
+    """
+    Returns application state if any stored.
+    """
     fernet = Fernet(current_app.config['SECRET_KEY'].encode())
     result = db.session \
         .query(ApplicationState) \
@@ -335,10 +337,16 @@ def delete_application_state():
     if request.data:
         data = json.loads(request.data)
         trans_id = int(data['panelId'].split('_')[-1])
-    return delete_tool_data(trans_id)
+    status, msg = delete_tool_data(trans_id)
+    return make_json_response(
+        data={
+            'status': status,
+            'msg': msg,
+        }
+    )
 
 
-def delete_tool_data(trans_id):
+def delete_tool_data(trans_id=None):
     try:
         if trans_id:
             results = db.session \
@@ -354,17 +362,7 @@ def delete_tool_data(trans_id):
         for result in results:
             db.session.delete(result)
         db.session.commit()
-        return make_json_response(
-            data={
-                'status': True,
-                'msg': 'Success',
-            }
-        )
+        return True, 'Success'
     except Exception as e:
         db.session.rollback()
-        return make_json_response(
-            data={
-                'status': False,
-                'msg': str(e),
-            }
-        )
+        return False, str(e)

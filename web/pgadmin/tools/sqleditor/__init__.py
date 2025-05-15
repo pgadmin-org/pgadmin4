@@ -362,7 +362,11 @@ def panel(trans_id):
             params=json.dumps(params),
         )
     else:
-        return gone('Server did not find.')
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "sqleditor/index.html",
+            title=None,
+            params=json.dumps(params))
 
 
 @blueprint.route(

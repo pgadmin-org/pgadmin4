@@ -100,9 +100,9 @@ def panel(trans_id):
         app.config['sid_soid_mapping'] = dict()
 
     data = _get_database_role(params['sid'], params['did'])
-    params['db'] = underscore_escape(data['db_name'])
+    params['db'] = underscore_escape(data['db_name']) \
+        if 'db_name' in data else 'postgres'
     params['role'] = underscore_escape(data['role'])
-    params['o_db_name'] = underscore_escape(data['db_name'])
     set_env_variables(is_win=_platform == 'win32')
     return render_template("psql/index.html",
                            params=json.dumps(params))
