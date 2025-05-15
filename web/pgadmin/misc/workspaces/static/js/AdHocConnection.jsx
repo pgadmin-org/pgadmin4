@@ -455,7 +455,7 @@ export default function AdHocConnection({mode}) {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       openUrl,
-      {title: escapedTitle, db: db_name},
+      {title: escapedTitle, db: db_name, server_name: formData.server_name, 'user': user_name},
       {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );

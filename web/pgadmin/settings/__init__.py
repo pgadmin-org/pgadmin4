@@ -8,13 +8,17 @@
 ##########################################################################
 
 """Utility functions for storing and retrieving user configuration settings."""
-
+import os
 import traceback
 import json
 
 from flask import Response, request, render_template, url_for, current_app
 from flask_babel import gettext
 from flask_login import current_user
+from selenium.webdriver.support.expected_conditions import \
+    element_selection_state_to_be
+from sqlalchemy import false
+
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request,\
@@ -262,6 +266,8 @@ def get_file_format_setting():
                               info=get_file_type_setting(list(data.values())))
 
 
+
+
 @blueprint.route(
     '/save_application_state',
     methods=["POST"], endpoint='save_application_state'
@@ -269,19 +275,23 @@ def get_file_format_setting():
 @pga_login_required
 def save_application_state():
     """
-    Args:
-        sid: server id
-        did: database id
+    Expose an api to save the application state which stores the data from
+    query tool, ERD, schema-diff, psql
     """
     data = json.loads(request.data)
-    id = data['trans_id']
+    trans_id = data['trans_id']
     fernet = Fernet(current_app.config['SECRET_KEY'].encode())
     tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
+    if 'open_file_name' in connection_info and connection_info['open_file_name'] and 'is_editor_dirty' in connection_info and connection_info['is_editor_dirty']:
+        last_saved_file_hash = compute_sha256_large_file(connection_info['open_file_name'])
+        print(last_saved_file_hash)
+        connection_info['last_saved_file_hash'] = last_saved_file_hash
+
     try:
         data_entry = ApplicationState(
-            uid=current_user.id, id=id,connection_info=connection_info,
+            uid=current_user.id, id=trans_id,connection_info=connection_info,
             tool_name=data['tool_name'], tool_data=tool_data)
 
         db.session.merge(data_entry)
@@ -304,6 +314,9 @@ def save_application_state():
 )
 @pga_login_required
 def get_application_state():
+    """
+    Returns application state if any stored.
+    """
     fernet = Fernet(current_app.config['SECRET_KEY'].encode())
     result = db.session \
         .query(ApplicationState) \
@@ -312,8 +325,26 @@ def get_application_state():
 
     res = []
     for row in result:
+        connection_info = row.connection_info
+        print(connection_info)
+        if 'open_file_name' in connection_info and connection_info['open_file_name']:
+            file_path = connection_info['open_file_name']
+            file_deleted = False if os.path.exists(file_path) else True
+            connection_info['file_deleted'] = file_deleted
+            if not file_deleted and connection_info['is_editor_dirty']:
+                if 'last_saved_file_hash' in connection_info and connection_info['last_saved_file_hash']:
+                    connection_info['external_file_changes'] = check_external_file_changes(file_path, connection_info['last_saved_file_hash'])
+
+
+        # if 'open_file_name' in connection_info and connection_info['open_file_name']:
+        #     initial_file_hash = connection_info['initial_file_hash']
+        #     file_deleted, file_modified_in_pgadmin, file_modified_externally = detect_file_change(connection_info['open_file_name'], tool_data, initial_file_hash )
+        #     connection_info['file_deleted'] = file_deleted
+        #     connection_info['file_modified_in_pgadmin'] = file_modified_in_pgadmin
+        #     connection_info['file_modified_externally'] = file_modified_externally
+
         res.append({'tool_name': row.tool_name,
-                    'connection_info': row.connection_info,
+                    'connection_info': connection_info,
                     'tool_data': fernet.decrypt(row.tool_data).decode(),
                     'id': row.id
                     })
@@ -335,10 +366,16 @@ def delete_application_state():
     if request.data:
         data = json.loads(request.data)
         trans_id = int(data['panelId'].split('_')[-1])
-    return delete_tool_data(trans_id)
+    status, msg = delete_tool_data(trans_id)
+    return make_json_response(
+        data={
+            'status': status,
+            'msg': msg,
+        }
+    )
 
 
-def delete_tool_data(trans_id):
+def delete_tool_data(trans_id=None):
     try:
         if trans_id:
             results = db.session \
@@ -354,17 +391,66 @@ def delete_tool_data(trans_id):
         for result in results:
             db.session.delete(result)
         db.session.commit()
-        return make_json_response(
-            data={
-                'status': True,
-                'msg': 'Success',
-            }
-        )
+        return True, 'Success'
     except Exception as e:
         db.session.rollback()
-        return make_json_response(
-            data={
-                'status': False,
-                'msg': str(e),
-            }
-        )
+        return False, str(e)
+
+
+import hashlib
+
+def compute_sha256_large_data_in_memory(data):
+    """Hash large data (in-memory) by processing in chunks."""
+    sha256_hash = hashlib.sha256()
+    # Process data in 8 KB chunks
+    string_data = json.loads(data)
+    chunk_size = 8192
+    for i in range(0, len(string_data), chunk_size):
+        chunk = string_data[i:i + chunk_size]
+        sha256_hash.update(chunk.encode("utf-8"))
+
+    return sha256_hash.hexdigest()
+
+
+def compute_sha256_large_file(file_path):
+    """Compute SHA-256 hash for large files by reading in chunks."""
+    sha256_hash = hashlib.sha256()
+
+    # Open the file in binary mode
+    with open(file_path, "rb") as file:
+        # Read and hash in 8 KB chunks (can adjust the chunk size if needed)
+        for chunk in iter(lambda: file.read(8192), b""):
+            print(chunk)
+            sha256_hash.update(chunk)
+
+    return sha256_hash.hexdigest()
+
+
+def detect_file_change(file_path, data, initial_file_hash ):
+    file_deleted = False
+    file_modified_in_pgadmin = False
+    file_modified_externally = False
+    if os.path.exists(file_path):
+        current_file_hash = compute_sha256_large_file(file_path)
+        stored_data_hash = compute_sha256_large_data_in_memory(data)
+        if stored_data_hash != current_file_hash:
+            if stored_data_hash != initial_file_hash:
+                # file changes in pgadmin
+                file_modified_in_pgadmin = True
+
+            if current_file_hash != initial_file_hash:
+                # file is changed externally
+                file_modified_externally = True
+
+    else:
+        file_deleted = True
+        file_modified_in_pgadmin = True
+    return file_deleted, file_modified_in_pgadmin, file_modified_externally
+
+
+def check_external_file_changes(file_path, last_saved_file_hash):
+    current_file_hash = compute_sha256_large_file(file_path)
+    if current_file_hash != last_saved_file_hash:
+        return True
+    return False
+

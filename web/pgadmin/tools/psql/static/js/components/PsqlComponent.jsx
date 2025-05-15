@@ -20,7 +20,6 @@ import { io } from 'socketio';
 import { copyToClipboard } from '../../../../../static/js/clipboard';
 import 'pgadmin.browser.keyboard';
 import gettext from 'sources/gettext';
-import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 const Root = styled(Box)(()=>({
@@ -148,8 +147,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
   const termRef = React.useRef(null);
   const containerRef = React.useRef(null);
   const fitAddonRef = useRef(null);
-  const preferencesStore = usePreferences();
-  const {saveToolData} = useApplicationState();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
 
   const initializePsqlTool = useCallback((params)=>{
     const term = new Terminal({
@@ -201,13 +199,10 @@ export default function  PsqlComponent({ params, pgAdmin }) {
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
-    const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
-    if(save_app_state){
-      let data = {        tool_name: 'psql',
-        trans_id: params.trans_id,
-        tool_data: null,
-        connection_info: params};
-      saveToolData(data);
+
+    const saveAppState = enableSaveToolData('psql');
+    if(saveAppState){
+      saveToolData('psql', params,  params.trans_id, null);
     }
 
     return () => {

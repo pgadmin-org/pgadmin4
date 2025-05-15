@@ -16,6 +16,8 @@ import config
 import json
 from flask import render_template, Response, request, session, current_app
 from flask_babel import gettext
+
+from pgadmin.settings import delete_tool_data
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import success_return, \
@@ -237,6 +239,9 @@ def save():
         res, msg = Preferences.save(
             data['mid'], data['category_id'], data['id'], data['value'])
         sgm.get_nodes(sgm)
+
+        if data['name'] == 'save_app_state' and not data['value']:
+            delete_tool_data()
 
         if not res:
             return internal_server_error(errormsg=msg)

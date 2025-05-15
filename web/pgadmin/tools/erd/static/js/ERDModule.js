@@ -22,6 +22,7 @@ import usePreferences, { listenPreferenceBroadcast } from '../../../../preferenc
 import pgAdmin from 'sources/pgadmin';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
+import ToolErrorView from '../../../../static/js/ToolErrorView';
 
 export function setPanelTitle(docker, panelId, panelTitle) {
   docker.setTitle(panelId, panelTitle);
@@ -87,29 +88,29 @@ export default class ERDModule {
   }
 
   // Callback to draw ERD Tool for objects
-  showErdTool(_data, treeIdentifier, gen=false, sqlId=null, tooState=null) {
+  showErdTool(_data, treeIdentifier, gen=false, connectionInfo=null, toolDataId=null) {
     let parentData = null;
     let panelTitle = null;
-    if(sqlId){
-      let connection_info = tooState.connection_info;  
-      panelTitle = connection_info.title;
+    if(connectionInfo){
+      panelTitle = connectionInfo.title;
+      
       parentData = {
         server_group: {
-          _id: connection_info.sgid || 0,
-          server_type: connection_info.server_type
+          _id: connectionInfo.sgid || 0,
+          server_type: connectionInfo.server_type
         },
         server: {
-          _id: connection_info.sid,
+          _id: connectionInfo.sid,
         },
         database: {
-          _id: connection_info.did,
+          _id: connectionInfo.did,
         },
         schema: {
-          _id: connection_info.scid || null,
+          _id: connectionInfo.scid || null,
     
         },
         table: {
-          _id: connection_info.tid || null,
+          _id: connectionInfo.tid || null,
         }
       };
 
@@ -141,7 +142,7 @@ export default class ERDModule {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.ERD_TOOL}_${transId}`,
       panelUrl,
-      {sql_id: sqlId, title: _.escape(panelTitle)},
+      {sql_id: toolDataId, title: _.escape(panelTitle)},
       {title: 'Untitled', icon: 'fa fa-sitemap'},
       Boolean(open_new_tab?.includes('erd_tool'))
     );
@@ -179,13 +180,19 @@ export default class ERDModule {
           <ApplicationStateProvider>
             <ModalProvider>
               <NotifierProvider pgAdmin={this.pgAdmin} pgWindow={pgWindow} />
-              <ERDTool
-                params={params}
-                pgWindow={pgWindow}
-                pgAdmin={this.pgAdmin}
-                panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
-                panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
-              />
+              { params.error ?
+                <ToolErrorView 
+                  error={params.error}
+                  panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
+                  panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
+                /> :
+                <ERDTool
+                  params={params}
+                  pgWindow={pgWindow}
+                  pgAdmin={this.pgAdmin}
+                  panelId={`${BROWSER_PANELS.ERD_TOOL}_${params.trans_id}`}
+                  panelDocker={pgWindow.pgAdmin.Browser.docker.default_workspace}
+                /> }
             </ModalProvider>
           </ApplicationStateProvider>
         </PgAdminProvider>

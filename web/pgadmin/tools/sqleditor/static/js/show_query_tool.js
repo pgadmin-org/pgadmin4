@@ -114,31 +114,29 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
   launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, {});
 }
 
-export function relaunchSqlTool(tooState, sqlId){
+export function relaunchSqlTool(connectionInfo, sqlId){
   let browserPref = usePreferences.getState().getPreferencesForModule('browser');
-  let connection_info = tooState.connection_info;
   let parentData = {
     server_group: {
-      _id: connection_info.sgid || 0,
+      _id: connectionInfo.sgid || 0,
     },
     server: {
-      _id: connection_info.sid,
-      label: connection_info.server,
+      _id: connectionInfo.sid,
+      label: connectionInfo.server,
     },
     database: {
-      _id: connection_info.did,
-      label: connection_info.database_name,
-      _label: connection_info.database_name,
+      _id: connectionInfo.did,
+      label: connectionInfo.database_name,
+      _label: connectionInfo.database_name,
     },
   };
 
   const transId = getRandomInt(1, 9999999);
   const qtUrl = generateUrl(transId, parentData, null);
-  const title = getTitle(pgAdmin, browserPref, parentData, false, connection_info.server_name, connection_info.database_name, connection_info.role || connection_info.user);
+  const title = getTitle(pgAdmin, browserPref, parentData, false, connectionInfo.server_name, connectionInfo.database_name, connectionInfo.role || connectionInfo.user);
   launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, qtUrl, title, {
-    user: connection_info.user,
-    role: connection_info.role,
-    sql_id: sqlId
+    sql_id: sqlId,
+    ...connectionInfo,
   });
 
 }
