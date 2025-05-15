@@ -886,8 +886,11 @@ function getFinalTheme(baseTheme) {
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
-  const selectedTheme = prefStore?.getPreferencesForModule('misc')?.theme || window.pgAdmin.theme || 'light';
-
+  const selectedTheme =
+    (prefStore && prefStore.getPreferencesForModule('misc')?.theme) ||
+    (window.pgAdmin && window.pgAdmin.theme) ||
+    'light';
+    
   // Initialize theme state
   const [theme, setTheme] = useState(() => {
     if (selectedTheme === 'system') {
@@ -915,7 +918,10 @@ export default function Theme({children}) {
   useEffect(() => {
     if (selectedTheme !== 'system') {
       setTheme(selectedTheme);
-      window.pgAdmin.theme = selectedTheme; // Update global theme
+      if (window.pgAdmin) {
+        window.pgAdmin.theme = selectedTheme; // Update global theme
+      }
+      // window.pgAdmin?.theme = selectedTheme; // Update global theme
       return;
     }
 
@@ -923,13 +929,17 @@ export default function Theme({children}) {
     const updateTheme = (event) => {
       const newTheme = event.matches ? 'dark' : 'light';
       setTheme(newTheme);
-      window.pgAdmin.theme = newTheme; // Update global theme
+      if (window.pgAdmin) {
+        window.pgAdmin.theme = newTheme; // Update global theme
+      }
     };
 
     // Set initial system theme
     const initialTheme = isSystemInDarkMode.matches ? 'dark' : 'light';
     setTheme(initialTheme);
-    window.pgAdmin.theme = initialTheme; // Update global theme
+    if (window.pgAdmin) {
+      window.pgAdmin.theme = initialTheme; // Update global theme
+    }
     isSystemInDarkMode.addEventListener('change', updateTheme);
 
     return () => {
