@@ -66,7 +66,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
-  const {saveToolData} = useApplicationState();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
@@ -413,16 +413,9 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
 
-    const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
-
+    const save_app_state = enableSaveToolData('sqleditor');
     if(save_app_state && editor.current.isDirty()){
-      let data = {
-        'tool_name': 'sqleditor',
-        'trans_id': queryToolCtx.params.trans_id,
-        'tool_data': editor.current.getValue(),
-        'connection_info': _.find(queryToolCtx.connection_list, c => c.is_selected)
-      };
-      setqtDataToSave(data);
+      setSaveQtData(editor.current.getValue());
     }
 
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
@@ -434,10 +427,11 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   }, []);
 
-  const [qtDataToSave, setqtDataToSave] = useState(null);
-  useDelayDebounce((args) => {
-    saveToolData(args);
-  }, qtDataToSave, 500);
+  const [saveQtData, setSaveQtData] = useState(null);
+  useDelayDebounce((qtData)=>{
+    let connectionInfo = _.find(queryToolCtx.connection_list, c => c.is_selected);
+    saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, qtData);
+  }, saveQtData, 500);
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {

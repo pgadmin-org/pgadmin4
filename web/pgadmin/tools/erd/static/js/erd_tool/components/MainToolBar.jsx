@@ -38,7 +38,7 @@ import { MagicIcon, SQLFileIcon } from '../../../../../../static/js/components/E
 import { useModal } from '../../../../../../static/js/helpers/ModalProvider';
 import { withColorPicker } from '../../../../../../static/js/helpers/withColorPicker';
 import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
-import usePreferences from '../../../../../../preferences/static/js/store';
+import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -64,8 +64,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   });
   const [showDetails, setShowDetails] = useState(true);
 
-  const {saveToolData} = useApplicationState();
-  const preferencesStore = usePreferences();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
   const sqlMenuRef = React.useRef(null);
@@ -134,17 +133,12 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.ANY_ITEM_SELECTED, (selected)=>{
         setDisableButton('drop-table', !selected);
       }],
-      [ERD_EVENTS.DIRTY, (isDirty)=>{
+      [ERD_EVENTS.DIRTY, (isDirty, data)=>{
+        const save_app_state = enableSaveToolData('ERD');
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
-      }],
-      [ERD_EVENTS.SAVE_ERD_TOOL_DATA, (data)=>{
-        const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
-        if(save_app_state){
-          saveToolData({'tool_name': 'ERD',
-            'trans_id': connectionInfo.trans_id,
-            'connection_info': connectionInfo, 
-            ...data});
+        if(isDirty && save_app_state){
+          setSaveERDData(data);
         }
       }],
     ];
@@ -157,6 +151,11 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       });
     };
   }, []);
+
+  const [saveERDData, setSaveERDData] = useState(null);
+  useDelayDebounce((erdData)=>{
+    saveToolData('ERD', connectionInfo,  connectionInfo.trans_id, erdData);
+  }, saveERDData, 500);
 
   useEffect(()=>{
     const showSql = ()=>{

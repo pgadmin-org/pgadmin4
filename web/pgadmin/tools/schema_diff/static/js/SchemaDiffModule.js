@@ -62,7 +62,7 @@ export default class SchemaDiff {
     }]);
   }
 
-  launchSchemaDiff(sqlId=null) {
+  launchSchemaDiff(toolDataId=null) {
     let panelTitle = SchemaDiff.panelTitleCount > 1 ? gettext('Schema Diff - %s', SchemaDiff.panelTitleCount) : gettext('Schema Diff');
     SchemaDiff.panelTitleCount++;
     const trans_id = commonUtils.getRandomInt(1, 9999999);
@@ -80,7 +80,7 @@ export default class SchemaDiff {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.SCHEMA_DIFF_TOOL}_${trans_id}`,
       baseUrl,
-      {sql_id: sqlId},
+      {toolDataId: toolDataId},
       {title: panelTitle, icon: 'pg-font-icon icon-compare', manualClose: false, renamable: true},
       Boolean(openInNewTab?.includes('schema_diff'))
     );

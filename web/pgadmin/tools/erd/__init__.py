@@ -500,19 +500,26 @@ def panel(trans_id):
 
     s = Server.query.filter_by(id=int(params['sid'])).first()
 
-    params.update({
-        'bgcolor': s.bgcolor,
-        'fgcolor': s.fgcolor,
-        'client_platform': user_agent.platform,
-        'is_desktop_mode': app.PGADMIN_RUNTIME,
-        'is_linux': is_linux_platform
-    })
+    if s:
+        params.update({
+            'bgcolor': s.bgcolor,
+            'fgcolor': s.fgcolor,
+            'client_platform': user_agent.platform,
+            'is_desktop_mode': app.PGADMIN_RUNTIME,
+            'is_linux': is_linux_platform
+        })
 
-    return render_template(
-        "erd/index.html",
-        title=underscore_unescape(params['title']),
-        params=json.dumps(params),
-    )
+        return render_template(
+            "erd/index.html",
+            title=underscore_unescape(params['title']),
+            params=json.dumps(params),
+        )
+    else:
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "erd/index.html",
+            title=None,
+            params=json.dumps(params))
 
 
 @blueprint.route(
