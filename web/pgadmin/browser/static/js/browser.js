@@ -212,6 +212,7 @@ define('pgadmin.browser', [
       let save_the_workspace = prefStore.getPreferencesForModule('misc').save_app_state;
       if(save_the_workspace){
         this.restore_pgadmin_state();
+        pgBrowser.docker.default_workspace.focus();
       }
     },
     check_corrupted_db_file: function() {
@@ -299,33 +300,33 @@ define('pgadmin.browser', [
     },
 
     restore_pgadmin_state: function () {
-      getApiInstance().get(
+      getApiInstance({'Content-Encoding': 'gzip'}).get(
         url_for('settings.get_application_state')
       ).then((res)=> {
         if(res.data.success && res.data.data.result.length > 0){
-          _.each(res.data.data.result, function(tool_state){
-            let tool_name = tool_state.tool_name;
-            let tool_data = tool_state.tool_data;
-            let sql_id = `${tool_name}-${getRandomInt(1, 9999999)}`;
+          _.each(res.data.data.result, function(toolState){
+            let toolNme = toolState.tool_name;
+            let toolData = toolState.tool_data;
+            let toolDataId = `${toolNme}-${getRandomInt(1, 9999999)}`;
+            let connectionInfo = toolState.connection_info;
 
-            if (tool_name == 'sqleditor'){
-              localStorage.setItem(sql_id, tool_data);
-              showQueryTool.relaunchSqlTool(tool_state, sql_id);
-            }else if(tool_name == 'psql'){
-              pgAdmin.Tools.Psql.openPsqlTool(null, null, tool_state);
-            }else if(tool_name == 'ERD'){
-              localStorage.setItem(sql_id, tool_data);
-              pgAdmin.Tools.ERD.showErdTool(null, null, false, sql_id, tool_state);
-            }else if(tool_name == 'schema_diff'){
-              localStorage.setItem(sql_id, tool_data);
-              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(sql_id);
+            if (toolNme == 'sqleditor'){
+              localStorage.setItem(toolDataId, toolData);
+              showQueryTool.relaunchSqlTool(connectionInfo, toolDataId);
+            }else if(toolNme == 'psql'){
+              pgAdmin.Tools.Psql.openPsqlTool(null, null, connectionInfo);
+            }else if(toolNme == 'ERD'){
+              localStorage.setItem(toolDataId, toolData);
+              pgAdmin.Tools.ERD.showErdTool(null, null, false, connectionInfo, toolDataId);
+            }else if(toolNme == 'schema_diff'){
+              localStorage.setItem(toolDataId, toolData);
+              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(toolDataId);
             }
           });
 
           // call clear application state data.
           try {
-            getApiInstance().delete(url_for('settings.delete_application_state'), {
-            });
+            getApiInstance().delete(url_for('settings.delete_application_state'), {});
           } catch (error) {
             console.error(error);
             pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));

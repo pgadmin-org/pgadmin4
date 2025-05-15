@@ -10,7 +10,7 @@
 import { getRandomInt, hasBinariesConfiguration } from 'sources/utils';
 import { retrieveAncestorOfTypeServer } from 'sources/tree/tree_utils';
 import { generateTitle } from 'tools/sqleditor/static/js/sqleditor_title';
-import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import usePreferences,{ listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import 'pgadmin.browser.keyboard';
 import pgWindow from 'sources/window';
@@ -26,7 +26,7 @@ import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
 import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
-
+import ToolErrorView from '../../../../static/js/ToolErrorView';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -104,33 +104,31 @@ export default class Psql {
     }
   }
 
-  openPsqlTool(_data, treeIdentifier, tooState=null) {
+  openPsqlTool(_data, treeIdentifier, connectionInfo=null) {
     let parentData = null;
     let panelTitle = '';
-    if (tooState){
-      let connection_info = tooState.connection_info;  
+    if (connectionInfo){
       parentData = {
         server_group: {
-          _id: connection_info.sgid || 0
+          _id: connectionInfo.sgid || 0
         },
         server: {
-          _id: connection_info.sid,
-          server_type: connection_info.server_type,
-          label: connection_info.server_name,
+          _id: connectionInfo.sid,
+          server_type: connectionInfo.server_type,
+          label: connectionInfo.server_name,
           user: {
-            name: connection_info.user
+            name: connectionInfo.user
           }
         },
         database: {
-          _id: connection_info.did,
-          label: connection_info.db
+          _id: connectionInfo.did,
+          label: connectionInfo.db
         },
         schema: {
-          _id: connection_info.scid || null,
-    
+          _id: connectionInfo.scid || null,
         },
         table: {
-          _id: connection_info.tid || null,
+          _id: connectionInfo.tid || null,
         }
       };
 
@@ -211,6 +209,11 @@ export default class Psql {
   }
 
   async loadComponent(container, params) {
+    let panelDocker = pgWindow.pgAdmin.Browser.docker.psql_workspace;
+    if (pgWindow.pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT) {
+      panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
+    }
+
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);
@@ -220,12 +223,20 @@ export default class Psql {
           <ApplicationStateProvider>
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-              <PsqlComponent params={params} pgAdmin={pgAdmin} />
+              { params.error ?
+                <ToolErrorView 
+                  error={params.error}
+                  panelId={`${BROWSER_PANELS.PSQL_TOOL}_${params.trans_id}`}
+                  panelDocker={panelDocker}
+                /> :
+                <PsqlComponent 
+                  params={params} 
+                  pgAdmin={pgAdmin} />
+              }
             </ModalProvider>
           </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );
   }
-
 }

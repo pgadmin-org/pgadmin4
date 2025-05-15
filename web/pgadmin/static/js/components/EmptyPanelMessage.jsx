@@ -12,6 +12,8 @@ import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import PropTypes from 'prop-types';
+import { FormHelperText } from '@mui/material';
+import HTMLReactParse from 'html-react-parser';
 
 const StyledBox = styled(Box)(({theme}) => ({
   color: theme.palette.text.primary,
@@ -23,16 +25,20 @@ const StyledBox = styled(Box)(({theme}) => ({
   height: '100%',
 }));
 
-export default function EmptyPanelMessage({text, style}) {
+export default function EmptyPanelMessage({text, style, error}) {
 
   return (
     <StyledBox style={style}>
-      <InfoRoundedIcon style={{height: '1.2rem'}}/>
-      <span style={{marginLeft: '4px'}}>{text}</span>
+      { error ? <FormHelperText variant="outlined" error= {true}  style={{marginLeft: '4px'}} >{HTMLReactParse(error)}</FormHelperText> :
+        <div>
+          <InfoRoundedIcon style={{height: '1.2rem'}}/>
+          <span style={{marginLeft: '4px'}}>{text}</span>
+        </div>}
     </StyledBox>
   );
 }
 EmptyPanelMessage.propTypes = {
   text: PropTypes.string,
   style: PropTypes.object,
+  error: PropTypes.string,
 };

@@ -38,7 +38,7 @@ import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
-import { retrieveDataFromLocalStorgae } from '../../../../../../settings/static/ApplicationStateProvider';
+import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -194,13 +194,11 @@ export default class ERDTool extends React.Component {
       },
       'linksUpdated': () => {
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
-        this.eventBus.fireEvent(ERD_EVENTS.SAVE_ERD_TOOL_DATA, {'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int));
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
-        this.eventBus.fireEvent(ERD_EVENTS.SAVE_ERD_TOOL_DATA, {'tool_data':this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int));
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -357,9 +355,11 @@ export default class ERDTool extends React.Component {
 
 
     if(this.props.params.sql_id){
-      let sqlValue = retrieveDataFromLocalStorgae(this.props.params.sql_id);
+      let sqlValue = getToolData(this.props.params.sql_id);
       if (sqlValue) {
         this.diagram.deserialize(sqlValue);
+        this.diagram.clearSelection();
+        this.registerModelEvents();
       }
     }
     else if(this.props.params.gen) {

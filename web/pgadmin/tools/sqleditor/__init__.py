@@ -71,7 +71,6 @@ from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
-from pgadmin.settings import delete_tool_data
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -362,7 +361,11 @@ def panel(trans_id):
             params=json.dumps(params),
         )
     else:
-        return gone('Server did not find.')
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "sqleditor/index.html",
+            title=None,
+            params=json.dumps(params))
 
 
 @blueprint.route(

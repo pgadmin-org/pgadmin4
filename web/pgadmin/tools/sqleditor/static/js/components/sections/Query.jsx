@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import { MODAL_DIALOGS } from '../QueryToolConstants';
 import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
+import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 
 
 async function registerAutocomplete(editor, api, transId) {
@@ -66,10 +67,12 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
-  const {saveToolData} = useApplicationState();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
+  const save_app_state = enableSaveToolData('sqleditor');
+
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
       startMarker = 0,
@@ -162,12 +165,26 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   };
 
+  const warnReloadFile = (fileName, sqlId)=>{
+    queryToolCtx.modal.confirm(
+      gettext('Reload file?'),
+      gettext('The file has been modified by another program. Do you want to reload it and loose changes made in pgadmin?'),
+      function() {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+      },
+      function() {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+      }
+    );
+  };
+
   useEffect(()=>{
     layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.QUERY && editor.current.focus();
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, triggerExecution);
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTE_CURSOR_WARNING, checkUnderlineQueryCursorWarning);
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, (result, executeCursor)=>{
@@ -328,6 +345,19 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     setTimeout(()=>{
       (queryToolCtx.params.is_query_tool|| queryToolCtx.preferences.view_edit_promotion_warning) && editor.current.focus();
     }, 250);
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, warnReloadFile);
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA, ()=>{
+      setSaveQtData(true);
+    });
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, (sqlId)=>{
+      let sqlValue = getToolData(sqlId);
+      if (sqlValue) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
+      }
+    });
   }, []);
 
   useEffect(()=>{
@@ -413,16 +443,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
 
-    const save_app_state = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
-
     if(save_app_state && editor.current.isDirty()){
-      let data = {
-        'tool_name': 'sqleditor',
-        'trans_id': queryToolCtx.params.trans_id,
-        'tool_data': editor.current.getValue(),
-        'connection_info': _.find(queryToolCtx.connection_list, c => c.is_selected)
-      };
-      setqtDataToSave(data);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
     }
 
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
@@ -434,10 +456,22 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   }, []);
 
-  const [qtDataToSave, setqtDataToSave] = useState(null);
-  useDelayDebounce((args) => {
-    saveToolData(args);
-  }, qtDataToSave, 500);
+  // const saveQueryToolData = useCallback(_.debounce((openFileName=null)=>{
+  //   console.log('In saveQueryToolData')
+  //   console.log(editor.current.isDirty(), openFileName, queryToolCtx.current_file)
+  //   let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
+  //   'open_file_name': openFileName, 'is_editor_dirty': editor.current.isDirty() };
+  //   saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
+  // }, 500), []);
+
+
+  const [saveQtData, setSaveQtData] = useState(false);
+  useDelayDebounce(()=>{
+    let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
+      'open_file_name':queryToolCtx.current_file, 'is_editor_dirty': editor.current.isDirty() };
+    saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
+    setSaveQtData(false);
+  }, saveQtData, 500);
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {

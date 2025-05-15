@@ -37,7 +37,7 @@ import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 import usePreferences from '../../../../../preferences/static/js/store';
-import { retrieveDataFromLocalStorgae } from '../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -217,6 +217,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
   const modal = useModal();
+  const {enableSaveToolData} = useApplicationState();
+  const save_app_state = enableSaveToolData('sqleditor');
 
   /* Connection status poller */
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
@@ -334,14 +336,34 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           setQtStatePartial({ editor_disabled: true });
         });
     } else if (qtState.params.sql_id) {
-      let sqlValue = retrieveDataFromLocalStorgae(qtState.params.sql_id);
-      if (sqlValue) {
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
-      }
-      setQtStatePartial({ editor_disabled: false });
+      populateEditorData();
     } else {
       setQtStatePartial({ editor_disabled: false });
     }
+  };
+
+  const populateEditorData = () =>{
+    let sqlId = qtState.params.sql_id,
+      loadSqlFromLocalStorage = true;
+      
+    if(qtState.params.open_file_name){
+      if(qtState.params.file_deleted == 'false' &&  qtState.params.is_editor_dirty == 'false'){
+        // call load file from disk as no fil changes
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, qtState.params.open_file_name, qtState.params?.storage);
+      }else{
+        if(qtState.params.file_deleted != 'true'){
+          if(qtState.params.external_file_changes == 'true'){
+            loadSqlFromLocalStorage = false;
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
+          }else{
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
+          }
+        }
+      }
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+    }
+    if(loadSqlFromLocalStorage) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+    setQtStatePartial({ editor_disabled: false });
   };
 
   const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, reexecute=false)=>{
@@ -571,13 +593,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   useEffect(()=>{
-    const fileDone = (fileName, success=true)=>{
+    const fileDone = (fileName, success=true )=>{
       if(success) {
         setQtStatePartial({
           current_file: fileName,
         });
         isDirtyRef.current = false;
         setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
+        
+        if(save_app_state)eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };
@@ -900,6 +924,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     editor_disabled: qtState.editor_disabled,
     eol: qtState.eol,
     connection_list: qtState.connection_list,
+    current_file: qtState.current_file,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
@@ -930,7 +955,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file]);
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,

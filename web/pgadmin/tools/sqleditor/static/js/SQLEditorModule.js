@@ -28,6 +28,7 @@ import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
+import ToolErrorView from '../../../../static/js/ToolErrorView';
 
 export default class SQLEditor {
   static instance;
@@ -240,7 +241,7 @@ export default class SQLEditor {
       panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
     }
 
-    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : null;
+    const selectedNodeInfo = params.selectedNodeInfo ? JSON.parse(_.unescape(params.selectedNodeInfo)) : params.selectedNodeInfo;
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);
@@ -250,8 +251,19 @@ export default class SQLEditor {
           <ApplicationStateProvider>
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-              <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={panelDocker}
-                qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
+              { params.error ?   
+                <ToolErrorView 
+                  error={params.error}
+                  panelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`}
+                  panelDocker={panelDocker}
+                /> :
+                <QueryToolComponent params={params} 
+                  pgWindow={pgWindow} 
+                  pgAdmin={pgAdmin} 
+                  qtPanelDocker={panelDocker}
+                  qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} 
+                  selectedNodeInfo={selectedNodeInfo}
+                />}
             </ModalProvider>
           </ApplicationStateProvider>
         </PgAdminProvider>

@@ -23,6 +23,7 @@ import url_for from 'sources/url_for';
 import Theme from '../../../pgadmin/static/js/Theme';
 import SchemaDiffComponent from '../../../pgadmin/tools/schema_diff/static/js/components/SchemaDiffComponent';
 import SchemaDiff from '../../../pgadmin/tools/schema_diff/static/js/SchemaDiffModule';
+import { ApplicationStateProvider } from '../../../pgadmin/settings/static/ApplicationStateProvider';
 
 
 describe('Schema Diff Component', () => {
@@ -63,10 +64,12 @@ describe('Schema Diff Component', () => {
     await act(async ()=>{
       render(
         <Theme>
-          <SchemaDiffComponent
-            params={{ transId: params.transId, pgAdmin: pgWindow.pgAdmin }}
-          >
-          </SchemaDiffComponent>
+          <ApplicationStateProvider>
+            <SchemaDiffComponent
+              params={{ transId: params.transId, pgAdmin: pgWindow.pgAdmin }}
+            >
+            </SchemaDiffComponent>
+          </ApplicationStateProvider>
         </Theme>
       );
     });

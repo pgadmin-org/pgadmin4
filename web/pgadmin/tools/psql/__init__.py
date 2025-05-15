@@ -10,7 +10,6 @@ import json
 import os
 import select
 import struct
-import traceback
 
 import config
 import re
@@ -29,7 +28,7 @@ from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 from pgadmin.authenticate import socket_login_required
-
+from pgadmin.model import Server
 
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
@@ -99,13 +98,20 @@ def panel(trans_id):
     if 'sid_soid_mapping' not in app.config:
         app.config['sid_soid_mapping'] = dict()
 
-    data = _get_database_role(params['sid'], params['did'])
-    params['db'] = underscore_escape(data['db_name'])
-    params['role'] = underscore_escape(data['role'])
-    params['o_db_name'] = underscore_escape(data['db_name'])
-    set_env_variables(is_win=_platform == 'win32')
-    return render_template("psql/index.html",
-                           params=json.dumps(params))
+    s = Server.query.filter_by(id=int(params['sid'])).first()
+    if s:
+        data = _get_database_role(params['sid'], params['did'])
+        params['db'] = underscore_escape(data['db_name']) \
+            if 'db_name' in data else 'postgres'
+        params['role'] = underscore_escape(data['role'])
+        set_env_variables(is_win=_platform == 'win32')
+        return render_template("psql/index.html",
+                               params=json.dumps(params))
+    else:
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "psql/index.html",
+            params=json.dumps(params))
 
 
 def set_env_variables(is_win=False):
@@ -618,6 +624,7 @@ def _get_database_role(sid, did):
         role = manager.role if manager.role else None
         return {'db_name': db_name, 'role': role}
     except Exception as e:
+        print(str(e))
         return None
 
 
