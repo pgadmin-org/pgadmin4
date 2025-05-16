@@ -12,9 +12,11 @@ import _ from 'lodash';
 import { checkMasterPassword, showQuickSearch } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
-import getApiInstance from '../../../static/js/api_instance';
+import getApiInstance, {parseApiError} from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
+import * as showQueryTool from '../../../tools/sqleditor/static/js/show_query_tool';
+import {getRandomInt} from 'sources/utils';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -206,6 +208,11 @@ define('pgadmin.browser', [
     uiloaded: function() {
       this.set_master_password('');
       this.check_version_update();
+      const prefStore = usePreferences.getState();
+      let save_the_workspace = prefStore.getPreferencesForModule('misc').save_app_state;
+      if(save_the_workspace){
+        this.restore_pgadmin_state();
+      }
     },
     check_corrupted_db_file: function() {
       getApiInstance().get(
@@ -288,6 +295,44 @@ define('pgadmin.browser', [
 
       }).catch(function() {
         // Suppress any errors
+      });
+    },
+
+    restore_pgadmin_state: function () {
+      getApiInstance({'Content-Encoding': 'gzip'}).get(
+        url_for('settings.get_application_state')
+      ).then((res)=> {
+        if(res.data.success && res.data.data.result.length > 0){
+          _.each(res.data.data.result, function(tool_state){
+            let tool_name = tool_state.tool_name;
+            let tool_data = tool_state.tool_data;
+            let tool_data_id = `${tool_name}-${getRandomInt(1, 9999999)}`;
+
+            if (tool_name == 'sqleditor'){
+              localStorage.setItem(tool_data_id, tool_data);
+              showQueryTool.relaunchSqlTool(tool_state, tool_data_id);
+            }else if(tool_name == 'psql'){
+              pgAdmin.Tools.Psql.openPsqlTool(null, null, tool_state);
+            }else if(tool_name == 'ERD'){
+              localStorage.setItem(tool_data_id, tool_data);
+              pgAdmin.Tools.ERD.showErdTool(null, null, false, tool_data_id, tool_state);
+            }else if(tool_name == 'schema_diff'){
+              localStorage.setItem(tool_data_id, tool_data);
+              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(tool_data_id);
+            }
+          });
+
+          // call clear application state data.
+          try {
+            getApiInstance().delete(url_for('settings.delete_application_state'), {
+            });
+          } catch (error) {
+            console.error(error);
+            pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));
+          }
+        }
+      }).catch(function(error) {
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
       });
     },
 

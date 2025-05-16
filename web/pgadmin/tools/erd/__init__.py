@@ -10,7 +10,7 @@
 """A blueprint module implementing the erd tool."""
 import json
 
-from flask import url_for, request, Response
+from flask import request, Response
 from flask import render_template, current_app as app
 from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
@@ -18,8 +18,7 @@ from flask_babel import gettext
 from werkzeug.user_agent import UserAgent
 from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields
-from pgadmin.utils.ajax import make_json_response, bad_request, \
-    internal_server_error
+from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import Server
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.driver import get_driver
@@ -29,12 +28,13 @@ from pgadmin.browser.server_groups.servers.databases.schemas.utils \
 from pgadmin.browser.server_groups.servers.databases.schemas.tables. \
     constraints.foreign_key import utils as fkey_utils
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
-    PREF_LABEL_DISPLAY, PREF_LABEL_OPTIONS
+    PREF_LABEL_OPTIONS
 from .utils import ERDHelper
 from pgadmin.utils.exception import ConnectionLost
 from pgadmin.authenticate import socket_login_required
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from ... import socketio
+
 
 MODULE_NAME = 'erd'
 SOCKETIO_NAMESPACE = '/{0}'.format(MODULE_NAME)
@@ -462,11 +462,11 @@ def panel(trans_id):
     Args:
         panel_title: Title of the panel
     """
+    params = {'trans_id': trans_id, }
+    if request.form:
+        for key, val in request.form.items():
+            params[key] = val
 
-    params = {
-        'trans_id': trans_id,
-        'title': request.form['title']
-    }
     if request.args:
         params.update({k: v for k, v in request.args.items()})
 

@@ -152,6 +152,12 @@ class PgadminPage:
     def open_query_tool(self):
         self.click_element(self.find_by_css_selector(
             "button[data-label='Tools']"))
+        WebDriverWait(self.driver, 3).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "li[data-label='Query Tool']")))
+        ActionChains(self.driver).move_to_element(
+            self.driver.find_element(
+                By.CSS_SELECTOR, "li[data-label='Query Tool']")).perform()
         self.click_element(self.find_by_css_selector(
             "li[data-label='Query Tool']"))
 
@@ -502,7 +508,10 @@ class PgadminPage:
                 TreeAreaLocators.server_connection_status_element(server_name))
             server_class = server_connection_status_element.get_attribute(
                 'class')
-            if server_class == 'icon-pg' or server_class == 'icon-ppas':
+            print("(click_expand_server_node)"
+                  "server_class = " + str(server_class), file=sys.stderr)
+            if (server_class.find('icon-pg') != -1 or
+                    server_class.find('icon-ppas') != -1):
                 server_connected = True
         except Exception as e:
             print("There is some exception thrown in the function "

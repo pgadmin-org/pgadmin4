@@ -21,9 +21,10 @@ from pgadmin.utils.ajax import make_json_response, bad_request,\
     success_return, internal_server_error
 from pgadmin.utils.menu import MenuItem
 
-from pgadmin.model import db, Setting
+from pgadmin.model import db, Setting, ApplicationState
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from .utils import get_dialog_type, get_file_type_setting
+from cryptography.fernet import Fernet
 
 MODULE_NAME = 'settings'
 
@@ -52,7 +53,10 @@ class SettingsModule(PgAdminModule):
             'settings.save_tree_state', 'settings.get_tree_state',
             'settings.reset_tree_state',
             'settings.save_file_format_setting',
-            'settings.get_file_format_setting'
+            'settings.get_file_format_setting',
+            'settings.save_application_state',
+            'settings.get_application_state',
+            'settings.delete_application_state'
         ]
 
 
@@ -256,3 +260,109 @@ def get_file_format_setting():
 
     return make_json_response(success=True,
                               info=get_file_type_setting(list(data.values())))
+
+
+@blueprint.route(
+    '/save_application_state',
+    methods=["POST"], endpoint='save_application_state'
+)
+@pga_login_required
+def save_application_state():
+    """
+    Expose an api to save the application state which stores the data from
+    query tool, ERD, schema-diff, psql
+    """
+    data = json.loads(request.data)
+    trans_id = data['trans_id']
+    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
+    connection_info = data['connection_info'] \
+        if 'connection_info' in data else None
+    try:
+        data_entry = ApplicationState(
+            uid=current_user.id, id=trans_id,connection_info=connection_info,
+            tool_name=data['tool_name'], tool_data=tool_data)
+
+        db.session.merge(data_entry)
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+
+    return make_json_response(
+        data={
+            'status': True,
+            'msg': 'Success',
+        }
+    )
+
+
+@blueprint.route(
+    '/get_application_state',
+    methods=["GET"], endpoint='get_application_state'
+)
+@pga_login_required
+def get_application_state():
+    """
+    Returns application state if any stored.
+    """
+    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    result = db.session \
+        .query(ApplicationState) \
+        .filter(ApplicationState.uid == current_user.id) \
+        .all()
+
+    res = []
+    for row in result:
+        res.append({'tool_name': row.tool_name,
+                    'connection_info': row.connection_info,
+                    'tool_data': fernet.decrypt(row.tool_data).decode(),
+                    'id': row.id
+                    })
+    return make_json_response(
+        data={
+            'status': True,
+            'msg': '',
+            'result': res
+        }
+    )
+
+
+@blueprint.route(
+    '/delete_application_state/',
+    methods=["DELETE"], endpoint='delete_application_state')
+@pga_login_required
+def delete_application_state():
+    trans_id = None
+    if request.data:
+        data = json.loads(request.data)
+        trans_id = int(data['panelId'].split('_')[-1])
+    status, msg = delete_tool_data(trans_id)
+    return make_json_response(
+        data={
+            'status': status,
+            'msg': msg,
+        }
+    )
+
+
+def delete_tool_data(trans_id=None):
+    try:
+        if trans_id:
+            results = db.session \
+                .query(ApplicationState) \
+                .filter(ApplicationState.uid == current_user.id,
+                        ApplicationState.id == trans_id) \
+                .all()
+        else:
+            results = db.session \
+                .query(ApplicationState) \
+                .filter(ApplicationState.uid == current_user.id) \
+                .all()
+        for result in results:
+            db.session.delete(result)
+        db.session.commit()
+        return True, 'Success'
+    except Exception as e:
+        db.session.rollback()
+        return False, str(e)

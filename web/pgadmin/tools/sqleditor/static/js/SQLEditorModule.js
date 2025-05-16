@@ -27,6 +27,8 @@ import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../brow
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import usePreferences, { listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
+import ErrorView from '../../../../static/js/ErrorView';
 
 export default class SQLEditor {
   static instance;
@@ -218,7 +220,7 @@ export default class SQLEditor {
     let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
     let open_new_tab = browser_preferences.new_browser_tab_open;
     const [icon, tooltip] = panelTitleFunc.getQueryToolIcon(panel_title, is_query_tool);
-    let selectedNodeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(
+    let selectedNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(
       pgAdmin.Browser.tree.selected()
     );
 
@@ -246,11 +248,25 @@ export default class SQLEditor {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} qtPanelDocker={panelDocker}
-              qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} selectedNodeInfo={selectedNodeInfo}/>
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+              { params.error ?   
+                <ErrorView error={params.error}
+                  panelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`}
+                  panelDocker={panelDocker}
+                  pgAdmin={pgWindow.pgAdmin}
+                  toolName={'Query Tool'}
+                /> :
+                <QueryToolComponent params={params} 
+                  pgWindow={pgWindow} 
+                  pgAdmin={pgAdmin} 
+                  qtPanelDocker={panelDocker}
+                  qtPanelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`} 
+                  selectedNodeInfo={selectedNodeInfo}
+                />}
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );

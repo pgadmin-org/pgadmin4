@@ -32,7 +32,7 @@ import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
-
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
   _.each(Object.keys(script_array).reverse(), function (s) {
@@ -117,6 +117,7 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
 
   useEffect(() => {
     schemaDiffToolContext.api.get(url_for('schema_diff.servers')).then((res) => {
@@ -132,6 +133,15 @@ export function SchemaDiffCompare({ params }) {
       });
 
       setSourceGroupServerList(groupedOptions);
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
+          if(d.diff_type == TYPE.SOURCE){
+            setSelectedSourceSid(d.selectedSourceSid);
+          }else{
+            setSelectedTargetSid(d.selectedTargetSid);
+          }
+        });
+      }
     }).catch((err) => {
       pgAdmin.Browser.notifier.alert(err.message);
     });
@@ -144,7 +154,6 @@ export function SchemaDiffCompare({ params }) {
 
     eventBus.registerListener(
       SCHEMA_DIFF_EVENT.TRIGGER_SELECT_DATABASE, triggerSelectDatabase);
-
 
     eventBus.registerListener(
       SCHEMA_DIFF_EVENT.TRIGGER_SELECT_SCHEMA, triggerSelectSchema);
@@ -159,6 +168,15 @@ export function SchemaDiffCompare({ params }) {
       SCHEMA_DIFF_EVENT.TRIGGER_GENERATE_SCRIPT, triggerGenerateScript);
 
   }, []);
+
+  const save_app_state = enableSaveToolData('schema_diff');
+  if(save_app_state){
+    let tool_data =  [
+      { diff_type: TYPE.SOURCE, selectedSourceSid: selectedSourceSid, selectedSourceDid:selectedSourceDid, selectedSourceScid: selectedSourceScid},
+      { diff_type: TYPE.TARGET, selectedTargetSid:selectedTargetSid, selectedTargetDid:selectedTargetDid, selectedTargetScid:selectedTargetScid },
+    ];
+    saveToolData('schema_diff', null, params.transId, tool_data);
+  }
 
   function checkAndSetSourceData(diff_type, selectedOption) {
     if(selectedOption == null) {
@@ -626,7 +644,6 @@ export function SchemaDiffCompare({ params }) {
       url_for('schema_diff.databases', { 'sid': sid })
     ).then((res) => {
       res.data.data.map((opt) => {
-
         if (opt.is_maintenance_db) {
           if (diff_type == TYPE.SOURCE) {
             setSelectedSourceDid(opt.value);
@@ -641,7 +658,15 @@ export function SchemaDiffCompare({ params }) {
       } else {
         setTargetDatabaseList(res.data.data);
       }
-
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
+          if(d.diff_type == TYPE.SOURCE){
+            setSelectedSourceDid(d.selectedSourceDid);
+          }else{
+            setSelectedTargetDid(d.selectedTargetDid);
+          }
+        });
+      }
     });
   }
 
@@ -654,7 +679,15 @@ export function SchemaDiffCompare({ params }) {
       } else {
         setTargetSchemaList(res.data.data);
       }
-
+      if(params?.oldSchemaDiffData){
+        _.each(params.oldSchemaDiffData,(d)=>{
+          if(d.diff_type == TYPE.SOURCE){
+            setSelectedSourceScid(d.selectedSourceScid);
+          }else{
+            setSelectedTargetScid(d.selectedTargetScid);
+          }
+        });
+      }
     });
   }
 

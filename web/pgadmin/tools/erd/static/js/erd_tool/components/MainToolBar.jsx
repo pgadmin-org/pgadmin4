@@ -37,6 +37,8 @@ import { ERD_EVENTS } from '../ERDConstants';
 import { MagicIcon, SQLFileIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { useModal } from '../../../../../../static/js/helpers/ModalProvider';
 import { withColorPicker } from '../../../../../../static/js/helpers/withColorPicker';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
 const StyledBox = styled(Box)(({theme}) => ({
   padding: '2px 4px',
@@ -48,7 +50,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.bottom,
 }));
 
-export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange}) {
+export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange, connectionInfo}) {
   const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save': true,
@@ -62,6 +64,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   });
   const [showDetails, setShowDetails] = useState(true);
 
+  const {saveToolData, enableSaveToolData} = useApplicationState();
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
   const sqlMenuRef = React.useRef(null);
@@ -130,9 +133,13 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.ANY_ITEM_SELECTED, (selected)=>{
         setDisableButton('drop-table', !selected);
       }],
-      [ERD_EVENTS.DIRTY, (isDirty)=>{
+      [ERD_EVENTS.DIRTY, (isDirty, data)=>{
+        const save_app_state = enableSaveToolData('ERD');
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
+        if(save_app_state){
+          setSaveData(data);
+        }
       }],
     ];
     events.forEach((e)=>{
@@ -144,6 +151,11 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       });
     };
   }, []);
+
+  const [saveData, setSaveData] = useState(null);
+  useDelayDebounce((saveData)=>{
+    saveToolData('ERD', connectionInfo,  connectionInfo.trans_id, saveData);
+  }, saveData, 500);
 
   useEffect(()=>{
     const showSql = ()=>{
@@ -333,6 +345,7 @@ MainToolBar.propTypes = {
   textColor: PropTypes.string,
   notation: PropTypes.string,
   onNotationChange: PropTypes.func,
+  connectionInfo: PropTypes.object,
 };
 
 const ColorButton = withColorPicker(PgIconButton);

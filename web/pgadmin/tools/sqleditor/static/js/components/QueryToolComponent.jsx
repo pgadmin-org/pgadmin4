@@ -37,6 +37,7 @@ import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 import usePreferences from '../../../../../preferences/static/js/store';
+import { getToolData } from '../../../../../settings/static/ApplicationStateProvider';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -173,6 +174,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     },
     is_new_tab: window.location == window.parent?.location,
     is_visible: true,
+    manual_panel_close: true,
     current_file: null,
     obtaining_conn: true,
     connected: false,
@@ -332,8 +334,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           setQtStatePartial({ editor_disabled: true });
         });
     } else if (qtState.params.sql_id) {
-      let sqlValue = localStorage.getItem(qtState.params.sql_id);
-      localStorage.removeItem(qtState.params.sql_id);
+      let sqlValue = getToolData(qtState.params.sql_id);
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
@@ -499,7 +500,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           'trans_id': qtState.params.trans_id,
         }), {
           keepalive: true,
-          method: 'DELETE',
+          method: 'DELETE'
         }
       )
         .then(()=>{/* Success */})
@@ -898,6 +899,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     mainContainerRef: containerRef,
     editor_disabled: qtState.editor_disabled,
     eol: qtState.eol,
+    connection_list: qtState.connection_list,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
