@@ -927,7 +927,6 @@ export default function Theme({children}) {
   useEffect(() => {
     if (selectedTheme !== 'system') {
       setTheme(selectedTheme);
-      window.theme = selectedTheme; // Update global theme
       return;
     }
 
