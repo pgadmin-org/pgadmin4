@@ -19,7 +19,7 @@ azure-mgmt-resource==23.3.0
 azure-mgmt-subscription==3.1.1
 bcrypt==4.3.*
 boto3==1.38.*
-cryptography==44.0.*
+cryptography==45.0.*
 Flask-Babel==4.0.*
 Flask-Compress==1.*
 Flask-Login==0.*
