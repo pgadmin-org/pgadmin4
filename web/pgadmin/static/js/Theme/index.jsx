@@ -937,7 +937,6 @@ export default function Theme({children}) {
     const updateTheme = (event) => {
       const newTheme = event.matches ? 'dark' : 'light';
       setTheme(newTheme);
-      window.theme = newTheme; // Update global theme
     };
     isSystemInDarkMode.addEventListener('change', updateTheme);
 
