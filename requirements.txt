@@ -41,7 +41,7 @@ ldap3==2.*
 libgravatar==1.0.*
 passlib==1.*
 psutil==7.0.*
-psycopg[c]==3.2.8
+psycopg[c]==3.2.9
 pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*
