@@ -885,15 +885,15 @@ function getFinalTheme(baseTheme) {
 /* Get the actual system theme is user selected system theme in preferences */
 function getSystemTheme(selectedTheme) {
   if (selectedTheme === 'system') {
-    const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
+    const systemMatchMedia = matchMedia('(prefers-color-scheme: dark)');
     return {
-      'theme': isSystemInDarkMode.matches ? 'dark' : 'light',
-      'isSystemInDarkMode': isSystemInDarkMode,
+      'theme': systemMatchMedia.matches ? 'dark' : 'light',
+      'systemMatchMedia': systemMatchMedia,
     };
   }
   return {
     'theme': selectedTheme,
-    'isSystemInDarkMode': null,
+    'systemMatchMedia': null,
   };
 }
 
@@ -931,17 +931,17 @@ export default function Theme({children}) {
       return;
     }
 
-    let {theme, isSystemInDarkMode} = getSystemTheme(selectedTheme);
+    let {theme, systemMatchMedia} = getSystemTheme(selectedTheme);
     setTheme(theme);
 
     const updateTheme = (event) => {
       const newTheme = event.matches ? 'dark' : 'light';
       setTheme(newTheme);
     };
-    isSystemInDarkMode.addEventListener('change', updateTheme);
+    systemMatchMedia.addEventListener('change', updateTheme);
 
     return () => {
-      isSystemInDarkMode.removeEventListener('change', updateTheme);
+      systemMatchMedia.removeEventListener('change', updateTheme);
     };
   },[selectedTheme]);
 
