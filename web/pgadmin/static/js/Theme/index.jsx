@@ -883,7 +883,7 @@ function getFinalTheme(baseTheme) {
 }
 
 /* Get the actual system theme is user selected system theme in preferences */
-function getSystemTheme(selectedTheme) {
+function parseSystemTheme(selectedTheme) {
   if (selectedTheme === 'system') {
     const systemMatchMedia = matchMedia('(prefers-color-scheme: dark)');
     return {
@@ -907,7 +907,7 @@ export default function Theme({children}) {
     'light';
 
   // Initialize theme state
-  const [theme, setTheme] = useState(getSystemTheme(selectedTheme).theme);
+  const [theme, setTheme] = useState(parseSystemTheme(selectedTheme).theme);
 
   // Memoize the theme object
   const themeObj = useMemo(()=>{
@@ -925,22 +925,17 @@ export default function Theme({children}) {
 
   // Handle theme updates
   useEffect(() => {
-    if (selectedTheme !== 'system') {
-      setTheme(selectedTheme);
-      return;
-    }
-
-    let {theme, systemMatchMedia} = getSystemTheme(selectedTheme);
+    let {theme, systemMatchMedia} = parseSystemTheme(selectedTheme);
     setTheme(theme);
 
     const updateTheme = (event) => {
       const newTheme = event.matches ? 'dark' : 'light';
       setTheme(newTheme);
     };
-    systemMatchMedia.addEventListener('change', updateTheme);
+    systemMatchMedia?.addEventListener('change', updateTheme);
 
     return () => {
-      systemMatchMedia.removeEventListener('change', updateTheme);
+      systemMatchMedia?.removeEventListener('change', updateTheme);
     };
   },[selectedTheme]);
 
