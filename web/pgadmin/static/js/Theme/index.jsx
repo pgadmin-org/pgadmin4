@@ -882,23 +882,32 @@ function getFinalTheme(baseTheme) {
   }, baseTheme);
 }
 
+/* Get the actual system theme is user selected system theme in preferences */
+function getSystemTheme(selectedTheme) {
+  if (selectedTheme === 'system') {
+    const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
+    return {
+      'theme': isSystemInDarkMode.matches ? 'dark' : 'light',
+      'isSystemInDarkMode': isSystemInDarkMode,
+    };
+  }
+  return {
+    'theme': selectedTheme,
+    'isSystemInDarkMode': null,
+  };
+}
+
 /* Theme wrapper used by DOM containers to apply theme */
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
   const selectedTheme =
-    (prefStore && prefStore.getPreferencesForModule('misc')?.theme) ||
-    (window.pgAdmin && window.pgAdmin.theme) ||
+    prefStore?.getPreferencesForModule('misc')?.theme ||
+    window.theme ||
     'light';
-    
+
   // Initialize theme state
-  const [theme, setTheme] = useState(() => {
-    if (selectedTheme === 'system') {
-      const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
-      return isSystemInDarkMode.matches ? 'dark' : 'light';
-    }
-    return selectedTheme;
-  });
+  const [theme, setTheme] = useState(getSystemTheme(selectedTheme).theme);
 
   // Memoize the theme object
   const themeObj = useMemo(()=>{
@@ -918,28 +927,18 @@ export default function Theme({children}) {
   useEffect(() => {
     if (selectedTheme !== 'system') {
       setTheme(selectedTheme);
-      if (window.pgAdmin) {
-        window.pgAdmin.theme = selectedTheme; // Update global theme
-      }
-      // window.pgAdmin?.theme = selectedTheme; // Update global theme
+      window.theme = selectedTheme; // Update global theme
       return;
     }
 
-    const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
+    let {theme, isSystemInDarkMode} = getSystemTheme(selectedTheme);
+    setTheme(theme);
+
     const updateTheme = (event) => {
       const newTheme = event.matches ? 'dark' : 'light';
       setTheme(newTheme);
-      if (window.pgAdmin) {
-        window.pgAdmin.theme = newTheme; // Update global theme
-      }
+      window.theme = newTheme; // Update global theme
     };
-
-    // Set initial system theme
-    const initialTheme = isSystemInDarkMode.matches ? 'dark' : 'light';
-    setTheme(initialTheme);
-    if (window.pgAdmin) {
-      window.pgAdmin.theme = initialTheme; // Update global theme
-    }
     isSystemInDarkMode.addEventListener('change', updateTheme);
 
     return () => {
