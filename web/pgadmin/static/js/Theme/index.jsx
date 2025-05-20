@@ -882,12 +882,34 @@ function getFinalTheme(baseTheme) {
   }, baseTheme);
 }
 
+/* Get the actual system theme is user selected system theme in preferences */
+function parseSystemTheme(selectedTheme) {
+  if (selectedTheme === 'system') {
+    const systemMatchMedia = matchMedia('(prefers-color-scheme: dark)');
+    return {
+      'theme': systemMatchMedia.matches ? 'dark' : 'light',
+      'systemMatchMedia': systemMatchMedia,
+    };
+  }
+  return {
+    'theme': selectedTheme,
+    'systemMatchMedia': null,
+  };
+}
+
 /* Theme wrapper used by DOM containers to apply theme */
 /* In future, this will be moved to App container */
 export default function Theme({children}) {
   const prefStore = usePreferences();
-  const [theme, setTheme] = useState();
+  const selectedTheme =
+    prefStore?.getPreferencesForModule('misc')?.theme ||
+    window.theme ||
+    'light';
 
+  // Initialize theme state
+  const [theme, setTheme] = useState(parseSystemTheme(selectedTheme).theme);
+
+  // Memoize the theme object
   const themeObj = useMemo(()=>{
     let baseTheme = getLightTheme(basicSettings);
     switch(theme) {
@@ -901,31 +923,26 @@ export default function Theme({children}) {
     return getFinalTheme(baseTheme);
   }, [theme]);
 
+  // Handle theme updates
   useEffect(() => {
-    const selectedTheme = prefStore.getPreferencesForModule('misc').theme;
-    if(theme && theme === selectedTheme) {
-      return;
-    }else{
-      if (selectedTheme !== 'system') {
-        setTheme(selectedTheme);
-        return;
-      }
-      const isSystemInDarkMode = matchMedia('(prefers-color-scheme: dark)');
-      setTheme(isSystemInDarkMode.matches ? 'dark' : 'light');
-      const listener = (event) => {
-        setTheme(event.matches ? 'dark' : 'light');
-      };
-      isSystemInDarkMode.addEventListener('change',listener);
-      return () => {
-        isSystemInDarkMode.removeEventListener('change',listener);
-      };
-    }
-  },[prefStore]);
+    let {theme, systemMatchMedia} = parseSystemTheme(selectedTheme);
+    setTheme(theme);
+
+    const updateTheme = (event) => {
+      const newTheme = event.matches ? 'dark' : 'light';
+      setTheme(newTheme);
+    };
+    systemMatchMedia?.addEventListener('change', updateTheme);
+
+    return () => {
+      systemMatchMedia?.removeEventListener('change', updateTheme);
+    };
+  },[selectedTheme]);
 
   return (
     <ThemeProvider theme={themeObj}>
       <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDateFns} >
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         {children}
       </LocalizationProvider>
     </ThemeProvider>
