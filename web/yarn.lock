@@ -1543,7 +1543,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     crelt: ^1.0.5
-  checksum: 4d418f176bd93705bc51c82a2f1c0e41fecc0368dc43c415635c4dfdd763aa05ebdf7f000bc9ca0083c1887e6d305b89482ec1f4db8b8765c6f38de324187476
+  checksum: a30048004ce7cc1ee77a7618485ab5399939eab72b64329d57be98245ea39cb68ba54ad944ee679cc2aeac5bf9f202b2073ad0916f0788497fb64a07073399e8
   languageName: node
   linkType: hard
 
@@ -3869,16 +3869,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"accepts@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "accepts@npm:2.0.0"
-  dependencies:
-    mime-types: ^3.0.0
-    negotiator: ^1.0.0
-  checksum: 49fe6c050cb6f6ff4e771b4d88324fca4d3127865f2473872e818dca127d809ba3aa8fdfc7acb51dd3c5bade7311ca6b8cfff7015ea6db2f7eb9c8444d223a4f
-  languageName: node
-  linkType: hard
-
 "acorn-globals@npm:^7.0.0":
   version: 7.0.1
   resolution: "acorn-globals@npm:7.0.1"
@@ -3934,7 +3924,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.0.4, acorn@npm:^8.1.0, acorn@npm:^8.11.0, acorn@npm:^8.12.1, acorn@npm:^8.14.0, acorn@npm:^8.8.1, acorn@npm:^8.8.2":
+"acorn@npm:^8.0.4, acorn@npm:^8.1.0, acorn@npm:^8.11.0, acorn@npm:^8.12.1, acorn@npm:^8.14.0, acorn@npm:^8.8.1":
   version: 8.14.1
   resolution: "acorn@npm:8.14.1"
   bin:
@@ -9066,13 +9056,6 @@ __metadata:
   version: 1.0.1
   resolution: "is-potential-custom-element-name@npm:1.0.1"
   checksum: ced7bbbb6433a5b684af581872afe0e1767e2d1146b2207ca0068a648fb5cab9d898495d1ac0583524faaf24ca98176a7d9876363097c2d14fee6dd324f3a1ab
-  languageName: node
-  linkType: hard
-
-"is-promise@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "is-promise@npm:4.0.0"
-  checksum: 0b46517ad47b00b6358fd6553c83ec1f6ba9acd7ffb3d30a0bf519c5c69e7147c132430452351b8a9fc198f8dd6c4f76f8e6f5a7f100f8c77d57d9e0f4261a8a
   languageName: node
   linkType: hard
 
@@ -16360,22 +16343,6 @@ __metadata:
   version: 1.1.2
   resolution: "zimmerframe@npm:1.1.2"
   checksum: 83b05c0b73ae45c520af7f0c856c1ea56728047d41dcec6b86a2016ad8cbe8694e8efdb0ea973f55fa72bbb851fbceaadcba748c0fd000ef17d095e7ee366f00
-  languageName: node
-  linkType: hard
-
-"zod-to-json-schema@npm:^3.24.1":
-  version: 3.24.5
-  resolution: "zod-to-json-schema@npm:3.24.5"
-  peerDependencies:
-    zod: ^3.24.1
-  checksum: dc4e5e4c06e9a5494e4b1d8c8363ac907f9d488f36c8e4923e1e5ac4f91f737722f99200cd92a409551e7456d960734d4cabd37935234ca95e290572468ffc08
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.23.8, zod@npm:^3.24.2":
-  version: 3.24.4
-  resolution: "zod@npm:3.24.4"
-  checksum: 62829789765a9187bd72bed3972a7c1a39fdfe6c59bc752eedabec5f99af701658471b8577d22e0fee2081e6e35d4efc93c02c90e13350755a36feadbf72bbbc
   languageName: node
   linkType: hard
 
