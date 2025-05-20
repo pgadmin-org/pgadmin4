@@ -32,6 +32,7 @@ def pprompt():
 
 
 def user_info_server():
+    # issues/8665
     print("NOTE: Configuring authentication for SERVER mode.\n")
 
     if all(value in os.environ for value in

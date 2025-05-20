@@ -623,6 +623,7 @@ def setup_db(app: Annotated[str, typer.Argument(
     app = app or create_app()
     create_app_data_directory(config)
 
+    # issues/8665
     print("pgAdmin 4 - Application Initialisation")
     print("======================================\n")
 
