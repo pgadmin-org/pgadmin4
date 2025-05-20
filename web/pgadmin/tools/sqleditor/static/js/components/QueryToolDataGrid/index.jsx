@@ -257,7 +257,7 @@ function cellClassGetter(col, isSelected, dataChangeStore, rowKeyGetter){
   };
 }
 
-function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
+function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength) {
   let retColumns = [
     ...columns,
   ];
@@ -266,7 +266,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   canvasContext.font = '12px Roboto';
 
   for(const col of retColumns) {
-    col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy);
+    col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength);
     col.resizable = true;
     col.editorOptions = {
       commitOnOutsideClick: false,
@@ -338,15 +338,16 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onColumnSelect
   return retColumns;
 }
 
-function getColumnWidth(column, rows, canvas, columnWidthBy) {
+function getColumnWidth(column, rows, canvas, columnWidthBy, maxColumnDataDisplayLength) {
   const dataWidthReducer = (longest, nextRow) => {
     let value = nextRow[column.key];
     if(_.isNull(value) || _.isUndefined(value)) {
       value = '';
     }
     value = value.toString();
-    if (value.length > 200) {
-      value = `${value.substring(0, 200)}`;
+    // If the length of the value is very large then we do not use the entire value and truncate it.
+    if (value.length > maxColumnDataDisplayLength) {
+      value = `${value.substring(0, maxColumnDataDisplayLength)}`;
     }
     return longest.length > value.length ? longest : value;
   };
@@ -373,7 +374,7 @@ function getColumnWidth(column, rows, canvas, columnWidthBy) {
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
-  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, ...props}) {
+  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, startRowNum, maxColumnDataDisplayLength, ...props}) {
   const [readyColumns, setReadyColumns] = useState([]);
   const [lastSelectedColumn, setLastSelectedColumn] = useState(null);
   const eventBus = useContext(QueryToolEventsContext);
@@ -431,7 +432,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }), [onSelectedCellChange]);
 
   useEffect(()=>{
-    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
+    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength);
     setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
   }, [columns]);
 
@@ -496,4 +497,5 @@ QueryToolDataGrid.propTypes = {
   rowKeyGetter: PropTypes.func,
   columnWidthBy: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   startRowNum: PropTypes.number,
+  maxColumnDataDisplayLength: PropTypes.number,
 };

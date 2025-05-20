@@ -88,15 +88,15 @@ export default function jsonEditorOverride(theme) {
       color: theme.palette.text.primary + ' !important',
       fontWeight: 'normal !important',
       cursor:'pointer',
-      border: '1px solid transparent !important',
-      margin: '0.5px !important',
       padding: '2px 4px !important',
+      margin: '1px !important',
     },
 
     '.jse-button.jse-group-button.jse-selected': {
       color: theme.palette.primary.contrastTextLight ?? theme.palette.primary.main + ' !important',
       backgroundColor: theme.palette.primary.light + ' !important',
       borderColor: theme.palette.primary.main + ' !important',
+      borderRight: '1px solid ' + theme.palette.primary.main + ' !important',
       '&:hover':{
         backgroundColor: theme.palette.primary.hoverLight + ' !important',
       }
@@ -117,6 +117,7 @@ export default function jsonEditorOverride(theme) {
     },
 
     '.jse-button.jse-group-button': {
+      margin: '0 !important',
       height: '32px !important',
       borderRadius: '0 !important',
     },

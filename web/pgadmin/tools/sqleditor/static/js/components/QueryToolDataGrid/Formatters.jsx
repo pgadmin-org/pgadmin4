@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
+import usePreferences from '../../../../../../preferences/static/js/store';
 
 
 const StyledNullAndDefaultFormatter = styled(NullAndDefaultFormatter)(({theme}) => ({
@@ -41,11 +42,13 @@ const FormatterPropTypes = {
   column: PropTypes.object,
 };
 export function TextFormatter({row, column}) {
+  const maxColumnDataDisplayLength = usePreferences().getPreferences('sqleditor', 'max_column_data_display_length').value;
   let value = row[column.key];
   if(!_.isNull(value) && !_.isUndefined(value)) {
     value = value.toString();
-    if (value.length > 200) {
-      value = `${value.substring(0, 200).replace(/\n/g,' ')}...`;
+    // If the length of the value is very large then we do not render the entire value and truncate it.
+    if (value.length > maxColumnDataDisplayLength) {
+      value = `${value.substring(0, maxColumnDataDisplayLength).replace(/\n/g,' ')}...`;
     }
   }
   return (
