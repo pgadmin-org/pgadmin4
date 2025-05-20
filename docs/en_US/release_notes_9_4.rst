@@ -37,4 +37,5 @@ Bug fixes
   | `Issue #8607 <https://github.com/pgadmin-org/pgadmin4/issues/8607>`_ -  Fixed an issue where the query tool returns "cannot unpack non-iterable Response object" when running any query with a database name change.
   | `Issue #8608 <https://github.com/pgadmin-org/pgadmin4/issues/8608>`_ -  Handle result grid data changes in View/Edit Data mode by automatically reconnecting to the server if a disconnection occurs.
   | `Issue #8668 <https://github.com/pgadmin-org/pgadmin4/issues/8668>`_ -  Implement API fetch error display for select dropdown.
+  | `Issue #8711 <https://github.com/pgadmin-org/pgadmin4/issues/8711>`_ -  Fixed an issue where light theme briefly appears when pgAdmin loads or tools open, even when a dark or system UI theme is preferred.
   | `Issue #8713 <https://github.com/pgadmin-org/pgadmin4/issues/8713>`_ -  Fixed issues related to column range selection using shift + click.
