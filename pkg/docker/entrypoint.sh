@@ -114,6 +114,7 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ] && [ "${external_config_db_exists}" = "
     fi
      email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}, 'GLOBALLY_DELIVERABLE': ${GLOBALLY_DELIVERABLE}}"
      # issues/8665
+     echo 'JSON LOGGING' $PGADMIN_CONFIG_JSON_LOGGER
      echo "email config is ${email_config}"
      is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${email_config}); print(val)")
      if echo "${is_valid_email}" | grep "False" > /dev/null; then
@@ -165,6 +166,7 @@ elif [ "${PGADMIN_REPLACE_SERVERS_ON_STARTUP}" = "True" ]; then
 fi
 
 # Start Postfix to handle password resets etc.
+# issues/8665
 if [ -z "${PGADMIN_DISABLE_POSTFIX}" ]; then
     sudo /usr/sbin/postfix start
 fi
@@ -189,5 +191,5 @@ fi
 if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
     exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
 else
-    exec /venv/bin/gunicorn --log-config gunicorn_logging.conf --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
 fi
