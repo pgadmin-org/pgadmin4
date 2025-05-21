@@ -235,12 +235,25 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         result = self.page.find_by_xpath(
             QueryToolLocators.output_cell_xpath.format(2, 2))
+        result.click()
+
+        copy_button = self.page.find_by_css_selector(
+            QueryToolLocators.copy_button_css)
+        copy_button.click()
+
+        scratch_pad_ele = self.page.find_by_css_selector(
+            QueryToolLocators.scratch_pad_css)
+        self.page.paste_values(scratch_pad_ele)
+
+        clipboard_text = scratch_pad_ele.get_attribute("value")
 
         # Search for 'Shared Read Blocks' word in result (buffers option)
-        self.assertIn('Shared Read Blocks', result.text)
+        self.assertIn('Shared Read Blocks', clipboard_text)
 
         # Search for 'Actual Total Time' word in result (timing option)
-        self.assertIn('Actual Total Time', result.text)
+        self.assertIn('Actual Total Time', clipboard_text)
+
+        scratch_pad_ele.clear()
 
     def _query_tool_auto_commit_disabled(self):
         table_name = 'query_tool_auto_commit_disabled_table'
