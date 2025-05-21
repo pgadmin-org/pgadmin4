@@ -207,7 +207,7 @@ class QueryToolLocators:
     row_editor_text_area_css = "div[data-label='pg-editor'] textarea"
 
     json_editor_text_area_css = \
-        "div.ace_layer.ace_text-layer .ace_line_group .ace_line"
+        "div.jsoneditor-div .jse-contents .cm-editor .cm-content"
 
     row_editor_checkbox_css = "div[data-label='pg-checkbox-editor']"
 

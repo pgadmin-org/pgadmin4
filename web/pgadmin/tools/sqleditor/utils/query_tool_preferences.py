@@ -375,6 +375,14 @@ def register_query_tool_preferences(self):
                          ' rows with alternating background colors.')
     )
 
+    self.max_column_data_display_length = self.preference.register(
+        'Results_grid', 'max_column_data_display_length',
+        gettext("Max column data display length"), 'integer',
+        200, category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('Maximum number of characters to display in the'
+                         ' data preview.')
+    )
+
     self.sql_font_size = self.preference.register(
         'Editor', 'sql_font_size',
         gettext("Font size"), 'numeric', '1',

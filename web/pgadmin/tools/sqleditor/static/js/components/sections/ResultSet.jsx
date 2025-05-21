@@ -1573,6 +1573,7 @@ export function ResultSet() {
                 queryToolCtx.preferences.sqleditor.column_data_max_width :
                 queryToolCtx.preferences?.sqleditor?.column_data_auto_resize
             }
+            maxColumnDataDisplayLength={queryToolCtx.preferences?.sqleditor?.max_column_data_display_length}
             key={rowsResetKey}
             rowKeyGetter={rowKeyGetter}
             onRowsChange={onRowsChange}

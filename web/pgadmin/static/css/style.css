@@ -3,7 +3,6 @@
 
 @import 'node_modules/@xterm/xterm/css/xterm.css';
 
-@import 'node_modules/jsoneditor/dist/jsoneditor.min.css';
 @import 'node_modules/react-checkbox-tree/lib/react-checkbox-tree.css';
 
 @import 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css';

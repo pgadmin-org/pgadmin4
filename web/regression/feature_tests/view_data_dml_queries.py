@@ -157,7 +157,7 @@ CREATE TABLE public.nonintpkey
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(table_name))
         table_node.click()
-
+        time.sleep(1)
         # Open Object -> View/Edit data
         self._view_data_grid(table_name)
 
@@ -288,14 +288,17 @@ CREATE TABLE public.nonintpkey
         else:
             key_to_press = Keys.CONTROL
         try:
-            WebDriverWait(self.driver, 3).until(
-                EC.visibility_of_element_located(
-                    (By.CSS_SELECTOR,
-                     QueryToolLocators.json_editor_text_area_css)))
+            json_editor = self.page.find_by_css_selector(
+                QueryToolLocators.json_editor_text_area_css)
+            json_editor.click()
+
             actions = ActionChains(self.driver)
             actions.key_down(key_to_press).send_keys('a').\
                 key_up(key_to_press).send_keys(Keys.DELETE).perform()
             actions.send_keys(value).perform()
+
+            time.sleep(0.5)
+
             # Click on editor's Save button
             self.page.find_by_css_selector(
                 QueryToolLocators.text_editor_ok_btn_css).click()
