@@ -5,7 +5,7 @@ gunicorn.SERVER_SOFTWARE = "Python"
 
 
 def on_starting(worker):
-    # Can be resolved because of how Dockerfile organizes the files
+    # Can be resolved because of how Dockerfile organizes the code during build
     import config
 
     if not config.JSON_LOGGER:
