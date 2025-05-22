@@ -28,7 +28,7 @@ msgstr "Nome de usuário ou senha incorretos."
 
 #: pgadmin/__init__.py:353
 msgid "Unauthorised access, permission denied."
-msgstr ""
+msgstr "Acesso não autorizado, permissão negada."
 
 #: pgadmin/__init__.py:664 pgadmin/__init__.py:714
 msgid "Auto-detected {0} installation with the data directory at {1}"
@@ -40,7 +40,7 @@ msgstr "403 PROIBIDO"
 
 #: pgadmin/__init__.py:933
 msgid " You need to refresh the page."
-msgstr ""
+msgstr "Você precisa recarregar a página."
 
 #: pgadmin/about/__init__.py:42
 #, python-format
@@ -88,7 +88,7 @@ msgstr "Confirmar"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:62
 msgid "Python Version"
-msgstr ""
+msgstr "Versão do Python"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:70
 msgid "Current User"
@@ -96,7 +96,7 @@ msgstr "Usuário Atual"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:79
 msgid "Electron Version"
-msgstr ""
+msgstr "Versão do Electron"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:88 pgadmin/browser/__init__.py:86
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:389
@@ -109,7 +109,7 @@ msgstr "Sistema Operacional"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:107
 msgid "pgAdmin Database File"
-msgstr "arquivo de banco de dados pgAdmin"
+msgstr "Arquivo de banco de dados pgAdmin"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:117
 msgid "Log File"
@@ -117,7 +117,7 @@ msgstr "Arquivo de Registro"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:127
 msgid "pgAdmin Server Configuration"
-msgstr ""
+msgstr "Configuração do Servidor pgAdmin"
 
 #: pgadmin/about/static/js/about.js:43
 #, python-format
@@ -552,7 +552,7 @@ msgstr ""
 #: pgadmin/browser/register_browser_preferences.py:115
 #: pgadmin/static/js/BrowserComponent.jsx:45
 msgid "Processes"
-msgstr ""
+msgstr "Processos"
 
 #: pgadmin/browser/register_browser_preferences.py:116
 msgid ""
