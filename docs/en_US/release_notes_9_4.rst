@@ -31,6 +31,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #6510 <https://github.com/pgadmin-org/pgadmin4/issues/6510>`_ -  Fixed an issue where the result grid slowed down when any column contained a large amount of data.
   | `Issue #6564 <https://github.com/pgadmin-org/pgadmin4/issues/6564>`_ -  Fix the issue where an error is displayed when a table is dropped while a query is running.
   | `Issue #6968 <https://github.com/pgadmin-org/pgadmin4/issues/6968>`_ -  Fixed an issue where the options key was not working as expected in the PSQL tool.
   | `Issue #8595 <https://github.com/pgadmin-org/pgadmin4/issues/8595>`_ -  Enhance contrast for selected and hovered items in the Object Explorer to improve visibility and accessibility.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-04-24 16:12+0530\n"
+"POT-Creation-Date: 2025-05-22 15:57+0530\n"
 "PO-Revision-Date: 2017-12-17 23:18+0200\n"
 "Last-Translator: grzegorz <begina.felicysym@wp.eu>\n"
 "Language: pl\n"
@@ -79,7 +79,7 @@ msgstr "Tryb Aplikacji"
 #: pgadmin/about/static/js/AboutComponent.jsx:54
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:26
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:560
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:835
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:843
 msgid "Commit"
 msgstr ""
 
@@ -411,32 +411,32 @@ msgstr ""
 msgid "Nodes"
 msgstr "Węzły"
 
-#: pgadmin/browser/__init__.py:791
+#: pgadmin/browser/__init__.py:796
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
 "utility specified {0}. Please check that the hook utility is configured "
 "correctly."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:815
+#: pgadmin/browser/__init__.py:820
 msgid "Incorrect master password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:861
+#: pgadmin/browser/__init__.py:866
 msgid "Master password cannot be empty"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:945
+#: pgadmin/browser/__init__.py:950
 msgid "pgAdmin user password changed successfully"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:992
+#: pgadmin/browser/__init__.py:997
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1104
+#: pgadmin/browser/__init__.py:1109
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -790,10 +790,12 @@ msgstr "Brak wymaganych atrybutów."
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:124
 #: pgadmin/browser/templates/browser/js/messages.js:21
 #: pgadmin/browser/templates/browser/js/messages.js:41
-#: pgadmin/browser/utils.py:444 pgadmin/static/js/utils.js:470
+#: pgadmin/browser/utils.py:444 pgadmin/static/js/utils.js:434
 #: pgadmin/tools/backup/__init__.py:563
 #: pgadmin/tools/grant_wizard/__init__.py:101
-#: pgadmin/tools/sqleditor/__init__.py:1014 pgadmin/utils/exception.py:37
+#: pgadmin/tools/sqleditor/__init__.py:864
+#: pgadmin/tools/sqleditor/__init__.py:1030
+#: pgadmin/tools/sqleditor/__init__.py:1450 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "Stracono połączenie z serwerem."
 
@@ -985,7 +987,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1601
 #: pgadmin/tools/schema_diff/__init__.py:367
-#: pgadmin/tools/sqleditor/__init__.py:2606
+#: pgadmin/tools/sqleditor/__init__.py:2635
 msgid "Server connected."
 msgstr "Połączono z serwerem."
 
@@ -1270,8 +1272,8 @@ msgstr "Rzutowanie..."
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:481
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:391
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:395
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:744
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:786
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:743
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:785
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:119
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:140
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:179
@@ -1428,7 +1430,6 @@ msgstr "Nazwa"
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.ui.js:33
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:79
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:48
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:112
 msgid "OID"
 msgstr "OID"
 
@@ -2232,7 +2233,7 @@ msgstr "Domyślnie"
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:63
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:105
 #: pgadmin/tools/debugger/static/js/components/Stack.jsx:55
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:428
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:429
 msgid "Value"
 msgstr "Wartość"
 
@@ -2249,8 +2250,8 @@ msgstr "Status"
 #: pgadmin/misc/sql/static/js/SQL.jsx:77 pgadmin/static/js/UtilityView.jsx:52
 #: pgadmin/tools/backup/static/js/backup.js:163
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:300
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:771
-#: pgadmin/tools/import_export/static/js/import_export.js:82
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:770
+#: pgadmin/tools/import_export/static/js/import_export.js:100
 #: pgadmin/tools/maintenance/static/js/maintenance.js:98
 #: pgadmin/tools/restore/static/js/restore.js:97
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:307
@@ -2691,12 +2692,13 @@ msgstr ""
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:760
 #: pgadmin/tools/backup/static/js/backup.ui.js:730
 #: pgadmin/tools/backup/static/js/backup.ui.js:735
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:114
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:120
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:126
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:155
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:173
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:191
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:167
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:174
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:190
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:219
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:237
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:255
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:266
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:369
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:397
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:410
@@ -3016,8 +3018,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:501
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:681
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:403
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:202
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:235
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:277
 msgid "Columns"
 msgstr "Kolumny"
 
@@ -4306,7 +4307,7 @@ msgid "System package?"
 msgstr "Pakiet systemowy?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:100
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:118
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:165
 msgid "Header"
 msgstr "Nagłówek"
 
@@ -6609,7 +6610,7 @@ msgstr "Typ..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:211
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:21
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:423
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:424
 msgid "Label"
 msgstr "Etykieta"
 
@@ -6729,7 +6730,7 @@ msgid "Element type"
 msgstr "Typ elementu"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:770
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:125
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:189
 msgid "Delimiter"
 msgstr "Ogranicznik"
 
@@ -6867,7 +6868,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:187
 #: pgadmin/tools/backup/__init__.py:116
-#: pgadmin/tools/import_export/__init__.py:103
+#: pgadmin/tools/import_export/__init__.py:105
 #: pgadmin/tools/maintenance/__init__.py:61
 #: pgadmin/tools/restore/__init__.py:85
 msgid "Not available"
@@ -6897,7 +6898,7 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2309
-#: pgadmin/tools/import_export/__init__.py:242
+#: pgadmin/tools/import_export/__init__.py:300
 #: pgadmin/tools/maintenance/__init__.py:181
 msgid "Could not find the given server"
 msgstr "Nie udało się znaleźć wskazanego serwera"
@@ -6940,7 +6941,7 @@ msgid "With data (concurrently)"
 msgstr "Z danymi (równolegle)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:174
-#: pgadmin/tools/import_export/static/js/import_export.js:116
+#: pgadmin/tools/import_export/static/js/import_export.js:135
 #: pgadmin/tools/maintenance/static/js/maintenance.js:146
 msgid "Please select server or child node from tree."
 msgstr "Należy wybrać z drzewa serwer lub węzeł podrzędny."
@@ -6948,8 +6949,8 @@ msgstr "Należy wybrać z drzewa serwer lub węzeł podrzędny."
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:192
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
 #: pgadmin/tools/backup/static/js/backup.js:213
-#: pgadmin/tools/import_export/static/js/import_export.js:146
-#: pgadmin/tools/import_export/static/js/import_export.js:172
+#: pgadmin/tools/import_export/static/js/import_export.js:165
+#: pgadmin/tools/import_export/static/js/import_export.js:191
 #: pgadmin/tools/maintenance/static/js/maintenance.js:188
 #: pgadmin/tools/maintenance/static/js/maintenance.js:214
 #: pgadmin/tools/restore/static/js/restore.js:145
@@ -6963,7 +6964,7 @@ msgid "Failed to create materialized view refresh job."
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:219
-#: pgadmin/tools/import_export/static/js/import_export.js:173
+#: pgadmin/tools/import_export/static/js/import_export.js:192
 #: pgadmin/tools/maintenance/static/js/maintenance.js:215
 #: pgadmin/tools/restore/static/js/restore.js:171
 msgid "Failed to fetch Utility information"
@@ -7150,9 +7151,9 @@ msgstr ""
 #: pgadmin/static/js/helpers/Notifier.jsx:184
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:866
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:537
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:550
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:263
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:440
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:549
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:256
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:451
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmExecuteQueryContent.jsx:57
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmPromotionContent.jsx:38
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:18
@@ -7184,7 +7185,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:123
 #: pgadmin/tools/backup/static/js/backup.ui.js:573
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:105
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:112
 msgid "Encoding"
 msgstr "Kodowanie"
 
@@ -8742,10 +8743,12 @@ msgstr "Role pokazane z zaznaczeniem mają ustawione WITH ADMIN OPTION."
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:136
 #: pgadmin/browser/templates/browser/js/messages.js:23
 #: pgadmin/static/js/SchemaView/utils/createFieldControls.jsx:20
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:52
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:62
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:85
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:106
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:57
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:68
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:92
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:113
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:120
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:143
 msgid "General"
 msgstr "Ogólne"
 
@@ -9561,6 +9564,7 @@ msgstr "Nazwa zdarzenia oczekiwania"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:19
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:45
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:277
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:275
 msgid "Query"
 msgstr "Zapytanie"
@@ -10302,7 +10306,7 @@ msgid ""
 "    supported browsers."
 msgstr ""
 
-#: pgadmin/browser/templates/browser/index.html:106
+#: pgadmin/browser/templates/browser/index.html:109
 msgid "Loading {0} v{1}..."
 msgstr "Wczytywanie {0} v{1}..."
 
@@ -10736,7 +10740,7 @@ msgid "CPU"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:323
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:229
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:228
 msgid "Memory"
 msgstr ""
 
@@ -11248,11 +11252,11 @@ msgstr ""
 msgid "Memory bytes"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:235
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:234
 msgid "Swap memory"
 msgstr ""
 
-#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:242
+#: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:241
 msgid "Process memory usage"
 msgstr ""
 
@@ -11759,7 +11763,7 @@ msgstr ""
 #: pgadmin/misc/file_manager/__init__.py:191 pgadmin/settings/__init__.py:85
 #: pgadmin/tools/backup/__init__.py:183 pgadmin/tools/debugger/__init__.py:264
 #: pgadmin/tools/grant_wizard/__init__.py:123
-#: pgadmin/tools/import_export/__init__.py:142
+#: pgadmin/tools/import_export/__init__.py:157
 #: pgadmin/tools/import_export_servers/__init__.py:60
 #: pgadmin/tools/maintenance/__init__.py:130
 #: pgadmin/tools/restore/__init__.py:118
@@ -12703,7 +12707,7 @@ msgstr ""
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:747
 #: pgadmin/static/js/Explain/Graphical.jsx:430
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:439
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:440
 msgid "Download"
 msgstr ""
 
@@ -12796,7 +12800,7 @@ msgstr ""
 #: pgadmin/misc/workspaces/static/js/AdHocConnection.jsx:373
 #: pgadmin/misc/workspaces/static/js/AdHocConnection.jsx:483
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:662
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:643
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:642
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:247
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:194
 msgid "Connect to server"
@@ -12911,7 +12915,7 @@ msgstr ""
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:583
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:85
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:105
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:549
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:548
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmExecuteQueryContent.jsx:63
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmPromotionContent.jsx:44
 msgid "Continue"
@@ -13121,10 +13125,10 @@ msgstr ""
 #: pgadmin/static/js/helpers/Notifier.jsx:49
 #: pgadmin/static/js/helpers/Notifier.jsx:172
 #: pgadmin/tools/erd/static/js/erd_tool/components/FloatingNote.jsx:93
-#: pgadmin/tools/import_export/static/js/import_export.js:165
+#: pgadmin/tools/import_export/static/js/import_export.js:184
 #: pgadmin/tools/maintenance/static/js/maintenance.js:207
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:267
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:444
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:260
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:455
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:196
 msgid "OK"
 msgstr "OK"
@@ -13321,7 +13325,7 @@ msgid "Zoom in"
 msgstr ""
 
 #: pgadmin/static/js/Explain/Graphical.jsx:426
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:437
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:438
 msgid "Zoom to original"
 msgstr ""
 
@@ -13414,7 +13418,7 @@ msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr ""
 
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:129
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:617
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:616
 #: pgadmin/tools/user_management/static/js/Permissions.jsx:112
 #, fuzzy
 msgid "Saving..."
@@ -13442,7 +13446,7 @@ msgstr ""
 
 #: pgadmin/static/js/SchemaView/DataGridView/header.jsx:91
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:390
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:662
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:670
 msgid "Add row"
 msgstr ""
 
@@ -13536,7 +13540,7 @@ msgstr ""
 
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:68
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:93
-#: pgadmin/static/js/components/FormComponents.jsx:492
+#: pgadmin/static/js/components/FormComponents.jsx:495
 msgid "Validate"
 msgstr ""
 
@@ -13557,27 +13561,27 @@ msgstr ""
 msgid "No options"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:489
+#: pgadmin/static/js/components/FormComponents.jsx:492
 msgid "Select a file"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1005
+#: pgadmin/static/js/components/FormComponents.jsx:1013
 msgid "<Select All>"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1010
+#: pgadmin/static/js/components/FormComponents.jsx:1018
 msgid "Select an item..."
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1082
+#: pgadmin/static/js/components/FormComponents.jsx:1096
 msgid "Select the color"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1302
+#: pgadmin/static/js/components/FormComponents.jsx:1316
 msgid "Close Message"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1355
+#: pgadmin/static/js/components/FormComponents.jsx:1369
 msgid "Loading"
 msgstr ""
 
@@ -13988,14 +13992,14 @@ msgstr ""
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:520
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:71
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:61
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:67
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:38
 #: pgadmin/tools/restore/static/js/restore.ui.js:395
 msgid "Filename"
 msgstr "Nazwa pliku"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:531
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:84
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:91
 #: pgadmin/tools/restore/static/js/restore.ui.js:381
 msgid "Format"
 msgstr "Format"
@@ -14117,7 +14121,6 @@ msgstr ""
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:781
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:106
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:262
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:87
 #: pgadmin/tools/restore/static/js/restore.ui.js:530
 msgid "Please provide a filename."
@@ -14164,17 +14167,17 @@ msgid "Edit grid values"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:179
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:574
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:582
 msgid "Previous tab"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:197
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:592
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:600
 msgid "Next tab"
 msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:215
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:610
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:618
 msgid "Switch Panel"
 msgstr ""
 
@@ -14707,71 +14710,71 @@ msgstr ""
 msgid "Loading project..."
 msgstr "Ładowanie..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:622
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:621
 msgid "Project saved successfully."
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:657
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:656
 msgid "-- This script was generated by the ERD tool in pgAdmin 4.\n"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:658
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:657
 msgid ""
 "-- Please log an issue at https://github.com/pgadmin-"
 "org/pgadmin4/issues/new/choose if you find any bugs, including "
 "reproduction steps.\n"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:671
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:670
 msgid "Preparing the SQL..."
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:698
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:697
 #, fuzzy
 msgid "Preparing the image..."
 msgstr "Ładowanie pliku..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:767
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:766
 msgid "Unknown error. Check console logs"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:782
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:781
 msgid "Maximum image size limit"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:783
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:782
 msgid ""
 "The downloaded image has exceeded the maximum size of 32767 x 32767 "
 "pixels, and has been cropped to that size."
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:792
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:791
 msgid "One to one relation"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:800
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:799
 msgid "One to many relation"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:808
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:807
 msgid "Many to many relation"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:834
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:833
 msgid "Initializing connection..."
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:865
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:864
 msgid "Fetching required data..."
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:889
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:888
 msgid "Fetching schema data..."
 msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:98
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:316
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:942
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:987
 msgid "Unsaved changes"
 msgstr "Niezapisane zmiany"
 
@@ -14966,43 +14969,51 @@ msgid ""
 "explorer to access Grant Wizard Tool."
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:40
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:51
+#: pgadmin/tools/import_export/__init__.py:42
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:56
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:56
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:30
 msgid "Import/Export"
 msgstr "Import/Eksport"
 
-#: pgadmin/tools/import_export/__init__.py:114
+#: pgadmin/tools/import_export/__init__.py:117
+msgid "Copying table data using query on database '{0}' and server '{1}'"
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:122
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:124
+#: pgadmin/tools/import_export/__init__.py:133
+msgid "Export - Copying table data using query"
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:135
 msgid "Import - "
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:124
+#: pgadmin/tools/import_export/__init__.py:135
 msgid "Export - "
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:125
+#: pgadmin/tools/import_export/__init__.py:136
 msgid "Copying table data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:150
 msgid "Import Data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:150
 msgid "Export Data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:252
+#: pgadmin/tools/import_export/__init__.py:310
 msgid "Please connect to the server first..."
 msgstr "Należy najpierw połączyć z serwerem..."
 
-#: pgadmin/tools/import_export/__init__.py:278
-#: pgadmin/tools/import_export/__init__.py:284
+#: pgadmin/tools/import_export/__init__.py:336
+#: pgadmin/tools/import_export/__init__.py:342
 msgid "Please specify a valid file"
 msgstr "Należy określić poprawny plik"
 
@@ -15014,34 +15025,108 @@ msgstr ""
 msgid "Please select any table from the object explorer to Import/Export data."
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.js:164
+#: pgadmin/tools/import_export/static/js/import_export.js:65
+msgid "Export Data Using Query..."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.js:70
+msgid ""
+"Please select any database from the object explorer to Export Data using "
+"query."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.js:182
+#, python-format
+msgid "Export Data Using Query - database '%s'"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.js:182
 #, python-format
 msgid "Import/Export data - table '%s'"
 msgstr "Import/Eksport danych - tabela '%s'"
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:55
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:41
+msgid "Columns to export"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:41
+msgid "Columns to import"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:60
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:33
 msgid "Import"
 msgstr "Import"
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:56
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:61
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:34
 msgid "Export"
 msgstr "Eksport"
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:90
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:97
 msgid "binary"
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:94
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:101
 msgid "csv"
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:98
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:105
 msgid "text"
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:150
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:119
+msgid "On Error"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:125
+msgid "stop"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:129
+msgid "ignore"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:138
+msgid ""
+"Specifies how to behave when encountering an error converting a columns "
+"input value into its data type. An error_action value of stop means fail "
+"the command, while ignore means discard the input row and continue with "
+"the next one. The default is stop. The ignore option is applicable only "
+"for COPY FROM when the FORMAT is text or csv."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:142
+msgid "Log Verbosity"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:148
+msgid "default"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:152
+msgid "verbose"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:161
+msgid ""
+"Specify the amount of messages emitted by a COPY command: default or "
+"verbose. If verbose is specified, additional messages are emitted during "
+"processing. This is currently used in COPY FROM command when ON_ERROR "
+"option is set to ignore."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:172
+msgid "Freeze"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:185
+msgid ""
+"Requests copying the data with rows already frozen, just as they would be"
+" after running the VACUUM FREEZE command."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:214
 msgid ""
 "Specifies the character that separates columns within each row (line) of "
 "the file. The default is a tab character in text format, a comma in CSV "
@@ -15053,11 +15138,11 @@ msgstr ""
 "w CSV. Musi to być jeden znak jednobajtowy. Opcja ta nie jest dostępna w "
 "formacie binarnym."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:154
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:218
 msgid "Quote"
 msgstr "Cytat"
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:168
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:232
 msgid ""
 "Specifies the quoting character to be used when a data value is quoted. "
 "The default is double-quote. This must be a single one-byte character. "
@@ -15067,11 +15152,11 @@ msgstr ""
 "cudzysłów. Musi to być jeden znak jednobajtowy. Opcja ta dostępna jest "
 "tylko przy formacie CSV."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:172
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:236
 msgid "Escape"
 msgstr "Ucieczka"
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:186
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:250
 msgid ""
 "Specifies the character that should appear before a data character that "
 "matches the QUOTE value. The default is the same as the QUOTE value (so "
@@ -15084,11 +15169,11 @@ msgstr ""
 "podwojony gdy wystąpi w danych). Musi to być jeden znak jednobajtowy. "
 "Opcja ta dostępna jest tylko przy formacie CSV."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:190
-msgid "NULL Strings"
-msgstr "Ciągi znaków NULL"
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:254
+msgid "NULL String"
+msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:197
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:261
 msgid ""
 "Specifies the string that represents a null value. The default is \\N "
 "(backslash-N) in text format, and an unquoted empty string in CSV format."
@@ -15102,15 +15187,27 @@ msgstr ""
 "formacie tekstowym dla przypadków gdy nie rozróżnia się nulli i pustych "
 "ciągów znaków. Ta opcja nie jest dostępna dla formatu binarnego."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:222
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:265
+msgid "Default String"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:274
+msgid ""
+"Specifies the string that represents a default value. Each time the "
+"string is found in the input file, the default value of the corresponding"
+" column will be used. This option is allowed only in COPY FROM, and only "
+"when not using binary format"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:303
 msgid "Columns for importing..."
 msgstr "Kolumny do importu..."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:223
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:304
 msgid "Columns for exporting..."
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:230
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:312
 msgid ""
 "An optional list of columns to be copied. If no column list is specified,"
 " all columns of the table will be copied."
@@ -15118,15 +15215,42 @@ msgstr ""
 "Opcjonalna lista kolumn do skopiowania. Jeśli nie zostanie wskazana lista"
 " kolumn, zostaną skopiowane wszystkie kolumny."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:234
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:316
+msgid "Export Data Query"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:320
+msgid ""
+"Specifies A SELECT, VALUES, INSERT, UPDATE, DELETE, or MERGE command "
+"whose results are to be copied."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:324
+msgid "Force Quote columns"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:335
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:345
+msgid "Force Quote columns..."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:353
+msgid ""
+"Forces quoting to be used for all non-NULL values in each specified "
+"column. NULL output is never quoted. If * is specified, non-NULL values "
+"will be quoted in all columns. This option is allowed only in COPY TO, "
+"and only when using CSV format."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:357
 msgid "NOT NULL columns"
 msgstr ""
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:243
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:366
 msgid "Not null columns..."
 msgstr "Kolumny bez null..."
 
-#: pgadmin/tools/import_export/static/js/import_export.ui.js:249
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:373
 msgid ""
 "Do not match the specified column values against the null string. In the "
 "default case where the null string is empty, this means that empty values"
@@ -15139,6 +15263,27 @@ msgstr ""
 "traktowane jak ciąg znaków o zerowej długości a nie nulle, nawet gdy nie "
 "są w apostrofach. Ta opcja dostępna jest tylko dla importu, i tylko z "
 "formatu CSV."
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:377
+msgid "NULL columns"
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:386
+msgid "Null columns..."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:393
+msgid ""
+"Match the specified columns values against the null string, even if it "
+"has been quoted, and if a match is found set the value to NULL. In the "
+"default case where the null string is empty, this converts a quoted empty"
+" string into NULL. This option is allowed only in COPY FROM, and only "
+"when using CSV format."
+msgstr ""
+
+#: pgadmin/tools/import_export/static/js/import_export.ui.js:410
+msgid "Export Data Query can not be empty."
+msgstr ""
 
 #: pgadmin/tools/import_export_servers/__init__.py:42
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:211
@@ -15414,20 +15559,20 @@ msgstr "Szczegółowe Komunikaty"
 msgid "PSQL"
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:306
+#: pgadmin/tools/psql/__init__.py:313
 msgid ""
 "PSQL utility not found. Specify the valid binary path in the preferences "
 "for the appropriate server version, or select \"Set as default\" to use "
 "an existing binary path."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:414
+#: pgadmin/tools/psql/__init__.py:421
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:478 pgadmin/tools/psql/__init__.py:512
+#: pgadmin/tools/psql/__init__.py:485 pgadmin/tools/psql/__init__.py:519
 msgid "Invalid session.\r\n"
 msgstr ""
 
@@ -15821,29 +15966,29 @@ msgstr "Nie udało się sprawdzić statusu transakcji."
 msgid "Query tool"
 msgstr "Narzędzie zapytania"
 
-#: pgadmin/tools/sqleditor/__init__.py:1023
+#: pgadmin/tools/sqleditor/__init__.py:1039
 msgid "******* Error *******"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:1414
+#: pgadmin/tools/sqleditor/__init__.py:1432
 msgid "No primary key found for this object, so unable to save records."
 msgstr "Nie znaleziono klucza głównego obiektu, zatem nie da się zapisać rekordów."
 
-#: pgadmin/tools/sqleditor/__init__.py:1741
+#: pgadmin/tools/sqleditor/__init__.py:1770
 #: pgadmin/tools/sqleditor/utils/query_tool_connection_check.py:66
-#: pgadmin/tools/sqleditor/utils/start_running_query.py:111
+#: pgadmin/tools/sqleditor/utils/start_running_query.py:114
 msgid "Either transaction object or session object not found."
 msgstr "Nie znaleziono obiektu ani transakcji ani sesji."
 
-#: pgadmin/tools/sqleditor/__init__.py:2023
+#: pgadmin/tools/sqleditor/__init__.py:2052
 msgid "File type not supported"
 msgstr "Nie wspierany typ pliku"
 
-#: pgadmin/tools/sqleditor/__init__.py:2084
+#: pgadmin/tools/sqleditor/__init__.py:2113
 msgid "Error: {0}"
 msgstr "Błąd: {0}"
 
-#: pgadmin/tools/sqleditor/__init__.py:2125
+#: pgadmin/tools/sqleditor/__init__.py:2154
 msgid "Could not find the required parameter (query)."
 msgstr ""
 
@@ -15983,19 +16128,19 @@ msgstr ""
 msgid "Do you want to continue and establish a new session"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:754
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:753
 msgid "Add New Connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:781
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:780
 msgid "Connection with this configuration already present."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:829
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:828
 msgid "Manage Macros"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:879
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:878
 msgid "Sort/Filter options"
 msgstr ""
 
@@ -16024,17 +16169,17 @@ msgstr ""
 msgid "The connection with the server is bad."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:237
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:288
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:299
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:230
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:281
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:292
 msgid "Arrays must start with \"{\" and end with \"}\""
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:284
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:277
 msgid "Please enter a valid number"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:420
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:413
 msgid "Invalid JSON input"
 msgstr ""
 
@@ -16049,7 +16194,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:22
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:562
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:853
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:861
 msgid "Rollback"
 msgstr ""
 
@@ -16145,59 +16290,59 @@ msgstr ""
 msgid "Dark Matter"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:258
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:349
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:350
 msgid "Fetching all the records..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:362
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:363
 msgid "Rendering data points..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:399
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:400
 msgid "Graph Type"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:402
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:403
 msgid "Line Chart"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:403
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:404
 msgid "Stacked Line Chart"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:404
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:405
 msgid "Bar Chart"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:405
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:406
 msgid "Stacked Bar Chart"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:406
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:407
 msgid "Pie Chart"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:415
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:416
 msgid "Generate"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:417
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:418
 msgid "Collapse"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:417
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:418
 msgid "Expand"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:423
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:424
 msgid "X Axis"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:428
+#: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:429
 msgid "Y Axis"
 msgstr ""
 
@@ -16234,7 +16379,7 @@ msgid "Sort/Filter"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:529
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:730
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:738
 msgid "Filter options"
 msgstr ""
 
@@ -16255,28 +16400,28 @@ msgid "100 rows"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:540
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:764
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:772
 msgid "Cancel query"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:447
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:455
 msgid "Execute script"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:544
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:454
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:465
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:473
 msgid "Execute query"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:546
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:747
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:755
 msgid "Execute options"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:551
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:914
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:959
 #: pgadmin/utils/constants.py:25
 msgid "Explain"
 msgstr "Plan zapytania"
@@ -16532,7 +16677,7 @@ msgid "Refetching latest results..."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:241
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:887
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:932
 msgid "Waiting for the query to complete..."
 msgstr ""
 
@@ -16549,93 +16694,102 @@ msgstr ""
 msgid "Execution Cancelled"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:718
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:478
+msgid "Server Connected."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:761
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:65
 msgid "Query complete"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:721
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:764
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "Zapytanie zakończone z powodzeniem w czasie %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:723
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:766
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "Uruchomiono z powodzeniem. Pełny czas uruchomienia: %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:724
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:767
 #, python-format
 msgid "%s rows affected."
 msgstr "%s wierszy zwróconych."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:943
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:988
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "Dane zostały zmienione ale nie zapisane. Czy na pewno odrzucić zmiany?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:958
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1003
 msgid "Applying the new filter..."
 msgstr "Zastosowanie nowego filtru..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:999
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1044
 msgid "Downloading results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1005
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1046
+#, python-format
+msgid "Downloading results(%s)..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1052
 msgid "Setting the limit on the result..."
 msgstr "Ustawianie limitu na wynik..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1019
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1066
 msgid "Removing the filter..."
 msgstr "Usuwanie filtru..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1080
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1127
 msgid "Fetching rows..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1138
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1185
 msgid "Save data changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1141
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1188
 msgid "The data has changed. Do you want to save changes?"
 msgstr "Dane tekstowe zostały zmienione. Czy chcesz zapisać zmiany?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1167
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1214
 msgid "Saving data..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1194
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1241
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1206
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1253
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1248
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1295
 msgid "Data saved successfully."
 msgstr "Udany zapis do danych."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1250
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1297
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1425
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1472
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1494
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1541
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:413
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1511
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1558
 msgid "No data output. Execute a query to get output."
 msgstr ""
 
@@ -17109,10 +17263,18 @@ msgid ""
 msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:380
+msgid "Max column data display length"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:382
+msgid "Maximum number of characters to display in the data preview."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
 msgid "Font size"
 msgstr "Rozmiar czcionki"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:384
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:392
 msgid ""
 "The font size to use for the SQL text boxes and editors. The value "
 "specified is in \"em\" units, in which 1 is the default relative font "
@@ -17126,182 +17288,182 @@ msgstr ""
 "procent należy użyć wartości 1.2 zaś by zmniejszyć o 20 procent powinno "
 "się użyć 0.8. Minimum to 0.1, a maksimum 10."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:395
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:403
 msgid "Font ligatures?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:397
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:405
 msgid ""
 "If set to true, ligatures will be enabled in SQL text boxes and editors "
 "provided the configured font family supports them."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:405
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:413
 msgid "Font family"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:407
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:415
 msgid ""
 "Specify the font family to be used for all SQL editors. The specified "
 "font should already be installed on your system. If the font is not "
 "found, the editor will fall back to the default font, Source Code Pro."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:417
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:425
 msgid "Connection status"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:419
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:427
 msgid ""
 "If set to True, the Query Tool will monitor and display the connection "
 "and transaction status."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:426
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:434
 msgid "Connection status refresh rate"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:429
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:437
 msgid "The number of seconds between connection/transaction status polls."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:437
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:445
 msgid "Show query success notification?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:439
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:447
 msgid ""
 "If set to True, the Query Tool will show notifications on successful "
 "query execution."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:484
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:492
 msgid "Save data changes"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:502
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:510
 msgid "EXPLAIN query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:520
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:528
 msgid "EXPLAIN ANALYZE query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:538
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:546
 msgid "Clear query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:556
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:564
 msgid "Download Results"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:628
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:636
 msgid "Open file"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:645
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:653
 msgid "Save file"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:679
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:687
 msgid "Paste rows"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:696
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:704
 msgid "Delete rows"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:713
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:721
 msgid "Filter dialog"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:781
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:789
 msgid "Edit options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:799
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:807
 msgid "Toggle case of selected text"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:816
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:824
 msgid "Keywords in uppercase"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:817
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:825
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:833
 msgid "Auto completion"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:818
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:826
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:824
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:832
 msgid "Autocomplete on key press"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:826
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:834
 msgid ""
 "If set to True, autocomplete will be available on key press along with "
 "CTRL/CMD + Space. If set to False, autocomplete is only activated when "
 "CTRL/CMD + Space is pressed."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:870
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:878
 msgid "Keyword case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:875
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:883
 msgid "Convert keywords to upper, lower, or preserve casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:882
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:890
 msgid "Identifier case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:887
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:895
 msgid "Convert identifiers to upper, lower, or preserve casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:894
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:902
 msgid "Function case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:899
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:907
 msgid "Convert function names to upper, lower, or preserve casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:906
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:914
 msgid "Data type case"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:911
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:919
 msgid "Convert data types to upper, lower, or preserve casing."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:918
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:926
 msgid "Spaces around operators?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:920
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:928
 msgid "If set to True, spaces are used around all operators."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:926
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:934
 msgid "Tab size"
 msgstr "Rozmiar tabulacji"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:930
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:938
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "Liczba spacji na tabulację. Minimum 2, maksimum 8."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:937
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:945
 msgid "Use spaces?"
 msgstr "Użyć spacji?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:939
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:947
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
@@ -17309,67 +17471,67 @@ msgstr ""
 "Określa czy używać do wstawień spacji zamiast tabulacji, gdy wciśnie się "
 "klawisz tab lub są włączone automatyczne wcięcia."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:947
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:955
 msgid "Auto-indent new line?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:949
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:957
 msgid ""
 "Specifies whether the newly added line using enter key should be auto-"
 "indented or not"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:957
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:965
 msgid "Expression Width"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:959
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:967
 msgid ""
 "maximum number of characters in parenthesized expressions to be kept on "
 "single line."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:967
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:975
 msgid "Logical operator new line"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:968
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:976
 msgid "Before"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:969
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:977
 msgid "After"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:971
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:979
 msgid ""
 "Decides newline placement before or after logical operators (AND, OR, "
 "XOR)."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:979
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:987
 msgid "Lines between queries"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:983
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:991
 msgid ""
 "Decides how many empty lines to leave between SQL statements. If zero it "
 "puts no new line."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:991
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:999
 msgid "New line before semicolon?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:993
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1001
 msgid "Whether to place query separator (;) on a separate line."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1000
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1008
 msgid "Row Limit"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1002
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1010
 msgid ""
 "This setting specifies the maximum number of rows that will be plotted on"
 " a chart. Increasing this limit may impact performance if charts are "
@@ -22567,4 +22729,7 @@ msgstr ""
 #~ "select \"Set as default\" to use "
 #~ "an existing binary path."
 #~ msgstr ""
+
+#~ msgid "NULL Strings"
+#~ msgstr "Ciągi znaków NULL"
 
