@@ -14,6 +14,15 @@ import { getBrowser, toPrettySize } from './utils';
 // This function is used to download the base64 data
 // and create a link to download the file.
 export async function downloadBase64UrlData(downloadUrl, fileName) {
+  if(getBrowser().name == 'Electron') {
+    const {automatically_open_downloaded_file, prompt_for_download_location} = usePreferences.getState().getPreferencesForModule('misc');
+    // In Electron, we use the electronUI to download the file.
+    await window.electronUI.downloadBase64UrlData(downloadUrl, {
+      defaultPath: fileName,
+    }, prompt_for_download_location, automatically_open_downloaded_file);
+    return;
+  }
+  // In other browsers, we create a link to download the file.
   let link = document.createElement('a');
   link.setAttribute('href', downloadUrl);
   link.setAttribute('download', fileName);

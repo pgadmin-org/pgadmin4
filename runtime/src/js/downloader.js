@@ -63,25 +63,29 @@ function updateProgress(callerWindow) {
   setProgress.call(callerWindow, progress);
 }
 
+async function fileDownloadPath(callerWindow, options, prompt=true) {
+  let filePath = path.join(app.getPath('downloads'), options.defaultPath);
+  // prompt is true when the user has set the preference to prompt for download location
+  if(prompt) {
+    const result = await dialog.showSaveDialog(callerWindow, {
+      title: 'Save File',
+      ...options,
+    });
+
+    if (result.canceled) {
+      return;
+    }
+    filePath = result.filePath;
+  }
+  return filePath;
+}
+
 export function setupDownloader() {
   // Listen for the renderer's request to show the open dialog
   ipcMain.handle('get-download-path', async (event, options, prompt=true) => {
     try {
-      let filePath = path.join(app.getPath('downloads'), options.defaultPath);
       const callerWindow = BrowserWindow.fromWebContents(event.sender);
-      // prompt is true when the user has set the preference to prompt for download location
-      if(prompt) {
-        const result = await dialog.showSaveDialog(callerWindow, {
-          title: 'Save File',
-          ...options,
-        });
-
-        if (result.canceled) {
-          return;
-        }
-        filePath = result.filePath;
-      }
-
+      const filePath = await fileDownloadPath(callerWindow, options, prompt);
       downloadQueue[filePath] = new DownloadItem(filePath, () => {
         updateProgress(callerWindow);
       }, () => {
@@ -117,5 +121,14 @@ export function setupDownloader() {
       item.remove();
       openFile && shell.openPath(filePath);
     }
+  });
+
+  // non-streaming direct download
+  ipcMain.handle('download-base64-url', async (event, base64url, options, prompt=true, openFile=false) => {
+    const callerWindow = BrowserWindow.fromWebContents(event.sender);
+    const filePath = await fileDownloadPath(callerWindow, options, prompt);
+    const buffer = Buffer.from(base64url.split(',')[1], 'base64');
+    fs.writeFileSync(filePath, buffer);
+    openFile && shell.openPath(filePath);
   });
 }

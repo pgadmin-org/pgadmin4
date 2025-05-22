@@ -29,4 +29,5 @@ contextBridge.exposeInMainWorld('electronUI', {
   downloadDataSaveChunk: (...args) => ipcRenderer.send('download-data-save-chunk', ...args),
   downloadDataSaveTotal: (...args) => ipcRenderer.send('download-data-save-total', ...args),
   downloadDataSaveEnd: (...args) => ipcRenderer.send('download-data-save-end', ...args),
+  downloadBase64UrlData: (...args) => ipcRenderer.invoke('download-base64-url', ...args)
 });
