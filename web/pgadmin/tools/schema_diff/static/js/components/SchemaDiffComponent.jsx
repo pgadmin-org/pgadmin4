@@ -25,7 +25,6 @@ import getApiInstance, { callFetch } from '../../../../../static/js/api_instance
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
 
-
 export const SchemaDiffEventsContext = createContext();
 export const SchemaDiffContext = createContext();
 
@@ -91,6 +90,9 @@ export default function SchemaDiffComponent({params}) {
         .catch((err)=>console.error(err));
     });
   }
+
+  // let oldSchemaDiffData = getToolData(params.params?.toolDataId);
+  // params = {...params, oldSchemaDiffData: oldSchemaDiffData};
 
   useEffect(()=>{
     initializeSchemaDiff();

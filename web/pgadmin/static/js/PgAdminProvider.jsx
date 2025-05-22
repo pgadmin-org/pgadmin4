@@ -18,7 +18,6 @@ export function usePgAdmin() {
 }
 
 export function PgAdminProvider({children, value}) {
-
   return <PgAdminContext.Provider value={value}>
     {children}
   </PgAdminContext.Provider>;

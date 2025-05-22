@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useContext, useCallback, useEffect, useMemo } from 'react';
+import React, {useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -25,6 +25,8 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 import { MODAL_DIALOGS } from '../QueryToolConstants';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
 
 async function registerAutocomplete(editor, api, transId) {
@@ -64,6 +66,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
+  const {saveToolData, enableSaveToolData} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
@@ -136,7 +139,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       cmObj.setCursor(errorLineNo, endMarker);
     }
   };
-
   const triggerExecution = (explainObject, macroSQL, executeCursor=false)=>{
     if(queryToolCtx.params.is_query_tool) {
       let external = null;
@@ -233,6 +235,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.execCommand(cmd);
       }
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_TO_EDITOR, (text)=>{
       editor.current?.setValue(text);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
@@ -241,6 +244,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.setCursor(editor.current.lineCount(), 0);
       }, 250);
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
       editor.current?.focus();
       let key = {
@@ -254,6 +258,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
       editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
@@ -261,6 +266,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
       let selection = true, sql = editor.current?.getSelection();
       let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
@@ -297,7 +303,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
       // Set the new EOL character in the editor.
       editor.current?.setEOL(lineSep);
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());    
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
@@ -317,6 +323,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current.setCursor(lastCursorPos.current.line, lastCursorPos.current.ch);
       }
     };
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS, lastFocus);
     setTimeout(()=>{
       (queryToolCtx.params.is_query_tool|| queryToolCtx.preferences.view_edit_promotion_warning) && editor.current.focus();
@@ -405,6 +412,12 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
+
+    const save_app_state = enableSaveToolData('sqleditor');
+    if(save_app_state && editor.current.isDirty()){
+      setSaveQtData(editor.current.getValue());
+    }
+
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
       if(queryToolCtx.preferences.sqleditor.view_edit_promotion_warning){
         checkViewEditDataPromotion();
@@ -413,6 +426,12 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
     }
   }, []);
+
+  const [saveQtData, setSaveQtData] = useState(null);
+  useDelayDebounce((qtData)=>{
+    let connectionInfo = _.find(queryToolCtx.connection_list, c => c.is_selected);
+    saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, qtData);
+  }, saveQtData, 500);
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {
