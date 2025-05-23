@@ -58,7 +58,7 @@ msgstr "Servidor"
 
 #: pgadmin/about/__init__.py:72
 msgid "Desktop"
-msgstr ""
+msgstr "Área de Trabalho"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:38
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.ui.js:121
@@ -158,7 +158,7 @@ msgstr "interno"
 
 #: pgadmin/authenticate/kerberos.py:161
 msgid "kerberos"
-msgstr ""
+msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:169
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
@@ -184,7 +184,7 @@ msgstr "Erro ao conectar ao servidor LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:48
 msgid "ldap"
-msgstr ""
+msgstr "ldap"
 
 #: pgadmin/authenticate/ldap.py:65
 msgid "LDAP configuration error: Set the bind password."
@@ -253,6 +253,8 @@ msgid ""
 "User has not registered the Time-based One-Time Password (TOTP) "
 "Authenticator for authentication."
 msgstr ""
+"Usuário não registrou o Time-based One-Time Password (TOTP) "
+"para a autenticação"
 
 #: pgadmin/authenticate/mfa/authenticator.py:67
 msgid "User does not have valid HASH to generate the OTP."
@@ -263,6 +265,8 @@ msgid ""
 "Enter the code shown in your authenticator application for TOTP (Time-"
 "based One-Time Password)"
 msgstr ""
+"Preencha o código apresentado no seu aplicativo autenticador para o TOTP (Time-"
+"based One-Time Password)"
 
 #: pgadmin/authenticate/mfa/authenticator.py:164
 msgid "TOTP Authenticator QRCode"
@@ -273,6 +277,7 @@ msgid ""
 "Scan the QR code and the enter the code from the TOTP Authenticator "
 "application"
 msgstr ""
+"Escaneie o QR Code e preencha o código do aplicativo autenticador TOTP."
 
 #: pgadmin/authenticate/mfa/authenticator.py:195
 msgid "Failed to validate the code"
@@ -300,7 +305,7 @@ msgstr "Falha ao enviar o código para e-mail."
 
 #: pgadmin/authenticate/mfa/email.py:94
 msgid "A verification code was sent to {}. Check your email and enter the code."
-msgstr "Um código de verificação foi enviado para {}. "
+msgstr "Um código de verificação foi enviado para {}. Cheque seu e-mail e preencha o código."
 
 #: pgadmin/authenticate/mfa/email.py:149
 msgid "User has not registered for email authentication"
@@ -343,6 +348,8 @@ msgid ""
 "This email address will only be used for two factor authentication "
 "purposes. The email address for the user account will not be changed."
 msgstr ""
+"Esse endereço de e-mail será apenas utilizado para a autenticação de dois fatores."
+"O endereço de e-mail principal do seu usuário não será alterado."
 
 #: pgadmin/authenticate/mfa/email.py:242
 msgid "Enter code here"
