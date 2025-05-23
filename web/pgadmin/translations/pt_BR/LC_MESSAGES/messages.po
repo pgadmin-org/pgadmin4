@@ -320,7 +320,7 @@ msgstr "Enviar Código"
 
 #: pgadmin/authenticate/mfa/email.py:208
 msgid "Sending Code..."
-msgstr ""
+msgstr "Enviando Código..."
 
 #: pgadmin/authenticate/mfa/email.py:216
 msgid "Enter the email address to send a code"
@@ -586,7 +586,7 @@ msgstr "Alt/Opção"
 #: pgadmin/browser/register_browser_preferences.py:132
 #: pgadmin/static/js/BrowserComponent.jsx:86
 msgid "Object Explorer"
-msgstr ""
+msgstr "Explorador de Objeto"
 
 #: pgadmin/browser/register_browser_preferences.py:147
 msgid "Tabbed panel backward"
@@ -594,7 +594,7 @@ msgstr "Painel com abas para trás"
 
 #: pgadmin/browser/register_browser_preferences.py:162
 msgid "Close tab panel"
-msgstr ""
+msgstr "Fechar aba"
 
 #: pgadmin/browser/register_browser_preferences.py:177
 msgid "Tabbed panel forward"
@@ -648,7 +648,7 @@ msgstr "Depuração direta"
 
 #: pgadmin/browser/register_browser_preferences.py:358
 msgid "Refresh object explorer"
-msgstr ""
+msgstr "Atualizar explorador de objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:373
 msgid "Add grid row"
@@ -846,7 +846,7 @@ msgstr "O grupo de servidores especificado com id"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:617
 msgid "Could not find the server with id# {0}."
-msgstr ""
+msgstr "Não foi encontrado o servidor com o id# {0}."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:697
 msgid ""
@@ -856,12 +856,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:720
 msgid "Server deleted"
-msgstr ""
+msgstr "Servidor deletado"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:732
 #: pgadmin/browser/server_groups/servers/__init__.py:2062
 msgid "Could not find the required server."
-msgstr ""
+msgstr "Servidor requerido não encontrado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:773
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:158
@@ -877,7 +877,7 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:175
 #: pgadmin/misc/workspaces/static/js/AdHocConnection.jsx:213
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:775
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:324
@@ -989,33 +989,33 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1321
 msgid "Server has no active connection for generating statistics."
-msgstr ""
+msgstr "Servidor não possui conexões ativas para gerar estatísticas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1422
 msgid "Please enter the server details to connect"
-msgstr ""
+msgstr "Por favor preencha os detalhes do servidor para conectar"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1601
 #: pgadmin/tools/schema_diff/__init__.py:367
 #: pgadmin/tools/sqleditor/__init__.py:2635
 msgid "Server connected."
-msgstr ""
+msgstr "Servidor conectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1643
 msgid "Server could not be disconnected."
-msgstr ""
+msgstr "Servidor não pôde ser desconectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1647
 msgid "Server disconnected."
-msgstr ""
+msgstr "Servidor desconectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1667
 msgid "Could not reload the server configuration."
-msgstr ""
+msgstr "As configurações do servidor não puderam ser recarregadas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1672
 msgid "Server configuration reloaded."
-msgstr ""
+msgstr "Configurações do servidor recarregadas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1717
 msgid "Named restore point created: {0}"
