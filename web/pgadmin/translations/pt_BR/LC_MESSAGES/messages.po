@@ -58,7 +58,7 @@ msgstr "Servidor"
 
 #: pgadmin/about/__init__.py:72
 msgid "Desktop"
-msgstr ""
+msgstr "Área de Trabalho"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:38
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.ui.js:121
@@ -158,7 +158,7 @@ msgstr "interno"
 
 #: pgadmin/authenticate/kerberos.py:161
 msgid "kerberos"
-msgstr ""
+msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:169
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
@@ -184,7 +184,7 @@ msgstr "Erro ao conectar ao servidor LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:48
 msgid "ldap"
-msgstr ""
+msgstr "ldap"
 
 #: pgadmin/authenticate/ldap.py:65
 msgid "LDAP configuration error: Set the bind password."
@@ -253,6 +253,8 @@ msgid ""
 "User has not registered the Time-based One-Time Password (TOTP) "
 "Authenticator for authentication."
 msgstr ""
+"Usuário não registrou o Time-based One-Time Password (TOTP) "
+"para a autenticação"
 
 #: pgadmin/authenticate/mfa/authenticator.py:67
 msgid "User does not have valid HASH to generate the OTP."
@@ -263,6 +265,8 @@ msgid ""
 "Enter the code shown in your authenticator application for TOTP (Time-"
 "based One-Time Password)"
 msgstr ""
+"Preencha o código apresentado no seu aplicativo autenticador para o TOTP (Time-"
+"based One-Time Password)"
 
 #: pgadmin/authenticate/mfa/authenticator.py:164
 msgid "TOTP Authenticator QRCode"
@@ -273,6 +277,7 @@ msgid ""
 "Scan the QR code and the enter the code from the TOTP Authenticator "
 "application"
 msgstr ""
+"Escaneie o QR Code e preencha o código do aplicativo autenticador TOTP."
 
 #: pgadmin/authenticate/mfa/authenticator.py:195
 msgid "Failed to validate the code"
@@ -300,7 +305,7 @@ msgstr "Falha ao enviar o código para e-mail."
 
 #: pgadmin/authenticate/mfa/email.py:94
 msgid "A verification code was sent to {}. Check your email and enter the code."
-msgstr "Um código de verificação foi enviado para {}. "
+msgstr "Um código de verificação foi enviado para {}. Cheque seu e-mail e preencha o código."
 
 #: pgadmin/authenticate/mfa/email.py:149
 msgid "User has not registered for email authentication"
@@ -320,7 +325,7 @@ msgstr "Enviar Código"
 
 #: pgadmin/authenticate/mfa/email.py:208
 msgid "Sending Code..."
-msgstr ""
+msgstr "Enviando Código..."
 
 #: pgadmin/authenticate/mfa/email.py:216
 msgid "Enter the email address to send a code"
@@ -343,6 +348,8 @@ msgid ""
 "This email address will only be used for two factor authentication "
 "purposes. The email address for the user account will not be changed."
 msgstr ""
+"Esse endereço de e-mail será apenas utilizado para a autenticação de dois fatores."
+"O endereço de e-mail principal do seu usuário não será alterado."
 
 #: pgadmin/authenticate/mfa/email.py:242
 msgid "Enter code here"
@@ -586,7 +593,7 @@ msgstr "Alt/Opção"
 #: pgadmin/browser/register_browser_preferences.py:132
 #: pgadmin/static/js/BrowserComponent.jsx:86
 msgid "Object Explorer"
-msgstr ""
+msgstr "Explorador de Objeto"
 
 #: pgadmin/browser/register_browser_preferences.py:147
 msgid "Tabbed panel backward"
@@ -594,7 +601,7 @@ msgstr "Painel com abas para trás"
 
 #: pgadmin/browser/register_browser_preferences.py:162
 msgid "Close tab panel"
-msgstr ""
+msgstr "Fechar aba"
 
 #: pgadmin/browser/register_browser_preferences.py:177
 msgid "Tabbed panel forward"
@@ -648,7 +655,7 @@ msgstr "Depuração direta"
 
 #: pgadmin/browser/register_browser_preferences.py:358
 msgid "Refresh object explorer"
-msgstr ""
+msgstr "Atualizar explorador de objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:373
 msgid "Add grid row"
@@ -846,7 +853,7 @@ msgstr "O grupo de servidores especificado com id"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:617
 msgid "Could not find the server with id# {0}."
-msgstr ""
+msgstr "Não foi encontrado o servidor com o id# {0}."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:697
 msgid ""
@@ -856,12 +863,12 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:720
 msgid "Server deleted"
-msgstr ""
+msgstr "Servidor deletado"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:732
 #: pgadmin/browser/server_groups/servers/__init__.py:2062
 msgid "Could not find the required server."
-msgstr ""
+msgstr "Servidor requerido não encontrado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:773
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:158
@@ -877,7 +884,7 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:175
 #: pgadmin/misc/workspaces/static/js/AdHocConnection.jsx:213
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:775
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:324
@@ -989,33 +996,33 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1321
 msgid "Server has no active connection for generating statistics."
-msgstr ""
+msgstr "Servidor não possui conexões ativas para gerar estatísticas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1422
 msgid "Please enter the server details to connect"
-msgstr ""
+msgstr "Por favor preencha os detalhes do servidor para conectar"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1601
 #: pgadmin/tools/schema_diff/__init__.py:367
 #: pgadmin/tools/sqleditor/__init__.py:2635
 msgid "Server connected."
-msgstr ""
+msgstr "Servidor conectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1643
 msgid "Server could not be disconnected."
-msgstr ""
+msgstr "Servidor não pôde ser desconectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1647
 msgid "Server disconnected."
-msgstr ""
+msgstr "Servidor desconectado."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1667
 msgid "Could not reload the server configuration."
-msgstr ""
+msgstr "As configurações do servidor não puderam ser recarregadas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1672
 msgid "Server configuration reloaded."
-msgstr ""
+msgstr "Configurações do servidor recarregadas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1717
 msgid "Named restore point created: {0}"
