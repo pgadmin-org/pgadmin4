@@ -596,7 +596,7 @@ export function getRandomColor() {
 
 // Using this function instead of 'btoa' directly.
 // https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
-function stringToBase64(str) {
+export function stringToBase64(str) {
   return btoa(
     Array.from(
       new TextEncoder().encode(str),

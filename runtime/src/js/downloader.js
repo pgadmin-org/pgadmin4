@@ -82,7 +82,7 @@ async function fileDownloadPath(callerWindow, options, prompt=true) {
 
 export function setupDownloader() {
   // Listen for the renderer's request to show the open dialog
-  ipcMain.handle('get-download-path', async (event, options, prompt=true) => {
+  ipcMain.handle('get-download-stream-path', async (event, options, prompt=true) => {
     try {
       const callerWindow = BrowserWindow.fromWebContents(event.sender);
       const filePath = await fileDownloadPath(callerWindow, options, prompt);
@@ -97,25 +97,25 @@ export function setupDownloader() {
 
       return filePath;
     } catch (error) {
-      writeServerLog(`Error in get-download-path: ${error}`);
+      writeServerLog(`Error in get-download-stream-path: ${error}`);
     } 
   });
 
-  ipcMain.on('download-data-save-total', (event, filePath, total) => {
+  ipcMain.on('download-stream-save-total', (event, filePath, total) => {
     const item = downloadQueue[filePath];
     if (item) {
       item.setTotal(total);
     }
   });
 
-  ipcMain.on('download-data-save-chunk', (event, filePath, chunk) => {
+  ipcMain.on('download-stream-save-chunk', (event, filePath, chunk) => {
     const item = downloadQueue[filePath];
     if (item) {
       item.write(chunk);
     }
   });
 
-  ipcMain.on('download-data-save-end', (event, filePath, openFile=false) => {
+  ipcMain.on('download-stream-save-end', (event, filePath, openFile=false) => {
     const item = downloadQueue[filePath];
     if (item) {
       item.remove();
@@ -124,11 +124,18 @@ export function setupDownloader() {
   });
 
   // non-streaming direct download
-  ipcMain.handle('download-base64-url', async (event, base64url, options, prompt=true, openFile=false) => {
+  ipcMain.handle('download-base64-url-data', async (event, base64url, options, prompt=true, openFile=false) => {
     const callerWindow = BrowserWindow.fromWebContents(event.sender);
     const filePath = await fileDownloadPath(callerWindow, options, prompt);
     const buffer = Buffer.from(base64url.split(',')[1], 'base64');
     fs.writeFileSync(filePath, buffer);
+    openFile && shell.openPath(filePath);
+  });
+
+  ipcMain.handle('download-text-data', async (event, text, options, prompt=true, openFile=false) => {
+    const callerWindow = BrowserWindow.fromWebContents(event.sender);
+    const filePath = await fileDownloadPath(callerWindow, options, prompt);
+    fs.writeFileSync(filePath, text);
     openFile && shell.openPath(filePath);
   });
 }

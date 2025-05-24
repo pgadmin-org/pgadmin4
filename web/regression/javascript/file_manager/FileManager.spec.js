@@ -16,7 +16,7 @@ import FileManager, { FileManagerUtils, getComparator } from '../../../pgadmin/m
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import getApiInstance from '../../../pgadmin/static/js/api_instance';
-import * as downloadUtils from '../../../pgadmin/static/js/download_utils';
+import DownloadUtils from '../../../pgadmin/static/js/DownloadUtils';
 import userEvent from '@testing-library/user-event';
 
 const files = [
@@ -345,9 +345,9 @@ describe('FileManagerUtils', ()=>{
   });
 
   it('downloadFile', async ()=>{
-    jest.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {});
+    jest.spyOn(DownloadUtils, 'downloadBlob').mockImplementation(() => {});
     let row = {Filename: 'newfile1', Path: '/home/newfile1', 'storage_folder': 'my_storage'};
     await fmObj.downloadFile(row);
-    expect(downloadUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
+    expect(DownloadUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
   });
 });

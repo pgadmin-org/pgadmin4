@@ -10,6 +10,7 @@
 const { contextBridge, ipcRenderer } = require('electron/renderer');
 
 contextBridge.exposeInMainWorld('electronUI', {
+  focus: () => ipcRenderer.send('focus'),
   onMenuClick: (callback) => ipcRenderer.on('menu-click', (_event, details) => callback(details)),
   setMenus: (menus) => {
     ipcRenderer.send('setMenus', menus);
@@ -25,9 +26,10 @@ contextBridge.exposeInMainWorld('electronUI', {
   log: (text)=> ipcRenderer.send('log', text),
   reloadApp: ()=>{ipcRenderer.send('reloadApp');},
   // Download related functions
-  getDownloadPath: (...args) => ipcRenderer.invoke('get-download-path', ...args),
-  downloadDataSaveChunk: (...args) => ipcRenderer.send('download-data-save-chunk', ...args),
-  downloadDataSaveTotal: (...args) => ipcRenderer.send('download-data-save-total', ...args),
-  downloadDataSaveEnd: (...args) => ipcRenderer.send('download-data-save-end', ...args),
-  downloadBase64UrlData: (...args) => ipcRenderer.invoke('download-base64-url', ...args)
+  getDownloadStreamPath: (...args) => ipcRenderer.invoke('get-download-stream-path', ...args),
+  downloadStreamSaveChunk: (...args) => ipcRenderer.send('download-stream-save-chunk', ...args),
+  downloadStreamSaveTotal: (...args) => ipcRenderer.send('download-stream-save-total', ...args),
+  downloadStreamSaveEnd: (...args) => ipcRenderer.send('download-stream-save-end', ...args),
+  downloadBase64UrlData: (...args) => ipcRenderer.invoke('download-base64-url-data', ...args),
+  downloadTextData: (...args) => ipcRenderer.invoke('download-text-data', ...args)
 });

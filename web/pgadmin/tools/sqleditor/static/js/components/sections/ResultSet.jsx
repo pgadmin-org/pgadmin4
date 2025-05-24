@@ -22,7 +22,7 @@ import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout'
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
 import { QuerySources } from './QueryHistory';
-import { downloadFileStream } from '../../../../../../static/js/download_utils';
+import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import CopyData from '../QueryToolDataGrid/CopyData';
 import moment from 'moment';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -516,7 +516,7 @@ export class ResultSetUtils {
   async saveResultsToFile(fileName, onProgress) {
     try {
       this.hasQueryCommitted = false;
-      await downloadFileStream({
+      await DownloadUtils.downloadFileStream({
         url: url_for('sqleditor.query_tool_download', {
           'trans_id': this.transId,
         }),

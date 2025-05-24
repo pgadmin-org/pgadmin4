@@ -154,6 +154,7 @@ export default function BrowserComponent({pgAdmin}) {
   useBeforeUnload({
     enabled: confirmOnClose,
     beforeClose: (forceClose)=>{
+      window.electronUI?.focus();
       pgAdmin.Browser.notifier.confirm(
         gettext('Quit pgAdmin 4'),
         gettext('Are you sure you want to quit the application?'),

@@ -149,7 +149,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
     <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
   </InputLabel>;
   return (
-    <StyledGrid container spacing={0} className={className} data-testid="form-input">
+    <StyledGrid container spacing={0} className={className} data-testid="form-input" width="100%">
       <Grid size={{ lg: labelGridBasis, md: labelGridBasis, sm: 12, xs: 12 }}>
         {
           labelTooltip ?

@@ -32,7 +32,7 @@ import Uploader from './Uploader';
 import GridView from './GridView';
 import convert from 'convert-units';
 import PropTypes from 'prop-types';
-import { downloadBlob } from '../../../../../static/js/download_utils';
+import DownloadUtils from '../../../../../static/js/DownloadUtils';
 import ErrorBoundary from '../../../../../static/js/helpers/ErrorBoundary';
 import { MY_STORAGE } from './FileManagerConstants';
 import _ from 'lodash';
@@ -311,7 +311,7 @@ export class FileManagerUtils {
         'storage_folder': ss,
       },
     });
-    downloadBlob(res.data, res.headers.filename);
+    DownloadUtils.downloadBlob(res.data, res.headers.filename);
   }
 
   setDialogView(view) {
