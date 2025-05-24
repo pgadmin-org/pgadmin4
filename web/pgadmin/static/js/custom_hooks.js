@@ -246,6 +246,7 @@ export function useBeforeUnload({ enabled, isNewTab, beforeClose, closePanel }) 
   const onBeforeUnloadElectron = useCallback((e)=>{
     e.preventDefault();
     e.returnValue = 'prevent';
+    window.electronUI?.focus();
     beforeClose?.(forceClose);
   }, []);
 

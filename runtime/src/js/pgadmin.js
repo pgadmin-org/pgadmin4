@@ -406,8 +406,15 @@ ipcMain.on('restartApp', ()=>{
   app.relaunch();
   app.exit(0);
 });
-ipcMain.on('log', (text) => ()=>{
+ipcMain.on('log', (_e, text) => ()=>{
   misc.writeServerLog(text);
+});
+ipcMain.on('focus', (e) => {
+  const callerWindow = BrowserWindow.fromWebContents(e.sender)
+  if (callerWindow) {
+    if (callerWindow.isMinimized()) callerWindow.restore();
+    callerWindow.focus();
+  }
 });
 ipcMain.on('reloadApp', reloadApp);
 ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{

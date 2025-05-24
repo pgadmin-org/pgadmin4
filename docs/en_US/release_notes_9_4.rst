@@ -41,3 +41,4 @@ Bug fixes
   | `Issue #8668 <https://github.com/pgadmin-org/pgadmin4/issues/8668>`_ -  Implement API fetch error display for select dropdown.
   | `Issue #8711 <https://github.com/pgadmin-org/pgadmin4/issues/8711>`_ -  Fixed an issue where light theme briefly appears when pgAdmin loads or tools open, even when a dark or system UI theme is preferred.
   | `Issue #8713 <https://github.com/pgadmin-org/pgadmin4/issues/8713>`_ -  Fixed issues related to column range selection using shift + click.
+  | `Issue #8760 <https://github.com/pgadmin-org/pgadmin4/issues/8760>`_ -  Fixed an issue where pgAdmin failed to focus when previously unfocused and then quit.
