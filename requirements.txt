@@ -15,7 +15,7 @@
 Authlib==1.5.*
 azure-identity==1.23.0
 azure-mgmt-rdbms==10.1.0
-azure-mgmt-resource==23.3.0
+azure-mgmt-resource==23.4.0
 azure-mgmt-subscription==3.1.1
 bcrypt==4.3.*
 boto3==1.38.*
