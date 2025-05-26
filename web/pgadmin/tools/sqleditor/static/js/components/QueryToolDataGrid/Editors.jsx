@@ -89,8 +89,8 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
     padding: '0.25rem',
     '& .jsoneditor-div': {
       fontSize: '12px',
-      minWidth: '525px',
-      minHeight: '300px',
+      minWidth: '600px',
+      minHeight: '500px',
       ...theme.mixins.panelBorder.all,
       outline: 0,
       resize: 'both',

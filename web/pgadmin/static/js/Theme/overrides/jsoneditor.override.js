@@ -165,16 +165,23 @@ export default function jsonEditorOverride(theme) {
       '--jse-svelte-select-background': theme.palette.background.default,
       '--list-background': theme.palette.background.default,
       '--item-is-active-color': theme.palette.primary.contrastText,
-      '--item-hover-bg': theme.palette.primary.hoverMain,
+      '--jse-hover-background-color': theme.palette.primary.hoverMain,
     },
-
+    '.svelte-select .svelte-select-list .list-item:hover': {
+      '--item-hover-bg': theme.palette.primary.main,
+      '--item-hover-color': theme.palette.primary.contrastText,
+    },
     /* Body */
     '.jse-modal-contents': {
       '--jse-modal-background': theme.palette.background.default,
     },
 
     '.jse-transform-modal-inner textarea': {
-      ' --jse-input-background': theme.palette.background.default,
+      '--jse-input-background': theme.palette.background.default,
+    },
+
+    '.jse-filter-value': {
+      '--jse-input-background': theme.palette.background.default,
     },
 
     '.jse-contextmenu': {
@@ -200,7 +207,37 @@ export default function jsonEditorOverride(theme) {
       '--jse-value-color-boolean': 'darkorange',
       '--jse-value-color-string': theme.otherVars.editor.string,
       '--jse-value-color-null': theme.otherVars.editor.keyword,
-      '--jse-delimiter-color': theme.palette.text.primary
+      '--jse-delimiter-color': theme.palette.text.primary,
+      '--jse-font-family-mono': theme.typography.fontFamilySourceCode
+    },
+    '.jse-text-mode .jse-contents .cm-editor .cm-selectionBackground': {
+      '--jse-selection-background-color': theme.otherVars.editor.selectionBg,
+    },
+
+    '.jse-main:not(.jse-focus)': {
+      '--jse-selection-background-inactive-color': theme.otherVars.editor.selectionBg,
+    },
+
+    '.jse-table-mode .jse-contents table.jse-table-main .jse-table-row .jse-table-cell.jse-table-cell-header, .jse-table-mode.jse-contents table.jse-table-main .jse-table-row .jse-table-cell.jse-table-cell-gutter': {
+      '--jse-table-header-background': theme.otherVars.editor.guttersBg,
+      '--jse-text-readonly': theme.otherVars.editor.guttersFg,
+    },
+
+    '.jse-table-mode .jse-contents table.jse-table-main .jse-table-row .jse-table-cell.jse-table-cell-gutter': {
+      '--jse-table-header-background': theme.otherVars.editor.guttersBg,
+      '--jse-text-readonly': theme.otherVars.editor.guttersFg,
+    },
+
+    '.jse-column-header:hover': {
+      '--jse-table-header-background-highlight': theme.palette.primary.hoverMain,
+    },
+
+    '.jse-json-node.jse-selected-value .jse-value-outer, .jse-json-node.jse-selected-value .jse-meta, .jse-json-node.jse-selected-value .jse-items .jse-header, .jse-json-node.jse-selected-value .jse-items .jse-contents, .jse-json-node.jse-selected-value .jse-props .jse-header, .jse-json-node.jse-selected-value .jse-props .jse-contents, .jse-json-node.jse-selected-value .jse-footer': {
+      '--jse-selection-background-color': theme.otherVars.editor.selectionBg,
+    },
+    
+    '.jse-json-node.jse-selected .jse-header, .jse-json-node.jse-selected .jse-contents, .jse-json-node.jse-selected .jse-footer': {
+      '--jse-selection-background-color': theme.otherVars.editor.selectionBg,
     }
   };
 }
