@@ -89,8 +89,8 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
     padding: '0.25rem',
     '& .jsoneditor-div': {
       fontSize: '12px',
-      minWidth: '600px',
-      minHeight: '500px',
+      minWidth: '200px',
+      minHeight: '200px',
       ...theme.mixins.panelBorder.all,
       outline: 0,
       resize: 'both',
@@ -139,6 +139,10 @@ const ResizableDiv = ({columnIndex, children, resizeKey, defaultSize, ...otherPr
     editorRef.current.firstChild.style.height = window.resizeKeys?.[resizeKey]?.height || defaultSize.height;
     editorRef.current.firstChild.style.width = window.resizeKeys?.[resizeKey]?.width || defaultSize.width;
 
+    // set initial position of editor and resize if it goes beyond visible area.
+    setEditorPosition(getCellElement(columnIndex), editorRef.current, '.rdg', 12);
+    resizeEditor();
+
     return () => document.removeEventListener('mouseup', resizeEditor);
 
   },[]);
@@ -146,7 +150,6 @@ const ResizableDiv = ({columnIndex, children, resizeKey, defaultSize, ...otherPr
   return (
     <StyledEditorDiv ref={(ele)=>{
       editorRef.current = ele;
-      setEditorPosition(getCellElement(columnIndex), ele, '.rdg', 12);
     }} {...otherProps}>
       {children}
     </StyledEditorDiv>
