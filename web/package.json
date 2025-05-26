@@ -145,7 +145,7 @@
     "snapsvg-cjs": "^0.0.6",
     "socket.io-client": "^4.5.0",
     "split.js": "^1.5.10",
-    "sql-formatter": "^15.5.1",
+    "sql-formatter": "^15.6.2",
     "uplot": "^1.6.32",
     "uplot-react": "^1.1.4",
     "valid-filename": "^4.0.0",
