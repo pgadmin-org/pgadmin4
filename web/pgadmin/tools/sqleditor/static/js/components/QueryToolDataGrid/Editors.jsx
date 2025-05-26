@@ -102,7 +102,7 @@ const StyledEditorDiv = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ResizableDiv = ({columnIndex, children, ...otherProps}) => {
+const ResizableDiv = ({columnIndex, children, resizeKey, defaultSize, ...otherProps}) => {
 
   const editorRef = React.useRef(null);
   const {getCellElement} = useContext(RowInfoContext);
@@ -124,11 +124,20 @@ const ResizableDiv = ({columnIndex, children, ...otherProps}) => {
       if (box.right > innerWidth) {
         editorRef.current.firstChild.style.width = `${currentWidth - widthDiff - 20}px`;
       }
+      // logic to save the height and width of the editor
+      if (currentHeight || currentWidth) {
+        window.resizeKeys = window.resizeKeys || {};
+        window.resizeKeys[resizeKey] = {height: editorRef.current.firstChild.style.height, width: editorRef.current.firstChild.style.width};
+      }
+
     };
 
     editorRef.current.addEventListener('mousedown', () => {
       document.addEventListener('mouseup', resizeEditor, {once: true});
     });
+    // Fetch the saved height and width from window object
+    editorRef.current.firstChild.style.height = window.resizeKeys?.[resizeKey]?.height || defaultSize.height;
+    editorRef.current.firstChild.style.width = window.resizeKeys?.[resizeKey]?.width || defaultSize.width;
 
     return () => document.removeEventListener('mouseup', resizeEditor);
 
@@ -146,7 +155,9 @@ const ResizableDiv = ({columnIndex, children, ...otherProps}) => {
 ResizableDiv.displayName = 'ResizableDiv';
 ResizableDiv.propTypes = {
   children: CustomPropTypes.children,
-  columnIndex: PropTypes.number
+  columnIndex: PropTypes.number,
+  resizeKey: PropTypes.string,
+  defaultSize: PropTypes.object,
 };
 
 function autoFocusAndSelect(input) {
@@ -249,7 +260,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
   return (
     <Portal container={document.body}>
       <ResizableDiv columnIndex={column.idx}
-        className='Editors-textEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
+        className='Editors-textEditor' data-label="pg-editor" resizeKey={'text'} defaultSize={{height:'80px', width:'250px'}} onKeyDown={suppressEnterKey} >
         <textarea ref={autoFocusAndSelect} className='Editors-textarea' value={localVal} onChange={onChange} onKeyDown={onkeydown} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
@@ -436,7 +447,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   return (
     <Portal container={document.body}>
       <ResizableDiv columnIndex={column.idx}
-        className='Editors-jsonEditor' data-label="pg-editor" onKeyDown={suppressEnterKey} >
+        className='Editors-jsonEditor' data-label="pg-editor" resizeKey={'json'} defaultSize={{height:'500px', width:'600px'}} onKeyDown={suppressEnterKey} >
         <JsonEditor
           setJsonEditorSize={setJsonEditorSize}
           value={localVal}

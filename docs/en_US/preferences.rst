@@ -543,8 +543,8 @@ preferences for copied data.
 * Specify the number of records to fetch in one batch. Changing this value will
   override DATA_RESULT_ROWS_PER_PAGE setting from config file.
 * Use the *Max column data display length* to specify the maximum number of
-  characters to display in a cell. If the data is larger than this value, it
-  will be truncated.
+  characters to be visible in the data output cell. If the data is larger 
+  than this value, it will be truncated.
 * Use the *Result copy field separator* drop-down listbox to select the field
   separator for copied data.
 * Use the *Result copy quote character* drop-down listbox to select the quote

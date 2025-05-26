@@ -379,8 +379,8 @@ def register_query_tool_preferences(self):
         'Results_grid', 'max_column_data_display_length',
         gettext("Max column data display length"), 'integer',
         200, category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('Maximum number of characters to display in the'
-                         ' data preview.')
+        help_str=gettext('Maximum number of characters to be visible in the'
+                         ' data output cell.')
     )
 
     self.sql_font_size = self.preference.register(
