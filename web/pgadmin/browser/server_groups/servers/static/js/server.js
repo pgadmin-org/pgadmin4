@@ -331,6 +331,30 @@ define('pgadmin.node.server', [
 
           return false;
         },
+        /* Refresh the server */
+        refresh: function(args, i) {
+          let obj = this,
+            tree = pgBrowser.tree,
+            item = i || tree.selected(),
+            data = item && tree.itemData(item);
+          // Fetch connection status.
+          fetch_connection_status(obj, data, tree, item);
+          setTimeout(function() {
+            pgAdmin.Browser.Node.callbacks.refresh.apply(obj, [null, item]);
+          }, 10);
+          // Fetch Node and check if the server is connected or not.
+          const url = obj.generate_url(item, 'nodes', data, true);
+          getApiInstance().get(url)
+            .then(({ data: { result } }) => {
+              if (!result.connected) {
+                setTimeout(function() {
+                  tree.close(item);
+                }, 10);
+                tree.setInode(item);
+              }            
+            })
+            .catch((error) => pgAdmin.Browser.notifier.pgRespErrorNotify(error));
+        },
         /* Add restore point */
         restore_point: function(args) {
           let input = args || {},
@@ -778,7 +802,6 @@ define('pgadmin.node.server', [
 
       getApiInstance().get(url)
         .then(({data: res})=>{
-          tree.setInode(item);
           if (res?.data) {
             if (typeof res.data.icon == 'string') {
               tree.removeIcon(item);
