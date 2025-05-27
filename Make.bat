@@ -284,6 +284,7 @@ REM Main build sequence Ends
 
     REM WGET
     FOR /f "tokens=*" %%i IN ('npm info electron version') DO SET "ELECTRON_VERSION=%%i"
+    SET ELECTRON_VERSION="35.4.0"
     :GET_NW
         wget https://github.com/electron/electron/releases/download/v%ELECTRON_VERSION%/electron-v%ELECTRON_VERSION%-win32-x64.zip -O "%TMPDIR%\electron-v%ELECTRON_VERSION%-win32-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW

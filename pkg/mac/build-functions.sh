@@ -34,6 +34,7 @@ _build_runtime() {
     fi
 
     ELECTRON_VERSION="$(npm info electron version)"
+    ELECTRON_VERSION="35.4.0"
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do

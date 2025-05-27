@@ -8374,10 +8374,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-to-image@npm:1.11.13":
-  version: 1.11.13
-  resolution: "html-to-image@npm:1.11.13"
-  checksum: 18da77cf6c1e7f821f320dc6941642ee292df136f38c548ecb77aa04718b979df63ba4ea56e53d1939b9dbe8e23ca10c44b55319a885bfe7f5f5023c1b5698fe
+"html-to-image@npm:1.11.11":
+  version: 1.11.11
+  resolution: "html-to-image@npm:1.11.11"
+  checksum: b453beca72a697bf06fae4945e5460d1d9b1751e8569a0d721dda9485df1dde093938cc9bd9172b8df5fc23133a53a4d619777b3d22f7211cd8a67e3197ab4e8
   languageName: node
   linkType: hard
 
@@ -13667,7 +13667,7 @@ __metadata:
     globals: ^16.1.0
     hotkeys-js: ^3.13.3
     html-react-parser: ^5.2.0
-    html-to-image: 1.11.13
+    html-to-image: 1.11.11
     image-minimizer-webpack-plugin: ^4.0.2
     imagemin: ^9.0.0
     imagemin-mozjpeg: ^10.0.0
