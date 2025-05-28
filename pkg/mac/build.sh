@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Build script to create Mac App Bundle and DMG for pgAdmin4 runtime
 
