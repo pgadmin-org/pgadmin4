@@ -28,3 +28,4 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8032 <https://github.com/pgadmin-org/pgadmin4/issues/8032>`_ -  Fixed an issue where the Schema Diff Tool incorrectly reported differences due to variations in the order of the privileges.

@@ -54,6 +54,9 @@ def parse_priv_from_db(db_privileges):
             "with_grant": db_privileges['grantable'][idx]
         })
 
+    # Sort the privileges based on the privilege_type to fix
+    # a Schema Diff issue.
+    privileges.sort(key=lambda x: x['privilege_type'])
     acl['privileges'] = privileges
 
     return acl
