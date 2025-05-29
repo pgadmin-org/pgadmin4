@@ -207,11 +207,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^22.7.7":
-  version: 22.15.19
-  resolution: "@types/node@npm:22.15.19"
+  version: 22.15.24
+  resolution: "@types/node@npm:22.15.24"
   dependencies:
     undici-types: ~6.21.0
-  checksum: 5aa45bf93c62bba1193bf07a56dddd84b74f89a554a08e1bd7772610f529d8dc6f828d464bc28c10001bd0092b6b3d11736544b52e154f25f5ca0ed93f04c32b
+  checksum: 664a33bf8cf7f4fe9c0512f40ab3e767f3990a20258a39bcbf0763093be34c4a731091894f0ccb8799494b142ce15582593f9e5fe7d0de337efff11bcd5c5678
   languageName: node
   linkType: hard
 
@@ -606,14 +606,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-context-menu@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "electron-context-menu@npm:4.0.5"
+"electron-context-menu@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "electron-context-menu@npm:4.1.0"
   dependencies:
     cli-truncate: ^4.0.0
     electron-dl: ^4.0.0
     electron-is-dev: ^3.0.1
-  checksum: 4b486b65af658489661685414d605a388c433ca5f8543767310516509351043ffac242a34a66785d9cc68eee90640d765e49fba1237cbaa5c50490dc5509b9af
+  checksum: 230e89f302df05fedd0bccb7fe1bf1dc0bc42028956b74766d40b88ada3257e9ded695b0bea129f5c1771164cbe6c6a24a69836004998220ec70719f406ede38
   languageName: node
   linkType: hard
 
@@ -1561,7 +1561,7 @@ __metadata:
   dependencies:
     axios: ^1.9.0
     electron: 36.2.1
-    electron-context-menu: ^4.0.5
+    electron-context-menu: ^4.1.0
     electron-store: ^10.0.1
     eslint: ^9.27.0
     eslint-plugin-unused-imports: ^4.1.4
