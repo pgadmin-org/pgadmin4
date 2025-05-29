@@ -26,6 +26,7 @@ class AllPermissionTypes:
     tools_grant_wizard = 'tools_grant_wizard'
     storage_add_folder = 'storage_add_folder'
     storage_remove_folder = 'storage_remove_folder'
+    change_password = 'change_password'
 
     @staticmethod
     def list():
@@ -37,6 +38,7 @@ class AllPermissionCategories:
     object_explorer = 'Object Explorer'
     tools = 'Tools'
     storage_manager = 'Storage Manager'
+    miscellaneous = 'Miscellaneous'
 
 
 class PgAdminPermissions:
@@ -117,6 +119,11 @@ class PgAdminPermissions:
             AllPermissionCategories.storage_manager,
             AllPermissionTypes.storage_remove_folder,
             gettext("Delete file/folder")
+        )
+        self.add_permission(
+            AllPermissionCategories.miscellaneous,
+            AllPermissionTypes.change_password,
+            gettext("Change password")
         )
 
     def add_permission(self, category: str, permission: str, label: str):
