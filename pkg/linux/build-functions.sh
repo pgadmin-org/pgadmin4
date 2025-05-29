@@ -242,7 +242,6 @@ _copy_code() {
 
     # License files
     cp "${SOURCEDIR}/LICENSE" "${SERVERROOT}/usr/${APP_NAME}/"
-    cp "${SOURCEDIR}/DEPENDENCIES" "${SERVERROOT}/usr/${APP_NAME}/"
 
     # Web setup script
     mkdir -p "${WEBROOT}/usr/${APP_NAME}/bin/"

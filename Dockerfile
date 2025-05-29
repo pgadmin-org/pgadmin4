@@ -192,7 +192,6 @@ COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # License files
 COPY LICENSE /pgadmin4/LICENSE
-COPY DEPENDENCIES /pgadmin4/DEPENDENCIES
 
 # Install runtime dependencies and configure everything in one RUN step
 RUN apk add --no-cache \

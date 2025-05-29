@@ -239,7 +239,6 @@ REM Main build sequence Ends
 
     ECHO Staging license files...
     COPY "%WD%\LICENSE" "%BUILDROOT%\" > nul || EXIT /B 1
-    COPY "%WD%\DEPENDENCIES" "%BUILDROOT%\" > nul || EXIT /B 1
 
     ECHO Creating config_distro.py
     ECHO SERVER_MODE = False > "%BUILDROOT%\web\config_distro.py"
