@@ -110,7 +110,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     if (!onTextSelect) return;
 
     const handleSelection = () => {
-      const selectedText = window.getSelection().toString();
+      const selectedText = editor.current?.getSelection();
       if (selectedText) {
         onTextSelect(selectedText);
       } else {

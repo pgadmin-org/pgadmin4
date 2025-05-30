@@ -157,9 +157,7 @@ const defaultExtensions = [
   }),
   autoCompleteCompartment.of([]),
   EditorView.clipboardOutputFilter.of((text, state)=>{
-    const lineSep = state.facet(eol);
-    // Fetch the selection range from the editor's current state.
-    return state.selection.ranges.map((range)=>state.sliceDoc(range.from, range.to)).join(lineSep) ?? '';
+    return CustomEditorView.getSelectionFromState(state);
   })
 ];
 
