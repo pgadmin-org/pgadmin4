@@ -157,10 +157,7 @@ const defaultExtensions = [
   }),
   autoCompleteCompartment.of([]),
   EditorView.clipboardOutputFilter.of((text, state)=>{
-    const lineSep = state.facet(eol);
-    // Fetch the primary selection from the editor's current state.
-    const selection = state.selection.main;
-    return state.doc.sliceString(selection.from, selection.to, lineSep);
+    return CustomEditorView.getSelectionFromState(state);
   })
 ];
 
