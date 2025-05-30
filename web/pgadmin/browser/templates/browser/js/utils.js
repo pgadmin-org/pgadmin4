@@ -123,7 +123,7 @@ define('pgadmin.browser.utils',
       auth_source: '{{auth_source}}',
       gravatar: {% if config.SHOW_GRAVATAR_IMAGE %}'{{ username | gravatar }}'{% else %}''{% endif %},
       menus: [
-        {% if auth_only_internal %}
+        {% if auth_only_internal and is_admin %}
         {
           label: '{{ _('Change Password') }}',
           type: 'normal',
