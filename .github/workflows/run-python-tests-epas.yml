@@ -39,6 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Update python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Setup the EDB APT repo on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |

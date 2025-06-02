@@ -1497,9 +1497,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/lang-sql@npm:^6.8.0":
-  version: 6.8.0
-  resolution: "@codemirror/lang-sql@npm:6.8.0"
+"@codemirror/lang-sql@npm:^6.9.0":
+  version: 6.9.0
+  resolution: "@codemirror/lang-sql@npm:6.9.0"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/language": ^6.0.0
@@ -1507,7 +1507,7 @@ __metadata:
     "@lezer/common": ^1.2.0
     "@lezer/highlight": ^1.0.0
     "@lezer/lr": ^1.0.0
-  checksum: 1b5a3c8129b09f24039d8c0906fc4cb8d0f706a424a1d56721057bd1e647797c2b1240bb53eed9bf2bac5806a4e0363e555a3963f04c478efa05829890c537f7
+  checksum: aca08c11b519f962e9a59e14dc6f54102deaa7a15a390c2dc50401234d33a1fd0c5d2436e6f1810a0363b6f2649480d28eb16a10a7e3f4221ffa3f130ef0672e
   languageName: node
   linkType: hard
 
@@ -13637,7 +13637,7 @@ __metadata:
     "@babel/preset-react": ^7.12.13
     "@babel/preset-typescript": ^7.24.7
     "@codemirror/lang-json": ^6.0.1
-    "@codemirror/lang-sql": ^6.8.0
+    "@codemirror/lang-sql": ^6.9.0
     "@date-io/core": ^3.0.0
     "@date-io/date-fns": 3.x
     "@emotion/memoize": ^0.9.0
