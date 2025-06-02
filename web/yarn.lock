@@ -2346,19 +2346,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "@mui/icons-material@npm:7.1.0"
+"@mui/icons-material@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@mui/icons-material@npm:7.1.1"
   dependencies:
     "@babel/runtime": ^7.27.1
   peerDependencies:
-    "@mui/material": ^7.1.0
+    "@mui/material": ^7.1.1
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 582d1bdaffa7f712598a537b6852ec12f87fe576239e3bc743c72a9b470fb9aa67b3655b5b70ed69893eccce91d80e8ecc6c3356b1b42edf217f4bc7e2256620
+  checksum: 85f1369e987f76d364f85305c4e2af188709af83a68cd6326ff92910d97b7db2f31c6797233d75306dd0063c4de587c6fdd55c0f65c1d3f882d40ded7624b1ae
   languageName: node
   linkType: hard
 
@@ -13646,7 +13646,7 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@emotion/utils": ^1.0.0
     "@fortawesome/fontawesome-free": latest
-    "@mui/icons-material": ^7.1.0
+    "@mui/icons-material": ^7.1.1
     "@mui/material": ^7.1.0
     "@mui/x-date-pickers": ^8.3.1
     "@projectstorm/react-diagrams": ^7.0.4
