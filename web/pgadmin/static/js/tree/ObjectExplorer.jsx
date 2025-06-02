@@ -118,7 +118,7 @@ export default function ObjectExplorer() {
         return mtree.readNode(path);
       },
       sortComparator: (a, b) => {
-        // No nee to sort columns
+        // No need to sort columns
         if (a._metadata && a._metadata.data._type == 'column') return 0;
         // Sort alphabetically
         if (a.constructor === b.constructor) {
