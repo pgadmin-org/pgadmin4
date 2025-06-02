@@ -165,7 +165,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   };
 
-  const warnReloadFile = (fileName, sqlId)=>{
+  const warnReloadFile = (fileName, sqlId, storage=null)=>{
     queryToolCtx.modal.confirm(
       gettext('Reload file?'),
       gettext('The file has been modified by another program. Do you want to reload it and loose changes made in pgadmin?'),
@@ -174,6 +174,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       },
       function() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
       }
     );
   };
@@ -208,7 +209,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current.setValue(res.data);
         //Check the file content for Trojan Source
         checkTrojanSource(res.data);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
         // Detect line separator from content and editor's EOL.
         const lineSep = editor.current?.detectEOL(res.data);
         // Update the EOL if it differs from the current editor EOL
@@ -216,21 +217,21 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         // Mark the editor content as clean
         editor.current?.markClean();
       }).catch((err)=>{
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false, storage);
         pgAdmin.Browser.notifier.error(parseApiError(err));
       });
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName, storage)=>{
       queryToolCtx.api.post(url_for('sqleditor.save_file'), {
         'file_name': decodeURI(fileName),
         'file_content': editor.current.getValue(false, true),
       }).then(()=>{
         editor.current.markClean();
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true, storage);
         pgAdmin.Browser.notifier.success(gettext('File saved successfully.'));
       }).catch((err)=>{
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false, storage);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
     });
@@ -456,19 +457,11 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   }, []);
 
-  // const saveQueryToolData = useCallback(_.debounce((openFileName=null)=>{
-  //   console.log('In saveQueryToolData')
-  //   console.log(editor.current.isDirty(), openFileName, queryToolCtx.current_file)
-  //   let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
-  //   'open_file_name': openFileName, 'is_editor_dirty': editor.current.isDirty() };
-  //   saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
-  // }, 500), []);
-
 
   const [saveQtData, setSaveQtData] = useState(false);
   useDelayDebounce(()=>{
     let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
-      'open_file_name':queryToolCtx.current_file, 'is_editor_dirty': editor.current.isDirty() };
+      'open_file_name':queryToolCtx.current_file, 'storage': queryToolCtx.selected_storage, 'is_editor_dirty': editor.current.isDirty() };
     saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
     setSaveQtData(false);
   }, saveQtData, 500);

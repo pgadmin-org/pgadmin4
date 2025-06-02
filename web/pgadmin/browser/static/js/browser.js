@@ -334,6 +334,7 @@ define('pgadmin.browser', [
         }
       }).catch(function(error) {
         pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+        getApiInstance().delete(url_for('settings.delete_application_state'), {});
       });
     },
 

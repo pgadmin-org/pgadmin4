@@ -14,8 +14,8 @@ import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
 import { LAYOUT_EVENTS } from './helpers/Layout';
-import getApiInstance from './api_instance';
-import url_for from 'sources/url_for';
+import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
+
 
 function ToolForm({actionUrl, params}) {
   const formRef = useRef(null);
@@ -40,6 +40,7 @@ ToolForm.propTypes = {
 
 export default function ToolView({dockerObj}) {
   const pgAdmin = usePgAdmin();
+  const {deleteToolData} = useApplicationState();
 
   useEffect(()=>{
     pgAdmin.Browser.Events.on('pgadmin:tool:show', (panelId, toolUrl, formParams, tabParams, newTab)=>{
@@ -60,15 +61,8 @@ export default function ToolView({dockerObj}) {
         // case of workspace layout.
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
         const deregisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
-          if(panelId == closePanelId){
-            let api = getApiInstance();
-            api.delete(
-              url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
-            ).then(()=> { /* Sonar Qube */}).catch(function(error) {
-              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-            });
-            deregisterRemove();
-          }
+          deleteToolData(panelId, closePanelId);
+          deregisterRemove();
         });
 
         handler.focus();

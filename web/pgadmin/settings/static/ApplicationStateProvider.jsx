@@ -12,6 +12,7 @@ import getApiInstance from '../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import { getBrowser } from '../../static/js/utils';
 import usePreferences from '../../preferences/static/js/store';
+import { usePgAdmin } from '../../static/js/PgAdminProvider';
 
 const ApplicationStateContext = React.createContext();
 
@@ -25,6 +26,7 @@ export function getToolData(localStorageId){
 
 export function ApplicationStateProvider({children}){
   const preferencesStore = usePreferences();
+  const pgAdmin = usePgAdmin();
   const saveAppState = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
   const openNewTab = preferencesStore?.getPreferencesForModule('browser')?.new_browser_tab_open;
 
@@ -49,9 +51,21 @@ export function ApplicationStateProvider({children}){
     return saveAppState;
   };
 
+  const deleteToolData = (panelId, closePanelId) =>{
+    if(panelId == closePanelId){
+      let api = getApiInstance();
+      api.delete(
+        url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
+      ).then(()=> { /* Sonar Qube */}).catch(function(error) {
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      });
+    }      
+  };
+
   const value = useMemo(()=>({
     saveToolData,
-    enableSaveToolData
+    enableSaveToolData,
+    deleteToolData
   }), []);
 
   return <ApplicationStateContext.Provider value={value}>

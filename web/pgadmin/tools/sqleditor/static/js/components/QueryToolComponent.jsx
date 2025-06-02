@@ -176,6 +176,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     is_visible: true,
     manual_panel_close: true,
     current_file: null,
+    selected_storage: params?.storage, 
     obtaining_conn: true,
     connected: false,
     connected_once: false,
@@ -354,13 +355,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(qtState.params.file_deleted != 'true'){
           if(qtState.params.external_file_changes == 'true'){
             loadSqlFromLocalStorage = false;
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId, qtState.params?.storage); 
           }else{
             eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
           }
         }
       }
-      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+      //eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
     }
     if(loadSqlFromLocalStorage) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
     setQtStatePartial({ editor_disabled: false });
@@ -593,10 +594,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   useEffect(()=>{
-    const fileDone = (fileName, success=true )=>{
+    const fileDone = (fileName, success=true, storage=null)=>{
       if(success) {
+        if(storage){
+          setQtStatePartial({
+            selected_storage: storage
+          });
+        }
         setQtStatePartial({
-          current_file: fileName,
+          current_file: fileName
         });
         isDirtyRef.current = false;
         setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
@@ -631,8 +637,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
           };
-          pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
+          pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName, storage);
           }, null, modal);
         }
       }],
@@ -925,6 +931,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
+    selected_storage: qtState.selected_storage,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
@@ -955,7 +962,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file, qtState.selected_storage]);
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,
