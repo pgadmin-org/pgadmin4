@@ -54,9 +54,10 @@ import currentQueryHighlighterExtn from '../extensions/currentQueryHighlighter';
 import { autoCompleteCompartment, eolCompartment, indentNewLine, eol } from '../extensions/extraStates';
 import { OS_EOL } from '../../../../../tools/sqleditor/static/js/components/QueryToolConstants';
 import { useTheme } from '@mui/material';
+import plpgsqlFoldService from '../extensions/plpgsqlFoldService';
 
-const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px'}} />);
-const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px'}} />);
+const arrowRightHtml = ReactDOMServer.renderToString(<KeyboardArrowRightRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
+const arrowDownHtml = ReactDOMServer.renderToString(<ExpandMoreRoundedIcon style={{width: '16px', fill: 'currentcolor'}} />);
 
 function handleDrop(e, editor) {
   let dropDetails = null;
@@ -158,7 +159,9 @@ const defaultExtensions = [
   autoCompleteCompartment.of([]),
   EditorView.clipboardOutputFilter.of((text, state)=>{
     return CustomEditorView.getSelectionFromState(state);
-  })
+  }),
+  // Custom folding service for PL/pgSQL
+  plpgsqlFoldService,
 ];
 
 export default function Editor({
