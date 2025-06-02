@@ -117,7 +117,7 @@
     "leaflet": "^1.9.4",
     "lodash": "4.*",
     "moment": "^2.29.4",
-    "moment-timezone": "^0.5.48",
+    "moment-timezone": "^0.6.0",
     "notificar": "^1.0.1",
     "notistack": "^3.0.1",
     "papaparse": "^5.5.2",
