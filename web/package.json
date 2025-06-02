@@ -12,7 +12,7 @@
     "@babel/eslint-plugin": "^7.26.10",
     "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
     "@babel/plugin-syntax-jsx": "^7.16.0",
-    "@babel/plugin-transform-runtime": "^7.27.1",
+    "@babel/plugin-transform-runtime": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-typescript": "^7.24.7",
     "@emotion/memoize": "^0.9.0",
