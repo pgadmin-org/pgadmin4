@@ -25,7 +25,8 @@ import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
-from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils.constants import (KERBEROS, UTILITIES_ARRAY,
+                                     BG_PROCESS_ERROR_MSGS)
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.preferences import Preferences
 
@@ -43,6 +44,27 @@ PROCESS_STARTED = 1
 PROCESS_FINISHED = 2
 PROCESS_TERMINATED = 3
 PROCESS_NOT_FOUND = _("Could not find a process with the specified ID.")
+
+
+def set_error_msg(cmd, error_code, stderr):
+    """
+    This function is used to set the error message based on
+    exit code if stderr is empty.
+    """
+    error_str = ''
+    # Get the Utility from the cmd.
+    for utility in UTILITIES_ARRAY:
+        if utility in cmd:
+            error_str = utility + _(': error: ')
+            break
+
+    try:
+        error_str = error_str + BG_PROCESS_ERROR_MSGS[error_code]
+    except KeyError:
+        error_str = (error_str + _('utility failed with exit code: ') +
+                     str(error_code))
+
+    stderr.append([error_code, error_str])
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
@@ -607,6 +629,10 @@ class BatchProcess:
                 'execution_time': execution_time,
                 'process_state': self.process_state
             }
+
+        # Set error message based on exit code if stderr is empty.
+        if err_completed and len(stderr) == 0:
+            set_error_msg(self.cmd, self.ecode, stderr)
 
         return {
             'out': {
