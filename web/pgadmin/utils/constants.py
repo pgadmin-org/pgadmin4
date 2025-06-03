@@ -118,7 +118,7 @@ BINARY_PATHS = {
 UTILITIES_ARRAY = ['pg_dumpall', 'pg_dump', 'pg_restore', 'psql']
 
 BG_PROCESS_ERROR_MSGS = {
-    3221225781: gettext('Unable to find a dll needed by the utility. Ensuring '
+    3221225781: gettext('Unable to find a dll needed by the utility. Ensure '
                         '.dll files needed by the utility are in the same '
                         'folder as your executable.')
 }

@@ -46,10 +46,9 @@ PROCESS_TERMINATED = 3
 PROCESS_NOT_FOUND = _("Could not find a process with the specified ID.")
 
 
-def set_error_msg(cmd, error_code, stderr):
+def get_error_msg(cmd, error_code):
     """
-    This function is used to set the error message based on
-    exit code if stderr is empty.
+    This function is used to get the error message based on exit code.
     """
     error_str = ''
     # Get the Utility from the cmd.
@@ -64,7 +63,7 @@ def set_error_msg(cmd, error_code, stderr):
         error_str = (error_str + _('utility failed with exit code: ') +
                      str(error_code))
 
-    stderr.append([error_code, error_str])
+    return error_str
 
 
 def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
@@ -632,7 +631,8 @@ class BatchProcess:
 
         # Set error message based on exit code if stderr is empty.
         if err_completed and len(stderr) == 0:
-            set_error_msg(self.cmd, self.ecode, stderr)
+            err_msg = get_error_msg(self.cmd, self.ecode)
+            stderr.append([self.ecode, err_msg])
 
         return {
             'out': {
