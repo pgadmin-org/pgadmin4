@@ -13,6 +13,7 @@ import gettext from 'sources/gettext';
 import { showChangeUserPassword, showUrlDialog } from '../../../../static/js/Dialogs/index';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import Component from './Component';
+import withCheckPermission from '../../../../browser/static/js/withCheckPermission';
 
 class UserManagement {
   static instance;
@@ -30,9 +31,11 @@ class UserManagement {
     this.initialized = true;
   }
 
-  // This is a callback function to show change user dialog.
+  // This is a callback function to show change user dialog based on permission.
   change_password(url) {
-    showChangeUserPassword(url);
+    withCheckPermission({ permission: 'change_password' }, () => {
+      showChangeUserPassword(url);
+    })();
   }
 
   // This is a callback function to show 2FA dialog.
