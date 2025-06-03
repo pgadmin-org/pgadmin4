@@ -629,10 +629,11 @@ class BatchProcess:
                 'process_state': self.process_state
             }
 
-        # Set error message based on exit code if stderr is empty.
-        if err_completed and len(stderr) == 0:
+        # Get the error message based on exit code.
+        if err_completed and self.ecode != 0:
             err_msg = get_error_msg(self.cmd, self.ecode)
-            stderr.append([self.ecode, err_msg])
+            # This should be the last line as added 'Z' for sorting.
+            stderr.append(['Z', err_msg])
 
         return {
             'out': {
