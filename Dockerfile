@@ -172,7 +172,7 @@ COPY --from=env-builder /venv /venv
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 COPY --from=pg17-builder /usr/local/lib/libpq.so.5.17 /usr/lib/
-COPY --from=pg17-builder /usr/lib/libzstd.so.1.5.6 /usr/lib/
+COPY --from=pg17-builder /usr/lib/libzstd.so.1.5.7 /usr/lib/
 COPY --from=pg17-builder /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.17 /usr/lib/libpq.so.5 && \
