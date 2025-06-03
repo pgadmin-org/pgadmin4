@@ -35,10 +35,10 @@ class AllPermissionTypes:
 
 
 class AllPermissionCategories:
-    object_explorer = 'Object Explorer'
-    tools = 'Tools'
-    storage_manager = 'Storage Manager'
-    miscellaneous = 'Miscellaneous'
+    object_explorer = gettext('Object Explorer')
+    tools = gettext('Tools')
+    storage_manager = gettext('Storage Manager')
+    miscellaneous = gettext('Miscellaneous')
 
 
 class PgAdminPermissions:
