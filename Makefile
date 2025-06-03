@@ -20,8 +20,9 @@ APP_REVISION := $(shell grep ^APP_REVISION web/version.py | awk -F"=" '{print $$
 # Include only platform-independent builds in all
 all: docs pip src
 
+# Add BUILD_OPTS variable to pass arguments
 appbundle:
-	./pkg/mac/build.sh
+	./pkg/mac/build.sh $(BUILD_OPTS)
 
 install-node:
 	cd web && yarn install
