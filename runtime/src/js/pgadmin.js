@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { app, BrowserWindow, dialog, ipcMain, Menu, shell, screen } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell, screen, autoUpdater } from 'electron';
 import axios from 'axios';
 import Store from 'electron-store';
 import fs from 'fs';
@@ -14,7 +14,7 @@ import path from 'path';
 import * as misc from './misc.js';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
-import { setupMenu } from './menu.js';
+import { setupMenu, refreshMenus } from './menu.js';
 import contextMenu from 'electron-context-menu';
 import { setupDownloader } from './downloader.js';
 
@@ -35,6 +35,8 @@ let configureWindow = null,
   viewLogWindow = null;
 
 let serverPort = 5050;
+let UUID = crypto.randomUUID();
+
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,6 +46,40 @@ process.env['ELECTRON_ENABLE_SECURITY_WARNINGS'] = false;
 
 // Paths to the rest of the app
 let [pythonPath, pgadminFile] = misc.getAppPaths(__dirname);
+
+const menuCallbacks = {
+  'check_for_updates': ()=>{
+    pgAdminMainScreen.webContents.send('appUpdateNotifier', {check_version_update: true});
+  },
+  'restart_to_update': ()=>{
+    forceQuitAndInstallUpdate();
+  },
+  'view_logs': ()=>{
+    if(viewLogWindow === null || viewLogWindow?.isDestroyed()) {
+      viewLogWindow = new BrowserWindow({
+        show: false,
+        width: 800,
+        height: 460,
+        position: 'center',
+        resizable: false,
+        parent: pgAdminMainScreen,
+        icon: '../../assets/pgAdmin4.png',
+        webPreferences: {
+          preload: path.join(__dirname, 'other_preload.js'),
+        },
+      });
+      viewLogWindow.loadFile('./src/html/view_log.html');
+      viewLogWindow.once('ready-to-show', ()=>{
+        viewLogWindow.show();
+      });
+    } else {
+      viewLogWindow.hide();
+      viewLogWindow.show();
+    }
+  },
+  'configure': openConfigure,
+  'reloadApp': reloadApp,
+};
 
 // Do not allow a second instance of pgAdmin to run.
 const gotTheLock = app.requestSingleInstanceLock();
@@ -153,6 +189,39 @@ function reloadApp() {
   currWin.webContents.reload();
 }
 
+// This function stores the flags in configStore that are needed 
+// for auto-update and refreshes menu
+function setConfigAndRefreshMenu(event) {
+  if (event == 'update-available') {
+    configStore.set('update_downloading', true);
+    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
+  } else if (event == 'update-not-available') {
+    configStore.set('update_downloading', false);
+    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
+  } else if (event == 'update-downloaded') {
+    configStore.set('update_downloading', false);
+    configStore.set('update_downloaded', true);
+    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
+  } else if (event == 'error-close') {
+    configStore.set('update_downloading', false);
+    configStore.set('update_downloaded', false);
+    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
+  }
+}
+
+// This function will force quit and install update and restart the app
+function forceQuitAndInstallUpdate() {
+  // Disable beforeunload handlers
+  const preventUnload = (event) => {
+    event.preventDefault();
+    pgAdminMainScreen.webContents.off('will-prevent-unload', preventUnload);
+  };
+  pgAdminMainScreen.webContents.on('will-prevent-unload', preventUnload);
+  // Set flag to show notification after restart
+  configStore.set('update_installed', true);
+  autoUpdater.quitAndInstall();
+}
+
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
@@ -162,7 +231,6 @@ function startDesktopMode() {
     return;
 
   let pingIntervalID;
-  let UUID = crypto.randomUUID();
   // Set the environment variables so that pgAdmin 4 server
   // starts listening on the appropriate port.
   process.env.PGADMIN_INT_PORT = serverPort;
@@ -307,36 +375,10 @@ function launchPgAdminWindow() {
   splashWindow.close();
   pgAdminMainScreen.webContents.session.clearCache();
 
-  setupMenu(pgAdminMainScreen, {
-    'view_logs': ()=>{
-      if(viewLogWindow === null || viewLogWindow?.isDestroyed()) {
-        viewLogWindow = new BrowserWindow({
-          show: false,
-          width: 800,
-          height: 460,
-          position: 'center',
-          resizable: false,
-          parent: pgAdminMainScreen,
-          icon: '../../assets/pgAdmin4.png',
-          webPreferences: {
-            preload: path.join(__dirname, 'other_preload.js'),
-          },
-        });
-        viewLogWindow.loadFile('./src/html/view_log.html');
-        viewLogWindow.once('ready-to-show', ()=>{
-          viewLogWindow.show();
-        });
-      } else {
-        viewLogWindow.hide();
-        viewLogWindow.show();
-      }
-    },
-    'configure': openConfigure,
-    'reloadApp': reloadApp,
-  });
-
-  setupDownloader();
-
+  setupMenu(pgAdminMainScreen, configStore, menuCallbacks);
+  
+  setupDownloader()
+  
   pgAdminMainScreen.loadURL(startPageUrl);
 
   const bounds = configStore.get('bounds');
@@ -382,12 +424,33 @@ function launchPgAdminWindow() {
 
   pgAdminMainScreen.on('close', () => {
     configStore.set('bounds', pgAdminMainScreen.getBounds());
+    setConfigAndRefreshMenu('error-close');
     pgAdminMainScreen.removeAllListeners('close');
     pgAdminMainScreen.close();
   });
+
+  // Notify if update was installed (fix: always check after main window is ready)
+  notifyUpdateInstalled();
 }
 
 let splashWindow;
+
+// Helper to notify update installed after restart
+function notifyUpdateInstalled() {
+  if (configStore.get('update_installed')) {
+    // Reset the flag
+    configStore.set('update_installed', false);
+    // Notify renderer
+    if (pgAdminMainScreen) {
+      pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_installed: true});
+    } else {
+      // If main screen not ready, wait and send after it's created
+      app.once('browser-window-created', (event, window) => {
+        window.webContents.send('appUpdateNotifier', {update_installed: true});
+      });
+    }
+  }
+}
 
 // setup preload events.
 ipcMain.handle('showOpenDialog', (e, options) => dialog.showOpenDialog(BrowserWindow.fromWebContents(e.sender), options));
@@ -406,7 +469,7 @@ ipcMain.on('restartApp', ()=>{
   app.relaunch();
   app.exit(0);
 });
-ipcMain.on('log', (_e, text) => ()=>{
+ipcMain.on('log', (text) => {
   misc.writeServerLog(text);
 });
 ipcMain.on('focus', (e) => {
@@ -427,6 +490,62 @@ ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
   }
 });
 ipcMain.handle('openConfigure', openConfigure);
+
+// Register autoUpdater event listeners ONCE
+// For now only macOS is supported for electron auto-update
+if (process.platform === 'darwin') {
+  autoUpdater.on('checking-for-update', () => {
+    misc.writeServerLog('[Auto-Updater]: Checking for update...');
+  });
+
+  autoUpdater.on('update-available', () => {
+    setConfigAndRefreshMenu('update-available');
+    misc.writeServerLog('[Auto-Updater]: Update downloading...');
+    pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_downloading: true});
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    setConfigAndRefreshMenu('update-not-available');
+    misc.writeServerLog('[Auto-Updater]: No update available...');
+    pgAdminMainScreen.webContents.send('appUpdateNotifier', {no_update_available: true});
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    setConfigAndRefreshMenu('update-downloaded');
+    misc.writeServerLog('[Auto-Updater]: Update downloaded...');
+    pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_downloaded: true});
+  });
+
+  autoUpdater.on('error', (message) => {
+    setConfigAndRefreshMenu('error-close');
+    misc.writeServerLog(`[Auto-Updater]: ${message}`);
+    pgAdminMainScreen.webContents.send('appUpdateNotifier', {error: true, errMsg: message});
+  });
+
+  ipcMain.handle('sendDataForAppUpdate', (_, data) => {
+    if (data.check_for_updates) {
+      const ftpUrl = encodeURIComponent(`${data.auto_update_url}/pgadmin4-${data.upgrade_version}-${process.arch}.zip`);
+      let serverUrl = `http://127.0.0.1:${serverPort}/misc/auto_update/${data.current_version_int}/${data.upgrade_version}/${data.upgrade_version_int}/${data.product_name}/${ftpUrl}/?key=${UUID}`;      
+
+      try {
+        autoUpdater.setFeedURL({ url: serverUrl });
+        misc.writeServerLog('[Auto-Updater]: Initiating update check...');
+        autoUpdater.checkForUpdates();
+      } catch (err) {
+        misc.writeServerLog('[Auto-Updater]: Error setting autoUpdater feed URL: ' + err.message);
+        if (pgAdminMainScreen) {
+          pgAdminMainScreen.webContents.send('appUpdateNotifier', {error: true, errMsg: 'Failed to check for updates. Please try again later.'});
+        }
+        return;
+      }
+    }
+
+    if (data.install_update_now) {
+      /* Needed for force quit and install update and restart app*/
+      forceQuitAndInstallUpdate();
+    }
+  });
+}
 
 app.whenReady().then(() => {
   splashWindow = new BrowserWindow({
