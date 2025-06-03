@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #8665 <https://github.com/pgadmin-org/pgadmin4/issues/8665>`_ -  Supports JSON logging for gunicorn process within Docker.
 
 Housekeeping
 ************
