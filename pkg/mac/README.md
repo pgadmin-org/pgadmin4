@@ -31,11 +31,15 @@ Either build the sources or get them from macports or similar:
    *notarization.conf* and set the values accordingly. Note that notarization
    will fail if the code isn't signed.
    
-4. To build, go to pgAdmin4 source root directory and execute:
+4. To build only DMG file, go to pgAdmin4 source root directory and execute:
 
        make appbundle
+
+   To build both DMG and ZIP files, go to pgAdmin4 source root directory and execute:
+
+       make appbundle BUILD_OPTS="--zip"
        
    This will create the python virtual environment and install all the required
    python modules mentioned in the requirements file using pip, build the
-   runtime code and finally create the app bundle and the DMG in *./dist*
+   runtime code and finally create the app bundle and the DMG and/or ZIP in *./dist*
    directory.
