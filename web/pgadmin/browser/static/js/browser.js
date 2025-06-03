@@ -15,6 +15,7 @@ import { send_heartbeat, stop_heartbeat } from './heartbeat';
 import getApiInstance from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
+import {appUpdateNotifier} from './UpdateCheckNotify';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -272,12 +273,29 @@ define('pgadmin.browser', [
       checkMasterPassword(data, self.masterpass_callback_queue, cancel_callback);
     },
 
-    check_version_update: function() {
+    check_version_update: async function(trigger_update_check=false) {
       getApiInstance().get(
-        url_for('misc.upgrade_check')
+        url_for('misc.upgrade_check') + '?trigger_update_check=' + trigger_update_check
       ).then((res)=> {
         const data = res.data.data;
-        if(data.outdated) {
+        if (pgAdmin.server_mode == 'False' && (data.check_for_auto_updates && data.auto_update_url!=='')) {
+          // This is for desktop installers whose auto_update_url is mentioned in https://www.pgadmin.org/versions.json
+          const message = `${gettext('You are currently running version %s of %s, however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}`;
+          function downloadUpdate() {
+            window.electronUI?.sendDataForAppUpdate({
+              'check_for_updates': data.check_for_auto_updates,
+              'current_version':data.current_version,
+              'upgrade_version': data.upgrade_version,
+              'current_version_int':data.current_version_int,
+              'upgrade_version_int': data.upgrade_version_int,
+              'auto_update_url': data.auto_update_url,
+              'product_name': data.product_name,
+              'platform':data.platform,
+            });
+          }
+          appUpdateNotifier(message, 'warning', downloadUpdate, null, 'Update available', 'download_update');
+        } else if(data.outdated) {
+          //This is for server mode or auto-update not supported desktop installer or not mentioned auto_update_url
           pgAdmin.Browser.notifier.warning(
             `
             ${gettext('You are currently running version %s of %s, <br/>however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}
@@ -287,9 +305,14 @@ define('pgadmin.browser', [
             null
           );
         }
-
-      }).catch(function() {
-        // Suppress any errors
+        // If the user manually triggered a check for updates (trigger_update_check is true)
+        // and no update is available (data.outdated is false), show an info notification.
+        if (!data.outdated && trigger_update_check){
+          appUpdateNotifier('No update available.....', 'info', null, 10000);
+        }
+      }).catch((error)=>{
+        console.error('Error during version check', error);
+        pgAdmin.Browser.notifier.error(gettext(`${error.response?.data?.errormsg || error?.message}`));
       });
     },
 

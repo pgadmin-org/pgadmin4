@@ -21,7 +21,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.ajax import precondition_required, make_json_response, \
-    internal_server_error
+    internal_server_error, make_response
 from pgadmin.utils.heartbeat import log_server_heartbeat, \
     get_server_heartbeat, stop_server_heartbeat
 import config
@@ -32,6 +32,7 @@ import os
 import sys
 import ssl
 from urllib.request import urlopen
+from urllib.parse import unquote
 from pgadmin.settings import get_setting, store_setting
 
 MODULE_NAME = 'misc'
@@ -171,7 +172,7 @@ class MiscModule(PgAdminModule):
         return ['misc.ping', 'misc.index', 'misc.cleanup',
                 'misc.validate_binary_path', 'misc.log_heartbeat',
                 'misc.stop_heartbeat', 'misc.get_heartbeat',
-                'misc.upgrade_check']
+                'misc.upgrade_check', 'misc.auto_update']
 
     def register(self, app, options):
         """
@@ -343,15 +344,21 @@ def validate_binary_path():
                  methods=['GET'])
 @pga_login_required
 def upgrade_check():
+    trigger_update_check = (request.args.get('trigger_update_check', 'false')
+                            .lower() == 'true')
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
+    global platform
     ret = {
         "outdated": False,
     }
     if config.UPGRADE_CHECK_ENABLED:
         last_check = get_setting('LastUpdateCheck', default='0')
         today = time.strftime('%Y%m%d')
-        if int(last_check) < int(today):
+        # Check for updates if either:
+        # - The last check was before today (daily check), or
+        # - The user manually triggered an update check
+        if int(last_check) < int(today) or trigger_update_check:
             data = None
             url = '%s?version=%s' % (
                 config.UPGRADE_CHECK_URL, config.APP_VERSION)
@@ -387,15 +394,66 @@ def upgrade_check():
             if data is not None and \
                 data[config.UPGRADE_CHECK_KEY]['version_int'] > \
                     config.APP_VERSION_INT:
-                ret = {
-                    "outdated": True,
-                    "current_version": config.APP_VERSION,
-                    "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                        'version'],
-                    "product_name": config.APP_NAME,
-                    "download_url": data[config.UPGRADE_CHECK_KEY][
-                        'download_url']
-                }
+                if sys.platform == 'darwin':
+                    platform = 'macos'
+                elif sys.platform == 'win32':
+                    platform = 'windows'
+                if not config.SERVER_MODE:
+                    ret = {
+                        "outdated": True,
+                        "check_for_auto_updates":
+                            data[config.UPGRADE_CHECK_KEY]
+                            .get('auto_update_url') is not None,
+                        "auto_update_url": data[config.UPGRADE_CHECK_KEY][
+                            'auto_update_url'][platform]
+                            if data[config.UPGRADE_CHECK_KEY][
+                            'auto_update_url'] is not None else '',
+                        "platform":platform,
+                        "installer_type": config.UPGRADE_CHECK_KEY,
+                        "current_version": config.APP_VERSION,
+                        "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                            'version'],
+                        "current_version_int": config.APP_VERSION_INT,
+                        "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
+                            'version_int'],
+                        "product_name": config.APP_NAME,
+                        "download_url": data[config.UPGRADE_CHECK_KEY][
+                            'download_url']
+                    }
+                else:
+                    ret = {
+                        "outdated": True,
+                        "current_version": config.APP_VERSION,
+                        "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                            'version'],
+                        "product_name": config.APP_NAME,
+                        "download_url": data[config.UPGRADE_CHECK_KEY][
+                            'download_url']
+                    }
 
         store_setting('LastUpdateCheck', today)
     return make_json_response(data=ret)
+
+
+@blueprint.route("/auto_update/<current_version_int>/<latest_version>"
+                 "/<latest_version_int>/<product_name>/<path:ftp_url>/",
+                 methods=['GET'])
+@pgCSRFProtect.exempt
+def auto_update(current_version_int, latest_version, latest_version_int,
+                product_name, ftp_url):
+    """
+    Endpoint to provide auto-update information for the desktop app.
+
+    Returns update metadata (download URL and version name)
+    if a newer version is available. Responds with HTTP 204
+    if the current version is up to date.
+    """
+    if latest_version_int > current_version_int:
+        update_info = {
+            'url': unquote(ftp_url),
+            'name': f'{product_name} v{latest_version}',
+        }
+        current_app.logger.debug(update_info)
+        return make_response(response=update_info, status=200)
+    else:
+        return make_response(status=204)

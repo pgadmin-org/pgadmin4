@@ -385,6 +385,24 @@ _codesign_bundle() {
              -i org.pgadmin.pgadmin4 \
              --sign "${DEVELOPER_ID}" \
              "${BUNDLE_DIR}"
+
+    echo "Verifying the signature from bundle dir..."
+    codesign --verify --deep --verbose=4 "${BUNDLE_DIR}"
+}
+
+_create_zip() {
+    ZIP_NAME="${DMG_NAME%.dmg}.zip"
+    echo "ZIP_NAME: ${ZIP_NAME}"
+
+    echo "Compressing pgAdmin 4.app in bundle dir into ${ZIP_NAME}..."
+    ditto -c -k --sequesterRsrc --keepParent "${BUNDLE_DIR}" "${ZIP_NAME}"
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to create the ZIP file. Exiting."
+        exit 1
+    fi
+
+    echo "Successfully created ZIP file: ${ZIP_NAME}"
 }
 
 _create_dmg() {
@@ -426,8 +444,57 @@ _codesign_dmg() {
              "${DMG_NAME}"
 }
 
+_notarize_zip() {
+    if [ "${CODESIGN}" -eq 0 ]; then
+        return
+    fi
 
-_notarize_pkg() {
+    echo "Uploading ZIP for Notarization ..."
+    STATUS=$(xcrun notarytool submit "${ZIP_NAME}" \
+                              --team-id "${DEVELOPER_TEAM_ID}" \
+                              --apple-id "${DEVELOPER_USER}" \
+                              --password "${DEVELOPER_ASP}" 2>&1)
+
+    echo "${STATUS}"
+
+    # Get the submission ID
+    SUBMISSION_ID=$(echo "${STATUS}" | awk -F ': ' '/id:/ { print $2; exit; }')
+    echo "Notarization submission ID: ${SUBMISSION_ID}"
+
+    echo "Waiting for Notarization to be completed ..."
+    xcrun notarytool wait "${SUBMISSION_ID}" \
+                 --team-id "${DEVELOPER_TEAM_ID}" \
+                 --apple-id "${DEVELOPER_USER}" \
+                 --password "${DEVELOPER_ASP}"
+
+    # Print status information
+    REQUEST_STATUS=$(xcrun notarytool info "${SUBMISSION_ID}" \
+                 --team-id "${DEVELOPER_TEAM_ID}" \
+                 --apple-id "${DEVELOPER_USER}" \
+                 --password "${DEVELOPER_ASP}" 2>&1 | \
+            awk -F ': ' '/status:/ { print $2; }')
+
+    if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
+        echo "Notarization failed."
+        exit 1
+    fi
+
+    # Staple the notarization
+    echo "Stapling the notarization to the pgAdmin 4 app..."
+    if [[ "${ZIP_NAME##*.}" == "zip" ]]; then
+        xcrun stapler staple ${BUNDLE_DIR}
+        ditto -c -k --keepParent ${BUNDLE_DIR} ${ZIP_NAME}
+    fi
+
+    if [ $? != 0 ]; then
+            echo "ERROR: could not staple ${ZIP_NAME}"
+            exit 1
+    fi
+
+    echo "Notarization completed successfully."
+}
+
+_notarize_dmg() {
     if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi

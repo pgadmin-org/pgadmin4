@@ -1289,6 +1289,7 @@ const StyledNotifierMessageBox = styled(Box)(({theme}) => ({
     backgroundColor: theme.palette.warning.light,
     '& .FormFooter-iconWarning': {
       color: theme.palette.warning.main,
+      marginBottom: theme.spacing(8),
     },
   },
   '& .FormFooter-message': {

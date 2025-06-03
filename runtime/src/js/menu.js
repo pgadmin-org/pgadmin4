@@ -12,6 +12,7 @@ import { app, Menu, ipcMain, BrowserWindow, globalShortcut } from 'electron';
 const isMac = process.platform == 'darwin';
 const isLinux = process.platform == 'linux';
 let mainMenu;
+let cachedMenus;
 
 // Use to convert shortcut to accelerator for electron.
 function convertShortcutToAccelerator({ control, meta, shift, alt, key } = {}) {
@@ -29,7 +30,7 @@ function convertShortcutToAccelerator({ control, meta, shift, alt, key } = {}) {
   return [...mods, k].join('+');
 }
 
-function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
+function buildMenu(pgadminMenus, pgAdminMainScreen, configStore, callbacks) {
   const template = [];
 
   // bind all menus click event.
@@ -73,14 +74,43 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
   let menuFile = pgadminMenus.shift();
 
   if (isMac) {
-  // Remove About pgAdmin 4 from help menu and add it to the top of menuFile submenu.
+    if (configStore.get('update_downloaded')) {
+      //Add Restart to update menu item in the app menu if update is downloaded.
+      menuFile.submenu.unshift({
+        name:'mnu_restart_to_update',
+        id: 'mnu_restart_to_update',
+        label: 'Restart to Update...',
+        enabled: true,
+        priority: 998,
+        click: callbacks['restart_to_update'],
+      });
+    } else {
+      // Add Check for Updates menu item in the app menu.
+      menuFile.submenu.unshift({
+        name:'mnu_check_updates',
+        id: 'mnu_check_updates',
+        label: 'Check for Updates...',
+        enabled: true,
+        priority: 998,
+        click: callbacks['check_for_updates'],
+      });
+    }
+
+    // Disable the Check for updates menu item if update is downloading.
+    if(configStore.get('update_downloading')) {
+      menuFile.submenu.forEach((item)=> {
+        if (item.id == 'mnu_check_updates') item.enabled=false;
+      });
+    }
+
+    // Remove About pgAdmin 4 from help menu and add it to the top of menuFile submenu.
     const helpMenu = pgadminMenus.find((menu) => menu.name == 'help');
     if (helpMenu) {
       const aboutItem = helpMenu.submenu.find((item) => item.name === 'mnu_about');
       if (aboutItem) {
         helpMenu.submenu = helpMenu.submenu.filter((item) => item.name !== 'mnu_about');
         menuFile.submenu.unshift(aboutItem);
-        menuFile.submenu.splice(1, 0, { type: 'separator' });
+        menuFile.submenu.splice(2, 0, { type: 'separator' });
       }
     }
   }
@@ -136,17 +166,26 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
   return Menu.buildFromTemplate(template);
 }
 
-export function setupMenu(pgAdminMainScreen, callbacks={}) {
+function buildAndSetMenus(menus, pgAdminMainScreen, configStore, callbacks={}) {
+  mainMenu = buildMenu(menus, pgAdminMainScreen, configStore, callbacks);
+  if(isMac) {
+    Menu.setApplicationMenu(mainMenu);
+  } else {
+    pgAdminMainScreen.setMenu(mainMenu);
+  }
+}
+
+export function refreshMenus(pgAdminMainScreen, configStore, callbacks={}) {
+  buildAndSetMenus(cachedMenus, pgAdminMainScreen, configStore, callbacks);
+}
+
+export function setupMenu(pgAdminMainScreen, configStore, callbacks={}) {
   ipcMain.on('setMenus', (event, menus)=>{
-    mainMenu = buildMenu(menus, pgAdminMainScreen, callbacks);
     // this is important because the shortcuts are registered multiple times
     // when the menu is set multiple times using accelerators.
     globalShortcut.unregisterAll();
-    if(isMac) {
-      Menu.setApplicationMenu(mainMenu);
-    } else {
-      pgAdminMainScreen.setMenu(mainMenu);
-    }
+    cachedMenus = menus; //It will be used later for refreshing the menus
+    buildAndSetMenus(menus, pgAdminMainScreen, configStore, callbacks);
 
     ipcMain.on('enable-disable-menu-items', (event, menu, menuItem)=>{
       const menuItemObj = mainMenu.getMenuItemById(menuItem?.id);
