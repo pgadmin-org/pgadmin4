@@ -115,7 +115,13 @@ BINARY_PATHS = {
     ]
 }
 
-UTILITIES_ARRAY = ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']
+UTILITIES_ARRAY = ['pg_dumpall', 'pg_dump', 'pg_restore', 'psql']
+
+BG_PROCESS_ERROR_MSGS = {
+    3221225781: gettext('Unable to find a dll needed by the utility. Ensure '
+                        '.dll files needed by the utility are in the same '
+                        'folder as your executable.')
+}
 
 ENTER_EMAIL_ADDRESS = "Email address: "
 USER_NOT_FOUND = gettext("The specified user ID (%s) could not be found.")
