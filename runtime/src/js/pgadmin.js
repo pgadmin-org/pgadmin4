@@ -209,6 +209,13 @@ function setConfigAndRefreshMenu(event) {
   }
 }
 
+// Remove auto_update_enabled from configStore on app close or quit
+function cleanupAutoUpdateFlag() {
+  if (configStore.has('auto_update_enabled')) {
+    configStore.delete('auto_update_enabled');
+  }
+}
+
 // This function will force quit and install update and restart the app
 function forceQuitAndInstallUpdate() {
   // Disable beforeunload handlers
@@ -219,6 +226,7 @@ function forceQuitAndInstallUpdate() {
   pgAdminMainScreen.webContents.on('will-prevent-unload', preventUnload);
   // Set flag to show notification after restart
   configStore.set('update_installed', true);
+  cleanupAutoUpdateFlag();
   autoUpdater.quitAndInstall();
 }
 
@@ -419,6 +427,7 @@ function launchPgAdminWindow() {
   });
 
   pgAdminMainScreen.on('closed', ()=>{
+    cleanupAutoUpdateFlag();
     misc.cleanupAndQuitApp();
   });
 
@@ -522,8 +531,17 @@ if (process.platform === 'darwin') {
     pgAdminMainScreen.webContents.send('appUpdateNotifier', {error: true, errMsg: message});
   });
 
-  ipcMain.handle('sendDataForAppUpdate', (_, data) => {
-    if (data.check_for_updates) {
+  ipcMain.on('sendDataForAppUpdate', (_, data) => {
+    // Update auto-update enabled flag and refresh menus only if the setting is changed or not set
+    if (typeof data.check_for_updates !== 'undefined') {
+      const currentFlag = configStore.get('auto_update_enabled');
+      if (typeof currentFlag === 'undefined' || currentFlag !== data.check_for_updates) {
+      configStore.set('auto_update_enabled', data.check_for_updates);
+      refreshMenus(pgAdminMainScreen, configStore, menuCallbacks);
+      }
+    }
+
+    if (data.auto_update_url && data.upgrade_version && data.upgrade_version_int && data.current_version_int && data.product_name) {
       const ftpUrl = encodeURIComponent(`${data.auto_update_url}/pgadmin4-${data.upgrade_version}-${process.arch}.zip`);
       let serverUrl = `http://127.0.0.1:${serverPort}/misc/auto_update/${data.current_version_int}/${data.upgrade_version}/${data.upgrade_version_int}/${data.product_name}/${ftpUrl}/?key=${UUID}`;      
 

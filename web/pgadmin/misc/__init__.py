@@ -398,17 +398,21 @@ def upgrade_check():
                     platform = 'macos'
                 elif sys.platform == 'win32':
                     platform = 'windows'
-                if not config.SERVER_MODE:
+                # Determine if auto-update is available and construct the
+                # response accordingly. If running in desktop mode
+                # (not SERVER_MODE) and an auto-update URL is provided for the
+                # platform, return a response indicating that auto-update is
+                # available, including relevant update details.
+                # Otherwise, return a response indicating that auto-update is
+                # not available, but an update exists.
+                if not config.SERVER_MODE and data[config.UPGRADE_CHECK_KEY][
+                        'auto_update_url'][platform] != '':
                     ret = {
                         "outdated": True,
-                        "check_for_auto_updates":
-                            data[config.UPGRADE_CHECK_KEY]
-                            .get('auto_update_url') is not None,
+                        "check_for_auto_updates": True,
                         "auto_update_url": data[config.UPGRADE_CHECK_KEY][
-                            'auto_update_url'][platform]
-                            if data[config.UPGRADE_CHECK_KEY][
-                            'auto_update_url'] is not None else '',
-                        "platform":platform,
+                            'auto_update_url'][platform],
+                        "platform": platform,
                         "installer_type": config.UPGRADE_CHECK_KEY,
                         "current_version": config.APP_VERSION,
                         "upgrade_version": data[config.UPGRADE_CHECK_KEY][
@@ -423,6 +427,7 @@ def upgrade_check():
                 else:
                     ret = {
                         "outdated": True,
+                        "check_for_auto_updates": False,
                         "current_version": config.APP_VERSION,
                         "upgrade_version": data[config.UPGRADE_CHECK_KEY][
                             'version'],
@@ -442,7 +447,7 @@ def upgrade_check():
 def auto_update(current_version_int, latest_version, latest_version_int,
                 product_name, ftp_url):
     """
-    Endpoint to provide auto-update information for the desktop app.
+    Get auto-update information for the desktop app.
 
     Returns update metadata (download URL and version name)
     if a newer version is available. Responds with HTTP 204

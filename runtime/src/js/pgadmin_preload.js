@@ -32,7 +32,7 @@ contextBridge.exposeInMainWorld('electronUI', {
   downloadStreamSaveEnd: (...args) => ipcRenderer.send('download-stream-save-end', ...args),
   downloadBase64UrlData: (...args) => ipcRenderer.invoke('download-base64-url-data', ...args),
   downloadTextData: (...args) => ipcRenderer.invoke('download-text-data', ...args),
-  sendDataForAppUpdate: (data) => ipcRenderer.invoke('sendDataForAppUpdate', data),
+  sendDataForAppUpdate: (data) => ipcRenderer.send('sendDataForAppUpdate', data),
   appUpdateNotifier: (callback) => {
     ipcRenderer.removeAllListeners('appUpdateNotifier'); // Clean up previous listeners
     ipcRenderer.on('appUpdateNotifier', (_, data) => callback(data));
