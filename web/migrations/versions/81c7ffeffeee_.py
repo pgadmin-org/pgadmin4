@@ -35,7 +35,8 @@ def upgrade():
     qt_open_tab_setting = session.query(Preferences).filter_by(
         name='new_browser_tab').order_by(Preferences.id.desc()).first()
     debugger_tab_setting = session.query(Preferences).filter_by(
-        name='debugger_new_browser_tab').order_by(Preferences.id.desc()).first()
+        name='debugger_new_browser_tab').order_by(
+        Preferences.id.desc()).first()
     schema_diff_tab_setting = session.query(Preferences).filter_by(
         name='schema_diff_new_browser_tab').order_by(
         Preferences.id.desc()).first()

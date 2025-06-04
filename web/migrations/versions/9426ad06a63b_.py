@@ -33,7 +33,8 @@ def upgrade():
             "server", table_kwargs={'sqlite_autoincrement': True}) as batch_op:
         if context.get_impl().bind.dialect.name == "sqlite":
             batch_op.alter_column('id', autoincrement=True)
-        batch_op.add_column(sa.Column('shared_username', sa.String(64), nullable=True))
+        batch_op.add_column(sa.Column('shared_username', sa.String(64),
+                                      nullable=True))
 
 
 def downgrade():

@@ -1,5 +1,12 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: c62bcc14c3d6
 Revises: 1f0eddc8fc79
@@ -15,6 +22,7 @@ down_revision = '1f0eddc8fc79'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     # Add 'change_password' permission to all roles except 'Administrator'.
     meta = sa.MetaData()
@@ -26,11 +34,12 @@ def upgrade():
         (role_table.c.name != 'Administrator')
     ).values(
         permissions=sa.case(
-            (perm == None, 'change_password'),
+            (perm.is_(None), 'change_password'),
             (perm == '', 'change_password'),
             else_=perm + ',change_password'
         ))
     )
+
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

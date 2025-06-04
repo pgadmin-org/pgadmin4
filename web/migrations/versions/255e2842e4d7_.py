@@ -26,8 +26,9 @@ depends_on = None
 
 
 def upgrade():
-    with op.batch_alter_table("server",
-                               table_kwargs={'sqlite_autoincrement': True}) as batch_op:
+    with (op.batch_alter_table("server",
+                               table_kwargs={'sqlite_autoincrement': True})
+          as batch_op):
         if context.get_impl().bind.dialect.name == "sqlite":
             batch_op.alter_column('id', autoincrement=True)
         batch_op.add_column(sa.Column('is_adhoc', sa.Integer(),

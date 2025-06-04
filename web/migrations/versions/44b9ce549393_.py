@@ -49,6 +49,7 @@ def upgrade():
         table.update().values(prepare_threshold=5)
     )
 
+
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.
     pass
