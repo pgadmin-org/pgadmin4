@@ -48,7 +48,7 @@ class PgAdminPermissions:
         self.add_permission(
             AllPermissionCategories.object_explorer,
             AllPermissionTypes.object_register_server,
-            gettext("Register/remove server")
+            gettext("Register/Edit/remove server")
         )
         self.add_permission(
             AllPermissionCategories.tools,
