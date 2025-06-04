@@ -7,11 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/CloseRounded';
-import { DefaultButton, PgIconButton } from '../../../static/js/components/Buttons';
 import PropTypes from 'prop-types';
+import { DefaultButton, PgIconButton } from '../../../static/js/components/Buttons';
 import pgAdmin from 'sources/pgadmin';
 
 const StyledBox = styled(Box)(({theme}) => ({
