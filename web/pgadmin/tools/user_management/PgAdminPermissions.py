@@ -48,12 +48,12 @@ class PgAdminPermissions:
         self.add_permission(
             AllPermissionCategories.object_explorer,
             AllPermissionTypes.object_register_server,
-            gettext("Register/Edit/remove server")
+            gettext("Manage Server")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_query_tool,
-            gettext("Query tool")
+            gettext("Query Tool")
         )
         self.add_permission(
             AllPermissionCategories.tools,
@@ -63,32 +63,32 @@ class PgAdminPermissions:
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_psql_tool,
-            gettext("PSQL tool")
+            gettext("PSQL Tool")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_backup,
-            gettext("Backup tool (including server and globals)")
+            gettext("Backup Tool (including server and globals)")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_restore,
-            gettext("Restore tool")
+            gettext("Restore Tool")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_import_export_data,
-            gettext("Import/export data")
+            gettext("Import/Export Data")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_import_export_servers,
-            gettext("Import/export servers")
+            gettext("Import/Export Servers")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_search_objects,
-            gettext("Search objects")
+            gettext("Search Objects")
         )
         self.add_permission(
             AllPermissionCategories.tools,
@@ -98,32 +98,32 @@ class PgAdminPermissions:
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_schema_diff,
-            gettext("Schema diff")
+            gettext("Schema Diff")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_grant_wizard,
-            gettext("Grant wizard")
+            gettext("Grant Wizard")
         )
         self.add_permission(
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_erd_tool,
-            gettext("ERD tool")
+            gettext("ERD Tool")
         )
         self.add_permission(
             AllPermissionCategories.storage_manager,
             AllPermissionTypes.storage_add_folder,
-            gettext("Add folder")
+            gettext("Add Folder")
         )
         self.add_permission(
             AllPermissionCategories.storage_manager,
             AllPermissionTypes.storage_remove_folder,
-            gettext("Delete file/folder")
+            gettext("Delete File/Folder")
         )
         self.add_permission(
             AllPermissionCategories.miscellaneous,
             AllPermissionTypes.change_password,
-            gettext("Change password")
+            gettext("Change Password")
         )
 
     def add_permission(self, category: str, permission: str, label: str):
