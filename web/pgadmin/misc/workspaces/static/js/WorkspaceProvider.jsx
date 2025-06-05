@@ -75,16 +75,16 @@ export function WorkspaceProvider({children}) {
     pgAdmin.Browser.docker.currentWorkspace = newVal;
     if (newVal == WORKSPACES.DEFAULT) {
       setTimeout(() => {
-        pgAdmin.Browser.tree.selectNode(lastSelectedTreeItem.current, true, 'center');
+        pgAdmin.Browser.tree?.selectNode(lastSelectedTreeItem.current, true, 'center');
         lastSelectedTreeItem.current = null;
       }, 250);
     }  else {
       // Get the selected tree node and save it into the state variable.
-      let selItem = pgAdmin.Browser.tree.selected();
+      let selItem = pgAdmin.Browser.tree?.selected();
       if (selItem)
         lastSelectedTreeItem.current = selItem;
       // Deselect the node to disable the menu options.
-      pgAdmin.Browser.tree.deselect(selItem);
+      pgAdmin.Browser.tree?.deselect(selItem);
     }
     setCurrentWorkspace(newVal);
   };

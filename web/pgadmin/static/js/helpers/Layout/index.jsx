@@ -26,6 +26,7 @@ import usePreferences from '../../../../preferences/static/js/store';
 import _ from 'lodash';
 import UtilityView from '../../UtilityView';
 import ToolView from '../../ToolView';
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 
 function TabTitle({id, closable, defaultInternal}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
@@ -497,7 +498,9 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
         label="Layout Context Menu" />
       {enableToolEvents && <>
         <UtilityView dockerObj={layoutDockerObj} />
-        <ToolView dockerObj={layoutDockerObj} />
+        <ApplicationStateProvider>
+          <ToolView dockerObj={layoutDockerObj} />
+        </ApplicationStateProvider>
       </>}
     </LayoutDockerContext.Provider>
   );

@@ -10,7 +10,7 @@
 import { getRandomInt, hasBinariesConfiguration } from 'sources/utils';
 import { retrieveAncestorOfTypeServer } from 'sources/tree/tree_utils';
 import { generateTitle } from 'tools/sqleditor/static/js/sqleditor_title';
-import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import usePreferences,{ listenPreferenceBroadcast } from '../../../../preferences/static/js/store';
 import 'pgadmin.browser.keyboard';
 import pgWindow from 'sources/window';
@@ -25,7 +25,8 @@ import Theme from '../../../../static/js/Theme';
 import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
-
+import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
+import ToolErrorView from '../../../../static/js/ToolErrorView';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -103,35 +104,61 @@ export default class Psql {
     }
   }
 
-  openPsqlTool(data, treeIdentifier) {
+  openPsqlTool(_data, treeIdentifier, connectionInfo=null) {
+    let parentData = null;
+    let panelTitle = '';
+    if (connectionInfo){
+      parentData = {
+        server_group: {
+          _id: connectionInfo.sgid || 0
+        },
+        server: {
+          _id: connectionInfo.sid,
+          server_type: connectionInfo.server_type,
+          label: connectionInfo.server_name,
+          user: {
+            name: connectionInfo.user
+          }
+        },
+        database: {
+          _id: connectionInfo.did,
+          label: connectionInfo.db
+        },
+        schema: {
+          _id: connectionInfo.scid || null,
+        },
+        table: {
+          _id: connectionInfo.tid || null,
+        }
+      };
 
-    const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
-    if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
-      return;
-    }
+    }else{
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
+      if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
+        return;
+      }
 
-    const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
-    if (node === undefined || !node.getData()) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('PSQL Error'),
-        gettext('No object selected.')
-      );
-      return;
-    }
+      const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
+      if (node === undefined || !node.getData()) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('PSQL Error'),
+          gettext('No object selected.')
+        );
+        return;
+      }
 
-    const parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
+      parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
+      if(_.isUndefined(parentData.server)) {
+        pgAdmin.Browser.notifier.alert(
+          gettext('PSQL Error'),
+          gettext('Please select a server/database object.')
+        );
+        return;
+      }
 
-    if(_.isUndefined(parentData.server)) {
-      pgAdmin.Browser.notifier.alert(
-        gettext('PSQL Error'),
-        gettext('Please select a server/database object.')
-      );
-      return;
     }
 
     const transId = getRandomInt(1, 9999999);
-
-    let panelTitle = '';
     // Set psql tab title as per prefrences setting.
     let title_data = {
       'database': parentData.database ? _.unescape(parentData.database.label) : 'postgres' ,
@@ -139,6 +166,7 @@ export default class Psql {
       'server': parentData.server.label,
       'type': 'psql_tool',
     };
+
     let tab_title_placeholder = usePreferences.getState().getPreferencesForModule('browser').psql_tab_title_placeholder;
     panelTitle = generateTitle(tab_title_placeholder, title_data);
 
@@ -150,7 +178,7 @@ export default class Psql {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
-      {title: panelTitle, db: db_label},
+      {title: panelTitle, db: db_label, server_name: parentData.server.label, 'user': parentData.server.user.name },
       {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
@@ -180,23 +208,35 @@ export default class Psql {
     return [openUrl, pData.database._label];
   }
 
-
   async loadComponent(container, params) {
+    let panelDocker = pgWindow.pgAdmin.Browser.docker.psql_workspace;
+    if (pgWindow.pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT) {
+      panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
+    }
+
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ModalProvider>
-            <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-            <PsqlComponent params={params} pgAdmin={pgAdmin} />
-          </ModalProvider>
+          <ApplicationStateProvider>
+            <ModalProvider>
+              <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+              { params.error ?
+                <ToolErrorView 
+                  error={params.error}
+                  panelId={`${BROWSER_PANELS.PSQL_TOOL}_${params.trans_id}`}
+                  panelDocker={panelDocker}
+                /> :
+                <PsqlComponent 
+                  params={params} 
+                  pgAdmin={pgAdmin} />
+              }
+            </ModalProvider>
+          </ApplicationStateProvider>
         </PgAdminProvider>
       </Theme>
     );
   }
-
-
-
 }

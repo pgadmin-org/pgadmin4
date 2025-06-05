@@ -392,6 +392,17 @@ class QueryHistoryModel(db.Model):
     last_updated_flag = db.Column(db.String(), nullable=False)
 
 
+class ApplicationState(db.Model):
+    """Define the application state SQL table."""
+    __tablename__ = 'application_state'
+    uid = db.Column(db.Integer(), db.ForeignKey(USER_ID), nullable=False,
+                    primary_key=True)
+    id = db.Column(db.Integer(),nullable=False,primary_key=True)
+    connection_info = db.Column(MutableDict.as_mutable(types.JSON))
+    tool_name = db.Column(db.String(64), nullable=False)
+    tool_data = db.Column(PgAdminDbBinaryString())
+
+
 class Database(db.Model):
     """
     Define a Database.

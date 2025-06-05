@@ -38,6 +38,7 @@ import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
+import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -193,11 +194,11 @@ export default class ERDTool extends React.Component {
       },
       'linksUpdated': () => {
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -352,7 +353,16 @@ export default class ERDTool extends React.Component {
     done = await this.loadPrequisiteData();
     if(!done) return;
 
-    if(this.props.params.gen) {
+
+    if(this.props.params.sql_id){
+      let sqlValue = getToolData(this.props.params.sql_id);
+      if (sqlValue) {
+        this.diagram.deserialize(sqlValue);
+        this.diagram.clearSelection();
+        this.registerModelEvents();
+      }
+    }
+    else if(this.props.params.gen) {
       await this.loadTablesData();
     }
   }
@@ -829,6 +839,10 @@ export default class ERDTool extends React.Component {
     updated && this.diagram.fireEvent({}, 'nodesUpdated', true);
   }
 
+  serializeFile(){
+    return this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int);
+  }
+
   async initConnection() {
     this.setLoading(gettext('Initializing connection...'));
     this.setState({conn_status: CONNECT_STATUS.CONNECTING});
@@ -928,7 +942,7 @@ export default class ERDTool extends React.Component {
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
-          notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange}
+          notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange} connectionInfo={this.props.params}
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
@@ -958,6 +972,7 @@ ERDTool.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     gen: PropTypes.bool.isRequired,
+    sql_id: PropTypes.string,
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,

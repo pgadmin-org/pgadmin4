@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useContext, useCallback, useEffect, useMemo } from 'react';
+import React, {useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
@@ -25,6 +25,9 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 import { MODAL_DIALOGS } from '../QueryToolConstants';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
+import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 
 
 async function registerAutocomplete(editor, api, transId) {
@@ -64,9 +67,11 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
+
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
       startMarker = 0,
@@ -136,7 +141,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       cmObj.setCursor(errorLineNo, endMarker);
     }
   };
-
   const triggerExecution = (explainObject, macroSQL, executeCursor=false)=>{
     if(queryToolCtx.params.is_query_tool) {
       let external = null;
@@ -160,12 +164,27 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   };
 
+  const warnReloadFile = (fileName, sqlId, storage=null)=>{
+    queryToolCtx.modal.confirm(
+      gettext('Reload file?'),
+      gettext('The file has been modified by another program. Do you want to reload it and loose changes made in pgadmin?'),
+      function() {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+      },
+      function() {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
+      }
+    );
+  };
+
   useEffect(()=>{
     layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.QUERY && editor.current.focus();
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, triggerExecution);
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTE_CURSOR_WARNING, checkUnderlineQueryCursorWarning);
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, (result, executeCursor)=>{
@@ -189,7 +208,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current.setValue(res.data);
         //Check the file content for Trojan Source
         checkTrojanSource(res.data);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
         // Detect line separator from content and editor's EOL.
         const lineSep = editor.current?.detectEOL(res.data);
         // Update the EOL if it differs from the current editor EOL
@@ -197,7 +216,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         // Mark the editor content as clean
         editor.current?.markClean();
       }).catch((err)=>{
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false, storage);
         pgAdmin.Browser.notifier.error(parseApiError(err));
       });
     });
@@ -233,6 +252,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.execCommand(cmd);
       }
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_TO_EDITOR, (text)=>{
       editor.current?.setValue(text);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
@@ -241,6 +261,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current?.setCursor(editor.current.lineCount(), 0);
       }, 250);
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
       editor.current?.focus();
       let key = {
@@ -254,6 +275,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
       editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
@@ -261,6 +283,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
       let selection = true, sql = editor.current?.getSelection();
       let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
@@ -297,7 +320,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
       // Set the new EOL character in the editor.
       editor.current?.setEOL(lineSep);
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());    
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current?.isDirty());
     });
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
@@ -317,10 +340,24 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         editor.current.setCursor(lastCursorPos.current.line, lastCursorPos.current.ch);
       }
     };
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS, lastFocus);
     setTimeout(()=>{
       (queryToolCtx.params.is_query_tool|| queryToolCtx.preferences.view_edit_promotion_warning) && editor.current.focus();
     }, 250);
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, warnReloadFile);
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA, ()=>{
+      setSaveQtData(true);
+    });
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, (sqlId)=>{
+      let sqlValue = getToolData(sqlId);
+      if (sqlValue) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
+      }
+    });
   }, []);
 
   useEffect(()=>{
@@ -405,6 +442,11 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
+
+    if(isSaveToolDataEnabled('sqleditor') && editor.current.isDirty()){
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+    }
+
     if(!queryToolCtx.params.is_query_tool && editor.current.isDirty()){
       if(queryToolCtx.preferences.sqleditor.view_edit_promotion_warning){
         checkViewEditDataPromotion();
@@ -413,6 +455,15 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
     }
   }, []);
+
+
+  const [saveQtData, setSaveQtData] = useState(false);
+  useDelayDebounce(()=>{
+    let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
+      'open_file_name':queryToolCtx.current_file, 'is_editor_dirty': editor.current.isDirty() };
+    saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
+    setSaveQtData(false);
+  }, saveQtData, 500);
 
   const closePromotionWarning = (closeModal)=>{
     if(editor.current.isDirty()) {

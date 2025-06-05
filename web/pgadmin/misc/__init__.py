@@ -124,6 +124,19 @@ class MiscModule(PgAdminModule):
             )
         )
 
+        self.preference.register(
+            'user_interface', 'save_app_state',
+            gettext("Save the application state?"),
+            'boolean', True,
+            category_label=PREF_LABEL_USER_INTERFACE,
+            help_str=gettext(
+                'If set to True, pgAdmin will save the state of opened tools'
+                ' (such as Query Tool, PSQL, Schema Diff, and ERD), including'
+                ' any unsaved data. This data will be automatically restored'
+                ' in the event of an unexpected shutdown or browser refresh.'
+            )
+        )
+
         if not config.SERVER_MODE:
             self.preference.register(
                 'file_downloads', 'automatically_open_downloaded_file',

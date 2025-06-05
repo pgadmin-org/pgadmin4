@@ -292,7 +292,6 @@ class AuthSourceManager:
                 current_app.logger.debug(
                     "Authentication initiated via source: %s is failed." %
                     source.get_source_name())
-
         return status, msg
 
     def login(self):

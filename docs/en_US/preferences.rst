@@ -309,11 +309,20 @@ Use the fields on the *User Interface* panel to set the user interface related p
   this setting is False, meaning that Query Tool/PSQL tabs will open in the currently
   active workspace (either the default or the workspace selected at the time of opening).
 
+* When the *Save the application state?* option is enabled  the current state of various
+  tools—such as Query Tool, ERD, Schema Diff, and PSQL—will be saved in the encrypted
+  format.If the application is closed unexpectedly, the tab is accidentally closed,
+  or the page is refreshed, the saved state will be automatically restored for
+  each respective tool.**Note:**
+
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
   Currently we support Light, Dark, High Contrast and System theme. Selecting System option will follow
   your computer's settings.
+
+**Note:** Saving the application state will not preserve data for tool tabs opened in
+separate browser tabs when running in server mode..
 
 The Paths Node
 **************

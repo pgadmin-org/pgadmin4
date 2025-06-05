@@ -90,9 +90,10 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def _open_maintenance_dialogue(self):
         if self.test_level == 'table':
-            self.page.expand_tables_node("Server", self.server['name'],
-                                         self.server['db_password'],
-                                         self.database_name, 'public')
+            self.assertTrue(self.page.expand_tables_node(
+                "Server", self.server['name'], self.server['db_password'],
+                self.database_name, 'public'),
+                'Tree not expanded to the table node')
 
             table_node = self.page.check_if_element_exists_with_scroll(
                 TreeAreaLocators.table_node(self.table_name))

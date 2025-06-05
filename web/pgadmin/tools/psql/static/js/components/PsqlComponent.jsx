@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { Box, styled, useTheme } from '@mui/material';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
@@ -20,7 +20,7 @@ import { io } from 'socketio';
 import { copyToClipboard } from '../../../../../static/js/clipboard';
 import 'pgadmin.browser.keyboard';
 import gettext from 'sources/gettext';
-
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 const Root = styled(Box)(()=>({
   width: '100%',
@@ -129,14 +129,8 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
 function psql_Addon(term) {
   const fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
-
   term.loadAddon(new WebLinksAddon());
-
   term.loadAddon(new SearchAddon());
-
-  fitAddon.fit();
-  term.resize(15, 50);
-  fitAddon.fit();
   return fitAddon;
 }
 
@@ -152,32 +146,29 @@ export default function  PsqlComponent({ params, pgAdmin }) {
   const theme = useTheme();
   const termRef = React.useRef(null);
   const containerRef = React.useRef(null);
+  const fitAddonRef = useRef(null);
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
 
-  const initializePsqlTool = (params)=>{
+  const initializePsqlTool = useCallback((params)=>{
     const term = new Terminal({
       cursorBlink: true,
       scrollback: 5000,
     });
     /* Addon for fitAddon, webLinkAddon, SearchAddon */
-    const fitAddon = psql_Addon(term);
-
+    fitAddonRef.current  = psql_Addon(term);
+    /*  Open terminal */
     term.open(containerRef.current);
-
     /*  Socket */
     const socket = psql_socket();
 
-    psql_socket_io(socket, params.is_enable, params.sid, params.db, params.server_type, fitAddon, term, params.role);
+    psql_socket_io(socket, params.is_enable, params.sid, params.db, params.server_type, fitAddonRef.current, term, params.role);
 
     psql_terminal_io(term, socket, params.platform, pgAdmin);
 
-    /*  Set terminal size */
-    setTimeout(function(){
-      socket.emit('resize', {'cols': term.cols, 'rows': term.rows});
-    }, 1000);
     return [term, socket];
-  };
+  }, [params, pgAdmin]);;
 
-  const setTheme = ()=>{
+  const setTheme = useCallback(()=>{
     if(termRef.current) {
       termRef.current.options.theme = {
         background: theme.palette.background.default,
@@ -187,29 +178,42 @@ export default function  PsqlComponent({ params, pgAdmin }) {
         selectionBackground: `${theme.otherVars.editor.selectionBg}`,
       };
     }
-  };
+  }, [theme]);
 
   useEffect(()=>{
     const [term, socket] = initializePsqlTool(params);
     termRef.current = term;
-
     setTheme();
 
-    termRef.current.focus();
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          fitAddonRef.current?.fit();
+          socket.emit('resize', { cols: term.cols, rows: term.rows});
+          term.focus();
+          observer.disconnect(); // Only do this once
+        }
+      }
+    });
 
-    termRef.current.focus();
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    if(isSaveToolDataEnabled('psql')){
+      saveToolData('psql', params,  params.trans_id, null);
+    }
 
     return () => {
       term.dispose();
       socket.disconnect();
+      observer.disconnect();
     };
-
   }, []);
 
   useEffect(()=>{
     setTheme();
   },[theme]);
-
 
   return (
     <Root ref={containerRef}>
@@ -224,7 +228,8 @@ PsqlComponent.propTypes = {
     db: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     server_type: PropTypes.string,
     role: PropTypes.string,
-    platform: PropTypes.string
+    platform: PropTypes.string,
+    trans_id: PropTypes.number
   }),
   pgAdmin: PropTypes.object.isRequired,
 };

@@ -42,11 +42,11 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error, service_unavailable
+    success_return, internal_server_error, service_unavailable, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
-from pgadmin.browser.utils import underscore_unescape, underscore_escape
+from pgadmin.browser.utils import underscore_escape
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
@@ -146,7 +146,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_new_connection_user',
             'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
-            'sqleditor.connect_server',
+            'sqleditor.connect_server'
         ]
 
     def on_logout(self):
@@ -325,38 +325,47 @@ def panel(trans_id):
     params['fgcolor'] = None
 
     s = Server.query.filter_by(id=int(params['sid'])).first()
-    if s.shared and s.user_id != current_user.id:
-        # Import here to avoid circular dependency
-        from pgadmin.browser.server_groups.servers import ServerModule
-        shared_server = ServerModule.get_shared_server(s, params['sgid'])
-        s = ServerModule.get_shared_server_properties(s, shared_server)
+    if s:
+        if s.shared and s.user_id != current_user.id:
+            # Import here to avoid circular dependency
+            from pgadmin.browser.server_groups.servers import ServerModule
+            shared_server = ServerModule.get_shared_server(s, params['sgid'])
+            s = ServerModule.get_shared_server_properties(s, shared_server)
 
-    if s and s.bgcolor:
-        # If background is set to white means we do not have to change
-        # the title background else change it as per user specified
-        # background
-        if s.bgcolor != '#ffffff':
-            params['bgcolor'] = s.bgcolor
-        params['fgcolor'] = s.fgcolor or 'black'
+        if s and s.bgcolor:
+            # If background is set to white means we do not have to change
+            # the title background else change it as per user specified
+            # background
+            if s.bgcolor != '#ffffff':
+                params['bgcolor'] = s.bgcolor
+            params['fgcolor'] = s.fgcolor or 'black'
 
-    params['server_name'] = underscore_escape(s.name)
-    if 'user' not in params:
-        params['user'] = underscore_escape(s.username)
-    if 'role' not in params and s.role:
-        params['role'] = underscore_escape(s.role)
-    params['layout'] = get_setting('SQLEditor/Layout')
-    params['macros'] = get_user_macros()
-    params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
-    params['title'] = underscore_escape(params['title'])
-    params['selectedNodeInfo'] = underscore_escape(params['selectedNodeInfo'])
-    if 'database_name' in params:
-        params['database_name'] = underscore_escape(params['database_name'])
+        params['server_name'] = underscore_escape(s.name)
+        if 'user' not in params:
+            params['user'] = underscore_escape(s.username)
+        if 'role' not in params and s.role:
+            params['role'] = underscore_escape(s.role)
+        params['layout'] = get_setting('SQLEditor/Layout')
+        params['macros'] = get_user_macros()
+        params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+        params['title'] = underscore_escape(params['title'])
+        params['selectedNodeInfo'] = (
+            underscore_escape(params['selectedNodeInfo']))
+        if 'database_name' in params:
+            params['database_name'] = (
+                underscore_escape(params['database_name']))
 
-    return render_template(
-        "sqleditor/index.html",
-        title=underscore_escape(params['title']),
-        params=json.dumps(params),
-    )
+        return render_template(
+            "sqleditor/index.html",
+            title=underscore_escape(params['title']),
+            params=json.dumps(params),
+        )
+    else:
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "sqleditor/index.html",
+            title=None,
+            params=json.dumps(params))
 
 
 @blueprint.route(
@@ -655,6 +664,7 @@ def close(trans_id):
             # session variable.
             grid_data.pop(str(trans_id), None)
             session['gridData'] = grid_data
+
         except Exception as e:
             current_app.logger.error(e)
             return internal_server_error(errormsg=str(e))

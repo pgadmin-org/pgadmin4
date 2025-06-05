@@ -10,6 +10,7 @@ import json
 import os
 import select
 import struct
+
 import config
 import re
 import subprocess
@@ -23,12 +24,11 @@ from flask_security import current_user
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 from pgadmin.authenticate import socket_login_required
-
+from pgadmin.model import Server
 
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
@@ -81,32 +81,37 @@ def panel(trans_id):
     Return panel template for PSQL tools.
     :param trans_id:
     """
-    params = {
-        'trans_id': trans_id,
-        'title': request.form['title']
-    }
-    if 'sid_soid_mapping' not in app.config:
-        app.config['sid_soid_mapping'] = dict()
+    params = {'trans_id': trans_id,
+              'is_enable':config.ENABLE_PSQL,
+              'platform': _platform
+              }
     if request.args:
         params.update({k: v for k, v in request.args.items()})
+    if request.form:
+        for key, val in request.form.items():
+            params[key] = val
 
-    data = _get_database_role(params['sid'], params['did'])
+    params['title'] = underscore_escape(params['title'])
+    if 'user' in params:
+        params['user'] = underscore_escape(params['user'])
 
-    params = {
-        'sid': params['sid'],
-        'db': underscore_escape(data['db_name']),
-        'server_type': params['server_type'],
-        'is_enable': config.ENABLE_PSQL,
-        'title': underscore_escape(params['title']),
-        'theme': params['theme'],
-        'o_db_name': underscore_escape(data['db_name']),
-        'role': underscore_escape(data['role']),
-        'platform': _platform
-    }
+    if 'sid_soid_mapping' not in app.config:
+        app.config['sid_soid_mapping'] = dict()
 
-    set_env_variables(is_win=_platform == 'win32')
-    return render_template("psql/index.html",
-                           params=json.dumps(params))
+    s = Server.query.filter_by(id=int(params['sid'])).first()
+    if s:
+        data = _get_database_role(params['sid'], params['did'])
+        params['db'] = underscore_escape(data['db_name']) \
+            if 'db_name' in data else 'postgres'
+        params['role'] = underscore_escape(data['role'])
+        set_env_variables(is_win=_platform == 'win32')
+        return render_template("psql/index.html",
+                               params=json.dumps(params))
+    else:
+        params['error'] = 'Server did not find.'
+        return render_template(
+            "psql/index.html",
+            params=json.dumps(params))
 
 
 def set_env_variables(is_win=False):
@@ -618,7 +623,8 @@ def _get_database_role(sid, did):
         db_name = conn.db
         role = manager.role if manager.role else None
         return {'db_name': db_name, 'role': role}
-    except Exception:
+    except Exception as e:
+        print(str(e))
         return None
 
 

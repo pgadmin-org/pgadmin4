@@ -13,6 +13,9 @@ import { usePgAdmin } from './PgAdminProvider';
 import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
+import { LAYOUT_EVENTS } from './helpers/Layout';
+import { deleteToolData } from '../../settings/static/ApplicationStateProvider';
+
 
 function ToolForm({actionUrl, params}) {
   const formRef = useRef(null);
@@ -56,6 +59,11 @@ export default function ToolView({dockerObj}) {
         // Handler here will return which layout instance the tool should go in
         // case of workspace layout.
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
+        const deregisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
+          deleteToolData(panelId, closePanelId);
+          deregisterRemove();
+        });
+
         handler.focus();
         handler.docker.openTab({
           id: panelId,
