@@ -355,6 +355,10 @@ def create_import_export_job(sid):
     # Remove unwanted keys from data
     update_data_for_import_export(data)
 
+    # Replace "\n" with " " as it is not working on Windows.
+    if 'query' in data:
+        data['query'] = data['query'].replace("\n", " ")
+
     # Create the COPY FROM/TO  from template
     temp_path = 'import_export/sql/#{0}#/cmd.sql'.format(manager.version)
     query = render_template(temp_path, conn=conn, data=data, columns=cols,

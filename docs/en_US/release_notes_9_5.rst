@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #1926 <https://github.com/pgadmin-org/pgadmin4/issues/1926>`_ -  Add a new permission to allow disabling "Change Password" feature for a pgAdmin role.
+  | `Issue #3319 <https://github.com/pgadmin-org/pgadmin4/issues/3319>`_ -  Added support to preserve the workspace, query windows, and pgAdmin state during an abrupt shutdown or restart.
   | `Issue #8665 <https://github.com/pgadmin-org/pgadmin4/issues/8665>`_ -  Supports JSON logging for gunicorn process within Docker.
 
 Housekeeping
@@ -34,3 +35,4 @@ Bug fixes
   | `Issue #7466 <https://github.com/pgadmin-org/pgadmin4/issues/7466>`_ -  Fixed an issue where utilities such as pg_dump and pg_restore failed to log error messages when required dependency files were missing.
   | `Issue #8032 <https://github.com/pgadmin-org/pgadmin4/issues/8032>`_ -  Fixed an issue where the Schema Diff Tool incorrectly reported differences due to variations in the order of the privileges.
   | `Issue #8691 <https://github.com/pgadmin-org/pgadmin4/issues/8691>`_ -  Fixed an issue in the query tool where using multiple cursors to copy text resulted in only the first line being copied.
+  | `Issue #8809 <https://github.com/pgadmin-org/pgadmin4/issues/8809>`_ -  Fixed an issue where data export using a query failed when the query contained a newline character.
