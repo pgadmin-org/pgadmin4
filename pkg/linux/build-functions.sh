@@ -63,7 +63,7 @@ _create_python_virtualenv() {
     cd "usr/${APP_NAME}" || exit
 
     # Create the blank venv
-    "${SYSTEM_PYTHON_PATH}" -m venv venv
+    "${SYSTEM_PYTHON_PATH}" -m venv --system-site-packages venv
     # shellcheck disable=SC1091
     . venv/bin/activate
 
