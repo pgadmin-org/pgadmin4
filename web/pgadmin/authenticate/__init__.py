@@ -274,9 +274,6 @@ class AuthSourceManager:
         """Authenticate through all the sources."""
         status = False
         msg = None
-        username = self.form.data['email']
-        users = User.query.filter_by(username=username).all()
-
         for src in self.auth_sources:
             source = get_auth_sources(src)
             self.set_source(source)

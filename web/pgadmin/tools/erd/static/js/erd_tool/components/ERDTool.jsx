@@ -194,11 +194,11 @@ export default class ERDTool extends React.Component {
       },
       'linksUpdated': () => {
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int));
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int));
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -837,6 +837,10 @@ export default class ERDTool extends React.Component {
   onNoteClose(updated) {
     this.setState({note_open: false});
     updated && this.diagram.fireEvent({}, 'nodesUpdated', true);
+  }
+
+  serializeFile(){
+    return this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int);
   }
 
   async initConnection() {

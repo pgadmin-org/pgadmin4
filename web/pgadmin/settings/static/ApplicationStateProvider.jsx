@@ -12,10 +12,9 @@ import getApiInstance from '../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import { getBrowser } from '../../static/js/utils';
 import usePreferences from '../../preferences/static/js/store';
-import { usePgAdmin } from '../../static/js/PgAdminProvider';
+import pgAdmin from 'sources/pgadmin';
 
 const ApplicationStateContext = React.createContext();
-
 export const useApplicationState = ()=>useContext(ApplicationStateContext);
 
 export function getToolData(localStorageId){
@@ -24,9 +23,22 @@ export function getToolData(localStorageId){
   return toolDataJson;
 }
 
+export function deleteToolData(panelId, closePanelId){
+  const saveAppState = usePreferences.getState().getPreferencesForModule('misc')?.save_app_state;
+  if(saveAppState){
+    if(panelId == closePanelId){
+      let api = getApiInstance();
+      api.delete(
+        url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
+      ).then(()=> { /* Sonar Qube */}).catch(function(error) {
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      });
+    }  
+  }
+};
+
 export function ApplicationStateProvider({children}){
   const preferencesStore = usePreferences();
-  const pgAdmin = usePgAdmin();
   const saveAppState = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
   const openNewTab = preferencesStore?.getPreferencesForModule('browser')?.new_browser_tab_open;
 
@@ -43,7 +55,7 @@ export function ApplicationStateProvider({children}){
     ).catch((error)=>{console.error(error);});
   };
 
-  const enableSaveToolData = (toolName)=>{
+  const isSaveToolDataEnabled = (toolName)=>{
     let toolMapping = {'sqleditor': 'qt', 'schema_diff': 'schema_diff', 'psql': 'psql_tool', 'ERD': 'erd_tool'};
     if(openNewTab?.includes(toolMapping[toolName])){
       return saveAppState && getBrowser().name == 'Electron';
@@ -51,21 +63,9 @@ export function ApplicationStateProvider({children}){
     return saveAppState;
   };
 
-  const deleteToolData = (panelId, closePanelId) =>{
-    if(panelId == closePanelId){
-      let api = getApiInstance();
-      api.delete(
-        url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
-      ).then(()=> { /* Sonar Qube */}).catch(function(error) {
-        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-      });
-    }      
-  };
-
   const value = useMemo(()=>({
     saveToolData,
-    enableSaveToolData,
-    deleteToolData
+    isSaveToolDataEnabled,
   }), []);
 
   return <ApplicationStateContext.Provider value={value}>

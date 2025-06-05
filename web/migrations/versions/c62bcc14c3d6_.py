@@ -40,6 +40,16 @@ def upgrade():
         ))
     )
 
+    op.create_table(
+        'application_state',
+        sa.Column('uid', sa.Integer(), nullable=False),
+        sa.Column('id', sa.Integer()),
+        sa.Column('connection_info', sa.JSON()),
+        sa.Column('tool_name', sa.String(length=64)),
+        sa.Column('tool_data', sa.String()),
+        sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('id', 'uid'))
+
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

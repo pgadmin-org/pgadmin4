@@ -11,12 +11,12 @@
 import os
 import json
 
-from flask import Response, request, render_template, url_for, current_app
+from flask import Response, request, render_template, current_app
 from flask_babel import gettext
 from flask_login import current_user
 
 from pgadmin.user_login_check import pga_login_required
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, get_complete_file_path
 from pgadmin.utils.ajax import make_json_response, bad_request,\
     success_return, internal_server_error
 from pgadmin.utils.menu import MenuItem
@@ -26,9 +26,6 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from .utils import get_dialog_type, get_file_type_setting
 from cryptography.fernet import Fernet
 import hashlib
-from urllib.parse import unquote
-from pgadmin.utils.preferences import Preferences
-from pgadmin.utils import get_storage_directory
 
 MODULE_NAME = 'settings'
 
@@ -284,8 +281,7 @@ def save_application_state():
         if 'connection_info' in data else None
     if ('open_file_name' in connection_info and
             connection_info['open_file_name']):
-        file_path = get_file_path(connection_info['open_file_name'],
-                                  connection_info['storage'])
+        file_path = get_complete_file_path(connection_info['open_file_name'])
         connection_info['last_saved_file_hash'] = (
             get_last_saved_file_hash(file_path, trans_id))
 
@@ -323,7 +319,7 @@ def get_last_saved_file_hash(file_path, trans_id):
             last_saved_file_hash = connection_info['last_saved_file_hash']
 
     if file_hash_update_require:
-        last_saved_file_hash = compute_sha256_large_file(file_path)
+        last_saved_file_hash = compute_md5_hash_file(file_path)
 
     return last_saved_file_hash
 
@@ -348,8 +344,8 @@ def get_application_state():
         connection_info = row.connection_info
         if ('open_file_name' in connection_info and
                 connection_info['open_file_name']):
-            file_path = get_file_path(
-                connection_info['open_file_name'], connection_info['storage'])
+            file_path = get_complete_file_path(
+                connection_info['open_file_name'])
             file_deleted = False if os.path.exists(file_path) else True
             connection_info['file_deleted'] = file_deleted
 
@@ -372,31 +368,6 @@ def get_application_state():
             'result': res
         }
     )
-
-
-def get_file_path(file_name, storage):
-
-    file_path = unquote(file_name)
-
-    # get the current storage from request if available
-    # or get it from last_storage preference.
-    if storage:
-        storage_folder = storage
-    else:
-        storage_folder = Preferences.module('file_manager').preference(
-            'last_storage').get()
-
-    # retrieve storage directory path
-    storage_manager_path = get_storage_directory(
-        shared_storage=storage_folder)
-
-    if storage_manager_path:
-        # generate full path of file
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
-    return file_path
 
 
 @blueprint.route(
@@ -439,20 +410,8 @@ def delete_tool_data(trans_id=None):
         return False, str(e)
 
 
-def compute_sha256_large_data_in_memory(data, chunk_size=8192):
-    """Hash large data (in-memory) by processing in chunks."""
-    md5_hash = hashlib.md5()
-    # Process data in 8 KB chunks
-    string_data = json.loads(data)
-    for i in range(0, len(string_data), chunk_size):
-        chunk = string_data[i:i + chunk_size]
-        md5_hash.update(chunk.encode("utf-8"))
-
-    return md5_hash.hexdigest()
-
-
-def compute_sha256_large_file(file_path, chunk_size=8192):
-    """Compute SHA-256 hash for large files by reading in chunks."""
+def compute_md5_hash_file(file_path, chunk_size=8192):
+    """Compute md5 hash for large files by reading in chunks."""
     md5_hash = hashlib.md5()
 
     # Open the file in binary mode
@@ -465,7 +424,7 @@ def compute_sha256_large_file(file_path, chunk_size=8192):
 
 
 def check_external_file_changes(file_path, last_saved_file_hash):
-    current_file_hash = compute_sha256_large_file(file_path)
+    current_file_hash = compute_md5_hash_file(file_path)
     if current_file_hash != last_saved_file_hash:
         return True
     return False

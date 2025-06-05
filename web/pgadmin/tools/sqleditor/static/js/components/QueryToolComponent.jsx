@@ -174,9 +174,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     },
     is_new_tab: window.location == window.parent?.location,
     is_visible: true,
-    manual_panel_close: true,
     current_file: null,
-    selected_storage: params?.storage, 
     obtaining_conn: true,
     connected: false,
     connected_once: false,
@@ -218,8 +216,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
   const modal = useModal();
-  const {enableSaveToolData} = useApplicationState();
-  const save_app_state = enableSaveToolData('sqleditor');
+  const {isSaveToolDataEnabled} = useApplicationState();
 
   /* Connection status poller */
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
@@ -355,13 +352,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(qtState.params.file_deleted != 'true'){
           if(qtState.params.external_file_changes == 'true'){
             loadSqlFromLocalStorage = false;
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId, qtState.params?.storage); 
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
           }else{
             eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
           }
         }
       }
-      //eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
     }
     if(loadSqlFromLocalStorage) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
     setQtStatePartial({ editor_disabled: false });
@@ -594,20 +590,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   useEffect(()=>{
-    const fileDone = (fileName, success=true, storage=null)=>{
+    const fileDone = (fileName, success=true)=>{
       if(success) {
-        if(storage){
-          setQtStatePartial({
-            selected_storage: storage
-          });
-        }
         setQtStatePartial({
           current_file: fileName
         });
         isDirtyRef.current = false;
         setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
         
-        if(save_app_state)eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
+        if(isSaveToolDataEnabled('sqleditor'))eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };
@@ -637,8 +628,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
           };
-          pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName, storage);
+          pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
           }, null, modal);
         }
       }],
@@ -931,7 +922,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
-    selected_storage: qtState.selected_storage,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
@@ -962,7 +952,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file, qtState.selected_storage]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file]);
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,

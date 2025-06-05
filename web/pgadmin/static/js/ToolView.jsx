@@ -14,7 +14,7 @@ import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
 import { LAYOUT_EVENTS } from './helpers/Layout';
-import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
+import { deleteToolData } from '../../settings/static/ApplicationStateProvider';
 
 
 function ToolForm({actionUrl, params}) {
@@ -40,7 +40,6 @@ ToolForm.propTypes = {
 
 export default function ToolView({dockerObj}) {
   const pgAdmin = usePgAdmin();
-  const {deleteToolData} = useApplicationState();
 
   useEffect(()=>{
     pgAdmin.Browser.Events.on('pgadmin:tool:show', (panelId, toolUrl, formParams, tabParams, newTab)=>{

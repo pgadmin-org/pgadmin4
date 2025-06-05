@@ -118,7 +118,7 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
-  const {saveToolData, enableSaveToolData} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
   const [oldSchemaDiffData, setOldSchemaDiffData] = useState([]);
 
   useEffect(() => {
@@ -284,8 +284,7 @@ export function SchemaDiffCompare({ params }) {
         gettext('Please select the different source and target.'));
     } else {
 
-      const save_app_state = enableSaveToolData('schema_diff');
-      if(save_app_state){
+      if(isSaveToolDataEnabled('schema_diff')){
         let toolData =  [
           { diff_type: TYPE.SOURCE, selectedSourceSid: sourceData.sid, selectedSourceDid:sourceData.did, selectedSourceScid: sourceData.scid},
           { diff_type: TYPE.TARGET, selectedTargetSid:targetData.sid, selectedTargetDid:targetData.did, selectedTargetScid:targetData.scid },

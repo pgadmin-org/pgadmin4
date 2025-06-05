@@ -10,7 +10,6 @@ import HTMLReactParse from 'html-react-parser';
 const StyledBox = styled(Box)(({theme}) => ({
   color: theme.palette.text.primary,
   margin: '24px auto 12px',
-  fontSize: '0.8rem',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

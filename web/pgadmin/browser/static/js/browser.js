@@ -306,20 +306,17 @@ define('pgadmin.browser', [
         if(res.data.success && res.data.data.result.length > 0){
           _.each(res.data.data.result, function(toolState){
             let toolNme = toolState.tool_name;
-            let toolData = toolState.tool_data;
             let toolDataId = `${toolNme}-${getRandomInt(1, 9999999)}`;
             let connectionInfo = toolState.connection_info;
+            localStorage.setItem(toolDataId, toolState.tool_data);
 
             if (toolNme == 'sqleditor'){
-              localStorage.setItem(toolDataId, toolData);
               showQueryTool.relaunchSqlTool(connectionInfo, toolDataId);
             }else if(toolNme == 'psql'){
               pgAdmin.Tools.Psql.openPsqlTool(null, null, connectionInfo);
             }else if(toolNme == 'ERD'){
-              localStorage.setItem(toolDataId, toolData);
               pgAdmin.Tools.ERD.showErdTool(null, null, false, connectionInfo, toolDataId);
             }else if(toolNme == 'schema_diff'){
-              localStorage.setItem(toolDataId, toolData);
               pgAdmin.Tools.SchemaDiff.launchSchemaDiff(toolDataId);
             }
           });

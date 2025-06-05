@@ -64,7 +64,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   });
   const [showDetails, setShowDetails] = useState(true);
 
-  const {saveToolData, enableSaveToolData} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
   const sqlMenuRef = React.useRef(null);
@@ -134,10 +134,9 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
         setDisableButton('drop-table', !selected);
       }],
       [ERD_EVENTS.DIRTY, (isDirty, data)=>{
-        const save_app_state = enableSaveToolData('ERD');
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
-        if(isDirty && save_app_state){
+        if(isDirty && isSaveToolDataEnabled('ERD')){
           setSaveERDData(data);
         }
       }],

@@ -67,11 +67,10 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
-  const {saveToolData, enableSaveToolData} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
   const preferencesStore = usePreferences();
   const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
-  const save_app_state = enableSaveToolData('sqleditor');
 
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
@@ -222,16 +221,16 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       });
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName, storage)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName)=>{
       queryToolCtx.api.post(url_for('sqleditor.save_file'), {
         'file_name': decodeURI(fileName),
         'file_content': editor.current.getValue(false, true),
       }).then(()=>{
         editor.current.markClean();
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true, storage);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true);
         pgAdmin.Browser.notifier.success(gettext('File saved successfully.'));
       }).catch((err)=>{
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false, storage);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
     });
@@ -444,7 +443,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
 
-    if(save_app_state && editor.current.isDirty()){
+    if(isSaveToolDataEnabled('sqleditor') && editor.current.isDirty()){
       eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
     }
 
@@ -461,7 +460,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const [saveQtData, setSaveQtData] = useState(false);
   useDelayDebounce(()=>{
     let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
-      'open_file_name':queryToolCtx.current_file, 'storage': queryToolCtx.selected_storage, 'is_editor_dirty': editor.current.isDirty() };
+      'open_file_name':queryToolCtx.current_file, 'is_editor_dirty': editor.current.isDirty() };
     saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
     setSaveQtData(false);
   }, saveQtData, 500);

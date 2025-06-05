@@ -147,7 +147,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
   const termRef = React.useRef(null);
   const containerRef = React.useRef(null);
   const fitAddonRef = useRef(null);
-  const {saveToolData, enableSaveToolData} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
 
   const initializePsqlTool = useCallback((params)=>{
     const term = new Terminal({
@@ -200,8 +200,7 @@ export default function  PsqlComponent({ params, pgAdmin }) {
       observer.observe(containerRef.current);
     }
 
-    const saveAppState = enableSaveToolData('psql');
-    if(saveAppState){
+    if(isSaveToolDataEnabled('psql')){
       saveToolData('psql', params,  params.trans_id, null);
     }
 
