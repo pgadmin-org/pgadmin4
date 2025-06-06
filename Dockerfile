@@ -50,7 +50,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
     yarn set version berry && \
-    yarn set version 3 && \
+    yarn set version 4 && \
     yarn install && \
     yarn run bundle && \
     rm -rf node_modules \

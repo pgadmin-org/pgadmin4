@@ -177,7 +177,7 @@ _build_runtime() {
     # Install the runtime node_modules
     pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
         yarn set version berry
-        yarn set version 3
+        yarn set version 4
         yarn plugin import workspace-tools
         yarn workspaces focus --production
 
@@ -225,7 +225,7 @@ _copy_code() {
 
     pushd "${SOURCEDIR}/web" > /dev/null || exit
         yarn set version berry
-        yarn set version 3
+        yarn set version 4
         yarn install
         yarn run bundle
     popd > /dev/null || exit

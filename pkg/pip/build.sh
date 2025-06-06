@@ -57,7 +57,7 @@ do
 done
 
 yarn set version berry
-yarn set version 3
+yarn set version 4
 yarn install
 yarn run bundle
 

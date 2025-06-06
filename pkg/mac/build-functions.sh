@@ -59,7 +59,7 @@ _build_runtime() {
     # Install the runtime node_modules, then replace the package.json
     pushd "${BUNDLE_DIR}/Contents/Resources/app/" > /dev/null || exit
         yarn set version berry
-        yarn set version 3
+        yarn set version 4
         yarn plugin import workspace-tools
         yarn workspaces focus --production
 
@@ -289,7 +289,7 @@ _complete_bundle() {
     # Build node modules
     pushd "${SOURCE_DIR}/web" > /dev/null || exit
         yarn set version berry
-        yarn set version 3
+        yarn set version 4
         yarn install
         yarn run bundle
 
