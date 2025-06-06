@@ -37,3 +37,4 @@ Bug fixes
   | `Issue #8691 <https://github.com/pgadmin-org/pgadmin4/issues/8691>`_ -  Fixed an issue in the query tool where using multiple cursors to copy text resulted in only the first line being copied.
   | `Issue #8808 <https://github.com/pgadmin-org/pgadmin4/issues/8808>`_ -  Fixed an issue where data export using a query opened the wrong dialog type.
   | `Issue #8809 <https://github.com/pgadmin-org/pgadmin4/issues/8809>`_ -  Fixed an issue where data export using a query failed when the query contained a newline character.
+  | `Issue #8834 <https://github.com/pgadmin-org/pgadmin4/issues/8834>`_ -  Fixed an issue where the Columns node was not visible under Catalog Objects.

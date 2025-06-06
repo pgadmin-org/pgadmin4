@@ -85,10 +85,11 @@ class CatalogObjectModule(SchemaChildModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super().register(app, options)
 
         from .columns import blueprint as module
-        app.register_blueprint(module)
+        self.submodules.append(module)
+
+        super().register(app, options)
 
 
 blueprint = CatalogObjectModule(__name__)
