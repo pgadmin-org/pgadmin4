@@ -144,7 +144,7 @@ jobs:
       - name: Upgrade yarn
         run: |
           yarn set version berry
-          yarn set version 3
+          yarn set version 4
 
       - name: Build the JS bundle
         run: |
