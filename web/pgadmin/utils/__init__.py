@@ -339,18 +339,18 @@ def does_utility_exist(file):
 
     if file is None:
         error_msg = gettext("Utility file not found. Please correct the Binary"
-                            " Path in the Preferences dialog")
+                            " Path in the Preferences")
         return error_msg
 
     if Path(config.STORAGE_DIR) == Path(file) or \
             Path(config.STORAGE_DIR) in Path(file).parents:
-        error_msg = gettext("Please correct the Binary Path in the Preferences"
-                            " dialog. pgAdmin storage directory can not be a"
-                            " utility binary directory.")
+        error_msg = gettext("Please correct the Binary Path in the "
+                            "Preferences. pgAdmin storage directory can not "
+                            "be a utility binary directory.")
 
     if not os.path.exists(file):
         error_msg = gettext("'%s' file not found. Please correct the Binary"
-                            " Path in the Preferences dialog" % file)
+                            " Path in the Preferences" % file)
     return error_msg
 
 

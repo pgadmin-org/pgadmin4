@@ -361,7 +361,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       helpMessageMode: ['edit', 'create'],
     },
     {
-      id: 'sync', label: gettext('Synchronous commit'), control: 'select2', deps:['event'],
+      id: 'sync', label: gettext('Synchronous commit'), deps:['event'],
       group: gettext('With'), type: 'select',
       helpMessage: gettext('The value of this parameter overrides the synchronous_commit setting. The default value is off.'),
       helpMessageMode: ['edit', 'create'],

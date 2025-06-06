@@ -219,6 +219,11 @@ class PgadminPage:
         else:
             assert False, "'Tools -> Query Tool' menu did not enable."
 
+    def close_active_tab(self):
+        self.find_by_css_selector(f"div[data-dockid='id-main'] "
+                                  ".dock-tab.dock-tab-active "
+                                  "button[data-label='Close']").click()
+
     def close_query_tool(self, prompt=True):
         self.driver.switch_to.default_content()
         time.sleep(.5)

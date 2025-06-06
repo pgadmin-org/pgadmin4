@@ -13,7 +13,7 @@ from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.feature_utils.tree_area_locators import TreeAreaLocators
 from regression.feature_utils.locators import NavMenuLocators, \
-    QueryToolLocators
+    QueryToolLocators, PreferencesLocaltors
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -30,11 +30,10 @@ class CopySQLFeatureTest(BaseFeatureTest):
     test_table_name = ""
 
     def before(self):
-
+        self._update_preferences_setting()
         self.page.add_server(self.server)
 
     def runTest(self):
-        self._update_preferences_setting()
         self._create_table()
         sql_query = self._get_sql_query()
         query_tool_result = self._get_query_tool_result()
@@ -97,44 +96,24 @@ class CopySQLFeatureTest(BaseFeatureTest):
             NavMenuLocators.file_menu_css)
         file_menu.click()
 
-        self.page.retry_click(
-            (By.CSS_SELECTOR, NavMenuLocators.preference_menu_item_css),
-            (By.XPATH, NavMenuLocators.specified_preference_tree_node
-             .format('Browser'))
-        )
+        pref_menu_item = self.page.find_by_css_selector(
+            NavMenuLocators.preference_menu_item_css)
+        pref_menu_item.click()
 
         wait = WebDriverWait(self.page.driver, 10)
 
-        self.page.retry_click(
-            (By.XPATH,
-             NavMenuLocators.specified_sub_node_of_pref_tree_node.
-             format('Browser', 'Display')),
-            (By.XPATH,
-             NavMenuLocators.show_system_objects_pref_label_xpath))
+        self.page.click_tab("Preferences")
 
         # Wait till the preference dialogue box is displayed by checking the
         # visibility of Show System Object label
         wait.until(EC.presence_of_element_located(
-            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
+            (By.XPATH,
+             PreferencesLocaltors.show_system_objects_pref_label_xpath))
         )
-        maximize_button = self.page.find_by_css_selector(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
-
-        specified_preference_tree_node_name = 'Query Tool'
-        sql_editor = self.page.find_by_xpath(
-            NavMenuLocators.specified_preference_tree_node.format(
-                specified_preference_tree_node_name))
-        sql_editor.click()
-        if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.
-                format(specified_preference_tree_node_name)).get_attribute(
-                    'aria-expanded') == 'false':
-            ActionChains(self.driver).double_click(sql_editor).perform()
 
         option_node = self.page.find_by_xpath(
-            "//*[@id='treeContainer']//div//span[text()="
-            "'Results grid']//preceding::span[text()='Options'][1]")
+            "//*[@id='treeContainer']//div//div[text()="
+            "'Results grid']//preceding::div[text()='Options'][1]")
         # self.page.check_if_element_exists_with_scroll(option_node)
         self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
                                         option_node)
@@ -147,4 +126,7 @@ class CopySQLFeatureTest(BaseFeatureTest):
         switch_box_element.click()
 
         # save and close the preference dialog.
-        self.page.click_modal('Save')
+        self.page.find_by_css_selector(PreferencesLocaltors.save_btn) \
+            .click()
+        time.sleep(3)
+        self.page.close_active_tab()

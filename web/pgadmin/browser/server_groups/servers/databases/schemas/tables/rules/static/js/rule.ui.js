@@ -81,7 +81,7 @@ export default class RuleSchema extends BaseUISchema {
         controlProps: { allowClear: false },
       },
       {
-        id: 'event', label: gettext('Event'), control: 'select2',
+        id: 'event', label: gettext('Event'),
         group: gettext('Definition'), type: 'select',
         controlProps: { allowClear: false },
         options:[
