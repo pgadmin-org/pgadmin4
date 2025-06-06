@@ -719,6 +719,7 @@ class ServerNode(PGChildNodeView):
         return make_json_response(success=1,
                                   info=gettext("Server deleted"))
 
+    @permissions_required(AllPermissionTypes.object_register_server)
     @pga_login_required
     def update(self, gid, sid):
         """Update the server settings"""

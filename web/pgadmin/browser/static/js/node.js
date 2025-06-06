@@ -141,6 +141,7 @@ define('pgadmin.browser.node', [
             function() {
               return !!(self.canEdit(...arguments));
             } : (!!self.canEdit),
+          permission: self.type == 'server' ? 'object_register_server' : undefined,
         }]);
       }
 
