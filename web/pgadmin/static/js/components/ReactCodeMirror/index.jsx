@@ -7,11 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
+import { startCompletion } from '@codemirror/autocomplete';
 
 import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
@@ -22,6 +23,10 @@ import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
 import FindDialog from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
+import usePreferences from '../../../../preferences/static/js/store';
+import { toCodeMirrorKey } from '../../utils';
+import { QueryToolEventsContext } from '../../../../tools/sqleditor/static/js/components/QueryToolComponent';
+import { QUERY_TOOL_EVENTS } from '../../../../tools/sqleditor/static/js/components/QueryToolConstants';
 
 const Root = styled('div')(() => ({
   position: 'relative',
@@ -64,25 +69,42 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
+  const preferences = usePreferences().getPreferencesForModule('sqleditor');
+  const eventBus = useContext(QueryToolEventsContext);
 
   const finalCustomKeyMap = useMemo(()=>[{
-    key: 'Mod-f', run: () => {
+    key: toCodeMirrorKey(preferences.find), run: () => {
       setShowFind(prevVal => [true, false, !prevVal[2]]);
     },
     preventDefault: true,
     stopPropagation: true,
   }, {
-    key: 'Mod-Alt-f', run: () => {
+    key: toCodeMirrorKey(preferences.replace), run: () => {
       setShowFind(prevVal => [true, true, !prevVal[2]]);
     },
     preventDefault: true,
     stopPropagation: true,
   }, {
-    key: 'Mod-l', run: () => {
+    key: toCodeMirrorKey(preferences.gotolinecol), run: () => {
       setShowGoto(true);
     },
     preventDefault: true,
     stopPropagation: true,
+  }, {
+    key: toCodeMirrorKey(preferences.comment), run: () => {
+      editor.current?.execCommand('toggleComment');
+    },
+    preventDefault: true,
+    stopPropagation: true,
+  },{
+    key: toCodeMirrorKey(preferences.format_sql), run: () => {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
+    },
+    preventDefault: true,
+    stopPropagation: true,
+  },{
+    key: toCodeMirrorKey(preferences.autocomplete), run: startCompletion,
+    preventDefault: true,
   },
   ...customKeyMap], [customKeyMap]);
 

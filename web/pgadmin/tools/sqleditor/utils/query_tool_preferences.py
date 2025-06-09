@@ -873,6 +873,120 @@ def register_query_tool_preferences(self):
         fields=shortcut_fields
     )
 
+    self.preference.register(
+        'keyboard_shortcuts',
+        'find',
+        gettext('Find'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 70,
+                'char': 'F'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'replace',
+        gettext('Replace'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 70,
+                'char': 'F'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'goto_line_col',
+        gettext('Go to line/column'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 76,
+                'char': 'L'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'comment',
+        gettext('Toggle comment'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 191,
+                'char': '/'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'format_sql',
+        gettext('Format SQL'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 75,
+                'char': 'K'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'auto_complete',
+        gettext('Auto complete'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': False,
+            'key': {
+                'key_code': 32,
+                'char': 'Space'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
     self.keyword_case = self.preference.register(
         'editor', 'keyword_case',
         gettext("Keyword case"), 'radioModern', 'upper',
