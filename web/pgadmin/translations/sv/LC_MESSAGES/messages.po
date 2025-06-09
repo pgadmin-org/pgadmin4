@@ -1,5 +1,5 @@
 # Translations template for pgadmin4.
-# Copyright (C) 2025 ORGANIZATION
+# Copyright (C) 2025 pgadmin
 # This file is distributed under the same license as the pgadmin4 project.
 # Daniel Nylander <github@danielnylander.se>, 2025.
 #
@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PgAdmin4 Swedish\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-05-22 15:57+0530\n"
-"PO-Revision-Date: 2025-06-08 08:53+0200\n"
+"PO-Revision-Date: 2025-06-09 15:34+0200\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
 "Language-Team: sv\n"
 "Language: sv\n"
@@ -33,7 +33,7 @@ msgstr "Automatisk detektering av {0}-installation med datakatalogen på {1}"
 
 #: pgadmin/__init__.py:797
 msgid "403 FORBIDDEN"
-msgstr "403 FÖRBJUDET"
+msgstr "403 FORBIDDEN"
 
 #: pgadmin/__init__.py:933
 msgid " You need to refresh the page."
@@ -81,7 +81,7 @@ msgstr "Applikationsläge"
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:560
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:843
 msgid "Commit"
-msgstr "Åtagande"
+msgstr "Genomför"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:62
 msgid "Python Version"
@@ -89,7 +89,7 @@ msgstr "Python-version"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:70
 msgid "Current User"
-msgstr "Nuvarande användare"
+msgstr "Aktuell användare"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:79
 msgid "Electron Version"
@@ -490,7 +490,7 @@ msgstr "Gömma delade servrar?"
 #: pgadmin/browser/register_browser_preferences.py:46
 #: pgadmin/utils/constants.py:22
 msgid "Display"
-msgstr "Visa"
+msgstr "Visning"
 
 #: pgadmin/browser/register_browser_preferences.py:47
 msgid "If set to True, then all shared servers will be hidden from browser tree"
@@ -632,7 +632,7 @@ msgstr "Objektets huvudmeny"
 
 #: pgadmin/browser/register_browser_preferences.py:223
 msgid "Tools main menu"
-msgstr "Verktyg huvudmeny"
+msgstr "Verktygshuvudmeny"
 
 #: pgadmin/browser/register_browser_preferences.py:238
 msgid "Help main menu"
@@ -727,7 +727,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:435
 msgid "Debugger tab title"
-msgstr "Titel på fliken Debugger"
+msgstr "Titel på fliken Felsökare"
 
 #: pgadmin/browser/register_browser_preferences.py:438
 #, python-format
@@ -1244,7 +1244,7 @@ msgstr " -- definition ofullständig"
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:23
 msgid "Casts"
-msgstr "Besättningar"
+msgstr "Casts"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:322
 msgid "Could not find the specified cast."
@@ -1260,7 +1260,7 @@ msgstr "Det angivna cast-objektet kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:555
 msgid "Cast dropped"
-msgstr "Besättningen tappade"
+msgstr "Cast togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:609
 msgid "Could not find the specified cast on the server."
@@ -1289,7 +1289,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:39
 msgid "Cast"
-msgstr "Roller"
+msgstr "Cast"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:54
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:60
@@ -1743,7 +1743,7 @@ msgstr "EXPLICIT"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.ui.js:154
 msgid "ASSIGNMENT"
-msgstr "UPPGIFT"
+msgstr "ASSIGNMENT"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.ui.js:161
 msgid "System cast?"
@@ -1919,11 +1919,11 @@ msgstr "Jobbtyp"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:77
 msgid "SELF-CONTAINED"
-msgstr "SJÄLVHÄFTANDE"
+msgstr "SELF-CONTAINED"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:78
 msgid "PRE-DEFINED"
-msgstr "FÖRDEFINIERAD"
+msgstr "PRE-DEFINED"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:86
 msgid ""
@@ -2061,7 +2061,7 @@ msgstr "Är du säker på att du vill avaktivera programmet %s?"
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:47
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:21
 msgid "DBMS Schedules"
-msgstr "DBMS Scheman"
+msgstr "DBMS-scheman"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:240
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/__init__.py:296
@@ -2075,13 +2075,13 @@ msgstr "Skapandet av jobbschemat misslyckades."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:37
 msgid "DBMS Schedule"
-msgstr "DBMS Schema"
+msgstr "DBMS-schema"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:56
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:61
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.js:66
 msgid "DBMS Schedule..."
-msgstr "DBMS Schema..."
+msgstr "DBMS-schema..."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_job_scheduler_common.ui.js:30
 msgid "Repeat Interval"
@@ -2341,7 +2341,7 @@ msgstr "Den angivna händelseutlösaren kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:595
 msgid "Event trigger dropped"
-msgstr "Händelseutlösare släpptes"
+msgstr "Händelseutlösare togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:740
 msgid "Could not find the specified event trigger on the server."
@@ -2404,7 +2404,7 @@ msgstr "Systemhändelseutlösare?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:104
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:200
 msgid "Trigger enabled?"
-msgstr "Trigger aktiverad?"
+msgstr "Utlösare aktiverad?"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:73
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:109
@@ -2442,7 +2442,7 @@ msgstr "Alltid"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:43
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:324
 msgid "Trigger function"
-msgstr "Triggerfunktion"
+msgstr "Utlösarfunktion"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:84
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:67
@@ -2453,11 +2453,11 @@ msgstr "Evenemang"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:87
 msgid "DDL COMMAND START"
-msgstr "DDL-KOMMANDO START"
+msgstr "DDL COMMAND START"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:88
 msgid "DDL COMMAND END"
-msgstr "DDL-KOMMANDOTS SLUT"
+msgstr "DDL COMMAND END"
 
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:89
 msgid "SQL DROP"
@@ -2559,7 +2559,7 @@ msgstr "Händelseutlösarfunktionen kan inte vara tom."
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:39
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:31
 msgid "Extensions"
-msgstr "Tillägg"
+msgstr "Utökningar"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:225
 msgid "Could not find the specified extension."
@@ -2576,7 +2576,7 @@ msgstr "Det angivna tillägget kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:400
 msgid "Extension dropped"
-msgstr "Förlängning tappad"
+msgstr "Utökning togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:509
 msgid "Could not find the extension on the server."
@@ -2584,13 +2584,13 @@ msgstr "Det gick inte att hitta tillägget på servern."
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:62
 msgid "Extension"
-msgstr "Tillägg"
+msgstr "Utökning"
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:78
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:83
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.js:88
 msgid "Extension..."
-msgstr "Förlängning..."
+msgstr "Utökning..."
 
 #: pgadmin/browser/server_groups/servers/databases/extensions/static/js/extension.ui.js:92
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:127
@@ -2638,60 +2638,60 @@ msgstr "Namnet får inte vara tomt."
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:24
 msgid "Foreign Data Wrappers"
-msgstr "Utländska dataförpackningar"
+msgstr "Främmande dataförpackningar"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:344
 msgid "Could not find the specified foreign data wrapper."
-msgstr "Kunde inte hitta den angivna utländska dataomslaget."
+msgstr "Kunde inte hitta den angivna främmande dataomslaget."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:387
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:754
 msgid "Could not find the foreign data wrapper information."
-msgstr "Det gick inte att hitta informationen om den utländska dataförpackningen."
+msgstr "Det gick inte att hitta informationen om den främmande dataförpackningen."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:585
 msgid "The specified foreign data wrapper could not be found.\n"
-msgstr "Den angivna omslutningen av utländska data kunde inte hittas.\n"
+msgstr "Den angivna omslutningen av främmande data kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:610
 msgid "Foreign Data Wrapper dropped"
-msgstr "Foreign Data Wrapper tappad"
+msgstr "Främmande dataomslag togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:813
 msgid "Could not find the foreign data wrapper on the server."
-msgstr "Kunde inte hitta den utländska dataomslaget på servern."
+msgstr "Kunde inte hitta den främmande dataomslaget på servern."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:52
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:24
 msgid "Foreign Servers"
-msgstr "Utländska servrar"
+msgstr "Främmande servrar"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:335
 msgid "Could not find the specified foreign server."
-msgstr "Den angivna utländska servern kunde inte hittas."
+msgstr "Den angivna främmande servern kunde inte hittas."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:441
 msgid "The specified foreign server could not be found."
-msgstr "Den angivna utländska servern kunde inte hittas."
+msgstr "Den angivna främmande servern kunde inte hittas."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:580
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:603
 msgid "The specified foreign server could not be found.\n"
-msgstr "Den angivna utländska servern kunde inte hittas.\n"
+msgstr "Den angivna främmande servern kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:602
 msgid "Foreign Server dropped"
-msgstr "Utländsk server tappad"
+msgstr "Främmande server togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:38
 msgid "Foreign Server"
-msgstr "Utländsk server"
+msgstr "Främmande server"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:57
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:62
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.js:67
 msgid "Foreign Server..."
-msgstr "Utländsk server..."
+msgstr "Främmande server..."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.ui.js:53
 msgid "System foreign server?"
@@ -2827,7 +2827,7 @@ msgstr "Den angivna användarmappningen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:632
 msgid "User Mapping dropped"
-msgstr "Mappning av användare släppt"
+msgstr "Mappning av användare togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.js:38
 msgid "User Mapping"
@@ -2856,17 +2856,17 @@ msgstr "Mappning av systemanvändare?"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:38
 msgid "Foreign Data Wrapper"
-msgstr "Utländsk dataomvandling"
+msgstr "Främmande dataomslag"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:57
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:62
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.js:67
 msgid "Foreign Data Wrapper..."
-msgstr "Utländsk dataomslag..."
+msgstr "Främmande dataomslag..."
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.ui.js:55
 msgid "System foreign data wrapper?"
-msgstr "Systemets utländska dataomslag?"
+msgstr "Systemets främmande dataomslag?"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/static/js/foreign_data_wrapper.ui.js:61
 msgid "Handler"
@@ -2891,7 +2891,7 @@ msgstr "Det angivna språket kunde inte hittas."
 
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:568
 msgid "Language dropped"
-msgstr "Språket försvann"
+msgstr "Språket togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.js:38
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:268
@@ -2951,7 +2951,7 @@ msgstr "Det gick inte att hitta den angivna publikationen."
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:566
 msgid "Publication dropped"
-msgstr "Publiceringen upphörde"
+msgstr "Publiceringen togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:37
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:180
@@ -3000,13 +3000,13 @@ msgstr "Med"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:40
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:61
 msgid "UPDATE"
-msgstr "UPPDATERA"
+msgstr "UPDATE"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:29
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:71
 msgid "DELETE"
-msgstr "TA BORT"
+msgstr "DELETE"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:33
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:58
@@ -3103,7 +3103,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:281
 msgid "Tables in Schema"
-msgstr "Tabeller i Schema"
+msgstr "Tabeller i schema"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:69
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:25
@@ -3149,7 +3149,7 @@ msgstr "Det angivna schemat kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:839
 msgid "Schema dropped"
-msgstr "Schema tappat"
+msgstr "Schema togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:914
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:155
@@ -3348,7 +3348,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:568
 msgid "Collation dropped"
-msgstr "Kollation tappad"
+msgstr "Kollation togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:690
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:693
@@ -3388,7 +3388,7 @@ msgstr "Plats"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:135
 msgid "LC_COLLATE"
-msgstr "LC_KOLLAT"
+msgstr "LC_COLLATE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:143
 msgid "LC_TYPE"
@@ -3434,7 +3434,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:683
 msgid "Domain dropped"
-msgstr "Domän droppad"
+msgstr "Domän togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:24
@@ -3444,7 +3444,7 @@ msgstr "Begränsningar för domäner"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:525
 msgid "Domain Constraint dropped"
-msgstr "Domänbegränsning släppt"
+msgstr "Domänbegränsning togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/static/js/domain_constraints.js:59
@@ -3538,11 +3538,11 @@ msgstr "Begränsningar"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:64
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:30
 msgid "Foreign Tables"
-msgstr "Utländska tabeller"
+msgstr "Främmande tabeller"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:829
 msgid "Foreign Table dropped"
-msgstr "Utländsk tabell tappad"
+msgstr "Främmande tabell togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1629
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1674
@@ -3556,13 +3556,13 @@ msgstr "-- Skapa kolumn(er) först..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1248
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:836
 msgid "Trigger(s) have been disabled"
-msgstr "Trigger(s) har avaktiverats"
+msgstr "Utlösare har inaktiverats"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1908
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1250
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:838
 msgid "Trigger(s) have been enabled"
-msgstr "Trigger(s) har aktiverats"
+msgstr "Utlösare har aktiverats"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/foreign_table_columns/static/js/foreign_table_column.js:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/foreign_table_columns/static/js/foreign_table_column.js:58
@@ -3575,13 +3575,13 @@ msgstr "Kolumnen..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:44
 msgid "Foreign Table"
-msgstr "Utländska bord"
+msgstr "Främmande bord"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:71
 msgid "Foreign Table..."
-msgstr "Utländska bord..."
+msgstr "Främmande bord..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:86
@@ -3590,7 +3590,7 @@ msgstr "Utländska bord..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:102
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:110
 msgid "Trigger(s)"
-msgstr "Utlösande faktor(er)"
+msgstr "Utlösare"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:77
@@ -3623,7 +3623,7 @@ msgstr "System främmande tabell?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:122
 msgid "Foreign server"
-msgstr "Utländsk server"
+msgstr "Främmande server"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:127
 msgid "Inherits"
@@ -3631,7 +3631,7 @@ msgstr "Ärver"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:254
 msgid "Foreign server cannot be empty."
-msgstr "Den utländska servern får inte vara tom."
+msgstr "Den främmande servern får inte vara tom."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:412
 msgid "Inherited from"
@@ -3672,14 +3672,14 @@ msgstr "Välj lagringsutrymme"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:544
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:501
 msgid "NONE"
-msgstr "INGEN"
+msgstr "NONE"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:549
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:554
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:509
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:514
 msgid "GENERATED"
-msgstr "GENERERAD"
+msgstr "GENERATED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:571
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:572
@@ -3733,7 +3733,7 @@ msgstr "Den angivna FTS-konfigurationen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:624
 msgid "FTS Configuration dropped"
-msgstr "FTS-konfiguration tappad"
+msgstr "FTS-konfiguration togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:944
 msgid ""
@@ -3812,7 +3812,7 @@ msgstr "Det angivna FTS-lexikonet kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/__init__.py:615
 msgid "FTS Dictionary dropped"
-msgstr "FTS ordbok droppade"
+msgstr "FTS-ordbok togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.js:42
 msgid "FTS Dictionary"
@@ -3857,7 +3857,7 @@ msgstr "Den angivna FTS-parsern kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:561
 msgid "FTS Parser dropped"
-msgstr "FTS Parser släpptes"
+msgstr "FTS Parser togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:885
 msgid ""
@@ -3912,7 +3912,7 @@ msgstr "FTS mallar"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:517
 msgid "FTS Template dropped"
-msgstr "FTS-mall släppt"
+msgstr "FTS-mall togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:757
 msgid ""
@@ -3972,7 +3972,7 @@ msgstr "Den angivna funktionen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:690
 msgid "Function dropped."
-msgstr "Funktion tappad."
+msgstr "Funktion togs bort."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1156
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1348
@@ -3994,7 +3994,7 @@ msgstr "Förfaranden"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:1913
 msgid "Trigger Functions"
-msgstr "Triggerfunktioner"
+msgstr "Utlösarfunktioner"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:60
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.js:65
@@ -4133,13 +4133,13 @@ msgstr "Procedur..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:28
 msgid "Trigger functions"
-msgstr "Triggerfunktioner"
+msgstr "Utlösarfunktioner"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.js:77
 msgid "Trigger function..."
-msgstr "Triggerfunktion..."
+msgstr "Utlösarfunktion..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:110
 msgid "System trigger function?"
@@ -4147,7 +4147,7 @@ msgstr "Systemets triggerfunktion?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:137
 msgid "trigger"
-msgstr "avtryckare"
+msgstr "utlösare"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:138
 msgid "event_trigger"
@@ -4297,7 +4297,7 @@ msgstr "Paket"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:500
 msgid "Package dropped"
-msgstr "Paketet tappat"
+msgstr "Paketet togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:108
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:676
@@ -4387,7 +4387,7 @@ msgstr "Sekvenser"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:522
 msgid "Sequence dropped"
-msgstr "Sekvens tappad"
+msgstr "Sekvens togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.js:43
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:60
@@ -4562,7 +4562,7 @@ msgstr "Synonymer"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:549
 msgid "Synonym dropped"
-msgstr "Synonym tappade"
+msgstr "Synonym togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.js:38
 msgid "Synonym"
@@ -4605,7 +4605,7 @@ msgstr "\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1156
 msgid "Table dropped"
-msgstr "Tabell tappad"
+msgstr "Tabell togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1673
 msgid "Table rows counted: {}"
@@ -4679,19 +4679,19 @@ msgstr "MAIN"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:440
 msgid "EXTERNAL"
-msgstr "EXTERN"
+msgstr "EXTERNAL"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:442
 msgid "EXTENDED"
-msgstr "FÖRLÄNGD"
+msgstr "EXTENDED"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:447
 msgid "DEFAULT"
-msgstr "STANDARD"
+msgstr "DEFAULT"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:502
 msgid "IDENTITY"
-msgstr "IDENTITET"
+msgstr "IDENTITY"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:530
 msgid "Identity"
@@ -4707,11 +4707,11 @@ msgstr "ALLTID"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:536
 msgid "BY DEFAULT"
-msgstr "AV DEFAULT"
+msgstr "BY DEFAULT"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:583
 msgid "Foreign key?"
-msgstr "Utländsk nyckel?"
+msgstr "Främmande nyckel?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:587
 msgid "Inherited?"
@@ -4763,11 +4763,11 @@ msgstr "Cache-värdet får inte vara tomt."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.js:27
 msgid "Compound Triggers"
-msgstr "Sammansatta utlösare"
+msgstr "Compound Triggers"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:610
 msgid "Compound Trigger is dropped"
-msgstr "Compound Trigger släpps"
+msgstr "Compound Trigger togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:111
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:169
@@ -4808,7 +4808,7 @@ msgstr "Aktivera alltid"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:115
 msgid "FOR Events"
-msgstr "FOR Evenemang"
+msgstr "FOR-händelser"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:115
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:118
@@ -4917,7 +4917,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:204
 msgid "Constraints dropped."
-msgstr "Begränsningar släpptes."
+msgstr "Begränsningar togs bort."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:52
 msgid "Check Constraints"
@@ -4938,7 +4938,7 @@ msgstr "Den angivna kontrollbegränsningen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:653
 msgid "Check constraint dropped."
-msgstr "Kontrollera att begränsningen släpptes."
+msgstr "Kontrollera att begränsningen togs bort."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:742
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:503
@@ -5064,7 +5064,7 @@ msgstr "Systemets uteslutningsbegränsning?"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:134
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:43
 msgid "Tablespace"
-msgstr "Bordsyta"
+msgstr "Tabellutrymme"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:283
 msgid "Access method"
@@ -5136,7 +5136,7 @@ msgstr "Kunde inte hitta den främmande nyckeln."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:56
 msgid "Foreign Keys"
-msgstr "Utländska nycklar"
+msgstr "Främmande nycklar"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:769
 msgid "The specified foreign key could not be found.\n"
@@ -5144,11 +5144,11 @@ msgstr "Den angivna främmande nyckeln kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:787
 msgid "Foreign key dropped."
-msgstr "Främmande nyckel tappad."
+msgstr "Främmande nyckel togs bort."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:980
 msgid "Foreign key updated."
-msgstr "Utländsk nyckel uppdaterad."
+msgstr "Främmande nyckel uppdaterad."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/utils.py:314
 msgid "Could not find the foreign key constraint in the table."
@@ -5156,11 +5156,11 @@ msgstr "Det gick inte att hitta begränsningen för främmande nyckel i tabellen
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:24
 msgid "Foreign key"
-msgstr "Utländsk nyckel"
+msgstr "Främmande nyckel"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:45
 msgid "Foreign key..."
-msgstr "Utländsk nyckel..."
+msgstr "Främmande nyckel..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.js:50
 msgid "Validate foreign key"
@@ -5253,7 +5253,7 @@ msgstr "Den angivna begränsningen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:776
 msgid "{0} dropped."
-msgstr "{0} tappad."
+msgstr "{0} togs bort."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:1019
 msgid "Could not find the {} in the table."
@@ -5323,7 +5323,7 @@ msgstr "Du måste ange en eller flera kolumner för att skapa index."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:757
 msgid "Index is dropped"
-msgstr "Index är borttaget"
+msgstr "Index togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:256
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:323
@@ -5363,7 +5363,7 @@ msgstr "Sorteringsordning"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:218
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:43
 msgid "NULLs"
-msgstr "NULL"
+msgstr "NULLs"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:272
 msgid "Gin pending list limit"
@@ -5488,7 +5488,7 @@ msgstr "Den angivna partitionen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:788
 msgid "Partition dropped"
-msgstr "Partitionen tappades bort"
+msgstr "Partitionen togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:44
 msgid "Partition"
@@ -5526,7 +5526,7 @@ msgstr "Indexets storlek"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:24
 msgid "Table size"
-msgstr "Bordsstorlek"
+msgstr "Tabellstorlek"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:35
@@ -5567,7 +5567,7 @@ msgstr "Längd på död tupel"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:40
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:169
 msgid "Free space"
-msgstr "Fritt utrymme"
+msgstr "Ledigt utrymme"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:71
@@ -5897,7 +5897,7 @@ msgstr "RLS-policyer"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:535
 msgid "policy dropped"
-msgstr "policy tappad"
+msgstr "policy togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/utils.py:86
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/utils.py:130
@@ -5975,7 +5975,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:463
 msgid "Rule dropped"
-msgstr "Regel tappad"
+msgstr "Regel togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:57
 msgid "rule"
@@ -6074,7 +6074,7 @@ msgstr "För hashpartitioner får fältet Remainder inte vara tomt."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:74
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:80
 msgid "Table..."
-msgstr "Bord..."
+msgstr "Tabell..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:96
 msgid "Truncate Restart Identity"
@@ -6086,7 +6086,7 @@ msgstr "ERD för tabell"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:167
 msgid "Foreign Key"
-msgstr "Utländsk nyckel"
+msgstr "Främmande nyckel"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:193
 msgid "Unique"
@@ -6608,7 +6608,7 @@ msgstr "Död tuple procent"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:41
 msgid "Free percent"
-msgstr "Fri procent"
+msgstr "Ledigt procent"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:27
@@ -6624,7 +6624,7 @@ msgstr "Den angivna triggerfunktionen kunde inte hittas"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:699
 msgid "Trigger is dropped"
-msgstr "Utlösaren har tappats bort"
+msgstr "Utlösaren togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:285
@@ -6642,7 +6642,7 @@ msgstr "Utlösare"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:92
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:98
 msgid "Trigger..."
-msgstr "Trigger..."
+msgstr "Utlösare..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:214
 msgid "Row trigger?"
@@ -6672,7 +6672,7 @@ msgstr "Nytt bord"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:468
 msgid "Trigger function cannot be empty."
-msgstr "Triggerfunktionen kan inte vara tom."
+msgstr "Utlösarfunktionen kan inte vara tom."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/pg/macros/catalogs.sql:17
 #: pgadmin/browser/server_groups/servers/databases/schemas/templates/catalog/pg/macros/catalogs.sql:25
@@ -6722,7 +6722,7 @@ msgstr "Den angivna typen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1200
 msgid "Type dropped"
-msgstr "Typ tappad"
+msgstr "Typ togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:61
@@ -6906,7 +6906,7 @@ msgstr "Datatyp"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1270
 msgid "Composite"
-msgstr "Sammansatt"
+msgstr "Komposit"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1271
 msgid "Enumeration"
@@ -6973,16 +6973,16 @@ msgstr "Uppdatera materialiserad vy ({0})"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:168
 msgid "WITH NO DATA"
-msgstr "UTAN DATA"
+msgstr "WITH NO DATA"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:170
 msgid "WITH DATA"
-msgstr "MED DATA"
+msgstr "WITH DATA"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:173
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:292
 msgid "CONCURRENTLY"
-msgstr "SAMTIDIGT"
+msgstr "CONCURRENTLY"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:180
 msgid "Refresh Materialized View"
@@ -7006,7 +7006,7 @@ msgstr "Materialiserade vyer"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:730
 msgid "View dropped"
-msgstr "Visa droppade"
+msgstr "Visning togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1780
 msgid ""
@@ -7204,7 +7204,7 @@ msgstr "Databas"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:85
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:91
 msgid "Database..."
-msgstr "Databasen..."
+msgstr "Databas..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:97
 msgid "Connect Database"
@@ -7216,7 +7216,7 @@ msgstr "Vald databas är redan ansluten."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:104
 msgid "Delete (Force)"
-msgstr "Ta bort (Force)"
+msgstr "Ta bort (tvinga)"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:109
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:564
@@ -7345,7 +7345,7 @@ msgstr "Intensivvårdsavdelning"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:213
 msgid "Collation Version"
-msgstr "Kollationering Version"
+msgstr "Kollationsversion"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:217
 msgid "ICU Rules"
@@ -7421,7 +7421,7 @@ msgstr "Det gick inte att hitta den angivna prenumerationen."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:558
 msgid "Subscription dropped"
-msgstr "Abonnemanget har avslutats"
+msgstr "Prenumeration togs bort"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:40
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:110
@@ -7856,7 +7856,7 @@ msgstr "Den angivna katalogen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:414
 msgid "Directory dropped"
-msgstr "Katalog tappad"
+msgstr "Katalog togs bort"
 
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:481
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:533
@@ -7873,7 +7873,7 @@ msgstr "Katalog"
 #: pgadmin/browser/server_groups/servers/directories/static/js/directory.js:66
 #: pgadmin/browser/server_groups/servers/directories/static/js/directory.js:72
 msgid "Directory..."
-msgstr "Directory..."
+msgstr "Katalog..."
 
 #: pgadmin/browser/server_groups/servers/directories/static/js/directory.ui.js:51
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/static/js/pgd_replication_group_node.ui.js:27
@@ -7934,7 +7934,7 @@ msgstr "Schema..."
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:39
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:45
 msgid "<any>"
-msgstr "<any>"
+msgstr "<alla>"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:43
 msgid "Time"
@@ -8001,7 +8001,7 @@ msgstr "Månad dagar"
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/repeat.ui.js:100
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/repeat.ui.js:108
 msgid "Days"
-msgstr "Dagar"
+msgstr "Dygn"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:205
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/repeat.ui.js:58
@@ -8127,7 +8127,7 @@ msgstr "Jobb steg..."
 #: pgadmin/static/js/SchemaView/FormView.jsx:192
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:66
 msgid "SQL"
-msgstr "Structured Query Language"
+msgstr "SQL"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:74
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:84
@@ -8194,7 +8194,7 @@ msgstr "Misslyckad"
 #: pgadmin/dashboard/static/js/Dashboard.jsx:211
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:37
 msgid "Success"
-msgstr "Sparades"
+msgstr "Lyckades"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:144
 msgid "Ignore"
@@ -8377,7 +8377,7 @@ msgstr "Flush LSN"
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:71
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:59
 msgid "Replay LSN"
-msgstr "Replay LSN"
+msgstr "Spela upp LSN"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:58
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:65
@@ -8398,7 +8398,7 @@ msgstr "Flush Lag"
 #: pgadmin/dashboard/static/js/Replication/schema_ui/pgd_outgoing.ui.js:83
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_stats.ui.js:71
 msgid "Replay Lag"
-msgstr "Replay Lag"
+msgstr "Uppspelningsfördröjning"
 
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:70
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:120
@@ -8442,7 +8442,7 @@ msgstr "Den angivna resursgruppen kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:585
 msgid "Resource Group dropped"
-msgstr "Resursgrupp tappad"
+msgstr "Resursgrupp togs bort"
 
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:639
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:725
@@ -9095,7 +9095,7 @@ msgstr "Användare/Roll"
 
 #: pgadmin/browser/server_groups/servers/static/js/membership.ui.js:45
 msgid "WITH ADMIN"
-msgstr "MED ADMIN"
+msgstr "WITH ADMIN"
 
 #: pgadmin/browser/server_groups/servers/static/js/options.ui.js:25
 #: pgadmin/static/js/components/KeyboardShortcuts.jsx:98
@@ -9747,7 +9747,7 @@ msgstr "Ange ett värde för parametern."
 #: pgadmin/tools/backup/static/js/backup.ui.js:225
 #: pgadmin/tools/restore/static/js/restore.ui.js:175
 msgid "Tablespaces"
-msgstr "Bordsytor"
+msgstr "Tabellutrymmen"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:168
 msgid "Could not find the tablespace."
@@ -9759,7 +9759,7 @@ msgstr "Kunde inte hitta informationen om tablespace."
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:354
 msgid "Tablespace created successfully, Set parameter fail: {0}"
-msgstr "Tablespace skapades framgångsrikt, Set parameter fail: {0}"
+msgstr "Tabellutrymme skapades, Set parameter fail: {0}"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:446
 msgid "The specified tablespace could not be found.\n"
@@ -9767,7 +9767,7 @@ msgstr "Det angivna tablespacet kunde inte hittas.\n"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:463
 msgid "Tablespace dropped"
-msgstr "Tabellutrymmet har tagits bort"
+msgstr "Tabellutrymmet togs bort"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:536
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:588
@@ -9778,7 +9778,7 @@ msgstr "Det gick inte att hitta tablespace på servern."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:65
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:71
 msgid "Tablespace..."
-msgstr "Bordsyta..."
+msgstr "Tabellutrymme..."
 
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:55
 msgid "System tablespace?"
@@ -9958,11 +9958,11 @@ msgstr "1st"
 
 #: pgadmin/browser/static/js/constants.js:67
 msgid "2nd"
-msgstr "2:a"
+msgstr "2nd"
 
 #: pgadmin/browser/static/js/constants.js:68
 msgid "3rd"
-msgstr "3:e"
+msgstr "3rd"
 
 #: pgadmin/browser/static/js/constants.js:68
 msgid "4th"
@@ -10002,7 +10002,7 @@ msgstr "12:e"
 
 #: pgadmin/browser/static/js/constants.js:73
 msgid "13th"
-msgstr "13:e kvartalet"
+msgstr "13:e"
 
 #: pgadmin/browser/static/js/constants.js:73
 msgid "14th"
@@ -10010,27 +10010,27 @@ msgstr "14:e"
 
 #: pgadmin/browser/static/js/constants.js:74
 msgid "15th"
-msgstr "15:e kvartalet"
+msgstr "15:e"
 
 #: pgadmin/browser/static/js/constants.js:74
 msgid "16th"
-msgstr "16:e kvartalet"
+msgstr "16th"
 
 #: pgadmin/browser/static/js/constants.js:75
 msgid "17th"
-msgstr "17:e kvartalet"
+msgstr "17th"
 
 #: pgadmin/browser/static/js/constants.js:75
 msgid "18th"
-msgstr "18:e kvartalet"
+msgstr "18th"
 
 #: pgadmin/browser/static/js/constants.js:76
 msgid "19th"
-msgstr "19:e kvartalet"
+msgstr "19th"
 
 #: pgadmin/browser/static/js/constants.js:76
 msgid "20th"
-msgstr "20:e kvartalet"
+msgstr "20th"
 
 #: pgadmin/browser/static/js/constants.js:77
 msgid "21st"
@@ -10038,43 +10038,43 @@ msgstr "21st"
 
 #: pgadmin/browser/static/js/constants.js:77
 msgid "22nd"
-msgstr "22:a kvartalet"
+msgstr "22nd"
 
 #: pgadmin/browser/static/js/constants.js:78
 msgid "23rd"
-msgstr "23:e kvartalet"
+msgstr "23rd"
 
 #: pgadmin/browser/static/js/constants.js:78
 msgid "24th"
-msgstr "24:e kvartalet"
+msgstr "24th"
 
 #: pgadmin/browser/static/js/constants.js:79
 msgid "25th"
-msgstr "25:e kvartalet"
+msgstr "25th"
 
 #: pgadmin/browser/static/js/constants.js:79
 msgid "26th"
-msgstr "26:e kvartalet"
+msgstr "26th"
 
 #: pgadmin/browser/static/js/constants.js:80
 msgid "27th"
-msgstr "27:e kvartalet"
+msgstr "27th"
 
 #: pgadmin/browser/static/js/constants.js:80
 msgid "28th"
-msgstr "28:e kvartalet"
+msgstr "28th"
 
 #: pgadmin/browser/static/js/constants.js:81
 msgid "29th"
-msgstr "29:e kvartalet"
+msgstr "29th"
 
 #: pgadmin/browser/static/js/constants.js:81
 msgid "30th"
-msgstr "30:e kvartalet"
+msgstr "30th"
 
 #: pgadmin/browser/static/js/constants.js:82
 msgid "31st"
-msgstr "31:a kvartalet"
+msgstr "31st"
 
 #: pgadmin/browser/static/js/constants.js:85
 msgid "January"
@@ -10442,7 +10442,7 @@ msgstr "Radera (kaskad)"
 #: pgadmin/browser/static/js/node.js:235
 #, python-format
 msgid "%s Script"
-msgstr "%s Skript"
+msgstr "%s-skript"
 
 #: pgadmin/browser/static/js/node.js:248
 msgid "Scripts"
@@ -10479,7 +10479,7 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:530
 #, python-format
 msgid "Delete FORCE %s?"
-msgstr "Radera FORCE %s?"
+msgstr "Ta bort FORCE %s?"
 
 #: pgadmin/browser/static/js/node.js:534
 #, python-format
@@ -10498,7 +10498,7 @@ msgstr "Ta bort CASCADE %s?"
 #: pgadmin/browser/static/js/node.js:540
 #, python-format
 msgid "The %s \"%s\" cannot be dropped."
-msgstr "Det går inte att släppa %s \"%s\"."
+msgstr "Det går inte att ta bort %s \"%s\"."
 
 #: pgadmin/browser/static/js/node.js:547
 #, python-format
@@ -10523,12 +10523,12 @@ msgstr "Radera %s?"
 #: pgadmin/browser/static/js/node.js:557
 #, python-format
 msgid "The %s \"%s\" cannot be dropped/removed."
-msgstr "%s \"%s\" kan inte tappas bort/tas bort."
+msgstr "%s \"%s\" kan inte tas bort."
 
 #: pgadmin/browser/static/js/node.js:598
 #, python-format
 msgid "Error dropping/removing %s: \"%s\""
-msgstr "Fel att släppa/ta bort %s: \"%s\""
+msgstr "Fel vid borttagning av %s: \"%s\""
 
 #: pgadmin/browser/static/js/withCheckPermission.js:23
 msgid "Permission Denied"
@@ -11301,11 +11301,11 @@ msgid ""
 "a procedural code debugger and much more. The tool is designed to answer the "
 "needs of developers, DBAs and system administrators alike."
 msgstr ""
-"pgAdmin är ett Open Source-administrations- och hanteringsverktyg för "
-"PostgreSQL-databasen. Den innehåller ett grafiskt administrationsgränssnitt, "
-"ett SQL-frågeverktyg, en procedurkodfelsökare och mycket mer. Verktyget är "
-"utformat för att svara på behoven hos både utvecklare, DBA och "
-"systemadministratörer."
+"pgAdmin är ett administrations- och hanteringsverktyg för PostgreSQL-databasen "
+"baserad på öppen källkod. Den innehåller ett grafiskt "
+"administrationsgränssnitt, ett SQL-frågeverktyg, en procedurkodfelsökare och "
+"mycket mer. Verktyget är utformat för att svara på behoven hos både utvecklare, "
+"DBA och systemadministratörer."
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:175
 msgid "Quick Links"
@@ -11338,7 +11338,7 @@ msgstr "Planet PostgreSQL"
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:265
 msgid "Community Support"
-msgstr "Support mellan användare"
+msgstr "Gemenskapssupport"
 
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:36
 #: pgadmin/dashboard/static/js/Replication/LogReplication.jsx:107
@@ -11388,7 +11388,7 @@ msgstr "Spolning av fördröjning"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:87
 msgid "Replay lag"
-msgstr "Fördröjning i uppspelning"
+msgstr "Uppspelningsfördröjning"
 
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:134
 msgid "Replay timestamp"
@@ -11508,7 +11508,7 @@ msgstr "Starta om LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:43
 msgid "Confirmed Flush LSN"
-msgstr "Bekräftat Flush LSN"
+msgstr "Bekräftad Flush LSN"
 
 #: pgadmin/dashboard/static/js/Replication/schema_ui/replication_slots.ui.js:47
 msgid "WAL Status"
@@ -11565,7 +11565,7 @@ msgstr "Totalt utrymme"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:165
 msgid "Used space"
-msgstr "Utnyttjat utrymme"
+msgstr "Använt utrymme"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:173
 msgid "Total inodes"
@@ -11577,7 +11577,7 @@ msgstr "Använda inoder"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:181
 msgid "Free inodes"
-msgstr "Fria inoder"
+msgstr "Lediga inoder"
 
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:236
 msgid "file_system"
@@ -11743,7 +11743,7 @@ msgstr "Transaktioner"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:20
 msgid "Commits"
-msgstr "Åtaganden"
+msgstr "Genomföranden"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:21
 msgid "Rollbacks"
@@ -11976,7 +11976,7 @@ msgstr "Avslutad av användaren."
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:117
 msgid "Terminating the process..."
-msgstr "Avsluta processen..."
+msgstr "Avslutar processen..."
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:148
 msgid "error"
@@ -12027,7 +12027,7 @@ msgstr "Avslutade"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:63
 msgid "Terminated"
-msgstr "Avslutas"
+msgstr "Avslutad"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:64
 msgid "Terminating..."
@@ -12104,7 +12104,7 @@ msgstr "Molnleverantör"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:37
 msgid "Credentials"
-msgstr "Referenser"
+msgstr "Inloggningsuppgifter"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:37
 msgid "Cluster Type"
@@ -12613,7 +12613,7 @@ msgstr "Nätverksanslutning"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:672
 msgid "Subscription cannot be empty."
-msgstr "Abonnemanget kan inte vara tomt."
+msgstr "Prenumeration får nte vara tomt."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:677
 msgid "Resource group cannot be empty."
@@ -13035,7 +13035,7 @@ msgstr "Öppna"
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:721
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:797
 msgid "My Storage"
-msgstr "Min förvaring"
+msgstr "Min lagring"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:724
 msgid "Home"
@@ -13211,7 +13211,7 @@ msgstr ""
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:97
 msgid "Welcome to the PSQL Workspace!"
-msgstr "Välkommen till PSQL Workspace!"
+msgstr "Välkommen till PSQL-arbetsytan!"
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:98
 msgid ""
@@ -13792,7 +13792,7 @@ msgstr "Ange minst 3 tecken för att söka"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:278
 msgid "MENU ITEMS"
-msgstr "MENY-PUNKTER"
+msgstr "MENU ITEMS"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:287
 #: pgadmin/static/js/QuickSearch/index.jsx:307
@@ -13801,7 +13801,7 @@ msgstr "Inga sökresultat"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:295
 msgid "HELP ARTICLES"
-msgstr "HJÄLP ARTIKLAR"
+msgstr "HELP ARTICLES"
 
 #: pgadmin/static/js/QuickSearch/index.jsx:299
 msgid "Show all"
@@ -13961,7 +13961,7 @@ msgstr "Välj en fil"
 
 #: pgadmin/static/js/components/FormComponents.jsx:1013
 msgid "<Select All>"
-msgstr "<Select All>"
+msgstr "<Markera alla>"
 
 #: pgadmin/static/js/components/FormComponents.jsx:1018
 msgid "Select an item..."
@@ -14325,7 +14325,7 @@ msgstr "Metoder för tabellåtkomst"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:332
 msgid "$ quoting"
-msgstr "$ kvotering"
+msgstr ""
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:368
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:30
@@ -14341,7 +14341,7 @@ msgstr "Tvinga fram dubbla citattecken på identifierare"
 #: pgadmin/tools/backup/static/js/backup.ui.js:382
 #: pgadmin/tools/restore/static/js/restore.ui.js:288
 msgid "Use SET SESSION AUTHORIZATION"
-msgstr "Använda SET SESSION AUTHORIZATION"
+msgstr "Använd SET SESSION AUTHORIZATION"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:389
 #: pgadmin/tools/restore/static/js/restore.ui.js:300
@@ -14362,7 +14362,7 @@ msgstr "Tidsgräns för väntan på lås"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:445
 msgid "Table(s)"
-msgstr "Bord"
+msgstr "Tabell(er)"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:448
 #: pgadmin/tools/backup/static/js/backup.ui.js:456
@@ -14379,15 +14379,15 @@ msgstr "Tabellalternativ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:453
 msgid "Table(s) data"
-msgstr "Tabell(er) data"
+msgstr "Tabelldata"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:461
 msgid "Table(s) and children"
-msgstr "Bord(e) och barn"
+msgstr "Tabell(er) och barn"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:470
 msgid "Table(s) data and children"
-msgstr "Tabell(er) data och barn"
+msgstr "Tabelldata och barn"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:520
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:71
@@ -14401,7 +14401,7 @@ msgstr "Filnamn"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:91
 #: pgadmin/tools/restore/static/js/restore.ui.js:381
 msgid "Format"
-msgstr "Format"
+msgstr "Formatera"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:537
 msgid "Custom"
@@ -14409,7 +14409,7 @@ msgstr "Anpassad"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:541
 msgid "Tar"
-msgstr "Tjära"
+msgstr "Tar"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:545
 #: pgadmin/tools/restore/static/js/restore.ui.js:369
@@ -14685,7 +14685,7 @@ msgstr "Felsökning"
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:181
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:871
 msgid "Debug"
-msgstr "Debugg"
+msgstr "Felsök"
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:78
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:107
@@ -14774,11 +14774,11 @@ msgstr "Fel inträffade: "
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:773
 msgid "Debugger Listener Startup Error"
-msgstr "Fel vid start av Debugger Listener"
+msgstr "Fel vid start av felsökningslyssnare"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:797
 msgid "Debugger Listener Startup Set Arguments Error"
-msgstr "Debugger Listener Startup Set Arguments Error"
+msgstr ""
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:861
 msgid "Clear All"
@@ -14786,7 +14786,7 @@ msgstr "Rensa alla"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:152
 msgid "Debugger Aborted"
-msgstr "Debugger avbruten"
+msgstr "Felsökare avbruten"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:153
 msgid ""
@@ -14843,7 +14843,7 @@ msgstr "Fel vid körning av stop i felsökningssession."
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:673
 msgid "Debugger poll end execution error"
-msgstr "Fel i debuggarens poll vid slutet av exekveringen"
+msgstr "Fel i felsökarens poll vid slutet av exekveringen"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:714
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:721
@@ -15006,7 +15006,7 @@ msgstr ""
 
 #: pgadmin/tools/erd/__init__.py:411
 msgid "Table Relation Depth"
-msgstr "Bord Relation Djup"
+msgstr "Tabellrelationsdjup"
 
 #: pgadmin/tools/erd/__init__.py:415
 msgid ""
@@ -15060,7 +15060,7 @@ msgstr "Ansluter"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:65
 msgid "Disconnected"
-msgstr "Urkopplad"
+msgstr "Frånkopplad"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:82
 msgid "(Obtaining connection...)"
@@ -15098,7 +15098,7 @@ msgstr "Det går inte att ta bort en tabell från en annan databas än den aktue
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:519
 msgid "Delete ?"
-msgstr "Radera?"
+msgstr "Ta bort?"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:520
 #, python-format
@@ -15276,7 +15276,7 @@ msgstr "Med DROP-tabell"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:322
 msgid "Crow's Foot Notation"
-msgstr "Kråkfot Notation"
+msgstr "Kråkfotsnotation"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:323
 msgid "Chen Notation"
@@ -15856,13 +15856,13 @@ msgstr "på schema '{0}/{1}'"
 #: pgadmin/tools/maintenance/__init__.py:93
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:372
 msgid "VACUUM"
-msgstr "VAKUUM"
+msgstr "VACUUM"
 
 #: pgadmin/tools/maintenance/__init__.py:95
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:71
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:377
 msgid "ANALYZE"
-msgstr "ANALYSERA"
+msgstr "ANALYZE"
 
 #: pgadmin/tools/maintenance/__init__.py:97
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:382
@@ -15875,7 +15875,7 @@ msgstr "REINDEX INDEX"
 
 #: pgadmin/tools/maintenance/__init__.py:103
 msgid "REINDEX TABLE"
-msgstr "REINDEX-TABELL"
+msgstr "REINDEX TABLE"
 
 #: pgadmin/tools/maintenance/__init__.py:105
 msgid "REINDEX SCHEMA"
@@ -15884,11 +15884,11 @@ msgstr "REINDEX SCHEMA"
 #: pgadmin/tools/maintenance/__init__.py:107
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:387
 msgid "CLUSTER"
-msgstr "KLUSTER"
+msgstr "CLUSTER"
 
 #: pgadmin/tools/maintenance/__init__.py:109
 msgid "{0} {1} of server {2}"
-msgstr "{0} {1} av server {2}"
+msgstr "{0} {1} för servern {2}"
 
 #: pgadmin/tools/maintenance/__init__.py:240
 msgid "Maintenance job created."
@@ -15922,11 +15922,11 @@ msgstr "FULL"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:55
 msgid "FREEZE"
-msgstr "FRYS"
+msgstr "FREEZE"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:87
 msgid "DISABLE PAGE SKIPPING"
-msgstr "INAKTIVERA SIDHOPPNING"
+msgstr "DISABLE PAGE SKIPPING"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:103
 msgid "SKIP LOCKED"
@@ -15942,7 +15942,7 @@ msgstr "PROCESS MAIN"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:171
 msgid "SKIP DATABASE STATS"
-msgstr "HOPPA ÖVER DATABASSTATISTIK"
+msgstr "SKIP DATABASE STATS"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:188
 msgid "ONLY DATABASE STATS"
@@ -15950,27 +15950,27 @@ msgstr "ENDAST DATABASSTATISTIK"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:206
 msgid "INDEX CLEANUP"
-msgstr "INDEX RENSNING"
+msgstr "INDEX CLEANUP"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:210
 msgid "ON"
-msgstr "PÅ"
+msgstr "ON"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:214
 msgid "OFF"
-msgstr "AV"
+msgstr "OFF"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:220
 msgid "AUTO"
-msgstr "AUTOMATISKT"
+msgstr "AUTO"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:242
 msgid "PARALLEL"
-msgstr "PARALLELL"
+msgstr "PARALLEL"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:259
 msgid "BUFFER USAGE LIMIT"
-msgstr "GRÄNS FÖR BUFFERTANVÄNDNING"
+msgstr "BUFFER USAGE LIMIT"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:270
 msgid ""
@@ -15996,7 +15996,7 @@ msgstr ""
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:306
 msgid "TABLESPACE"
-msgstr "TABELLUTRYMMET"
+msgstr "TABLESPACE"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:367
 msgid "Maintenance operation"
@@ -16112,7 +16112,7 @@ msgstr "Avsluta vid fel"
 
 #: pgadmin/tools/restore/static/js/restore.ui.js:360
 msgid "Custom or tar"
-msgstr "Anpassad eller tjära"
+msgstr "Anpassad eller tar"
 
 #: pgadmin/tools/restore/static/js/restore.ui.js:458
 msgid "Clean before restore"
@@ -16395,7 +16395,7 @@ msgid ""
 "id=\"prefdlgid\" class=\"pref-dialog-link\">preferences dialog</a>."
 msgstr ""
 "%s objekt är inaktiverade i webbläsaren. Du kan aktivera dem i <a "
-"id=\"prefdlgid\" class=\"pref-dialog-link\">dialogrutan In</a>ställningar."
+"id=\"prefdlgid\" class=\"pref-dialog-link\">dialogrutan</a>i Inställningar."
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:316
 msgid "Locating..."
@@ -16675,11 +16675,11 @@ msgstr "Återgå"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:37
 msgid "ASC"
-msgstr "Stigande"
+msgstr "ASC"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:38
 msgid "DESC"
-msgstr "Fallande"
+msgstr "DESC"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:46
 msgid "FIRST"
@@ -16687,7 +16687,7 @@ msgstr "FÖRSTA"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:47
 msgid "LAST"
-msgstr "SISTA"
+msgstr "LAST"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:72
 msgid "SQL Filter"
@@ -16769,7 +16769,7 @@ msgstr "Mörk materia"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
-msgstr "<Row Number>"
+msgstr "<Radrummerr>"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:350
 msgid "Fetching all the records..."
@@ -16836,7 +16836,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:249
 msgid "Commit transaction?"
-msgstr "Genomföra transaktion?"
+msgstr "Genomför transaktion?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:252
 msgid ""
@@ -16882,7 +16882,7 @@ msgstr "100 rader"
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:540
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:772
 msgid "Cancel query"
-msgstr "Avbryt förfrågan"
+msgstr "Avbryt fråga"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:455
@@ -16965,7 +16965,7 @@ msgstr "Tydlig fråga"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:615
 msgid "Format SQL"
-msgstr "Format SQL"
+msgstr "Formatera SQL"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:621
 msgid "Filter Options Menu"
@@ -17148,7 +17148,7 @@ msgstr "min"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "secs"
-msgstr "sek"
+msgstr "s"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
 msgid "msec"
@@ -17198,7 +17198,7 @@ msgstr "Framgångsrik körning. Total körtid för frågan: %s."
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:767
 #, python-format
 msgid "%s rows affected."
-msgstr "%s rader påverkas."
+msgstr "%s rader påverkade."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:988
 msgid ""
@@ -17429,7 +17429,7 @@ msgstr "CRLF"
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:157
 #, python-format
 msgid "Ln %s, Col %s"
-msgstr "Ln %s, Kol %s"
+msgstr "Rad %s, Kol %s"
 
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:99
 msgid "Data sorting object updated successfully"
@@ -17877,7 +17877,7 @@ msgstr "EXPLAIN-fråga"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:528
 msgid "EXPLAIN ANALYZE query"
-msgstr "EXPLAIN ANALYZE fråga"
+msgstr "EXPLAIN ANALYZE-fråga"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:546
 msgid "Clear query"
@@ -17947,7 +17947,7 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:878
 msgid "Keyword case"
-msgstr "Sökord fall"
+msgstr "Sökord skiftläge"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:883
 msgid "Convert keywords to upper, lower, or preserve casing."
@@ -18278,7 +18278,7 @@ msgstr "Lösenordet måste innehålla minst %s tecken för användaren %s"
 #: pgadmin/tools/user_management/static/js/UserDialog.jsx:172
 #, python-format
 msgid "Confirm Password cannot be empty for user %s"
-msgstr "Bekräfta lösenord kan inte tömmas för användare %s"
+msgstr "Bekräfta lösenord får inte vara tom för användare %s"
 
 #: pgadmin/tools/user_management/static/js/UserDialog.jsx:180
 #, python-format
@@ -18388,7 +18388,7 @@ msgstr "Konfiguration för %s servrar dumpad till %s"
 
 #: pgadmin/utils/__init__.py:592
 msgid "'Servers' attribute not found in the specified file."
-msgstr "attributet 'Servers' hittades inte i den angivna filen."
+msgstr "Attributet 'Servers' hittades inte i den angivna filen."
 
 #: pgadmin/utils/__init__.py:607
 #, python-format
@@ -18403,7 +18403,7 @@ msgstr "Port måste vara ett heltal för server '%s'"
 #: pgadmin/utils/__init__.py:637
 #, python-format
 msgid "'Host' or 'Service' attribute not found for server '%s'"
-msgstr "attributet 'Host' eller 'Service' hittades inte för servern '%s'"
+msgstr "Attributet 'Host' eller 'Service' hittades inte för servern '%s'"
 
 #: pgadmin/utils/__init__.py:668
 #, python-format
@@ -18452,7 +18452,7 @@ msgstr "Redigerare"
 
 #: pgadmin/utils/constants.py:27
 msgid "CSV/TXT Output"
-msgstr "CSV/TXT-utmatning"
+msgstr "CSV/TXT-utdata"
 
 #: pgadmin/utils/constants.py:29
 msgid "SQL formatting"
@@ -18476,7 +18476,7 @@ msgstr "Transaktions-ID hittades inte i sessionen."
 
 #: pgadmin/utils/constants.py:57
 msgid "FAIL TO PROMOTE VIEW/EDIT DATA TO QUERY TOOL"
-msgstr "MISSLYCKAS MED ATT FLYTTA VISA/REDIGERA DATA TILL FRÅGEVERKTYGET"
+msgstr "FAIL TO PROMOTE VIEW/EDIT DATA TO QUERY TOOL"
 
 #: pgadmin/utils/constants.py:61
 msgid "Error fetching role information from the database server."
@@ -18666,7 +18666,7 @@ msgstr "Asynkron avisering \"{0}\" mottagen från serverprocess med PID {1}\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1712
 msgid "ERROR:  "
-msgstr "FEL: "
+msgstr "ERROR:  "
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1733
 msgid "SQL state: "
