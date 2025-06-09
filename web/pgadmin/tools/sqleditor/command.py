@@ -365,6 +365,7 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             self.limit = 100
 
         self.thread_native_id = None
+        self.server_cursor = kwargs['server_cursor'] if 'server_cursor' in kwargs else None
 
     def get_primary_keys(self, *args, **kwargs):
         return None, None
@@ -425,6 +426,8 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
     def set_thread_native_id(self, thread_native_id):
         self.thread_native_id = thread_native_id
 
+    def set_server_cursor(self, server_cursor):
+        self.server_cursor = server_cursor
 
 class TableCommand(GridCommand):
     """
@@ -816,6 +819,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         self.table_has_oids = False
         self.columns_types = None
         self.thread_native_id = None
+        self.server_cursor = False
 
     def get_sql(self, default_conn=None):
         return None
@@ -916,6 +920,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
 
     def set_auto_commit(self, auto_commit):
         self.auto_commit = auto_commit
+
+    def set_server_cursor(self, server_cursor):
+        self.server_cursor = server_cursor
 
     def __set_updatable_results_attrs(self, sql_path,
                                       table_oid, conn):

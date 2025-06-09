@@ -125,7 +125,7 @@ export default class SQLEditor {
         priority: 101,
         label: gettext('All Rows'),
         permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
-      }, {
+      },{
         name: 'view_first_100_rows_context_' + supportedNode,
         node: supportedNode,
         module: this,

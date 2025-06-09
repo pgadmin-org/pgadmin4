@@ -146,7 +146,8 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_new_connection_user',
             'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
-            'sqleditor.connect_server'
+            'sqleditor.connect_server',
+            'sqleditor.server_cursor',
         ]
 
     def on_logout(self):
@@ -203,9 +204,14 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     """
 
     if request.data:
-        filter_sql = json.loads(request.data)
+        _data = json.loads(request.data)
     else:
-        filter_sql = request.args or request.form
+        _data = request.args or request.form
+
+    filter_sql = _data['filter_sql'] if 'filter_sql' in _data else None
+    server_cursor = _data['server_cursor'] if\
+        'server_cursor' in _data and (_data['server_cursor'] == 'true' or
+                                      _data['server_cursor'] is True) else False
 
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
@@ -242,8 +248,9 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
         command_obj = ObjectRegistry.get_object(
             obj_type, conn_id=conn_id, sgid=sgid, sid=sid,
             did=did, obj_id=obj_id, cmd_type=cmd_type,
-            sql_filter=filter_sql
+            sql_filter=filter_sql, server_cursor=server_cursor
         )
+
     except ObjectGone:
         raise
     except Exception as e:
@@ -354,6 +361,8 @@ def panel(trans_id):
         if 'database_name' in params:
             params['database_name'] = (
                 underscore_escape(params['database_name']))
+        params['server_cursor'] = params[
+            'server_cursor'] if 'server_cursor' in params else False
 
         return render_template(
             "sqleditor/index.html",
@@ -485,6 +494,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         kwargs['auto_commit'] = pref.preference('auto_commit').get()
     if kwargs.get('auto_rollback', None) is None:
         kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
+    if kwargs.get('server_cursor', None) is None:
+        kwargs['server_cursor'] = pref.preference('server_cursor').get()
 
     try:
         conn = manager.connection(conn_id=conn_id,
@@ -544,6 +555,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     # Set the value of auto commit and auto rollback specified in Preferences
     command_obj.set_auto_commit(kwargs['auto_commit'])
     command_obj.set_auto_rollback(kwargs['auto_rollback'])
+    command_obj.set_server_cursor(kwargs['server_cursor'])
 
     # Set the value of database name, that will be used later
     command_obj.dbname = dbname if dbname else None
@@ -909,8 +921,13 @@ def start_view_data(trans_id):
 
         update_session_grid_transaction(trans_id, session_obj)
 
+        if trans_obj.server_cursor:
+            conn.execute_void("BEGIN;")
+
         # Execute sql asynchronously
-        status, result = conn.execute_async(sql)
+        status, result = conn.execute_async(
+            sql,
+            server_cursor=trans_obj.server_cursor)
     else:
         status = False
         result = error_msg
@@ -947,6 +964,7 @@ def start_query_tool(trans_id):
     )
 
     connect = 'connect' in request.args and request.args['connect'] == '1'
+
     is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
     if is_error:
         return make_json_response(success=0, errormsg=errmsg,
@@ -1209,6 +1227,7 @@ def poll(trans_id):
             'transaction_status': transaction_status,
             'data_obj': data_obj,
             'pagination': pagination,
+            'server_cursor': trans_obj.server_cursor,
         }
     )
 
@@ -1466,6 +1485,9 @@ def save(trans_id):
             session_obj['columns_info'],
             session_obj['client_primary_key'],
             conn)
+        # trans_obj.set_thread_native_id(None)
+        # session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
+        # update_session_grid_transaction(trans_id, session_obj)
     else:
         status = False
         res = error_msg
@@ -1825,6 +1847,11 @@ def check_and_upgrade_to_qt(trans_id, connect):
 
     if 'gridData' in session and str(trans_id) in session['gridData']:
         data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
+        session['gridData'][str(trans_id)] = {
+            # -1 specify the highest protocol version available
+            'command_obj': pickle.dumps(data, -1)
+        }
+
         if data.object_type in ['table', 'foreign_table', 'view', 'mview']:
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 data.sid)
@@ -1837,9 +1864,57 @@ def check_and_upgrade_to_qt(trans_id, connect):
                 'conn_id': data.conn_id
             }
             is_error, errmsg, _, _ = _init_sqleditor(
-                trans_id, connect, data.sgid, data.sid, data.did, **kwargs)
+                trans_id, connect, data.sgid, data.sid, data.did,
+                **kwargs)
 
     return is_error, errmsg
+
+
+def set_pref_options(trans_id, operation):
+    if request.data:
+        _data = json.loads(request.data)
+    else:
+        _data = request.args or request.form
+
+    connect = 'connect' in request.args and request.args['connect'] == '1'
+
+    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
+    if is_error:
+        return make_json_response(success=0, errormsg=errmsg,
+                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
+                                  status=404)
+
+    # Check the transaction and connection status
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(success=0, errormsg=error_msg,
+                                  info='DATAGRID_TRANSACTION_REQUIRED',
+                                  status=404)
+
+    if status and conn is not None and \
+        trans_obj is not None and session_obj is not None:
+
+        res = None
+
+        if operation == 'auto_commit':
+            # Call the set_auto_commit method of transaction object
+            trans_obj.set_auto_commit(_data)
+        elif operation == 'auto_rollback':
+            trans_obj.set_auto_rollback(_data)
+        elif operation == 'server_cursor':
+            trans_obj.set_server_cursor(_data)
+
+        # As we changed the transaction object we need to
+        # restore it and update the session variable.
+        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
+        update_session_grid_transaction(trans_id, session_obj)
+    else:
+        status = False
+        res = error_msg
+
+    return make_json_response(data={'status': status, 'result': res})
 
 
 @blueprint.route(
@@ -1854,45 +1929,7 @@ def set_auto_commit(trans_id):
     Args:
         trans_id: unique transaction id
     """
-    if request.data:
-        auto_commit = json.loads(request.data)
-    else:
-        auto_commit = request.args or request.form
-
-    connect = 'connect' in request.args and request.args['connect'] == '1'
-
-    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
-    if is_error:
-        return make_json_response(success=0, errormsg=errmsg,
-                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
-                                  status=404)
-
-    # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
-        return make_json_response(success=0, errormsg=error_msg,
-                                  info='DATAGRID_TRANSACTION_REQUIRED',
-                                  status=404)
-
-    if status and conn is not None and \
-            trans_obj is not None and session_obj is not None:
-
-        res = None
-
-        # Call the set_auto_commit method of transaction object
-        trans_obj.set_auto_commit(auto_commit)
-
-        # As we changed the transaction object we need to
-        # restore it and update the session variable.
-        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-        update_session_grid_transaction(trans_id, session_obj)
-    else:
-        status = False
-        res = error_msg
-
-    return make_json_response(data={'status': status, 'result': res})
+    return set_pref_options(trans_id, 'auto_commit')
 
 
 @blueprint.route(
@@ -1907,45 +1944,22 @@ def set_auto_rollback(trans_id):
     Args:
         trans_id: unique transaction id
     """
-    if request.data:
-        auto_rollback = json.loads(request.data)
-    else:
-        auto_rollback = request.args or request.form
+    return set_pref_options(trans_id, 'auto_rollback')
 
-    connect = 'connect' in request.args and request.args['connect'] == '1'
 
-    is_error, errmsg = check_and_upgrade_to_qt(trans_id, connect)
-    if is_error:
-        return make_json_response(success=0, errormsg=errmsg,
-                                  info=ERROR_MSG_FAIL_TO_PROMOTE_QT,
-                                  status=404)
+@blueprint.route(
+    '/server_cursor/<int:trans_id>',
+    methods=["PUT", "POST"], endpoint='server_cursor'
+)
+@pga_login_required
+def set_server_cursor(trans_id):
+    """
+    This method is used to set the value for server_cursor.
 
-    # Check the transaction and connection status
-    status, error_msg, conn, trans_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
-        return make_json_response(success=0, errormsg=error_msg,
-                                  info='DATAGRID_TRANSACTION_REQUIRED',
-                                  status=404)
-
-    if status and conn is not None and \
-            trans_obj is not None and session_obj is not None:
-
-        res = None
-
-        # Call the set_auto_rollback method of transaction object
-        trans_obj.set_auto_rollback(auto_rollback)
-
-        # As we changed the transaction object we need to
-        # restore it and update the session variable.
-        session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-        update_session_grid_transaction(trans_id, session_obj)
-    else:
-        status = False
-        res = error_msg
-
-    return make_json_response(data={'status': status, 'result': res})
+    Args:
+        trans_id: unique transaction id
+    """
+    return set_pref_options(trans_id, 'server_cursor')
 
 
 @blueprint.route(
@@ -2181,11 +2195,17 @@ def start_query_download_tool(trans_id):
         if not sql:
             sql = trans_obj.get_sql(sync_conn)
         if sql and query_commited:
+            if trans_obj.server_cursor:
+                sync_conn.release_async_cursor()
+                sync_conn.execute_void("BEGIN;")
             # Re-execute the query to ensure the latest data is included
-            sync_conn.execute_async(sql)
+            sync_conn.execute_async(sql, server_cursor=trans_obj.server_cursor)
         # This returns generator of records.
         status, gen, conn_obj = \
             sync_conn.execute_on_server_as_csv(records=10)
+
+        if trans_obj.server_cursor and query_commited:
+            sync_conn.execute_void("COMMIT;")
 
         if not status:
             return make_json_response(

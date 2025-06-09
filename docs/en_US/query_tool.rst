@@ -558,3 +558,36 @@ To execute a macro, simply select the appropriate shortcut keys, or select it fr
 .. image:: images/query_output_data.png
    :alt: Query Tool Macros Execution
    :align: center
+
+
+Server Side Cursor
+******************
+
+Server-side cursors allow partial retrieval of large datasets, making them particularly useful when working with
+very large result sets. However, they may offer lower performance in typical, everyday usage scenarios.
+
+To enable server-side cursors:
+
+* Go to Preferences > Query Tool > Options and set "Execute with server-side cursor?" to True.
+
+.. image:: images/query_tool_server_cursor_preference.png
+   :alt: Query Tool Manage Macros Clear row confirmation
+   :align: center
+
+* Alternatively, you can enable it on a per-session basis via the Query Tool’s Execute menu.
+
+.. image:: images/query_tool_server_cursor_execute_menu.png
+   :alt: Query Tool Manage Macros Clear row confirmation
+   :align: center
+
+
+Limitations:
+
+1. Transaction Requirement: Server-side cursors work only in transaction mode.
+If enabled pgAdmin will automatically ensure queries run within a transaction.
+
+2. Limited Use Case: Use server-side cursors only when fetching large datasets.
+
+3. Pagination Limitation: In the Result Grid, the First and Last page buttons will be disabled,
+as server-side cursors do not return a total row count. Consequently, the total number of rows
+will not be displayed after execution.

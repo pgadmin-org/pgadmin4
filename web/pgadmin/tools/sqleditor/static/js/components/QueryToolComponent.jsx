@@ -180,12 +180,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     connected_once: false,
     connection_status: null,
     connection_status_msg: '',
+    server_cursor: preferencesStore.getPreferencesForModule('sqleditor').server_cursor === true,
     params: {
       ...params,
       title: _.unescape(params.title),
       is_query_tool: params.is_query_tool == 'true',
       node_name: retrieveNodeName(selectedNodeInfo),
-      dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo)
+      dbname: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
+      server_cursor: preferencesStore.getPreferencesForModule('sqleditor').server_cursor === true,
     },
     connection_list: [{
       sgid: params.sgid,
@@ -343,7 +345,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const populateEditorData = () =>{
     let sqlId = qtState.params.sql_id,
       loadSqlFromLocalStorage = true;
-      
+
     if(qtState.params.open_file_name){
       if(qtState.params.file_deleted == 'false' &&  qtState.params.is_editor_dirty == 'false'){
         // call load file from disk as no fil changes
@@ -352,7 +354,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(qtState.params.file_deleted != 'true'){
           if(qtState.params.external_file_changes == 'true'){
             loadSqlFromLocalStorage = false;
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId);
           }else{
             eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
           }
@@ -363,7 +365,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     setQtStatePartial({ editor_disabled: false });
   };
 
-  const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, reexecute=false)=>{
+  const initializeQueryTool = (password, explainObject=null, macroSQL='', executeCursor=false, executeServerCursor=false, reexecute=false)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
     if(qtState.params.is_query_tool) {
@@ -381,12 +383,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         ...qtState.params,
       });
     }
+    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SERVER_CURSOR, executeServerCursor);
     api.post(baseUrl, qtState.params.is_query_tool ? {
       user: selectedConn.user,
       role: selectedConn.role,
       password: password,
       dbname: selectedConn.database_name
-    } : qtState.params.sql_filter)
+    } : {sql_filter: qtState.params.sql_filter,
+      server_cursor: qtState.params.server_cursor})
       .then(()=>{
         setQtStatePartial({
           connected: true,
@@ -395,7 +399,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         });
         //this condition works if user is in View/Edit Data or user does not saved server or tunnel password and disconnected the server and executing the query
         if(!qtState.params.is_query_tool || reexecute) {
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor);
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, explainObject, macroSQL, executeCursor, executeServerCursor);
           let msg = `${selectedConn['server_name']}/${selectedConn['database_name']} - Database connected`;
           pgAdmin.Browser.notifier.success(_.escape(msg));
         }
@@ -597,7 +601,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         });
         isDirtyRef.current = false;
         setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
-        
+
         if(isSaveToolDataEnabled('sqleditor'))eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
@@ -916,6 +920,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     api: api,
     modal: modal,
     params: qtState.params,
+    server_cursor: qtState.server_cursor,
     preferences: qtState.preferences,
     mainContainerRef: containerRef,
     editor_disabled: qtState.editor_disabled,
@@ -952,7 +957,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         };
       });
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol, qtState.current_file]);
+    updateServerCursor: (state) => {
+      setQtStatePartial(state);
+    },
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor]);
+
 
   const queryToolConnContextValue = React.useMemo(()=>({
     connected: qtState.connected,
@@ -1012,6 +1021,7 @@ QueryToolComponent.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     is_query_tool: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
+    server_cursor: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     user: PropTypes.string,
     role: PropTypes.string,
     server_name: PropTypes.string,

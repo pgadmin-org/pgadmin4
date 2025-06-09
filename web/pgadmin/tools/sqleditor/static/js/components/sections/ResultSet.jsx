@@ -515,7 +515,6 @@ export class ResultSetUtils {
 
   async saveResultsToFile(fileName, onProgress) {
     try {
-      this.hasQueryCommitted = false;
       await DownloadUtils.downloadFileStream({
         url: url_for('sqleditor.query_tool_download', {
           'trans_id': this.transId,
@@ -762,6 +761,10 @@ export class ResultSetUtils {
 
     let retMsg, tabMsg;
     retMsg = tabMsg = gettext('Query returned successfully in %s.', this.queryRunTime());
+
+    if (httpMessage.data.data?.server_cursor) {
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SERVER_CURSOR, httpMessage.data.data?.server_cursor);
+    }
     if(this.hasResultsToDisplay(httpMessage.data.data)) {
       let msg1 = gettext('Successfully run. Total query runtime: %s.', this.queryRunTime());
       let msg2 = gettext('%s rows affected.', httpMessage.data.data?.rows_affected);
@@ -877,7 +880,6 @@ export function ResultSet() {
   // NONE - no select, PAGE - show select all, ALL - select all.
   const [allRowsSelect, setAllRowsSelect] = useState('NONE');
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
-
   // We'll use this track if any changes were saved.
   // It will help to decide whether results refresh is required or not on page change.
   const pageDataDirty = useRef(false);

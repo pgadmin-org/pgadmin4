@@ -123,7 +123,10 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const checkMenuClick = useCallback((e)=>{
     setCheckedMenuItems((prev)=>{
       let newVal = !prev[e.value];
-      if(e.value === 'auto_commit' || e.value === 'auto_rollback') {
+      if (e.value === 'server_cursor') {
+        queryToolCtx.updateServerCursor({server_cursor: newVal});
+      }
+      if(e.value === 'auto_commit' || e.value === 'auto_rollback' || e.value === 'server_cursor') {
         autoCommitRollback(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
           .catch ((error)=>{
             newVal = prev[e.value];
@@ -341,6 +344,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           explain_settings: queryToolPref.explain_settings,
           explain_wal: queryToolPref.explain_wal,
           open_in_new_tab: queryToolPref.open_in_new_tab,
+          server_cursor: queryToolPref.server_cursor,
         });
       }
     }
@@ -634,6 +638,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
         <PgMenuItem hasCheck value="auto_rollback" checked={checkedMenuItems['auto_rollback']}
           onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
+        <PgMenuItem hasCheck value="server_cursor" checked={checkedMenuItems['server_cursor']}
+          onClick={checkMenuClick}>{gettext('Use server cursor')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={explainMenuRef}

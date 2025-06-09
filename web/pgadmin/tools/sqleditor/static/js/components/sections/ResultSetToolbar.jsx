@@ -99,7 +99,7 @@ ShowDataOutputQueryPopup.propTypes = {
 };
 
 
-function PaginationInputs({pagination, totalRowCount, clearSelection}) {
+function PaginationInputs({pagination, totalRowCount, clearSelection, serverCursor=false}) {
   const eventBus = useContext(QueryToolEventsContext);
   const [editPageRange, setEditPageRange] = useState(false);
   const [errorInputs, setErrorInputs] = useState({
@@ -117,7 +117,7 @@ function PaginationInputs({pagination, totalRowCount, clearSelection}) {
   const goToPage = (pageNo)=>{
     const from = (pageNo-1) * pagination.page_size + 1;
     const to = from + pagination.page_size - 1;
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, from, to);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, from, to, serverCursor);
     clearSelection();
   };
 
@@ -233,10 +233,10 @@ function PaginationInputs({pagination, totalRowCount, clearSelection}) {
       <span> {gettext('of')} {pagination.page_count}</span>
       <div className='PaginationInputs-divider'>&nbsp;</div>
       <PgButtonGroup size="small">
-        <PgIconButton title={gettext('First Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
-        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
-        <PgIconButton title={gettext('Next Page')} disabled={pagination.page_no == pagination.page_count} onClick={()=>goToPage(pagination.page_no+1)} icon={<FastForwardRoundedIcon />}/>
-        <PgIconButton title={gettext('Last Page')} disabled={pagination.page_no == pagination.page_count} onClick={()=>goToPage(pagination.page_count)} icon={<SkipNextRoundedIcon />} />
+        <PgIconButton title={gettext('First Page')} disabled={pagination.page_no <= 1 || serverCursor} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
+        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no <= 1 && !serverCursor} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
+        <PgIconButton title={gettext('Next Page')} disabled={pagination.page_no == pagination.page_count && !serverCursor} onClick={()=>goToPage(pagination.page_no+1)} icon={<FastForwardRoundedIcon />}/>
+        <PgIconButton title={gettext('Last Page')} disabled={pagination.page_no == pagination.page_count || serverCursor} onClick={()=>goToPage(pagination.page_count)} icon={<SkipNextRoundedIcon />} />
       </PgButtonGroup>
     </Box>
   );
@@ -245,6 +245,7 @@ PaginationInputs.propTypes = {
   pagination: PropTypes.object,
   totalRowCount: PropTypes.number,
   clearSelection: PropTypes.func,
+  serverCursor: PropTypes.bool,
 };
 export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, allRowsSelect}) {
   const eventBus = useContext(QueryToolEventsContext);
@@ -445,7 +446,7 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
         </Box>
         {totalRowCount > 0 &&
         <Box>
-          <PaginationInputs key={JSON.stringify(pagination)} pagination={pagination} totalRowCount={totalRowCount} clearSelection={clearSelection} />
+          <PaginationInputs key={JSON.stringify(pagination)} pagination={pagination} totalRowCount={totalRowCount} clearSelection={clearSelection} serverCursor={queryToolCtx.server_cursor}/>
         </Box>}
       </StyledDiv>
       <PgMenu
