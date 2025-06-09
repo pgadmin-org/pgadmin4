@@ -272,7 +272,6 @@ REM Main build sequence Ends
 
     CALL yarn set version berry || EXIT /B 1
     CALL yarn set version 4 || EXIT /B 1
-    CALL yarn plugin import workspace-tools || EXIT /B 1
     CALL yarn workspaces focus --production || EXIT /B 1
 
     ECHO Removing yarn cache...
