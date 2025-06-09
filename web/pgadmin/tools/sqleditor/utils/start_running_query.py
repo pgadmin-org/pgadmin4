@@ -149,7 +149,6 @@ class StartRunningQuery:
 
         trans_obj.set_thread_native_id(None)
 
-
         @copy_current_request_context
         def asyn_exec_query(conn, sql, trans_obj, is_rollback_req,
                             app):
@@ -162,8 +161,9 @@ class StartRunningQuery:
                     else:
                         _, _ = conn.execute_async(
                             sql, server_cursor=trans_obj.server_cursor)
-                        # # If the transaction aborted for some reason and
-                        # # Auto RollBack is True then issue a rollback to cleanup.
+                        # If the transaction aborted for some reason and
+                        # Auto RollBack is True then issue a rollback
+                        # to cleanup.
                     if is_rollback_req:
                         conn.execute_void("ROLLBACK;")
                 except Exception as e:
@@ -184,11 +184,11 @@ class StartRunningQuery:
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
 
-        return ((trans_obj.server_cursor
-                 ) or (not trans_obj.auto_commit and
-                conn.transaction_status() == TX_STATUS_IDLE and
-                is_begin_required(sql)
-                ))
+        return ((trans_obj.server_cursor) or (
+            not trans_obj.auto_commit and
+            conn.transaction_status() == TX_STATUS_IDLE and
+            is_begin_required(sql)
+        ))
 
     @staticmethod
     def is_rollback_statement_required(trans_obj, conn):

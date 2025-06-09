@@ -365,7 +365,8 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             self.limit = 100
 
         self.thread_native_id = None
-        self.server_cursor = kwargs['server_cursor'] if 'server_cursor' in kwargs else None
+        self.server_cursor = kwargs['server_cursor'] if\
+            'server_cursor' in kwargs else None
 
     def get_primary_keys(self, *args, **kwargs):
         return None, None
@@ -428,6 +429,7 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
 
     def set_server_cursor(self, server_cursor):
         self.server_cursor = server_cursor
+
 
 class TableCommand(GridCommand):
     """

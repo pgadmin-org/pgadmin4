@@ -96,7 +96,6 @@ class TestExecuteServerCursor(BaseTestGenerator):
 
         self.assertEqual(response.status_code, 200)
         csv_data = response.data.decode()
-        print(csv_data)
 
         self.set_server_cursor(False)
 
@@ -104,7 +103,6 @@ class TestExecuteServerCursor(BaseTestGenerator):
         url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
-
 
         database_utils.disconnect_database(self, self._sid, self._did)
 

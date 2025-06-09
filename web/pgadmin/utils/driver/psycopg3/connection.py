@@ -692,7 +692,6 @@ WHERE db.datname = current_database()""")
     async def __reset_auto_commit_for(self, autocommit):
         await self.conn.set_autocommit(autocommit)
 
-
     def __cursor(self, server_cursor=False, scrollable=False):
 
         if not get_crypt_key()[0] and config.SERVER_MODE:
@@ -716,7 +715,7 @@ WHERE db.datname = current_database()""")
 
         if self.connected() and cur and not cur.closed:
             if not server_cursor or (
-                server_cursor and type(cur) == AsyncDictServerCursor):
+                    server_cursor and type(cur) is AsyncDictServerCursor):
                 return True, cur
 
         if not self.connected():

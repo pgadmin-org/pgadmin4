@@ -210,8 +210,9 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
 
     filter_sql = _data['filter_sql'] if 'filter_sql' in _data else None
     server_cursor = _data['server_cursor'] if\
-        'server_cursor' in _data and (_data['server_cursor'] == 'true' or
-                                      _data['server_cursor'] is True) else False
+        'server_cursor' in _data and (
+            _data['server_cursor'] == 'true' or _data['server_cursor'] is True
+    ) else False
 
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
@@ -1893,8 +1894,8 @@ def set_pref_options(trans_id, operation):
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
-    if status and conn is not None and \
-        trans_obj is not None and session_obj is not None:
+    if (status and conn is not None and
+            trans_obj is not None and session_obj is not None):
 
         res = None
 
