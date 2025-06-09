@@ -59,6 +59,7 @@ LANGUAGES = {
     'pt_BR': 'Portuguese (Brazilian)',
     'ru': 'Russian',
     'es': 'Spanish',
+    'sv': 'Swedish'
 }
 
 # DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING!

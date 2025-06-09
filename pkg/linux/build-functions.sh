@@ -178,7 +178,6 @@ _build_runtime() {
     pushd "${BUNDLEDIR}/resources/app" > /dev/null || exit
         yarn set version berry
         yarn set version 4
-        yarn plugin import workspace-tools
         yarn workspaces focus --production
 
         # remove the yarn cache
