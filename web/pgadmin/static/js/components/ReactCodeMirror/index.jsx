@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback, useMemo, useRef, useState, useEffect, useContext } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
@@ -25,7 +25,6 @@ import FindDialog from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 import usePreferences from '../../../../preferences/static/js/store';
 import { toCodeMirrorKey } from '../../utils';
-import { QueryToolEventsContext } from '../../../../tools/sqleditor/static/js/components/QueryToolComponent';
 import { QUERY_TOOL_EVENTS } from '../../../../tools/sqleditor/static/js/components/QueryToolConstants';
 
 const Root = styled('div')(() => ({
@@ -64,14 +63,12 @@ CopyButton.propTypes = {
 };
 
 
-export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, ...props}) {
+export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, eventBus, ...props}) {
   const editor = useRef();
   const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
-  const eventBus = useContext(QueryToolEventsContext);
-
   const finalCustomKeyMap = useMemo(()=>[{
     key: toCodeMirrorKey(preferences.find), run: () => {
       setShowFind(prevVal => [true, false, !prevVal[2]]);
@@ -85,7 +82,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     preventDefault: true,
     stopPropagation: true,
   }, {
-    key: toCodeMirrorKey(preferences.gotolinecol), run: () => {
+    key: toCodeMirrorKey(preferences.goto_line_col), run: () => {
       setShowGoto(true);
     },
     preventDefault: true,
@@ -98,7 +95,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     stopPropagation: true,
   },{
     key: toCodeMirrorKey(preferences.format_sql), run: () => {
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
+      eventBus?.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
     },
     preventDefault: true,
     stopPropagation: true,
@@ -170,5 +167,6 @@ CodeMirror.propTypes = {
   className: CustomPropTypes.className,
   showCopyBtn: PropTypes.bool,
   customKeyMap: PropTypes.array,
-  onTextSelect:PropTypes.func
+  onTextSelect:PropTypes.func,
+  eventBus: PropTypes.object,
 };
