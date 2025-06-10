@@ -1486,9 +1486,6 @@ def save(trans_id):
             session_obj['columns_info'],
             session_obj['client_primary_key'],
             conn)
-        # trans_obj.set_thread_native_id(None)
-        # session_obj['command_obj'] = pickle.dumps(trans_obj, -1)
-        # update_session_grid_transaction(trans_id, session_obj)
     else:
         status = False
         res = error_msg
@@ -1848,11 +1845,6 @@ def check_and_upgrade_to_qt(trans_id, connect):
 
     if 'gridData' in session and str(trans_id) in session['gridData']:
         data = pickle.loads(session['gridData'][str(trans_id)]['command_obj'])
-        session['gridData'][str(trans_id)] = {
-            # -1 specify the highest protocol version available
-            'command_obj': pickle.dumps(data, -1)
-        }
-
         if data.object_type in ['table', 'foreign_table', 'view', 'mview']:
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 data.sid)
