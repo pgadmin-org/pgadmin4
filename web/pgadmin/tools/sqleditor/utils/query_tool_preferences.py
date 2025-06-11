@@ -551,7 +551,7 @@ def register_query_tool_preferences(self):
             'control': True,
             'key': {
                 'key_code': 76,
-                'char': 'L'
+                'char': 'l'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -885,7 +885,7 @@ def register_query_tool_preferences(self):
             'ctrl_is_meta': True,
             'key': {
                 'key_code': 70,
-                'char': 'F'
+                'char': 'f'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -904,7 +904,7 @@ def register_query_tool_preferences(self):
             'ctrl_is_meta': True,
             'key': {
                 'key_code': 70,
-                'char': 'F'
+                'char': 'f'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -923,7 +923,7 @@ def register_query_tool_preferences(self):
             'ctrl_is_meta': True,
             'key': {
                 'key_code': 76,
-                'char': 'L'
+                'char': 'l'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -961,7 +961,7 @@ def register_query_tool_preferences(self):
             'ctrl_is_meta': True,
             'key': {
                 'key_code': 75,
-                'char': 'K'
+                'char': 'k'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,

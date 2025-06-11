@@ -598,7 +598,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
-        <PgMenuItem shortcut={queryToolPref.gotolinecol}
+        <PgMenuItem shortcut={queryToolPref.goto_line_col}
           onClick={()=>{executeCmd('gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={queryToolPref.indent}

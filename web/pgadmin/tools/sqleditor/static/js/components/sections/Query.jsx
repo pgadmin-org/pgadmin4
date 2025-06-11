@@ -384,12 +384,14 @@ export default function Query({onTextSelect, setQtStatePartial}) {
           shiftKey: findShortcut.shift,
           altKey: findShortcut.alt,
         };
-      } else { 
-        key.keyCode = replaceShortcut.key.key_code;
-        key.metaKey = replaceShortcut.ctrl_is_meta;
-        key.ctrlKey = replaceShortcut.control;
-        key.shiftKey = replaceShortcut.shift;
-        key.altKey = replaceShortcut.alt;
+      } else {
+        key = {
+          keyCode: replaceShortcut.key.key_code,
+          metaKey: replaceShortcut.ctrl_is_meta,
+          ctrlKey: replaceShortcut.control,
+          shiftKe: replaceShortcut.shift,
+          altKey: replaceShortcut.alt,
+        };
       }
       if(isMac()) {
         key.metaKey = true;
