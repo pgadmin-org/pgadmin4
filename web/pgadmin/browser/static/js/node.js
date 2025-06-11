@@ -141,6 +141,7 @@ define('pgadmin.browser.node', [
             function() {
               return !!(self.canEdit(...arguments));
             } : (!!self.canEdit),
+          permission: self.type == 'server' ? AllPermissionTypes.OBJECT_REGISTER_SERVER : undefined,
         }]);
       }
 
@@ -161,7 +162,7 @@ define('pgadmin.browser.node', [
             function() {
               return !!(self.canDrop(...arguments));
             } : (!!self.canDrop),
-          permission: self.type == 'server' ? 'object_register_server' : undefined,
+          permission: self.type == 'server' ? AllPermissionTypes.OBJECT_REGISTER_SERVER : undefined,
         }]);
 
         if (self.canDropCascade) {
