@@ -923,6 +923,7 @@ def start_view_data(trans_id):
         update_session_grid_transaction(trans_id, session_obj)
 
         if trans_obj.server_cursor:
+            conn.release_async_cursor()
             conn.execute_void("BEGIN;")
 
         # Execute sql asynchronously
