@@ -156,8 +156,9 @@ class StartRunningQuery:
             # and formatted_error is True.
             with app.app_context():
                 try:
-                    if trans_obj.server_cursor and sql == 'COMMIT;':
-                        conn.execute_void("COMMIT;")
+                    if trans_obj.server_cursor and (sql == 'COMMIT;' or
+                                                    sql == 'ROLLBACK;'):
+                        conn.execute_void(sql)
                     else:
                         _, _ = conn.execute_async(
                             sql, server_cursor=trans_obj.server_cursor)
