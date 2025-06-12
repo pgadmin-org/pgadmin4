@@ -17,6 +17,7 @@ import os
 import secrets
 import datetime
 import asyncio
+import copy
 from collections import deque
 import psycopg
 from flask import g, current_app
@@ -30,7 +31,7 @@ from pgadmin.model import User
 from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
 from ..abstract import BaseConnection
-from .cursor import DictCursor, AsyncDictCursor
+from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
 from .typecast import register_global_typecasters,\
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
@@ -186,6 +187,7 @@ class Connection(BaseConnection):
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
+        self._autocommit = True
 
         super(Connection, self).__init__()
 
@@ -358,6 +360,7 @@ class Connection(BaseConnection):
                             prepare_threshold=manager.prepare_threshold
                         )
                     pg_conn = asyncio.run(connectdbserver())
+                    pg_conn.server_cursor_factory = AsyncDictServerCursor
                 else:
                     pg_conn = psycopg.Connection.connect(
                         connection_string,
@@ -704,9 +707,10 @@ WHERE db.datname = current_database()""")
             self.conn_id.encode('utf-8')
         ), None)
 
-        if self.connected() and cur and not cur.closed and \
-                (not server_cursor or (server_cursor and cur.name)):
-            return True, cur
+        if self.connected() and cur and not cur.closed:
+            if not server_cursor or (
+                    server_cursor and type(cur) is AsyncDictServerCursor):
+                return True, cur
 
         if not self.connected():
             errmsg = ""
@@ -732,8 +736,10 @@ WHERE db.datname = current_database()""")
             if server_cursor:
                 # Providing name to cursor will create server side cursor.
                 cursor_name = "CURSOR:{0}".format(self.conn_id)
+                self.conn.server_cursor_factory = AsyncDictServerCursor
                 cur = self.conn.cursor(
-                    name=cursor_name
+                    name=cursor_name,
+                    scrollable=scrollable
                 )
             else:
                 cur = self.conn.cursor(scrollable=scrollable)
@@ -893,7 +899,10 @@ WHERE db.datname = current_database()""")
         def gen(conn_obj, trans_obj, quote='strings', quote_char="'",
                 field_separator=',', replace_nulls_with=None):
 
-            cur.scroll(0, mode='absolute')
+            try:
+                cur.scroll(0, mode='absolute')
+            except Exception as e:
+                print(str(e))
             results = cur.fetchmany(records)
             if not results:
                 yield gettext('The query executed did not return any data.')
@@ -1037,7 +1046,15 @@ WHERE db.datname = current_database()""")
 
         return True, None
 
-    def execute_async(self, query, params=None, formatted_exception_msg=True):
+    def release_async_cursor(self):
+        if self.__async_cursor and not self.__async_cursor.closed:
+            try:
+                self.__async_cursor.close_cursor()
+            except Exception as e:
+                print("EXception==", str(e))
+
+    def execute_async(self, query, params=None, formatted_exception_msg=True,
+                      server_cursor=False):
         """
         This function executes the given query asynchronously and returns
         result.
@@ -1048,10 +1065,11 @@ WHERE db.datname = current_database()""")
             formatted_exception_msg: if True then function return the
             formatted exception message
         """
-
         self.__async_cursor = None
         self.__async_query_error = None
-        status, cur = self.__cursor(scrollable=True)
+
+        status, cur = self.__cursor(scrollable=True,
+                                    server_cursor=server_cursor)
 
         if not status:
             return False, str(cur)
@@ -1501,7 +1519,7 @@ Failed to reset the connection to the server due to following error:
         else:
             status = 1
 
-        if not cur:
+        if not cur or cur.closed:
             return False, self.CURSOR_NOT_FOUND
 
         result = None
@@ -1533,7 +1551,6 @@ Failed to reset the connection to the server due to following error:
                     result = []
                     try:
                         result = cur.fetchall(_tupples=True)
-
                     except psycopg.ProgrammingError:
                         result = None
                     except psycopg.Error:

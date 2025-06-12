@@ -55,6 +55,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   // NONE - no select, PAGE - show select all, ALL - select all.
   const [allRowsSelect, setAllRowsSelect] = useState('NONE');
+  const [serverCursor, setServerCursor] = useState(false);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, (newPos)=>{
@@ -81,6 +82,9 @@ export function StatusBar({eol, handleEndOfLineChange}) {
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows)=>{
       setSelectedRowsCount(rows);
+    });
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SERVER_CURSOR, (server_cursor)=>{
+      setServerCursor(server_cursor);
     });
   }, []);
 
@@ -111,7 +115,7 @@ export function StatusBar({eol, handleEndOfLineChange}) {
 
   return (
     <StyledBox>
-      <Box className='StatusBar-padding StatusBar-divider'>{gettext('Total rows: %s', rowsCount)}</Box>
+      <Box className='StatusBar-padding StatusBar-divider'>{serverCursor && gettext('Query executed with server cursor')} {!serverCursor && gettext('Total rows: %s', rowsCount)}</Box>
       {lastTaskText &&
         <Box className='StatusBar-padding StatusBar-divider'>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }

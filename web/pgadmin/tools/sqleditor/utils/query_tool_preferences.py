@@ -80,6 +80,17 @@ def register_query_tool_preferences(self):
                          'Tool tabs.')
     )
 
+    self.server_cursor = self.preference.register(
+        'Options', 'server_cursor',
+        gettext("Use server cursor?"), 'boolean', False,
+        category_label=PREF_LABEL_OPTIONS,
+        help_str=gettext('If set to True, the dataset will be fetched using a'
+                         ' server-side cursor after the query is executed.'
+                         ' This allows controlled data transfer to the client,'
+                         ' enabling examination of large datasets without'
+                         ' loading them entirely into memory.')
+    )
+
     self.show_prompt_save_query_changes = self.preference.register(
         'Options', 'prompt_save_query_changes',
         gettext("Prompt to save unsaved query changes?"), 'boolean', True,

@@ -73,7 +73,7 @@ export default function ObjectExplorerToolbar() {
     <Box display="flex" alignItems="center" gap="2px">
       <PgButtonGroup size="small">
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} shortcut={browserPref?.sub_menu_query_tool} />
-        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context'] ?? 
+        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context'] ??
           {label :gettext('All Rows')}}
         shortcut={browserPref?.sub_menu_view_data} />
         <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context'] ?? { label : gettext('Filtered Rows...')}} />

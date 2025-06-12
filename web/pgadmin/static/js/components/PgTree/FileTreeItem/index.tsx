@@ -134,6 +134,7 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
   }
 
   private readonly setActiveFile = async (FileOrDir): Promise<void> => {
+
     this.props.changeDirectoryCount(FileOrDir.parent);
     if(FileOrDir._loaded !== true) {
       this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'added', FileOrDir);
