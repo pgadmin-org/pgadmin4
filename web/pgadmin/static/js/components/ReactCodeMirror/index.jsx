@@ -13,6 +13,7 @@ import FileCopyRoundedIcon from '@mui/icons-material/FileCopyRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import PropTypes from 'prop-types';
 import { startCompletion } from '@codemirror/autocomplete';
+import { format } from 'sql-formatter';
 
 import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
@@ -25,7 +26,6 @@ import FindDialog from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 import usePreferences from '../../../../preferences/static/js/store';
 import { toCodeMirrorKey } from '../../utils';
-import { QUERY_TOOL_EVENTS } from '../../../../tools/sqleditor/static/js/components/QueryToolConstants';
 
 const Root = styled('div')(() => ({
   position: 'relative',
@@ -63,12 +63,45 @@ CopyButton.propTypes = {
 };
 
 
-export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, eventBus, ...props}) {
+export default function CodeMirror({className, currEditor, showCopyBtn=false, customKeyMap=[], onTextSelect, ...props}) {
   const editor = useRef();
   const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
+
+  const formatSQL = (view)=>{
+    let selection = true, sql = view.getSelection();
+    /* New library does not support capitalize casing
+      so if a user has set capitalize casing we will
+      use preserve casing which is default for the library.
+    */
+    let formatPrefs = {
+      language: 'postgresql',
+      keywordCase: preferences.keyword_case === 'capitalize' ? 'preserve' : preferences.keyword_case,
+      identifierCase: preferences.identifier_case === 'capitalize' ? 'preserve' : preferences.identifier_case,
+      dataTypeCase: preferences.data_type_case,
+      functionCase: preferences.function_case,
+      logicalOperatorNewline: preferences.logical_operator_new_line,
+      expressionWidth: preferences.expression_width,
+      linesBetweenQueries: preferences.lines_between_queries,
+      tabWidth: preferences.tab_size,
+      useTabs: !preferences.use_spaces,
+      denseOperators: !preferences.spaces_around_operators,
+      newlineBeforeSemicolon: preferences.new_line_before_semicolon
+    };
+    if(sql == '') {
+      sql = view.getValue();
+      selection = false;
+    }
+    let formattedSql = format(sql,formatPrefs);
+    if(selection) {
+      view.replaceSelection(formattedSql);
+    } else {
+      view.setValue(formattedSql);
+    }
+  };
+
   const finalCustomKeyMap = useMemo(()=>[{
     key: toCodeMirrorKey(preferences.find), run: () => {
       setShowFind(prevVal => [true, false, !prevVal[2]]);
@@ -94,9 +127,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     preventDefault: true,
     stopPropagation: true,
   },{
-    key: toCodeMirrorKey(preferences.format_sql), run: () => {
-      eventBus?.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
-    },
+    key: toCodeMirrorKey(preferences.format_sql), run: formatSQL,
     preventDefault: true,
     stopPropagation: true,
   },{
@@ -168,5 +199,4 @@ CodeMirror.propTypes = {
   showCopyBtn: PropTypes.bool,
   customKeyMap: PropTypes.array,
   onTextSelect:PropTypes.func,
-  eventBus: PropTypes.object,
 };

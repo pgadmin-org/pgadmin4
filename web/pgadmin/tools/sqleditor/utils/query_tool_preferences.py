@@ -561,7 +561,7 @@ def register_query_tool_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'download_results',
-        gettext('Download Results'),
+        gettext('Download results'),
         'keyboardshortcut',
         {
             'alt': False,
@@ -615,7 +615,7 @@ def register_query_tool_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'switch_panel',
-        gettext('Switch Panel'),
+        gettext('Switch panel'),
         'keyboardshortcut',
         {
             'alt': True,

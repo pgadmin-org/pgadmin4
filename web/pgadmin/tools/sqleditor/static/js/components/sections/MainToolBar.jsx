@@ -291,9 +291,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     setLimit(e.target.value);
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SET_LIMIT,e.target.value);
   };
-  const formatSQL=()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
-  };
   const toggleCase=()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE);
   };
@@ -442,12 +439,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
       shortcut: queryToolPref.clear_query,
       options: {
         callback: ()=>{clearQuery();}
-      }
-    },
-    {
-      shortcut: queryToolPref.format_sql,
-      options: {
-        callback: ()=>{formatSQL();}
       }
     },
   ], containerRef);
@@ -612,7 +603,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={()=>{executeCmd('formatSql');}}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}
