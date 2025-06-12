@@ -1895,11 +1895,11 @@ def set_pref_options(trans_id, operation):
 
         if operation == 'auto_commit':
             # Call the set_auto_commit method of transaction object
-            trans_obj.set_auto_commit(_data['auto_commit'])
+            trans_obj.set_auto_commit(_data)
         elif operation == 'auto_rollback':
-            trans_obj.set_auto_rollback(_data['auto_rollback'])
+            trans_obj.set_auto_rollback(_data)
         elif operation == 'server_cursor':
-            trans_obj.set_server_cursor(_data['server_cursor'])
+            trans_obj.set_server_cursor(_data)
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.

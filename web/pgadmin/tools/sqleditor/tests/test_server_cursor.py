@@ -64,10 +64,7 @@ class TestExecuteServerCursor(BaseTestGenerator):
 
     def set_server_cursor(self, server_cursor):
         _url = '/sqleditor/server_cursor/{0}'.format(self.trans_id)
-        res = self.tester.post(_url, data=json.dumps({
-            "server_cursor": server_cursor
-        }))
-
+        res = self.tester.post(_url, data=json.dumps(server_cursor))
         self.assertEqual(res.status_code, 200)
 
     def runTest(self):
@@ -93,8 +90,8 @@ class TestExecuteServerCursor(BaseTestGenerator):
         response = self.initiate_sql_query_tool(self.trans_id, self.sql)
 
         self.assertEqual(response.status_code, 200)
-        _resp = response.data.decode()
-        self.assertTrue(_resp.server_cursor)
+        _resp =json.loads(response.data.decode())
+        self.assertTrue(_resp['data']['server_cursor'])
 
         self.set_server_cursor(False)
 
