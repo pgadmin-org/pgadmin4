@@ -12,7 +12,7 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import PropTypes from 'prop-types';
-import { DefaultButton, PgIconButton } from '../../../static/js/components/Buttons';
+import { DefaultButton, PgIconButton } from '../components/Buttons';
 import pgAdmin from 'sources/pgadmin';
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -21,11 +21,11 @@ const StyledBox = styled(Box)(({theme}) => ({
   minWidth: '325px',
   maxWidth: '400px',
   ...theme.mixins.panelBorder.all,
-  '&.UpdateCheckNotify-containerWarning': {
+  '&.UpdateWarningNotifier-containerWarning': {
     borderColor: theme.palette.warning.main,
     backgroundColor: theme.palette.warning.light,
   },
-  '& .UpdateCheckNotify-containerHeader': {
+  '& .UpdateWarningNotifier-containerHeader': {
     height: '32px',
     display: 'flex',
     justifyContent: 'space-between',
@@ -33,11 +33,11 @@ const StyledBox = styled(Box)(({theme}) => ({
     alignItems: 'center',
     borderTopLeftRadius: 'inherit',
     borderTopRightRadius: 'inherit',
-    '& .UpdateCheckNotify-iconWarning': {
+    '& .UpdateWarningNotifier-iconWarning': {
       color: theme.palette.warning.main,
     },
   },
-  '&.UpdateCheckNotify-containerBody': {
+  '&.UpdateWarningNotifier-containerBody': {
     marginTop: '1rem',
     overflowWrap: 'break-word',
   },
@@ -53,12 +53,12 @@ function UpdateWarningNotifier({desc, title, onClose, onClick, status, uniqueKey
     }
   };
   return (
-    <StyledBox className={'UpdateCheckNotify-containerWarning'} data-test={'Update-popup-warning'}>
-      <Box display="flex" justifyContent="space-between" className='UpdateCheckNotify-containerHeader'>
+    <StyledBox className={'UpdateWarningNotifier-containerWarning'} data-test={'Update-popup-warning'}>
+      <Box display="flex" justifyContent="space-between" className='UpdateWarningNotifier-containerHeader'>
         <Box marginRight={'1rem'}>{title}</Box>
-        <PgIconButton size="xs" noBorder icon={<CloseIcon />} onClick={handleClose} title={'Close'} className={'UpdateCheckNotify-iconWarning'} />
+        <PgIconButton size="xs" noBorder icon={<CloseIcon />} onClick={handleClose} title={'Close'} className={'UpdateWarningNotifier-iconWarning'} />
       </Box>
-      <Box className='UpdateCheckNotify-containerBody'>
+      <Box className='UpdateWarningNotifier-containerBody'>
         {desc && <Box>{desc}</Box>}
         <Box display="flex">
           {onClick && <Box marginTop={'1rem'} display="flex">
@@ -86,7 +86,7 @@ UpdateWarningNotifier.propTypes = {
   uniqueKey: PropTypes.string,
 };
 
-export function appUpdateNotifier(desc, type, onClick, hideDuration=null, title='', status='download_update') {
+export function appAutoUpdateNotifier(desc, type, onClick, hideDuration=null, title='', status='download_update') {
   const uniqueKey = `${title}::${desc}`;
 
   // Check if this warning is already active except error type
