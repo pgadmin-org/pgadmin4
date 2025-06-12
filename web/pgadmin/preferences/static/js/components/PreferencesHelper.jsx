@@ -198,7 +198,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 
-export function showResetPrefModal(api, pgAdmin, preferencesStore) {
+export function showResetPrefModal(api, pgAdmin, preferencesStore, onReset) {
   pgAdmin.Browser.notifier.showModal(
     gettext('Reset all preferences'),
     (modalClose) => {
@@ -209,7 +209,7 @@ export function showResetPrefModal(api, pgAdmin, preferencesStore) {
             method: 'DELETE',
           });
           preferencesStore.cache(); // Refresh preferences cache
-
+          onReset();
           if (reloadNow) {
             reloadPgAdmin();
           } else {

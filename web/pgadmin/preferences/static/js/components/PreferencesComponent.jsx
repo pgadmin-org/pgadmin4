@@ -138,6 +138,7 @@ export default function PreferencesComponent({panelId}) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [loaderText, setLoaderText] = useState(gettext('Loading preferences...'));
   const layoutDocker = React.useContext(LayoutDockerContext);
+  const valuesVersionRef = useRef();
 
   const fetchPreferences = async () => {
     setLoaderText(gettext('Loading preferences...'));
@@ -180,6 +181,7 @@ export default function PreferencesComponent({panelId}) {
         treeNodesData.push(categoryNode);
       });
 
+      valuesVersionRef.current = new Date().getTime();
       setPrefTreeData(treeNodesData);
       setInitValues(values);
       setSelectedItem(selectedItem || treeNodesData[0]?.children[0]);
@@ -329,7 +331,9 @@ export default function PreferencesComponent({panelId}) {
   };
 
   const resetAllPreferences = () => {
-    showResetPrefModal(api, pgAdmin, preferencesStore);
+    showResetPrefModal(api, pgAdmin, preferencesStore, ()=>{
+      fetchPreferences();
+    });
   };
 
   const filteredList = useFuzzySearchList({
@@ -391,6 +395,7 @@ export default function PreferencesComponent({panelId}) {
           {
             prefSchema.current &&
             <RightPreference
+              key={valuesVersionRef.current}
               schema={prefSchema.current}
               initValues={initValues}
               filteredItemIds={filteredItemIds}

@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import pgAdmin from 'sources/pgadmin';
 import { BROWSER_PANELS } from '../../../browser/static/js/constants';
 import { preferencesPanelData } from '../../../static/js/BrowserComponent';
 
@@ -47,11 +46,8 @@ export default class Preferences {
 
   // This is a callback function to show preferences.
   show() {
-    let processPanel = this.pgBrowser.docker.default_workspace.find(BROWSER_PANELS.PREFERENCES);
-    if(!processPanel) {
-      pgAdmin.Browser.docker.default_workspace.openTab(preferencesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
-    } else {
-      this.pgBrowser.docker.default_workspace.focus(BROWSER_PANELS.PREFERENCES);
-    }
+    let handler = this.pgBrowser.getDockerHandler?.(BROWSER_PANELS.USER_MANAGEMENT, this.pgBrowser.docker.default_workspace);
+    handler.focus();
+    handler.docker.openTab(preferencesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
   }
 }

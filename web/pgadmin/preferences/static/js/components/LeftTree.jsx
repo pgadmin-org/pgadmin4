@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Resizable } from 're-resizable';
 // Import helpers from new file
@@ -30,6 +30,14 @@ export default function LeftTree({prefTreeData, selectedItem, setSelectedItem, f
     }, []);
     return filteredTreeData;
   }, [prefTreeData, filteredList]);
+
+  useEffect(() => {
+    // When the filtered list changes, we need to update the selected item
+    // to the first item in the filtered tree data, if available.
+    if (filteredTreeData.length > 0) {
+      setSelectedItem(filteredTreeData[0]?.children[0] ?? null);
+    }
+  }, [filteredList.length]);
 
   return (
     <Resizable className='PreferencesComponent-treeContainer'

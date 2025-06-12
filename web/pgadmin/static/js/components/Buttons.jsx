@@ -174,11 +174,11 @@ DefaultButton.propTypes = {
 
 
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, accesskey, isDropdown, tooltipPlacement, ...props}, ref)=>{
+export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, isDropdown, tooltipPlacement, ...props}, ref)=>{
   const [tooltipOpen, setTooltipOpen] = useState(false);
   let shortcutTitle = null;
-  if(accesskey || shortcut) {
-    shortcutTitle = <ShortcutTitle title={title} accesskey={accesskey} shortcut={shortcut}/>;
+  if(shortcut) {
+    shortcutTitle = <ShortcutTitle title={title} shortcut={shortcut}/>;
   }
 
   useEffect(() => {
@@ -204,7 +204,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
           <span>
             <PrimaryButton ref={ref} style={style}
               className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-              accessKey={accesskey} data-label={title || ''} {...props}>
+              data-label={title || ''} {...props}>
               {icon}
             </PrimaryButton>
           </span>
@@ -216,7 +216,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
           <span>
             <DefaultButton ref={ref} style={style}
               className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-              accessKey={accesskey} data-label={title || ''} {...props}>
+              data-label={title || ''} {...props}>
               {icon}
             </DefaultButton>
           </span>
@@ -228,7 +228,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       <Tooltip {...tooltipProps}>
         <PrimaryButton ref={ref} style={style}
           className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
+          data-label={title || ''} {...props}>
           {icon}
         </PrimaryButton>
       </Tooltip>
@@ -239,7 +239,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       <Tooltip {...tooltipProps}>
         <DefaultButton ref={ref} style={style}
           className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
+          data-label={title || ''} {...props}>
           {icon}
         </DefaultButton>
       </Tooltip>

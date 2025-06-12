@@ -72,6 +72,7 @@ export default function RightPreference({ schema, filteredItemIds, selectedItem,
         onDataChange={(isChanged, changedData) => {
           onDataChange(changedData);
         }}
+        focusOnFirstInput={false}
       />
     </div>
   );
@@ -80,7 +81,7 @@ RightPreference.propTypes = {
   schema: PropTypes.object.isRequired,
   initValues: PropTypes.object.isRequired,
   onDataChange: PropTypes.func.isRequired,
-  filteredItemIds: PropTypes.arrayOf(PropTypes.number).isRequired,
+  filteredItemIds: PropTypes.arrayOf(PropTypes.any).isRequired,
   selectedItem: PropTypes.object,
   setSelectedItem: PropTypes.func.isRequired,
 };

@@ -72,9 +72,11 @@ export const defaultTabsData = [
   processesPanelData,
 ];
 
-const mainPanelGroup  = {
-  ...getDefaultGroup(),
-  panelExtra: () => <MainMoreToolbar tabsData={defaultTabsData}/>
+const getMorePanelGroup = (tabsData) => {
+  return {
+    ...getDefaultGroup(),
+    panelExtra: () => <MainMoreToolbar tabsData={tabsData}/>
+  };
 };
 
 let defaultLayout = {
@@ -121,7 +123,7 @@ function Layouts({browser}) {
         savedLayout={pgAdmin.Browser.utils.layout}
         groups={{
           'object-explorer': objectExplorerGroup,
-          'playground': mainPanelGroup,
+          'playground': getMorePanelGroup(defaultTabsData),
         }}
         noContextGroups={['object-explorer']}
         resetToTabPanel={BROWSER_PANELS.MAIN}
@@ -137,7 +139,7 @@ function Layouts({browser}) {
           }}
           defaultLayout={item.layout}
           groups={{
-            'playground': item?.tabsData ? {...getDefaultGroup(), panelExtra: () => <MainMoreToolbar tabsData={item.tabsData}/>} : {...getDefaultGroup()},
+            'playground': item?.tabsData ? getMorePanelGroup(item?.tabsData) : {...getDefaultGroup()},
           }}
           resetToTabPanel={BROWSER_PANELS.MAIN}
           isLayoutVisible={currentWorkspace == item.workspace}
