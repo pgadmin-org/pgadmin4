@@ -49,7 +49,7 @@ let [pythonPath, pgadminFile] = misc.getAppPaths(__dirname);
 
 const menuCallbacks = {
   'check_for_updates': ()=>{
-    pgAdminMainScreen.webContents.send('appUpdateNotifier', {check_version_update: true});
+    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {check_version_update: true});
   },
   'restart_to_update': ()=>{
     forceQuitAndInstallUpdate();
@@ -451,11 +451,11 @@ function notifyUpdateInstalled() {
     configStore.set('update_installed', false);
     // Notify renderer
     if (pgAdminMainScreen) {
-      pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_installed: true});
+      pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});
     } else {
       // If main screen not ready, wait and send after it's created
       app.once('browser-window-created', (event, window) => {
-        window.webContents.send('appUpdateNotifier', {update_installed: true});
+        window.webContents.send('notifyAppAutoUpdate', {update_installed: true});
       });
     }
   }
@@ -510,25 +510,25 @@ if (process.platform === 'darwin') {
   autoUpdater.on('update-available', () => {
     setConfigAndRefreshMenu('update-available');
     misc.writeServerLog('[Auto-Updater]: Update downloading...');
-    pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_downloading: true});
+    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_downloading: true});
   });
 
   autoUpdater.on('update-not-available', () => {
     setConfigAndRefreshMenu('update-not-available');
     misc.writeServerLog('[Auto-Updater]: No update available...');
-    pgAdminMainScreen.webContents.send('appUpdateNotifier', {no_update_available: true});
+    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {no_update_available: true});
   });
 
   autoUpdater.on('update-downloaded', () => {
     setConfigAndRefreshMenu('update-downloaded');
     misc.writeServerLog('[Auto-Updater]: Update downloaded...');
-    pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_downloaded: true});
+    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_downloaded: true});
   });
 
   autoUpdater.on('error', (message) => {
     setConfigAndRefreshMenu('error-close');
     misc.writeServerLog(`[Auto-Updater]: ${message}`);
-    pgAdminMainScreen.webContents.send('appUpdateNotifier', {error: true, errMsg: message});
+    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {error: true, errMsg: message});
   });
 
   ipcMain.on('sendDataForAppUpdate', (_, data) => {
@@ -552,7 +552,7 @@ if (process.platform === 'darwin') {
       } catch (err) {
         misc.writeServerLog('[Auto-Updater]: Error setting autoUpdater feed URL: ' + err.message);
         if (pgAdminMainScreen) {
-          pgAdminMainScreen.webContents.send('appUpdateNotifier', {error: true, errMsg: 'Failed to check for updates. Please try again later.'});
+          pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {error: true, errMsg: 'Failed to check for updates. Please try again later.'});
         }
         return;
       }
