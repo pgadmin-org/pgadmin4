@@ -57,6 +57,32 @@ if [ "${PGADMIN_PYTHON_VERSION}" == "" ]; then
     export PGADMIN_PYTHON_VERSION=3.13.1
 fi
 
+# Initialize variables
+CREATE_ZIP=0
+CREATE_DMG=1
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --zip)
+            CREATE_ZIP=1
+            shift
+            ;;
+        --help)
+            echo "Usage: $0 [OPTIONS]"
+            echo "Options:"
+            echo "  --zip         Create both ZIP and DMG files"
+            echo "  --help        Display this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/build-functions.sh"
 
@@ -69,6 +95,16 @@ _complete_bundle
 _generate_sbom
 _codesign_binaries
 _codesign_bundle
-_create_dmg
-_codesign_dmg
-_notarize_pkg
+
+# Handle ZIP creation if requested
+if [ "${CREATE_ZIP}" -eq 1 ]; then
+    _create_zip
+    _notarize_zip
+fi
+
+# Handle DMG creation if not disabled
+if [ "${CREATE_DMG}" -eq 1 ]; then
+    _create_dmg
+    _codesign_dmg
+    _notarize_dmg
+fi
