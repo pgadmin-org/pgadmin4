@@ -35,7 +35,7 @@ import { useWorkspace, WorkspaceProvider } from '../../misc/workspaces/static/js
 import { PgAdminProvider, usePgAdmin } from './PgAdminProvider';
 import PreferencesComponent from '../../preferences/static/js/components/PreferencesComponent';
 import { ApplicationStateProvider } from '../../settings/static/ApplicationStateProvider';
-import { appUpdateNotifier } from '../../browser/static/js/UpdateCheckNotify';
+import { appAutoUpdateNotifier } from './helpers/appAutoUpdateNotifier';
 
 const objectExplorerGroup  = {
   tabLocked: true,
@@ -191,22 +191,22 @@ export default function BrowserComponent({pgAdmin}) {
   
   // Listen for auto-update events from the Electron main process and display notifications
   // to the user based on the update status (e.g., update available, downloading, downloaded, installed, or error).
-  if (window.electronUI && typeof window.electronUI.appUpdateNotifier === 'function') {
-    window.electronUI.appUpdateNotifier((data)=>{
+  if (window.electronUI && typeof window.electronUI.notifyAppAutoUpdate === 'function') {
+    window.electronUI.notifyAppAutoUpdate((data)=>{
       if (data?.check_version_update) {
         pgAdmin.Browser.check_version_update(true);
       } else if (data.update_downloading) {
-        appUpdateNotifier('Update downloading...', 'info', null, 10000);
+        appAutoUpdateNotifier('Update downloading...', 'info', null, 10000);
       } else if (data.no_update_available) {
-        appUpdateNotifier('No update available.....', 'info', null, 10000);
+        appAutoUpdateNotifier('No update available.....', 'info', null, 10000);
       } else if (data.update_downloaded) {
         const UPDATE_DOWNLOADED_MESSAGE = gettext('An update is ready. Restart the app now to install it, or later to keep using the current version.');
-        appUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', installUpdate, null, 'Update downloaded', 'update_downloaded');
+        appAutoUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', installUpdate, null, 'Update downloaded', 'update_downloaded');
       } else if (data.error) {
-        appUpdateNotifier(`${data.errMsg}`, 'error');
+        appAutoUpdateNotifier(`${data.errMsg}`, 'error');
       } else if (data.update_installed) {
         const UPDATE_INSTALLED_MESSAGE = gettext('Update installed successfully!');
-        appUpdateNotifier(UPDATE_INSTALLED_MESSAGE, 'success');
+        appAutoUpdateNotifier(UPDATE_INSTALLED_MESSAGE, 'success');
       }
     });
   }
