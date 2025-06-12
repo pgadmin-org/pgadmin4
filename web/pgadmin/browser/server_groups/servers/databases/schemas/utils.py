@@ -402,7 +402,7 @@ class DataTypeReader:
     def parse_type_name(cls, type_name):
         """
         Returns prase type name without length and precision
-        so that we can match the end result with types in the select2.
+        so that we can match the end result with types in the select.
 
         Args:
             self: self

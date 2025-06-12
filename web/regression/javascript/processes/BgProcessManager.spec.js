@@ -103,22 +103,4 @@ describe('BgProcessManager', ()=>{
     obj.checkPending();
     expect(nSpy).toHaveBeenCalled();
   });
-
-
-  it('openProcessesPanel', ()=>{
-    const panel = {};
-    jest.spyOn(pgBrowser.docker.default_workspace, 'openTab').mockReturnValue(panel);
-
-    /* panel open */
-    jest.spyOn(pgBrowser.docker.default_workspace, 'find').mockReturnValue(panel);
-    jest.spyOn(pgBrowser.docker.default_workspace, 'focus');
-    obj.openProcessesPanel();
-    expect(pgBrowser.docker.default_workspace.focus).toHaveBeenCalled();
-    expect(pgBrowser.docker.default_workspace.openTab).not.toHaveBeenCalled();
-
-    /* panel closed */
-    jest.spyOn(pgBrowser.docker.default_workspace, 'find').mockReturnValue(null);
-    obj.openProcessesPanel();
-    expect(pgBrowser.docker.default_workspace.openTab).toHaveBeenCalled();
-  });
 });

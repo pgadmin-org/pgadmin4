@@ -48,22 +48,6 @@ class NavMenuLocators:
 
     maintenance_obj_css = "li[data-label='Maintenance...']"
 
-    show_system_objects_pref_label_xpath = \
-        "//label[contains(text(), 'Show system objects?')]"
-
-    maximize_pref_dialogue_css = "button[data-label='Maximize']"
-
-    maximize_pref_dialogue_css = "button[data-label='Maximize']"
-
-    specified_pref_node_exp_status = \
-        "//*[@id='treeContainer']//div//span[text()='{0}']"
-
-    specified_preference_tree_node = \
-        "//*[@id='treeContainer']//div//span[text()='{0}']" \
-
-    specified_sub_node_of_pref_tree_node = \
-        "//*[@id='treeContainer']//div//span[text()='{1}']"
-
     insert_bracket_pair_switch_btn = \
         ("//div[label[text()='Insert bracket pairs?']]/"
          "following-sibling::div//input")
@@ -110,6 +94,18 @@ class NavMenuLocators:
         "div[data-test='process-popup-end'] button[data-label='Close']"
     process_watcher_error_close_xpath = \
         ".btn.btn-sm-sq.btn-primary.pg-bg-close > i"
+
+
+class PreferencesLocaltors:
+    show_system_objects_pref_label_xpath = \
+        "//label[contains(text(), 'Show system objects?')]"
+
+    specified_preference_tree_node_xpath = \
+        ("//*[@id='treeContainer']//div[contains(@class,'PgTree-nodeLabel')]"
+         "[text()='{0}']")
+
+    save_btn = \
+        "#id-preferences button[data-label='Save']"
 
 
 class QueryToolLocators:
