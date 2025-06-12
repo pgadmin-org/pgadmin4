@@ -316,35 +316,31 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       ), {id:modalId});
     };
 
+    const createKeyObjectFromShortcut = (pref)=>{
+      // this function creates a key object from the shortcut preference
+      let key = {
+        keyCode: pref.key.key_code,
+        metaKey: pref.ctrl_is_meta,
+        ctrlKey: pref.control,
+        shiftKey: pref.shift,
+        altKey: pref.alt,
+      };
+      if(isMac()) {
+        key.metaKey = true;
+        key.ctrlKey = false;
+      }
+      return key;
+    };
+
     const unregisterEditorExecCmd = eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, (cmd='')=>{
       let key = {}, gotolinecol = queryToolCtx.preferences.sqleditor.goto_line_col,
         formatSql = queryToolCtx.preferences.sqleditor.format_sql;
       switch(cmd) {
       case 'gotoLineCol':
-        key = {
-          keyCode: gotolinecol.key.key_code,
-          metaKey: gotolinecol.ctrl_is_meta,
-          ctrlKey: gotolinecol.control,
-          shiftKey: gotolinecol.shift,
-          altKey: gotolinecol.alt,
-        };
-        if(isMac()) {
-          key.metaKey = true;
-          key.ctrlKey = false;
-        }
+        key = createKeyObjectFromShortcut(gotolinecol);
         break;
       case 'formatSql':
-        key = {
-          keyCode: formatSql.key.key_code,
-          metaKey: formatSql.ctrl_is_meta,
-          ctrlKey: formatSql.control,
-          shiftKey: formatSql.shift,
-          altKey: formatSql.alt,
-        };
-        if(isMac()) {
-          key.metaKey = true;
-          key.ctrlKey = false;
-        }
+        key = createKeyObjectFromShortcut(formatSql);
         break;
       default:
         editor.current?.execCommand(cmd);
@@ -359,25 +355,9 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       let key ={};
       editor.current?.focus();
       if (!replace) {
-        key = {
-          keyCode: findShortcut.key.key_code,
-          metaKey: findShortcut.ctrl_is_meta,
-          ctrlKey: findShortcut.control,
-          shiftKey: findShortcut.shift,
-          altKey: findShortcut.alt,
-        };
+        key = createKeyObjectFromShortcut(findShortcut);
       } else {
-        key = {
-          keyCode: replaceShortcut.key.key_code,
-          metaKey: replaceShortcut.ctrl_is_meta,
-          ctrlKey: replaceShortcut.control,
-          shiftKe: replaceShortcut.shift,
-          altKey: replaceShortcut.alt,
-        };
-      }
-      if(isMac()) {
-        key.metaKey = true;
-        key.ctrlKey = false;
+        key = createKeyObjectFromShortcut(replaceShortcut);
       }
       editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
     });
