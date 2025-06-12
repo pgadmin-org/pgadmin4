@@ -686,12 +686,6 @@ WHERE db.datname = current_database()""")
                 current_app.logger.error(errmsg)
         return errmsg
 
-    def __reset_auto_commit(self, autocommit):
-        asyncio.run(self.__reset_auto_commit_for(autocommit))
-
-    async def __reset_auto_commit_for(self, autocommit):
-        await self.conn.set_autocommit(autocommit)
-
     def __cursor(self, server_cursor=False, scrollable=False):
 
         if not get_crypt_key()[0] and config.SERVER_MODE:
@@ -743,13 +737,11 @@ WHERE db.datname = current_database()""")
                 # Providing name to cursor will create server side cursor.
                 cursor_name = "CURSOR:{0}".format(self.conn_id)
                 self.conn.server_cursor_factory = AsyncDictServerCursor
-                # self.__reset_auto_commit(False)
                 cur = self.conn.cursor(
                     name=cursor_name,
                     scrollable=scrollable
                 )
             else:
-                # self.__reset_auto_commit(auto_commit)
                 cur = self.conn.cursor(scrollable=scrollable)
         except psycopg.Error as pe:
             current_app.logger.exception(pe)
@@ -1527,7 +1519,7 @@ Failed to reset the connection to the server due to following error:
         else:
             status = 1
 
-        if not cur:
+        if not cur or cur.closed:
             return False, self.CURSOR_NOT_FOUND
 
         result = None

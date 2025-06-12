@@ -930,6 +930,7 @@ def start_view_data(trans_id):
         status, result = conn.execute_async(
             sql,
             server_cursor=trans_obj.server_cursor)
+
     else:
         status = False
         result = error_msg
@@ -1894,11 +1895,11 @@ def set_pref_options(trans_id, operation):
 
         if operation == 'auto_commit':
             # Call the set_auto_commit method of transaction object
-            trans_obj.set_auto_commit(_data)
+            trans_obj.set_auto_commit(_data['auto_commit'])
         elif operation == 'auto_rollback':
-            trans_obj.set_auto_rollback(_data)
+            trans_obj.set_auto_rollback(_data['auto_rollback'])
         elif operation == 'server_cursor':
-            trans_obj.set_server_cursor(_data)
+            trans_obj.set_server_cursor(_data['server_cursor'])
 
         # As we changed the transaction object we need to
         # restore it and update the session variable.
@@ -1933,7 +1934,7 @@ def set_auto_commit(trans_id):
 @pga_login_required
 def set_auto_rollback(trans_id):
     """
-    This method is used to set the value for auto commit .
+    This method is used to set the value for auto rollback .
 
     Args:
         trans_id: unique transaction id
@@ -1948,7 +1949,7 @@ def set_auto_rollback(trans_id):
 @pga_login_required
 def set_server_cursor(trans_id):
     """
-    This method is used to set the value for server_cursor.
+    This method is used to set the value for server cursor.
 
     Args:
         trans_id: unique transaction id

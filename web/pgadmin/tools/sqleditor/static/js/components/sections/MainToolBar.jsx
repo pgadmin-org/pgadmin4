@@ -46,7 +46,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.bottom,
 }));
 
-function autoCommitRollback(type, api, transId, value) {
+function autoCommitRollbackServerCur(type, api, transId, value) {
   let url = url_for(`sqleditor.${type}`, {
     'trans_id': transId,
   });
@@ -127,7 +127,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         queryToolCtx.updateServerCursor({server_cursor: newVal});
       }
       if(e.value === 'auto_commit' || e.value === 'auto_rollback' || e.value === 'server_cursor') {
-        autoCommitRollback(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
+        autoCommitRollbackServerCur(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
           .catch ((error)=>{
             newVal = prev[e.value];
             eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
@@ -267,8 +267,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   };
   useEffect(()=>{
     if(isInTxn()) {
-      setDisableButton('commit', false);
-      setDisableButton('rollback', false);
+      setDisableButton('commit', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ?true:false);
+      setDisableButton('rollback', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ?true:false);
       setDisableButton('execute-options', true);
     } else {
       setDisableButton('commit', true);
@@ -639,7 +639,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgMenuItem hasCheck value="auto_rollback" checked={checkedMenuItems['auto_rollback']}
           onClick={checkMenuClick}>{gettext('Auto rollback on error?')}</PgMenuItem>
         <PgMenuItem hasCheck value="server_cursor" checked={checkedMenuItems['server_cursor']}
-          onClick={checkMenuClick}>{gettext('Use server cursor')}</PgMenuItem>
+          onClick={checkMenuClick}>{gettext('Use server cursor?')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={explainMenuRef}

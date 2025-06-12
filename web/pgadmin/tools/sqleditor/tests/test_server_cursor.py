@@ -40,7 +40,7 @@ class TestExecuteServerCursor(BaseTestGenerator):
             secrets.choice(range(10000, 65535)))
         self._sid = self.server_information['server_id']
 
-        server_con = server_utils.connect_server(self, self._sid)
+        server_utils.connect_server(self, self._sid)
 
         self._did = test_utils.create_database(
             self.server, self._db_name
@@ -64,12 +64,10 @@ class TestExecuteServerCursor(BaseTestGenerator):
 
     def set_server_cursor(self, server_cursor):
         _url = '/sqleditor/server_cursor/{0}'.format(self.trans_id)
-        print(_url)
         res = self.tester.post(_url, data=json.dumps({
             "server_cursor": server_cursor
         }))
 
-        print(res)
         self.assertEqual(res.status_code, 200)
 
     def runTest(self):
@@ -78,7 +76,7 @@ class TestExecuteServerCursor(BaseTestGenerator):
                                                  test_utils.SERVER_GROUP,
                                                  self._sid,
                                                  self._did)
-        if not db_con["info"] == "Database connected.":
+        if db_con["info"] != "Database connected.":
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
@@ -95,7 +93,8 @@ class TestExecuteServerCursor(BaseTestGenerator):
         response = self.initiate_sql_query_tool(self.trans_id, self.sql)
 
         self.assertEqual(response.status_code, 200)
-        csv_data = response.data.decode()
+        _resp = response.data.decode()
+        self.assertTrue(_resp.server_cursor)
 
         self.set_server_cursor(False)
 

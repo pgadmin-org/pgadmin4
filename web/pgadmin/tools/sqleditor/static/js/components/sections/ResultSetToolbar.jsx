@@ -205,16 +205,16 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
           />
         </Box> : <span>{gettext('Showing rows: %s to %s', inputs.from, inputs.to)}</span>}
       <PgButtonGroup>
-        {editPageRange && <PgIconButton size="xs"
+        {!serverCursor && editPageRange && <PgIconButton size="xs"
           title={editPageRange ? gettext('Apply (or press Enter on input)') : gettext('Edit range')}
           onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, inputs.from, inputs.to)}
           disabled={errorInputs.from || errorInputs.to} icon={<CheckRoundedIcon />}
         />}
-        <PgIconButton size="xs"
+        {!serverCursor && <PgIconButton size="xs"
           title={editPageRange ? gettext('Cancel edit') : gettext('Edit range')}
           onClick={()=>setEditPageRange((prev)=>!prev)}
           icon={editPageRange ? <EditOffRoundedIcon /> : <EditRoundedIcon />}
-        />
+        />}
       </PgButtonGroup>
       <div className='PaginationInputs-divider'>&nbsp;</div>
       <span>{gettext('Page No:')}</span>
@@ -228,13 +228,14 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
         value={inputs.pageNo}
         onChange={(value)=>onInputChange('pageNo', value)}
         onKeyDown={onInputKeydownPageNo}
+        disabled={serverCursor}
         error={errorInputs['pageNo']}
       />
       <span> {gettext('of')} {pagination.page_count}</span>
       <div className='PaginationInputs-divider'>&nbsp;</div>
       <PgButtonGroup size="small">
         <PgIconButton title={gettext('First Page')} disabled={pagination.page_no <= 1 || serverCursor} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
-        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no <= 1 && !serverCursor} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
+        <PgIconButton title={gettext('Previous Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(pagination.page_no-1)} icon={<FastRewindRoundedIcon />}/>
         <PgIconButton title={gettext('Next Page')} disabled={pagination.page_no == pagination.page_count && !serverCursor} onClick={()=>goToPage(pagination.page_no+1)} icon={<FastForwardRoundedIcon />}/>
         <PgIconButton title={gettext('Last Page')} disabled={pagination.page_no == pagination.page_count || serverCursor} onClick={()=>goToPage(pagination.page_count)} icon={<SkipNextRoundedIcon />} />
       </PgButtonGroup>

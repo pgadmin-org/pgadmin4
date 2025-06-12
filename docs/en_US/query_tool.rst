@@ -568,16 +568,11 @@ very large result sets. However, they may offer lower performance in typical, ev
 
 To enable server-side cursors:
 
-* Go to Preferences > Query Tool > Options and set "Execute with server-side cursor?" to True.
-
-.. image:: images/query_tool_server_cursor_preference.png
-   :alt: Query Tool Manage Macros Clear row confirmation
-   :align: center
-
+* Go to Preferences > Query Tool > Options and set "Use server cursor?" to True.
 * Alternatively, you can enable it on a per-session basis via the Query Tool’s Execute menu.
 
 .. image:: images/query_tool_server_cursor_execute_menu.png
-   :alt: Query Tool Manage Macros Clear row confirmation
+   :alt: Query Tool Server Cursor
    :align: center
 
 

@@ -137,10 +137,12 @@ class StartRunningQuery:
         StartRunningQuery.save_transaction_in_session(session_obj,
                                                       trans_id, trans_obj)
 
+        if trans_obj.server_cursor and sql != 'COMMIT;' and sql != 'ROLLBACK;':
+            conn.release_async_cursor()
+
         if StartRunningQuery.is_begin_required_for_sql_query(trans_obj,
                                                              conn, sql
                                                              ):
-            conn.release_async_cursor()
             conn.execute_void("BEGIN;")
 
         is_rollback_req = StartRunningQuery.is_rollback_statement_required(
@@ -185,7 +187,7 @@ class StartRunningQuery:
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
 
-        return ((trans_obj.server_cursor) or (
+        return ((trans_obj.server_cursor and trans_obj.auto_commit) or (
             not trans_obj.auto_commit and
             conn.transaction_status() == TX_STATUS_IDLE and
             is_begin_required(sql)

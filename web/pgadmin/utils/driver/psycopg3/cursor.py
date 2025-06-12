@@ -15,11 +15,9 @@ result.
 
 import asyncio
 from collections import OrderedDict
-import psycopg
 from flask import g, current_app
 from psycopg import (Cursor as _cursor, AsyncCursor as _async_cursor,
                      AsyncServerCursor as _async_server_cursor)
-from typing import Any, Sequence
 from psycopg.rows import dict_row, tuple_row
 from psycopg._encodings import py_codecs as encodings
 from .encoding import configure_driver_encodings

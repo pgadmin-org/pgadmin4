@@ -82,13 +82,13 @@ def register_query_tool_preferences(self):
 
     self.server_cursor = self.preference.register(
         'Options', 'server_cursor',
-        gettext("Execute with server side cursor?"), 'boolean', False,
+        gettext("Use server cursor?"), 'boolean', False,
         category_label=PREF_LABEL_OPTIONS,
-        help_str=gettext('If set to True, the dataset will be fetched from the'
-                         ' server-side cursor after query execution.'
-                         ' This will be helpful to transfer to the client only'
-                         ' a controlled amount of data, so a large dataset can'
-                         ' be examined without being kept entirely in memory.')
+        help_str=gettext('If set to True, the dataset will be fetched using a'
+                         ' server-side cursor after the query is executed.'
+                         ' This allows controlled data transfer to the client,'
+                         ' enabling examination of large datasets without'
+                         ' loading them entirely into memory.')
     )
 
     self.show_prompt_save_query_changes = self.preference.register(
