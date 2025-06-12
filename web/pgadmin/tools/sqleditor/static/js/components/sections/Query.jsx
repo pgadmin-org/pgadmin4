@@ -25,9 +25,8 @@ import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 import { MODAL_DIALOGS } from '../QueryToolConstants';
-import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState, getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
-import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 
 
 async function registerAutocomplete(editor, api, transId) {

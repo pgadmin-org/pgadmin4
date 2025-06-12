@@ -348,14 +348,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if(qtState.params.file_deleted == 'false' &&  qtState.params.is_editor_dirty == 'false'){
         // call load file from disk as no fil changes
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, qtState.params.open_file_name, qtState.params?.storage);
-      }else{
-        if(qtState.params.file_deleted != 'true'){
-          if(qtState.params.external_file_changes == 'true'){
-            loadSqlFromLocalStorage = false;
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
-          }else{
-            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
-          }
+      }else if(qtState.params.file_deleted != 'true'){
+        if(qtState.params.external_file_changes == 'true'){
+          loadSqlFromLocalStorage = false;
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
+        }else{
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
         }
       }
     }
