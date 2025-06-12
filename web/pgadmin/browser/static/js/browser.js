@@ -17,7 +17,7 @@ import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/s
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
 import * as showQueryTool from '../../../tools/sqleditor/static/js/show_query_tool';
 import {getRandomInt} from 'sources/utils';
-import {appUpdateNotifier} from './UpdateCheckNotify';
+import {appAutoUpdateNotifier} from '../../../static/js/helpers/appAutoUpdateNotifier';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -301,7 +301,7 @@ define('pgadmin.browser', [
               'platform':data.platform,
             });
           }
-          appUpdateNotifier(message, 'warning', downloadUpdate, null, 'Update available', 'download_update');
+          appAutoUpdateNotifier(message, 'warning', downloadUpdate, null, 'Update available', 'download_update');
         } else if(data.outdated) {
           //This is for server mode or auto-update not supported desktop installer or not mentioned auto_update_url
           pgAdmin.Browser.notifier.warning(
@@ -316,7 +316,7 @@ define('pgadmin.browser', [
         // If the user manually triggered a check for updates (trigger_update_check is true)
         // and no update is available (data.outdated is false), show an info notification.
         if (!data.outdated && trigger_update_check){
-          appUpdateNotifier('No update available.....', 'info', null, 10000);
+          appAutoUpdateNotifier('No update available.....', 'info', null, 10000);
         }
       }).catch((error)=>{
         console.error('Error during version check', error);
