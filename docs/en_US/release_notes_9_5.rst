@@ -21,7 +21,10 @@ New features
 ************
 
   | `Issue #1926 <https://github.com/pgadmin-org/pgadmin4/issues/1926>`_ -  Add a new permission to allow disabling "Change Password" feature for a pgAdmin role.
+  | `Issue #1947 <https://github.com/pgadmin-org/pgadmin4/issues/1947>`_ -  Added role-based restrictions for editing server connections.
+  | `Issue #2864 <https://github.com/pgadmin-org/pgadmin4/issues/2864>`_ -  Add a search box to enable searching within the preferences tab.
   | `Issue #3319 <https://github.com/pgadmin-org/pgadmin4/issues/3319>`_ -  Added support to preserve the workspace, query windows, and pgAdmin state during an abrupt shutdown or restart.
+  | `Issue #6743 <https://github.com/pgadmin-org/pgadmin4/issues/6743>`_ -  Open preferences in a new tab instead of a dialog for better user experience.
   | `Issue #8665 <https://github.com/pgadmin-org/pgadmin4/issues/8665>`_ -  Supports JSON logging for gunicorn process within Docker.
 
 Housekeeping
