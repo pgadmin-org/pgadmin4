@@ -90,7 +90,7 @@ class TestExecuteServerCursor(BaseTestGenerator):
         response = self.initiate_sql_query_tool(self.trans_id, self.sql)
 
         self.assertEqual(response.status_code, 200)
-        _resp =json.loads(response.data.decode())
+        _resp = json.loads(response.data.decode())
         self.assertTrue(_resp['data']['server_cursor'])
 
         self.set_server_cursor(False)
