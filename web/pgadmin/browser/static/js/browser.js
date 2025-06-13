@@ -10,7 +10,6 @@
 import MainMenuFactory from './MainMenuFactory';
 import _ from 'lodash';
 import { checkMasterPassword, showQuickSearch } from '../../../static/js/Dialogs/index';
-import { pgHandleItemError } from '../../../static/js/utils';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
 import getApiInstance from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
@@ -195,7 +194,7 @@ define('pgadmin.browser', [
       obj.check_corrupted_db_file();
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
-      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNode.bind(obj));
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
       obj.bind_beforeunload();
 
@@ -1228,173 +1227,39 @@ define('pgadmin.browser', [
       }
     },
 
-    onRefreshTreeNodeReact: function(_i, _opts) {
-      this.tree.refresh(_i).then(() =>{
-        if (_opts?.success) _opts.success();
-      });
-    },
+    onRefreshTreeNode: async function(nodeItem, opts) {
+      this.tree.toggleItemLoader(nodeItem, true);
 
-    onRefreshTreeNode: function(_i, _opts) {
-      let _d = _i && this.tree.itemData(_i),
-        n = this.Nodes[_d?._type],
-        ctx = {
-          b: this, // Browser
-          d: _d, // current parent
-          i: _i, // current item
-          p: null, // path of the old object
-          pathOfTreeItems: [], // path items
-          t: this.tree, // Tree Api
-          o: _opts,
-        },
-        isOpen,
-        idx = -1;
+      const itemNodeData = nodeItem && this.tree.itemData(nodeItem);
+      let nodeObj = this.Nodes[itemNodeData?._type];
 
-      this.Events.trigger('pgadmin-browser:tree:refreshing', _i, _d, n);
+      // If the node is a collection node, we can directly refresh it.
+      if(!nodeObj?.collection_node) {
+        // If the node is not a collection node, we need to fetch its data
+        // from the server and update the tree node.
+        try {
+          const url = nodeObj.generate_url(nodeItem, 'nodes', itemNodeData, true);
+          const api = getApiInstance();
+          const resp = await api.get(url);
+          // server response data comes in result
+          const respData = resp.data.data || resp.data.result;
 
-      if (!n) {
-        _i = null;
-        ctx.i = null;
-        ctx.d = null;
-      } else {
-        isOpen = (this.tree.isInode(_i) && this.tree.isOpen(_i));
-      }
-
-      ctx.branch = ctx.t.serialize(
-        _i, {}, function(i, el, d) {
-          idx++;
-          if (!idx || (d.inode && d.open)) {
-            return {
-              _id: d._id, _type: d._type, branch: d.branch, open: d.open,
-            };
-          }
-        });
-
-      if (!n) {
-        ctx.t.destroy({
-          success: function() {
-            ctx.t = ctx.b.tree;
-            ctx.i = null;
-            ctx.b._refreshNode(ctx, ctx.branch);
-          },
-          error: function() {
-            let fail = _opts.o?.fail || _opts?.fail;
-
-            if (typeof(fail) == 'function') {
-              fail();
-            }
-          },
-        });
-        return;
-      }
-
-      let api = getApiInstance();
-      let fetchNodeInfo = function(__i, __d, __n) {
-        let info = __n.getTreeNodeHierarchy(__i),
-          url = __n.generate_url(__i, 'nodes', __d, true);
-
-        api.get(
-          url
-        ).then(({data: res})=> {
-          // Node information can come as result/data
-          let newData = res.result || res.data;
-
-          newData._label = newData.label;
-          newData.label = _.escape(newData.label);
-
-          ctx.t.setLabel(ctx.i, {label: newData.label});
-          ctx.t.addIcon(ctx.i, {icon: newData.icon});
-          ctx.t.setId(ctx.i, {id: newData.id});
-          if (newData.inode)
-            ctx.t.setInode(ctx.i, {inode: true});
-
-          // This will update the tree item data.
-          let itemData = ctx.t.itemData(ctx.i);
-          _.extend(itemData, newData);
-
-          if (
-            __n.can_expand && typeof(__n.can_expand) == 'function'
-          ) {
-            if (!__n.can_expand(itemData)) {
-              ctx.t.unload(ctx.i);
-              return;
-            }
-          }
-          ctx.b._refreshNode(ctx, ctx.branch);
-          let success = (ctx?.o?.success) || ctx.success;
-          if (success && typeof(success) == 'function') {
-            success();
-          }
-        }).catch(function(error) {
-          if (!pgHandleItemError(
-            error, {item: __i, info: info}
-          )) {
-            if(error.response.headers['content-type'] == 'application/json') {
-              let jsonResp = error.response.data ?? {};
-              if(error.response.status == 410 && jsonResp.success == 0) {
-                let parent = ctx.t.parent(ctx.i);
-
-                ctx.t.remove(ctx.i, {
-                  success: function() {
-                    if (parent) {
-                    // Try to refresh the parent on error
-                      try {
-                        pgBrowser.Events.trigger(
-                          'pgadmin:browser:tree:refresh', parent
-                        );
-                      } catch (e) { console.warn(e.stack || e); }
-                    }
-                  },
-                });
-              }
-            }
-
-            pgAdmin.Browser.notifier.pgNotifier('error', error, gettext('Error retrieving details for the node.'), function (msg) {
-              if (msg == 'CRYPTKEY_SET') {
-                fetchNodeInfo(__i, __d, __n);
-              } else {
-                console.warn(arguments);
-              }
+          if(respData) {
+            this.tree.update(nodeItem, {
+              ...itemNodeData, ...respData
             });
+            this.tree.setLabel(nodeItem, {label: respData.label});
+            this.tree.addIcon(nodeItem, {icon: respData.icon});
           }
-        });
-      };
-
-      if (n?.collection_node) {
-        let p = ctx.i = this.tree.parent(_i),
-          unloadNode = function() {
-            this.tree.unload(_i, {
-              success: function() {
-                _i = p;
-                _d = ctx.d = ctx.t.itemData(ctx.i);
-                n = ctx.b.Nodes[_d._type];
-                _i = p;
-                fetchNodeInfo(_i, _d, n);
-              },
-              fail: function() { console.warn(arguments); },
-            });
-          }.bind(this);
-        if (!this.tree.isInode(_i)) {
-          this.tree.setInode(_i, { success: unloadNode });
-        } else {
-          unloadNode();
+        } catch (error) {
+          console.error('Failed to refresh tree node:', error);
+          return;
         }
-      } else if (isOpen) {
-        this.tree.unload(_i, {
-          success: fetchNodeInfo.bind(this, _i, _d, n),
-          fail: function() {
-            console.warn(arguments);
-          },
-        });
-      } else if (!this.tree.isInode(_i) && _d.inode) {
-        this.tree.setInode(_i, {
-          success: fetchNodeInfo.bind(this, _i, _d, n),
-          fail: function() {
-            console.warn(arguments);
-          },
-        });
-      } else {
-        fetchNodeInfo(_i, _d, n);
       }
+
+      await this.tree.refresh(nodeItem);
+      this.tree.toggleItemLoader(nodeItem, false);
+      opts?.success?.();
     },
 
     onLoadFailNode: function(_nodeData) {

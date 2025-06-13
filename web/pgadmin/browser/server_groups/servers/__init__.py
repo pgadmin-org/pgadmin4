@@ -31,7 +31,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import db, Server, ServerGroup, User, SharedServer
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
-from pgadmin.utils.exception import CryptKeyMissing
+from pgadmin.utils.exception import CryptKeyMissing, ConnectionLost
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.browser.server_groups.servers.utils import \
     (is_valid_ipaddress, get_replication_type, convert_connection_parameter,
@@ -627,12 +627,18 @@ class ServerNode(PGChildNodeView):
         in_recovery = None
         wal_paused = None
         if connected:
-            status, result, in_recovery, wal_paused =\
-                recovery_state(conn, manager.version)
-            if not status:
+            try:
+                status, result, in_recovery, wal_paused =\
+                    recovery_state(conn, manager.version)
+
+                if not status:
+                    connected = False
+                    manager.release()
+                    errmsg = "{0} : {1}".format(server.name, result)
+
+            except ConnectionLost:
                 connected = False
                 manager.release()
-                errmsg = "{0} : {1}".format(server.name, result)
 
         return make_json_response(
             result=self.blueprint.generate_browser_node(
