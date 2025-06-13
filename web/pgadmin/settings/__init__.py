@@ -279,7 +279,7 @@ def save_application_state():
     tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
-    if ('open_file_name' in connection_info and
+    if (connection_info and 'open_file_name' in connection_info and
             connection_info['open_file_name']):
         file_path = get_complete_file_path(connection_info['open_file_name'])
         connection_info['last_saved_file_hash'] = (
@@ -342,7 +342,7 @@ def get_application_state():
     res = []
     for row in result:
         connection_info = row.connection_info
-        if ('open_file_name' in connection_info and
+        if (connection_info and 'open_file_name' in connection_info and
                 connection_info['open_file_name']):
             file_path = get_complete_file_path(
                 connection_info['open_file_name'])

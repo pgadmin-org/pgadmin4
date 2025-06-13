@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////////
 //
 // pgAdmin 4 - PostgreSQL Tools
@@ -10,8 +9,8 @@
 
 
 import {genericBeforeEach, getEditView} from '../genericFunctions';
-import {getBinaryPathSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/binary_path.ui';
 import pgAdmin from '../fake_pgadmin';
+import { getBinaryPathSchema } from '../../../pgadmin/preferences/static/js/components/binary_path.ui';
 
 describe('BinaryPathschema', ()=>{
 
