@@ -7,10 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { format } from 'sql-formatter';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import CodeMirror from '../../../../../../static/js/components/ReactCodeMirror';
-import { PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
+import { PANELS, QUERY_TOOL_EVENTS, MODAL_DIALOGS } from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -24,7 +23,6 @@ import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
-import { MODAL_DIALOGS } from '../QueryToolConstants';
 import { useApplicationState, getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
@@ -68,7 +66,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const pgAdmin = usePgAdmin();
   const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
   const preferencesStore = usePreferences();
-  const queryToolPref = queryToolCtx.preferences.sqleditor;
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
@@ -234,24 +231,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       });
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, (cmd='')=>{
-      if(cmd == 'gotoLineCol') {
-        editor.current?.focus();
-        let key = {
-          keyCode: 76, metaKey: false, ctrlKey: true, shiftKey: false, altKey: false,
-        };
-        if(isMac()) {
-          key.metaKey = true;
-          key.ctrlKey = false;
-          key.shiftKey = false;
-          key.altKey = false;
-        }
-        editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
-      } else {
-        editor.current?.execCommand(cmd);
-      }
-    });
-
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_TO_EDITOR, (text)=>{
       editor.current?.setValue(text);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
@@ -261,20 +240,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }, 250);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
-      editor.current?.focus();
-      let key = {
-        keyCode: 70, metaKey: false, ctrlKey: true, shiftKey: false, altKey: replace,
-      };
-      if(isMac()) {
-        key.metaKey = true;
-        key.ctrlKey = false;
-        key.shiftKey = false;
-        key.altKey = replace;
-      }
-      editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
-    });
-
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
@@ -282,40 +247,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
-
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
-      let selection = true, sql = editor.current?.getSelection();
-      let sqlEditorPref = preferencesStore.getPreferencesForModule('sqleditor');
-      /* New library does not support capitalize casing
-        so if a user has set capitalize casing we will
-        use preserve casing which is default for the library.
-      */
-      let formatPrefs = {
-        language: 'postgresql',
-        keywordCase: sqlEditorPref.keyword_case === 'capitalize' ? 'preserve' : sqlEditorPref.keyword_case,
-        identifierCase: sqlEditorPref.identifier_case === 'capitalize' ? 'preserve' : sqlEditorPref.identifier_case,
-        dataTypeCase: sqlEditorPref.data_type_case,
-        functionCase: sqlEditorPref.function_case,
-        logicalOperatorNewline: sqlEditorPref.logical_operator_new_line,
-        expressionWidth: sqlEditorPref.expression_width,
-        linesBetweenQueries: sqlEditorPref.lines_between_queries,
-        tabWidth: sqlEditorPref.tab_size,
-        useTabs: !sqlEditorPref.use_spaces,
-        denseOperators: !sqlEditorPref.spaces_around_operators,
-        newlineBeforeSemicolon: sqlEditorPref.new_line_before_semicolon
-      };
-      if(sql == '') {
-        sql = editor.current.getValue();
-        selection = false;
-      }
-      let formattedSql = format(sql,formatPrefs);
-      if(selection) {
-        editor.current.replaceSelection(formattedSql, 'around');
-      } else {
-        editor.current.setValue(formattedSql);
-      }
-    });
-
+    
     eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
       // Set the new EOL character in the editor.
       editor.current?.setEOL(lineSep);
@@ -384,44 +316,58 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       ), {id:modalId});
     };
 
-    const formatSQL = ()=>{
-      let selection = true, sql = editor.current?.getSelection();
-      /* New library does not support capitalize casing
-        so if a user has set capitalize casing we will
-        use preserve casing which is default for the library.
-      */
-      let formatPrefs = {
-        language: 'postgresql',
-        keywordCase: queryToolPref.keyword_case === 'capitalize' ? 'preserve' : queryToolPref.keyword_case,
-        identifierCase: queryToolPref.identifier_case === 'capitalize' ? 'preserve' : queryToolPref.identifier_case,
-        dataTypeCase: queryToolPref.data_type_case,
-        functionCase: queryToolPref.function_case,
-        logicalOperatorNewline: queryToolPref.logical_operator_new_line,
-        expressionWidth: queryToolPref.expression_width,
-        linesBetweenQueries: queryToolPref.lines_between_queries,
-        tabWidth: queryToolPref.tab_size,
-        useTabs: !queryToolPref.use_spaces,
-        denseOperators: !queryToolPref.spaces_around_operators,
-        newlineBeforeSemicolon: queryToolPref.new_line_before_semicolon
+    const createKeyObjectFromShortcut = (pref)=>{
+      // this function creates a key object from the shortcut preference
+      let key = {
+        keyCode: pref.key.key_code,
+        metaKey: pref.ctrl_is_meta,
+        ctrlKey: pref.control,
+        shiftKey: pref.shift,
+        altKey: pref.alt,
       };
-      if(sql == '') {
-        sql = editor.current.getValue();
-        selection = false;
+      if(isMac()) {
+        key.metaKey = true;
+        key.ctrlKey = false;
       }
-      let formattedSql = format(sql,formatPrefs);
-      if(selection) {
-        editor.current.replaceSelection(formattedSql, 'around');
-      } else {
-        editor.current.setValue(formattedSql);
-      }
+      return key;
     };
 
-    const unregisterFormatSQL = eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, formatSQL);
+    const unregisterEditorExecCmd = eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, (cmd='')=>{
+      let key = {}, gotolinecol = queryToolCtx.preferences.sqleditor.goto_line_col,
+        formatSql = queryToolCtx.preferences.sqleditor.format_sql;
+      switch(cmd) {
+      case 'gotoLineCol':
+        key = createKeyObjectFromShortcut(gotolinecol);
+        break;
+      case 'formatSql':
+        key = createKeyObjectFromShortcut(formatSql);
+        break;
+      default:
+        editor.current?.execCommand(cmd);
+        return;
+      }
+      editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
+    });
+
+    const unregisterFindReplace = eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
+      let findShortcut = queryToolCtx.preferences.sqleditor.find;
+      let replaceShortcut = queryToolCtx.preferences.sqleditor.replace;
+      let key ={};
+      editor.current?.focus();
+      if (!replace) {
+        key = createKeyObjectFromShortcut(findShortcut);
+      } else {
+        key = createKeyObjectFromShortcut(replaceShortcut);
+      }
+      editor.current?.fireDOMEvent(new KeyboardEvent('keydown', key));
+    });
+
     const unregisterWarn = eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE, warnSaveTextClose);
 
     return ()=>{
-      unregisterFormatSQL();
       unregisterWarn();
+      unregisterEditorExecCmd();
+      unregisterFindReplace();
     };
   }, [queryToolCtx.preferences]);
 
@@ -531,7 +477,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const shortcutOverrideKeys = useMemo(
     ()=>{
       // omit CM internal shortcuts
-      const queryToolPref = _.omit(queryToolCtx.preferences.sqleditor, ['indent', 'unindent', 'comment']);
+      const queryToolPref = _.omit(queryToolCtx.preferences.sqleditor, ['indent', 'unindent']);
       const queryToolShortcuts = Object.values(queryToolPref)
         .filter((p)=>isShortcutValue(p))
         .map((p)=>parseShortcutValue(p));
@@ -540,18 +486,14 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         any: (_v, e)=>{
           const eventStr = parseKeyEventValue(e);
           if(queryToolShortcuts.includes(eventStr)) {
-            if((isMac() && eventStr == 'meta+k') || eventStr == 'ctrl+k') {
-              eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
-            } else {
-              queryToolCtx.mainContainerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
-                which: e.which,
-                keyCode: e.keyCode,
-                altKey: e.altKey,
-                shiftKey: e.shiftKey,
-                ctrlKey: e.ctrlKey,
-                metaKey: e.metaKey,
-              }));
-            }
+            queryToolCtx.mainContainerRef?.current?.dispatchEvent(new KeyboardEvent('keydown', {
+              which: e.which,
+              keyCode: e.keyCode,
+              altKey: e.altKey,
+              shiftKey: e.shiftKey,
+              ctrlKey: e.ctrlKey,
+              metaKey: e.metaKey,
+            }));
             e.preventDefault();
             e.stopPropagation();
             return true;

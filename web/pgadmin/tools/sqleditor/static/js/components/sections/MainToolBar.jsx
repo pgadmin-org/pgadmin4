@@ -291,9 +291,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
     setLimit(e.target.value);
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SET_LIMIT,e.target.value);
   };
-  const formatSQL=()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
-  };
   const toggleCase=()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE);
   };
@@ -444,12 +441,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         callback: ()=>{clearQuery();}
       }
     },
-    {
-      shortcut: queryToolPref.format_sql,
-      options: {
-        callback: ()=>{formatSQL();}
-      }
-    },
   ], containerRef);
 
   /* Macro shortcuts */
@@ -598,7 +589,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
-        <PgMenuItem shortcut={queryToolPref.gotolinecol}
+        <PgMenuItem shortcut={queryToolPref.goto_line_col}
           onClick={()=>{executeCmd('gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={queryToolPref.indent}
@@ -612,7 +603,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={()=>{executeCmd('formatSql');}}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}

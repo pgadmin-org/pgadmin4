@@ -551,7 +551,7 @@ def register_query_tool_preferences(self):
             'control': True,
             'key': {
                 'key_code': 76,
-                'char': 'L'
+                'char': 'l'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -561,7 +561,7 @@ def register_query_tool_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'download_results',
-        gettext('Download Results'),
+        gettext('Download results'),
         'keyboardshortcut',
         {
             'alt': False,
@@ -615,7 +615,7 @@ def register_query_tool_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'switch_panel',
-        gettext('Switch Panel'),
+        gettext('Switch panel'),
         'keyboardshortcut',
         {
             'alt': True,
@@ -867,6 +867,120 @@ def register_query_tool_preferences(self):
             'key': {
                 'key_code': 82,
                 'char': 'r'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'find',
+        gettext('Find'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 70,
+                'char': 'f'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'replace',
+        gettext('Replace'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 70,
+                'char': 'f'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'goto_line_col',
+        gettext('Go to line/column'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 76,
+                'char': 'l'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'comment',
+        gettext('Toggle comment'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 191,
+                'char': '/'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'format_sql',
+        gettext('Format SQL'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': True,
+            'key': {
+                'key_code': 75,
+                'char': 'k'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'auto_complete',
+        gettext('Auto complete'),
+        'keyboardshortcut',
+        {
+            'alt': False,
+            'shift': False,
+            'control': True,
+            'ctrl_is_meta': False,
+            'key': {
+                'key_code': 32,
+                'char': 'Space'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
