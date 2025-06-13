@@ -133,7 +133,7 @@ export default function(basicSettings) {
         number: '#7fcc5c',
         string: '#e4e487',
         variable: '#7dc9f1',
-        type: '#7dc9f1',
+        type: '#BBBB2A',
         comment: '#7fcc5c',
         punctuation: '#d6aaaa',
         operator: '#d6aaaa',

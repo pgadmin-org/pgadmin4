@@ -131,7 +131,7 @@ export default function(basicSettings) {
         number: '#45D48A',
         string: '#EAEA43',
         variable: '#7DC9F1',
-        type: '#7DC9F1',
+        type: '#BBBB2A',
         comment: '#FFAD65',
         punctuation: '#d6aaaa',
         operator: '#d6aaaa',
