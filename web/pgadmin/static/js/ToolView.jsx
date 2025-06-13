@@ -61,7 +61,8 @@ export default function ToolView({dockerObj}) {
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
         const deregisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
           deleteToolData(panelId, closePanelId);
-          deregisterRemove();
+          if(panelId == closePanelId){
+            deregisterRemove();}
         });
 
         handler.focus();

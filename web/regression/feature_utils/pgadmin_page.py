@@ -154,12 +154,13 @@ class PgadminPage:
             "button[data-label='Tools']"))
         WebDriverWait(self.driver, 3).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, "li[data-label='Query Tool']")))
-        ActionChains(self.driver).move_to_element(
+                (By.CSS_SELECTOR, NavMenuLocators.query_tool_menu_css)))
+        (ActionChains(self.driver).move_to_element(
             self.driver.find_element(
-                By.CSS_SELECTOR, "li[data-label='Query Tool']")).perform()
+                By.CSS_SELECTOR, NavMenuLocators.query_tool_menu_css))
+         .perform())
         self.click_element(self.find_by_css_selector(
-            "li[data-label='Query Tool']"))
+            NavMenuLocators.query_tool_menu_css))
 
         self.driver.switch_to.default_content()
         WebDriverWait(self.driver, 10).until(

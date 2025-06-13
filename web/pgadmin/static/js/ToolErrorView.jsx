@@ -3,8 +3,7 @@ import React from 'react';
 import gettext from 'sources/gettext';
 import { LAYOUT_EVENTS } from './helpers/Layout';
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
-import { FormHelperText } from '@mui/material';
+import { FormHelperText, Box } from '@mui/material';
 import HTMLReactParse from 'html-react-parser';
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -34,6 +33,4 @@ ToolErrorView.propTypes = {
   error: PropTypes.string,
   panelId: PropTypes.string,
   panelDocker: PropTypes.object,
-  pgAdmin: PropTypes.object,
-  toolName: PropTypes.string,
 };
