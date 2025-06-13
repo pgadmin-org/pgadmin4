@@ -17214,7 +17214,7 @@ msgstr "ore"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:144
 msgid "min"
-msgstr "minimo"
+msgstr "minuti"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "secs"
