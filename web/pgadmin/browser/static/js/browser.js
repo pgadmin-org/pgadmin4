@@ -198,6 +198,7 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:disable_select', obj.disableTreeSelection.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -1648,6 +1649,10 @@ define('pgadmin.browser', [
         traverseNodes();
       }
 
+    },
+
+    disableTreeSelection: function(_disable) {
+      pgBrowser.disable_tree_select = _disable;
     },
 
     editor_shortcut_keys: {

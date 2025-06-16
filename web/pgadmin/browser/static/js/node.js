@@ -784,12 +784,12 @@ define('pgadmin.browser.node', [
 
           if (first_child._loaded) {
             tree.open(first_child);
-            tree.select(first_child);
+            !pgBrowser['disable_tree_select'] && tree.select(first_child);
           } else {
             const openSoleItem = setInterval(() => {
               if (first_child._loaded) {
                 tree.open(first_child);
-                tree.select(first_child);
+                !pgBrowser['disable_tree_select'] && tree.select(first_child);
                 clearSoleItemInterval();
               }
             }, 200);
@@ -800,7 +800,7 @@ define('pgadmin.browser.node', [
 
         } else if(tree.children(item).length == 1) {
           const first_child = tree.first(item);
-          tree.select(first_child);
+          !pgBrowser['disable_tree_select'] && tree.select(first_child);
         }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', item);
