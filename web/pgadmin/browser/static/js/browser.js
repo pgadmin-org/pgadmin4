@@ -197,6 +197,7 @@ define('pgadmin.browser', [
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:disable_select', obj.disableTreeSelection.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -1652,6 +1653,36 @@ define('pgadmin.browser', [
         traverseNodes();
       }
 
+    },
+
+    disableTreeSelection: function(_disable) {
+      pgBrowser.disable_tree_select = _disable;
+    },
+
+    editor_shortcut_keys: {
+      // Autocomplete sql command
+      'Ctrl-Space': 'autocomplete',
+      'Cmd-Space': 'autocomplete',
+
+      'Alt-Up': 'goLineUp',
+      'Alt-Down': 'goLineDown',
+
+      // Move word by word left/right
+      'Ctrl-Alt-Left': 'goGroupLeft',
+      'Cmd-Alt-Left': 'goGroupLeft',
+      'Ctrl-Alt-Right': 'goGroupRight',
+      'Cmd-Alt-Right': 'goGroupRight',
+
+      // Allow user to delete Tab(s)
+      'Shift-Tab': 'indentLess',
+    },
+    editor_options: {
+      tabSize: parseInt(pgBrowser.utils.tabSize),
+      wrapCode: pgBrowser.utils.wrapCode,
+      insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
+      brace_matching: pgBrowser.utils.braceMatching,
+      indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
+      highlightSelectionMatches:pgBrowser.utils.highlightSelectionMatches
     },
   });
 
