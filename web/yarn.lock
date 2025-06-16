@@ -7011,9 +7011,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^28.13.0":
-  version: 28.13.3
-  resolution: "eslint-plugin-jest@npm:28.13.3"
+"eslint-plugin-jest@npm:^28.14.0":
+  version: 28.14.0
+  resolution: "eslint-plugin-jest@npm:28.14.0"
   dependencies:
     "@typescript-eslint/utils": "npm:^6.0.0 || ^7.0.0 || ^8.0.0"
   peerDependencies:
@@ -7025,7 +7025,7 @@ __metadata:
       optional: true
     jest:
       optional: true
-  checksum: 10c0/ad461c2009ff69212b7962cb642f0815982ea3ae8a8ae4c65e73642bf8990d496707e2a9fb8e38fe067fa1d86da5eb1dc126975398de311c6e0d8211df6309f8
+  checksum: 10c0/da9c99dd8a1a80aa0c126ff4558882451dcee61b7e4c88e2407ac27d0c86fad2951384a4b037748e26f8743890b4628c6917b0760b01b7017c53fb29768584bc
   languageName: node
   linkType: hard
 
@@ -13723,7 +13723,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     diff-arrays-of-objects: "npm:^1.1.8"
     eslint: "npm:^9.28.0"
-    eslint-plugin-jest: "npm:^28.13.0"
+    eslint-plugin-jest: "npm:^28.14.0"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-unused-imports: "npm:^4.1.4"
     exports-loader: "npm:^5.0.0"
