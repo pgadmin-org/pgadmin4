@@ -362,7 +362,7 @@ _.extend(pgBrowser.browserTreeState, {
       if (tmpTreeData && 'selected' in tmpTreeData && selectedItem in tmpTreeData['selected']) {
         if (tmpTreeData['selected'][selectedItem] == data.id) {
           this.is_selected = true;
-          pgBrowser.tree.select(item, true, 'center');
+          !pgBrowser['disable_tree_select'] && pgBrowser.tree.select(item, true, 'center');
         }
       }
     }

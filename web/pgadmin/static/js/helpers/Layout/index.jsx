@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import EventBus from '../EventBus';
 import getApiInstance from '../../api_instance';
 import url_for from 'sources/url_for';
+import pgAdmin from 'sources/pgadmin';
 import { PgIconButton } from '../../components/Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import gettext from 'sources/gettext';
@@ -192,6 +193,11 @@ export class LayoutDocker {
         })],
       }, null, 'float');
     }
+    if (panelData?.id == 'id-search-objects') {
+      // Disable the tree.select from all other places as it is clashing with
+      // the tree.select() in tree.findNodeWithToggle() of Search objects module.
+      pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:disable_select', true);
+    }
   }
 
   isTabOpen(panelId) {
@@ -342,6 +348,11 @@ function DialogClose({panelData}) {
     <Box display="flex" alignItems="center">
       <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(panelData.activeId);
+        if (panelData?.activeId == 'id-search-objects') {
+          // Enable the tree.select of all other places after closing of Search Objects dialog as it 
+          // is clashing with the tree.select() in tree.findNodeWithToggle() of Search objects module.
+          pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:disable_select', false);
+        }
       }} style={{marginRight: '-4px'}}/>
     </Box>
   );

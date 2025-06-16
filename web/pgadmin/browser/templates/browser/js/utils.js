@@ -72,6 +72,10 @@ define('pgadmin.browser.utils',
   /* Enable server password exec command */
   pgAdmin['enable_server_passexec_cmd'] = '{{enable_server_passexec_cmd}}';
 
+  /* Enable tree.select of all places by default */
+  pgBrowser['disable_tree_select'] = false;
+  
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',
