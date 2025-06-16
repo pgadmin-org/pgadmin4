@@ -496,9 +496,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conf@npm:^13.0.0":
-  version: 13.1.0
-  resolution: "conf@npm:13.1.0"
+"conf@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "conf@npm:14.0.0"
   dependencies:
     ajv: ^8.17.1
     ajv-formats: ^3.0.1
@@ -507,9 +507,9 @@ __metadata:
     dot-prop: ^9.0.0
     env-paths: ^3.0.0
     json-schema-typed: ^8.0.1
-    semver: ^7.6.3
+    semver: ^7.7.2
     uint8array-extras: ^1.4.0
-  checksum: 621fb7d5ed9ff22e7e3b0315b67b38a8ad074d479816383189e75279dab92e760df0644f93762c4a84e644768d9370611744e017f4c6d6dae86ddbb035756127
+  checksum: 107c1499980e57097742a684d6b46ec530d5b477f3aea9ed2f6b2531d06f14066f9ecb2a6d6f697c9f3ea0522a86ad483431691791bc5fa8b12b293eaef820a1
   languageName: node
   linkType: hard
 
@@ -653,13 +653,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-store@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "electron-store@npm:10.0.1"
+"electron-store@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "electron-store@npm:10.1.0"
   dependencies:
-    conf: ^13.0.0
-    type-fest: ^4.20.0
-  checksum: f80a02a226128f89bed0e6ba9ae28e75ba86acb7a922697ddc16b1014c9a6925dbb5f9024ee7fc500f74a4e389e158ee4889c84d91dcb861bd68f4934276af6c
+    conf: ^14.0.0
+    type-fest: ^4.41.0
+  checksum: b02159b2d4a13a442682313d4fe27a4332b44735da31a241c92315082fab34a5e1d876801b3a1ca4dc845472f792e18960c1446fc025119d3eff0a1ee1655ef9
   languageName: node
   linkType: hard
 
@@ -1581,7 +1581,7 @@ __metadata:
     axios: ^1.9.0
     electron: 36.4.0
     electron-context-menu: ^4.1.0
-    electron-store: ^10.0.1
+    electron-store: ^10.1.0
     eslint: ^9.28.0
     eslint-plugin-unused-imports: ^4.1.4
   languageName: unknown
@@ -1701,7 +1701,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.3.2, semver@npm:^7.6.3":
+"semver@npm:^7.3.2, semver@npm:^7.7.2":
   version: 7.7.2
   resolution: "semver@npm:7.7.2"
   bin:
@@ -1838,7 +1838,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.18.2, type-fest@npm:^4.20.0":
+"type-fest@npm:^4.18.2, type-fest@npm:^4.41.0":
   version: 4.41.0
   resolution: "type-fest@npm:4.41.0"
   checksum: 7055c0e3eb188425d07403f1d5dc175ca4c4f093556f26871fe22041bc93d137d54bef5851afa320638ca1379106c594f5aa153caa654ac1a7f22c71588a4e80
