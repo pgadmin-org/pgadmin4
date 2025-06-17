@@ -84,6 +84,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   const filterMenuRef = React.useRef(null);
 
   const queryToolPref = queryToolCtx.preferences.sqleditor;
+  const editorPref = queryToolCtx.preferences.editor;
   const setDisableButton = useCallback((name, disable=true)=>{
     setButtonsDisabled((prev)=>({...prev, [name]: disable}));
   }, []);
@@ -595,25 +596,25 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         onClose={onMenuClose}
         label={gettext('Edit Menu')}
       >
-        <PgMenuItem shortcut={queryToolPref.find}
+        <PgMenuItem shortcut={editorPref.find}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
-        <PgMenuItem shortcut={queryToolPref.replace}
+        <PgMenuItem shortcut={editorPref.replace}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, true);}}>{gettext('Replace')}</PgMenuItem>
-        <PgMenuItem shortcut={queryToolPref.goto_line_col}
+        <PgMenuItem shortcut={editorPref.goto_line_col}
           onClick={()=>{executeCmd('gotoLineCol');}}>{gettext('Go to Line/Column')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={queryToolPref.indent}
           onClick={()=>{executeCmd('indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.unindent}
           onClick={()=>{executeCmd('indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
-        <PgMenuItem shortcut={queryToolPref.comment}
+        <PgMenuItem shortcut={editorPref.comment}
           onClick={()=>{executeCmd('toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.toggle_case}
           onClick={toggleCase}>{gettext('Toggle Case Of Selected Text')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
-        <PgMenuItem shortcut={queryToolPref.format_sql} onClick={()=>{executeCmd('formatSql');}}>{gettext('Format SQL')}</PgMenuItem>
+        <PgMenuItem shortcut={editorPref.format_sql} onClick={()=>{executeCmd('formatSql');}}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}
