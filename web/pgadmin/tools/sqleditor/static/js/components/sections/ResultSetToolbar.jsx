@@ -367,13 +367,18 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
     {
       shortcut: queryToolPref.save_data,
       options: {
-        callback: ()=>{saveData();}
+        callback: ()=>{!buttonsDisabled['save-data'] && saveData();}
       }
     },
     {
       shortcut: queryToolPref.download_results,
       options: {
-        callback: (e)=>{e.preventDefault(); downloadResult();}
+        callback: (e)=>{
+          if (!buttonsDisabled['save-result']) {
+            e.preventDefault();
+            downloadResult();
+          }
+        }
       }
     },
   ], queryToolCtx.mainContainerRef);
