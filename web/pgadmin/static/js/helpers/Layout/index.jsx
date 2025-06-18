@@ -45,7 +45,7 @@ function TabTitle({id, closable, defaultInternal}) {
   }, []);
 
   useEffect(()=>{
-    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
+    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, (panelId)=>{
       if(panelId == id) {
         const internal = layoutDocker?.find(id)?.internal??{};
         setAttrs({
@@ -54,7 +54,7 @@ function TabTitle({id, closable, defaultInternal}) {
           tooltip: internal.tooltip ?? internal.title,
         });
       }
-    }, 100));
+    });
 
     return ()=>deregister?.();
   }, []);

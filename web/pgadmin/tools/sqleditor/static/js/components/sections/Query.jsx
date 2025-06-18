@@ -23,9 +23,8 @@ import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
-import { useApplicationState, getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
-
 
 async function registerAutocomplete(editor, api, transId) {
   editor.registerAutocomplete((context, onAvailable)=>{
@@ -64,7 +63,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
-  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled, getQueryToolContent, deleteToolData} = useApplicationState();
   const preferencesStore = usePreferences();
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
 
@@ -160,15 +159,16 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   };
 
-  const warnReloadFile = (fileName, sqlId, storage=null)=>{
+  const warnReloadFile = (fileName, storage=null)=>{
     queryToolCtx.modal.confirm(
       gettext('Reload file?'),
       gettext('The file has been modified by another program. Do you want to reload it and loose changes made in pgadmin?'),
       function() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+        deleteToolData();
       },
       function() {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
       }
     );
@@ -244,6 +244,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);
     });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
@@ -283,10 +284,12 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       setSaveQtData(true);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, (sqlId)=>{
-      let sqlValue = getToolData(sqlId);
-      if (sqlValue) {
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT, async ()=>{
+      let sqlValue = await getQueryToolContent();
+      if(sqlValue){
         eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
+        // call delete appplication state api
+        deleteToolData();
       }
     });
   }, []);
