@@ -36,6 +36,7 @@ Bug fixes
 *********
 
   | `Issue #6118 <https://github.com/pgadmin-org/pgadmin4/issues/6118>`_ -  Improved PL/pgSQL code folding and support nested blocks.
+  | `Issue #7173 <https://github.com/pgadmin-org/pgadmin4/issues/7173>`_ -  Add a flag to allow access to system Python packages on recent Linux distributions.
   | `Issue #7466 <https://github.com/pgadmin-org/pgadmin4/issues/7466>`_ -  Fixed an issue where utilities such as pg_dump and pg_restore failed to log error messages when required dependency files were missing.
   | `Issue #8032 <https://github.com/pgadmin-org/pgadmin4/issues/8032>`_ -  Fixed an issue where the Schema Diff Tool incorrectly reported differences due to variations in the order of the privileges.
   | `Issue #8235 <https://github.com/pgadmin-org/pgadmin4/issues/8235>`_ -  Fixed an issue in SQL syntax highlighting where the same color was used for both variable names and datatypes.
