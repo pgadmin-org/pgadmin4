@@ -131,7 +131,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     preventDefault: true,
     stopPropagation: true,
   },{
-    key: toCodeMirrorKey(preferences.autocomplete), run: startCompletion,
+    key: toCodeMirrorKey(preferences.auto_complete), run: startCompletion,
     preventDefault: true,
   },
   ...customKeyMap], [customKeyMap]);

@@ -272,8 +272,10 @@ export default function Editor({
   useEffect(() => {
     if (!checkIsMounted()) return;
     const keys = keymap.of([
-      customKeyMap??[], defaultKeymap, closeBracketsKeymap, historyKeymap,
-      foldKeymap, completionKeymap
+      // Filtering out the default keymaps so that it uses the custom keymaps.
+      customKeyMap??[], ...completionKeymap.filter(k => k.key != 'Ctrl-Space'),
+      defaultKeymap.filter(k => k.key != 'Mod-/'), closeBracketsKeymap, historyKeymap,
+      foldKeymap
     ].flat());
     editor.current?.dispatch({
       effects: shortcuts.current.reconfigure(keys)
@@ -298,6 +300,7 @@ export default function Editor({
     }));
 
     const autoCompOptions = {
+      defaultKeymap: false,
       icons: false,
       addToOptions: [{
         render: (completion) => {
