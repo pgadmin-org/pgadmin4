@@ -1653,38 +1653,7 @@ define('pgadmin.browser', [
       }
 
     },
-
-    editor_shortcut_keys: {
-      // Autocomplete sql command
-      'Ctrl-Space': 'autocomplete',
-      'Cmd-Space': 'autocomplete',
-
-      'Alt-Up': 'goLineUp',
-      'Alt-Down': 'goLineDown',
-
-      // Move word by word left/right
-      'Ctrl-Alt-Left': 'goGroupLeft',
-      'Cmd-Alt-Left': 'goGroupLeft',
-      'Ctrl-Alt-Right': 'goGroupRight',
-      'Cmd-Alt-Right': 'goGroupRight',
-
-      // Allow user to delete Tab(s)
-      'Shift-Tab': 'indentLess',
-    },
-    editor_options: {
-      tabSize: parseInt(pgBrowser.utils.tabSize),
-      wrapCode: pgBrowser.utils.wrapCode,
-      insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
-      brace_matching: pgBrowser.utils.braceMatching,
-      indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
-      highlightSelectionMatches:pgBrowser.utils.highlightSelectionMatches
-    },
   });
-
-  // Use spaces instead of tab
-  if (pgBrowser.utils.useSpaces == 'True') {
-    pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
-  }
 
   return pgAdmin.Browser;
 });

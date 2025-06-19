@@ -43,17 +43,18 @@ Use the fields on the *Display* panel to specify general display preferences:
   be automatically expanded if a treeview node is expanded and has only a single
   child.
 
+* When the *Confirm before Close/Reset in object properties dialog?* switch is
+  set to *True*, pgAdmin will warn you before closing the properties dialog of
+  an object if there are any unsaved changes. On user confirmation,
+  the properties dialog will close.
+
+* When the *Confirm on close or refresh?* switch is set to *True*, pgAdmin will
+  attempt to catch browser close or refresh events and prompt before allowing
+  them to continue.
+
 * Use the *Object explorer state saving interval* field to set the treeview state
   saving interval. A value of *-1* will disable the treeview state saving
   functionality.
-
-* When the *Confirm before closing properties with unsaved changes* switch is set to *True*,
-  pgAdmin will warn you before closing the properties dialog of an object if there
-  are any unsaved changes. On user confirmation, the properties dialog will close.
-
-* When the *Confirm on close or refresh* switch is set to *True*, pgAdmin will
-  attempt to catch browser close or refresh events and prompt before allowing
-  them to continue.
 
 * When the *Hide shared servers?* switch is set to *True*, the client will hide
   all the shared servers from the object explorer. **Note:** This option is visible only when
@@ -61,9 +62,11 @@ Use the fields on the *Display* panel to specify general display preferences:
 
 * When the *Show empty object collections?* switch is turned off, then all object
   collections which are empty will be hidden from browser tree.
+
 * When the *Show system objects?* switch is set to *True*, the client will
   display system objects such as system schemas (for example, *pg_temp*) or
   system columns (for example,  *xmin* or *ctid*) in the tree control.
+
 * When the *Show template databases?* switch is set to *True*, the client will
   display template databases.
 
@@ -138,6 +141,8 @@ Use field on *Tab settings* panel to specify the tab related properties.
 
 * When the *Dynamic tab size* If set to True, the tabs will take full size as per the title, it will also applicable for already opened tabs
 
+* Use the *PSQL tool tab title placeholder* field to customize the PSQL tool tab title.
+
 * When the *Open in new browser tab* filed is selected for Query tool, Schema Diff or Debugger, it will
   open in a new browser tab when invoked.
 
@@ -190,6 +195,9 @@ preferences for the graphs on the *Dashboard* tab:
 
 * Use the *Memory usage statistics refresh rate* field to specify the number
   of seconds between memory usage statistics samples displayed in graphs.
+
+* Use the *PGD replication lag refresh rate* field to specify the number
+  of seconds between PGD replication lag samples displayed in graphs.
 
 * Use the *Percentage of CPU time used by different process modes statistics refresh rate*
   field to specify the number of seconds between Percentage of CPU time used by different
@@ -259,12 +267,12 @@ The Graphs Node
 
 Expand the *Graphs* node to specify your Graphs display preferences.
 
-* Use the *Chart line width* field to specify the width of the lines on the
-  line chart.
-
 .. image:: images/preferences_dashboard_graphs.png
     :alt: Preferences dashboard graph options
     :align: center
+
+* Use the *Chart line width* field to specify the width of the lines on the
+  line chart.
 
 * When the *Show graph data points?* switch is set to *True*, data points will
   be visible on graph lines.
@@ -318,18 +326,16 @@ Use the fields on the *User Interface* panel to set the user interface related p
 
 * When the *Save the application state?* option is enabled  the current state of various
   tools—such as Query Tool, ERD, Schema Diff, and PSQL—will be saved in the encrypted
-  format.If the application is closed unexpectedly, the tab is accidentally closed,
+  format. If the application is closed unexpectedly, the tab is accidentally closed,
   or the page is refreshed, the saved state will be automatically restored for
-  each respective tool.**Note:**
+  each respective tool. **Note:** Saving the application state will not preserve data for tool tabs opened in
+  separate browser tabs when running in server mode.
 
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
   Currently we support Light, Dark, High Contrast and System theme. Selecting System option will follow
   your computer's settings.
-
-**Note:** Saving the application state will not preserve data for tool tabs opened in
-separate browser tabs when running in server mode..
 
 The Paths Node
 **************
@@ -427,6 +433,10 @@ Tool display.
 
 Use the fields on the *Editor* panel to change settings of the query editor.
 
+* Use the *Auto-indent new line?* switch to specify whether the editor will
+  automatically indent new lines. When set to *True*, the editor will indent
+  new lines according to the indentation of the previous line.
+
 * When the *Brace matching?* switch is set to *True*, the editor will highlight
   pairs of matched braces.
 
@@ -444,6 +454,9 @@ Use the fields on the *Editor* panel to change settings of the query editor.
 * Use the *Font size* field to specify the font size that will be used in text
   boxes and editors.
 
+* When the *Highlight selection matches?* switch is set to *True*, the editor will
+  highlight matched selected text.
+
 * When the *Insert bracket pairs?* switch is set to *True*, the editor will
   automatically insert paired brackets.
 
@@ -453,9 +466,6 @@ Use the fields on the *Editor* panel to change settings of the query editor.
 * When the *Plain text mode?* switch is set to *True*, the editor mode will be
   changed to text/plain. Keyword highlighting and code folding will be disabled.
   This will improve editor performance with large files.
-
-* When the *Highlight selection matches?* switch is set to *True*, the editor will
-  highlight matched selected text.
 
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences sqleditor explain options
@@ -512,28 +522,28 @@ Use the fields on the *Options* panel to manage editor preferences.
   the CREATE sql of the selected object will be copied to query tool when query tool
   will open.
 
+* When the *Open the file in a new tab?* switch is set to *True*, the
+  editor will open the new file in new tab of the Query Tool.
+
+* When the *Prompt to commit/rollback active transactions?* switch is set to
+  *True*, the editor will prompt the user to commit or rollback changes when
+  exiting the Query Tool while the current transaction is not committed.
+  
 * When the *Prompt to save unsaved data changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved data when exiting the data
   editor.
-
-* When the *Open the file in a new tab?* switch is set to *True*, the
-  editor will open the new file in new tab of the Query Tool.
 
 * When the *Prompt to save unsaved query changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved query modifications when exiting
   the Query Tool.
 
-* When the *Prompt to commit/rollback active transactions?* switch is set to
-  *True*, the editor will prompt the user to commit or rollback changes when
-  exiting the Query Tool while the current transaction is not committed.
+* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
+  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
 
 * When the *Sort View Data results by primary key columns?* If set to *True*,
   data returned when using the View/Edit Data - All Rows option will be sorted
   by the Primary Key columns by default. When using the First/Last 100 Rows options,
   data is always sorted.
-
-* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
-  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
 
 * When the *Underline query at cursor?* switch is set to *True*, query tool will
   parse and underline the query at the cursor position.
@@ -553,14 +563,15 @@ preferences for copied data.
   auto-size to the maximum width of the data in the column as loaded in the
   first batch. If set to *Column name*, the column will be sized to the widest
   of the data type or column name.
-* Specify the maximum width of the column in pixels when 'Columns sized by' is
-  set to *Column data*. If 'Columns sized by' is set to *Column name* then this
-  setting won't have any effect.
-* Specify the number of records to fetch in one batch. Changing this value will
-  override DATA_RESULT_ROWS_PER_PAGE setting from config file.
+* Use *Data result rows per page* to specify the number of records to fetch in
+  one batch. Changing this value will override DATA_RESULT_ROWS_PER_PAGE setting
+  from config file.
 * Use the *Max column data display length* to specify the maximum number of
   characters to be visible in the data output cell. If the data is larger 
   than this value, it will be truncated.
+* Use *Maximum column width* to Specify the maximum width of the column in pixels
+  when 'Columns sized by' is set to *Column data*. If 'Columns sized by' is set to
+  *Column name* then this setting won't have any effect.
 * Use the *Result copy field separator* drop-down listbox to select the field
   separator for copied data.
 * Use the *Result copy quote character* drop-down listbox to select the quote
