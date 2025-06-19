@@ -37,7 +37,7 @@ export function deleteToolData(panelId, closePanelId){
   }
 };
 
-export function ApplicationStateProvider({children}){
+export function ApplicationStateProvider({children, toolDataId}){
   const preferencesStore = usePreferences();
   const saveAppState = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
   const openNewTab = preferencesStore?.getPreferencesForModule('browser')?.new_browser_tab_open;
@@ -63,9 +63,36 @@ export function ApplicationStateProvider({children}){
     return saveAppState;
   };
 
+  async function getQueryToolContent() {
+    try {
+      let transId = toolDataId.split('-')[1];
+      const res = await getApiInstance({'Content-Encoding': 'gzip'}).get(
+        url_for('settings.get_tool_data', {
+          'trans_id': transId,
+        })
+      );
+      return res.data.success? JSON.parse(res.data.data.result.tool_data): null;
+    } catch (error) {
+      pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      return null;
+    }
+  }
+
+  const deleteToolData = ()=>{
+    let transId = toolDataId.split('-')[1];
+    getApiInstance().delete(
+      url_for('settings.delete_application_state'), {data:{'panelId': transId}}
+    ).then(()=> { /* Sonar Qube */}).catch(function(error) {
+      pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+    });
+
+  };
+
   const value = useMemo(()=>({
     saveToolData,
     isSaveToolDataEnabled,
+    getQueryToolContent,
+    deleteToolData
   }), []);
 
   return <ApplicationStateContext.Provider value={value}>
@@ -75,5 +102,6 @@ export function ApplicationStateProvider({children}){
 }
 
 ApplicationStateProvider.propTypes = {
-  children: PropTypes.object
+  children: PropTypes.object,
+  toolDataId: PropTypes.string
 };

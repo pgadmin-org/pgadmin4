@@ -220,9 +220,7 @@ export default class SQLEditor {
     let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
     let open_new_tab = browser_preferences.new_browser_tab_open;
     const [icon, tooltip] = panelTitleFunc.getQueryToolIcon(panel_title, is_query_tool);
-    let selectedNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(
-      pgAdmin.Browser.tree.selected()
-    );
+    let selectedNodeInfo = pgAdmin.Browser.tree?.selected() ? pgAdmin.Browser.tree?.getTreeNodeHierarchy(pgAdmin.Browser.tree.selected()) : null;
 
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
@@ -248,7 +246,7 @@ export default class SQLEditor {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ApplicationStateProvider>
+          <ApplicationStateProvider toolDataId={params.toolDataId}>
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
               { params.error ?   

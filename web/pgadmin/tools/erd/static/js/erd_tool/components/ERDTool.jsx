@@ -360,6 +360,8 @@ export default class ERDTool extends React.Component {
         this.diagram.deserialize(sqlValue);
         this.diagram.clearSelection();
         this.registerModelEvents();
+        this.setState({dirty: true});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
       }
     }
     else if(this.props.params.gen) {

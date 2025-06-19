@@ -166,7 +166,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
   const modal = useModal();
-  const {isSaveToolDataEnabled} = useApplicationState();
+  const {isSaveToolDataEnabled, deleteToolData} = useApplicationState();
 
   /* Connection status poller */
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
@@ -283,7 +283,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
           setQtStatePartial({ editor_disabled: true });
         });
-    } else if (qtState.params.sql_id) {
+    } else if (qtState.params.toolDataId) {
       populateEditorData();
     } else {
       setQtStatePartial({ editor_disabled: false });
@@ -291,23 +291,24 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   const populateEditorData = () =>{
-    let sqlId = qtState.params.sql_id,
-      loadSqlFromLocalStorage = true;
-      
+    let populateQueryContent = true;
+
     if(qtState.params.open_file_name){
       if(qtState.params.file_deleted == 'false' &&  qtState.params.is_editor_dirty == 'false'){
-        // call load file from disk as no fil changes
+        // call load file from disk as no file changes
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, qtState.params.open_file_name, qtState.params?.storage);
+        populateQueryContent = false;
+        deleteToolData();
       }else if(qtState.params.file_deleted != 'true'){
         if(qtState.params.external_file_changes == 'true'){
-          loadSqlFromLocalStorage = false;
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name, sqlId); 
+          populateQueryContent = false;
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name);
         }else{
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
         }
       }
     }
-    if(loadSqlFromLocalStorage) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_SQL_FROM_LOCAL_STORAGE, sqlId);
+    if(populateQueryContent) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT);
     setQtStatePartial({ editor_disabled: false });
   };
 
@@ -545,7 +546,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         });
         isDirtyRef.current = false;
         setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName}, isDirtyRef.current);
-        
+
         if(isSaveToolDataEnabled('sqleditor'))eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
@@ -584,6 +585,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],
       [QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileDone],
       [QUERY_TOOL_EVENTS.QUERY_CHANGED, (isDirty)=>{
+        if(isDirtyRef.current === isDirty) return;
+
         isDirtyRef.current = isDirty;
         if(qtState.params.is_query_tool) {
           setPanelTitle(qtPanelDocker, qtPanelId, null, qtState, isDirty);
