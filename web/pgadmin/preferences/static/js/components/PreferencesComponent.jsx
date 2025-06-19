@@ -199,7 +199,9 @@ export default function PreferencesComponent({panelId}) {
 
   useEffect(()=>{
     /* Bind the close event and check if user should be warned */
-    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, ()=>{
+    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
+      if(panelId != id) return;
+
       if(Object.keys(prefChangedData.current).length > 0) {
         pgAdmin.Browser.notifier.confirm(
           gettext('Warning'),

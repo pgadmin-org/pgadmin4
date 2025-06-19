@@ -34,7 +34,6 @@ export default function RightPreference({ schema, filteredItemIds, selectedItem,
 
     schema.schemaFields.forEach((field) => {
       field.visible = field.parentId === selectedItem.id && filteredItemIds.includes(field.id);
-      field.labelTooltip = `${selectedItem.key.toLowerCase()}:${selectedItem.key}:${field.key}`;
     });
     schema.categoryUpdated(selectedItem.id);
   };

@@ -139,6 +139,7 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
 
     delete element.value; // Original value is moved to fieldValues
     element.visible = false;
+    element.labelTooltip = `${node.name}:${subNode.name}:${element.name}`;
     element.helpMessage = element?.help_str || null;
     element.parentId = nodeData.id;
     fieldItems.push(element);

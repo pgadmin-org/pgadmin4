@@ -84,6 +84,10 @@ export default function cmOverride(theme) {
         color: editor.guttersFg,
         borderRight: 'none',
 
+        '& .cm-lineNumbers': {
+          padding: '0px 4px',
+        },
+
         '& .cm-foldGutter': {
           padding: '0px',
           color: editor.fg,

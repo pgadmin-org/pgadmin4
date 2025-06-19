@@ -177,7 +177,7 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.sql_font_size = self.preference.register(
+    self.preference.register(
         'Editor', 'plain_editor_mode',
         gettext("Plain text mode?"), 'boolean', False,
         category_label=PREF_LABEL_EDITOR,
@@ -188,7 +188,7 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.sql_font_size = self.preference.register(
+    self.preference.register(
         'Editor', 'code_folding',
         gettext("Code folding?"), 'boolean', True,
         category_label=PREF_LABEL_EDITOR,
@@ -1064,7 +1064,7 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.sql_font_size = self.preference.register(
+    self.preference.register(
         'Editor', 'indent_new_line',
         gettext("Auto-indent new line?"), 'boolean', True,
         category_label=PREF_LABEL_EDITOR,
