@@ -5,18 +5,19 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  pgAdmin4\n"
+"Project-Id-Version: pgAdmin4\n"
 "Report-Msgid-Bugs-To: liborm85@gmail.com\n"
 "POT-Creation-Date: 2025-06-19 16:47+0530\n"
-"PO-Revision-Date: 2025-05-24 17:30+0200\n"
+"PO-Revision-Date: 2025-06-21 07:03+0200\n"
 "Last-Translator: Libor M. <liborm85@gmail.com>\n"
-"Language: cs\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"Generated-By: Babel 2.7.0\n"
+"X-Generator: Poedit 3.5\n"
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -162,10 +163,11 @@ msgid "kerberos"
 msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:170
-msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
+msgid ""
+"Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
 msgstr ""
-"Nelze použít ověřování pomocí protokolu Kerberos, protože nelze načíst "
-"modul GSSAPI."
+"Nelze použít ověřování pomocí protokolu Kerberos, protože nelze načíst modul "
+"GSSAPI."
 
 #: pgadmin/authenticate/kerberos.py:210
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
@@ -269,11 +271,11 @@ msgstr "Uživatel nemá platný otisk generování OTP."
 
 #: pgadmin/authenticate/mfa/authenticator.py:126
 msgid ""
-"Enter the code shown in your authenticator application for TOTP (Time-"
-"based One-Time Password)"
+"Enter the code shown in your authenticator application for TOTP (Time-based "
+"One-Time Password)"
 msgstr ""
-"Zadejte kód zobrazený ve vaší ověřovací aplikaci pro TOTP (jednorázové "
-"heslo založené na čase)"
+"Zadejte kód zobrazený ve vaší ověřovací aplikaci pro TOTP (jednorázové heslo "
+"založené na čase)"
 
 #: pgadmin/authenticate/mfa/authenticator.py:164
 msgid "TOTP Authenticator QRCode"
@@ -312,10 +314,11 @@ msgstr "Odeslání kódu na e-mail se nezdařilo."
 
 #: pgadmin/authenticate/mfa/email.py:95
 #, python-brace-format
-msgid "A verification code was sent to {}. Check your email and enter the code."
+msgid ""
+"A verification code was sent to {}. Check your email and enter the code."
 msgstr ""
-"Ověřovací kód byl odeslán na adresu {}. Zkontrolujte svůj e-mail a "
-"zadejte kód."
+"Ověřovací kód byl odeslán na adresu {}. Zkontrolujte svůj e-mail a zadejte "
+"kód."
 
 #: pgadmin/authenticate/mfa/email.py:150
 msgid "User has not registered for email authentication"
@@ -355,8 +358,8 @@ msgstr "Poznámka"
 
 #: pgadmin/authenticate/mfa/email.py:221
 msgid ""
-"This email address will only be used for two factor authentication "
-"purposes. The email address for the user account will not be changed."
+"This email address will only be used for two factor authentication purposes. "
+"The email address for the user account will not be changed."
 msgstr ""
 "Tato e-mailová adresa bude použita pouze pro účely dvoufaktorové "
 "autentizace. E-mailová adresa uživatelského účtu se nezmění."
@@ -403,8 +406,7 @@ msgstr "Zavřete dialog."
 #: pgadmin/authenticate/mfa/views.py:341
 msgid "Can't access this page, when multi factor authentication is disabled."
 msgstr ""
-"Na tuto stránku nelze vstoupit, když je deaktivováno vícefaktorové "
-"ověřování."
+"Na tuto stránku nelze vstoupit, když je deaktivováno vícefaktorové ověřování."
 
 #: pgadmin/authenticate/mfa/views.py:346
 msgid "Complete the authentication process first"
@@ -455,8 +457,8 @@ msgid ""
 "utility specified {0}. Please check that the hook utility is configured "
 "correctly."
 msgstr ""
-"Hlavní heslo nebylo možné získat z nástroje MASTER_PASSWORD_HOOK zadaného"
-" {0}. Zkontrolujte, zda je nástroj správně nakonfigurován."
+"Hlavní heslo nebylo možné získat z nástroje MASTER_PASSWORD_HOOK zadaného "
+"{0}. Zkontrolujte, zda je nástroj správně nakonfigurován."
 
 #: pgadmin/browser/__init__.py:787
 msgid "Incorrect master password"
@@ -473,11 +475,11 @@ msgstr "Heslo uživatele pgAdmin bylo úspěšně změněno"
 #: pgadmin/browser/__init__.py:964
 #, python-brace-format
 msgid ""
-"Your account is authenticated using an external {} source. Please contact"
-" the administrators of this service if you need to reset your password."
+"Your account is authenticated using an external {} source. Please contact "
+"the administrators of this service if you need to reset your password."
 msgstr ""
-"Váš účet je ověřen pomocí externího {} zdroje. Pokud potřebujete "
-"resetovat své heslo, kontaktujte správce této služby."
+"Váš účet je ověřen pomocí externího {} zdroje. Pokud potřebujete resetovat "
+"své heslo, kontaktujte správce této služby."
 
 #: pgadmin/browser/__init__.py:1076
 msgid ""
@@ -497,11 +499,11 @@ msgstr "Zobrazit prázdné kolekce objektů"
 
 #: pgadmin/browser/register_browser_preferences.py:31
 msgid ""
-"If turned off, then all object collections which are empty will be hidden"
-" from browser tree."
+"If turned off, then all object collections which are empty will be hidden "
+"from browser tree."
 msgstr ""
-"Pokud je vypnuto, všechny kolekce objektů, které jsou prázdné, budou "
-"skryty ze stromu prohlížeče."
+"Pokud je vypnuto, všechny kolekce objektů, které jsou prázdné, budou skryty "
+"ze stromu prohlížeče."
 
 #: pgadmin/browser/register_browser_preferences.py:38
 msgid "Show template databases?"
@@ -517,10 +519,11 @@ msgid "Display"
 msgstr "Zobrazení"
 
 #: pgadmin/browser/register_browser_preferences.py:48
-msgid "If set to True, then all shared servers will be hidden from browser tree"
+msgid ""
+"If set to True, then all shared servers will be hidden from browser tree"
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, budou všechny sdílené servery ve "
-"stromu prohlížeče skryty."
+"Pokud je nastaveno na hodnotu Ano, budou všechny sdílené servery ve stromu "
+"prohlížeče skryty."
 
 #: pgadmin/browser/register_browser_preferences.py:55
 msgid "Object explorer tree state saving interval"
@@ -528,8 +531,8 @@ msgstr "Interval ukládání stavu stromu průzkumníka objektů"
 
 #: pgadmin/browser/register_browser_preferences.py:58
 msgid ""
-"Object explorer state saving interval in seconds. Use -1 to disable the "
-"tree saving mechanism."
+"Object explorer state saving interval in seconds. Use -1 to disable the tree "
+"saving mechanism."
 msgstr ""
 "Interval ukládání stavu průzkumníka objektů v sekundách. Pomocí -1 "
 "deaktivujete mechanismus ukládání stromu."
@@ -540,8 +543,8 @@ msgstr "Potvrdit zavření nebo obnovení"
 
 #: pgadmin/browser/register_browser_preferences.py:68
 msgid ""
-"Confirm closure or refresh of the browser or browser tab is intended "
-"before proceeding."
+"Confirm closure or refresh of the browser or browser tab is intended before "
+"proceeding."
 msgstr ""
 "Před pokračováním se ujistěte, že je zamýšleno uzavření nebo obnovení "
 "prohlížeče nebo karty prohlížeče."
@@ -552,11 +555,11 @@ msgstr "Potvrzení před zavřením/resetem ve vlastnostech objektu"
 
 #: pgadmin/browser/register_browser_preferences.py:79
 msgid ""
-"Confirm before closing or resetting the changes in the properties dialog "
-"for an object if the changes are not saved."
+"Confirm before closing or resetting the changes in the properties dialog for "
+"an object if the changes are not saved."
 msgstr ""
-"Potvrdit před zavřením nebo resetováním změn v dialogu vlastností "
-"objektu, pokud se změny neuloží."
+"Potvrdit před zavřením nebo resetováním změn v nastavení objektu, pokud se "
+"změny neuloží."
 
 #: pgadmin/browser/register_browser_preferences.py:86
 msgid "Auto-expand sole children"
@@ -564,8 +567,8 @@ msgstr "Automatické rozbalení jediných potomků"
 
 #: pgadmin/browser/register_browser_preferences.py:89
 msgid ""
-"If a treeview node is expanded and has only a single child, automatically"
-" expand the child node as well."
+"If a treeview node is expanded and has only a single child, automatically "
+"expand the child node as well."
 msgstr ""
 "Pokud je uzel stromu rozbalen a má pouze jednoho podřízeného potomka, "
 "automaticky také rozbalte podřízený uzel."
@@ -586,11 +589,11 @@ msgstr "Maximální počet řádků historie úloh"
 
 #: pgadmin/browser/register_browser_preferences.py:106
 msgid ""
-"The maximum number of history rows to show on the Statistics tab for "
-"pgAgent jobs"
+"The maximum number of history rows to show on the Statistics tab for pgAgent "
+"jobs"
 msgstr ""
-"Maximální počet řádků historie, které se mají zobrazit na kartě "
-"Statistika pro úlohy pgAgent"
+"Maximální počet řádků historie, které se mají zobrazit na kartě Statistika "
+"pro úlohy pgAgent"
 
 #: pgadmin/browser/register_browser_preferences.py:113
 msgid "Process details/logs retention days"
@@ -715,8 +718,8 @@ msgstr "Dynamická velikost karty"
 
 #: pgadmin/browser/register_browser_preferences.py:403
 msgid ""
-"If set to True, the tabs will take full size as per the title, it will "
-"also applicable for already opened tabs"
+"If set to True, the tabs will take full size as per the title, it will also "
+"applicable for already opened tabs"
 msgstr ""
 "Pokud je nastaveno na hodnotu Ano, karty budou mít plnou velikost podle "
 "názvu, bude se vztahovat také na již otevřené karty"
@@ -728,13 +731,13 @@ msgstr "Název karty \"Dotazovací nástroj\""
 #: pgadmin/browser/register_browser_preferences.py:413
 #: pgadmin/browser/register_browser_preferences.py:484
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
-"can provide any string with or without placeholders of their choice. The "
-"blank title will be revert back to the default title with placeholders."
+"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
+"provide any string with or without placeholders of their choice. The blank "
+"title will be revert back to the default title with placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %DATABASE%, %USERNAME% a %SERVER%. Můžete"
-" použít libovolný řetězec s nebo bez zástupných znaků podle svého výběru."
-" Prázdný název vrátí zpět výchozí název se zástupnými znaky."
+"Podporované zástupné znaky jsou %DATABASE%, %USERNAME% a %SERVER%. Můžete "
+"použít libovolný řetězec s nebo bez zástupných znaků podle svého výběru. "
+"Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 
 #: pgadmin/browser/register_browser_preferences.py:422
 msgid "View/Edit data tab title"
@@ -742,15 +745,14 @@ msgstr "Název karty \"Zobrazit/upravit data\""
 
 #: pgadmin/browser/register_browser_preferences.py:426
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
-" %SERVER%. Users can provide any string with or without placeholders of "
-"their choice. The blank title will be revert back to the default title "
-"with placeholders."
+"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and "
+"%SERVER%. Users can provide any string with or without placeholders of their "
+"choice. The blank title will be revert back to the default title with "
+"placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%"
-" a %SERVER%. Můžete použít libovolný řetězec s nebo bez zástupných znaků "
-"podle svého výběru. Prázdný název vrátí zpět výchozí název se zástupnými "
-"znaky."
+"Podporované zástupné znaky jsou %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME% a "
+"%SERVER%. Můžete použít libovolný řetězec s nebo bez zástupných znaků podle "
+"svého výběru. Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 
 #: pgadmin/browser/register_browser_preferences.py:435
 msgid "Debugger tab title"
@@ -760,14 +762,12 @@ msgstr "Název karty \"Ladění\""
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
-"Users can provide any string with or without placeholders of their "
-"choice. The blank title will be revert back to the default title with "
-"placeholders."
+"Users can provide any string with or without placeholders of their choice. "
+"The blank title will be revert back to the default title with placeholders."
 msgstr ""
-"Podporované zástupné znaky jsou %FUNCTION%, %ARGS%, %SCHEMA% a "
-"%DATABASE%. Můžete použít libovolný řetězec s nebo bez zástupných znaků "
-"podle svého výběru. Prázdný název vrátí zpět výchozí název se zástupnými "
-"znaky."
+"Podporované zástupné znaky jsou %FUNCTION%, %ARGS%, %SCHEMA% a %DATABASE%. "
+"Můžete použít libovolný řetězec s nebo bez zástupných znaků podle svého "
+"výběru. Prázdný název vrátí zpět výchozí název se zástupnými znaky."
 
 #: pgadmin/browser/register_browser_preferences.py:447
 #: pgadmin/browser/static/js/collection.js:56
@@ -819,9 +819,9 @@ msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
 msgstr ""
-"Pro nastavení co otevřít na nové kartě prohlížeče pro daný modul vyberte "
-"ze seznamu Dotazovací nástroj, Ladění, Porovnání schémat, Nástroj E-R "
-"diagram nebo PSQL nástroj."
+"Pro nastavení co otevřít na nové kartě prohlížeče pro daný modul vyberte ze "
+"seznamu Dotazovací nástroj, Ladění, Porovnání schémat, Nástroj E-R diagram "
+"nebo PSQL nástroj."
 
 #: pgadmin/browser/register_browser_preferences.py:472
 msgid "Select open new tab..."
@@ -1159,11 +1159,11 @@ msgstr "Cesta k EDB Advanced Server"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:17
 msgid ""
-"Path to the directory containing the EDB Advanced Server utility programs"
-" (pg_dump, pg_restore etc)."
+"Path to the directory containing the EDB Advanced Server utility programs "
+"(pg_dump, pg_restore etc)."
 msgstr ""
-"Cesta ke složce obsahující obslužné programy EDB Advanced Server "
-"(pg_dump, pg_restore, atd.)."
+"Cesta ke složce obsahující obslužné programy EDB Advanced Server (pg_dump, "
+"pg_restore, atd.)."
 
 #: pgadmin/browser/server_groups/servers/ppas.py:26
 msgid "EDB Advanced Server"
@@ -1176,8 +1176,8 @@ msgstr "Cesta k PostgreSQL"
 
 #: pgadmin/browser/server_groups/servers/types.py:34
 msgid ""
-"Path to the directory containing the PostgreSQL utility programs "
-"(pg_dump, pg_restore etc)."
+"Path to the directory containing the PostgreSQL utility programs (pg_dump, "
+"pg_restore etc)."
 msgstr ""
 "Cesta ke složce obsahující obslužné programy PostgreSQL (pg_dump, "
 "pg_restore, atd.)."
@@ -1330,7 +1330,8 @@ msgstr "Nelze vygenerovat pomocí reverzního inženýrství SQL pro přetypová
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:721
 msgid "Could not generate reversed engineered SQL for the cast node."
-msgstr "Nelze vygenerovat pomocí reverzního inženýrství SQL pro přetypování uzlu."
+msgstr ""
+"Nelze vygenerovat pomocí reverzního inženýrství SQL pro přetypování uzlu."
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:39
 msgid "Cast"
@@ -1976,15 +1977,15 @@ msgstr "PRE-DEFINED (Předdefinovaný)"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:86
 msgid ""
-"If the Job Type is Self-Contained you need to specify the action and "
-"repeat interval in the Action and Repeat tabs respectively. If the Job "
-"Type is Pre-Defined you need to specify the existing Program and Schedule"
-" names in the Pre-Defined tab."
+"If the Job Type is Self-Contained you need to specify the action and repeat "
+"interval in the Action and Repeat tabs respectively. If the Job Type is Pre-"
+"Defined you need to specify the existing Program and Schedule names in the "
+"Pre-Defined tab."
 msgstr ""
-"Pokud je typ úlohy SELF-CONTAINED (Samostatný), musíte zadat akci a "
-"interval opakování na kartách Akce a Interval opakování. Pokud je typ "
-"úlohy PRE-DEFINED (Předdefinovaný), musíte na kartě Předdefinované zadat "
-"existující program a plán."
+"Pokud je typ úlohy SELF-CONTAINED (Samostatný), musíte zadat akci a interval "
+"opakování na kartách Akce a Interval opakování. Pokud je typ úlohy PRE-"
+"DEFINED (Předdefinovaný), musíte na kartě Předdefinované zadat existující "
+"program a plán."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:89
 msgid "Run Count"
@@ -3144,13 +3145,13 @@ msgstr "Pouze tabulky"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:279
 msgid ""
-"If ONLY is specified before the table name, only that table is added to "
-"the publication. If ONLY is not specified, the table and all its "
-"descendant tables (if any) are added."
+"If ONLY is specified before the table name, only that table is added to the "
+"publication. If ONLY is not specified, the table and all its descendant "
+"tables (if any) are added."
 msgstr ""
-"Pokud je před názvem tabulky zadáno POUZE (ONLY), bude do publikace "
-"přidána pouze tato tabulka. Pokud POUZE (ONLY) není zadáno, přidá se "
-"tabulka a všechny její následující potomky (jsou-li nějaké)."
+"Pokud je před názvem tabulky zadáno POUZE (ONLY), bude do publikace přidána "
+"pouze tato tabulka. Pokud POUZE (ONLY) není zadáno, přidá se tabulka a "
+"všechny její následující potomky (jsou-li nějaké)."
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:281
 msgid "Tables in Schema"
@@ -3171,8 +3172,7 @@ msgid ""
 "Could not find the schema in the database.\n"
 "                    It may have been removed by another user."
 msgstr ""
-"Schéma v databázi se nepodařilo najít. Mohlo být odstraněno jiným "
-"uživatelem."
+"Schéma v databázi se nepodařilo najít. Mohlo být odstraněno jiným uživatelem."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:601
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1132
@@ -3191,8 +3191,7 @@ msgid ""
 "Could not find the schema in the database. It may have been removed by "
 "another user."
 msgstr ""
-"Schéma v databázi se nepodařilo najít. Může být odstraněn jiným "
-"uživatelem."
+"Schéma v databázi se nepodařilo najít. Může být odstraněn jiným uživatelem."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:818
 msgid "The specified schema could not be found.\n"
@@ -3212,8 +3211,7 @@ msgid ""
 "Could not find the schema in the database.\n"
 "                It may have been removed by another user."
 msgstr ""
-"Schéma v databázi se nepodařilo najít. Mohlo být odstraněno jiným "
-"uživatelem."
+"Schéma v databázi se nepodařilo najít. Mohlo být odstraněno jiným uživatelem."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.js:21
@@ -3391,11 +3389,11 @@ msgstr "Porovnávání"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:476
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:267
 msgid ""
-"Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE."
+"Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/"
+"LC_COLLATE."
 msgstr ""
-"Definice je neúplná. Zadejte Národní prostředí NEBO Kopírovat prostředí "
-"NEBO LC_TYPE/LC_COLLATE."
+"Definice je neúplná. Zadejte Národní prostředí NEBO Kopírovat prostředí NEBO "
+"LC_TYPE/LC_COLLATE."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:568
 msgid "Collation dropped"
@@ -3795,10 +3793,10 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:953
-msgid "Could not generate reversed engineered query for FTS Configuration node."
+msgid ""
+"Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
-"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS nastavení "
-"uzlu."
+"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS nastavení uzlu."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:41
 msgid "FTS Configuration"
@@ -3917,8 +3915,7 @@ msgid ""
 "Could not generate reversed engineered query for the FTS Parser.\n"
 "{0}"
 msgstr ""
-"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS analyzátor."
-"\n"
+"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS analyzátor.\n"
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:894
@@ -3982,8 +3979,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:765
 msgid "Could not generate reversed engineered query for FTS Template node."
 msgstr ""
-"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS šablonu "
-"uzlu."
+"Nelze vygenerovat pomocí reverzního inženýrství dotaz pro FTS šablonu uzlu."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:39
 msgid "FTS Template"
@@ -4421,7 +4417,8 @@ msgstr "Hlavička"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:107
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:126
 msgid "Updating the package header definition may remove its existing body."
-msgstr "Aktualizace definice záhlaví balíčku může odstranit jeho existující tělo."
+msgstr ""
+"Aktualizace definice záhlaví balíčku může odstranit jeho existující tělo."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:128
@@ -4526,14 +4523,14 @@ msgstr "Ve vlastnictví (OWNED BY)"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:169
 msgid ""
 "The OWNED BY option causes the sequence to be associated with a specific "
-"table column, such that if that column (or its whole table) is dropped, "
-"the sequence will be automatically dropped as well. The specified table "
-"must have the same owner and be in the same schema as the sequence."
+"table column, such that if that column (or its whole table) is dropped, the "
+"sequence will be automatically dropped as well. The specified table must "
+"have the same owner and be in the same schema as the sequence."
 msgstr ""
 "Volba Ve vlastnictví (OWNED BY) způsobí, že sekvence bude přidružena ke "
-"konkrétnímu sloupci tabulky, takže pokud je tento sloupec (nebo celá jeho"
-" tabulka) zrušen, sekvence bude také automaticky zrušena. Zadaná tabulka "
-"musí mít stejného vlastníka a musí být ve stejném schématu jako sekvence."
+"konkrétnímu sloupci tabulky, takže pokud je tento sloupec (nebo celá jeho "
+"tabulka) zrušen, sekvence bude také automaticky zrušena. Zadaná tabulka musí "
+"mít stejného vlastníka a musí být ve stejném schématu jako sekvence."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:699
@@ -4685,8 +4682,8 @@ msgstr "Tabulka vyprázdněna"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2068
 #, python-brace-format
 msgid ""
-"The table is currently locked and the operation cannot be completed. "
-"Please try again later. \r\n"
+"The table is currently locked and the operation cannot be completed. Please "
+"try again later. \r\n"
 "Blocking Process ID : {0} Application Name : {1}"
 msgstr ""
 "Tabulka je aktuálně uzamčena a operaci nelze dokončit. Zkuste to znovu "
@@ -5443,11 +5440,11 @@ msgstr "Stránek na rozsah"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:289
 msgid ""
-"Number of table blocks that make up one block range for each entry of a "
-"BRIN index."
+"Number of table blocks that make up one block range for each entry of a BRIN "
+"index."
 msgstr ""
-"Počet bloků tabulky, které tvoří jeden rozsah bloků pro každý záznam BRIN"
-" indexu."
+"Počet bloků tabulky, které tvoří jeden rozsah bloků pro každý záznam BRIN "
+"indexu."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:291
 msgid "Buffering"
@@ -5504,7 +5501,8 @@ msgstr "Upozornění"
 msgid ""
 "Changing access method will clear columns collection. Do you want to "
 "continue?"
-msgstr "Změna metody přístupu vymaže kolekci sloupců. Opravdu chcete pokračovat?"
+msgstr ""
+"Změna metody přístupu vymaže kolekci sloupců. Opravdu chcete pokračovat?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:512
 msgid "Unique?"
@@ -5814,7 +5812,8 @@ msgstr "Sloupec: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:366
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:961
 msgid "User can select any column from the list of available columns."
-msgstr "Uživatel si může vybrat libovolný sloupec ze seznamu dostupných sloupců."
+msgstr ""
+"Uživatel si může vybrat libovolný sloupec ze seznamu dostupných sloupců."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:368
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:963
@@ -5834,13 +5833,13 @@ msgstr "Příklad: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:372
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:967
 msgid ""
-"Let's say, we want to create a partition table based per year for the "
-"column 'saledate', having datatype 'date/timestamp', then we need to "
-"specify the expression as 'extract(YEAR from saledate)' as partition key."
+"Let's say, we want to create a partition table based per year for the column "
+"'saledate', having datatype 'date/timestamp', then we need to specify the "
+"expression as 'extract(YEAR from saledate)' as partition key."
 msgstr ""
-"Řekněme, že chceme vytvořit dělenou tabulku pro sloupec 'datum_slev' za "
-"rok, která má datový typ 'date/timestamp', pak musíme jako klíč oddílu "
-"zadat výraz jako 'extract(YEAR from datum_slev)'."
+"Řekněme, že chceme vytvořit dělenou tabulku pro sloupec 'datum_slev' za rok, "
+"která má datový typ 'date/timestamp', pak musíme jako klíč oddílu zadat "
+"výraz jako 'extract(YEAR from datum_slev)'."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:390
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:985
@@ -5855,8 +5854,8 @@ msgstr "Vytvořit tabulku: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:403
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:998
 msgid ""
-"User can create multiple partitions while creating new partitioned table."
-" Operation switch is disabled in this scenario."
+"User can create multiple partitions while creating new partitioned table. "
+"Operation switch is disabled in this scenario."
 msgstr ""
 "Uživatel může při vytváření nové dělené tabulky vytvářet více oddílů. "
 "Přepínač operace je v tomto scénáři deaktivován."
@@ -5869,8 +5868,8 @@ msgstr "Upravit existující tabulku: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1001
 msgid ""
-"User can create/attach/detach multiple partitions. In attach operation "
-"user can select table from the list of suitable tables to be attached."
+"User can create/attach/detach multiple partitions. In attach operation user "
+"can select table from the list of suitable tables to be attached."
 msgstr ""
 "Uživatel může vytvořit/připojit/odpojit více oddílů. V operaci připojení "
 "může uživatel vybrat tabulku ze seznamu vhodných tabulek, které mají být "
@@ -5898,11 +5897,11 @@ msgstr "Pole Od/Do/V: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:412
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1007
 msgid ""
-"From/To/In input: Values for these fields must be quoted with single "
-"quote. For more than one partition key values must be comma(,) separated."
+"From/To/In input: Values for these fields must be quoted with single quote. "
+"For more than one partition key values must be comma(,) separated."
 msgstr ""
-"Pole Od/Do/V: Hodnoty pro tato pole musí být uváděny s apostrofem ('). "
-"Pro více než jednu hodnotu klíče oddílu musíte oddělit čárkou (,)."
+"Pole Od/Do/V: Hodnoty pro tato pole musí být uváděny s apostrofem ('). Pro "
+"více než jednu hodnotu klíče oddílu musíte oddělit čárkou (,)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:414
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1009
@@ -5912,12 +5911,11 @@ msgstr "Příklad Od/Do: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:415
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1010
 msgid ""
-"Enabled for range partition. Consider partitioned table with multiple "
-"keys of type Integer, then values should be specified like '100','200'."
+"Enabled for range partition. Consider partitioned table with multiple keys "
+"of type Integer, then values should be specified like '100','200'."
 msgstr ""
-"Povoleno pro oddíl rozsahu. Zvažte dělenou tabulku s více klíči typu celé"
-" číslo (INTEGER), pak by hodnoty měly být specifikovány jako '100', "
-"'200'."
+"Povoleno pro oddíl rozsahu. Zvažte dělenou tabulku s více klíči typu celé "
+"číslo (INTEGER), pak by hodnoty měly být specifikovány jako '100', '200'."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:417
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1012
@@ -5930,8 +5928,8 @@ msgid ""
 "Enabled for list partition. Values must be comma(,) separated and quoted "
 "with single quote."
 msgstr ""
-"Povoleno pro seznam oddílu. Hodnoty musí být odděleny čárkou (,) a "
-"uváděny s apostrofem (')."
+"Povoleno pro seznam oddílu. Hodnoty musí být odděleny čárkou (,) a uváděny s "
+"apostrofem (')."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:420
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1015
@@ -6007,18 +6005,18 @@ msgstr "Použitím: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:98
 msgid ""
 "This expression will be added to queries that refer to the table if row "
-"level security is enabled. Rows for which the expression returns true "
-"will be visible. Any rows for which the expression returns false or null "
-"will not be visible to the user (in a SELECT), and will not be available "
-"for modification (in an UPDATE or DELETE). Such rows are silently "
-"suppressed; no error is reported."
+"level security is enabled. Rows for which the expression returns true will "
+"be visible. Any rows for which the expression returns false or null will not "
+"be visible to the user (in a SELECT), and will not be available for "
+"modification (in an UPDATE or DELETE). Such rows are silently suppressed; no "
+"error is reported."
 msgstr ""
 "Tento výraz bude přidán do dotazů, které odkazují na tabulku, pokud je "
-"povoleno zabezpečení na úrovni řádků. Řádky pro které se vrací pravda "
-"(true) budou viditelné. Žádné řádky, pro které výraz vrací nepravda "
-"(false) nebo prázdné (null), nebudou pro uživatele viditelné (v SELECT) a"
-" nebudou k dispozici pro úpravy (v UPDATE nebo DELETE). Takové řádky jsou"
-" tiše potlačeny; není hlášena žádná chyba."
+"povoleno zabezpečení na úrovni řádků. Řádky pro které se vrací pravda (true) "
+"budou viditelné. Žádné řádky, pro které výraz vrací nepravda (false) nebo "
+"prázdné (null), nebudou pro uživatele viditelné (v SELECT) a nebudou k "
+"dispozici pro úpravy (v UPDATE nebo DELETE). Takové řádky jsou tiše "
+"potlačeny; není hlášena žádná chyba."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:100
 msgid "With check: "
@@ -6026,18 +6024,17 @@ msgstr "S kontrolou: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:101
 msgid ""
-"This expression will be used in INSERT and UPDATE queries against the "
-"table if row level security is enabled. Only rows for which the "
-"expression evaluates to true will be allowed. An error will be thrown if "
-"the expression evaluates to false or null for any of the records inserted"
-" or any of the records that result from the update."
+"This expression will be used in INSERT and UPDATE queries against the table "
+"if row level security is enabled. Only rows for which the expression "
+"evaluates to true will be allowed. An error will be thrown if the expression "
+"evaluates to false or null for any of the records inserted or any of the "
+"records that result from the update."
 msgstr ""
-"Tento výraz bude použit v dotazech INSERT a UPDATE proti tabulce, pokud "
-"je povoleno zabezpečení na úrovni řádků. Povoleny budou pouze řádky, pro "
-"které bude výraz vyhodnocen jako pravda (true). Chyba bude vyvolána, "
-"pokud bude výraz vyhodnocen jako nepravda (false) nebo prázdné (null) u "
-"všech vložených záznamů nebo u všech záznamů, které jsou výsledkem "
-"aktualizace."
+"Tento výraz bude použit v dotazech INSERT a UPDATE proti tabulce, pokud je "
+"povoleno zabezpečení na úrovni řádků. Povoleny budou pouze řádky, pro které "
+"bude výraz vyhodnocen jako pravda (true). Chyba bude vyvolána, pokud bude "
+"výraz vyhodnocen jako nepravda (false) nebo prázdné (null) u všech vložených "
+"záznamů nebo u všech záznamů, které jsou výsledkem aktualizace."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:463
 msgid "Rule dropped"
@@ -6220,9 +6217,9 @@ msgid ""
 "default-deny policy is used, meaning that no rows are visible or can be "
 "modified by other users"
 msgstr ""
-"Zkontrolujte, zda existují nějaké zásady. Pokud pro tabulku neexistuje "
-"žádná zásada, použije se zásada výchozího odmítnutí, což znamená, že "
-"nejsou viditelné žádné řádky ani je ostatní uživatelé nemohou upravit."
+"Zkontrolujte, zda existují nějaké zásady. Pokud pro tabulku neexistuje žádná "
+"zásada, použije se zásada výchozího odmítnutí, což znamená, že nejsou "
+"viditelné žádné řádky ani je ostatní uživatelé nemohou upravit."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:657
 msgid "Force RLS Policy?"
@@ -7086,11 +7083,10 @@ msgid ""
 "-- take account of the changes.\n"
 msgstr ""
 "\n"
-"-- Změna sloupců v pohledu vyžaduje zrušení a opětovné vytvoření pohledu."
-"\n"
+"-- Změna sloupců v pohledu vyžaduje zrušení a opětovné vytvoření pohledu.\n"
 "-- To může selhat, pokud jsou na tomto pohledu závislé jiné objekty,\n"
-"-- nebo může dojít k selhání procedurálních funkcí, pokud nejsou upraveny"
-" tak,\n"
+"-- nebo může dojít k selhání procedurálních funkcí, pokud nejsou upraveny "
+"tak,\n"
 "-- aby zohledňovaly změny.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2309
@@ -7185,11 +7181,11 @@ msgstr "Zadejte kód pohledu."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:163
 msgid ""
-"Updating the definition will drop and re-create the materialized view. It"
-" may result in loss of information about its dependent objects."
+"Updating the definition will drop and re-create the materialized view. It "
+"may result in loss of information about its dependent objects."
 msgstr ""
-"Aktualizace definice odstraní a znovu vytvoří materializovaný pohled. "
-"Může to vést ke ztrátě informací o závislých objektech."
+"Aktualizace definice odstraní a znovu vytvoří materializovaný pohled. Může "
+"to vést ke ztrátě informací o závislých objektech."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:78
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:84
@@ -7230,14 +7226,14 @@ msgstr "Kaskádovitě"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:166
 msgid ""
-"Changing the columns in a view requires dropping and re-creating the "
-"view. This may fail if other objects are dependent upon this view, or may"
-" cause procedural functions to fail if they are not modified to take "
-"account of the changes."
+"Changing the columns in a view requires dropping and re-creating the view. "
+"This may fail if other objects are dependent upon this view, or may cause "
+"procedural functions to fail if they are not modified to take account of the "
+"changes."
 msgstr ""
-"Změna sloupců v pohledu vyžaduje zrušení a opětovné vytvoření pohledu. To"
-" může selhat, pokud jsou na tomto pohledu závislé jiné objekty, nebo může"
-" dojít k selhání procedurálních funkcí, pokud nejsou upraveny tak, aby "
+"Změna sloupců v pohledu vyžaduje zrušení a opětovné vytvoření pohledu. To "
+"může selhat, pokud jsou na tomto pohledu závislé jiné objekty, nebo může "
+"dojít k selhání procedurálních funkcí, pokud nejsou upraveny tak, aby "
 "zohledňovaly změny."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:168
@@ -7440,8 +7436,7 @@ msgid ""
 "false, then template databases won't be displayed in the object explorer."
 msgstr ""
 "Poznámka: Pokud je nastavení předvoleb \"Zobrazit šablony databází\" "
-"nastaveno na hodnotu Ne, databáze šablon se v průzkumníku objektů "
-"nezobrazí."
+"nastaveno na hodnotu Ne, databáze šablon se v průzkumníku objektů nezobrazí."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:254
 msgid "Allow connections?"
@@ -7457,16 +7452,16 @@ msgstr "Omezení schématu"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:305
 msgid ""
-"Note: Changes to the schema restriction will require the Schemas node in "
-"the browser to be refreshed before they will be shown."
+"Note: Changes to the schema restriction will require the Schemas node in the "
+"browser to be refreshed before they will be shown."
 msgstr ""
 "Poznámka: Změny v omezení schématu vyžadují, aby byl uzel Schéma v "
 "prohlížeči obnoven, než budou zobrazeny."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:315
 msgid ""
-"Please refresh the Schemas node to make changes to the schema restriction"
-" take effect."
+"Please refresh the Schemas node to make changes to the schema restriction "
+"take effect."
 msgstr "Obnovte uzel Schéma, aby se změny omezení schématu projevily."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:329
@@ -7551,11 +7546,11 @@ msgstr "Připojení"
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:316
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:332
 msgid ""
-"To apply changes to the connection configuration, please disconnect from "
-"the server and then reconnect."
+"To apply changes to the connection configuration, please disconnect from the "
+"server and then reconnect."
 msgstr ""
-"Chcete-li použít změny konfigurace připojení, odpojte se od serveru a "
-"znovu se připojte."
+"Chcete-li použít změny konfigurace připojení, odpojte se od serveru a znovu "
+"se připojte."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:164
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:92
@@ -7667,8 +7662,8 @@ msgid ""
 "Specifies whether the existing data in the publications that are being "
 "subscribed to should be copied once the replication starts."
 msgstr ""
-"Určuje, zda by měla být po spuštění replikace zkopírována existující data"
-" v publikacích, které odebíráte."
+"Určuje, zda by měla být po spuštění replikace zkopírována existující data v "
+"publikacích, které odebíráte."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:313
 msgid "Create slot?"
@@ -7678,20 +7673,19 @@ msgstr "Vytvořit slot"
 msgid ""
 "Specifies whether the command should create the replication slot on the "
 "publisher.This field will be disabled and set to false if subscription "
-"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will "
-"hang."
+"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang."
 msgstr ""
-"Určuje, zda by měl příkaz vytvořit replikační slot na vydavatele. Toto "
-"pole bude deaktivováno a nastaveno na hodnotu Ne, pokud se odběr připojí "
-"ke stejné databázi. Jinak volání CREATE SUBSCRIPTION přestane reagovat."
+"Určuje, zda by měl příkaz vytvořit replikační slot na vydavatele. Toto pole "
+"bude deaktivováno a nastaveno na hodnotu Ne, pokud se odběr připojí ke "
+"stejné databázi. Jinak volání CREATE SUBSCRIPTION přestane reagovat."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:326
 msgid ""
 "Specifies whether the subscription should be actively replicating, or "
 "whether it should be just setup but not started yet."
 msgstr ""
-"Určuje, zda by se odběr měl aktivně replikovat nebo zda by mělo být pouze"
-" nastaveno, ale ještě nespuštěno."
+"Určuje, zda by se odběr měl aktivně replikovat nebo zda by mělo být pouze "
+"nastaveno, ale ještě nespuštěno."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:330
 msgid "Refresh publication?"
@@ -7707,13 +7701,13 @@ msgstr "Připojit"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:353
 msgid ""
-"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher"
-" at all. Setting this to false will change default values of enabled, "
+"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher at "
+"all. Setting this to false will change default values of enabled, "
 "create_slot and copy_data to false."
 msgstr ""
 "Určuje, zda se má CREATE SUBSCRIPTION vůbec připojit k vydavateli. "
-"Nastavením na Ne změníte výchozí hodnoty enabled, create_slot a copy_data"
-" na Ne."
+"Nastavením na Ne změníte výchozí hodnoty enabled, create_slot a copy_data na "
+"Ne."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:357
 #: pgadmin/dashboard/static/js/Replication/PGDReplication.jsx:118
@@ -7722,8 +7716,8 @@ msgstr "Název slotu"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:360
 msgid ""
-"Name of the replication slot to use. The default behavior is to use the "
-"name of the subscription for the slot name."
+"Name of the replication slot to use. The default behavior is to use the name "
+"of the subscription for the slot name."
 msgstr ""
 "Název replikačního slotu, který se má použít. Výchozí chování je použít "
 "název odběru pro název slotu."
@@ -7734,8 +7728,8 @@ msgstr "Synchronní schválení (COMMIT)"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:366
 msgid ""
-"The value of this parameter overrides the synchronous_commit setting. The"
-" default value is off."
+"The value of this parameter overrides the synchronous_commit setting. The "
+"default value is off."
 msgstr ""
 "Hodnota tohoto parametru přepíše nastavení synchronous_commit. Výchozí "
 "hodnota je vypnuto."
@@ -7746,13 +7740,13 @@ msgstr "Streamování"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:410
 msgid ""
-"Specifies whether to enable streaming of in-progress transactions for "
-"this subscription. By default, all transactions are fully decoded on the "
+"Specifies whether to enable streaming of in-progress transactions for this "
+"subscription. By default, all transactions are fully decoded on the "
 "publisher and only then sent to the subscriber as a whole."
 msgstr ""
-"Určuje, zda povolit streamování probíhajících transakcí pro tento odběr. "
-"Ve výchozím nastavení jsou všechny transakce plně dekódovány na "
-"vydavateli a teprve poté odeslány odběru jako celek."
+"Určuje, zda povolit streamování probíhajících transakcí pro tento odběr. Ve "
+"výchozím nastavení jsou všechny transakce plně dekódovány na vydavateli a "
+"teprve poté odeslány odběru jako celek."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:414
 msgid "Binary?"
@@ -7760,14 +7754,14 @@ msgstr "Binární"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:418
 msgid ""
-"Specifies whether the subscription will request the publisher to send the"
-" data in binary format (as opposed to text). Even when this option is "
-"enabled, only data types having binary send and receive functions will be"
-" transferred in binary."
+"Specifies whether the subscription will request the publisher to send the "
+"data in binary format (as opposed to text). Even when this option is "
+"enabled, only data types having binary send and receive functions will be "
+"transferred in binary."
 msgstr ""
 "Určuje, zda odběr požádá vydavatele o zaslání dat v binárním formátu (na "
-"rozdíl od textu). I když je tato možnost povolena, budou binárně "
-"přenášeny pouze datové typy s binárními funkcemi odesílání a přijímání."
+"rozdíl od textu). I když je tato možnost povolena, budou binárně přenášeny "
+"pouze datové typy s binárními funkcemi odesílání a přijímání."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:422
 msgid "Two phase?"
@@ -7783,12 +7777,12 @@ msgstr "Zakázat při chybě"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:434
 msgid ""
-"Specifies whether the subscription should be automatically disabled if "
-"any errors are detected by subscription workers during data replication "
-"from the publisher."
+"Specifies whether the subscription should be automatically disabled if any "
+"errors are detected by subscription workers during data replication from the "
+"publisher."
 msgstr ""
-"Určuje, zda se má odběr automaticky zakázat, pokud se během replikace dat"
-" zjistí od vydavatele nějaké chyby."
+"Určuje, zda se má odběr automaticky zakázat, pokud se během replikace dat "
+"zjistí od vydavatele nějaké chyby."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:438
 msgid "Run as owner?"
@@ -7796,13 +7790,13 @@ msgstr "Spustit jako vlastník"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:442
 msgid ""
-"If true, all replication actions are performed as the subscription owner."
-" If false, replication workers will perform actions on each table as the "
-"owner of that table."
+"If true, all replication actions are performed as the subscription owner. If "
+"false, replication workers will perform actions on each table as the owner "
+"of that table."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, všechny akce replikace se provádějí "
-"jako vlastník odběru. Pokud je nastaveno na hodnotu Ne, replikace se "
-"provede na každé tabulce jako vlastník této tabulky."
+"Pokud je nastaveno na hodnotu Ano, všechny akce replikace se provádějí jako "
+"vlastník odběru. Pokud je nastaveno na hodnotu Ne, replikace se provede na "
+"každé tabulce jako vlastník této tabulky."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:446
 msgid "Password required?"
@@ -7811,8 +7805,8 @@ msgstr "Je vyžadováno heslo"
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:450
 msgid ""
 "Specifies whether connections to the publisher made as a result of this "
-"subscription must use password authentication. Only superusers can set "
-"this value to false."
+"subscription must use password authentication. Only superusers can set this "
+"value to false."
 msgstr ""
 "Určuje, zda připojení k vydavateli vytvořená tímto odběrem musí používat "
 "ověřování heslem. Pouze superuživatelé mohou tuto hodnotu nastavit na Ne."
@@ -7834,18 +7828,17 @@ msgstr "jakýkoli"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:465
 msgid ""
-"Specifies whether the subscription will request the publisher to only "
-"send changes that do not have an origin or send changes regardless of "
-"origin. Setting origin to none means that the subscription will request "
-"the publisher to only send changes that do not have an origin. Setting "
-"origin to any means that the publisher sends changes regardless of their "
-"origin."
+"Specifies whether the subscription will request the publisher to only send "
+"changes that do not have an origin or send changes regardless of origin. "
+"Setting origin to none means that the subscription will request the "
+"publisher to only send changes that do not have an origin. Setting origin to "
+"any means that the publisher sends changes regardless of their origin."
 msgstr ""
-"Určuje, zda odběr požádá vydavatele, aby zasílal pouze změny, které "
-"nemají původ, nebo odešle změny bez ohledu na původ. Nastavení původu na "
-"hodnotu \"žádný\" znamená, že odběr požádá vydavatele, aby poslal pouze "
-"změny, které nemají původ. Nastavení původu na \"jakýkoli\" znamená, že "
-"vydavatel odesílá změny bez ohledu na jejich původ."
+"Určuje, zda odběr požádá vydavatele, aby zasílal pouze změny, které nemají "
+"původ, nebo odešle změny bez ohledu na původ. Nastavení původu na hodnotu "
+"\"žádný\" znamená, že odběr požádá vydavatele, aby poslal pouze změny, které "
+"nemají původ. Nastavení původu na \"jakýkoli\" znamená, že vydavatel odesílá "
+"změny bez ohledu na jejich původ."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:473
 msgid "Either Host name, Address must be specified."
@@ -8030,13 +8023,13 @@ msgid ""
 "e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the "
 "Minutes list box."
 msgstr ""
-"např. Chcete-li spustit po 5 minutách každou hodinu, jednoduše vyberte "
-"'05' v Minuty."
+"např. Chcete-li spustit po 5 minutách každou hodinu, jednoduše vyberte '05' "
+"v Minuty."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:142
 msgid ""
-"Values from more than one field may be specified in order to further "
-"control the schedule."
+"Values from more than one field may be specified in order to further control "
+"the schedule."
 msgstr ""
 "Hodnoty z více než jednoho pole mohou být specifikovány za účelem další "
 "kontroly plánu."
@@ -8046,18 +8039,18 @@ msgid ""
 "e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would "
 "click minute 05, hours 12 and 14, and weekdays Monday and Thursday."
 msgstr ""
-"např. Chcete-li spustit každé pondělí a čtvrtek v 12:05 a 14:05, klikněte"
-" na minutu 05, hodiny 12 a 14 a dny pondělí a čtvrtek."
+"např. Chcete-li spustit každé pondělí a čtvrtek v 12:05 a 14:05, klikněte na "
+"minutu 05, hodiny 12 a 14 a dny pondělí a čtvrtek."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:146
 msgid ""
-"For additional flexibility, the Month Days check list includes an extra "
-"Last Day option. This matches the last day of the month, whether it "
-"happens to be the 28th, 29th, 30th or 31st."
+"For additional flexibility, the Month Days check list includes an extra Last "
+"Day option. This matches the last day of the month, whether it happens to be "
+"the 28th, 29th, 30th or 31st."
 msgstr ""
-"Pro větší flexibilitu obsahuje seznam Dny v měsíci navíc možnost "
-"'poslední den'. To odpovídá poslednímu dni v měsíci, ať už se jedná o "
-"28., 29., 30. nebo 31. den."
+"Pro větší flexibilitu obsahuje seznam Dny v měsíci navíc možnost 'poslední "
+"den'. To odpovídá poslednímu dni v měsíci, ať už se jedná o 28., 29., 30. "
+"nebo 31. den."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:150
 msgid "Week days"
@@ -8113,9 +8106,10 @@ msgstr "Třída práce"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:64
 msgid ""
-"Please select a class to categorize the job. This option will not affect "
-"the way the job runs."
-msgstr "Vyberte třídu pro kategorizaci úkolu. Tato volba neovlivní průběh úlohy."
+"Please select a class to categorize the job. This option will not affect the "
+"way the job runs."
+msgstr ""
+"Vyberte třídu pro kategorizaci úkolu. Tato volba neovlivní průběh úlohy."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:67
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:70
@@ -8124,13 +8118,12 @@ msgstr "Hostitelský agent"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:72
 msgid ""
-"Enter the hostname of a machine running pgAgent if you wish to ensure "
-"only that machine will run this job. Leave blank if any host may run the "
-"job."
+"Enter the hostname of a machine running pgAgent if you wish to ensure only "
+"that machine will run this job. Leave blank if any host may run the job."
 msgstr ""
 "Zadejte název hostitele počítače, na kterém běží pgAgent, pokud chcete "
-"zajistit, aby tuto úlohu spustil pouze počítač. Pokud může hostitel "
-"spustit úlohu, ponechte prázdné."
+"zajistit, aby tuto úlohu spustil pouze počítač. Pokud může hostitel spustit "
+"úlohu, ponechte prázdné."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:76
 msgid "Created"
@@ -8233,25 +8226,24 @@ msgstr "Připojovací řetězec"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:136
 msgid ""
-"Please specify the connection string for the remote database server. Each"
-" parameter setting is in the form keyword = value. Spaces around the "
-"equal sign are optional. To write an empty value, or a value containing "
-"spaces, surround it with single quotes, e.g., keyword = 'a value'. Single"
-" quotes and backslashes within the value must be escaped with a "
-"backslash, i.e., ' and \\.<br>For more information, please see the "
-"documentation on <a href=\"https://www.postgresql.org/docs/current/libpq-"
-"connect.html#LIBPQ-CONNSTRING\" target=\"_blank\">libpq connection "
-"strings</a>."
+"Please specify the connection string for the remote database server. Each "
+"parameter setting is in the form keyword = value. Spaces around the equal "
+"sign are optional. To write an empty value, or a value containing spaces, "
+"surround it with single quotes, e.g., keyword = 'a value'. Single quotes and "
+"backslashes within the value must be escaped with a backslash, i.e., ' and "
+"\\.<br>For more information, please see the documentation on <a "
+"href=\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-"
+"CONNSTRING\" target=\"_blank\">libpq connection strings</a>."
 msgstr ""
-"Zadejte řetězec připojení pro vzdálený databázový server. Každé nastavení"
-" parametrů je ve tvaru klíčové slovo = hodnota. Mezery kolem znaménka "
+"Zadejte řetězec připojení pro vzdálený databázový server. Každé nastavení "
+"parametrů je ve tvaru klíčové slovo = hodnota. Mezery kolem znaménka "
 "rovnosti jsou volitelné. Chcete-li napsat prázdnou hodnotu nebo hodnotu "
 "obsahující mezery, ohraničte ji jednoduchými uvozovkami ('), např. "
 "klicove_slovo = 'nejaka hodnota'. Jednotlivé uvozovky a zpětná lomítka v "
-"hodnotě musí být zakončena zpětným lomítkem, tj. ' a \\.<br>Další "
-"informace naleznete v dokumentaci k <a "
-"href=\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-"
-"CONNSTRING\" target=\"_blank\">řetězcům připojení libpq</a>."
+"hodnotě musí být zakončena zpětným lomítkem, tj. ' a \\.<br>Další informace "
+"naleznete v dokumentaci k <a href=\"https://www.postgresql.org/docs/current/"
+"libpq-connect.html#LIBPQ-CONNSTRING\" target=\"_blank\">řetězcům připojení "
+"libpq</a>."
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:139
 msgid "On error"
@@ -8561,8 +8553,7 @@ msgstr "Limit připojení musí být celé číslo nebo -1."
 #, python-brace-format
 msgid ""
 "\n"
-"Role members information must be passed as an array of JSON objects in "
-"the\n"
+"Role members information must be passed as an array of JSON objects in the\n"
 "following format:\n"
 "\n"
 "rolmembers:[{\n"
@@ -8586,8 +8577,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:313
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an "
-"array of\n"
+"Role membership information must be passed as a string representing an array "
+"of\n"
 "JSON objects in the following format:\n"
 "rolmembers:{\n"
 "    'added': [{\n"
@@ -8610,8 +8601,8 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"Informace o členství v roli musí být předány jako řetězec představující "
-"pole objektů JSON v následujícím formátu:\n"
+"Informace o členství v roli musí být předány jako řetězec představující pole "
+"objektů JSON v následujícím formátu:\n"
 "rolmembers:{\n"
 "    'added': [{\n"
 "        role: [rolename],\n"
@@ -8636,8 +8627,8 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "\n"
-"Role membership information must be passed as an array of JSON objects in"
-" the\n"
+"Role membership information must be passed as an array of JSON objects in "
+"the\n"
 "following format:\n"
 "\n"
 "rolmembership:[{\n"
@@ -8661,8 +8652,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:372
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an "
-"array of\n"
+"Role membership information must be passed as a string representing an array "
+"of\n"
 "JSON objects in the following format:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -8712,8 +8703,7 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -8723,8 +8713,7 @@ msgid ""
 "]"
 msgstr ""
 "\n"
-"Bezpečnostní štítek musí být předán jako pole objektů JSON v následujícím"
-"\n"
+"Bezpečnostní štítek musí být předán jako pole objektů JSON v následujícím\n"
 "formátu:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -8736,8 +8725,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:427
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -8839,8 +8827,8 @@ msgid ""
 "    ]\n"
 msgstr ""
 "\n"
-"Konfigurační parametry/proměnné musí být v režimu aktualizace předány "
-"jako pole objektů JSON v následujícím formátu:\n"
+"Konfigurační parametry/proměnné musí být v režimu aktualizace předány jako "
+"pole objektů JSON v následujícím formátu:\n"
 "rolmembership:{\n"
 "'added': [{\n"
 "    database: <database> nebo null,\n"
@@ -9051,7 +9039,8 @@ msgstr "Členství"
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:171
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:192
 msgid "Select the checkbox for roles to include WITH ADMIN OPTION."
-msgstr "Zaškrtněte políčko pro role, které mají být zahrnuty WITH ADMIN OPTION."
+msgstr ""
+"Zaškrtněte políčko pro role, které mají být zahrnuty WITH ADMIN OPTION."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:171
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:192
@@ -9086,8 +9075,8 @@ msgid ""
 "Change the ownership or\n"
 "drop the database objects owned by a database role"
 msgstr ""
-"Změňte vlastnictví nebo odstraňte databázové objekty vlastněné "
-"databázovou rolí"
+"Změňte vlastnictví nebo odstraňte databázové objekty vlastněné databázovou "
+"rolí"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:61
 msgid "Reassign objects to"
@@ -9099,12 +9088,11 @@ msgstr "Nový vlastník dotčených objektů"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:131
 msgid ""
-"Note: CASCADE will automatically drop objects that depend on the affected"
-" objects, and in turn all objects that depend on those objects"
+"Note: CASCADE will automatically drop objects that depend on the affected "
+"objects, and in turn all objects that depend on those objects"
 msgstr ""
-"Poznámka: CASCADE automaticky odstraní objekty, které závisí na "
-"ovlivněných objektech, a následně všechny objekty, které na těchto "
-"objektech závisí"
+"Poznámka: CASCADE automaticky odstraní objekty, které závisí na ovlivněných "
+"objektech, a následně všechny objekty, které na těchto objektech závisí"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:135
 msgid "From database"
@@ -9128,8 +9116,8 @@ msgid ""
 "Are you sure you wish to ${state.role_op} all the objects owned by the "
 "selected role?"
 msgstr ""
-"Jste si jisti, že chcete ${state.role_op} všechny objekty vlastněné "
-"vybranou rolí?"
+"Jste si jisti, že chcete ${state.role_op} všechny objekty vlastněné vybranou "
+"rolí?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:212
 #, python-brace-format
@@ -9222,11 +9210,11 @@ msgstr "Znovu načíst konfiguraci"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:116
 msgid ""
-"Please select a server from the object explorer to reload the "
-"configuration files."
+"Please select a server from the object explorer to reload the configuration "
+"files."
 msgstr ""
-"Chcete-li znovu načíst konfigurační soubory, vyberte v průzkumníku "
-"objektů server."
+"Chcete-li znovu načíst konfigurační soubory, vyberte v průzkumníku objektů "
+"server."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:121
 msgid "Add Named Restore Point..."
@@ -9234,11 +9222,10 @@ msgstr "Přidat pojmenovaný bod obnovy..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:123
 msgid ""
-"Please select any server from the object explorer to Add Named Restore "
-"Point."
+"Please select any server from the object explorer to Add Named Restore Point."
 msgstr ""
-"Vyberte libovolný server z průzkumníku objektů k přidání pojmenovaného "
-"bodu obnovy."
+"Vyberte libovolný server z průzkumníku objektů k přidání pojmenovaného bodu "
+"obnovy."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:128
 msgid "Change Password..."
@@ -9254,11 +9241,11 @@ msgstr "Pozastavit přehrávání WAL"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:137
 msgid ""
-"Please select a connected database as a Super user and run in Recovery "
-"mode to Pause Replay of WAL."
+"Please select a connected database as a Super user and run in Recovery mode "
+"to Pause Replay of WAL."
 msgstr ""
-"Vyberte připojenou databázi jako superuživatel a spusťte v režimu "
-"obnovení, abyste pozastavili přehrávání WAL."
+"Vyberte připojenou databázi jako superuživatel a spusťte v režimu obnovení, "
+"abyste pozastavili přehrávání WAL."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:142
 msgid "Resume Replay of WAL"
@@ -9266,11 +9253,11 @@ msgstr "Pokračovat v přehrávání WAL"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:144
 msgid ""
-"Please select a connected database as a Super user and run in Recovery "
-"mode to Resume Replay of WAL."
+"Please select a connected database as a Super user and run in Recovery mode "
+"to Resume Replay of WAL."
 msgstr ""
-"Vyberte připojenou databázi jako superuživatel a spusťte v režimu "
-"obnovení, abyste obnovili přehrávání WAL."
+"Vyberte připojenou databázi jako superuživatel a spusťte v režimu obnovení, "
+"abyste obnovili přehrávání WAL."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:149
 msgid "Clear Saved Password"
@@ -9327,15 +9314,15 @@ msgstr "Smazat heslo SSH tunelu"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:478
 #, python-format
 msgid ""
-"Are you sure you want to clear the saved password of SSH Tunnel for "
-"server %s?"
+"Are you sure you want to clear the saved password of SSH Tunnel for server "
+"%s?"
 msgstr "Opravdu chcete smazat uložené heslo SSH tunelu pro serve r%s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:584
 msgid ""
-"You have connected to a server version that is older than is supported by"
-" pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
-"ways. Or a plague of frogs. Either way, you have been warned!"
+"You have connected to a server version that is older than is supported by "
+"pgAdmin. This may cause pgAdmin to break in strange and unpredictable ways. "
+"Or a plague of frogs. Either way, you have been warned!"
 msgstr ""
 "Varování: Tato verze serveru již není podporována pgAdminem. To může "
 "způsobit nefunkčnost či neočekávané chování."
@@ -9675,13 +9662,13 @@ msgstr "Příkaz pro získání hesla"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:514
 msgid ""
-"The server hostname, port, and username can be passed as variables by "
-"using the placeholders %HOST%, %PORT%, and %USERNAME%, which will be "
-"replaced with the corresponding server connection information."
+"The server hostname, port, and username can be passed as variables by using "
+"the placeholders %HOST%, %PORT%, and %USERNAME%, which will be replaced with "
+"the corresponding server connection information."
 msgstr ""
-"Název hostitele serveru, port a uživatelské jméno lze předat jako "
-"proměnné pomocí zástupných symbolů %HOST%, %PORT% a %USERNAME%, které "
-"budou nahrazeny odpovídajícími informacemi o připojení k serveru."
+"Název hostitele serveru, port a uživatelské jméno lze předat jako proměnné "
+"pomocí zástupných symbolů %HOST%, %PORT% a %USERNAME%, které budou nahrazeny "
+"odpovídajícími informacemi o připojení k serveru."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:517
 msgid "Password exec expiration (seconds)"
@@ -9693,13 +9680,11 @@ msgstr "Práh přípravy"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:529
 msgid ""
-"If it is set to 0, every query is prepared the first time it is executed."
-" If it is set to blank, prepared statements are disabled on the "
-"connection."
+"If it is set to 0, every query is prepared the first time it is executed. If "
+"it is set to blank, prepared statements are disabled on the connection."
 msgstr ""
-"Pokud je nastavena na 0, každý dotaz je připraven při prvním spuštění. "
-"Pokud je nastaveno na prázdné, předpřipravené dotazy jsou na připojení "
-"zakázány."
+"Pokud je nastavena na 0, každý dotaz je připraven při prvním spuštění. Pokud "
+"je nastaveno na prázdné, předpřipravené dotazy jsou na připojení zakázány."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:532
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:533
@@ -9708,12 +9693,11 @@ msgstr "SQL po připojení"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:537
 msgid ""
-"Any query specified in the control below will be executed with autocommit"
-" mode enabled for each connection to any database on this server."
+"Any query specified in the control below will be executed with autocommit "
+"mode enabled for each connection to any database on this server."
 msgstr ""
-"Jakýkoli dotaz uvedený níže bude proveden s režimem automatického "
-"schválení (COMMIT) pro každé připojení k jakékoli databázi na tomto "
-"serveru."
+"Jakýkoli dotaz uvedený níže bude proveden s režimem automatického schválení "
+"(COMMIT) pro každé připojení k jakékoli databázi na tomto serveru."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:540
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:541
@@ -9733,8 +9717,7 @@ msgstr "Název hostitele nebo služba musí být zadána."
 #: pgadmin/misc/workspaces/static/js/AdHocConnection.jsx:309
 msgid "Host name must be valid hostname or IPv4 or IPv6 address."
 msgstr ""
-"Název hostitele musí být platný název hostitele nebo adresa IPv4 nebo "
-"IPv6."
+"Název hostitele musí být platný název hostitele nebo adresa IPv4 nebo IPv6."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:603
 msgid "SSH Tunnel host must be specified."
@@ -9818,8 +9801,7 @@ msgstr "Informace o tabulkovém prostoru se nepodařilo najít."
 #, python-brace-format
 msgid "Tablespace created successfully, Set parameter fail: {0}"
 msgstr ""
-"Tabulkový prostor byl úspěšně vytvořen, nastavení parametru se nezdařilo:"
-" {0}"
+"Tabulkový prostor byl úspěšně vytvořen, nastavení parametru se nezdařilo: {0}"
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:447
 msgid "The specified tablespace could not be found.\n"
@@ -9962,7 +9944,7 @@ msgstr "Registrovat"
 
 #: pgadmin/browser/static/js/browser.js:333
 msgid "Failed to remove query data."
-msgstr ""
+msgstr "Nepodařilo se odstranit data dotazu."
 
 #: pgadmin/browser/static/js/browser.js:354
 #, python-format
@@ -10461,8 +10443,8 @@ msgstr "poslední den"
 #: pgadmin/browser/static/js/heartbeat.js:30
 #, python-brace-format
 msgid ""
-"pgAdmin server not responding, try to login again: ${error.message || "
-"error.response.data.errormsg}"
+"pgAdmin server not responding, try to login again: ${error.message || error."
+"response.data.errormsg}"
 msgstr ""
 "pgAdmin server neodpovídá, zkuste se přihlásit znovu: ${error.message || "
 "error.response.data.errormsg}"
@@ -10470,11 +10452,11 @@ msgstr ""
 #: pgadmin/browser/static/js/heartbeat.js:32
 #, python-brace-format
 msgid ""
-"Server heartbeat logging error: ${error.message || "
-"error.response.data.errormsg}"
+"Server heartbeat logging error: ${error.message || error.response.data."
+"errormsg}"
 msgstr ""
-"Chyba logování heartbeat serveru: ${error.message || "
-"error.response.data.errormsg}"
+"Chyba logování heartbeat serveru: ${error.message || error.response.data."
+"errormsg}"
 
 #: pgadmin/browser/static/js/node.js:94
 #, python-format
@@ -10525,11 +10507,10 @@ msgstr "Opravdu chcete přestat upravovat vlastnosti %s \"%s\"?"
 #: pgadmin/browser/static/js/node.js:478
 #, python-format
 msgid ""
-"Are you sure want to reset the current changes and re-open the panel for "
-"%s \"%s\"?"
-msgstr ""
-"Opravdu chcete resetovat aktuální změny a znovu otevřít panel pro %s "
+"Are you sure want to reset the current changes and re-open the panel for %s "
 "\"%s\"?"
+msgstr ""
+"Opravdu chcete resetovat aktuální změny a znovu otevřít panel pro %s \"%s\"?"
 
 #: pgadmin/browser/static/js/node.js:482
 msgid "Edit in progress?"
@@ -10538,9 +10519,8 @@ msgstr "Probíhá úprava?"
 #: pgadmin/browser/static/js/node.js:530
 #, python-format
 msgid ""
-"Delete database with the force option will attempt to terminate all "
-"existing connections to the <b>\"%s\"</b> database. Are you sure you want"
-" to proceed?"
+"Delete database with the force option will attempt to terminate all existing "
+"connections to the <b>\"%s\"</b> database. Are you sure you want to proceed?"
 msgstr ""
 "Smazat databázi s možností vynutit se pokusí ukončit všechna existující "
 "připojení k databázi <b>\"%s\"</b>. Opravdu chcete pokračovat?"
@@ -10608,8 +10588,8 @@ msgid ""
 "You don’t have the necessary permissions to access this feature. Please "
 "contact your administrator for assistance"
 msgstr ""
-"Pro přístup k této funkci nemáte potřebná oprávnění. Požádejte o pomoc "
-"svého správce"
+"Pro přístup k této funkci nemáte potřebná oprávnění. Požádejte o pomoc svého "
+"správce"
 
 #: pgadmin/browser/templates/browser/browser.html:2
 #, python-brace-format
@@ -10618,30 +10598,29 @@ msgid ""
 "    <strong>{1}</strong>, which is either deprecated or not supported by\n"
 "    pgAdmin 4."
 msgstr ""
-"Váš prohlížeč byl rozpoznán jako <strong>{0}</strong> verze "
-"<strong>{1}</strong>, který je buď zastaralý, nebo není podporován "
-"pgAdminem 4."
+"Váš prohlížeč byl rozpoznán jako <strong>{0}</strong> verze <strong>{1}</"
+"strong>, který je buď zastaralý, nebo není podporován pgAdminem 4."
 
 #: pgadmin/browser/templates/browser/browser.html:6
 #, python-brace-format
 msgid ""
 "Your browser was detected as <strong>{0}</strong> version\n"
-"    <strong>{1}</strong>, which pgAdmin has not been tested with. pgAdmin"
-" may\n"
-"    not work as expected, and any issues reported when using this browser"
-" may\n"
+"    <strong>{1}</strong>, which pgAdmin has not been tested with. pgAdmin "
+"may\n"
+"    not work as expected, and any issues reported when using this browser "
+"may\n"
 "    not be fixed."
 msgstr ""
-"Váš prohlížeč byl rozpoznán jako <strong>{0}</strong> verze "
-"<strong>{1}</strong>, se kterou pgAdmin nebyl testován. pgAdmin nemusí "
-"fungovat podle očekávání a případné problémy hlášené při používání tohoto"
-" prohlížeče nemusí být vyřešeny."
+"Váš prohlížeč byl rozpoznán jako <strong>{0}</strong> verze <strong>{1}</"
+"strong>, se kterou pgAdmin nebyl testován. pgAdmin nemusí fungovat podle "
+"očekávání a případné problémy hlášené při používání tohoto prohlížeče nemusí "
+"být vyřešeny."
 
 #: pgadmin/browser/templates/browser/browser.html:11
 msgid ""
 "Please visit the <a class=\"alert-link\"\n"
-"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to "
-"see the\n"
+"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to see "
+"the\n"
 "    supported browsers."
 msgstr ""
 "Podporované prohlížeče naleznete na stránce <a class=\"alert-link\" "
@@ -10683,15 +10662,15 @@ msgstr "Zavřít"
 #: pgadmin/browser/templates/browser/upgrade.html:1
 #, python-brace-format
 msgid ""
-"You are currently running version {0} of {1}, however the current version"
-" is {2}."
+"You are currently running version {0} of {1}, however the current version is "
+"{2}."
 msgstr "Momentálně používáte verzi {0} z {1}, ale aktuální verze je {2}."
 
 #: pgadmin/browser/templates/browser/upgrade.html:3
 #, python-brace-format
 msgid ""
-"Please click <a class=\"alert-link\" href=\"{0}\" "
-"target=\"_new\">here</a> for more information."
+"Please click <a class=\"alert-link\" href=\"{0}\" target=\"_new\">here</a> "
+"for more information."
 msgstr ""
 "Další informace získáte kliknutím <a class=\"alert-link\" href=\"{0}\" "
 "target=\"_new\">zde</a>."
@@ -10860,8 +10839,7 @@ msgstr "Zobrazit aktivitu"
 #: pgadmin/dashboard/__init__.py:162
 msgid "If set to True, activity will be displayed on dashboards."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, bude se aktivita zobrazovat na "
-"přehledu."
+"Pokud je nastaveno na hodnotu Ano, bude se aktivita zobrazovat na přehledu."
 
 #: pgadmin/dashboard/__init__.py:168
 msgid "Show state?"
@@ -10869,7 +10847,8 @@ msgstr "Zobrazit stav"
 
 #: pgadmin/dashboard/__init__.py:170
 msgid "If set to True, state tables will be displayed on dashboards."
-msgstr "Pokud je nastaveno na hodnotu Ano, tabulky stavů se zobrazí na přehledu."
+msgstr ""
+"Pokud je nastaveno na hodnotu Ano, tabulky stavů se zobrazí na přehledu."
 
 #: pgadmin/dashboard/__init__.py:176
 msgid "Long running query thresholds"
@@ -10880,8 +10859,8 @@ msgid ""
 "Set the warning and alert threshold value to highlight the long-running "
 "queries on the dashboard."
 msgstr ""
-"Nastavte varovnou a výstražnou prahovou hodnotu, abyste zvýraznili dlouho"
-" trvající dotazy na přehledu."
+"Nastavte varovnou a výstražnou prahovou hodnotu, abyste zvýraznili dlouho "
+"trvající dotazy na přehledu."
 
 #: pgadmin/dashboard/__init__.py:185
 msgid "Graphs"
@@ -10894,8 +10873,8 @@ msgstr "Zobrazit datové body grafu"
 #: pgadmin/dashboard/__init__.py:192
 msgid "If set to True, data points will be visible on graph lines."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, budou datové body viditelné na řádcích"
-" grafu."
+"Pokud je nastaveno na hodnotu Ano, budou datové body viditelné na řádcích "
+"grafu."
 
 #: pgadmin/dashboard/__init__.py:198
 msgid "Use different data point styles?"
@@ -10906,8 +10885,8 @@ msgid ""
 "If set to True, data points will be visible in a different style on each "
 "graph lines."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, budou datové body na každém řádku "
-"grafu viditelné v jiném stylu."
+"Pokud je nastaveno na hodnotu Ano, budou datové body na každém řádku grafu "
+"viditelné v jiném stylu."
 
 #: pgadmin/dashboard/__init__.py:206
 msgid "Show mouse hover tooltip?"
@@ -10915,11 +10894,11 @@ msgstr "Zobrazit popisek při najetí myši"
 
 #: pgadmin/dashboard/__init__.py:208
 msgid ""
-"If set to True, tooltip will appear on mouse hover on the graph lines "
-"giving the data point details"
+"If set to True, tooltip will appear on mouse hover on the graph lines giving "
+"the data point details"
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, zobrazí se nápověda na ukazateli myši "
-"na grafických řádcích s údaji o datových bodech"
+"Pokud je nastaveno na hodnotu Ano, zobrazí se nápověda na ukazateli myši na "
+"grafických řádcích s údaji o datových bodech"
 
 #: pgadmin/dashboard/__init__.py:215
 msgid "Chart line width"
@@ -11242,21 +11221,21 @@ msgstr "Načítání logů..."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:871
 msgid ""
-"Please enable the logging to view the server logs or check the log file "
-"is in place or not."
+"Please enable the logging to view the server logs or check the log file is "
+"in place or not."
 msgstr ""
-"Chcete-li zobrazit logy serveru, povolte logování nebo zkontrolujte zda "
-"je soubor protokolu na svém místě."
+"Chcete-li zobrazit logy serveru, povolte logování nebo zkontrolujte zda je "
+"soubor protokolu na svém místě."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:893
 msgid ""
-"The system_stats extension is not installed. You can install the "
-"extension in a database using the \"CREATE EXTENSION system_stats;\" SQL "
-"command. Reload pgAdmin once it is installed."
+"The system_stats extension is not installed. You can install the extension "
+"in a database using the \"CREATE EXTENSION system_stats;\" SQL command. "
+"Reload pgAdmin once it is installed."
 msgstr ""
-"Rozšíření systémových statistik (system_stats) není nainstalováno. "
-"Rozšíření můžete nainstalovat do databáze pomocí SQL příkazu \"CREATE "
-"EXTENSION system_stats;\". Po instalaci znovu načtěte pgAdmina."
+"Rozšíření systémových statistik (system_stats) není nainstalováno. Rozšíření "
+"můžete nainstalovat do databáze pomocí SQL příkazu \"CREATE EXTENSION "
+"system_stats;\". Po instalaci znovu načtěte pgAdmina."
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:901
 msgid "Failed to verify the presence of system stats extension."
@@ -11315,8 +11294,7 @@ msgstr "Při vykreslování grafu došlo k chybě."
 #: pgadmin/dashboard/static/js/SystemStats/Storage.jsx:327
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:207
 msgid ""
-"Not connected to the server or the connection to the server has been "
-"closed."
+"Not connected to the server or the connection to the server has been closed."
 msgstr "Není připojení k serveru nebo připojení k serveru bylo ukončeno."
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:257
@@ -11376,15 +11354,15 @@ msgstr "Otevřený software"
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:164
 msgid ""
 "pgAdmin is an Open Source administration and management tool for the "
-"PostgreSQL database. It includes a graphical administration interface, an"
-" SQL query tool, a procedural code debugger and much more. The tool is "
-"designed to answer the needs of developers, DBAs and system "
-"administrators alike."
+"PostgreSQL database. It includes a graphical administration interface, an "
+"SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system administrators "
+"alike."
 msgstr ""
-"pgAdmin je otevřený nástroj pro administraci a správu PostgreSQL "
-"databází. Obsahuje grafické administrační rozhraní, dotazovací nástroj "
-"SQL, debugger procedurálních kódů a mnoho dalšího. Tento nástroj je "
-"navržen tak, aby odpovídal potřebám vývojářů, DBA i správců systému."
+"pgAdmin je otevřený nástroj pro administraci a správu PostgreSQL databází. "
+"Obsahuje grafické administrační rozhraní, dotazovací nástroj SQL, debugger "
+"procedurálních kódů a mnoho dalšího. Tento nástroj je navržen tak, aby "
+"odpovídal potřebám vývojářů, DBA i správců systému."
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:175
 msgid "Quick Links"
@@ -11878,11 +11856,11 @@ msgstr "Cesta k nápovědě PostgreSQL"
 
 #: pgadmin/help/__init__.py:67
 msgid ""
-"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
-" major.minor version number."
+"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the "
+"major.minor version number."
 msgstr ""
-"Cesta k dokumentaci PostgreSQL. $VERSION$ bude nahrazeno číslem "
-"major.minor verze."
+"Cesta k dokumentaci PostgreSQL. $VERSION$ bude nahrazeno číslem major.minor "
+"verze."
 
 #: pgadmin/misc/__init__.py:41
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:127
@@ -11907,8 +11885,7 @@ msgstr "Téma"
 
 #: pgadmin/misc/__init__.py:90
 msgid ""
-"Click the save button to apply the theme. Below is the preview of the "
-"theme."
+"Click the save button to apply the theme. Below is the preview of the theme."
 msgstr "Kliknutím na tlačítko uložit téma použijete. Níže je náhled tématu."
 
 #: pgadmin/misc/__init__.py:96
@@ -11927,13 +11904,13 @@ msgstr "Pracovní prostor"
 msgid ""
 "Choose the layout that suits you best. pgAdmin offers two options: the "
 "Classic layout, a longstanding and familiar design, and the Workspace "
-"layout, which provides distraction free dedicated areas for the Query "
-"Tool, PSQL, and Schema Diff tools."
+"layout, which provides distraction free dedicated areas for the Query Tool, "
+"PSQL, and Schema Diff tools."
 msgstr ""
 "Vyberte si rozvržení, které vám nejlépe vyhovuje. pgAdmin nabízí dvě "
 "možnosti: Klasické rozvržení, dlouholetý a známý design, a rozvržení "
-"Pracovního prostoru, které poskytuje vyhrazené oblasti bez rozptylování "
-"pro nástroje Dotazovací nástroj, PSQL nástroj a Porovnání schémat."
+"Pracovního prostoru, které poskytuje vyhrazené oblasti bez rozptylování pro "
+"nástroje Dotazovací nástroj, PSQL nástroj a Porovnání schémat."
 
 #: pgadmin/misc/__init__.py:114
 msgid "Open the Query Tool/PSQL in their respective workspaces"
@@ -11941,31 +11918,34 @@ msgstr "Otevřít Dotazovací nástroj/PSQL v příslušných pracovních prosto
 
 #: pgadmin/misc/__init__.py:118
 msgid ""
-"This setting applies only when the layout is set to Workspace Layout. "
-"When set to True, all Query Tool/PSQL tabs will open in their respective "
-"workspaces. By default, this setting is False, meaning that Query "
-"Tool/PSQL tabs will open in the currently active workspace (either the "
-"default or the workspace selected at the time of opening)"
+"This setting applies only when the layout is set to Workspace Layout. When "
+"set to True, all Query Tool/PSQL tabs will open in their respective "
+"workspaces. By default, this setting is False, meaning that Query Tool/PSQL "
+"tabs will open in the currently active workspace (either the default or the "
+"workspace selected at the time of opening)"
 msgstr ""
 "Toto nastavení je použito pouze v případě, že je rozvržení nastaveno na "
-"rozvržení Pracovního prostoru. Při nastavení na hodnotu Ano se všechny "
-"karty Dotazovacího nástroje/PSQL otevřou v příslušných pracovních "
-"prostorech. Ve výchozím nastavení je toto nastavení Ne, což znamená, že "
-"karty Dotazovacího nástroje/PSQL se otevřou v aktuálně aktivním pracovním"
-" prostoru (buď výchozím, nebo pracovním prostoru vybraném v době "
-"otevření)."
+"rozvržení Pracovního prostoru. Při nastavení na hodnotu Ano se všechny karty "
+"Dotazovacího nástroje/PSQL otevřou v příslušných pracovních prostorech. Ve "
+"výchozím nastavení je toto nastavení Ne, což znamená, že karty Dotazovacího "
+"nástroje/PSQL se otevřou v aktuálně aktivním pracovním prostoru (buď "
+"výchozím, nebo pracovním prostoru vybraném v době otevření)."
 
 #: pgadmin/misc/__init__.py:129
 msgid "Save the application state?"
-msgstr ""
+msgstr "Uložit stav aplikace?"
 
 #: pgadmin/misc/__init__.py:133
 msgid ""
-"If set to True, pgAdmin will save the state of opened tools (such as "
-"Query Tool, PSQL, Schema Diff, and ERD), including any unsaved data. This"
-" data will be automatically restored in the event of an unexpected "
-"shutdown or browser refresh."
+"If set to True, pgAdmin will save the state of opened tools (such as Query "
+"Tool, PSQL, Schema Diff, and ERD), including any unsaved data. This data "
+"will be automatically restored in the event of an unexpected shutdown or "
+"browser refresh."
 msgstr ""
+"Pokud je nastaveno na hodnotu Ano, pgAdmin uloží stav otevřených nástrojů "
+"(jako je Dotazovací nástroj, PSQL nástroj, Porovnání schémat a Nástroj E-R "
+"diagram), včetně všech neuložených dat. Tato data budou automaticky obnovena "
+"v případě neočekávaného vypnutí nebo aktualizace prohlížeče."
 
 #: pgadmin/misc/__init__.py:143
 msgid "Automatically open downloaded file?"
@@ -11979,8 +11959,8 @@ msgid ""
 "                    application associated with that file type."
 msgstr ""
 "Toto nastavení platí a je viditelné pouze v desktopovém režimu. Pokud je "
-"nastaveno na hodnotu Ano, stažený soubor se automaticky otevře ve výchozí"
-" aplikaci podle typu souboru."
+"nastaveno na hodnotu Ano, stažený soubor se automaticky otevře ve výchozí "
+"aplikaci podle typu souboru."
 
 #: pgadmin/misc/__init__.py:155
 msgid "Prompt for the download location?"
@@ -11989,8 +11969,8 @@ msgstr "Zeptat se na místo uložení každého souboru"
 #: pgadmin/misc/__init__.py:159
 msgid ""
 "This setting is applicable and visible only in desktop mode. When set to "
-"True, a prompt will appear after clicking the download button, allowing "
-"you to choose the download location"
+"True, a prompt will appear after clicking the download button, allowing you "
+"to choose the download location"
 msgstr ""
 "Toto nastavení platí a je viditelné pouze v desktopovém režimu. Pokud je "
 "nastaveno na hodnotu Ano, po kliknutí na tlačítko stahování zobrazí se "
@@ -12006,11 +11986,11 @@ msgstr "Nelze najít proces se zadaným ID."
 
 #: pgadmin/misc/bgprocess/processes.py:57
 msgid ": error: "
-msgstr ""
+msgstr ": chyba: "
 
 #: pgadmin/misc/bgprocess/processes.py:63
 msgid "utility failed with exit code: "
-msgstr ""
+msgstr "utilita selhala s kódem ukončení:"
 
 #: pgadmin/misc/bgprocess/processes.py:271
 msgid "The process has already been started."
@@ -12236,8 +12216,7 @@ msgstr "Chyba při získávání IP hostitele: ${error.response.data.errormsg}"
 #, python-brace-format
 msgid "Error while saving cloud wizard data: ${error.response.data.errormsg}"
 msgstr ""
-"Chyba při ukládání dat cloudového průvodce: "
-"${error.response.data.errormsg}"
+"Chyba při ukládání dat cloudového průvodce: ${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:261
 msgid "Validating credentials..."
@@ -12275,8 +12254,10 @@ msgstr "Načítání..."
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:350
 #: pgadmin/misc/cloud/static/js/azure.js:43
 #: pgadmin/misc/cloud/static/js/google.js:70
-msgid "Authentication completed successfully. Click the Next button to proceed."
-msgstr "Ověření bylo úspěšně dokončeno. Pokračujte kliknutím na tlačítko Další."
+msgid ""
+"Authentication completed successfully. Click the Next button to proceed."
+msgstr ""
+"Ověření bylo úspěšně dokončeno. Pokračujte kliknutím na tlačítko Další."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:354
 msgid "Verification failed. Access Denied..."
@@ -12287,8 +12268,7 @@ msgid ""
 "Authentication completed successfully but you do not have permission to "
 "create the cluster."
 msgstr ""
-"Ověřování bylo úspěšně dokončeno, ale nemáte oprávnění k vytvoření "
-"clusteru."
+"Ověřování bylo úspěšně dokončeno, ale nemáte oprávnění k vytvoření clusteru."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:363
 msgid "Authentication is aborted."
@@ -12314,11 +12294,11 @@ msgstr "Ověřovací kód pro ověření pgAdmin na EDB BigAnimal je:"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:416
 msgid ""
-"By clicking the below button, you will be redirected to the EDB BigAnimal"
-" authentication page in a new tab."
+"By clicking the below button, you will be redirected to the EDB BigAnimal "
+"authentication page in a new tab."
 msgstr ""
-"Kliknutím na tlačítko níže budete přesměrováni na autentizační stránku "
-"EDB BigAnimal v nové kartě."
+"Kliknutím na tlačítko níže budete přesměrováni na autentizační stránku EDB "
+"BigAnimal v nové kartě."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:420
 msgid "Click here to authenticate yourself to EDB BigAnimal"
@@ -12393,8 +12373,8 @@ msgstr "Rozsah veřejných IP adres"
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:43
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:278
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
-"Add multiple IP addresses/ranges separated with commas."
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add "
+"multiple IP addresses/ranges separated with commas."
 msgstr ""
 "Rozsah IP adres pro povolený příchozí provoz, například: 127.0.0.1/32. "
 "Přidejte více IP adres/rozsahů oddělených čárkami."
@@ -12459,9 +12439,8 @@ msgid ""
 "At least 8 printable ASCII characters. Cannot contain any of the "
 "following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
 msgstr ""
-"Alespoň 8 tisknutelných znaků ASCII. Nesmí obsahovat nic z následujícího:"
-" / (lomítko), ' (jednoduché uvozovky), \" (dvojité uvozovky) a @ "
-"(zavináč)."
+"Alespoň 8 tisknutelných znaků ASCII. Nesmí obsahovat nic z následujícího: / "
+"(lomítko), ' (jednoduché uvozovky), \" (dvojité uvozovky) a @ (zavináč)."
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:171
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:500
@@ -12532,8 +12511,8 @@ msgstr "Přidělené úložiště musí být mezi 5 - 3072 GiB."
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:339
 msgid ""
 "Creates a standby in a different Availability Zone (AZ) to provide data "
-"redundancy, eliminate I/O freezes, and minimize latency spikes during "
-"system backups."
+"redundancy, eliminate I/O freezes, and minimize latency spikes during system "
+"backups."
 msgstr ""
 "Vytváří pohotovostní režim v jiné zóně dostupnosti, aby byla zajištěna "
 "redundance dat, eliminováno zamrzání I/O a minimalizovány špičky latence "
@@ -12547,11 +12526,11 @@ msgstr "Chyba při ověřování Microsoft Azure: ${error}"
 #: pgadmin/misc/cloud/static/js/azure.js:276
 #, python-brace-format
 msgid ""
-"Error while checking server name availability with Microsoft Azure: "
-"${error.response.data.errormsg}"
+"Error while checking server name availability with Microsoft Azure: ${error."
+"response.data.errormsg}"
 msgstr ""
-"Chyba při kontrole dostupnosti názvu serveru pomocí Microsoft Azure: "
-"${error.response.data.errormsg}"
+"Chyba při kontrole dostupnosti názvu serveru pomocí Microsoft Azure: ${error."
+"response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/azure.js:294
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:236
@@ -12583,12 +12562,12 @@ msgstr "Azure CLI"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:71
 msgid ""
-"Azure CLI will use the currently logged in identity through the Azure CLI"
-" on the local machine. Interactive Browser will open a browser window to "
+"Azure CLI will use the currently logged in identity through the Azure CLI on "
+"the local machine. Interactive Browser will open a browser window to "
 "authenticate a user interactively."
 msgstr ""
-"Azure CLI použije aktuálně přihlášenou identitu prostřednictvím Azure CLI"
-" na místním počítači. Interaktivní prohlížeč otevře okno prohlížeče pro "
+"Azure CLI použije aktuálně přihlášenou identitu prostřednictvím Azure CLI na "
+"místním počítači. Interaktivní prohlížeč otevře okno prohlížeče pro "
 "interaktivní ověření uživatele."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:77
@@ -12606,8 +12585,8 @@ msgstr "Kliknutím sem se ověříte v Microsoft Azure"
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:101
 msgid ""
 "After clicking the button above you will be redirected to the Microsoft "
-"Azure authentication page in a new browser tab if the Interactive Browser"
-" option is selected."
+"Azure authentication page in a new browser tab if the Interactive Browser "
+"option is selected."
 msgstr ""
 "Po kliknutí na tlačítko výše budete přesměrováni na ověřovací stránku "
 "Microsoft Azure na nové kartě prohlížeče, pokud je vybrána možnost "
@@ -12643,14 +12622,14 @@ msgstr "Zadané uživatelské jméno správce není povoleno."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:454
 msgid ""
-"The password must be 8-128 characters long and must contain characters "
-"from three of the following categories - English uppercase letters, "
-"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
-" (!, $, #, %, etc.)"
+"The password must be 8-128 characters long and must contain characters from "
+"three of the following categories - English uppercase letters, English "
+"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
+"%, etc.)"
 msgstr ""
 "Heslo musí mít 8-128 znaků a musí obsahovat znaky ze tří z následujících "
-"kategorií – anglická velká písmena, anglická malá písmena, číslice (0–9) "
-"a nealfanumerické znaky (!, $, #, %, atd.)"
+"kategorií – anglická velká písmena, anglická malá písmena, číslice (0–9) a "
+"nealfanumerické znaky (!, $, #, %, atd.)"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:480
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:374
@@ -12664,22 +12643,22 @@ msgid ""
 "\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
 "\"root\", \"guest\", \"public\", or start with \"pg_\"."
 msgstr ""
-"Uživatelské jméno správce musí mít 1-63 znaků a může obsahovat pouze "
-"znaky, čísla a podtržítka. Uživatelské jméno nemůže být "
-"\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
-"\"root\", \"guest\", \"public\" nebo začínat \"pg_\"."
+"Uživatelské jméno správce musí mít 1-63 znaků a může obsahovat pouze znaky, "
+"čísla a podtržítka. Uživatelské jméno nemůže být \"azure_superuser\", "
+"\"azure_pg_admin\", \"admin\", \"administrator\", \"root\", \"guest\", "
+"\"public\" nebo začínat \"pg_\"."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:494
 msgid ""
-"The password must be 8-128 characters long and must contain characters "
-"from three of the following categories - English uppercase letters, "
-"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
-" (!, $, #, %, etc.), and cannot contain all or part of the login name"
+"The password must be 8-128 characters long and must contain characters from "
+"three of the following categories - English uppercase letters, English "
+"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
+"%, etc.), and cannot contain all or part of the login name"
 msgstr ""
 "Heslo musí mít 8-128 znaků a musí obsahovat znaky ze tří z následujících "
-"kategorií – anglická velká písmena, anglická malá písmena, číslice (0–9) "
-"a nealfanumerické znaky (!, $, #, %, atd.), a nemůže obsahovat celé nebo "
-"část přihlašovacího jména"
+"kategorií – anglická velká písmena, anglická malá písmena, číslice (0–9) a "
+"nealfanumerické znaky (!, $, #, %, atd.), a nemůže obsahovat celé nebo část "
+"přihlašovacího jména"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:521
 msgid ""
@@ -12689,9 +12668,9 @@ msgid ""
 "192.168.0.100 -  192.168.0.200\""
 msgstr ""
 "Seznam IP adres nebo rozsah IP adres (počáteční IP adresa - koncová IP "
-"adresa), ze kterých má být přijímán příchozí provoz. Přidejte více IP "
-"adres/rozsahů oddělených čárkami, například: \\\"192.168.0.50, "
-"192.168.0.100 - 192.168.0.200\""
+"adresa), ze kterých má být přijímán příchozí provoz. Přidejte více IP adres/"
+"rozsahů oddělených čárkami, například: \\\"192.168.0.50, 192.168.0.100 - "
+"192.168.0.200\""
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:551
 msgid "Zone redundant high availability"
@@ -12699,11 +12678,11 @@ msgstr "Zónově redundantní vysoká dostupnost"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:577
 msgid ""
-"Zone redundant high availability deploys a standby replica in a different"
-" zone. The Burstable instance type does not support high availability."
+"Zone redundant high availability deploys a standby replica in a different "
+"zone. The Burstable instance type does not support high availability."
 msgstr ""
-"Zónová redundantní vysoká dostupnost nasazuje záložní repliku v jiné "
-"zóně. Typ instance Burstable nepodporuje vysokou dostupnost."
+"Zónová redundantní vysoká dostupnost nasazuje záložní repliku v jiné zóně. "
+"Typ instance Burstable nepodporuje vysokou dostupnost."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:638
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:468
@@ -12759,11 +12738,11 @@ msgstr "Rozsah veřejných IP adres nemůže být prázdný."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:723
 msgid ""
-"Name must be more than 2 characters and must only contain lowercase "
-"letters, numbers, and hyphens"
+"Name must be more than 2 characters and must only contain lowercase letters, "
+"numbers, and hyphens"
 msgstr ""
-"Název musí mít více než 2 znaky a musí obsahovat pouze malá písmena, "
-"čísla a pomlčky"
+"Název musí mít více než 2 znaky a musí obsahovat pouze malá písmena, čísla a "
+"pomlčky"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:225
 #: pgadmin/misc/cloud/static/js/biganimal.js:232
@@ -12843,8 +12822,8 @@ msgstr "Počet pohotovostních replik"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:75
 msgid ""
-"Adding standby replicas will increase your number of CPUs, as well as "
-"your cost."
+"Adding standby replicas will increase your number of CPUs, as well as your "
+"cost."
 msgstr "Přidání záložních replik zvýší váš počet CPU a také vaše náklady."
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:77
@@ -12909,9 +12888,8 @@ msgstr "Heslo databáze"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:485
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
-"Add multiple IP addresses/ranges separated with commas. Leave blank for "
-"0.0.0.0/0"
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add "
+"multiple IP addresses/ranges separated with commas. Leave blank for 0.0.0.0/0"
 msgstr ""
 "Rozsah IP adres pro povolený příchozí provoz, například: 127.0.0.1/32. "
 "Přidejte více IP adres/rozsahů oddělených čárkami. Ponechte prázdné pro "
@@ -12930,8 +12908,8 @@ msgstr "Nasadit cloudovou instanci..."
 #, python-brace-format
 msgid "Error while clearing cloud wizard data: ${error.response.data.errormsg}"
 msgstr ""
-"Při mazání dat cloudového průvodce došlo k chybě: "
-"${error.response.data.errormsg}"
+"Při mazání dat cloudového průvodce došlo k chybě: ${error.response.data."
+"errormsg}"
 
 #: pgadmin/misc/cloud/static/js/google.js:55
 #: pgadmin/misc/cloud/static/js/google.js:56
@@ -12950,16 +12928,16 @@ msgstr "Soubor s tajným klíčem klienta"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:41
 msgid ""
-"Select a client secrets file containing the client ID, client secret, and"
-" other OAuth 2.0 parameters for google authentication. Refer <a "
-"href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"Select a client secrets file containing the client ID, client secret, and "
+"other OAuth 2.0 parameters for google authentication. Refer <a "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
 "target=\"_blank\">link</a> for creating client secret."
 msgstr ""
 "Vyberte soubor s tajnými klíči klienta obsahující ID klienta, tajný klíč "
 "klienta a další parametry OAuth 2.0 pro přihlášení Google. Viz <a "
-"href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
 "target=\"_blank\">odkaz</a> pro vytvoření tajného klíče klienta."
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:53
@@ -13026,8 +13004,8 @@ msgstr "Nastavte heslo pro výchozího administrátora \"postgres\"."
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:508
 msgid ""
-"Name must only contain lowercase letters, numbers, and hyphens.Should "
-"start with a letter and must be 97 characters or less"
+"Name must only contain lowercase letters, numbers, and hyphens.Should start "
+"with a letter and must be 97 characters or less"
 msgstr ""
 "Název musí obsahovat pouze malá písmena, čísla a pomlčky. Měl by začínat "
 "písmenem a měl by mít maximálně 97 znaků."
@@ -13315,18 +13293,18 @@ msgstr "Vítejte v pracovním prostoru Dotazovacího nástroje!"
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:92
 msgid ""
-"The Query Tool is a robust and versatile environment designed for "
-"executing SQL commands and reviewing result sets efficiently."
+"The Query Tool is a robust and versatile environment designed for executing "
+"SQL commands and reviewing result sets efficiently."
 msgstr ""
-"Dotazovací nástroj je robustní a všestranné prostředí navržené pro "
-"efektivní provádění příkazů SQL a kontrolu sad výsledků."
+"Dotazovací nástroj je robustní a všestranné prostředí navržené pro efektivní "
+"provádění příkazů SQL a kontrolu sad výsledků."
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:93
 msgid ""
-"In this workspace, you can seamlessly open and manage multiple query "
-"tabs, making it easier to organize your work. You can select the existing"
-" servers or create a completely new ad-hoc connection to any database "
-"server as needed."
+"In this workspace, you can seamlessly open and manage multiple query tabs, "
+"making it easier to organize your work. You can select the existing servers "
+"or create a completely new ad-hoc connection to any database server as "
+"needed."
 msgstr ""
 "V tomto pracovním prostoru můžete bez problémů otevřít a spravovat více "
 "karet dotazů, což usnadňuje organizaci vaší práce. Podle potřeby můžete "
@@ -13339,18 +13317,18 @@ msgstr "Vítejte v pracovním prostoru PSQL nástroje!"
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:98
 msgid ""
-"The PSQL tool allows users to connect to PostgreSQL or EDB Advanced "
-"server using the psql command line interface."
+"The PSQL tool allows users to connect to PostgreSQL or EDB Advanced server "
+"using the psql command line interface."
 msgstr ""
-"PSQL nástroj umožňuje uživatelům připojit se k serveru PostgreSQL nebo "
-"EDB Advanced pomocí rozhraní příkazového řádku psql."
+"PSQL nástroj umožňuje uživatelům připojit se k serveru PostgreSQL nebo EDB "
+"Advanced pomocí rozhraní příkazového řádku psql."
 
 #: pgadmin/misc/workspaces/static/js/WorkspaceWelcomePage.jsx:99
 msgid ""
-"In this workspace, you can seamlessly open and manage multiple PSQL tabs,"
-" making it easier to organize your work. You can select the existing "
-"servers or create a completely new ad-hoc connection to any database "
-"server as needed."
+"In this workspace, you can seamlessly open and manage multiple PSQL tabs, "
+"making it easier to organize your work. You can select the existing servers "
+"or create a completely new ad-hoc connection to any database server as "
+"needed."
 msgstr ""
 "V tomto pracovním prostoru můžete bez problémů otevřít a spravovat více "
 "záložek PSQL, což usnadňuje organizaci vaší práce. Podle potřeby můžete "
@@ -13374,19 +13352,19 @@ msgstr "help_str"
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:139
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:144
 msgid "Loading preferences..."
-msgstr ""
+msgstr "Načítání nastavení..."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:191
 msgid "Failed to load preferences."
-msgstr ""
+msgstr "Načtení nastavení se nezdařilo."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:208
 msgid "Changes will be lost. Are you sure you want to close the preferences?"
-msgstr ""
+msgstr "Změny budou ztraceny. Opravdu chcete zavřít nastavení?"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:227
 msgid "Saving preferences..."
-msgstr ""
+msgstr "Ukládání nastavení..."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:283
 msgid "Object explorer refresh required"
@@ -13394,7 +13372,8 @@ msgstr "Je vyžadováno občerstvení průzkumníka objektů"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:284
 msgid "An object explorer refresh is required. Do you wish to refresh it now?"
-msgstr "Je vyžadováno občerstvení průzkumníka objektů. Přejete si ji nyní obnovit?"
+msgstr ""
+"Je vyžadováno občerstvení průzkumníka objektů. Přejete si ji nyní obnovit?"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:293
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:307
@@ -13412,7 +13391,7 @@ msgstr "Je vyžadována aktualizace stránky. Přejete si nyní obnovit stránku
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:314
 msgid "Failed to save preferences."
-msgstr ""
+msgstr "Uložení nastavení se nezdařilo."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:320
 msgid "Layout changed"
@@ -13445,11 +13424,14 @@ msgstr "Toto nastavení slouží k zobrazení/skrytí uzlů v průzkumníku obje
 
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:81
 msgid ""
-"Enter the directory in which the psql, pg_dump, pg_dumpall, and "
-"pg_restore utilities can be found for the corresponding database server "
-"version. The default path will be used for server versions that do not "
-"have a path specified."
+"Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore "
+"utilities can be found for the corresponding database server version. The "
+"default path will be used for server versions that do not have a path "
+"specified."
 msgstr ""
+"Zadejte adresář, ve kterém jsou obslužné programy psql, pg_dump, pg_dumpall "
+"a pg_restore pro odpovídající verzi databázového serveru. Výchozí cesta bude "
+"použita pro verze serveru, které nemají zadanou cestu."
 
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:118
 #: pgadmin/utils/constants.py:28
@@ -13463,7 +13445,7 @@ msgstr "Uživatelské rozhraní"
 
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:223
 msgid "Failed to reset preferences."
-msgstr ""
+msgstr "Obnovení výchozí nastavení se nezdařilo."
 
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:242
 msgid "Save & Reload"
@@ -13476,6 +13458,7 @@ msgstr "Uložit a znovu načíst později"
 #: pgadmin/preferences/static/js/components/RightPreference.jsx:49
 msgid "Navigate to any below item to view or edit its preferences."
 msgstr ""
+"Přejděte na libovolnou položku níže a zobrazte nebo upravte její nastavení."
 
 #: pgadmin/preferences/static/js/components/binary_path.ui.js:34
 msgid "Set as default"
@@ -13527,7 +13510,7 @@ msgstr "Nastavení uloženo"
 
 #: pgadmin/settings/__init__.py:402
 msgid "Unable to delete application state data."
-msgstr ""
+msgstr "Nelze smazat data o stavu aplikace."
 
 #: pgadmin/static/js/BrowserComponent.jsx:55
 msgid "Dashboard"
@@ -13552,7 +13535,7 @@ msgstr "Opravdu chcete aplikaci ukončit?"
 #: pgadmin/static/js/ToolErrorView.jsx:26
 #, python-brace-format
 msgid "There was some error while opening: ${error}"
-msgstr ""
+msgstr "Při otevírání došlo k chybě: ${error}"
 
 #: pgadmin/static/js/api_instance.js:48 pgadmin/static/js/socket_instance.js:50
 msgid "Connection to pgAdmin server has been lost"
@@ -13569,11 +13552,12 @@ msgstr "funkční klávesa"
 
 #: pgadmin/static/js/utils.js:281
 msgid "Please configure the PostgreSQL Binary Path in the Preferences."
-msgstr ""
+msgstr "Nakonfigurujte binární cestu k PostgreSQL v Nastavení."
 
 #: pgadmin/static/js/utils.js:286
-msgid "Please configure the EDB Advanced Server Binary Path in the Preferences."
-msgstr ""
+msgid ""
+"Please configure the EDB Advanced Server Binary Path in the Preferences."
+msgstr "V Nastavení nastavte cestu k EDB Advanced Server."
 
 #: pgadmin/static/js/utils.js:293
 msgid "Configuration required"
@@ -13591,26 +13575,26 @@ msgstr "Nepodařilo se načíst nastavení %s modulu %s"
 #: pgadmin/static/js/utils.js:364
 msgid ""
 "The file opened contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it "
-"is recommended that you review the text in an application that can "
-"display hidden Unicode characters before proceeding."
+"interpreted differently than what is displayed. If this is unexpected it is "
+"recommended that you review the text in an application that can display "
+"hidden Unicode characters before proceeding."
 msgstr ""
 "Otevřený soubor obsahuje obousměrné znaky Unicode, které by mohly být "
 "interpretovány jinak, než jak je zobrazeno. Pokud to neočekáváte, "
-"doporučujeme, abyste si před pokračováním přečetli text v aplikaci, která"
-" dokáže zobrazit skryté znaky Unicode."
+"doporučujeme, abyste si před pokračováním přečetli text v aplikaci, která "
+"dokáže zobrazit skryté znaky Unicode."
 
 #: pgadmin/static/js/utils.js:366
 msgid ""
 "The pasted text contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it "
-"is recommended that you review the text in an application that can "
-"display hidden Unicode characters before proceeding."
+"interpreted differently than what is displayed. If this is unexpected it is "
+"recommended that you review the text in an application that can display "
+"hidden Unicode characters before proceeding."
 msgstr ""
 "Vložený text obsahuje obousměrné znaky Unicode, které by mohly být "
 "interpretovány jinak, než jak je zobrazeno. Pokud to neočekáváte, "
-"doporučujeme, abyste si před pokračováním přečetli text v aplikaci, která"
-" dokáže zobrazit skryté znaky Unicode."
+"doporučujeme, abyste si před pokračováním přečetli text v aplikaci, která "
+"dokáže zobrazit skryté znaky Unicode."
 
 #: pgadmin/static/js/utils.js:368
 msgid "Trojan Source Warning"
@@ -13618,22 +13602,21 @@ msgstr "Upozornění na možný zdroj trojského koně"
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:23
 msgid ""
-"Select the user that will take ownership of the shared servers created by"
-" <b></b>. <b></b> shared servers are currently owned by this user. "
-"</br></br> Clicking on the “Change” button will either change ownership "
-"if a user is selected or delete any shared servers if no user is "
-"selected. There is no way to reverse this action."
+"Select the user that will take ownership of the shared servers created by "
+"<b></b>. <b></b> shared servers are currently owned by this user. </br></br> "
+"Clicking on the “Change” button will either change ownership if a user is "
+"selected or delete any shared servers if no user is selected. There is no "
+"way to reverse this action."
 msgstr ""
-"Vyberte uživatele, který převezme vlastnictví sdílených serverů "
-"vytvořených <b></b>. Sdílené servery <b></b> aktuálně vlastní tento "
-"uživatel. </br></br> Kliknutím na tlačítko \"Změnit\" buď změníte "
-"vlastnictví, pokud je vybrán uživatel, nebo odstraníte všechny sdílené "
-"servery, pokud není vybrán žádný uživatel. Tuto akci nelze nijak vrátit."
+"Vyberte uživatele, který převezme vlastnictví sdílených serverů vytvořených "
+"<b></b>. Sdílené servery <b></b> aktuálně vlastní tento uživatel. </br></br> "
+"Kliknutím na tlačítko \"Změnit\" buď změníte vlastnictví, pokud je vybrán "
+"uživatel, nebo odstraníte všechny sdílené servery, pokud není vybrán žádný "
+"uživatel. Tuto akci nelze nijak vrátit."
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:36
 msgid ""
-"The shared servers owned by <b></b> will be deleted. Do you wish to "
-"continue?"
+"The shared servers owned by <b></b> will be deleted. Do you wish to continue?"
 msgstr ""
 "Sdílené servery vlastněné uživatelem <b></b> budou smazány. Chcete "
 "pokračovat?"
@@ -13657,18 +13640,19 @@ msgstr "Neukládat"
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:67
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the identity file '%s' to "
-"connect the server \"%s\""
+"Please enter the SSH Tunnel password for the identity file '%s' to connect "
+"the server \"%s\""
 msgstr ""
-"Zadejte heslo SSH tunelu pro soubor identity '%s' pro připojení k serveru"
-" \"%s\""
+"Zadejte heslo SSH tunelu pro soubor identity '%s' pro připojení k serveru "
+"\"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:68
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the user '%s' to connect the "
-"server \"%s\""
-msgstr "Zadejte heslo SSH tunelu pro uživatele '%s' pro připojení k serveru \"%s\""
+"Please enter the SSH Tunnel password for the user '%s' to connect the server "
+"\"%s\""
+msgstr ""
+"Zadejte heslo SSH tunelu pro uživatele '%s' pro připojení k serveru \"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:77
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:100
@@ -13677,7 +13661,8 @@ msgstr "Uložit heslo"
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:85
 #, python-format
-msgid "Please enter the password for the user '%s' to connect the server - \"%s\""
+msgid ""
+"Please enter the password for the user '%s' to connect the server - \"%s\""
 msgstr "Zadejte heslo pro uživatele '%s' pro připojení serveru - \"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:86
@@ -13710,9 +13695,9 @@ msgstr "Zadejte hlavní heslo."
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:67
 #, python-brace-format
 msgid ""
-"Saved passwords are encrypted using encryption key stored in "
-"${keyringName}. Enter the master password for your existing pgAdmin saved"
-" passwords and they will be re-encrypted and saved when you click OK."
+"Saved passwords are encrypted using encryption key stored in ${keyringName}. "
+"Enter the master password for your existing pgAdmin saved passwords and they "
+"will be re-encrypted and saved when you click OK."
 msgstr ""
 "Uložená hesla jsou zašifrována pomocí šifrovacího klíče uloženého v "
 "${keyringName}. Zadejte hlavní heslo pro vaše stávající hesla uložená v "
@@ -13772,8 +13757,8 @@ msgstr "Migrace úspěšná"
 #: pgadmin/static/js/Dialogs/index.jsx:96
 #, python-brace-format
 msgid ""
-"Passwords previously saved are re-encrypted using encryption key stored "
-"in the ${res.data.data.keyring_name}."
+"Passwords previously saved are re-encrypted using encryption key stored in "
+"the ${res.data.data.keyring_name}."
 msgstr ""
 "Dříve uložená hesla jsou znovu zašifrována pomocí šifrovacího klíče "
 "uloženého v ${res.data.data.keyring_name}."
@@ -13795,8 +13780,8 @@ msgid ""
 "The master password retrieved from the master password hook utility is "
 "different from what was previously retrieved."
 msgstr ""
-"Hlavní heslo získané pomocí hooku z nástroje hlavního hesla se liší od "
-"toho, co bylo načteno dříve."
+"Hlavní heslo získané pomocí hooku z nástroje hlavního hesla se liší od toho, "
+"co bylo načteno dříve."
 
 #: pgadmin/static/js/Dialogs/index.jsx:121
 msgid "Do you want to reset your master password to match?"
@@ -13804,28 +13789,28 @@ msgstr "Chcete obnovit své hlavní heslo tak, aby se shodovalo?"
 
 #: pgadmin/static/js/Dialogs/index.jsx:122
 msgid ""
-"Note that this will close all open database connections and remove all "
-"saved passwords."
+"Note that this will close all open database connections and remove all saved "
+"passwords."
 msgstr ""
 "Všimněte si, že tím zavřete všechna otevřená databázová připojení a "
 "odstraníte všechna uložená hesla."
 
 #: pgadmin/static/js/Dialogs/index.jsx:150
 msgid ""
-"This will remove all the saved passwords. This will also remove "
-"established connections to the server and you may need to reconnect "
-"again. Do you wish to continue?"
+"This will remove all the saved passwords. This will also remove established "
+"connections to the server and you may need to reconnect again. Do you wish "
+"to continue?"
 msgstr ""
 "Toto smaže všechna uložená hesla a také odstraníte navázaná připojení k "
 "serveru a možná bude nutné se znovu připojit. Chcete pokračovat?"
 
 #: pgadmin/static/js/Dialogs/index.jsx:210
 msgid ""
-"Please make sure to disconnect the server and update the new password in "
-"the pgpass file before performing any other operation"
+"Please make sure to disconnect the server and update the new password in the "
+"pgpass file before performing any other operation"
 msgstr ""
-"Před provedením jakékoli jiné operace se ujistěte, že jste odpojili "
-"server a aktualizovali nové heslo v souboru pgpass"
+"Před provedením jakékoli jiné operace se ujistěte, že jste odpojili server a "
+"aktualizovali nové heslo v souboru pgpass"
 
 #: pgadmin/static/js/Dialogs/index.jsx:232
 msgid "Change pgAdmin User Password"
@@ -14091,8 +14076,7 @@ msgid ""
 "Enter the email address for the user account you wish to recover the "
 "password for:"
 msgstr ""
-"Zadejte e-mailovou adresu uživatelského účtu, pro který chcete obnovit "
-"heslo:"
+"Zadejte e-mailovou adresu uživatelského účtu, pro který chcete obnovit heslo:"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:20
 msgid "Email Address"
@@ -14322,11 +14306,11 @@ msgstr "Chyba při obnovení uloženého stavu stromu."
 
 #: pgadmin/static/js/tree/tree_utils.js:36
 msgid ""
-"Databases with = symbols in the name cannot be backed up or restored "
-"using this utility."
+"Databases with = symbols in the name cannot be backed up or restored using "
+"this utility."
 msgstr ""
-"Pomocí tohoto nástroje nelze zálohovat ani obnovit databáze se znaky '=' "
-"v názvu."
+"Pomocí tohoto nástroje nelze zálohovat ani obnovit databáze se znaky '=' v "
+"názvu."
 
 #: pgadmin/static/js/tree/tree_utils.js:49
 msgid "Please select server or child node from the object explorer."
@@ -14393,11 +14377,11 @@ msgstr "Zálohovat globální objekty..."
 
 #: pgadmin/tools/backup/static/js/backup.js:68
 msgid ""
-"Please select any server from the object explorer to take Backup of "
-"global objects."
+"Please select any server from the object explorer to take Backup of global "
+"objects."
 msgstr ""
-"Chcete-li provést zálohu globálních objektů, vyberte v průzkumníku "
-"objektů libovolný server."
+"Chcete-li provést zálohu globálních objektů, vyberte v průzkumníku objektů "
+"libovolný server."
 
 #: pgadmin/tools/backup/static/js/backup.js:77
 #: pgadmin/tools/backup/static/js/backup.js:105
@@ -14406,16 +14390,17 @@ msgstr "Zálohovat server..."
 
 #: pgadmin/tools/backup/static/js/backup.js:81
 #: pgadmin/tools/backup/static/js/backup.js:109
-msgid "Please select any server from the object explorer to take Server Backup."
+msgid ""
+"Please select any server from the object explorer to take Server Backup."
 msgstr ""
-"Chcete-li provést zálohu serveru, vyberte v průzkumníku objektů libovolný"
-" server."
+"Chcete-li provést zálohu serveru, vyberte v průzkumníku objektů libovolný "
+"server."
 
 #: pgadmin/tools/backup/static/js/backup.js:95
 #: pgadmin/tools/backup/static/js/backup.js:124
 msgid ""
-"Please select any database or schema or table from the object explorer to"
-" take Backup."
+"Please select any database or schema or table from the object explorer to "
+"take Backup."
 msgstr ""
 "Chcete-li provést zálohu, vyberte libovolnou databázi nebo schéma nebo "
 "tabulku z průzkumníku objektů."
@@ -14730,7 +14715,8 @@ msgstr "objekty"
 msgid ""
 "If Schema(s) is selected then it will take the backup of that selected "
 "schema(s) only"
-msgstr "Pokud je vybráno schéma, pak bude provedena záloha pouze vybraných schémat"
+msgstr ""
+"Pokud je vybráno schéma, pak bude provedena záloha pouze vybraných schémat"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:781
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:106
@@ -14741,11 +14727,9 @@ msgstr "Zadejte název souboru."
 
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:96
 msgid ""
-"Only objects global to the entire database will be backed up, in PLAIN "
-"format"
+"Only objects global to the entire database will be backed up, in PLAIN format"
 msgstr ""
-"Budou zálohovány pouze globální objekty pro celou databázi ve formátu "
-"PROSTÝ"
+"Budou zálohovány pouze globální objekty pro celou databázi ve formátu PROSTÝ"
 
 #: pgadmin/tools/debugger/__init__.py:64
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:171
@@ -14814,9 +14798,10 @@ msgstr "Nelze ladit zabalené funkce EDB Advanced Server."
 
 #: pgadmin/tools/debugger/__init__.py:457
 msgid ""
-"An 'edbspl' target with a variadic argument is not supported and cannot "
-"be debugged."
-msgstr "Cíl 'edbspl' s variadickým argumentem není podporován a nelze jej odladit."
+"An 'edbspl' target with a variadic argument is not supported and cannot be "
+"debugged."
+msgstr ""
+"Cíl 'edbspl' s variadickým argumentem není podporován a nelze jej odladit."
 
 #: pgadmin/tools/debugger/__init__.py:532
 #: pgadmin/tools/debugger/__init__.py:546
@@ -14825,8 +14810,8 @@ msgstr "V této databázi se nepodařilo najít rozšíření pldbgapi."
 
 #: pgadmin/tools/debugger/__init__.py:554
 msgid ""
-"The debugger plugin is not enabled. Please create the pldbgapi extension "
-"in this database."
+"The debugger plugin is not enabled. Please create the pldbgapi extension in "
+"this database."
 msgstr ""
 "Rozšíření pro ladění není povoleno. Vytvořte rozšíření pldbgapi v této "
 "databázi."
@@ -14846,12 +14831,12 @@ msgstr "Nelze načíst informace o ladícím rozšíření."
 #: pgadmin/tools/debugger/__init__.py:749
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
-"shared_preload_libraries setting in the postgresql.conf file and restart "
-"the database server for indirect debugging."
+"shared_preload_libraries setting in the postgresql.conf file and restart the "
+"database server for indirect debugging."
 msgstr ""
 "Rozšíření ladění není povolen. Přidejte rozšíření do nastavení "
-"shared_preload_library v souboru postgresql.conf a restartujte databázový"
-" server pro nepřímé ladění."
+"shared_preload_library v souboru postgresql.conf a restartujte databázový "
+"server pro nepřímé ladění."
 
 #: pgadmin/tools/debugger/__init__.py:768
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
@@ -14951,11 +14936,11 @@ msgstr "Chyba ladění"
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:494
 #, python-brace-format
 msgid ""
-"Current database has been moved or renamed to ${db_label}. Click on the "
-"OK button to refresh the database name."
+"Current database has been moved or renamed to ${db_label}. Click on the OK "
+"button to refresh the database name."
 msgstr ""
-"Aktuální databáze byla přesunuta nebo přejmenována na ${db_label}. "
-"Kliknutím na tlačítko OK obnovíte název databáze."
+"Aktuální databáze byla přesunuta nebo přejmenována na ${db_label}. Kliknutím "
+"na tlačítko OK obnovíte název databáze."
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:47
 msgid "Null?"
@@ -15004,8 +14989,8 @@ msgstr "Ladění zrušeno"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:153
 msgid ""
-"Debugger has been aborted. On clicking the ok button, debugger panel will"
-" be closed."
+"Debugger has been aborted. On clicking the ok button, debugger panel will be "
+"closed."
 msgstr "Ladění bylo zrušeno. Po kliknutí na tlačítko ok se panel ladění zavře."
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:167
@@ -15209,8 +15194,8 @@ msgstr "SQL včetně DROP tabulky"
 
 #: pgadmin/tools/erd/__init__.py:403 pgadmin/tools/erd/__init__.py:442
 msgid ""
-"If enabled, the SQL generated by the ERD Tool will add DROP table DDL "
-"before each CREATE table DDL."
+"If enabled, the SQL generated by the ERD Tool will add DROP table DDL before "
+"each CREATE table DDL."
 msgstr ""
 "Pokud je povoleno, SQL generované nástrojem E-R diagram přidá DDL DROP "
 "tabulky před každé DDL CREATE tabulky."
@@ -15224,9 +15209,9 @@ msgid ""
 "The maximum depth pgAdmin should traverse to find related tables when "
 "generating an ERD for a table. Use -1 for no limit."
 msgstr ""
-"Při generování E-R diagramu pro tabulku by měl pgAdmin procházet "
-"maximální hloubku, aby našel, aby našel související tabulky. Použijte -1 "
-"pro žádný limit."
+"Při generování E-R diagramu pro tabulku by měl pgAdmin procházet maximální "
+"hloubku, aby našel, aby našel související tabulky. Použijte -1 pro žádný "
+"limit."
 
 #: pgadmin/tools/erd/__init__.py:424
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:283
@@ -15337,13 +15322,11 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:669
 msgid ""
-"-- Please log an issue at https://github.com/pgadmin-"
-"org/pgadmin4/issues/new/choose if you find any bugs, including "
-"reproduction steps.\n"
+"-- Please log an issue at https://github.com/pgadmin-org/pgadmin4/issues/new/"
+"choose if you find any bugs, including reproduction steps.\n"
 msgstr ""
-"-- Prosím, pokud najdete nějaké chyby, sdělte nám je na "
-"https://github.com/pgadmin-org/pgadmin4/issues/new/choose včetně kroků "
-"pro reprodukci\n"
+"-- Prosím, pokud najdete nějaké chyby, sdělte nám je na https://github.com/"
+"pgadmin-org/pgadmin4/issues/new/choose včetně kroků pro reprodukci\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:682
 msgid "Preparing the SQL..."
@@ -15363,8 +15346,8 @@ msgstr "Limit maximální velikosti obrázku"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:794
 msgid ""
-"The downloaded image has exceeded the maximum size of 32767 x 32767 "
-"pixels, and has been cropped to that size."
+"The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, "
+"and has been cropped to that size."
 msgstr ""
 "Stažený obrázek přesáhl maximální velikost 32767 x 32767 pixelů a byl na "
 "tuto velikost oříznut."
@@ -15578,11 +15561,11 @@ msgstr "Správce oprávnění"
 
 #: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:311
 msgid ""
-"The SQL below will be executed on the database server to grant the "
-"selected privileges. Please click on Finish to complete the process."
+"The SQL below will be executed on the database server to grant the selected "
+"privileges. Please click on Finish to complete the process."
 msgstr ""
-"Níže uvedený SQL kód bude spuštěn na databázovém serveru k udělení "
-"vybraných oprávnění. Proces dokončete kliknutím na Dokončit."
+"Níže uvedený SQL kód bude spuštěn na databázovém serveru k udělení vybraných "
+"oprávnění. Proces dokončete kliknutím na Dokončit."
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:44
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:64
@@ -15594,8 +15577,8 @@ msgid ""
 "Please select any database, schema or schema objects from the object "
 "explorer to access Grant Wizard Tool."
 msgstr ""
-"Chcete-li získat přístup k nástroji Správce oprávnění, vyberte v "
-"průzkumníku objektů libovolnou databázi, schéma nebo objekty schématu."
+"Chcete-li získat přístup k nástroji Správce oprávnění, vyberte v průzkumníku "
+"objektů libovolnou databázi, schéma nebo objekty schématu."
 
 #: pgadmin/tools/import_export/__init__.py:42
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:56
@@ -15724,16 +15707,16 @@ msgstr "ignorovat"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:138
 msgid ""
 "Specifies how to behave when encountering an error converting a columns "
-"input value into its data type. An error_action value of stop means fail "
-"the command, while ignore means discard the input row and continue with "
-"the next one. The default is stop. The ignore option is applicable only "
-"for COPY FROM when the FORMAT is text or csv."
+"input value into its data type. An error_action value of stop means fail the "
+"command, while ignore means discard the input row and continue with the next "
+"one. The default is stop. The ignore option is applicable only for COPY FROM "
+"when the FORMAT is text or csv."
 msgstr ""
 "Určuje, jak se má chovat, když dojde k chybě při převodu vstupní hodnoty "
 "sloupce na datový typ. Hodnota error_action s hodnotou zastavit znamená "
 "selhání příkazu, zatímco ignorovat znamená zahození vstupního řádku a "
-"pokračování dalším. Výchozí hodnota je stop. Možnost ignorovat je "
-"použitelná pouze pro COPY FROM, pokud je FORMÁT text nebo csv."
+"pokračování dalším. Výchozí hodnota je stop. Možnost ignorovat je použitelná "
+"pouze pro COPY FROM, pokud je FORMÁT text nebo csv."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:142
 msgid "Log Verbosity"
@@ -15751,13 +15734,13 @@ msgstr "podrobný"
 msgid ""
 "Specify the amount of messages emitted by a COPY command: default or "
 "verbose. If verbose is specified, additional messages are emitted during "
-"processing. This is currently used in COPY FROM command when ON_ERROR "
-"option is set to ignore."
+"processing. This is currently used in COPY FROM command when ON_ERROR option "
+"is set to ignore."
 msgstr ""
 "Určete počet zpráv vygenerovaných příkazem COPY: výchozí nebo podrobný. "
-"Pokud je zadána možnost podrobný, budou během zpracování vygenerovány "
-"další zprávy. Toto se aktuálně používá v příkazu COPY FROM, když je volba"
-" ON_ERROR nastavena na ignorovat."
+"Pokud je zadána možnost podrobný, budou během zpracování vygenerovány další "
+"zprávy. Toto se aktuálně používá v příkazu COPY FROM, když je volba ON_ERROR "
+"nastavena na ignorovat."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:172
 msgid "Freeze"
@@ -15765,23 +15748,22 @@ msgstr "Zmrazit"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:185
 msgid ""
-"Requests copying the data with rows already frozen, just as they would be"
-" after running the VACUUM FREEZE command."
+"Requests copying the data with rows already frozen, just as they would be "
+"after running the VACUUM FREEZE command."
 msgstr ""
 "Požaduje kopírování dat s již zmrazenými řádky, stejně jako by byly po "
 "spuštění příkazu VACUUM FREEZE."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:214
 msgid ""
-"Specifies the character that separates columns within each row (line) of "
-"the file. The default is a tab character in text format, a comma in CSV "
-"format. This must be a single one-byte character. This option is not "
-"allowed when using binary format."
+"Specifies the character that separates columns within each row (line) of the "
+"file. The default is a tab character in text format, a comma in CSV format. "
+"This must be a single one-byte character. This option is not allowed when "
+"using binary format."
 msgstr ""
-"Určuje znak, který odděluje sloupce v každém řádku souboru. Výchozí je "
-"znak tabulátoru v textovém formátu, čárka ve formátu CSV. Musí to být "
-"jeden jednobajtový znak. Tato volba není povolena při použití binárního "
-"formátu."
+"Určuje znak, který odděluje sloupce v každém řádku souboru. Výchozí je znak "
+"tabulátoru v textovém formátu, čárka ve formátu CSV. Musí to být jeden "
+"jednobajtový znak. Tato volba není povolena při použití binárního formátu."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:218
 msgid "Quote"
@@ -15789,13 +15771,13 @@ msgstr "Uvození textu"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:232
 msgid ""
-"Specifies the quoting character to be used when a data value is quoted. "
-"The default is double-quote. This must be a single one-byte character. "
-"This option is allowed only when using CSV format."
+"Specifies the quoting character to be used when a data value is quoted. The "
+"default is double-quote. This must be a single one-byte character. This "
+"option is allowed only when using CSV format."
 msgstr ""
-"Určuje znak nabídky, který se použije při uvozování datové hodnoty. "
-"Výchozí hodnota jsou dvojité uvozovky. Musí to být jeden jednobajtový "
-"znak. Tato možnost je povolena pouze při použití formátu CSV."
+"Určuje znak nabídky, který se použije při uvozování datové hodnoty. Výchozí "
+"hodnota jsou dvojité uvozovky. Musí to být jeden jednobajtový znak. Tato "
+"možnost je povolena pouze při použití formátu CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:236
 msgid "Escape"
@@ -15804,16 +15786,15 @@ msgstr "Uvození speciálních znaků"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:250
 msgid ""
 "Specifies the character that should appear before a data character that "
-"matches the QUOTE value. The default is the same as the QUOTE value (so "
-"that the quoting character is doubled if it appears in the data). This "
-"must be a single one-byte character. This option is allowed only when "
-"using CSV format."
+"matches the QUOTE value. The default is the same as the QUOTE value (so that "
+"the quoting character is doubled if it appears in the data). This must be a "
+"single one-byte character. This option is allowed only when using CSV format."
 msgstr ""
 "Určuje znak, který by se měl objevit před datovým znakem, který odpovídá "
 "hodnotě 'Uvození textu'. Výchozí hodnota je stejná jako hodnota 'Uvození "
-"textu' (takže znak uvození se zdvojnásobí, pokud se objeví v datech). "
-"Musí to být jeden jednobajtový znak. Tato možnost je povolena pouze při "
-"použití formátu CSV."
+"textu' (takže znak uvození se zdvojnásobí, pokud se objeví v datech). Musí "
+"to být jeden jednobajtový znak. Tato možnost je povolena pouze při použití "
+"formátu CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:254
 msgid "NULL String"
@@ -15822,17 +15803,16 @@ msgstr "NULL řetězec"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:261
 msgid ""
 "Specifies the string that represents a null value. The default is \\N "
-"(backslash-N) in text format, and an unquoted empty string in CSV format."
-" You might prefer an empty string even in text format for cases where you"
-" don't want to distinguish nulls from empty strings. This option is not "
+"(backslash-N) in text format, and an unquoted empty string in CSV format. "
+"You might prefer an empty string even in text format for cases where you "
+"don't want to distinguish nulls from empty strings. This option is not "
 "allowed when using binary format."
 msgstr ""
-"Určuje řetězec, který představuje nulovou (NULL) hodnotu. Výchozí hodnota"
-" je \\N (zpětné lomítko-N) v textovém formátu a prázdný řádek bez "
-"uvozovek ve formátu CSV. Můžete dávat přednost prázdnému řetězci i v "
-"textovém formátu pro případy, kdy nechcete rozlišovat nulové hodnoty od "
-"prázdných řetězců. Tato volba není povolena při použití binárního "
-"formátu."
+"Určuje řetězec, který představuje nulovou (NULL) hodnotu. Výchozí hodnota je "
+"\\N (zpětné lomítko-N) v textovém formátu a prázdný řádek bez uvozovek ve "
+"formátu CSV. Můžete dávat přednost prázdnému řetězci i v textovém formátu "
+"pro případy, kdy nechcete rozlišovat nulové hodnoty od prázdných řetězců. "
+"Tato volba není povolena při použití binárního formátu."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:265
 msgid "Default String"
@@ -15840,15 +15820,15 @@ msgstr "Výchozí řetězec"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:274
 msgid ""
-"Specifies the string that represents a default value. Each time the "
-"string is found in the input file, the default value of the corresponding"
-" column will be used. This option is allowed only in COPY FROM, and only "
-"when not using binary format"
+"Specifies the string that represents a default value. Each time the string "
+"is found in the input file, the default value of the corresponding column "
+"will be used. This option is allowed only in COPY FROM, and only when not "
+"using binary format"
 msgstr ""
-"Určuje řetězec, který představuje výchozí hodnotu. Pokaždé, když je "
-"řetězec nalezen ve vstupním souboru, bude použita výchozí hodnota "
-"odpovídajícího sloupce. Tato možnost je povolena pouze v COPY FROM a "
-"pouze tehdy, když se nepoužívá binární formát."
+"Určuje řetězec, který představuje výchozí hodnotu. Pokaždé, když je řetězec "
+"nalezen ve vstupním souboru, bude použita výchozí hodnota odpovídajícího "
+"sloupce. Tato možnost je povolena pouze v COPY FROM a pouze tehdy, když se "
+"nepoužívá binární formát."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:303
 msgid "Columns for importing..."
@@ -15860,8 +15840,8 @@ msgstr "Sloupce pro export..."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:312
 msgid ""
-"An optional list of columns to be copied. If no column list is specified,"
-" all columns of the table will be copied."
+"An optional list of columns to be copied. If no column list is specified, "
+"all columns of the table will be copied."
 msgstr ""
 "Volitelný seznam sloupců, které mají být zkopírovány. Pokud není uveden "
 "žádný seznam sloupců, zkopírují se všechny sloupce tabulky."
@@ -15872,8 +15852,8 @@ msgstr "Exportní dotaz na data"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:320
 msgid ""
-"Specifies A SELECT, VALUES, INSERT, UPDATE, DELETE, or MERGE command "
-"whose results are to be copied."
+"Specifies A SELECT, VALUES, INSERT, UPDATE, DELETE, or MERGE command whose "
+"results are to be copied."
 msgstr ""
 "Určuje příkaz SELECT, VALUES, INSERT, UPDATE, DELETE nebo MERGE, jehož "
 "výsledky se mají zkopírovat."
@@ -15889,16 +15869,15 @@ msgstr "Vynutit uvozovky u sloupců..."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:353
 msgid ""
-"Forces quoting to be used for all non-NULL values in each specified "
-"column. NULL output is never quoted. If * is specified, non-NULL values "
-"will be quoted in all columns. This option is allowed only in COPY TO, "
-"and only when using CSV format."
+"Forces quoting to be used for all non-NULL values in each specified column. "
+"NULL output is never quoted. If * is specified, non-NULL values will be "
+"quoted in all columns. This option is allowed only in COPY TO, and only when "
+"using CSV format."
 msgstr ""
-"Vynutí použití uvozovek pro všechny hodnoty jiné než NULL v každém "
-"zadaném sloupci. Hodnoty NULL se nikdy nedávají do uvozovek. Pokud je "
-"zadána *, hodnoty jiné než NULL budou ve všech sloupcích uvedeny v "
-"uvozovkách. Tato možnost je povolena pouze v příkazu COPY TO a pouze při "
-"použití formátu CSV."
+"Vynutí použití uvozovek pro všechny hodnoty jiné než NULL v každém zadaném "
+"sloupci. Hodnoty NULL se nikdy nedávají do uvozovek. Pokud je zadána *, "
+"hodnoty jiné než NULL budou ve všech sloupcích uvedeny v uvozovkách. Tato "
+"možnost je povolena pouze v příkazu COPY TO a pouze při použití formátu CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:357
 msgid "NOT NULL columns"
@@ -15911,16 +15890,16 @@ msgstr "Nenulové sloupce..."
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:373
 msgid ""
 "Do not match the specified column values against the null string. In the "
-"default case where the null string is empty, this means that empty values"
-" will be read as zero-length strings rather than nulls, even when they "
-"are not quoted. This option is allowed only in import, and only when "
-"using CSV format."
+"default case where the null string is empty, this means that empty values "
+"will be read as zero-length strings rather than nulls, even when they are "
+"not quoted. This option is allowed only in import, and only when using CSV "
+"format."
 msgstr ""
-"Nejsou stejné zadané hodnoty sloupců oproti nulovému řetězci. Ve výchozím"
-" případě, kde je nulový řetězec prázdný, to znamená, že prázdné hodnoty "
-"se budou načítat jako řetězce nulové délky, nikoli jako nulové hodnoty, i"
-" když nejsou uvozeny. Tato možnost je povolena pouze při importu a pouze "
-"při použití formátu CSV."
+"Nejsou stejné zadané hodnoty sloupců oproti nulovému řetězci. Ve výchozím "
+"případě, kde je nulový řetězec prázdný, to znamená, že prázdné hodnoty se "
+"budou načítat jako řetězce nulové délky, nikoli jako nulové hodnoty, i když "
+"nejsou uvozeny. Tato možnost je povolena pouze při importu a pouze při "
+"použití formátu CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:377
 msgid "NULL columns"
@@ -15932,17 +15911,17 @@ msgstr "NULL sloupce..."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:393
 msgid ""
-"Match the specified columns values against the null string, even if it "
-"has been quoted, and if a match is found set the value to NULL. In the "
-"default case where the null string is empty, this converts a quoted empty"
-" string into NULL. This option is allowed only in COPY FROM, and only "
-"when using CSV format."
+"Match the specified columns values against the null string, even if it has "
+"been quoted, and if a match is found set the value to NULL. In the default "
+"case where the null string is empty, this converts a quoted empty string "
+"into NULL. This option is allowed only in COPY FROM, and only when using CSV "
+"format."
 msgstr ""
-"Porovnává zadané hodnoty sloupců s nulovým řetězcem, i když je v "
-"uvozovkách, a pokud je nalezena shoda, nastavuje hodnotu na NULL. Ve "
-"výchozím případě, kdy je nulový řetězec prázdný, se tímto převede prázdný"
-" řetězec v uvozovkách na NULL. Tato možnost je povolena pouze v režimu "
-"COPY FROM a pouze při použití formátu CSV."
+"Porovnává zadané hodnoty sloupců s nulovým řetězcem, i když je v uvozovkách, "
+"a pokud je nalezena shoda, nastavuje hodnotu na NULL. Ve výchozím případě, "
+"kdy je nulový řetězec prázdný, se tímto převede prázdný řetězec v uvozovkách "
+"na NULL. Tato možnost je povolena pouze v režimu COPY FROM a pouze při "
+"použití formátu CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:410
 msgid "Export Data Query can not be empty."
@@ -15992,8 +15971,8 @@ msgid ""
 "The existing server groups and servers were removed, and the selected "
 "servers were imported successfully."
 msgstr ""
-"Stávající skupiny serverů a servery byly odstraněny a vybrané servery "
-"byly úspěšně importovány."
+"Stávající skupiny serverů a servery byly odstraněny a vybrané servery byly "
+"úspěšně importovány."
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:107
 msgid "Import Servers"
@@ -16005,17 +15984,17 @@ msgstr "Chyba importu"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:155
 msgid ""
-"The following servers will be imported. Click the Finish button to "
-"complete the import process."
+"The following servers will be imported. Click the Finish button to complete "
+"the import process."
 msgstr ""
-"Budou importovány následující servery. Kliknutím na tlačítko Dokončit "
-"proces importu dokončete."
+"Budou importovány následující servery. Kliknutím na tlačítko Dokončit proces "
+"importu dokončete."
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:157
 msgid ""
-"All existing server groups and servers will be removed before the servers"
-" above are imported. On a successful import process, the object explorer "
-"will be refreshed."
+"All existing server groups and servers will be removed before the servers "
+"above are imported. On a successful import process, the object explorer will "
+"be refreshed."
 msgstr ""
 "Všechny existující skupiny serverů a servery budou před importem výše "
 "uvedených serverů odstraněny. Po úspěšném procesu importu bude obnoven "
@@ -16139,8 +16118,7 @@ msgstr "Údržba..."
 #: pgadmin/tools/maintenance/static/js/maintenance.js:72
 msgid "Please select any database from the object explorer to do Maintenance."
 msgstr ""
-"Chcete-li provést údržbu, vyberte libovolnou databázi z průzkumníka "
-"objektů."
+"Chcete-li provést údržbu, vyberte libovolnou databázi z průzkumníka objektů."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:168
 msgid "Maintenance error"
@@ -16148,11 +16126,11 @@ msgstr "Chyba údržby"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:169
 msgid ""
-"Maintenance job creation failed. Databases with = symbols in the name "
-"cannot be maintained using this utility."
+"Maintenance job creation failed. Databases with = symbols in the name cannot "
+"be maintained using this utility."
 msgstr ""
-"Vytvoření úlohy údržby se nezdařilo. Pomocí tohoto nástroje nelze "
-"udržovat databáze se znaky '=' v názvu."
+"Vytvoření úlohy údržby se nezdařilo. Pomocí tohoto nástroje nelze udržovat "
+"databáze se znaky '=' v názvu."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:39
 msgid "FULL"
@@ -16212,13 +16190,13 @@ msgstr "BUFFER USAGE LIMIT"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:270
 msgid ""
-"Sizes should be specified as a string containing the numerical size "
-"followed by any one of the following memory units: kB (kilobytes), MB "
-"(megabytes), GB (gigabytes), or TB (terabytes)"
+"Sizes should be specified as a string containing the numerical size followed "
+"by any one of the following memory units: kB (kilobytes), MB (megabytes), GB "
+"(gigabytes), or TB (terabytes)"
 msgstr ""
 "Velikosti by měly být zadány jako řetězec obsahující číselnou velikost "
-"následovanou některou z následujících jednotek paměti: kB (kilobajty), MB"
-" (megabajty), GB (gigabajty) nebo TB (terabajty)"
+"následovanou některou z následujících jednotek paměti: kB (kilobajty), MB "
+"(megabajty), GB (gigabajty) nebo TB (terabajty)"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:276
 msgid "SYSTEM"
@@ -16250,21 +16228,21 @@ msgstr "PSQL"
 
 #: pgadmin/tools/psql/__init__.py:319
 msgid ""
-"PSQL utility not found. Specify the valid binary path in the preferences "
-"for the appropriate server version, or select \"Set as default\" to use "
-"an existing binary path."
+"PSQL utility not found. Specify the valid binary path in the preferences for "
+"the appropriate server version, or select \"Set as default\" to use an "
+"existing binary path."
 msgstr ""
-"Nástroj PSQL nebyl nalezen. Zadejte platnou cestu v nastavení pro "
-"příslušnou verzi serveru, nebo vyberte možnost \"Nastavit jako výchozí\" "
-"pro použití existující cesty."
+"Nástroj PSQL nebyl nalezen. Zadejte platnou cestu v nastavení pro příslušnou "
+"verzi serveru, nebo vyberte možnost \"Nastavit jako výchozí\" pro použití "
+"existující cesty."
 
 #: pgadmin/tools/psql/__init__.py:427
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
 msgstr ""
-"Připojení ukončeno. Chcete-li vytvořit nové připojení, otevřete jiný "
-"nástroj psql."
+"Připojení ukončeno. Chcete-li vytvořit nové připojení, otevřete jiný nástroj "
+"psql."
 
 #: pgadmin/tools/psql/__init__.py:490 pgadmin/tools/psql/__init__.py:524
 msgid "Invalid session.\r\n"
@@ -16324,11 +16302,10 @@ msgstr "Obnovit..."
 
 #: pgadmin/tools/restore/static/js/restore.js:51
 msgid ""
-"Please select any schema or table from the object explorer to Restore "
-"data."
+"Please select any schema or table from the object explorer to Restore data."
 msgstr ""
-"Chcete-li obnovit data, vyberte z průzkumníka objektů jakékoli schéma "
-"nebo tabulku."
+"Chcete-li obnovit data, vyberte z průzkumníka objektů jakékoli schéma nebo "
+"tabulku."
 
 #: pgadmin/tools/restore/static/js/restore.js:134
 msgid "Restore Error"
@@ -16382,11 +16359,11 @@ msgstr "Ignorovat bílé znaky"
 
 #: pgadmin/tools/schema_diff/__init__.py:77
 msgid ""
-"Set ignore whitespace on or off by default in the drop-down menu near the"
-" Compare button in the Schema Diff tab."
+"Set ignore whitespace on or off by default in the drop-down menu near the "
+"Compare button in the Schema Diff tab."
 msgstr ""
-"Ve výchozím nastavení zapne nebo vypne ignorování bílých znaků v "
-"rozevírací nabídce u tlačítka Porovnat na kartě Porovnání schémat."
+"Ve výchozím nastavení zapne nebo vypne ignorování bílých znaků v rozevírací "
+"nabídce u tlačítka Porovnat na kartě Porovnání schémat."
 
 #: pgadmin/tools/schema_diff/__init__.py:84
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:70
@@ -16395,8 +16372,8 @@ msgstr "Ignorovat vlastníka"
 
 #: pgadmin/tools/schema_diff/__init__.py:86
 msgid ""
-"Set ignore owner on or off by default in the drop-down menu near the "
-"Compare button in the Schema Diff tab."
+"Set ignore owner on or off by default in the drop-down menu near the Compare "
+"button in the Schema Diff tab."
 msgstr ""
 "Ve výchozím nastavení zapne nebo vypne ignorování vlastníka v rozevírací "
 "nabídce u tlačítka Porovnat na kartě Porovnání schémat."
@@ -16408,8 +16385,8 @@ msgstr "Ignorovat tabulkový prostor"
 
 #: pgadmin/tools/schema_diff/__init__.py:95
 msgid ""
-"Set ignore tablespace on or off by default in the drop-down menu near the"
-" Compare button in the Schema Diff tab."
+"Set ignore tablespace on or off by default in the drop-down menu near the "
+"Compare button in the Schema Diff tab."
 msgstr ""
 "Ve výchozím nastavení zapne nebo vypne ignorování tabulkového prostoru v "
 "rozevírací nabídce u tlačítka Porovnat na kartě Porovnání schémat."
@@ -16420,11 +16397,11 @@ msgstr "Ignorovat GRANT/REVOKE"
 
 #: pgadmin/tools/schema_diff/__init__.py:104
 msgid ""
-"Set ignore grants/revoke on or off by default in the drop-down menu near "
-"the Compare button in the Schema Diff tab."
+"Set ignore grants/revoke on or off by default in the drop-down menu near the "
+"Compare button in the Schema Diff tab."
 msgstr ""
-"Ve výchozím nastavení zapne nebo vypne ignorování GRANT/REVOKE v "
-"rozevírací nabídce u tlačítka Porovnat na kartě Porovnání schémat."
+"Ve výchozím nastavení zapne nebo vypne ignorování GRANT/REVOKE v rozevírací "
+"nabídce u tlačítka Porovnat na kartě Porovnání schémat."
 
 #: pgadmin/tools/schema_diff/__init__.py:709
 msgid "Selected object is not supported for DDL comparison."
@@ -16436,11 +16413,11 @@ msgstr "Server(y) byly odpojeny."
 
 #: pgadmin/tools/schema_diff/__init__.py:736
 msgid ""
-"Schema diff does not support the comparison between Postgres Server and "
-"EDB Postgres Advanced Server."
+"Schema diff does not support the comparison between Postgres Server and EDB "
+"Postgres Advanced Server."
 msgstr ""
-"Porovnání schémat nepodporuje srovnání mezi Postgres Serverem a EDB "
-"Postgres Advanced Serverem."
+"Porovnání schémat nepodporuje srovnání mezi Postgres Serverem a EDB Postgres "
+"Advanced Serverem."
 
 #: pgadmin/tools/schema_diff/__init__.py:750
 msgid "Source and Target database server must be of the same major version."
@@ -16548,13 +16525,15 @@ msgid "Generating script..."
 msgstr "Generování skriptu..."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:348
-msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
-msgstr "-- Tento skript byl vygenerován pomocí Porovnání schémat v pgAdmin 4.\n"
+msgid ""
+"-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
+msgstr ""
+"-- Tento skript byl vygenerován pomocí Porovnání schémat v pgAdmin 4.\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:349
 msgid ""
-"-- For the circular dependencies, the order in which Schema Diff writes "
-"the objects is not very sophisticated \n"
+"-- For the circular dependencies, the order in which Schema Diff writes the "
+"objects is not very sophisticated \n"
 msgstr ""
 "-- U obousměrných závislostí není pořadí, ve kterém Porovnání schémat "
 "objekty zapisuje, příliš sofistikované \n"
@@ -16568,7 +16547,8 @@ msgstr ""
 "použijí ve správném pořadí.\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:351
-msgid "-- Please report an issue for any failure with the reproduction steps. \n"
+msgid ""
+"-- Please report an issue for any failure with the reproduction steps. \n"
 msgstr "-- Nahlaste problém pro jakékoli selhání v reprodukčních krocích.\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:399
@@ -16616,8 +16596,7 @@ msgstr "Porovnání schématu:"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:830
 msgid ""
-" Select the server, database and schema for the source and target and "
-"Click"
+" Select the server, database and schema for the source and target and Click"
 msgstr "Vyberte server, databázi a schéma pro zdroj a cíl a klikněte"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:832
@@ -16647,6 +16626,8 @@ msgid ""
 "%s objects are disabled in the browser. You can enable them in the <a "
 "id=\"prefdlgid\" class=\"pref-dialog-link\">preferences</a>."
 msgstr ""
+"V prohlížeči je zakázáno %s objektů. Můžete je povolit v <a id=\"prefdlgid\" "
+"class=\"pref-dialog-link\">nastavení</a>."
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:316
 msgid "Locating..."
@@ -16766,8 +16747,8 @@ msgid ""
 "main window of pgAdmin is closed then close this window and open a new "
 "pgAdmin session."
 msgstr ""
-"Povolte vyskakovacím oknům tohoto webu provést požadovanou akci. Pokud je"
-" hlavní okno pgAdmin zavřeno, zavřete toto okno a otevřete novou relaci "
+"Povolte vyskakovacím oknům tohoto webu provést požadovanou akci. Pokud je "
+"hlavní okno pgAdmin zavřeno, zavřete toto okno a otevřete novou relaci "
 "pgAdmin."
 
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:31
@@ -16804,8 +16785,10 @@ msgid "Database moved/renamed"
 msgstr "Databáze přesunuta/přejmenována"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:200
-msgid "An unexpected error occurred - ensure you are logged into the application."
-msgstr "Došlo k neočekávané chybě - zkontrolujte, zda jste přihlášeni do aplikace."
+msgid ""
+"An unexpected error occurred - ensure you are logged into the application."
+msgstr ""
+"Došlo k neočekávané chybě - zkontrolujte, zda jste přihlášeni do aplikace."
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:228
 msgid "Query History"
@@ -16832,8 +16815,7 @@ msgstr "Nepřipojeno"
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:427
 #, python-brace-format
 msgid ""
-"-- Query text not stored as it exceeds maximum length of "
-"${MAX_QUERY_LENGTH}"
+"-- Query text not stored as it exceeds maximum length of ${MAX_QUERY_LENGTH}"
 msgstr ""
 "-- Text dotazu není uložen, protože překračuje maximální délku "
 "${MAX_QUERY_LENGTH}"
@@ -16853,8 +16835,7 @@ msgstr "⁃ Pokud bylo spojení nečinné, mohlo být nuceně odpojeno."
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:510
 msgid "⁃ The application server or database server may have been restarted."
 msgstr ""
-"⁃ Možná došlo k restartování aplikačního serveru nebo databázového "
-"serveru."
+"⁃ Možná došlo k restartování aplikačního serveru nebo databázového serveru."
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:511
 msgid "⁃ The user session may have timed out."
@@ -17091,8 +17072,7 @@ msgstr "Zavřít dotazovací nástroj?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:237
 msgid ""
-"There is an active query running currently. Are you sure you want to "
-"close?"
+"There is an active query running currently. Are you sure you want to close?"
 msgstr "Aktuálně běží aktivní dotaz. Opravdu chcete zavřít?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:249
@@ -17314,13 +17294,15 @@ msgstr "Data"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:164
 msgid "Reload file?"
-msgstr ""
+msgstr "Znovu načíst soubor?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:165
 msgid ""
-"The file has been modified by another program. Do you want to reload it "
-"and loose changes made in pgadmin?"
+"The file has been modified by another program. Do you want to reload it and "
+"loose changes made in pgadmin?"
 msgstr ""
+"Soubor byl upraven jiným programem. Chcete jej znovu načíst a ztratit změny "
+"provedené v pgAdminu?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/Query.jsx:227
 msgid "File saved successfully."
@@ -17385,11 +17367,11 @@ msgstr "Opravdu chcete smazat historii?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:465
 msgid ""
-"This will remove all of your query history from this and other sessions "
-"for this database."
+"This will remove all of your query history from this and other sessions for "
+"this database."
 msgstr ""
-"Tímto se odstraní veškerá historie vašich dotazů z této a dalších relací "
-"pro tuto databázi."
+"Tímto se odstraní veškerá historie vašich dotazů z této a dalších relací pro "
+"tuto databázi."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:467
 msgid "Removing history..."
@@ -17475,8 +17457,8 @@ msgstr "Ovlivněno %s řádků."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:988
 msgid ""
-"The data has been modified, but not saved. Are you sure you wish to "
-"discard the changes?"
+"The data has been modified, but not saved. Are you sure you wish to discard "
+"the changes?"
 msgstr "Data byla změněna, ale nebyla uložena. Opravdu chcete změny zahodit?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1003
@@ -17517,18 +17499,19 @@ msgid "Saving data..."
 msgstr "Ukládání dat..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1241
-msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
+msgid ""
+"This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
-"Tento dotaz byl vygenerován aplikací pgAdmin jako součást operace "
-"\"Uložit data\""
+"Tento dotaz byl vygenerován aplikací pgAdmin jako součást operace \"Uložit "
+"data\""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1253
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
-"Ukládání změn dat bylo vráceno zpět (ROLLBACK), ale aktuální transakce je"
-" stále aktivní; předchozí dotazy nejsou ovlivněny."
+"Ukládání změn dat bylo vráceno zpět (ROLLBACK), ale aktuální transakce je "
+"stále aktivní; předchozí dotazy nejsou ovlivněny."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1295
 msgid "Data saved successfully."
@@ -17537,8 +17520,8 @@ msgstr "Data byla úspěšně uložena."
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1297
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
-"Automatické schvalování je vypnuto. Stále musíte schválit (COMMIT) změny "
-"v databázi."
+"Automatické schvalování je vypnuto. Stále musíte schválit (COMMIT) změny v "
+"databázi."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1472
 msgid "Geometry Viewer"
@@ -17786,11 +17769,11 @@ msgstr "Výzva k uložení neuložené změny dotazu"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:88
 msgid ""
-"Specifies whether or not to prompt user to save unsaved query on query "
-"tool exit."
+"Specifies whether or not to prompt user to save unsaved query on query tool "
+"exit."
 msgstr ""
-"Určuje, zda se má uživatel vyzvat k uložení neuloženého dotazu při "
-"ukončení nástroje dotazu."
+"Určuje, zda se má uživatel vyzvat k uložení neuloženého dotazu při ukončení "
+"nástroje dotazu."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:95
 msgid "Sort View Data results by primary key columns?"
@@ -17799,13 +17782,13 @@ msgstr "Seřadit výsledky zobrazení dat podle sloupců primárních klíčů"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:98
 msgid ""
 "If set to True, data returned when using the View/Edit Data - All Rows "
-"option will be sorted by the Primary Key columns by default. When using "
-"the First/Last 100 Rows options, data is always sorted."
+"option will be sorted by the Primary Key columns by default. When using the "
+"First/Last 100 Rows options, data is always sorted."
 msgstr ""
 "Pokud je nastaveno na hodnotu Ano, data vrácená při použití možnosti "
-"Zobrazit/upravit data - Všechny řádky budou ve výchozím nastavení "
-"seřazeny podle sloupců primárních klíčů. Při použití možností "
-"Prvních/Posledních 100 řádků jsou data vždy seřazena."
+"Zobrazit/upravit data - Všechny řádky budou ve výchozím nastavení seřazeny "
+"podle sloupců primárních klíčů. Při použití možností Prvních/Posledních 100 "
+"řádků jsou data vždy seřazena."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:106
 msgid "Prompt to save unsaved data changes?"
@@ -17813,8 +17796,8 @@ msgstr "Výzva k uložení neuložené změny dat"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:109
 msgid ""
-"Specifies whether or not to prompt user to save unsaved data on data grid"
-" exit."
+"Specifies whether or not to prompt user to save unsaved data on data grid "
+"exit."
 msgstr ""
 "Určuje, zda vyzvat uživatele k uložení neuložených dat na výstupu datové "
 "mřížky."
@@ -17837,7 +17820,8 @@ msgstr "Zkopírovat SQL z hlavního okna do dotazovacího nástroje"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
 msgid "Specifies whether or not to copy SQL to query tool from main window."
-msgstr "Určuje, zda se má zkopírovat SQL do dotazovacího nástroje z hlavního okna."
+msgstr ""
+"Určuje, zda se má zkopírovat SQL do dotazovacího nástroje z hlavního okna."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:138
 msgid "Open the file in a new tab?"
@@ -17853,11 +17837,11 @@ msgstr "Zobrazit upozornění na změnu na nástroj Zobrazit/upravit data?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:152
 msgid ""
-"If set to True, View/Edit Data tool will show promote to Query tool "
-"confirm dialog on query edit."
+"If set to True, View/Edit Data tool will show promote to Query tool confirm "
+"dialog on query edit."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, nástroj Zobrazit/upravit data zobrazí "
-"při úpravě dotazu dialog pro potvrzení změny na dotazovací nástroj."
+"Pokud je nastaveno na hodnotu Ano, nástroj Zobrazit/upravit data zobrazí při "
+"úpravě dotazu dialog pro potvrzení změny na dotazovací nástroj."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:159
 msgid "Underline query at cursor?"
@@ -17865,11 +17849,11 @@ msgstr "Podtrhnout dotaz u kurzoru"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:163
 msgid ""
-"If set to True, query tool will parse and underline the query at the "
-"cursor position."
+"If set to True, query tool will parse and underline the query at the cursor "
+"position."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, dotazovací nástroj analyzuje a "
-"podtrhne dotaz na pozici kurzoru."
+"Pokud je nastaveno na hodnotu Ano, dotazovací nástroj analyzuje a podtrhne "
+"dotaz na pozici kurzoru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:170
 msgid "Underlined query execute warning?"
@@ -17877,14 +17861,14 @@ msgstr "Podtrhnout upozornění provedeného dotazu"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:174
 msgid ""
-"If set to True, query tool will warn upon clicking the Execute Query "
-"button in the query tool. The warning will appear only if Underline query"
-" at cursor? is set to False."
+"If set to True, query tool will warn upon clicking the Execute Query button "
+"in the query tool. The warning will appear only if Underline query at "
+"cursor? is set to False."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, dotazovací nástroj zobrazí varování po"
-" kliknutí na tlačítko \"Provést dotaz\" v dotazovacím nástroji. "
-"Upozornění se zobrazí pouze v případě, že \"Podtrhnout dotaz u kurzoru\" "
-"je nastaveno na Ne."
+"Pokud je nastaveno na hodnotu Ano, dotazovací nástroj zobrazí varování po "
+"kliknutí na tlačítko \"Provést dotaz\" v dotazovacím nástroji. Upozornění se "
+"zobrazí pouze v případě, že \"Podtrhnout dotaz u kurzoru\" je nastaveno na "
+"Ne."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
 msgid "Plain text mode?"
@@ -17893,12 +17877,11 @@ msgstr "Režim prostého textu"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:185
 msgid ""
 "When set to True, keywords won't be highlighted and code folding will be "
-"disabled. Plain text mode will improve editor performance with large "
-"files."
+"disabled. Plain text mode will improve editor performance with large files."
 msgstr ""
 "Pokud je nastaveno na hodnotu Ano, klíčová slova nebudou zvýrazněna a "
-"skrývání částí kódu bude zakázáno. Režim prostého textu zlepší výkon "
-"editoru s velkými soubory."
+"skrývání částí kódu bude zakázáno. Režim prostého textu zlepší výkon editoru "
+"s velkými soubory."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:193
 msgid "Code folding?"
@@ -17906,13 +17889,13 @@ msgstr "Skrývání částí kódu"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:196
 msgid ""
-"Enable or disable code folding. In plain text mode, this will have no "
-"effect as code folding is always disabled in that mode. Disabling will "
-"improve editor performance with large files."
+"Enable or disable code folding. In plain text mode, this will have no effect "
+"as code folding is always disabled in that mode. Disabling will improve "
+"editor performance with large files."
 msgstr ""
-"Povolit nebo zakázat skrývání částí kódu. V režimu prostého textu to "
-"nebude mít žádný účinek, protože skrývání částí kódu je v tomto režimu "
-"vždy zakázáno. Zakázání zlepší výkon editoru s velkými soubory."
+"Povolit nebo zakázat skrývání částí kódu. V režimu prostého textu to nebude "
+"mít žádný účinek, protože skrývání částí kódu je v tomto režimu vždy "
+"zakázáno. Zakázání zlepší výkon editoru s velkými soubory."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:204
 msgid "Line wrapping?"
@@ -17935,7 +17918,8 @@ msgid "Highlight selection matches?"
 msgstr "Zvýraznit shody s výběrem"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:226
-msgid "Specifies whether or not to highlight matched selected text in the editor."
+msgid ""
+"Specifies whether or not to highlight matched selected text in the editor."
 msgstr "Určuje, zda se má či nemá zvýraznit shody s vybraným text v editoru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:233
@@ -17984,9 +17968,9 @@ msgstr "Nahradit nulovou hodnotu hodnotou"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid ""
-"Specifies the string that represents a null value while downloading query"
-" results as CSV. You can specify any arbitrary string to represent a null"
-" value, with quotes if desired."
+"Specifies the string that represents a null value while downloading query "
+"results as CSV. You can specify any arbitrary string to represent a null "
+"value, with quotes if desired."
 msgstr ""
 "Určuje řetězec, který představuje nulovou (NULL) hodnotu při stahování "
 "výsledků dotazu jako CSV. Můžete zadat libovolný řetězec, který bude "
@@ -18018,15 +18002,14 @@ msgstr "Název sloupce"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:341
 msgid ""
-"If set to 'Column data' columns will auto-size to the maximum width of "
-"the data in the column as loaded in the first batch. If set to 'Column "
-"name', the column will be sized to the widest of the data type or column "
-"name."
+"If set to 'Column data' columns will auto-size to the maximum width of the "
+"data in the column as loaded in the first batch. If set to 'Column name', "
+"the column will be sized to the widest of the data type or column name."
 msgstr ""
-"Pokud je nastaveno na 'Data sloupce', budou se datové sloupce automaticky"
-" zvětšovat na maximální šířku dat ve sloupci načtených v první dávce. "
-"Pokud je nastaveno na 'Název sloupce', bude velikost sloupce nastavena na"
-" nejširší z datového typu nebo názvu sloupce."
+"Pokud je nastaveno na 'Data sloupce', budou se datové sloupce automaticky "
+"zvětšovat na maximální šířku dat ve sloupci načtených v první dávce. Pokud "
+"je nastaveno na 'Název sloupce', bude velikost sloupce nastavena na nejširší "
+"z datového typu nebo názvu sloupce."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:351
 msgid "Maximum column width"
@@ -18034,11 +18017,11 @@ msgstr "Maximální šířka sloupce"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:354
 msgid ""
-"Specify the maximum width of the column in pixels when 'Columns sized by "
-"' is set to 'Column data'."
+"Specify the maximum width of the column in pixels when 'Columns sized by ' "
+"is set to 'Column data'."
 msgstr ""
-"Zadejte maximální šířku sloupce in pixelech, když 'Velikost sloupců "
-"podle' je nastaveno na 'Data sloupce'."
+"Zadejte maximální šířku sloupce in pixelech, když 'Velikost sloupců podle' "
+"je nastaveno na 'Data sloupce'."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:361
 msgid "Data result rows per page"
@@ -18050,8 +18033,7 @@ msgid ""
 "will override DATA_RESULT_ROWS_PER_PAGE setting from config  file."
 msgstr ""
 "Zadejte počet záznamů, které se mají načíst v jedné dávce. Změna této "
-"hodnoty přepíše nastavení DATA_RESULT_ROWS_PER_PAGE z konfiguračního "
-"souboru."
+"hodnoty přepíše nastavení DATA_RESULT_ROWS_PER_PAGE z konfiguračního souboru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:372
 msgid "Striped rows?"
@@ -18071,7 +18053,7 @@ msgstr "Maximální délka zobrazení dat ve sloupci"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:382
 msgid "Maximum number of characters to be visible in the data output cell."
-msgstr ""
+msgstr "Maximální počet znaků, které se mají zobrazit ve výstupní buňce dat."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:388
 msgid "Font size"
@@ -18079,17 +18061,16 @@ msgstr "Velikost písma"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:393
 msgid ""
-"The font size to use for the SQL text boxes and editors. The value "
-"specified is in \"em\" units, in which 1 is the default relative font "
-"size. For example, to increase the font size by 20 percent use a value of"
-" 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
-"maximum 10."
+"The font size to use for the SQL text boxes and editors. The value specified "
+"is in \"em\" units, in which 1 is the default relative font size. For "
+"example, to increase the font size by 20 percent use a value of 1.2, or to "
+"reduce by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10."
 msgstr ""
 "Velikost písma, která se použije pro textová pole a editory SQL. Zadaná "
-"hodnota je v jednotkách \"em\", ve kterých 1 je výchozí relativní "
-"velikost písma. Například pro zvětšení velikosti písma o 20 procent "
-"použijte hodnotu 1.2, nebo pro snížení o 20 procent použijte hodnotu 0.8."
-" Minimálně 0.1, maximálně 10."
+"hodnota je v jednotkách \"em\", ve kterých 1 je výchozí relativní velikost "
+"písma. Například pro zvětšení velikosti písma o 20 procent použijte hodnotu "
+"1.2, nebo pro snížení o 20 procent použijte hodnotu 0.8. Minimálně 0.1, "
+"maximálně 10."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:403
 msgid "Font ligatures?"
@@ -18109,13 +18090,13 @@ msgstr "Písmo"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:416
 msgid ""
-"Specify the font family to be used for all SQL editors. The specified "
-"font should already be installed on your system. If the font is not "
-"found, the editor will fall back to the default font, Source Code Pro."
+"Specify the font family to be used for all SQL editors. The specified font "
+"should already be installed on your system. If the font is not found, the "
+"editor will fall back to the default font, Source Code Pro."
 msgstr ""
-"Zadejte písmo, které se má použít pro všechny editory SQL. Zadané písmo "
-"by již mělo být ve vašem systému nainstalováno. Pokud písmo není "
-"nalezeno, editor se vrátí k výchozímu písmu Source Code Pro."
+"Zadejte písmo, které se má použít pro všechny editory SQL. Zadané písmo by "
+"již mělo být ve vašem systému nainstalováno. Pokud písmo není nalezeno, "
+"editor se vrátí k výchozímu písmu Source Code Pro."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:425
 msgid "Connection status"
@@ -18123,8 +18104,8 @@ msgstr "Stav připojení"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:427
 msgid ""
-"If set to True, the Query Tool will monitor and display the connection "
-"and transaction status."
+"If set to True, the Query Tool will monitor and display the connection and "
+"transaction status."
 msgstr ""
 "Pokud je nastaveno na hodnotu Ano, Dotazovací nástroj bude sledovat a "
 "zobrazit stav připojení a transakce."
@@ -18143,8 +18124,8 @@ msgstr "Zobrazit oznámení o úspěšném dokončení dotazu"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:447
 msgid ""
-"If set to True, the Query Tool will show notifications on successful "
-"query execution."
+"If set to True, the Query Tool will show notifications on successful query "
+"execution."
 msgstr ""
 "Pokud je nastaveno na hodnotu Ano, dotazovací nástroj zobrazí oznámení o "
 "úspěšném provedení dotazu."
@@ -18167,11 +18148,11 @@ msgstr "Vymazat dotaz"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:564
 msgid "Download results"
-msgstr ""
+msgstr "Stáhnout výsledky"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:618
 msgid "Switch panel"
-msgstr ""
+msgstr "Přepnout kartu"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:636
 msgid "Open file"
@@ -18212,11 +18193,10 @@ msgstr "Automatické dokončení"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:826
 msgid ""
-"If set to True, Keywords will be displayed in upper case for auto "
-"completion."
+"If set to True, Keywords will be displayed in upper case for auto completion."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, budou klíčová slova zobrazována "
-"velkými písmeny pro automatické dokončení."
+"Pokud je nastaveno na hodnotu Ano, budou klíčová slova zobrazována velkými "
+"písmeny pro automatické dokončení."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:832
 msgid "Autocomplete on key press"
@@ -18224,26 +18204,26 @@ msgstr "Automatické dokončování po stisknutí klávesy"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:834
 msgid ""
-"If set to True, autocomplete will be available on key press along with "
-"CTRL/CMD + Space. If set to False, autocomplete is only activated when "
-"CTRL/CMD + Space is pressed."
+"If set to True, autocomplete will be available on key press along with CTRL/"
+"CMD + Space. If set to False, autocomplete is only activated when CTRL/CMD + "
+"Space is pressed."
 msgstr ""
-"Pokud je nastaveno na hodnotu Ano, bude automatické dokončování dostupné "
-"po stisknutí klávesy nebo stisknutím Ctrl/Cmd + mezerník. Pokud je "
-"nastaveno na hodnotu Ne, automatické dokončování se aktivuje pouze po "
-"stisknutí Ctrl/Cmd + mezerník."
+"Pokud je nastaveno na hodnotu Ano, bude automatické dokončování dostupné po "
+"stisknutí klávesy nebo stisknutím Ctrl/Cmd + mezerník. Pokud je nastaveno na "
+"hodnotu Ne, automatické dokončování se aktivuje pouze po stisknutí Ctrl/Cmd "
+"+ mezerník."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:917
 msgid "Go to line/column"
-msgstr ""
+msgstr "Přejít na řádek/sloupec"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:936
 msgid "Toggle comment"
-msgstr ""
+msgstr "Zakomentovat/Odkomentovat"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:974
 msgid "Auto complete"
-msgstr ""
+msgstr "Automatické dokončení"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:992
 msgid "Keyword case"
@@ -18251,7 +18231,8 @@ msgstr "Velikost klíčového slova"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:998
 msgid "Convert keywords to upper, lower, or preserve casing."
-msgstr "Převede klíčová slova na velká nebo malá písmena nebo zachová velikost."
+msgstr ""
+"Převede klíčová slova na velká nebo malá písmena nebo zachová velikost."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1004
 msgid "Identifier case"
@@ -18259,7 +18240,8 @@ msgstr "Velikost identifikátoru"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1010
 msgid "Convert identifiers to upper, lower, or preserve casing."
-msgstr "Převede identifikátory na velká nebo malá písmena nebo zachová velikost."
+msgstr ""
+"Převede identifikátory na velká nebo malá písmena nebo zachová velikost."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1016
 msgid "Function case"
@@ -18293,7 +18275,7 @@ msgstr "Velikost tabulátoru"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1053
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
-msgstr "Počet mezer na kartu. Minimálně 2, maximálně 8."
+msgstr "Počet mezer na tabulátor. Minimálně 2, maximálně 8."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1059
 msgid "Use spaces?"
@@ -18301,11 +18283,11 @@ msgstr "Použít mezery"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1062
 msgid ""
-"Specifies whether or not to insert spaces instead of tabs when the tab "
-"key or auto-indent are used."
+"Specifies whether or not to insert spaces instead of tabs when the tab key "
+"or auto-indent are used."
 msgstr ""
-"Určuje, zda se mají při použití klávesy tabulátoru nebo automatické "
-"odsazení vložit mezery místo tabulátorů."
+"Určuje, zda se mají při použití klávesy tabulátoru nebo automatické odsazení "
+"vložit mezery místo tabulátorů."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1069
 msgid "Auto-indent new line?"
@@ -18328,8 +18310,8 @@ msgid ""
 "maximum number of characters in parenthesized expressions to be kept on "
 "single line."
 msgstr ""
-"Maximální počet znaků ve výrazech v závorkách, které mají být zachovány "
-"na jednom řádku."
+"Maximální počet znaků ve výrazech v závorkách, které mají být zachovány na "
+"jednom řádku."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1089
 msgid "Logical operator new line"
@@ -18345,11 +18327,10 @@ msgstr "Za"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1094
 msgid ""
-"Decides newline placement before or after logical operators (AND, OR, "
-"XOR)."
+"Decides newline placement before or after logical operators (AND, OR, XOR)."
 msgstr ""
-"Rozhoduje o umístění nového řádku před nebo za logické operátory (AND, "
-"OR, XOR)."
+"Rozhoduje o umístění nového řádku před nebo za logické operátory (AND, OR, "
+"XOR)."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1101
 msgid "Lines between queries"
@@ -18360,8 +18341,8 @@ msgid ""
 "Decides how many empty lines to leave between SQL statements. If zero it "
 "puts no new line."
 msgstr ""
-"Rozhoduje, kolik prázdných řádků ponechat mezi příkazy SQL. Pokud je "
-"nula, nevloží žádný nový řádek."
+"Rozhoduje, kolik prázdných řádků ponechat mezi příkazy SQL. Pokud je nula, "
+"nevloží žádný nový řádek."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1113
 msgid "New line before semicolon?"
@@ -18377,41 +18358,41 @@ msgstr "Limit řádků"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:1124
 msgid ""
-"This setting specifies the maximum number of rows that will be plotted on"
-" a chart. Increasing this limit may impact performance if charts are "
-"plotted with very high numbers of rows."
+"This setting specifies the maximum number of rows that will be plotted on a "
+"chart. Increasing this limit may impact performance if charts are plotted "
+"with very high numbers of rows."
 msgstr ""
-"Toto nastavení určuje maximální počet řádků, které budou vykresleny v "
-"grafu. Pokud jsou grafy vykreslovány s velmi vysokým počtem řádků, může "
-"zvýšení tohoto limitu ovlivnit výkon."
+"Toto nastavení určuje maximální počet řádků, které budou vykresleny v grafu. "
+"Pokud jsou grafy vykreslovány s velmi vysokým počtem řádků, může zvýšení "
+"tohoto limitu ovlivnit výkon."
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:51
 msgid "Manage Server"
-msgstr ""
+msgstr "Správa serveru"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:71
 msgid "Backup Tool (including server and globals)"
-msgstr ""
+msgstr "Zálohovací nástroj (včetně serveru a globálních nastavení)"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:76
 msgid "Restore Tool"
-msgstr ""
+msgstr "Obnovovací nástroj"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:81
 msgid "Import/Export Data"
-msgstr ""
+msgstr "Import/Export dat"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:91
 msgid "Search Objects"
-msgstr ""
+msgstr "Hledání objektů"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:116
 msgid "Add Folder"
-msgstr ""
+msgstr "Přidat složku"
 
 #: pgadmin/tools/user_management/PgAdminPermissions.py:121
 msgid "Delete File/Folder"
-msgstr ""
+msgstr "Odstranit soubor/složku"
 
 #: pgadmin/tools/user_management/__init__.py:55
 msgid "Users"
@@ -18441,8 +18422,8 @@ msgid ""
 "To proceed, ensure that all users assigned the '{0}' role have been "
 "reassigned."
 msgstr ""
-"Chcete-li pokračovat, ujistěte se, že všem uživatelům přiřazená role "
-"'{0}' byla znovu přidělena."
+"Chcete-li pokračovat, ujistěte se, že všem uživatelům přiřazená role '{0}' "
+"byla znovu přidělena."
 
 #: pgadmin/tools/user_management/__init__.py:568
 msgid "Role name must be unique."
@@ -18450,7 +18431,8 @@ msgstr "Název role musí být unikátní."
 
 #: pgadmin/tools/user_management/__init__.py:599
 msgid "User email/username must be unique for an authentication source."
-msgstr "E-mail/uživatelské jméno uživatele musí být unikátní pro zdroj ověřování."
+msgstr ""
+"E-mail/uživatelské jméno uživatele musí být unikátní pro zdroj ověřování."
 
 #: pgadmin/tools/user_management/__init__.py:615
 #, python-brace-format
@@ -18653,19 +18635,22 @@ msgid "User Management"
 msgstr "Správa uživatelů"
 
 #: pgadmin/utils/__init__.py:341
-msgid "Utility file not found. Please correct the Binary Path in the Preferences"
-msgstr ""
+msgid ""
+"Utility file not found. Please correct the Binary Path in the Preferences"
+msgstr "Soubor obslužného programu nebyl nalezen. Opravte cestu v Nastavení."
 
 #: pgadmin/utils/__init__.py:347
 msgid ""
-"Please correct the Binary Path in the Preferences. pgAdmin storage "
-"directory can not be a utility binary directory."
+"Please correct the Binary Path in the Preferences. pgAdmin storage directory "
+"can not be a utility binary directory."
 msgstr ""
+"Opravte cestu v Nastavení. Adresář úložiště pgAdmin nemůže být adresářem s "
+"binárními soubory utility."
 
 #: pgadmin/utils/__init__.py:352
 #, python-format
 msgid "'%s' file not found. Please correct the Binary Path in the Preferences"
-msgstr ""
+msgstr "Soubor '%s' nebyl nalezen. Opravte cestu v Nastavení"
 
 #: pgadmin/utils/__init__.py:575
 #, python-format
@@ -18814,9 +18799,11 @@ msgstr "PostgreSQL 17"
 
 #: pgadmin/utils/constants.py:121
 msgid ""
-"Unable to find a dll needed by the utility. Ensure .dll files needed by "
-"the utility are in the same folder as your executable."
+"Unable to find a dll needed by the utility. Ensure .dll files needed by the "
+"utility are in the same folder as your executable."
 msgstr ""
+"Nelze najít knihovnu DLL potřebnou pro daný nástroj. Ujistěte se, že soubory "
+"DLL potřebné pro daný nástroj jsou ve stejné složce jako spustitelný soubor."
 
 #: pgadmin/utils/constants.py:127
 #, python-format
@@ -18825,11 +18812,11 @@ msgstr "Zadané ID uživatele (%s) nebylo nalezeno."
 
 #: pgadmin/utils/constants.py:136
 msgid ""
-"Access denied: You’re having limited access. You’re not allowed to "
-"Rename, Delete or Create any files/folders"
+"Access denied: You’re having limited access. You’re not allowed to Rename, "
+"Delete or Create any files/folders"
 msgstr ""
-"Přístup odepřen: Máte omezený přístup. Nemáte povoleno přejmenovávat, "
-"mazat nebo vytvářet žádné soubory/složky"
+"Přístup odepřen: Máte omezený přístup. Nemáte povoleno přejmenovávat, mazat "
+"nebo vytvářet žádné soubory/složky"
 
 #: pgadmin/utils/constants.py:159
 msgid "Could not find the specified server."
@@ -18838,11 +18825,11 @@ msgstr "Zadaný server se nepodařilo najít."
 #: pgadmin/utils/exception.py:70
 #, python-brace-format
 msgid ""
-"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
-"the database server."
+"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to the "
+"database server."
 msgstr ""
-"Připojení k tunelu SSH pro hostitele '{0}' bylo ztraceno. Znovu se "
-"připojte k databázovému serveru."
+"Připojení k tunelu SSH pro hostitele '{0}' bylo ztraceno. Znovu se připojte "
+"k databázovému serveru."
 
 #: pgadmin/utils/heartbeat.py:35
 msgid "Manager not found. Stopped Heartbeat logging."
@@ -18909,12 +18896,12 @@ msgstr ""
 #: pgadmin/utils/driver/psycopg3/connection.py:743
 #, python-brace-format
 msgid ""
-"Failed to create cursor for psycopg3 connection with error message for "
-"the server#{1}:{2}:\n"
+"Failed to create cursor for psycopg3 connection with error message for the "
+"server#{1}:{2}:\n"
 "{0}"
 msgstr ""
-"Nepodařilo se vytvořit kurzor pro připojení psycopg3 s chybovou zprávou "
-"pro server#{1}:{2}:\n"
+"Nepodařilo se vytvořit kurzor pro připojení psycopg3 s chybovou zprávou pro "
+"server#{1}:{2}:\n"
 "{0}"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:755
@@ -18954,18 +18941,18 @@ msgstr "Není připojeno k databázovému serveru."
 #: pgadmin/utils/driver/psycopg3/connection.py:1669
 #, python-brace-format
 msgid ""
-"Asynchronous notification \"{0}\" with payload \"{1}\" received from "
-"server process with PID {2}\n"
+"Asynchronous notification \"{0}\" with payload \"{1}\" received from server "
+"process with PID {2}\n"
 msgstr ""
-"Asynchronní oznámení \"{0}\" s daty \"{1}\" bylo přijato z procesu "
-"serveru s PID {2}\n"
+"Asynchronní oznámení \"{0}\" s daty \"{1}\" bylo přijato z procesu serveru s "
+"PID {2}\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1675
 #, python-brace-format
 msgid ""
-"Asynchronous notification \"{0}\" received from server process with PID "
-"{1}\n"
-msgstr "Asynchronní oznámení \"{0}\" bylo přijato z procesu serveru s PID {1}\n"
+"Asynchronous notification \"{0}\" received from server process with PID {1}\n"
+msgstr ""
+"Asynchronní oznámení \"{0}\" bylo přijato z procesu serveru s PID {1}\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1712
 msgid "ERROR:  "
@@ -19016,98 +19003,3 @@ msgid ""
 msgstr ""
 "Nepodařilo se vytvořit tunel SSH.\n"
 "Chyba: {0}"
-
-#~ msgid ""
-#~ "Enter the directory in which the "
-#~ "psql, pg_dump, pg_dumpall, and pg_restore "
-#~ "utilities can be found for the "
-#~ "corresponding database server version.  The"
-#~ " default path will be used for "
-#~ "server versions that do not have a"
-#~ "  path specified."
-#~ msgstr ""
-#~ "Zadejte adresář, ve kterém lze nalézt"
-#~ " obslužné programy psql, pg_dump, "
-#~ "pg_dumpall a pg_restore pro odpovídající "
-#~ "verzi databázového serveru. Výchozí cesta "
-#~ "bude použita pro verze serveru, které"
-#~ " nemají zadanou cestu."
-
-#~ msgid "Please configure the PostgreSQL Binary Path in the Preferences dialog."
-#~ msgstr "V Nastavení nastavte cestu k PostgreSQL."
-
-#~ msgid ""
-#~ "Please configure the EDB Advanced Server"
-#~ " Binary Path in the Preferences "
-#~ "dialog."
-#~ msgstr "V Nastavení nastavte cestu k EDB Advanced Server."
-
-#~ msgid ""
-#~ "%s objects are disabled in the "
-#~ "browser. You can enable them in "
-#~ "the <a id=\"prefdlgid\" class=\"pref-"
-#~ "dialog-link\">preferences dialog</a>."
-#~ msgstr ""
-#~ "Objekty %s jsou v prohlížeči zakázány."
-#~ " Můžete je povolit v <a "
-#~ "id=\"prefdlgid\" class=\"pref-dialog-"
-#~ "link\">dialogovém okně Nastavení</a>."
-
-#~ msgid "Maximum number of characters to display in the data preview."
-#~ msgstr "Maximální počet znaků, které se mají zobrazit v náhledu dat."
-
-#~ msgid "Download Results"
-#~ msgstr "Stáhnout výsledky"
-
-#~ msgid "Register/remove server"
-#~ msgstr "Registrovat/odstranit server"
-
-#~ msgid "PSQL tool"
-#~ msgstr "PSQL nástroj"
-
-#~ msgid "Backup tool (including server and globals)"
-#~ msgstr "Zálohovací nástroj (včetně serveru a globálních nastavení)"
-
-#~ msgid "Restore tool"
-#~ msgstr "Obnovovací nástroj"
-
-#~ msgid "Import/export data"
-#~ msgstr "Import/export dat"
-
-#~ msgid "Import/export servers"
-#~ msgstr "Import/export serverů"
-
-#~ msgid "Schema diff"
-#~ msgstr "Porovnání schémat"
-
-#~ msgid "Grant wizard"
-#~ msgstr "Průvodce oprávněními"
-
-#~ msgid "Add folder"
-#~ msgstr "Přidat složku"
-
-#~ msgid "Delete file/folder"
-#~ msgstr "Odstranit soubor/složku"
-
-#~ msgid ""
-#~ "Utility file not found. Please correct"
-#~ " the Binary Path in the Preferences"
-#~ " dialog"
-#~ msgstr "Soubor obslužného programu nebyl nalezen. Opravte cestu v Nastavení."
-
-#~ msgid ""
-#~ "Please correct the Binary Path in "
-#~ "the Preferences dialog. pgAdmin storage "
-#~ "directory can not be a utility "
-#~ "binary directory."
-#~ msgstr ""
-#~ "Opravte cestu v dialogovém okně "
-#~ "Nastavení. Adresář pgAdmin nemůže být "
-#~ "binárním adresářem obslužného programu."
-
-#~ msgid ""
-#~ "'%s' file not found. Please correct "
-#~ "the Binary Path in the Preferences "
-#~ "dialog"
-#~ msgstr "Soubor '%s' nebyl nalezen. Opravte cestu v dialogovém okně Nastavení"
-
