@@ -44,4 +44,5 @@ Bug fixes
   | `Issue #8803 <https://github.com/pgadmin-org/pgadmin4/issues/8803>`_ -  Ensure that Keyboard shortcuts for save and download actions should not called when their respective UI buttons are disabled.
   | `Issue #8808 <https://github.com/pgadmin-org/pgadmin4/issues/8808>`_ -  Fixed an issue where data export using a query opened the wrong dialog type.
   | `Issue #8809 <https://github.com/pgadmin-org/pgadmin4/issues/8809>`_ -  Fixed an issue where data export using a query failed when the query contained a newline character.
+  | `Issue #8830 <https://github.com/pgadmin-org/pgadmin4/issues/8830>`_ -  Fixed a UI layout issue that occurred after upgrading from pgAdmin v9.2 when all tabs had been closed prior to the upgrade.
   | `Issue #8834 <https://github.com/pgadmin-org/pgadmin4/issues/8834>`_ -  Fixed an issue where the Columns node was not visible under Catalog Objects.
