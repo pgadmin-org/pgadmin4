@@ -346,7 +346,7 @@ def get_application_state():
                 connection_info['open_file_name']):
             file_path = get_complete_file_path(
                 connection_info['open_file_name'])
-            file_deleted = False if os.path.exists(file_path) else True
+            file_deleted = False if file_path else True
             connection_info['file_deleted'] = file_deleted
 
             if (not file_deleted and connection_info['is_editor_dirty'] and
