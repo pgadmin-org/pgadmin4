@@ -224,14 +224,17 @@ export default class Psql {
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
               { params.error ?
-                <ToolErrorView 
+                <ToolErrorView
                   error={params.error}
                   panelId={`${BROWSER_PANELS.PSQL_TOOL}_${params.trans_id}`}
                   panelDocker={panelDocker}
                 /> :
-                <PsqlComponent 
-                  params={params} 
-                  pgAdmin={pgAdmin} />
+                <PsqlComponent
+                  params={params}
+                  pgAdmin={pgAdmin}
+                  panelId={`${BROWSER_PANELS.PSQL_TOOL}_${params.trans_id}`}
+                  panelDocker={panelDocker}
+                />
               }
             </ModalProvider>
           </ApplicationStateProvider>
