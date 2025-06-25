@@ -737,17 +737,17 @@ def set_master_password():
                     if not isinstance(e, NoKeyringError):
                         delete_local_storage_master_key()
 
-                    # Delete saved password encrypted with kecyhain master key
-                    from pgadmin.browser.server_groups.servers.utils \
-                        import remove_saved_passwords, update_session_manager
-                    remove_saved_passwords(current_user.id)
-                    update_session_manager(current_user.id)
-
-                return form_master_password_response(
-                    existing=False,
-                    present=True,
-                    errmsg=errmsg,
-                    keyring_name=keyring_name)
+                    # Delete saved password encrypted with keychain master key
+                #     from pgadmin.browser.server_groups.servers.utils \
+                #         import remove_saved_passwords, update_session_manager
+                #     remove_saved_passwords(current_user.id)
+                #     update_session_manager(current_user.id)
+                #
+                # return form_master_password_response(
+                #     existing=False,
+                #     present=True,
+                #     errmsg=errmsg,
+                #     keyring_name=keyring_name)
     else:
         # If the master password is required and the master password hook
         # is specified then try to retrieve the encryption key and update data.
