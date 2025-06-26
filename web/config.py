@@ -319,6 +319,33 @@ MAX_SESSION_IDLE_TIME = 60
 CONFIG_DATABASE_URI = ''
 
 ##########################################################################
+# add default server to all users 
+# exemple:
+# postgresql_servers = [
+#     {
+#         "name": "Serveur A",
+#         "host": "localhost",
+#         "port": 5432,
+#         "username": "admin",
+#         "password": "",
+#         "maintenance_db": "postgres",
+#         "comment": "ajout auto"
+#     },
+#     {
+#         "name": "Serveur B",
+#         "host": "db2",
+#         "port": 5433,
+#         "username": "admin",
+#         "password": "secret",
+#         "maintenance_db": "postgres",
+#         "comment": ""
+#     }
+# ]
+##########################################################################
+
+postgresql_servers = []
+
+##########################################################################
 # User account and settings storage
 ##########################################################################
 
