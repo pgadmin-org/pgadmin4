@@ -122,7 +122,7 @@ export default class Psql {
         },
         database: {
           _id: connectionInfo.did,
-          label: connectionInfo.db
+          _label: connectionInfo.db
         },
         schema: {
           _id: connectionInfo.scid || null,
@@ -161,7 +161,7 @@ export default class Psql {
     const transId = getRandomInt(1, 9999999);
     // Set psql tab title as per prefrences setting.
     let title_data = {
-      'database': parentData.database ? _.unescape(parentData.database.label) : 'postgres' ,
+      'database': parentData.database ? _.unescape(parentData.database._label) : 'postgres' ,
       'username': parentData.server.user.name,
       'server': parentData.server.label,
       'type': 'psql_tool',

@@ -329,7 +329,7 @@ Use the fields on the *User Interface* panel to set the user interface related p
   format. If the application is closed unexpectedly, the tab is accidentally closed,
   or the page is refreshed, the saved state will be automatically restored for
   each respective tool. **Note:** Saving the application state will not preserve data for tool tabs opened in
-  separate browser tabs when running in server mode.
+  separate browser tabs when running in server mode.Any tool referring ad-hoc server connection will not be restored.
 
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,

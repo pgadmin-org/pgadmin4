@@ -30,7 +30,7 @@ import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanel
 import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
-import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
+import { connectServer, connectServerModal } from '../connectServer';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -190,47 +190,6 @@ export class ResultSetUtils {
       );
     }
   }
-  connectServerModal (modalData, connectCallback, cancelCallback) {
-    this.queryToolCtx.modal.showModal(gettext('Connect to server'), (closeModal)=>{
-      return (
-        <ConnectServerContent
-          closeModal={()=>{
-            cancelCallback?.();
-            closeModal();
-          }}
-          data={modalData}
-          onOK={(formData)=>{
-            connectCallback(Object.fromEntries(formData));
-            closeModal();
-          }}
-        />
-      );
-    }, {
-      onClose: cancelCallback,
-    });
-  };
-  async connectServer (sid, user, formData, connectCallback) {
-    try {
-      let {data: respData} = await this.api({
-        method: 'POST',
-        url: url_for('sqleditor.connect_server', {
-          'sid': sid,
-          ...(user ? {
-            'usr': user,
-          }:{}),
-        }),
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: formData
-      });
-      connectCallback?.(respData.data);
-    } catch (error) {
-      this.connectServerModal(error.response?.data?.result, async (data)=>{
-        this.connectServer(sid, user, data, connectCallback);
-      }, ()=>{
-        /*This is intentional (SonarQube)*/
-      });
-    }
-  };
 
   async startExecution(query, explainObject, macroSQL, onIncorrectSQL, flags={
     isQueryTool: true, external: false, reconnect: false, executeCursor: false, refreshData: false,
@@ -294,8 +253,8 @@ export class ResultSetUtils {
       }
     } catch(e) {
       if(e?.response?.status == 428){
-        this.connectServerModal(e.response?.data?.result, async (passwordData)=>{
-          await this.connectServer(this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
+        connectServerModal(this.queryToolCtx.modal, e.response?.data?.result, async (passwordData)=>{
+          await connectServer(this.api, this.queryToolCtx.modal, this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
             await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, true);
           });
         }, ()=>{
@@ -304,7 +263,7 @@ export class ResultSetUtils {
       }else if (e?.response?.data.info == 'CRYPTKEY_MISSING'){
         let pgBrowser = window.pgAdmin.Browser;
         pgBrowser.set_master_password('', async (passwordData)=>{
-          await this.connectServer(this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
+          await connectServer(this.api, this.queryToolCtx.modal, this.queryToolCtx.params.sid, this.queryToolCtx.params.user, passwordData, async ()=>{
             await this.eventBus.fireEvent(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, '', explainObject, macroSQL, flags.executeCursor, true);
           });
         }, ()=> {
@@ -463,11 +422,14 @@ export class ResultSetUtils {
         if (error.response?.status === 428) {
           // Handle 428: Show password dialog.
           return new Promise((resolve, reject) => {
-            this.connectServerModal(
+            connectServerModal(
+              this.queryToolCtx.modal,
               error.response?.data?.result,
               async (formData) => {
                 try {
-                  await this.connectServer(
+                  await connectServer(
+                    this.api, 
+                    this.queryToolCtx.modal,
                     this.queryToolCtx.params.sid,
                     this.queryToolCtx.params.user,
                     formData,

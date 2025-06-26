@@ -254,6 +254,7 @@ export default class SQLEditor {
                   error={params.error}
                   panelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`}
                   panelDocker={panelDocker}
+                  toolDataId={params.toolDataId}
                 /> :
                 <QueryToolComponent params={params} 
                   pgWindow={pgWindow} 

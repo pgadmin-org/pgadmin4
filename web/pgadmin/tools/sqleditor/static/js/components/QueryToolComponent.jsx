@@ -35,9 +35,9 @@ import * as Kerberos from 'pgadmin.authenticate.kerberos';
 import PropTypes from 'prop-types';
 import { retrieveNodeName } from '../show_view_data';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
-import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
+import { connectServer, connectServerModal } from './connectServer';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -372,8 +372,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, kberr);
             });
         } else if(error?.response?.status == 428) {
-          connectServerModal(error.response?.data?.result, (passwordData)=>{
-            initializeQueryTool(passwordData.password);
+          connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
+            await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
+              initializeQueryTool();
+            });
           }, ()=>{
             setQtStatePartial({
               connected: false,
@@ -533,7 +535,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }).then(()=>{
         initializeQueryTool();
       }).catch((err)=>{
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
       pgAdmin.Browser.notifier.error(error.response.data.errormsg);
@@ -617,25 +619,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE);
   }, [qtState.params.title]);
 
-  const connectServerModal = async (modalData, connectCallback, cancelCallback) => {
-    modal.showModal(gettext('Connect to server'), (closeModal)=>{
-      return (
-        <ConnectServerContent
-          closeModal={()=>{
-            cancelCallback?.();
-            closeModal();
-          }}
-          data={modalData}
-          onOK={(formData)=>{
-            connectCallback(Object.fromEntries(formData));
-            closeModal();
-          }}
-        />
-      );
-    }, {
-      onClose: cancelCallback,
-    });
-  };
 
   const updateQueryToolConnection = (connectionData, isNew=false)=>{
     let currSelectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
@@ -707,7 +690,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         })
         .catch((error)=>{
           if(error?.response?.status == 428) {
-            connectServerModal(error.response?.data?.result, (passwordData)=>{
+            connectServerModal(modal, error.response?.data?.result, (passwordData)=>{
               resolve(
                 updateQueryToolConnection({
                   ...connectionData,
