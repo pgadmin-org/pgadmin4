@@ -42,7 +42,7 @@ export const STATUS = {
 function ConnectionStatusIcon({status}) {
   if(status == STATUS.CONNECTING) {
     return <CircularProgress style={{height: '18px', width: '18px'}} />;
-  } else if(status == STATUS.CONNECTED || status == STATUS.FAILED) {
+  } else if(status == STATUS.CONNECTED) {
     return <ConnectedIcon />;
   } else {
     return <DisconnectedIcon />;

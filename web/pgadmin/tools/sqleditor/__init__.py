@@ -361,7 +361,7 @@ def panel(trans_id):
             params=json.dumps(params),
         )
     else:
-        params['error'] = 'Server did not find.'
+        params['error'] = 'The server was not found.'
         return render_template(
             "sqleditor/index.html",
             title=None,

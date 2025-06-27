@@ -96,14 +96,19 @@ export default class ERDModule {
       
       parentData = {
         server_group: {
-          _id: connectionInfo.sgid || 0,
-          server_type: connectionInfo.server_type
+          _id: connectionInfo.sgid || 0
         },
         server: {
           _id: connectionInfo.sid,
+          server_type: connectionInfo.server_type,
+          label: connectionInfo.server_name,
+          user: {
+            name: connectionInfo.user
+          }
         },
         database: {
           _id: connectionInfo.did,
+          label: connectionInfo.db_name
         },
         schema: {
           _id: connectionInfo.scid || null,
@@ -142,7 +147,7 @@ export default class ERDModule {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.ERD_TOOL}_${transId}`,
       panelUrl,
-      {sql_id: toolDataId, title: _.escape(panelTitle)},
+      {sql_id: toolDataId, title: _.escape(panelTitle), db_name:parentData.database.label, server_name: parentData.server.label, user: parentData.server.user.name, server_type: parentData.server.server_type},
       {title: 'Untitled', icon: 'fa fa-sitemap'},
       Boolean(open_new_tab?.includes('erd_tool'))
     );

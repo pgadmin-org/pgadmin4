@@ -39,6 +39,7 @@ import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
+import { connectServerModal, connectServer } from '../../../../../sqleditor/static/js/components/connectServer';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -348,10 +349,12 @@ export default class ERDTool extends React.Component {
     });
 
     let done = await this.initConnection();
-    if(!done) return;
+    if(!done && !this.props.params.sql_id) return;
 
-    done = await this.loadPrequisiteData();
-    if(!done) return;
+    if(done){
+      done = await this.loadPrequisiteData();
+      if(!done && !this.props.params.sql_id) return;
+    }
 
 
     if(this.props.params.sql_id){
@@ -361,7 +364,7 @@ export default class ERDTool extends React.Component {
         this.diagram.clearSelection();
         this.registerModelEvents();
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, sqlValue);
       }
     }
     else if(this.props.params.gen) {
@@ -597,6 +600,7 @@ export default class ERDTool extends React.Component {
         current_file: fileName,
         dirty: false,
       });
+      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, res.data);
       this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
       this.setTitle(fileName);
       this.diagram.deserialize(res.data);
@@ -857,7 +861,12 @@ export default class ERDTool extends React.Component {
     });
 
     try {
-      let response = await this.apiObj.post(initUrl);
+      let response = await this.apiObj.post(
+        initUrl, 
+        {server_name: this.props.params.server_name,
+          server_type : this.props.params.server_type,
+          user: this.props.params.user,
+          db_name: this.props.params.db_name});
       this.setState({
         conn_status: CONNECT_STATUS.CONNECTED,
         server_version: response.data.data.serverVersion,
@@ -866,7 +875,16 @@ export default class ERDTool extends React.Component {
       return true;
     } catch (error) {
       this.setState({conn_status: CONNECT_STATUS.FAILED});
-      this.handleAxiosCatch(error);
+
+      connectServerModal(this.context, error.response?.data?.result, async (passwordData)=>{
+        await connectServer(this.apiObj, this.context, this.props.params.sid, this.props.params.sid, passwordData, async ()=>{
+          await this.initConnection();
+          await this.loadPrequisiteData();
+        });
+      }, ()=>{
+        this.setState({conn_status: CONNECT_STATUS.FAILED});
+      });
+
       return false;
     } finally {
       this.setLoading(null);
@@ -925,6 +943,7 @@ export default class ERDTool extends React.Component {
     }
     setTimeout(()=>{
       this.onAutoDistribute();
+      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
     }, 250);
   }
 
@@ -975,6 +994,9 @@ ERDTool.propTypes = {
     fgcolor: PropTypes.string,
     gen: PropTypes.bool.isRequired,
     sql_id: PropTypes.string,
+    server_name: PropTypes.string,
+    user: PropTypes.string,
+    db_name: PropTypes.string,
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
