@@ -323,13 +323,13 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       // this function creates a key object from the shortcut preference
       let key = {
         keyCode: pref.key.key_code,
-        metaKey: pref.ctrl_is_meta,
+        metaKey: false,
         ctrlKey: pref.control,
         shiftKey: pref.shift,
         altKey: pref.alt,
       };
-      if(isMac()) {
-        key.metaKey = true;
+      if(isMac() && pref.ctrl_is_meta) {
+        key.metaKey = pref.control;
         key.ctrlKey = false;
       }
       return key;
