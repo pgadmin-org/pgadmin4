@@ -8379,10 +8379,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hotkeys-js@npm:^3.13.3":
-  version: 3.13.12
-  resolution: "hotkeys-js@npm:3.13.12"
-  checksum: 10c0/e965e4c244ea328850decea513f42518586e9a891a31d5a6cd784c7a3d758f822a052af63f9edae6007f5be1c86c6a638d5b122a7794b810e5298f9753f8c7a2
+"hotkeys-js@npm:^3.13.14":
+  version: 3.13.14
+  resolution: "hotkeys-js@npm:3.13.14"
+  checksum: 10c0/d610ab86f1ce565cae450f951875927b1e2dd4e69f823b6b0e1c4f6f3d040509cf04ee60ed350b05ee909a53ffa83a58913ab0f7a40c1dd533f6f2249f29fd46
   languageName: node
   linkType: hard
 
@@ -13736,7 +13736,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^4.1.4"
     exports-loader: "npm:^5.0.0"
     globals: "npm:^16.1.0"
-    hotkeys-js: "npm:^3.13.3"
+    hotkeys-js: "npm:^3.13.14"
     html-react-parser: "npm:^5.2.0"
     html-to-image: "npm:1.11.11"
     image-minimizer-webpack-plugin: "npm:^4.0.2"
