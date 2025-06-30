@@ -580,6 +580,10 @@ export class Tree {
   onNodeCopy(copyCallback) {
     this.copyHandler = copyCallback;
   }
+
+  toggleItemLoader(item, show) {
+    this.tree.toggleItemLoader(item, show);
+  }
 }
 
 function mapType(type, idx) {
