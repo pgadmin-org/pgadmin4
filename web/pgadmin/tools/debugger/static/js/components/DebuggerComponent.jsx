@@ -30,6 +30,7 @@ import { Results } from './Results';
 import { LocalVariablesAndParams } from './LocalVariablesAndParams';
 import DebuggerArgumentComponent from './DebuggerArgumentComponent';
 import usePreferences from '../../../../../preferences/static/js/store';
+import { ApplicationStateProvider } from '../../../../../settings/static/ApplicationStateProvider';
 
 export const DebuggerContext = React.createContext();
 export const DebuggerEventsContext = React.createContext();
@@ -1131,22 +1132,24 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
   };
 
   return (
-    <DebuggerContext.Provider value={DebuggerContextValue}>
-      <DebuggerEventsContext.Provider value={eventBus.current}>
-        <Loader message={loaderText} />
-        <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
-          <ToolBar
-            containerRef={containerRef}
-          />
-          <Layout
-            getLayoutInstance={(obj) => docker.current = obj}
-            defaultLayout={defaultLayout}
-            layoutId="Debugger/Layout"
-            savedLayout={savedLayout}
-          />
-        </Box>
-      </DebuggerEventsContext.Provider>
-    </DebuggerContext.Provider>
+    <ApplicationStateProvider>
+      <DebuggerContext.Provider value={DebuggerContextValue}>
+        <DebuggerEventsContext.Provider value={eventBus.current}>
+          <Loader message={loaderText} />
+          <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+            <ToolBar
+              containerRef={containerRef}
+            />
+            <Layout
+              getLayoutInstance={(obj) => docker.current = obj}
+              defaultLayout={defaultLayout}
+              layoutId="Debugger/Layout"
+              savedLayout={savedLayout}
+            />
+          </Box>
+        </DebuggerEventsContext.Provider>
+      </DebuggerContext.Provider>
+    </ApplicationStateProvider>
   );
 }
 

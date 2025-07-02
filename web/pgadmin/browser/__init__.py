@@ -474,7 +474,18 @@ def get_shared_storage_list():
 @pgCSRFProtect.exempt
 @pga_login_required
 def utils():
-    layout = get_setting('Browser/Layout', default='')
+    layout = {
+        'Browser/Layout': get_setting('Browser/Layout', default=''),
+        'Workspace/Layout-schema_diff_workspace':
+            get_setting('Workspace/Layout-schema_diff_workspace',
+                        default=''),
+        'Workspace/Layout-query_tool_workspace':
+            get_setting('Workspace/Layout-query_tool_workspace',
+                        default=''),
+        'Workspace/Layout-psql_workspace':
+            get_setting('Workspace/Layout-psql_workspace',
+                        default='')
+    }
     snippets = []
 
     prefs = Preferences.module('paths')

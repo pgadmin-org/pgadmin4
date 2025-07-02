@@ -25,10 +25,11 @@ import { showRenameTab } from '../../Dialogs';
 import usePreferences from '../../../../preferences/static/js/store';
 import _ from 'lodash';
 import UtilityView from '../../UtilityView';
-import ToolView from '../../ToolView';
-import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
+import ToolView, { getToolTabParams } from '../../ToolView';
+import { ApplicationStateProvider, useApplicationState } from '../../../../settings/static/ApplicationStateProvider';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 
-function TabTitle({id, closable, defaultInternal}) {
+export function TabTitle({id, closable, defaultInternal}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
   const internal = layoutDocker?.find(id)?.internal ?? defaultInternal;
   const [attrs, setAttrs] = useState({
@@ -53,6 +54,7 @@ function TabTitle({id, closable, defaultInternal}) {
           title: internal.title,
           tooltip: internal.tooltip ?? internal.title,
         });
+        layoutDocker.saveLayout();
       }
     });
 
@@ -217,9 +219,9 @@ export class LayoutDocker {
     }
   }
 
-  loadLayout(savedLayout) {
+  loadLayout(savedLayout, layoutId) {
     try {
-      this.layoutObj.loadLayout(JSON.parse(savedLayout));
+      this.layoutObj.loadLayout(JSON.parse(savedLayout[layoutId]));
     } catch {
       /* Fallback to default */
       this.layoutObj.loadLayout(this.defaultLayout);
@@ -384,6 +386,30 @@ export function getDefaultGroup() {
   };
 }
 
+const saveMyCustomTab = (tab) => {
+  // 'tab' here is the full TabData object, potentially with 'title', 'content', etc.
+  // We only want to save the 'id' and any custom properties needed by loadTab.
+  const savedTab = {
+    id: tab.id,
+  };
+  if (tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
+    // Conditionally add custom properties that were part of the original TabBase
+    const originalTabParams = tab.metaData.tabParams || {};
+    // Update internal properties so, we get updated title etc.
+    const updatedTabParams = {
+      ...originalTabParams,
+      ...tab.internal
+    };
+    const updatedMetaData = {
+      ...tab.metaData,
+      tabParams: updatedTabParams,
+      restore: true,
+    };
+    savedTab.metaData = updatedMetaData;
+  }
+  return savedTab;
+};
+
 export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, ...props}) {
   const [[contextPos, contextPanelId, contextExtraMenus], setContextPos] = React.useState([null, null, null]);
   const defaultGroups = React.useMemo(()=>({
@@ -394,10 +420,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const layoutDockerObj = React.useMemo(()=>new LayoutDocker(layoutId, props.defaultLayout, resetToTabPanel, noContextGroups), []);
   const prefStore = usePreferences();
   const dynamicTabsStyleRef = useRef();
+  const { deleteToolData } = useApplicationState();
 
   useEffect(()=>{
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (panelId)=>{
       layoutDockerObj.close(panelId);
+      deleteToolData(panelId);
     });
 
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.CONTEXT, (e, id, extraMenus)=>{
@@ -466,43 +494,69 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const contextMenuItems = getTabMenuItems(contextPanelId)
     .concat(contextExtraMenus ? [{type: 'separator'}, ...contextExtraMenus] : []);
 
+
+  const flatDefaultLayout = useMemo(()=>{
+    const flat = [];
+    const flattenLayout = (box)=>{
+      box.children.forEach((child)=>{
+        if(child.children) {
+          flattenLayout(child);
+        }
+        else {
+          flat.push(...(child.tabs ?? []));
+        }
+      });
+    };
+    flattenLayout(props.defaultLayout.dockbox);
+    return flat;
+  }, [props.defaultLayout]);
+
   return (
-    <LayoutDockerContext.Provider value={layoutDockerObj}>
-      <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'} >
-        {useMemo(()=>(<DockLayout
-          style={{
-            height: '100%',
-          }}
-          ref={(obj)=>{
-            if(obj) {
-              layoutDockerObj.layoutObj = obj;
-              getLayoutInstance?.(layoutDockerObj);
-              layoutDockerObj.loadLayout(savedLayout);
-            }
-          }}
-          groups={defaultGroups}
-          onLayoutChange={(l, currentTabId, direction)=>{
-            if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {
-              layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS[direction.toUpperCase()], currentTabId);
-              layoutDockerObj.saveLayout(l);
-            } else if(direction && direction != 'update') {
-              layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS.CHANGE, currentTabId);
-              layoutDockerObj.saveLayout(l);
-            }
-          }}
-          {...props}
-        />), [])}
-      </Box>
-      <div id="layout-portal"></div>
-      <ContextMenu menuItems={contextMenuItems} position={contextPos} onClose={()=>setContextPos([null, null, null])}
-        label="Layout Context Menu" />
-      {enableToolEvents && <>
-        <UtilityView dockerObj={layoutDockerObj} />
-        <ApplicationStateProvider>
+    <ApplicationStateProvider>
+      <LayoutDockerContext.Provider value={layoutDockerObj}>
+        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'} >
+          {useMemo(()=>(<DockLayout
+            style={{
+              height: '100%',
+            }}
+            ref={(obj)=>{
+              if(obj) {
+                layoutDockerObj.layoutObj = obj;
+                getLayoutInstance?.(layoutDockerObj);
+                layoutDockerObj.loadLayout(savedLayout, layoutId);
+              }
+            }}
+            loadTab={(tab)=>{
+              const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
+              if(!tabData && tab.metaData) {
+                let toolTabParams =  getToolTabParams(tab.id, tab.metaData.toolUrl, tab.metaData.formParams, tab.metaData.tabParams, tab.metaData.restore);
+                return toolTabParams;
+              }
+              return tabData;
+            }}
+            saveTab={saveMyCustomTab}
+            groups={defaultGroups}
+            onLayoutChange={(l, currentTabId, direction)=>{
+              if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {
+                layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS[direction.toUpperCase()], currentTabId);
+                layoutDockerObj.saveLayout(l);
+              } else if(direction && direction != 'update') {
+                layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS.CHANGE, currentTabId);
+                layoutDockerObj.saveLayout(l);
+              }
+            }}
+            {...props}
+          />), [])}
+        </Box>
+        <div id="layout-portal"></div>
+        <ContextMenu menuItems={contextMenuItems} position={contextPos} onClose={()=>setContextPos([null, null, null])}
+          label="Layout Context Menu" />
+        {enableToolEvents && <>
+          <UtilityView dockerObj={layoutDockerObj} />
           <ToolView dockerObj={layoutDockerObj} />
-        </ApplicationStateProvider>
-      </>}
-    </LayoutDockerContext.Provider>
+        </>}
+      </LayoutDockerContext.Provider>
+    </ApplicationStateProvider>
   );
 }
 
@@ -512,7 +566,7 @@ Layout.propTypes = {
   noContextGroups: PropTypes.array,
   getLayoutInstance: PropTypes.func,
   layoutId: PropTypes.string,
-  savedLayout: PropTypes.string,
+  savedLayout: PropTypes.any,
   resetToTabPanel: PropTypes.string,
   enableToolEvents: PropTypes.bool,
   isLayoutVisible: PropTypes.bool

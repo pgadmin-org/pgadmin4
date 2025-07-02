@@ -162,6 +162,10 @@ export class FileManagerUtils {
     this.storage_folder = '';
   }
 
+  setModalObj(obj){
+    this.params.modal = obj;
+  }
+
   get transId() {
     return this.config.transId;
   }
@@ -386,6 +390,61 @@ export class FileManagerUtils {
       ret = ret.slice(0, ret.lastIndexOf(this.separator)+1);
     }
     return ret;
+  }
+
+  async warnFileReload (fileName, toolContent) {
+    return new Promise((resolve) => {
+      this.params.modal.confirm(
+        gettext('Reload file?'),
+        gettext('The file has been modified by another program. Do you want to reload it and lose changes made in pgAdmin?'),
+        function () {
+          resolve({
+            loadFile: true,
+            data: null,
+            fileName: fileName,
+          });
+        },
+        function () {
+          resolve({
+            loadFile: false,
+            data: toolContent,
+            fileName: fileName
+          });
+        }
+      );
+    });
+  };
+
+  async loadFile(fileName){
+    try{
+      const res =  await this.api.post(url_for('file_manager.load_file'), {
+        'file_name': decodeURI(fileName)
+      }, {transformResponse: [(data, headers) => {
+        if(headers['content-type'].includes('application/json')) {
+          return JSON.parse(data);
+        }
+        return data;
+      }]});
+      if (res && res.status === 200) {
+        return {
+          success: true,
+          data: res.data,
+          error: null,
+        };
+      } else {
+        return {
+          success: false,
+          data: null,
+          error: res.data || 'Unknown error while loading file.',
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        data: null,
+        error: err.message || err,
+      };
+    }
   }
 
 }

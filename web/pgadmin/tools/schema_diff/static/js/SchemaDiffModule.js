@@ -62,7 +62,7 @@ export default class SchemaDiff {
     }]);
   }
 
-  launchSchemaDiff(toolDataId=null) {
+  launchSchemaDiff() {
     let panelTitle = SchemaDiff.panelTitleCount > 1 ? gettext('Schema Diff - %s', SchemaDiff.panelTitleCount) : gettext('Schema Diff');
     SchemaDiff.panelTitleCount++;
     const trans_id = commonUtils.getRandomInt(1, 9999999);
@@ -80,14 +80,14 @@ export default class SchemaDiff {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.SCHEMA_DIFF_TOOL}_${trans_id}`,
       baseUrl,
-      {toolDataId: toolDataId},
+      null,
       {title: panelTitle, icon: 'pg-font-icon icon-compare', manualClose: false, renamable: true},
       Boolean(openInNewTab?.includes('schema_diff'))
     );
     return true;
   }
 
-  async load(container, trans_id, params) {
+  async load(container, trans_id) {
     pgAdmin.Browser.keyboardNavigation.init();
     await listenPreferenceBroadcast();
     const root = ReactDOM.createRoot(container);
@@ -97,7 +97,7 @@ export default class SchemaDiff {
           <ApplicationStateProvider>
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
-              <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin, params:params }}></SchemaDiffComponent>
+              <SchemaDiffComponent params={{ transId: trans_id, pgAdmin: pgWindow.pgAdmin }}></SchemaDiffComponent>
             </ModalProvider>
           </ApplicationStateProvider>
         </PgAdminProvider>
