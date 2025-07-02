@@ -15,10 +15,9 @@ result.
 
 import asyncio
 from collections import OrderedDict
-import psycopg
 from flask import g, current_app
-from psycopg import Cursor as _cursor, AsyncCursor as _async_cursor
-from typing import Any, Sequence
+from psycopg import (Cursor as _cursor, AsyncCursor as _async_cursor,
+                     AsyncServerCursor as _async_server_cursor)
 from psycopg.rows import dict_row, tuple_row
 from psycopg._encodings import py_codecs as encodings
 from .encoding import configure_driver_encodings
@@ -220,6 +219,7 @@ class AsyncDictCursor(_async_cursor):
     def __init__(self, *args, **kwargs):
         self._odt_desc = None
         _async_cursor.__init__(self, *args, row_factory=dict_row)
+        self.cursor = _async_cursor
 
     def _dict_tuple(self, tup):
         """
@@ -234,8 +234,8 @@ class AsyncDictCursor(_async_cursor):
         Transform the regular description to wrapper object, which handles
         duplicate column name.
         """
-        self._odt_desc = _async_cursor.__getattribute__(self, 'description')
-        pgresult = _async_cursor.__getattribute__(self, 'pgresult')
+        self._odt_desc = self.cursor.__getattribute__(self, 'description')
+        pgresult = self.cursor.__getattribute__(self, 'pgresult')
         desc = self._odt_desc
 
         if desc is None or len(desc) == 0:
@@ -289,21 +289,21 @@ class AsyncDictCursor(_async_cursor):
         if params is not None and len(params) == 0:
             params = None
 
-        return await _async_cursor.execute(self, query, params)
+        return await self.cursor.execute(self, query, params)
 
     def executemany(self, query, params=None):
         """
         Execute many function of regular cursor.
         """
         self._odt_desc = None
-        return _async_cursor.executemany(self, query, params)
+        return self.cursor.executemany(self, query, params)
 
     async def _close_cursor(self):
         """
          Close the cursor.
         """
 
-        await _async_cursor.close(self)
+        await self.cursor.close(self)
 
     def close_cursor(self):
         """
@@ -328,13 +328,13 @@ class AsyncDictCursor(_async_cursor):
         """
         Fetch many tuples as ordered dictionary list.
         """
-        return await _async_cursor.fetchmany(self, size)
+        return await self.cursor.fetchmany(self, size)
 
     async def _fetchall(self):
         """
         Fetch all tuples as ordered dictionary list.
         """
-        return await _async_cursor.fetchall(self)
+        return await self.cursor.fetchall(self)
 
     def fetchall(self, _tupples=False):
         """
@@ -353,7 +353,7 @@ class AsyncDictCursor(_async_cursor):
         """
         Fetch all tuples as ordered dictionary list.
         """
-        return await _async_cursor.fetchone(self)
+        return await self.cursor.fetchone(self)
 
     def fetchone(self):
         """
@@ -382,7 +382,7 @@ class AsyncDictCursor(_async_cursor):
         """
         Fetch all tuples as ordered dictionary list.
         """
-        return await _async_cursor.scroll(self, position, mode=mode)
+        return await self.cursor.scroll(self, position, mode=mode)
 
     def scroll(self, position, mode="absolute"):
         """
@@ -395,3 +395,15 @@ class AsyncDictCursor(_async_cursor):
             return self.pgresult.ntuples
         else:
             return -1
+
+
+class AsyncDictServerCursor(AsyncDictCursor, _async_server_cursor):
+
+    def __init__(self, *args, name=None, **kwargs):
+        self._odt_desc = None
+        _async_server_cursor.__init__(self, name=name, *args,
+                                      row_factory=dict_row)
+        self.cursor = _async_server_cursor
+
+    def get_rowcount(self):
+        return 1

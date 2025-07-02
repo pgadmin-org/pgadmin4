@@ -552,6 +552,10 @@ Use the fields on the *Options* panel to manage editor preferences.
   will warn upon clicking the *Execute Query* button in the query tool.  The warning
   will appear only if *Underline query at cursor?* is set to *False*.
 
+* When the *Use server cursor?* switch is set to *True*, the dataset will be fetched
+  using a server-side cursor after the query is executed.
+
+
 .. image:: images/preferences_sql_results_grid.png
     :alt: Preferences sql results grid section
     :align: center
