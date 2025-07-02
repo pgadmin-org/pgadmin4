@@ -15,8 +15,8 @@ import sys
 if sys.version_info <= (3, 9):
     import select
 
-if sys.version_info < (3, 8):
-    raise RuntimeError('This application must be run under Python 3.8 '
+if sys.version_info < (3, 9):
+    raise RuntimeError('This application must be run under Python 3.9 '
                        'or later.')
 import builtins
 import os

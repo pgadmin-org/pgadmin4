@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #5797 <https://github.com/pgadmin-org/pgadmin4/issues/5797>`_ -  Implemented a server-side cursor to enhance performance when retrieving large datasets.
 
 Housekeeping
 ************
