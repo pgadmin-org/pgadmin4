@@ -57,7 +57,8 @@ class SettingsModule(PgAdminModule):
             'settings.get_file_format_setting',
             'settings.save_application_state',
             'settings.get_application_state',
-            'settings.delete_application_state'
+            'settings.delete_application_state',
+            'settings.get_tool_data'
         ]
 
 
@@ -279,7 +280,7 @@ def save_application_state():
     tool_data = fernet.encrypt(json.dumps(data['tool_data']).encode())
     connection_info = data['connection_info'] \
         if 'connection_info' in data else None
-    if ('open_file_name' in connection_info and
+    if (connection_info and 'open_file_name' in connection_info and
             connection_info['open_file_name']):
         file_path = get_complete_file_path(connection_info['open_file_name'])
         connection_info['last_saved_file_hash'] = (
@@ -326,8 +327,7 @@ def get_last_saved_file_hash(file_path, trans_id):
 
 @blueprint.route(
     '/get_application_state',
-    methods=["GET"], endpoint='get_application_state'
-)
+    methods=["GET"], endpoint='get_application_state')
 @pga_login_required
 def get_application_state():
     """
@@ -342,11 +342,11 @@ def get_application_state():
     res = []
     for row in result:
         connection_info = row.connection_info
-        if ('open_file_name' in connection_info and
+        if (connection_info and 'open_file_name' in connection_info and
                 connection_info['open_file_name']):
             file_path = get_complete_file_path(
                 connection_info['open_file_name'])
-            file_deleted = False if os.path.exists(file_path) else True
+            file_deleted = False if file_path else True
             connection_info['file_deleted'] = file_deleted
 
             if (not file_deleted and connection_info['is_editor_dirty'] and
@@ -371,15 +371,43 @@ def get_application_state():
 
 
 @blueprint.route(
+    '/get_tool_data/<int:trans_id>',
+    methods=["GET"], endpoint='get_tool_data')
+@pga_login_required
+def get_tool_data(trans_id):
+    fernet = Fernet(current_app.config['SECRET_KEY'].encode())
+    result = db.session \
+        .query(ApplicationState) \
+        .filter(ApplicationState.uid == current_user.id,
+                ApplicationState.id == trans_id) \
+        .first()
+
+    return make_json_response(
+        data={
+            'status': True,
+            'msg': '',
+            'result': {
+                'tool_data': fernet.decrypt(result.tool_data).decode(),
+            }
+        }
+    )
+
+
+@blueprint.route(
     '/delete_application_state/',
     methods=["DELETE"], endpoint='delete_application_state')
 @pga_login_required
 def delete_application_state():
-    trans_id = None
+    status = False
+    msg = gettext('Unable to delete application state data.')
     if request.data:
         data = json.loads(request.data)
-        trans_id = int(data['panelId'].split('_')[-1])
-    status, msg = delete_tool_data(trans_id)
+        if 'trans_ids' in data:
+            for trans_id in data['trans_ids']:
+                status, msg = delete_tool_data(trans_id)
+        else:
+            trans_id = int(data['panelId'].split('_')[-1])
+            status, msg = delete_tool_data(trans_id)
     return make_json_response(
         data={
             'status': status,

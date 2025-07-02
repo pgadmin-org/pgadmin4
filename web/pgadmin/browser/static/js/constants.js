@@ -29,6 +29,7 @@ export const BROWSER_PANELS = {
   DEPENDENCIES: 'id-dependencies',
   DEPENDENTS: 'id-dependents',
   PROCESSES: 'id-processes',
+  PREFERENCES: 'id-preferences',
   PROCESS_DETAILS: 'id-process-details',
   EDIT_PROPERTIES: 'id-edit-properties',
   UTILITY_DIALOG: 'id-utility',

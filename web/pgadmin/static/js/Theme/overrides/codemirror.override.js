@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -83,6 +83,10 @@ export default function cmOverride(theme) {
         backgroundColor: editor.guttersBg,
         color: editor.guttersFg,
         borderRight: 'none',
+
+        '& .cm-lineNumbers': {
+          padding: '0px 4px',
+        },
 
         '& .cm-foldGutter': {
           padding: '0px',

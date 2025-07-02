@@ -49,11 +49,11 @@ class _Preference():
         :param label: Display name of the options/preference
         :param _type: Type for proper validation on value
         :param default: Default value
-        :param help_str: Help string to be shown in preferences dialog.
+        :param help_str: Help string to be shown in preferences.
         :param min_val: minimum value
         :param max_val: maximum value
         :param options: options (Array of list objects)
-        :param select2: select2 options (object)
+        :param select: select options (object)
         :param fields: field schema (if preference has more than one field to
                         take input from user e.g. keyboardshortcut preference)
         :param allow_blanks: Flag specify whether to allow blank value.
@@ -305,7 +305,7 @@ class Preferences():
 
         :param name: Name of the module
         :param label: Display name of the module, it will be displayed in the
-                      preferences dialog.
+                      preferences.
 
         :returns nothing
         """
@@ -506,7 +506,7 @@ class Preferences():
         :param module:   Name of the module
         :param category: Name of category
         :param name:     Name of the option
-        :param label:    Label of the option, shown in the preferences dialog.
+        :param label:    Label of the option, shown in the preferences.
         :param _type:    Type of the option.
                          Allowed type of options are as below:
                          boolean, integer, numeric, date, datetime,

@@ -9,16 +9,15 @@
 
 import os
 
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
 from regression.python_test_utils import test_gui_helper
-from regression.feature_utils.locators import NavMenuLocators
-from regression.feature_utils.tree_area_locators import TreeAreaLocators
-from selenium.webdriver import ActionChains
+from regression.feature_utils.locators import NavMenuLocators, \
+    PreferencesLocaltors
+import time
 
 
 class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
@@ -256,26 +255,18 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         wait = WebDriverWait(self.page.driver, 10)
 
+        self.page.click_tab("Preferences")
+
         # Wait till the preference dialogue box is displayed by checking the
         # visibility of Show System Object label
         wait.until(EC.presence_of_element_located(
-            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
+            (By.XPATH, PreferencesLocaltors.
+             show_system_objects_pref_label_xpath))
         )
 
-        maximize_button = self.page.find_by_css_selector(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
-
-        path = self.page.find_by_xpath(
-            NavMenuLocators.specified_preference_tree_node.format('Paths'))
-        if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.format('Paths')).\
-                get_attribute('aria-expanded') == 'false':
-            ActionChains(self.driver).double_click(path).perform()
-
         binary_path = self.page.find_by_xpath(
-            NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
-                'Paths', 'Binary paths'))
+            PreferencesLocaltors.specified_preference_tree_node_xpath.
+            format('Binary paths'))
         binary_path.click()
 
         default_binary_path = self.server['default_binary_paths']
@@ -313,10 +304,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         # save and close the preference dialog.
         if path_already_set:
-            self.page.click_modal('Cancel')
+            self.page.close_active_tab()
         else:
-            self.page.click_modal('Save')
-
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
-        )
+            self.page.find_by_css_selector(PreferencesLocaltors.save_btn) \
+                .click()
+            time.sleep(3)
+            self.page.close_active_tab()

@@ -10,7 +10,7 @@
 """A blueprint module implementing the erd tool."""
 import json
 
-from flask import request, Response
+from flask import request, Response, session
 from flask import render_template, current_app as app
 from flask_security import permissions_required
 from pgadmin.user_login_check import pga_login_required
@@ -20,7 +20,7 @@ from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import Server
-from config import PG_DEFAULT_DRIVER
+from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD
 from pgadmin.utils.driver import get_driver
 from pgadmin.browser.utils import underscore_unescape
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -540,11 +540,26 @@ def initialize_erd(trans_id, sgid, sid, did):
     """
     # Read the data if present. Skipping read may cause connection
     # reset error if data is sent from the client
+    data = {}
     if request.data:
-        _ = request.data
+        data = json.loads(request.data)
 
-    conn = _get_connection(sid, did, trans_id)
-
+    try:
+        conn = _get_connection(sid, did, trans_id, data.get('db_name', None))
+    except ConnectionLost as e:
+        return make_json_response(
+            success=0,
+            status=428,
+            result={"server_label": data.get('server_name', None),
+                    "username": data.get('user', None),
+                    "server_type":data.get('server_type', None),
+                    "errmsg": str(e),
+                    "prompt_password": True,
+                    "allow_save_password": True
+                    if ALLOW_SAVE_PASSWORD and
+                    session.get('allow_save_password', None) else False,
+                    }
+        )
     return make_json_response(
         data={
             'connId': str(trans_id),
@@ -554,7 +569,7 @@ def initialize_erd(trans_id, sgid, sid, did):
     )
 
 
-def _get_connection(sid, did, trans_id):
+def _get_connection(sid, did, trans_id, db_name=None):
     """
     Get the connection object of ERD.
     :param sid:
@@ -564,9 +579,13 @@ def _get_connection(sid, did, trans_id):
     """
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     try:
-        conn = manager.connection(did=did, conn_id=trans_id,
+        conn = manager.connection(conn_id=trans_id,
                                   auto_reconnect=True,
-                                  use_binary_placeholder=True)
+                                  use_binary_placeholder=True,
+                                  **({"database": db_name}
+                                     if db_name is not None
+                                     else {"did": did})
+                                  )
         status, msg = conn.connect()
         if not status:
             app.logger.error(msg)

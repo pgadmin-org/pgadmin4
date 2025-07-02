@@ -2,23 +2,30 @@
 .. _preferences:
 
 ***************************
-`Preferences Dialog`:index:
+`Preferences`:index:
 ***************************
 
-Use options on the *Preferences* dialog to customize the behavior of the client.
-To open the *Preferences* dialog, select *Preferences* from the *File* menu or
+Use options in the *Preferences* tab to customize the behavior of the client.
+To open the *Preferences* tab, select *Preferences* from the *File* menu or
 click on the *Settings* button at the bottom left corner in case of Workspace
 layout.
 
-.. image:: images/preferences_menu.png
-    :alt: Preferences menu
+Header
+******
+
+.. image:: images/preferences_header.png
+    :alt: Preferences browser display options
     :align: center
 
-The left pane of the *Preferences* dialog displays a tree control; each node of
+* Use the *Save* button to save any preference changes.
+* Use the *Reset all preferences* button to restore all preferences to their default values.
+* Use the *Help* button to open preferences help.
+* Quickly search all preferences using the *Search* box. It finds matches in both labels and
+  help messages.
+
+The left pane of the *Preferences* tab displays a tree control; each node of
 the tree control provides access to options that are related to the node under
 which they are displayed.
-
-* Click the *Reset all preferences* button to restore all preferences to their default values.
 
 The Browser Node
 ****************
@@ -27,7 +34,7 @@ Use preferences found in the *Browser* node of the tree control to personalize
 your workspace.
 
 .. image:: images/preferences_browser_display.png
-    :alt: Preferences dialog browser display options
+    :alt: Preferences browser display options
     :align: center
 
 Use the fields on the *Display* panel to specify general display preferences:
@@ -36,17 +43,18 @@ Use the fields on the *Display* panel to specify general display preferences:
   be automatically expanded if a treeview node is expanded and has only a single
   child.
 
+* When the *Confirm before Close/Reset in object properties dialog?* switch is
+  set to *True*, pgAdmin will warn you before closing the properties dialog of
+  an object if there are any unsaved changes. On user confirmation,
+  the properties dialog will close.
+
+* When the *Confirm on close or refresh?* switch is set to *True*, pgAdmin will
+  attempt to catch browser close or refresh events and prompt before allowing
+  them to continue.
+
 * Use the *Object explorer state saving interval* field to set the treeview state
   saving interval. A value of *-1* will disable the treeview state saving
   functionality.
-
-* When the *Confirm before closing properties with unsaved changes* switch is set to *True*,
-  pgAdmin will warn you before closing the properties dialog of an object if there
-  are any unsaved changes. On user confirmation, the properties dialog will close.
-
-* When the *Confirm on close or refresh* switch is set to *True*, pgAdmin will
-  attempt to catch browser close or refresh events and prompt before allowing
-  them to continue.
 
 * When the *Hide shared servers?* switch is set to *True*, the client will hide
   all the shared servers from the object explorer. **Note:** This option is visible only when
@@ -54,9 +62,11 @@ Use the fields on the *Display* panel to specify general display preferences:
 
 * When the *Show empty object collections?* switch is turned off, then all object
   collections which are empty will be hidden from browser tree.
+
 * When the *Show system objects?* switch is set to *True*, the client will
   display system objects such as system schemas (for example, *pg_temp*) or
   system columns (for example,  *xmin* or *ctid*) in the tree control.
+
 * When the *Show template databases?* switch is set to *True*, the client will
   display template databases.
 
@@ -64,7 +74,7 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 main window navigation:
 
 .. image:: images/preferences_browser_keyboard_shortcuts.png
-    :alt: Preferences dialog browser keyboard shortcuts section
+    :alt: Preferences browser keyboard shortcuts section
     :align: center
 
 * The panel displays a list of keyboard shortcuts available for the main window;
@@ -75,7 +85,7 @@ Use the fields on the *Nodes* panel to select the object types that will be
 displayed in the *Browser* tree control:
 
 .. image:: images/preferences_browser_nodes.png
-    :alt: Preferences dialog browser nodes section
+    :alt: Preferences browser nodes section
     :align: center
 
 * The panel displays a list of database objects; slide the switch located next
@@ -87,7 +97,7 @@ Use the fields on the *Object Breadcrumbs* panel to change object breadcrumbs
 related settings:
 
 .. image:: images/preferences_browser_breadcrumbs.png
-    :alt: Preferences dialog object breadcrumbs section
+    :alt: Preferences object breadcrumbs section
     :align: center
 
 * Use *Enable object breadcrumbs?* to enable or disable object breadcrumbs
@@ -101,7 +111,7 @@ Use the fields on the *Processes* panel to change processes tab
 related settings:
 
 .. image:: images/preferences_browser_processes.png
-    :alt: Preferences dialog processes section
+    :alt: Preferences processes section
     :align: center
 
 * Change *Process details/logs retention days* to the number of days,
@@ -110,7 +120,7 @@ related settings:
 Use fields on the *Properties* panel to specify browser properties:
 
 .. image:: images/preferences_browser_properties.png
-    :alt: Preferences dialog browser properties section
+    :alt: Preferences browser properties section
     :align: center
 
 * Include a value in the *Count rows if estimated less than* field to perform a
@@ -124,12 +134,14 @@ Use fields on the *Properties* panel to specify browser properties:
 Use field on *Tab settings* panel to specify the tab related properties.
 
 .. image:: images/preferences_browser_tab_settings.png
-    :alt: Preferences dialog browser properties section
+    :alt: Preferences browser properties section
     :align: center
 
 * Use *Debugger tab title placeholder* field to customize the Debugger tab title.
 
 * When the *Dynamic tab size* If set to True, the tabs will take full size as per the title, it will also applicable for already opened tabs
+
+* Use the *PSQL tool tab title placeholder* field to customize the PSQL tool tab title.
 
 * When the *Open in new browser tab* filed is selected for Query tool, Schema Diff or Debugger, it will
   open in a new browser tab when invoked.
@@ -144,7 +156,7 @@ The Dashboards Node
 Expand the *Dashboards* node to specify your dashboard display preferences.
 
 .. image:: images/preferences_dashboard_display.png
-    :alt: Preferences dialog dashboard display options
+    :alt: Preferences dashboard display options
     :align: center
 
 * Set the warning and alert threshold value to highlight the long-running
@@ -157,7 +169,7 @@ Expand the *Dashboards* node to specify your dashboard display preferences.
   dashboards.
 
 .. image:: images/preferences_dashboard_refresh.png
-    :alt: Preferences dialog dashboard refresh options
+    :alt: Preferences dashboard refresh options
     :align: center
 
 Use the fields on the *Refresh rates* panel to specify your refersh rates
@@ -183,6 +195,9 @@ preferences for the graphs on the *Dashboard* tab:
 
 * Use the *Memory usage statistics refresh rate* field to specify the number
   of seconds between memory usage statistics samples displayed in graphs.
+
+* Use the *PGD replication lag refresh rate* field to specify the number
+  of seconds between PGD replication lag samples displayed in graphs.
 
 * Use the *Percentage of CPU time used by different process modes statistics refresh rate*
   field to specify the number of seconds between Percentage of CPU time used by different
@@ -214,7 +229,7 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 debugger window navigation:
 
 .. image:: images/preferences_debugger_keyboard_shortcuts.png
-    :alt: Preferences dialog debugger keyboard shortcuts section
+    :alt: Preferences debugger keyboard shortcuts section
     :align: center
 
 The ERD Tool Node
@@ -226,13 +241,13 @@ Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 ERD Tool window navigation:
 
 .. image:: images/preferences_erd_keyboard_shortcuts.png
-    :alt: Preferences dialog erd keyboard shortcuts section
+    :alt: Preferences erd keyboard shortcuts section
     :align: center
 
 Use the fields on the *Options* panel to manage ERD preferences.
 
 .. image:: images/preferences_erd_options.png
-    :alt: Preferences dialog erd options section
+    :alt: Preferences erd options section
     :align: center
 
 
@@ -253,7 +268,7 @@ The Graphs Node
 Expand the *Graphs* node to specify your Graphs display preferences.
 
 .. image:: images/preferences_dashboard_graphs.png
-    :alt: Preferences dialog dashboard graph options
+    :alt: Preferences dashboard graph options
     :align: center
 
 * Use the *Chart line width* field to specify the width of the lines on the
@@ -274,7 +289,7 @@ The Miscellaneous Node
 Expand the *Miscellaneous* node to specify miscellaneous display preferences.
 
 .. image:: images/preferences_misc_file_downloads.png
-    :alt: Preferences dialog file downloads section
+    :alt: Preferences file downloads section
     :align: center
 
 Use the fields on the *File Downloads* panel to manage file downloads related preferences.
@@ -292,7 +307,7 @@ Use the fields on the *File Downloads* panel to manage file downloads related pr
 Use the fields on the *User Interface* panel to set the user interface related preferences.
 
 .. image:: images/preferences_misc_user_interface.png
-    :alt: Preferences dialog user interface section
+    :alt: Preferences user interface section
     :align: center
 
 * Use the *Language* drop-down listbox to select the display language for
@@ -311,18 +326,16 @@ Use the fields on the *User Interface* panel to set the user interface related p
 
 * When the *Save the application state?* option is enabled  the current state of various
   tools—such as Query Tool, ERD, Schema Diff, and PSQL—will be saved in the encrypted
-  format.If the application is closed unexpectedly, the tab is accidentally closed,
+  format. If the application is closed unexpectedly, the tab is accidentally closed,
   or the page is refreshed, the saved state will be automatically restored for
-  each respective tool.**Note:**
+  each respective tool. **Note:** Saving the application state will not preserve data for tool tabs opened in
+  separate browser tabs when running in server mode.Any tool referring ad-hoc server connection will not be restored.
 
 * Use the *Themes* drop-down listbox to select the theme for pgAdmin. You'll also get a preview just below the
   drop down. You can also submit your own themes,
   check `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_ how.
   Currently we support Light, Dark, High Contrast and System theme. Selecting System option will follow
   your computer's settings.
-
-**Note:** Saving the application state will not preserve data for tool tabs opened in
-separate browser tabs when running in server mode..
 
 The Paths Node
 **************
@@ -331,7 +344,7 @@ Expand the *Paths* node to specify the locations of supporting utility and help
 files.
 
 .. image:: images/preferences_paths_binary.png
-    :alt: Preferences dialog binary path section
+    :alt: Preferences binary path section
     :align: center
 
 Use the fields on the *Binary paths* panel to specify the path to the directory
@@ -354,7 +367,7 @@ monitored databases:
 programs (pg_dump, pg_dumpall, pg_restore and psql) and there respective versions.
 
 .. image:: images/preferences_paths_help.png
-    :alt: Preferences dialog binary path help section
+    :alt: Preferences binary path help section
     :align: center
 
 Use the fields on the *Help* panel to specify the location of help files.
@@ -372,7 +385,7 @@ Expand the *Query Tool* node to access panels that allow you to specify your
 preferences for the Query Editor tool.
 
 .. image:: images/preferences_sql_auto_completion.png
-    :alt: Preferences dialog sqleditor auto completion option
+    :alt: Preferences sqleditor auto completion option
     :align: center
 
 Use the fields on the *Auto Completion* panel to set the auto completion options.
@@ -384,7 +397,7 @@ Use the fields on the *Auto Completion* panel to set the auto completion options
   shown in upper case.
 
 .. image:: images/preferences_sql_csv_output.png
-    :alt: Preferences dialog sqleditor csv output option
+    :alt: Preferences sqleditor csv output option
     :align: center
 
 Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
@@ -399,7 +412,7 @@ Use the fields on the *CSV/TXT Output* panel to control the CSV/TXT output.
   specified string in the output file. Default is set to 'NULL'.
 
 .. image:: images/preferences_sql_display.png
-    :alt: Preferences dialog sqleditor display options
+    :alt: Preferences sqleditor display options
     :align: center
 
 Use the fields on the *Display* panel to specify your preferences for the Query
@@ -415,10 +428,14 @@ Tool display.
   will show notifications on successful query execution.
 
 .. image:: images/preferences_sql_editor.png
-    :alt: Preferences dialog sqleditor editor settings
+    :alt: Preferences sqleditor editor settings
     :align: center
 
 Use the fields on the *Editor* panel to change settings of the query editor.
+
+* Use the *Auto-indent new line?* switch to specify whether the editor will
+  automatically indent new lines. When set to *True*, the editor will indent
+  new lines according to the indentation of the previous line.
 
 * When the *Brace matching?* switch is set to *True*, the editor will highlight
   pairs of matched braces.
@@ -437,6 +454,9 @@ Use the fields on the *Editor* panel to change settings of the query editor.
 * Use the *Font size* field to specify the font size that will be used in text
   boxes and editors.
 
+* When the *Highlight selection matches?* switch is set to *True*, the editor will
+  highlight matched selected text.
+
 * When the *Insert bracket pairs?* switch is set to *True*, the editor will
   automatically insert paired brackets.
 
@@ -447,11 +467,8 @@ Use the fields on the *Editor* panel to change settings of the query editor.
   changed to text/plain. Keyword highlighting and code folding will be disabled.
   This will improve editor performance with large files.
 
-* When the *Highlight selection matches?* switch is set to *True*, the editor will
-  highlight matched selected text.
-
 .. image:: images/preferences_sql_explain.png
-    :alt: Preferences dialog sqleditor explain options
+    :alt: Preferences sqleditor explain options
     :align: center
 
 Use the fields on the *Explain* panel to specify the level of detail included in
@@ -480,7 +497,7 @@ a graphical EXPLAIN.
   will include extended information about the query execution plan.
 
 .. image:: images/preferences_graph_visualiser.png
-    :alt: Preferences dialog sqleditor graph visualiser section
+    :alt: Preferences sqleditor graph visualiser section
     :align: center
 
 Use the fields on the *Graph Visualiser* panel to specify the settings
@@ -490,7 +507,7 @@ related to graphs.
   be plotted on a chart.
 
 .. image:: images/preferences_sql_options.png
-    :alt: Preferences dialog sqleditor options section
+    :alt: Preferences sqleditor options section
     :align: center
 
 Use the fields on the *Options* panel to manage editor preferences.
@@ -505,28 +522,28 @@ Use the fields on the *Options* panel to manage editor preferences.
   the CREATE sql of the selected object will be copied to query tool when query tool
   will open.
 
+* When the *Open the file in a new tab?* switch is set to *True*, the
+  editor will open the new file in new tab of the Query Tool.
+
+* When the *Prompt to commit/rollback active transactions?* switch is set to
+  *True*, the editor will prompt the user to commit or rollback changes when
+  exiting the Query Tool while the current transaction is not committed.
+  
 * When the *Prompt to save unsaved data changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved data when exiting the data
   editor.
-
-* When the *Open the file in a new tab?* switch is set to *True*, the
-  editor will open the new file in new tab of the Query Tool.
 
 * When the *Prompt to save unsaved query changes?* switch is set to *True*, the
   editor will prompt the user to saved unsaved query modifications when exiting
   the Query Tool.
 
-* When the *Prompt to commit/rollback active transactions?* switch is set to
-  *True*, the editor will prompt the user to commit or rollback changes when
-  exiting the Query Tool while the current transaction is not committed.
+* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
+  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
 
 * When the *Sort View Data results by primary key columns?* If set to *True*,
   data returned when using the View/Edit Data - All Rows option will be sorted
   by the Primary Key columns by default. When using the First/Last 100 Rows options,
   data is always sorted.
-
-* When the *Show View/Edit Data Promotion Warning?* switch is set to *True*
-  View/Edit Data tool will show promote to Query tool confirm dialog on query edit.
 
 * When the *Underline query at cursor?* switch is set to *True*, query tool will
   parse and underline the query at the cursor position.
@@ -540,7 +557,7 @@ Use the fields on the *Options* panel to manage editor preferences.
 
 
 .. image:: images/preferences_sql_results_grid.png
-    :alt: Preferences dialog sql results grid section
+    :alt: Preferences sql results grid section
     :align: center
 
 Use the fields on the *Results grid* panel to specify your formatting
@@ -550,14 +567,15 @@ preferences for copied data.
   auto-size to the maximum width of the data in the column as loaded in the
   first batch. If set to *Column name*, the column will be sized to the widest
   of the data type or column name.
-* Specify the maximum width of the column in pixels when 'Columns sized by' is
-  set to *Column data*. If 'Columns sized by' is set to *Column name* then this
-  setting won't have any effect.
-* Specify the number of records to fetch in one batch. Changing this value will
-  override DATA_RESULT_ROWS_PER_PAGE setting from config file.
+* Use *Data result rows per page* to specify the number of records to fetch in
+  one batch. Changing this value will override DATA_RESULT_ROWS_PER_PAGE setting
+  from config file.
 * Use the *Max column data display length* to specify the maximum number of
   characters to be visible in the data output cell. If the data is larger 
   than this value, it will be truncated.
+* Use *Maximum column width* to Specify the maximum width of the column in pixels
+  when 'Columns sized by' is set to *Column data*. If 'Columns sized by' is set to
+  *Column name* then this setting won't have any effect.
 * Use the *Result copy field separator* drop-down listbox to select the field
   separator for copied data.
 * Use the *Result copy quote character* drop-down listbox to select the quote
@@ -568,14 +586,14 @@ preferences for copied data.
   rows with alternating background colors.
 
 .. image:: images/preferences_sql_keyboard_shortcuts.png
-    :alt: Preferences dialog sql keyboard shortcuts section
+    :alt: Preferences sql keyboard shortcuts section
     :align: center
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 Query Tool window navigation.
 
 .. image:: images/preferences_sql_formatting.png
-    :alt: Preferences dialog SQL Formatting section
+    :alt: Preferences SQL Formatting section
     :align: center
 
 Use the fields on the *SQL formatting* panel to specify your preferences for
@@ -628,7 +646,7 @@ The Storage Node
 Expand the *Storage* node to specify your storage preferences.
 
 .. image:: images/preferences_storage_options.png
-    :alt: Preferences dialog storage section
+    :alt: Preferences storage section
     :align: center
 
 Use the fields on the *Options* panel to specify storage preferences.

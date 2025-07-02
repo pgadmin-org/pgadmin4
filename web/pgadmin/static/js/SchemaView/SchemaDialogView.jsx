@@ -43,7 +43,8 @@ import { WORKSPACES } from '../../../browser/static/js/constants';
 /* If its the dialog */
 export default function SchemaDialogView({
   getInitData, viewHelperProps, loadingText, schema={}, showFooter=true,
-  isTabView=true, checkDirtyOnEnableSave=false, customCloseBtnName=gettext('Close'), ...props
+  isTabView=true, checkDirtyOnEnableSave=false, customCloseBtnName=gettext('Close'), focusOnFirstInput=true,
+  ...props
 }) {
   // View helper properties
   const onDataChange  = props.onDataChange;
@@ -190,7 +191,7 @@ export default function SchemaDialogView({
             isTabView={isTabView}
             className={props.formClassName}
             showError={true} resetKey={resetKey}
-            focusOnFirstInput={true}
+            focusOnFirstInput={focusOnFirstInput}
           />
         </Box>
         {showFooter &&
@@ -268,4 +269,5 @@ SchemaDialogView.propTypes = {
   Notifier: PropTypes.object,
   checkDirtyOnEnableSave: PropTypes.bool,
   customCloseBtnName: PropTypes.string,
+  focusOnFirstInput: PropTypes.bool,
 };

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -160,8 +160,6 @@ const defaultExtensions = [
   EditorView.clipboardOutputFilter.of((text, state)=>{
     return CustomEditorView.getSelectionFromState(state);
   }),
-  // Custom folding service for PL/pgSQL
-  plpgsqlFoldService,
 ];
 
 export default function Editor({
@@ -174,9 +172,10 @@ export default function Editor({
 
   const editorContainerRef = useRef();
   const editor = useRef();
-  const defaultOptions = {
+  const finalOptions = {
     lineNumbers: true,
     foldGutter: true,
+    ...options
   };
 
   const preferencesStore = usePreferences();
@@ -189,27 +188,12 @@ export default function Editor({
 
   useEffect(() => {
     if (!checkIsMounted()) return;
-    const finalOptions = { ...defaultOptions, ...options };
     const osEOL = OS_EOL === 'crlf' ? '\r\n' : '\n';
     const finalExtns = [
-      (language == 'json') ? json() : sql({dialect: PgSQL}),
       ...defaultExtensions,
     ];
     if (finalOptions.lineNumbers) {
       finalExtns.push(lineNumbers());
-    }
-    if (finalOptions.foldGutter) {
-      finalExtns.push(foldGutter({
-        markerDOM: (open)=>{
-          let icon = document.createElement('span');
-          if(open) {
-            icon.innerHTML = arrowDownHtml;
-          } else {
-            icon.innerHTML = arrowRightHtml;
-          }
-          return icon;
-        },
-      }));
     }
     if (editorContainerRef.current) {
       const state = EditorState.create({
@@ -288,8 +272,10 @@ export default function Editor({
   useEffect(() => {
     if (!checkIsMounted()) return;
     const keys = keymap.of([
-      customKeyMap??[], defaultKeymap, closeBracketsKeymap, historyKeymap,
-      foldKeymap, completionKeymap
+      // Filtering out the default keymaps so that it uses the custom keymaps.
+      customKeyMap??[], ...completionKeymap.filter(k => k.key != 'Ctrl-Space'),
+      defaultKeymap.filter(k => k.key != 'Mod-/'), closeBracketsKeymap, historyKeymap,
+      foldKeymap
     ].flat());
     editor.current?.dispatch({
       effects: shortcuts.current.reconfigure(keys)
@@ -314,6 +300,7 @@ export default function Editor({
     }));
 
     const autoCompOptions = {
+      defaultKeymap: false,
       icons: false,
       addToOptions: [{
         render: (completion) => {
@@ -386,6 +373,34 @@ export default function Editor({
     }
     if (pref.underline_query_cursor){
       newConfigExtn.push(currentQueryHighlighterExtn());
+    }
+
+    if(!pref.plain_editor_mode) {
+      // lang override
+      if(language == 'json') {
+        newConfigExtn.push(json());
+      } else {
+        newConfigExtn.push(sql({dialect: PgSQL}));
+      }
+    }
+
+    if(pref.code_folding && finalOptions.foldGutter) {
+      newConfigExtn.push(foldGutter({
+        markerDOM: (open)=>{
+          let icon = document.createElement('span');
+          if(open) {
+            icon.innerHTML = arrowDownHtml;
+          } else {
+            icon.innerHTML = arrowRightHtml;
+          }
+          return icon;
+        },
+      }));
+    }
+
+    // add fold service conditionally
+    if(!pref.plain_editor_mode && pref.code_folding && language == 'pgsql') {
+      newConfigExtn.push(plpgsqlFoldService);
     }
 
     editor.current.dispatch({

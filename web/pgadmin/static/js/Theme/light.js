@@ -154,7 +154,7 @@ export default function(basicSettings) {
         number: '#964',
         string: '#a11',
         variable: '#222',
-        type: '#05a',
+        type: '#7e0000',
         comment: '#a50',
         punctuation: '#737373',
         operator: '#222',

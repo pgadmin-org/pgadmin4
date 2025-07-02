@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Button, ButtonGroup, Tooltip } from '@mui/material';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import ShortcutTitle from './ShortcutTitle';
@@ -174,20 +174,37 @@ DefaultButton.propTypes = {
 
 
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, accesskey, isDropdown, tooltipPlacement, ...props}, ref)=>{
+export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, isDropdown, tooltipPlacement, ...props}, ref)=>{
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   let shortcutTitle = null;
-  if(accesskey || shortcut) {
-    shortcutTitle = <ShortcutTitle title={title} accesskey={accesskey} shortcut={shortcut}/>;
+  if(shortcut) {
+    shortcutTitle = <ShortcutTitle title={title} shortcut={shortcut}/>;
   }
+
+  useEffect(() => {
+    // If the button is disabled changes, we should close the tooltip
+    // as the old button is unmounted.
+    setTooltipOpen(false);
+  }, [props.disabled]);
+
+  const tooltipProps = {
+    title: shortcutTitle || title || '',
+    'aria-label': title || '',
+    open: tooltipOpen,
+    onOpen: () => setTooltipOpen(true),
+    onClose: () => setTooltipOpen(false),
+    enterDelay: isDropdown ? 1500 : undefined,
+    placement: tooltipPlacement,
+  };
 
   if(props.disabled) {
     if(color == 'primary') {
       return (
-        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+        <Tooltip {...tooltipProps}>
           <span>
             <PrimaryButton ref={ref} style={style}
               className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-              accessKey={accesskey} data-label={title || ''} {...props}>
+              data-label={title || ''} {...props}>
               {icon}
             </PrimaryButton>
           </span>
@@ -195,11 +212,11 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       );
     } else {
       return (
-        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+        <Tooltip {...tooltipProps}>
           <span>
             <DefaultButton ref={ref} style={style}
               className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-              accessKey={accesskey} data-label={title || ''} {...props}>
+              data-label={title || ''} {...props}>
               {icon}
             </DefaultButton>
           </span>
@@ -208,10 +225,10 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     }
   } else if(color == 'primary') {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+      <Tooltip {...tooltipProps}>
         <PrimaryButton ref={ref} style={style}
           className={['Buttons-iconButton', (splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
+          data-label={title || ''} {...props}>
           {icon}
         </PrimaryButton>
       </Tooltip>
@@ -219,10 +236,10 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
     );
   } else {
     return (
-      <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''} enterDelay={isDropdown ? 1500 : undefined} placement={tooltipPlacement}>
+      <Tooltip {...tooltipProps}>
         <DefaultButton ref={ref} style={style}
           className={['Buttons-iconButton', 'Buttons-iconButtonDefault',(splitButton ? 'Buttons-splitButton' : ''), className].join(' ')}
-          accessKey={accesskey} data-label={title || ''} {...props}>
+          data-label={title || ''} {...props}>
           {icon}
         </DefaultButton>
       </Tooltip>

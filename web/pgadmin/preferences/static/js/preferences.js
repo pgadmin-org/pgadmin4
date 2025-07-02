@@ -7,11 +7,9 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import gettext from 'sources/gettext';
-import PreferencesComponent from './components/PreferencesComponent';
-import PreferencesTree from './components/PreferencesTree';
-import pgAdmin from 'sources/pgadmin';
+import { BROWSER_PANELS } from '../../../browser/static/js/constants';
+import { preferencesPanelData } from '../../../static/js/BrowserComponent';
 
 export default class Preferences {
   static instance;
@@ -48,13 +46,8 @@ export default class Preferences {
 
   // This is a callback function to show preferences.
   show() {
-    // Render Preferences component
-    pgAdmin.Browser.notifier.showModal(gettext('Preferences'), (closeModal) => {
-      return <PreferencesComponent
-        renderTree={(prefTreeData) => {
-          // Render preferences tree component
-          return <PreferencesTree pgBrowser={this.pgBrowser} data={prefTreeData} />;
-        }} closeModal={closeModal} />;
-    }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: 900, dialogHeight: 550, id: 'id-preferences' });
+    let handler = this.pgBrowser.getDockerHandler?.(BROWSER_PANELS.USER_MANAGEMENT, this.pgBrowser.docker.default_workspace);
+    handler.focus();
+    handler.docker.openTab(preferencesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
   }
 }

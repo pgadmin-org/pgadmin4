@@ -15,7 +15,7 @@
 Authlib==1.6.*
 azure-identity==1.23.0
 azure-mgmt-rdbms==10.1.0
-azure-mgmt-resource==23.4.0
+azure-mgmt-resource==24.0.0
 azure-mgmt-subscription==3.1.1
 bcrypt==4.3.*
 boto3==1.38.*
@@ -53,7 +53,7 @@ sqlparse==0.*
 sshtunnel==0.*
 typer[all]==0.16.*
 urllib3==1.26.*; python_version <= '3.9'
-urllib3==2.4.*;  python_version > '3.9'
+urllib3==2.5.*;  python_version > '3.9'
 user-agents==2.2.0
 Werkzeug==3.1.*
 WTForms==3.1.*; python_version <= '3.9'

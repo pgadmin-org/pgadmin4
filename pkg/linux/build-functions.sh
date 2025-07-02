@@ -63,7 +63,7 @@ _create_python_virtualenv() {
     cd "usr/${APP_NAME}" || exit
 
     # Create the blank venv
-    "${SYSTEM_PYTHON_PATH}" -m venv venv
+    "${SYSTEM_PYTHON_PATH}" -m venv --system-site-packages venv
     # shellcheck disable=SC1091
     . venv/bin/activate
 
@@ -72,7 +72,7 @@ _create_python_virtualenv() {
     pip3 install wheel
 
     # Install the requirements
-    pip3 install --no-cache-dir --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
+    pip3 install --force-reinstall --no-cache-dir --no-binary psycopg -r "${SOURCEDIR}/requirements.txt"
 
     # Fixup the paths in the venv activation scripts
     sed -i 's/VIRTUAL_ENV=.*/VIRTUAL_ENV="\/usr\/pgadmin4\/venv"/g' venv/bin/activate

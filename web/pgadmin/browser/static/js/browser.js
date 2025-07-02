@@ -16,7 +16,6 @@ import getApiInstance, {parseApiError} from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
 import * as showQueryTool from '../../../tools/sqleditor/static/js/show_query_tool';
-import {getRandomInt} from 'sources/utils';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -304,30 +303,35 @@ define('pgadmin.browser', [
         url_for('settings.get_application_state')
       ).then((res)=> {
         if(res.data.success && res.data.data.result.length > 0){
+          let deleteToolDataIds = [];
           _.each(res.data.data.result, function(toolState){
             let toolNme = toolState.tool_name;
-            let toolDataId = `${toolNme}-${getRandomInt(1, 9999999)}`;
+            let toolDataId = `${toolNme}-${toolState.id}`;
             let connectionInfo = toolState.connection_info;
-            localStorage.setItem(toolDataId, toolState.tool_data);
-
+            
             if (toolNme == 'sqleditor'){
               showQueryTool.relaunchSqlTool(connectionInfo, toolDataId);
-            }else if(toolNme == 'psql'){
-              pgAdmin.Tools.Psql.openPsqlTool(null, null, connectionInfo);
-            }else if(toolNme == 'ERD'){
-              pgAdmin.Tools.ERD.showErdTool(null, null, false, connectionInfo, toolDataId);
-            }else if(toolNme == 'schema_diff'){
-              pgAdmin.Tools.SchemaDiff.launchSchemaDiff(toolDataId);
+            }else{
+              localStorage.setItem(toolDataId, toolState.tool_data);
+              deleteToolDataIds.push(toolState.id);
+              if(toolNme == 'psql'){
+                pgAdmin.Tools.Psql.openPsqlTool(null, null, connectionInfo);
+              }else if(toolNme == 'ERD'){
+                pgAdmin.Tools.ERD.showErdTool(null, null, false, connectionInfo, toolDataId);
+              }else if(toolNme == 'schema_diff'){
+                pgAdmin.Tools.SchemaDiff.launchSchemaDiff(toolDataId);
+              }
             }
           });
 
           // call clear application state data.
-          try {
-            getApiInstance().delete(url_for('settings.delete_application_state'), {});
-          } catch (error) {
-            console.error(error);
-            pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));
-          }
+          if(deleteToolDataIds.length > 0){
+            try {
+              getApiInstance().delete(url_for('settings.delete_application_state'), {data:{'trans_ids': deleteToolDataIds}});
+            } catch (error) {
+              console.error(error);
+              pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));
+            }}
         }
       }).catch(function(error) {
         pgAdmin.Browser.notifier.pgRespErrorNotify(error);
@@ -1649,38 +1653,7 @@ define('pgadmin.browser', [
       }
 
     },
-
-    editor_shortcut_keys: {
-      // Autocomplete sql command
-      'Ctrl-Space': 'autocomplete',
-      'Cmd-Space': 'autocomplete',
-
-      'Alt-Up': 'goLineUp',
-      'Alt-Down': 'goLineDown',
-
-      // Move word by word left/right
-      'Ctrl-Alt-Left': 'goGroupLeft',
-      'Cmd-Alt-Left': 'goGroupLeft',
-      'Ctrl-Alt-Right': 'goGroupRight',
-      'Cmd-Alt-Right': 'goGroupRight',
-
-      // Allow user to delete Tab(s)
-      'Shift-Tab': 'indentLess',
-    },
-    editor_options: {
-      tabSize: parseInt(pgBrowser.utils.tabSize),
-      wrapCode: pgBrowser.utils.wrapCode,
-      insert_pair_brackets: pgBrowser.utils.insertPairBrackets,
-      brace_matching: pgBrowser.utils.braceMatching,
-      indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
-      highlightSelectionMatches:pgBrowser.utils.highlightSelectionMatches
-    },
   });
-
-  // Use spaces instead of tab
-  if (pgBrowser.utils.useSpaces == 'True') {
-    pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
-  }
 
   return pgAdmin.Browser;
 });

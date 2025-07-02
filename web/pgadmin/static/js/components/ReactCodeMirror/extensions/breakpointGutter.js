@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import {GutterMarker, gutter} from '@codemirror/view';
 import {StateField, StateEffect, RangeSet} from '@codemirror/state';
 
@@ -48,7 +56,7 @@ export function clearBreakpoints(view) {
 const breakpointMarker = new (class extends GutterMarker {
   toDOM() { return document.createTextNode('●'); }
 });
-  
+
 const breakpointGutter = [
   breakpointField,
   gutter({

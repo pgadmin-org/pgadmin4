@@ -12,13 +12,13 @@
   },
   "packageManager": "yarn@3.8.7",
   "devDependencies": {
-    "electron": "36.2.1",
-    "eslint": "^9.28.0",
+    "electron": "37.1.0",
+    "eslint": "^9.30.0",
     "eslint-plugin-unused-imports": "^4.1.4"
   },
   "dependencies": {
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "electron-context-menu": "^4.1.0",
-    "electron-store": "^10.0.1"
+    "electron-store": "^10.1.0"
   }
 }

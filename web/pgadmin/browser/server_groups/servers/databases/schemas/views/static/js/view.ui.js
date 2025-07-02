@@ -85,7 +85,6 @@ export default class ViewSchema extends BaseUISchema {
       type: 'select', group: gettext('Definition'),
       min_version: '90400', mode:['properties', 'create', 'edit'],
       controlProps: {
-        // Set select2 option width to 100%
         allowClear: false,
       }, disabled: obj.notInSchema,
       options:[{

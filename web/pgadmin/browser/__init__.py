@@ -481,32 +481,6 @@ def utils():
     pg_help_path_pref = prefs.preference('pg_help_path')
     pg_help_path = pg_help_path_pref.get()
 
-    # Get sqleditor options
-    prefs = Preferences.module('sqleditor')
-
-    editor_tab_size_pref = prefs.preference('tab_size')
-    editor_tab_size = editor_tab_size_pref.get()
-
-    editor_use_spaces_pref = prefs.preference('use_spaces')
-    editor_use_spaces = editor_use_spaces_pref.get()
-
-    editor_wrap_code_pref = prefs.preference('wrap_code')
-    editor_wrap_code = editor_wrap_code_pref.get()
-
-    brace_matching_pref = prefs.preference('brace_matching')
-    brace_matching = brace_matching_pref.get()
-
-    highlight_selection_matches_pref = prefs.preference(
-        'highlight_selection_matches'
-    )
-    highlight_selection_matches = highlight_selection_matches_pref.get()
-
-    insert_pair_brackets_perf = prefs.preference('insert_pair_brackets')
-    insert_pair_brackets = insert_pair_brackets_perf.get()
-
-    # This will be opposite of use_space option
-    editor_indent_with_tabs = False if editor_use_spaces else True
-
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -537,13 +511,6 @@ def utils():
             layout=layout,
             jssnippets=snippets,
             pg_help_path=pg_help_path,
-            editor_tab_size=editor_tab_size,
-            editor_use_spaces=editor_use_spaces,
-            editor_wrap_code=editor_wrap_code,
-            editor_brace_matching=brace_matching,
-            editor_highlight_selection_matches=highlight_selection_matches,
-            editor_insert_pair_brackets=insert_pair_brackets,
-            editor_indent_with_tabs=editor_indent_with_tabs,
             app_name=config.APP_NAME,
             app_version_int=config.APP_VERSION_INT,
             pg_libpq_version=pg_libpq_version,
@@ -770,17 +737,17 @@ def set_master_password():
                     if not isinstance(e, NoKeyringError):
                         delete_local_storage_master_key()
 
-                    # Delete saved password encrypted with kecyhain master key
-                    from pgadmin.browser.server_groups.servers.utils \
-                        import remove_saved_passwords, update_session_manager
-                    remove_saved_passwords(current_user.id)
-                    update_session_manager(current_user.id)
-
-                return form_master_password_response(
-                    existing=False,
-                    present=True,
-                    errmsg=errmsg,
-                    keyring_name=keyring_name)
+                    # Delete saved password encrypted with keychain master key
+                #     from pgadmin.browser.server_groups.servers.utils \
+                #         import remove_saved_passwords, update_session_manager
+                #     remove_saved_passwords(current_user.id)
+                #     update_session_manager(current_user.id)
+                #
+                # return form_master_password_response(
+                #     existing=False,
+                #     present=True,
+                #     errmsg=errmsg,
+                #     keyring_name=keyring_name)
     else:
         # If the master password is required and the master password hook
         # is specified then try to retrieve the encryption key and update data.

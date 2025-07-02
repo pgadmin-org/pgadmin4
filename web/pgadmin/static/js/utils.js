@@ -278,12 +278,12 @@ export function CSVToArray(strData, strDelimiter, quoteChar){
 export function hasBinariesConfiguration(pgBrowser, serverInformation) {
   const module = 'paths';
   let preference_name = 'pg_bin_dir';
-  let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences dialog.');
+  let msg = gettext('Please configure the PostgreSQL Binary Path in the Preferences.');
 
   if ((serverInformation.type && serverInformation.type === 'ppas') ||
     serverInformation.server_type === 'ppas') {
     preference_name = 'ppas_bin_dir';
-    msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
+    msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences.');
   }
 
   const preference = usePreferences.getState().getPreferences(module, preference_name);
