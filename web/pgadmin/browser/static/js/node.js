@@ -729,8 +729,10 @@ define('pgadmin.browser.node', [
             _item.clear_cache.apply(_item);
           }, 0);
         }
-        pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state',
-          item);
+        // Prevent previous tree state restore and opened tree event being called during object search operations when adding objects to the tree
+        if (!pgBrowser.tree.suppressAddOpenEvents) {
+          pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state', item);
+        }
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
@@ -778,18 +780,19 @@ define('pgadmin.browser.node', [
         let tree = pgBrowser.tree,
           auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
 
+        if (tree.suppressAddOpenEvents) return;
         if (auto_expand?.value && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
           const first_child = tree.first(item);
 
           if (first_child._loaded) {
             tree.open(first_child);
-            !pgBrowser['disable_tree_select'] && tree.select(first_child);
+            tree.select(first_child);
           } else {
             const openSoleItem = setInterval(() => {
               if (first_child._loaded) {
                 tree.open(first_child);
-                !pgBrowser['disable_tree_select'] && tree.select(first_child);
+                tree.select(first_child);
                 clearSoleItemInterval();
               }
             }, 200);
@@ -800,7 +803,7 @@ define('pgadmin.browser.node', [
 
         } else if(tree.children(item).length == 1) {
           const first_child = tree.first(item);
-          !pgBrowser['disable_tree_select'] && tree.select(first_child);
+          tree.select(first_child);
         }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', item);

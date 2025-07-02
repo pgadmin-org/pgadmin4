@@ -194,9 +194,9 @@ export class LayoutDocker {
       }, null, 'float');
     }
     if (panelData?.id == 'id-search-objects') {
-      // Disable the tree.select from all other places as it is clashing with
+      // Prevent previous tree state restore and opened tree event being called as it is clashing with
       // the tree.select() in tree.findNodeWithToggle() of Search objects module.
-      pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:disable_select', true);
+      pgAdmin.Browser.tree.suppressAddOpenEvents = true;
     }
   }
 
@@ -349,9 +349,9 @@ function DialogClose({panelData}) {
       <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(panelData.activeId);
         if (panelData?.activeId == 'id-search-objects') {
-          // Enable the tree.select of all other places after closing of Search Objects dialog as it 
+          // Enable the previous tree state restore and opened tree event after closing of Search Objects dialog as it 
           // is clashing with the tree.select() in tree.findNodeWithToggle() of Search objects module.
-          pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:disable_select', false);
+          pgAdmin.Browser.tree.suppressAddOpenEvents = false;
         }
       }} style={{marginRight: '-4px'}}/>
     </Box>
