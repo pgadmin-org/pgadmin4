@@ -84,8 +84,9 @@ export class Tree {
     this.rootNode = manageTree.tempTree;
     this.Nodes = pgBrowser ? pgBrowser.Nodes : pgAdmin.Browser.Nodes;
 
-    // Flag to prevent previous tree state restore and opened tree event being called during object search operations.
-    this.suppressAddOpenEvents = false;
+    // Flag to suppress added and opened tree event being called during object search operations, 
+    // tree.select of search object clashes with other tree.select.
+    this.suppressAddOpenEventsUntilPath = null;
     this.draggableTypes = {};
   }
 
