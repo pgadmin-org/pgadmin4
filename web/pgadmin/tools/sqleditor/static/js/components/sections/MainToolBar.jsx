@@ -46,7 +46,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.bottom,
 }));
 
-function autoCommitRollbackServerCur(type, api, transId, value) {
+function changeQueryExecutionSettings(type, api, transId, value) {
   let url = url_for(`sqleditor.${type}`, {
     'trans_id': transId,
   });
@@ -127,7 +127,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         queryToolCtx.updateServerCursor({server_cursor: newVal});
       }
       if(e.value === 'auto_commit' || e.value === 'auto_rollback' || e.value === 'server_cursor') {
-        autoCommitRollbackServerCur(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
+        changeQueryExecutionSettings(e.value, queryToolCtx.api, queryToolCtx.params.trans_id, newVal)
           .catch ((error)=>{
             newVal = prev[e.value];
             eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {

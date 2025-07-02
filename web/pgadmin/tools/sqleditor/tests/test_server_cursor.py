@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ##########################################################################
 #
 # pgAdmin 4 - PostgreSQL Tools
@@ -7,8 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-from unittest.mock import patch
-
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
