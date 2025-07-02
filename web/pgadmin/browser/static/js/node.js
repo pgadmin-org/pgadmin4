@@ -729,11 +729,19 @@ define('pgadmin.browser.node', [
             _item.clear_cache.apply(_item);
           }, 0);
         }
-        // Prevent previous tree state restore and opened tree event being called during object search operations when adding objects to the tree
-        if (!pgBrowser.tree.suppressAddOpenEvents) {
-          pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state', item);
-        }
         pgBrowser.Node.callbacks.change_server_background(item, data);
+        // Suppress added tree event being called during object search operations 
+        // where tree.select clashes due to previous tree state restore
+        const suppressPath = pgBrowser.tree.suppressAddOpenEventsUntilPath;
+        if (suppressPath) {
+          if (item.path === suppressPath) {
+            pgBrowser.tree.suppressAddOpenEventsUntilPath = null;
+          } else {
+            return;
+          }
+        }
+        
+        pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state', item);
       },
       // Callback called - when a node is selected in browser tree.
       selected: function(item, data) {
@@ -779,8 +787,17 @@ define('pgadmin.browser.node', [
       opened: function(item) {
         let tree = pgBrowser.tree,
           auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
+        // Suppress opened tree event being called during object search operations 
+        // where tree.select clashes due to only child of parent opens automatically.
+        const suppressPath = pgBrowser.tree.suppressAddOpenEventsUntilPath;
+        if (suppressPath) {
+          if (item.path === suppressPath) {
+            pgBrowser.tree.suppressAddOpenEventsUntilPath = null;
+          } else {
+            return;
+          }
+        }
 
-        if (tree.suppressAddOpenEvents) return;
         if (auto_expand?.value && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
           const first_child = tree.first(item);
