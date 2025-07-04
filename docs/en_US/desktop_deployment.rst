@@ -130,10 +130,12 @@ on Mac OS X (~/Library/Preferences/pgadmin),
 and on Windows (%APPDATA%/pgadmin).
 
 
-Auto-Update Feature for pgAdmin 4 Desktop
-*****************************************
+Auto-Update of pgAdmin 4 Desktop Application
+********************************************
 
-pgAdmin 4's desktop application includes an automated update system built using Electron's ``autoUpdater`` module. This feature enables users to receive and install updates seamlessly, ensuring they always have access to the latest features and security fixes.
+pgAdmin 4's desktop application includes an automated update system built using 
+Electron's ``autoUpdater`` module. This feature enables users to receive and install 
+updates seamlessly, ensuring they always have access to the latest features and security fixes.
 
 Supported Platforms
 ===================
@@ -159,43 +161,62 @@ Update Process Overview
 
 3. **Installation Flow:**
    
-   - User prompted to restart when update ready
+   - User prompted to Install & Restart or Restart Later when update ready
    - Update applied during application restart
+
+  The flow chart for the update process is as follows:
+
+  .. image:: images/auto_update_desktop_app.png
+    :alt: Runtime View Log
+    :align: center
 
 Technical Architecture
 ======================
 
-1. **Main Process (runtime/src/js/pgadmin.js)**
+1. **Main Process**
 
    Handles core update functionality:
+
+   File: runtime/src/js/pgadmin.js
 
    .. code-block:: javascript
 
       autoUpdater.on('checking-for-update', () => {
-        misc.writeServerLog('checking for updates...');
+         misc.writeServerLog('[Auto-Updater]: Checking for update...');
       });
 
       autoUpdater.on('update-available', () => {
-        setConfigAndRefreshMenu('update-available');
-        misc.writeServerLog('Update downloading...');
-        pgAdminMainScreen.webContents.send('appUpdateNotifier', {update_downloading: true});
+         setConfigAndRefreshMenu('update-available');
+         misc.writeServerLog('[Auto-Updater]: Update downloading...');
+         pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_downloading: true});
       });
 
-2. **Renderer Process (web/pgadmin/static/js/BrowserComponent.jsx)**
+2. **Renderer Process**
 
    Manages user interface updates:
 
+   File: web/pgadmin/static/js/BrowserComponent.jsx
+
    .. code-block:: javascript
 
-      if (window.electronUI?.appUpdateNotifier) {
-        window.electronUI.appUpdateNotifier((data) => {
-          if (data.update_downloading) {
-            appUpdateNotifier('Update downloading...', 'info', 10000);
-          } else if (data.update_downloaded) {
-            appUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', null, 
-              'Update downloaded', installUpdate, 'update_downloaded');
-          }
-        });
+      if (window.electronUI && typeof window.electronUI.notifyAppAutoUpdate === 'function') {
+         window.electronUI.notifyAppAutoUpdate((data)=>{
+            if (data?.check_version_update) {
+               pgAdmin.Browser.check_version_update(true);
+            } else if (data.update_downloading) {
+               appAutoUpdateNotifier('Update downloading...', 'info', null, 10000);
+            } else if (data.no_update_available) {
+               appAutoUpdateNotifier('No update available.....', 'info', null, 10000);
+            } else if (data.update_downloaded) {
+               const UPDATE_DOWNLOADED_MESSAGE = gettext('An update is ready. Restart the app now to install it, or later to keep using the current version.');
+               appAutoUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', installUpdate, null, 'Update downloaded', 'update_downloaded');
+            } else if (data.error) {
+               appAutoUpdateNotifier(`${data.errMsg}`, 'error');
+            } else if (data.update_installed) {
+               const UPDATE_INSTALLED_MESSAGE = gettext('Update installed successfully!');
+               appAutoUpdateNotifier(UPDATE_INSTALLED_MESSAGE, 'success');
+            }
+         });
       }
 
 3. **Update Server Communication**
@@ -217,8 +238,7 @@ User Interface Components
 2. **Menu Integration:**
    
    - Check for Updates option in pgAdmin 4 menu
-   - Update status indicators
-   - Restart to Update option when available
+   - Restart to Update option when  update available
 
 Error Handling
 ==============
@@ -233,8 +253,6 @@ The system includes comprehensive error handling:
 
 2. **Installation Errors:**
    
-   - Insufficient disk space
-   - Permission issues
    - Corrupted downloads
 
 3. **Recovery Mechanisms:**
@@ -245,12 +263,10 @@ The system includes comprehensive error handling:
 Security Considerations
 =======================
 
-The update system implements several security measures:
+The update system implements below security measures:
 
 1. **Secure Communication:**
-   
-   - HTTPS for update checks
-   - Encrypted download process
+
    - Protected update metadata
 
 Platform-Specific Notes
