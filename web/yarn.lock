@@ -3745,7 +3745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:8.35.1, @typescript-eslint/utils@npm:^6.0.0 || ^7.0.0 || ^8.0.0":
+"@typescript-eslint/utils@npm:8.35.1, @typescript-eslint/utils@npm:^8.0.0":
   version: 8.35.1
   resolution: "@typescript-eslint/utils@npm:8.35.1"
   dependencies:
@@ -7296,21 +7296,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^28.14.0":
-  version: 28.14.0
-  resolution: "eslint-plugin-jest@npm:28.14.0"
+"eslint-plugin-jest@npm:^29.0.1":
+  version: 29.0.1
+  resolution: "eslint-plugin-jest@npm:29.0.1"
   dependencies:
-    "@typescript-eslint/utils": "npm:^6.0.0 || ^7.0.0 || ^8.0.0"
+    "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
-    "@typescript-eslint/eslint-plugin": ^6.0.0 || ^7.0.0 || ^8.0.0
-    eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
+    "@typescript-eslint/eslint-plugin": ^8.0.0
+    eslint: ^8.57.0 || ^9.0.0
     jest: "*"
   peerDependenciesMeta:
     "@typescript-eslint/eslint-plugin":
       optional: true
     jest:
       optional: true
-  checksum: 10c0/da9c99dd8a1a80aa0c126ff4558882451dcee61b7e4c88e2407ac27d0c86fad2951384a4b037748e26f8743890b4628c6917b0760b01b7017c53fb29768584bc
+  checksum: 10c0/20edc166503a50c10b45f733797d530a5107c91efa25410ef405780d12222a796b5b41ed8f6d2b939632a1af273af6cc5732233463d1f36dbe7680bbb86c4eec
   languageName: node
   linkType: hard
 
@@ -14085,7 +14085,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     diff-arrays-of-objects: "npm:^1.1.8"
     eslint: "npm:^9.30.0"
-    eslint-plugin-jest: "npm:^28.14.0"
+    eslint-plugin-jest: "npm:^29.0.1"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-unused-imports: "npm:^4.1.4"
     exports-loader: "npm:^5.0.0"
