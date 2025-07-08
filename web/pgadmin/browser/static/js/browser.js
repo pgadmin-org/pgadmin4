@@ -284,18 +284,16 @@ define('pgadmin.browser', [
         if (pgAdmin.server_mode == 'False' && (data.check_for_auto_updates && data.auto_update_url!=='')) {
           // This is for desktop installers whose auto_update_url is mentioned in https://www.pgadmin.org/versions.json
           const message = `${gettext('You are currently running version %s of %s, however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}`;
-          function downloadUpdate() {
-            window.electronUI?.sendDataForAppUpdate({
-              'current_version':data.current_version,
-              'upgrade_version': data.upgrade_version,
-              'current_version_int':data.current_version_int,
-              'upgrade_version_int': data.upgrade_version_int,
-              'auto_update_url': data.auto_update_url,
-              'product_name': data.product_name,
-              'platform':data.platform,
-            });
-          }
-          appAutoUpdateNotifier(message, 'warning', downloadUpdate, null, 'Update available', 'download_update');
+          appAutoUpdateNotifier(
+            message,
+            'warning',
+            () => {
+              window.electronUI?.sendDataForAppUpdate(data);
+            },
+            null,
+            'Update available',
+            'download_update'
+          );
         } else if(data.outdated) {
           //This is for server mode or auto-update not supported desktop installer or not mentioned auto_update_url
           pgAdmin.Browser.notifier.warning(

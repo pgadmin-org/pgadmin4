@@ -17,6 +17,7 @@ import { fileURLToPath } from 'url';
 import { setupMenu, refreshMenus } from './menu.js';
 import contextMenu from 'electron-context-menu';
 import { setupDownloader } from './downloader.js';
+import { setupAutoUpdater, updateConfigAndMenus } from './autoUpdaterHandler.js';
 
 const configStore = new Store({
   defaults: {
@@ -39,6 +40,8 @@ let UUID = crypto.randomUUID();
 
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const baseUrl = `http://127.0.0.1:${serverPort}`;
 
 let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
@@ -189,25 +192,6 @@ function reloadApp() {
   currWin.webContents.reload();
 }
 
-// This function stores the flags in configStore that are needed 
-// for auto-update and refreshes menu
-function setConfigAndRefreshMenu(event) {
-  if (event == 'update-available') {
-    configStore.set('update_downloading', true);
-    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
-  } else if (event == 'update-not-available') {
-    configStore.set('update_downloading', false);
-    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
-  } else if (event == 'update-downloaded') {
-    configStore.set('update_downloading', false);
-    configStore.set('update_downloaded', true);
-    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
-  } else if (event == 'error-close') {
-    configStore.set('update_downloading', false);
-    configStore.set('update_downloaded', false);
-    refreshMenus(pgAdminMainScreen,configStore,menuCallbacks);
-  }
-}
 
 // Remove auto_update_enabled from configStore on app close or quit
 function cleanupAutoUpdateFlag() {
@@ -246,7 +230,6 @@ function startDesktopMode() {
   process.env.PGADMIN_SERVER_MODE = 'OFF';
 
   // Start Page URL
-  const baseUrl = `http://127.0.0.1:${serverPort}`;
   startPageUrl = `${baseUrl}/?key=${UUID}`;
   serverCheckUrl = `${baseUrl}/misc/ping?key=${UUID}`;
 
@@ -396,6 +379,15 @@ function launchPgAdminWindow() {
 
   pgAdminMainScreen.show();
 
+  setupAutoUpdater({
+    pgAdminMainScreen,
+    configStore,
+    menuCallbacks,
+    baseUrl,
+    UUID,
+    forceQuitAndInstallUpdate,
+  });
+
   pgAdminMainScreen.webContents.setWindowOpenHandler(({url})=>{
     let openDocsInBrowser = configStore.get('openDocsInBrowser', true);
     let isDocURL = false;
@@ -433,7 +425,7 @@ function launchPgAdminWindow() {
 
   pgAdminMainScreen.on('close', () => {
     configStore.set('bounds', pgAdminMainScreen.getBounds());
-    setConfigAndRefreshMenu('error-close');
+    updateConfigAndMenus('error-close', configStore, pgAdminMainScreen, menuCallbacks);
     pgAdminMainScreen.removeAllListeners('close');
     pgAdminMainScreen.close();
   });
@@ -478,7 +470,7 @@ ipcMain.on('restartApp', ()=>{
   app.relaunch();
   app.exit(0);
 });
-ipcMain.on('log', (text) => {
+ipcMain.on('log', (_e, text) => {
   misc.writeServerLog(text);
 });
 ipcMain.on('focus', (e) => {
@@ -500,70 +492,6 @@ ipcMain.handle('checkPortAvailable', async (_e, fixedPort)=>{
 });
 ipcMain.handle('openConfigure', openConfigure);
 
-// Register autoUpdater event listeners ONCE
-// For now only macOS is supported for electron auto-update
-if (process.platform === 'darwin') {
-  autoUpdater.on('checking-for-update', () => {
-    misc.writeServerLog('[Auto-Updater]: Checking for update...');
-  });
-
-  autoUpdater.on('update-available', () => {
-    setConfigAndRefreshMenu('update-available');
-    misc.writeServerLog('[Auto-Updater]: Update downloading...');
-    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_downloading: true});
-  });
-
-  autoUpdater.on('update-not-available', () => {
-    setConfigAndRefreshMenu('update-not-available');
-    misc.writeServerLog('[Auto-Updater]: No update available...');
-    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {no_update_available: true});
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    setConfigAndRefreshMenu('update-downloaded');
-    misc.writeServerLog('[Auto-Updater]: Update downloaded...');
-    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_downloaded: true});
-  });
-
-  autoUpdater.on('error', (message) => {
-    setConfigAndRefreshMenu('error-close');
-    misc.writeServerLog(`[Auto-Updater]: ${message}`);
-    pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {error: true, errMsg: message});
-  });
-
-  ipcMain.on('sendDataForAppUpdate', (_, data) => {
-    // Update auto-update enabled flag and refresh menus only if the setting is changed or not set
-    if (typeof data.check_for_updates !== 'undefined') {
-      const currentFlag = configStore.get('auto_update_enabled');
-      if (typeof currentFlag === 'undefined' || currentFlag !== data.check_for_updates) {
-      configStore.set('auto_update_enabled', data.check_for_updates);
-      refreshMenus(pgAdminMainScreen, configStore, menuCallbacks);
-      }
-    }
-
-    if (data.auto_update_url && data.upgrade_version && data.upgrade_version_int && data.current_version_int && data.product_name) {
-      const ftpUrl = encodeURIComponent(`${data.auto_update_url}/pgadmin4-${data.upgrade_version}-${process.arch}.zip`);
-      let serverUrl = `http://127.0.0.1:${serverPort}/misc/auto_update/${data.current_version_int}/${data.upgrade_version}/${data.upgrade_version_int}/${data.product_name}/${ftpUrl}/?key=${UUID}`;      
-
-      try {
-        autoUpdater.setFeedURL({ url: serverUrl });
-        misc.writeServerLog('[Auto-Updater]: Initiating update check...');
-        autoUpdater.checkForUpdates();
-      } catch (err) {
-        misc.writeServerLog('[Auto-Updater]: Error setting autoUpdater feed URL: ' + err.message);
-        if (pgAdminMainScreen) {
-          pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {error: true, errMsg: 'Failed to check for updates. Please try again later.'});
-        }
-        return;
-      }
-    }
-
-    if (data.install_update_now) {
-      /* Needed for force quit and install update and restart app*/
-      forceQuitAndInstallUpdate();
-    }
-  });
-}
 
 app.whenReady().then(() => {
   splashWindow = new BrowserWindow({
