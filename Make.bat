@@ -375,7 +375,7 @@ REM Main build sequence Ends
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 "%DISTROOT%\%INSTALLERNAME%"
+    CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss"  "/Ssigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 "%DISTROOT%\%INSTALLERNAME%" $f"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
