@@ -5,5 +5,5 @@ SELECT
 FROM
     pg_catalog.pg_constraint
 WHERE
-    conrelid={{foid}}::oid
+    conrelid={{foid}}::oid AND contype != 'n'
 ORDER by conname;

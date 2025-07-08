@@ -119,7 +119,7 @@ class BackupJobTest(BaseTestGenerator):
                  expected_cmd_opts=['--verbose', '--format=c',
                                     '--large-objects'],
                  not_expected_cmd_opts=[],
-                 expected_exit_code=[1]
+                 expected_exit_code=[0, 1]
              ),
              message='--large-objects is not supported by EPAS/PG server '
                      'less than 16'

@@ -25,7 +25,9 @@ New features
 Housekeeping
 ************
 
+  | `Issue #8828 <https://github.com/pgadmin-org/pgadmin4/issues/8828>`_ -  Ensure that pgAdmin 4 is compatible with PG/EPAS v18.
 
 Bug fixes
 *********
 
+  | `Issue #8914 <https://github.com/pgadmin-org/pgadmin4/issues/8914>`_ -  Update zstd library link to 1.5.7 in Dockerfile.
