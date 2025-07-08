@@ -348,7 +348,7 @@ def upgrade_check():
                             .lower() == 'true')
     # Get the current version info from the website, and flash a message if
     # the user is out of date, and the check is enabled.
-    global platform
+    platform = None
     ret = {
         "outdated": False,
     }
