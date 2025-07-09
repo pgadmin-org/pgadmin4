@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import copy
 import json
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
@@ -23,7 +24,8 @@ class TestMacros(BaseTestGenerator):
         ('Get all macros',
          dict(
              url='get_macros',
-             method='get'
+             method='get',
+             data={}
          )),
         ('Set Macros',
          dict(
@@ -112,6 +114,7 @@ class TestMacros(BaseTestGenerator):
             "dbname": database_info["db_name"]
         }))
         self.assertEqual(response.status_code, 200)
+        self.modified_data = copy.deepcopy(self.data)
 
     def runTest(self):
         url = '/sqleditor/{0}/{1}'.format(self.url, self.trans_id)
@@ -124,11 +127,11 @@ class TestMacros(BaseTestGenerator):
             self.assertEqual(len(response_data['macro']), 22)
         else:
             response = self.tester.put(url,
-                                       data=json.dumps(self.data),
+                                       data=json.dumps(self.modified_data),
                                        follow_redirects=True)
             self.assertEqual(response.status_code, 200)
 
-            for m in self.data['changed']:
+            for m in self.modified_data['changed']:
                 if self.operation == 'set':
                     m['id'] = m['mid']
                 url = '/sqleditor/get_macros/{0}/{1}'.format(m['id'],
