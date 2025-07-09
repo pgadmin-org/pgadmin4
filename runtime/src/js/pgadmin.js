@@ -41,7 +41,7 @@ let UUID = crypto.randomUUID();
 let appStartTime = (new Date()).getTime();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const baseUrl = `http://127.0.0.1:${serverPort}`;
+let baseUrl = `http://127.0.0.1:${serverPort}`;
 
 let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
@@ -230,6 +230,7 @@ function startDesktopMode() {
   process.env.PGADMIN_SERVER_MODE = 'OFF';
 
   // Start Page URL
+  baseUrl = `http://127.0.0.1:${serverPort}`;
   startPageUrl = `${baseUrl}/?key=${UUID}`;
   serverCheckUrl = `${baseUrl}/misc/ping?key=${UUID}`;
 
