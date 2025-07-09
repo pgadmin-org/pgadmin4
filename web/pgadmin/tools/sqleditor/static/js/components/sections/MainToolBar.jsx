@@ -249,11 +249,17 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
         return;
       }
     }
+    let _confirm_msg = gettext('The current transaction is not committed to the database. '
+        +'Do you want to commit or rollback the transaction?');
+    if (queryToolCtx.server_cursor) {
+      _confirm_msg = gettext('The query was executed with a server-side cursor, '
+        + 'which runs within a transaction.') + _confirm_msg;
+    }
+
     queryToolCtx.modal.showModal(gettext('Commit transaction?'), (closeModal)=>(
       <ConfirmTransactionContent
         closeModal={closeModal}
-        text={gettext('The current transaction is not committed to the database. '
-          +'Do you want to commit or rollback the transaction?')}
+        text={_confirm_msg}
         onRollback={()=>{
           onExecutionDone();
           onRollbackClick();
@@ -267,8 +273,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros, onAddT
   };
   useEffect(()=>{
     if(isInTxn()) {
-      setDisableButton('commit', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ?true:false);
-      setDisableButton('rollback', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ?true:false);
+      setDisableButton('commit', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ? true : false);
+      setDisableButton('rollback', queryToolCtx.params.server_cursor && !queryToolCtx.params.is_query_tool ? true : false);
       setDisableButton('execute-options', true);
     } else {
       setDisableButton('commit', true);
