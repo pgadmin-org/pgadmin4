@@ -1280,7 +1280,7 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
     # Check whether the next recordset/page is available or not
     next_page = 0
     if len(result) > 0 and len(result) > page_size:
-        result = result[0:len(result)-1]
+        result = result[0:len(result) - 1]
         next_page = 1
 
     pagination = {
