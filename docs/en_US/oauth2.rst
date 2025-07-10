@@ -81,5 +81,5 @@ PKCE Workflow
 
 Ref: https://oauth.net/2/pkce
 
-To enable PKCE workflow, set the configuration parameters OAUTH2_CHALLENGE_METHOD to S256 and OAUTH2_RESPONSE_TYPE to code.
+To enable PKCE workflow, set the configuration parameters OAUTH2_CHALLENGE_METHOD to *S256* and OAUTH2_RESPONSE_TYPE to *code*.
 Both parameters are mandatory to enable PKCE workflow.
