@@ -119,7 +119,7 @@ class OAuth2Authentication(BaseAuthentication):
 
             # Override with PKCE parameters if provided
             if 'OAUTH2_CHALLENGE_METHOD' in oauth2_config and \
-                'OAUTH2_RESPONSE_TYPE' in oauth2_config:
+                    'OAUTH2_RESPONSE_TYPE' in oauth2_config:
                 # Merge PKCE kwargs with defaults
                 pkce_kwargs = {
                     'code_challenge_method': oauth2_config[
