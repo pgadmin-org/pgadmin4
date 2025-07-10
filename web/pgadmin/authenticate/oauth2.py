@@ -109,6 +109,26 @@ class OAuth2Authentication(BaseAuthentication):
             OAuth2Authentication.oauth2_config[
                 oauth2_config['OAUTH2_NAME']] = oauth2_config
 
+            # Build client_kwargs with defaults
+            client_kwargs = {
+                'scope': oauth2_config.get(
+                    'OAUTH2_SCOPE', 'email profile'),
+                'verify': oauth2_config.get(
+                    'OAUTH2_SSL_CERT_VERIFICATION', True)
+            }
+
+            # Override with PKCE parameters if provided
+            if 'OAUTH2_CHALLENGE_METHOD' in oauth2_config and \
+                    'OAUTH2_RESPONSE_TYPE' in oauth2_config:
+                # Merge PKCE kwargs with defaults
+                pkce_kwargs = {
+                    'code_challenge_method': oauth2_config[
+                        'OAUTH2_CHALLENGE_METHOD'],
+                    'response_type': oauth2_config[
+                        'OAUTH2_RESPONSE_TYPE']
+                }
+                client_kwargs.update(pkce_kwargs)
+
             OAuth2Authentication.oauth2_clients[
                 oauth2_config['OAUTH2_NAME']
             ] = OAuth2Authentication.oauth_obj.register(
@@ -118,10 +138,7 @@ class OAuth2Authentication(BaseAuthentication):
                 access_token_url=oauth2_config['OAUTH2_TOKEN_URL'],
                 authorize_url=oauth2_config['OAUTH2_AUTHORIZATION_URL'],
                 api_base_url=oauth2_config['OAUTH2_API_BASE_URL'],
-                client_kwargs={'scope': oauth2_config.get(
-                    'OAUTH2_SCOPE', 'email profile'),
-                    'verify': oauth2_config.get(
-                    'OAUTH2_SSL_CERT_VERIFICATION', True)},
+                client_kwargs=client_kwargs,
                 server_metadata_url=oauth2_config.get(
                     'OAUTH2_SERVER_METADATA_URL', None)
             )
