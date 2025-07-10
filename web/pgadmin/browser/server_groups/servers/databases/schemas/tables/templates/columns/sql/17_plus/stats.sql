@@ -8,7 +8,10 @@ SELECT
     correlation AS {{ conn|qtIdent(_('Correlation')) }},
     most_common_elems AS {{ conn|qtIdent(_('Most common elements')) }},
     most_common_elem_freqs AS {{ conn|qtIdent(_('Most common elements frequencies')) }},
-    elem_count_histogram AS {{ conn|qtIdent(_('Histogram element count')) }}
+    elem_count_histogram AS {{ conn|qtIdent(_('Histogram element count')) }},
+    range_length_histogram  AS {{ conn|qtIdent(_('Histogram range values')) }},
+    range_empty_frac  AS {{ conn|qtIdent(_('Empty fraction range')) }},
+    range_bounds_histogram  AS {{ conn|qtIdent(_('Histogram bounds range')) }}
 FROM
     pg_catalog.pg_stats
 WHERE
