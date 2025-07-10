@@ -313,7 +313,7 @@ export default function SearchObjects({nodeData}) {
 
       return false;
     }
-    tree.suppressAddOpenEventsUntilPath = '/browser/' + rowData.id_path.join('/');
+    tree.suppressEventsForPath = '/browser/' + rowData.id_path.join('/');
     setLoaderText(gettext('Locating...'));
     tree.findNodeWithToggle(rowData.id_path)
       .then((treeItem)=>{

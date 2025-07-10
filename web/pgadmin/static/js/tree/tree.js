@@ -86,7 +86,7 @@ export class Tree {
 
     // Flag to suppress added and opened tree event being called during object search operations, 
     // tree.select of search object clashes with other tree.select.
-    this.suppressAddOpenEventsUntilPath = null;
+    this.suppressEventsForPath = null;
     this.draggableTypes = {};
   }
 

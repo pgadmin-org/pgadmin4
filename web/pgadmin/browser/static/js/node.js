@@ -732,10 +732,10 @@ define('pgadmin.browser.node', [
         pgBrowser.Node.callbacks.change_server_background(item, data);
         // Suppress added tree event being called during object search operations 
         // where tree.select clashes due to previous tree state restore
-        const suppressPath = pgBrowser.tree.suppressAddOpenEventsUntilPath;
+        const suppressPath = pgBrowser.tree.suppressEventsForPath;
         if (suppressPath) {
           if (item.path === suppressPath) {
-            pgBrowser.tree.suppressAddOpenEventsUntilPath = null;
+            pgBrowser.tree.suppressEventsForPath = null;
           } else {
             return;
           }
@@ -789,10 +789,10 @@ define('pgadmin.browser.node', [
           auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
         // Suppress opened tree event being called during object search operations 
         // where tree.select clashes due to only child of parent opens automatically.
-        const suppressPath = pgBrowser.tree.suppressAddOpenEventsUntilPath;
+        const suppressPath = pgBrowser.tree.suppressEventsForPath;
         if (suppressPath) {
           if (item.path === suppressPath) {
-            pgBrowser.tree.suppressAddOpenEventsUntilPath = null;
+            pgBrowser.tree.suppressEventsForPath = null;
           } else {
             return;
           }
