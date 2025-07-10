@@ -48,6 +48,8 @@ and modify the values for the following parameters:
     Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
     "OAUTH2_SSL_CERT_VERIFICATION", "Set this variable to False to disable SSL certificate verification for OAuth2 provider.
     This may need to set False, in case of self-signed certificates."
+    "OAUTH2_CHALLENGE_METHOD", "Enable PKCE workflow. PKCE method name, only *S256* is supported".
+    "OAUTH2_RESPONSE_TYPE", "Enable PKCE workflow. Mandatory with OAUTH2_CHALLENGE_METHOD, must be set to *code*".
 
 Redirect URL
 ============
@@ -65,12 +67,19 @@ the PostgreSQL server password.
 To accomplish this, set the configuration parameter MASTER_PASSWORD to *True*, so upon setting the master password,
 it will be used as an encryption key while storing the password. If it is False, the server password can not be stored.
 
-
 Login Page
-============
+==========
 
 After configuration, on restart, you can see the login page with the Oauth2 login button(s).
 
 .. image:: images/oauth2_login.png
     :alt: Oauth2 login
     :align: center
+
+PKCE Workflow
+=============
+
+Ref: https://oauth.net/2/pkce
+
+To enable PKCE workflow, set the configuration parameters OAUTH2_CHALLENGE_METHOD to S256 and OAUTH2_RESPONSE_TYPE to code.
+Both parameters are mandatory to enable PKCE workflow.
