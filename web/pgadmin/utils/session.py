@@ -31,6 +31,7 @@ from flask_login import login_url
 
 from pickle import dump, load
 from collections import OrderedDict
+from itsdangerous import signer
 
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
@@ -286,6 +287,8 @@ class FileBackedSessionManager(SessionManager):
 class ManagedSessionInterface(SessionInterface):
     def __init__(self, manager):
         self.manager = manager
+        signer.Signer.default_digest_method = \
+            eval(config.SESSION_DIGEST_METHOD)
 
     def open_session(self, app, request):
         cookie_val = request.cookies.get(app.config['SESSION_COOKIE_NAME'])

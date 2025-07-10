@@ -365,6 +365,9 @@ SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
+# Session digest method
+SESSION_DIGEST_METHOD = 'hashlib.sha1'
+
 ##########################################################################
 # Mail server settings
 ##########################################################################
