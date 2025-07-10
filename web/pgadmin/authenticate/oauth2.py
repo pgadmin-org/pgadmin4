@@ -111,16 +111,21 @@ class OAuth2Authentication(BaseAuthentication):
 
             # Build client_kwargs with defaults
             client_kwargs = {
-                'scope': oauth2_config.get('OAUTH2_SCOPE', 'email profile'),
-                'verify': oauth2_config.get('OAUTH2_SSL_CERT_VERIFICATION', True)
+                'scope': oauth2_config.get(
+                    'OAUTH2_SCOPE', 'email profile'),
+                'verify': oauth2_config.get(
+                    'OAUTH2_SSL_CERT_VERIFICATION', True)
             }
-            
+
             # Override with PKCE parameters if provided
-            if 'OAUTH2_CHALLENGE_METHOD' in oauth2_config and 'OAUTH2_RESPONSE_TYPE' in oauth2_config:
+            if 'OAUTH2_CHALLENGE_METHOD' in oauth2_config and \
+                'OAUTH2_RESPONSE_TYPE' in oauth2_config:
                 # Merge PKCE kwargs with defaults
                 pkce_kwargs = {
-                    'code_challenge_method': oauth2_config['OAUTH2_CHALLENGE_METHOD'],
-                    'response_type': oauth2_config['OAUTH2_RESPONSE_TYPE']
+                    'code_challenge_method': oauth2_config[
+                        'OAUTH2_CHALLENGE_METHOD'],
+                    'response_type': oauth2_config[
+                        'OAUTH2_RESPONSE_TYPE']
                 }
                 client_kwargs.update(pkce_kwargs)
 
