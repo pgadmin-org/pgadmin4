@@ -130,11 +130,10 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     if (this.props.decorations) {
       this.props.decorations.addChangeListener(this.forceUpdate);
     }
-    this.setActiveFile(this.props.item);
+    this.setFileLoaded(this.props.item);
   }
 
-  private readonly setActiveFile = async (FileOrDir): Promise<void> => {
-
+  private readonly setFileLoaded = async (FileOrDir): Promise<void> => {
     this.props.changeDirectoryCount(FileOrDir.parent);
     if(FileOrDir._loaded !== true) {
       this.events.dispatch(FileTreeXEvent.onTreeEvents, window.event, 'added', FileOrDir);
