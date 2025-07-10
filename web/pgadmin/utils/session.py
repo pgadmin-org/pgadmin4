@@ -287,7 +287,8 @@ class FileBackedSessionManager(SessionManager):
 class ManagedSessionInterface(SessionInterface):
     def __init__(self, manager):
         self.manager = manager
-        signer.Signer.default_digest_method = eval(config.SESSION_DIGEST_METHOD)
+        signer.Signer.default_digest_method = \
+            eval(config.SESSION_DIGEST_METHOD)
 
     def open_session(self, app, request):
         cookie_val = request.cookies.get(app.config['SESSION_COOKIE_NAME'])
