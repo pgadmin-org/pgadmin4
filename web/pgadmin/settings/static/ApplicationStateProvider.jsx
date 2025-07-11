@@ -13,7 +13,7 @@ import url_for from 'sources/url_for';
 import { getBrowser } from '../../static/js/utils';
 import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
-import { BROWSER_PANELS } from '../../browser/static/js/constants';
+import { TOOLS_SUPPORTING_RESTORE } from '../../browser/static/js/constants';
 import gettext from 'sources/gettext';
 
 const ApplicationStateContext = React.createContext();
@@ -89,7 +89,7 @@ export function ApplicationStateProvider({children}){
   }
 
   const deleteToolData = (panelId)=>{
-    if (saveAppState && [BROWSER_PANELS.QUERY_TOOL, BROWSER_PANELS.ERD_TOOL, BROWSER_PANELS.SCHEMA_DIFF_TOOL, BROWSER_PANELS.PSQL_TOOL].includes(panelId.split('_')[0])){
+    if (saveAppState && TOOLS_SUPPORTING_RESTORE.includes(panelId.split('_')[0])){
       getApiInstance().delete(
         url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
       ).then(()=> { /* Sonar Qube */}).catch(function(error) {

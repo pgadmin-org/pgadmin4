@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 45
+SCHEMA_VERSION = 46
 
 ##########################################################################
 #
@@ -399,7 +399,6 @@ class ApplicationState(db.Model):
                     primary_key=True)
     id = db.Column(db.Integer(),nullable=False,primary_key=True)
     connection_info = db.Column(MutableDict.as_mutable(types.JSON))
-    tool_name = db.Column(db.String(64), nullable=False)
     tool_data = db.Column(PgAdminDbBinaryString())
 
 

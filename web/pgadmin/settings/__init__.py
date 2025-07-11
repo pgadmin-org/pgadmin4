@@ -8,7 +8,6 @@
 ##########################################################################
 
 """Utility functions for storing and retrieving user configuration settings."""
-import os
 import json
 
 from flask import Response, request, render_template, current_app
@@ -83,6 +82,23 @@ def get_setting(setting, default=''):
         return default
     else:
         return data.value
+
+
+def get_workspace_layout():
+    result = (Setting.query.filter(
+        Setting.user_id == current_user.id,
+        Setting.setting.ilike('Workspace/Layout%')).all())
+
+    settings = {}
+    for row in result:
+        settings[row.setting] = row.value
+    return settings
+
+
+def get_layout():
+    layout = {'Browser/Layout': get_setting('Browser/Layout', default='')}
+    layout = {**layout, **get_workspace_layout()}
+    return layout
 
 
 @blueprint.route("/")
@@ -289,7 +305,7 @@ def save_application_state():
     try:
         data_entry = ApplicationState(
             uid=current_user.id, id=trans_id,connection_info=connection_info,
-            tool_name=data['tool_name'], tool_data=tool_data)
+            tool_data=tool_data)
 
         db.session.merge(data_entry)
         db.session.commit()
@@ -356,8 +372,7 @@ def get_application_state():
                     check_external_file_changes(
                         file_path, connection_info['last_saved_file_hash'])
 
-        res.append({'tool_name': row.tool_name,
-                    'connection_info': connection_info,
+        res.append({'connection_info': connection_info,
                     'tool_data': fernet.decrypt(row.tool_data).decode(),
                     'id': row.id
                     })
@@ -409,7 +424,6 @@ def get_tool_data(trans_id):
                 'status': True,
                 'msg': '',
                 'result': {
-                    'tool_name': result.tool_name,
                     'connection_info': connection_info,
                     'tool_data': tool_data,
                     'id': result.id

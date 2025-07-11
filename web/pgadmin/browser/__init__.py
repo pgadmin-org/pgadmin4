@@ -44,7 +44,7 @@ import config
 from pgadmin import current_blueprint
 from pgadmin.authenticate import get_logout_url
 from pgadmin.authenticate.mfa.utils import is_mfa_enabled
-from pgadmin.settings import get_setting
+from pgadmin.settings import get_setting, get_layout
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     bad_request
@@ -474,18 +474,8 @@ def get_shared_storage_list():
 @pgCSRFProtect.exempt
 @pga_login_required
 def utils():
-    layout = {
-        'Browser/Layout': get_setting('Browser/Layout', default=''),
-        'Workspace/Layout-schema_diff_workspace':
-            get_setting('Workspace/Layout-schema_diff_workspace',
-                        default=''),
-        'Workspace/Layout-query_tool_workspace':
-            get_setting('Workspace/Layout-query_tool_workspace',
-                        default=''),
-        'Workspace/Layout-psql_workspace':
-            get_setting('Workspace/Layout-psql_workspace',
-                        default='')
-    }
+    layout = get_layout()
+
     snippets = []
 
     prefs = Preferences.module('paths')

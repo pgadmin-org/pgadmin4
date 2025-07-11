@@ -142,6 +142,7 @@ def panel(trans_id, editor_title):
                 editor_title = editor_title[:idx] + '/' + editor_title[idx:]
         except IndexError as e:
             app.logger.exception(e)
+
     if request.args:
         params = {k: v for k, v in request.args.items()}
     if request.form:

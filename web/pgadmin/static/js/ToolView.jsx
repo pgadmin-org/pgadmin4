@@ -15,7 +15,6 @@ import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
 import { LAYOUT_EVENTS } from './helpers/Layout';
 import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
-import { TabTitle } from './helpers/Layout';
 
 
 function ToolForm({actionUrl, params}) {
@@ -40,36 +39,25 @@ ToolForm.propTypes = {
 };
 
 export function getToolTabParams(panelId, toolUrl, formParams, tabParams, restore=false) {
-  let freshTabParams = {    
-    closable: true,
-    manualClose: true,
-    ...tabParams};
-  
-  let restorTabParams = {
-    title: (<TabTitle id={panelId} closable={true} defaultInternal={{...tabParams}}/>),
-    internal: {
-      ...tabParams,
-      closable: true, 
-      manualClose: false,
-    },
-  };
-  let toolTabParams =  {
+  return {
     id: panelId,
-    ...(restore ? {...restorTabParams} : {...freshTabParams}),
-    cache: false,
-    group: 'playground',
+    title: panelId,
     content: (
       <LayoutIframeTab target={panelId} src={formParams ? undefined : toolUrl}>
-        {formParams && <ToolForm actionUrl={toolUrl} params={{...formParams, restore:restore}}/>}
+        {formParams && <ToolForm actionUrl={toolUrl} params={{...formParams, restore:restore, workSpace: tabParams?.workSpace }}/>}
       </LayoutIframeTab>
     ),
+    closable: true,
+    manualClose: true,
+    ...tabParams,
+    cache: false,
+    group: 'playground',
     metaData: {
       toolUrl: toolUrl,
       formParams: formParams,
       tabParams: tabParams,
     },
   };
-  return toolTabParams;
 }
 
 export default function ToolView({dockerObj}) {

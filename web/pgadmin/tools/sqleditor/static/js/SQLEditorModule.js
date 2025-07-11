@@ -235,7 +235,8 @@ export default class SQLEditor {
 
   async loadComponent(container, params) {
     let panelDocker = pgWindow.pgAdmin.Browser.docker.query_tool_workspace;
-    if (pgWindow.pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT) {
+    if ((params.restore != 'true' && pgWindow.pgAdmin.Browser.docker.currentWorkspace == WORKSPACES.DEFAULT) ||
+        (params.restore == 'true' && params.workSpace == WORKSPACES.DEFAULT)) {
       panelDocker = pgWindow.pgAdmin.Browser.docker.default_workspace;
     }
 
