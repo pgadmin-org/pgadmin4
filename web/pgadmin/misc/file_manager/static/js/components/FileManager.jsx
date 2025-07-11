@@ -392,7 +392,7 @@ export class FileManagerUtils {
     return ret;
   }
 
-  async warnFileReload (fileName, toolContent) {
+  warnFileReload (fileName, toolContent) {
     return new Promise((resolve) => {
       this.params.modal.confirm(
         gettext('Reload file?'),

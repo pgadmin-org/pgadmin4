@@ -200,32 +200,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
     } );
 
-    // eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
-    //   queryToolCtx.api.post(url_for('sqleditor.load_file'), {
-    //     'file_name': decodeURI(fileName),
-    //     'storage': storage
-    //   }, {transformResponse: [(data, headers) => {
-    //     if(headers['content-type'].includes('application/json')) {
-    //       return JSON.parse(data);
-    //     }
-    //     return data;
-    //   }]}).then((res)=>{
-    //     editor.current.setValue(res.data);
-    //     //Check the file content for Trojan Source
-    //     checkTrojanSource(res.data);
-    //     eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
-    //     // Detect line separator from content and editor's EOL.
-    //     const lineSep = editor.current?.detectEOL(res.data);
-    //     // Update the EOL if it differs from the current editor EOL
-    //     setQtStatePartial({ eol: lineSep });
-    //     // Mark the editor content as clean
-    //     editor.current?.markClean();
-    //   }).catch((err)=>{
-    //     eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false, storage);
-    //     pgAdmin.Browser.notifier.error(parseApiError(err));
-    //   });
-    // });
-
     eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName)=>{
       queryToolCtx.api.post(url_for('file_manager.save_file'), {
         'file_name': decodeURI(fileName),

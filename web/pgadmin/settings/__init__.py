@@ -85,6 +85,24 @@ def get_setting(setting, default=''):
         return data.value
 
 
+def get_workspace_layout():
+    result = (Setting.query.filter(
+        Setting.user_id == current_user.id,
+        Setting.setting.ilike('Workspace/Layout%')).all())
+
+    settings = {}
+    for row in result:
+        settings[row.setting] = row.value
+    return settings
+
+
+def get_layout():
+    layout = {'Browser/Layout': get_setting('Browser/Layout', default='')}
+    layout = {**layout, **get_workspace_layout()}
+    print(layout)
+    return layout
+
+
 @blueprint.route("/")
 @pga_login_required
 def index():

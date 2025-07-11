@@ -386,30 +386,6 @@ export function getDefaultGroup() {
   };
 }
 
-const saveMyCustomTab = (tab) => {
-  // 'tab' here is the full TabData object, potentially with 'title', 'content', etc.
-  // We only want to save the 'id' and any custom properties needed by loadTab.
-  const savedTab = {
-    id: tab.id,
-  };
-  if (tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
-    // Conditionally add custom properties that were part of the original TabBase
-    const originalTabParams = tab.metaData.tabParams || {};
-    // Update internal properties so, we get updated title etc.
-    const updatedTabParams = {
-      ...originalTabParams,
-      ...tab.internal
-    };
-    const updatedMetaData = {
-      ...tab.metaData,
-      tabParams: updatedTabParams,
-      restore: true,
-    };
-    savedTab.metaData = updatedMetaData;
-  }
-  return savedTab;
-};
-
 export default function Layout({groups, noContextGroups, getLayoutInstance, layoutId, savedLayout, resetToTabPanel, enableToolEvents=false, isLayoutVisible=true, ...props}) {
   const [[contextPos, contextPanelId, contextExtraMenus], setContextPos] = React.useState([null, null, null]);
   const defaultGroups = React.useMemo(()=>({
@@ -491,9 +467,27 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     return ret;
   };
 
-  const contextMenuItems = getTabMenuItems(contextPanelId)
-    .concat(contextExtraMenus ? [{type: 'separator'}, ...contextExtraMenus] : []);
-
+  const saveTab = (tab) => {
+  // 'tab' here is the full TabData object, potentially with 'title', 'content', etc.
+  // We only want to save the 'id' and any custom properties needed by loadTab.
+    const savedTab = {
+      id: tab.id,
+    };
+    if (tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
+    // add custom properties that were part of the original TabBase
+      const updatedMetaData = {
+        ...tab.metaData,
+        tabParams: {
+          ...( tab.metaData.tabParams || {}),
+          cached: tab?.cached,
+          internal: tab?.internal
+        },
+        restore: true,
+      };
+      savedTab.metaData = updatedMetaData;
+    }
+    return savedTab;
+  };
 
   const flatDefaultLayout = useMemo(()=>{
     const flat = [];
@@ -510,6 +504,17 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     flattenLayout(props.defaultLayout.dockbox);
     return flat;
   }, [props.defaultLayout]);
+  
+  const loadTab = (tab)=>{
+    const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
+    if(!tabData && tab.metaData) {
+      return LayoutDocker.getPanel(getToolTabParams(tab.id, tab.metaData.toolUrl, tab.metaData.formParams, tab.metaData.tabParams, tab.metaData?.restore));
+    }
+    return tabData;
+  };
+
+  const contextMenuItems = getTabMenuItems(contextPanelId)
+    .concat(contextExtraMenus ? [{type: 'separator'}, ...contextExtraMenus] : []);
 
   return (
     <ApplicationStateProvider>
@@ -526,15 +531,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
                 layoutDockerObj.loadLayout(savedLayout, layoutId);
               }
             }}
-            loadTab={(tab)=>{
-              const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
-              if(!tabData && tab.metaData) {
-                let toolTabParams =  getToolTabParams(tab.id, tab.metaData.toolUrl, tab.metaData.formParams, tab.metaData.tabParams, tab.metaData.restore);
-                return toolTabParams;
-              }
-              return tabData;
-            }}
-            saveTab={saveMyCustomTab}
+            loadTab={loadTab}
+            saveTab={saveTab}
             groups={defaultGroups}
             onLayoutChange={(l, currentTabId, direction)=>{
               if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {

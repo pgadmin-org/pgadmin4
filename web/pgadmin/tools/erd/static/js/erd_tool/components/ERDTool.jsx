@@ -107,12 +107,12 @@ const StyledBox = styled(Box)(({theme})=>({
 }));
 
 
-function GetToolContent ({transId, setToolContent}) {
+function GetToolContent ({transId, restoreToolContent}) {
   const {getToolContent} = useApplicationState();
   useEffect(() => {
     async function fetchData() {
       const response = await getToolContent(transId);
-      setToolContent(response);
+      restoreToolContent(response);
     }
     fetchData();
   }, [transId]);
@@ -121,7 +121,7 @@ function GetToolContent ({transId, setToolContent}) {
 
 GetToolContent.propTypes = {
   transId: PropTypes.number,
-  setToolContent: PropTypes.func,
+  restoreToolContent: PropTypes.func,
 };
 
 /* The main body container for the ERD */
@@ -378,33 +378,28 @@ export default class ERDTool extends React.Component {
       if (!loaded && !this.restore) return;
     }
 
-    if(this.restore){
-      this.restoreToolContent();
-    }
-    else if(this.props.params.gen) {
+    if(!this.restore && this.props.params.gen) {
       await this.loadTablesData();
     }
   }
 
-  async restoreToolContent() {
-    if (this.restore){
-      let toolContent = this.state.toolContent;
-      if(toolContent){
-        if(toolContent?.modifiedExternally){
-          toolContent = await this.fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent?.data, '');
-        }
+
+  restoreToolContent = async (toolContent) => {
+    if(toolContent){
+      if(toolContent?.modifiedExternally){
+        toolContent = await this.fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent?.data, '');
+      }
           
-        if(toolContent.loadFile){
-          this.openFile(toolContent.fileName);
-        }else{
-          this.diagram.deserialize(toolContent.data);
-          this.diagram.clearSelection();
-          this.registerModelEvents();
-          if(toolContent.fileName)this.setState({current_file: toolContent.fileName});
-        }
+      if(toolContent.loadFile){
+        this.openFile(toolContent.fileName);
+      }else{
+        this.diagram.deserialize(toolContent.data);
+        this.diagram.clearSelection();
+        this.registerModelEvents();
+        if(toolContent.fileName)this.setState({current_file: toolContent.fileName});
       }
     }
-  }
+  };
 
   componentDidUpdate() {
     if(this.state.dirty) {
@@ -983,9 +978,6 @@ export default class ERDTool extends React.Component {
     }, 250);
   }
 
-  setToolContent = (toolContent) => {
-    this.setState({ toolContent: toolContent });
-  };
 
   render() {
     this.erdDialogs.modal = this.context;
@@ -993,7 +985,7 @@ export default class ERDTool extends React.Component {
 
     return (
       <StyledBox ref={this.containerRef} height="100%" display="flex" flexDirection="column">
-        { this.restore && <GetToolContent transId={this.props.params.trans_id} setToolContent={this.setToolContent} /> }
+        { this.restore && <GetToolContent transId={this.props.params.trans_id} restoreToolContent={this.restoreToolContent} /> }
         <BeforeUnload
           onInit={({forceClose})=>{this.forceClose = forceClose;}}
           enabled={this.state.is_close_tab_warning}

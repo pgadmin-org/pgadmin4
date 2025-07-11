@@ -120,7 +120,7 @@ def index():
 
 @blueprint.route(
     '/panel/<int:trans_id>/<path:editor_title>',
-    methods=["POST"],
+    methods=["GET"],
     endpoint='panel'
 )
 @permissions_required(AllPermissionTypes.tools_schema_diff)
@@ -132,7 +132,6 @@ def panel(trans_id, editor_title):
     Args:
         editor_title: Title of the editor
     """
-    params = {}
     # If title has slash(es) in it then replace it
     if request.args and request.args['fslashes'] != '':
         try:
@@ -142,18 +141,12 @@ def panel(trans_id, editor_title):
                 editor_title = editor_title[:idx] + '/' + editor_title[idx:]
         except IndexError as e:
             app.logger.exception(e)
-    if request.args:
-        params = {k: v for k, v in request.args.items()}
-    if request.form:
-        for key, val in request.form.items():
-            params[key] = val
 
     return render_template(
         "schema_diff/index.html",
         _=gettext,
         trans_id=trans_id,
         editor_title=editor_title,
-        params=json.dumps(params)
     )
 
 

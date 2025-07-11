@@ -55,6 +55,13 @@ export const WORKSPACES = {
   SCHEMA_DIFF_TOOL: 'schema_diff_workspace'
 };
 
+export const TOOLS_SUPPORTING_RESTORE = [
+  BROWSER_PANELS.QUERY_TOOL,
+  BROWSER_PANELS.ERD_TOOL,
+  BROWSER_PANELS.SCHEMA_DIFF_TOOL,
+  BROWSER_PANELS.PSQL_TOOL
+];
+
 export const WEEKDAYS = [
     {label: gettext('Sunday'), value: '7'},
     {label: gettext('Monday'), value: '1'},
