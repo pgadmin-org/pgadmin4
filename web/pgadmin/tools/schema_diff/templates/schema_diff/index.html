@@ -5,7 +5,7 @@ try {
     ['sources/generated/browser_nodes', 'sources/generated/schema_diff'],
     function() {
         var pgSchemaDiff = window.pgAdmin.Tools.SchemaDiff;
-        pgSchemaDiff.load(document.getElementById('schema-diff-main-container'),{{trans_id}},{{ params|safe }});
+        pgSchemaDiff.load(document.getElementById('schema-diff-main-container'),{{trans_id}});
     },
     function() {
       console.log(arguments);

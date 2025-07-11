@@ -38,8 +38,10 @@ import { styled } from '@mui/material/styles';
 import BeforeUnload from './BeforeUnload';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
-import { getToolData } from '../../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 import { connectServerModal, connectServer } from '../../../../../sqleditor/static/js/components/connectServer';
+import { useEffect } from 'react';
+import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/components/FileManager';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -104,6 +106,24 @@ const StyledBox = styled(Box)(({theme})=>({
   }
 }));
 
+
+function GetToolContent ({transId, restoreToolContent}) {
+  const {getToolContent} = useApplicationState();
+  useEffect(() => {
+    async function fetchData() {
+      const response = await getToolContent(transId);
+      restoreToolContent(response);
+    }
+    fetchData();
+  }, [transId]);
+  return null;
+}
+
+GetToolContent.propTypes = {
+  transId: PropTypes.number,
+  restoreToolContent: PropTypes.func,
+};
+
 /* The main body container for the ERD */
 export default class ERDTool extends React.Component {
   static contextType = ModalContext;
@@ -131,6 +151,7 @@ export default class ERDTool extends React.Component {
       database: null,
       fill_color: null,
       text_color: null,
+      toolContent: null,
     };
     this.diagram = new ERDCore();
     /* Flag for checking if user has opted for save before close */
@@ -143,7 +164,8 @@ export default class ERDTool extends React.Component {
     this.erdDialogs = new ERDDialogs(this.context);
     this.apiObj = getApiInstance();
     this.preferencesStore = usePreferences.getState();
-
+    this.fmUtilsObj = new FileManagerUtils(this.apiObj, {modal: this.context});
+    this.restore = props.params.restore == 'true';
     this.eventBus = new EventBus();
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
@@ -195,11 +217,11 @@ export default class ERDTool extends React.Component {
       },
       'linksUpdated': () => {
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile(), this.state.current_file);
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile());
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, this.serializeFile(), this.state.current_file);
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -315,7 +337,7 @@ export default class ERDTool extends React.Component {
       cardinality_notation: erdPref.cardinality_notation,
     }, ()=>{
       this.registerKeyboardShortcuts();
-      this.setTitle(this.state.current_file);
+      if(this.state.current_file)this.setTitle(this.state.current_file);
     });
     this.registerModelEvents();
     this.realignGrid({
@@ -348,29 +370,36 @@ export default class ERDTool extends React.Component {
         .catch((err)=>console.error(err));
     });
 
-    let done = await this.initConnection();
-    if(!done && !this.props.params.sql_id) return;
+    const connected = await this.initConnection();
+    if (!connected && !this.restore) return;
 
-    if(done){
-      done = await this.loadPrequisiteData();
-      if(!done && !this.props.params.sql_id) return;
+    if(connected){
+      const loaded = await this.loadPrequisiteData();
+      if (!loaded && !this.restore) return;
     }
 
-
-    if(this.props.params.sql_id){
-      let sqlValue = getToolData(this.props.params.sql_id);
-      if (sqlValue) {
-        this.diagram.deserialize(sqlValue);
-        this.diagram.clearSelection();
-        this.registerModelEvents();
-        this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, sqlValue);
-      }
-    }
-    else if(this.props.params.gen) {
+    if(!this.restore && this.props.params.gen) {
       await this.loadTablesData();
     }
   }
+
+
+  restoreToolContent = async (toolContent) => {
+    if(toolContent){
+      if(toolContent?.modifiedExternally){
+        toolContent = await this.fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent?.data, '');
+      }
+          
+      if(toolContent.loadFile){
+        this.openFile(toolContent.fileName);
+      }else{
+        this.diagram.deserialize(toolContent.data);
+        this.diagram.clearSelection();
+        this.registerModelEvents();
+        if(toolContent.fileName)this.setState({current_file: toolContent.fileName});
+      }
+    }
+  };
 
   componentDidUpdate() {
     if(this.state.dirty) {
@@ -591,26 +620,25 @@ export default class ERDTool extends React.Component {
     this.props.pgAdmin.Tools.FileManager.show(params, this.openFile.bind(this), null, this.context);
   }
 
-  openFile(fileName) {
+  async openFile(fileName){
     this.setLoading(gettext('Loading project...'));
-    this.apiObj.post(url_for('sqleditor.load_file'), {
-      'file_name': decodeURI(fileName),
-    }).then((res)=>{
+    const fileData = await this.fmUtilsObj.loadFile(fileName);
+    const toolContent = JSON.parse(fileData.data);
+    if (fileData.success) {
       this.setState({
         current_file: fileName,
         dirty: false,
       });
-      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, res.data);
-      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
-      this.setTitle(fileName);
-      this.diagram.deserialize(res.data);
+      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false, toolContent, fileName);
+      this.setTitle(fileName); 
+      this.diagram.deserialize(toolContent);
       this.diagram.clearSelection();
       this.registerModelEvents();
-    }).catch((err)=>{
-      this.handleAxiosCatch(err);
-    }).then(()=>{
-      this.setLoading(null);
-    });
+    } else {
+      console.error('Failed to load file:', fileData.error);
+      pgAdmin.Browser.notifier.error(fileData.error);
+    }
+    this.setLoading(null);
   }
 
   onSaveDiagram(isSaveAs=false, closeOnSave=false) {
@@ -630,7 +658,7 @@ export default class ERDTool extends React.Component {
 
   saveFile(fileName) {
     this.setLoading(gettext('Saving...'));
-    this.apiObj.post(url_for('sqleditor.save_file'), {
+    this.apiObj.post(url_for('file_manager.save_file'), {
       'file_name': decodeURI(fileName),
       'file_content': JSON.stringify(this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)),
     }).then(()=>{
@@ -640,7 +668,7 @@ export default class ERDTool extends React.Component {
         dirty: false,
       });
       this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
-      this.setTitle(fileName);
+      this.setTitle(this.state.current_file); 
       this.setLoading(null);
       if(this.closeOnSave) {
         this.forceClose();
@@ -664,6 +692,10 @@ export default class ERDTool extends React.Component {
     if (this.state.is_new_tab) {
       window.document.title = title;
     } else {
+      this.props.panelDocker.setInternalAttrs(this.props.panelId, {
+        isDirty: dirty,
+        fileName: this.state.current_file
+      });
       setPanelTitle(this.props.panelDocker, this.props.panelId, title);
     }
   }
@@ -699,7 +731,7 @@ export default class ERDTool extends React.Component {
 
         let sqlId = `erd${this.props.params.trans_id}`;
         localStorage.setItem(sqlId, sqlScript);
-        showERDSqlTool(parentData, sqlId, this.props.params.title, this.props.pgWindow.pgAdmin.Tools.SQLEditor);
+        showERDSqlTool(parentData, sqlId, this.props.params.connectionTitle, this.props.pgWindow.pgAdmin.Tools.SQLEditor);
       })
       .catch((error)=>{
         this.handleAxiosCatch(error);
@@ -875,7 +907,6 @@ export default class ERDTool extends React.Component {
       return true;
     } catch (error) {
       this.setState({conn_status: CONNECT_STATUS.FAILED});
-
       connectServerModal(this.context, error.response?.data?.result, async (passwordData)=>{
         await connectServer(this.apiObj, this.context, this.props.params.sid, this.props.params.sid, passwordData, async ()=>{
           await this.initConnection();
@@ -947,11 +978,14 @@ export default class ERDTool extends React.Component {
     }, 250);
   }
 
+
   render() {
     this.erdDialogs.modal = this.context;
+    this.fmUtilsObj.setModalObj(this.context);
 
     return (
       <StyledBox ref={this.containerRef} height="100%" display="flex" flexDirection="column">
+        { this.restore && <GetToolContent transId={this.props.params.trans_id} restoreToolContent={this.restoreToolContent} /> }
         <BeforeUnload
           onInit={({forceClose})=>{this.forceClose = forceClose;}}
           enabled={this.state.is_close_tab_warning}
@@ -960,7 +994,7 @@ export default class ERDTool extends React.Component {
           closePanel={this.closePanel}
         />
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
-          fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
+          fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.connectionTitle)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
           notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange} connectionInfo={this.props.params}
@@ -989,7 +1023,7 @@ ERDTool.propTypes = {
     scid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     tid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     server_type: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+    connectionTitle: PropTypes.string.isRequired,
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     gen: PropTypes.bool.isRequired,
@@ -997,6 +1031,7 @@ ERDTool.propTypes = {
     server_name: PropTypes.string,
     user: PropTypes.string,
     db_name: PropTypes.string,
+    restore: PropTypes.string,
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,

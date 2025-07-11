@@ -18,7 +18,7 @@ from flask_login import current_user
 from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule, get_complete_file_path
 from pgadmin.utils.ajax import make_json_response, bad_request,\
-    success_return, internal_server_error
+    success_return, internal_server_error, make_response as ajax_response
 from pgadmin.utils.menu import MenuItem
 
 from pgadmin.model import db, Setting, ApplicationState
@@ -83,6 +83,24 @@ def get_setting(setting, default=''):
         return default
     else:
         return data.value
+
+
+def get_workspace_layout():
+    result = (Setting.query.filter(
+        Setting.user_id == current_user.id,
+        Setting.setting.ilike('Workspace/Layout%')).all())
+
+    settings = {}
+    for row in result:
+        settings[row.setting] = row.value
+    return settings
+
+
+def get_layout():
+    layout = {'Browser/Layout': get_setting('Browser/Layout', default='')}
+    layout = {**layout, **get_workspace_layout()}
+    print(layout)
+    return layout
 
 
 @blueprint.route("/")
@@ -382,15 +400,48 @@ def get_tool_data(trans_id):
                 ApplicationState.id == trans_id) \
         .first()
 
-    return make_json_response(
-        data={
-            'status': True,
-            'msg': '',
-            'result': {
-                'tool_data': fernet.decrypt(result.tool_data).decode(),
+    if result:
+        connection_info = result.connection_info
+        tool_data = fernet.decrypt(result.tool_data).decode()
+
+        if (connection_info and 'open_file_name' in connection_info and
+                connection_info['open_file_name']):
+            file_path = (
+                get_complete_file_path(connection_info['open_file_name']))
+            file_deleted = False if file_path else True
+            connection_info['file_deleted'] = file_deleted
+
+            if (not file_deleted and connection_info['is_editor_dirty'] and
+                'last_saved_file_hash' in connection_info and
+                    connection_info['last_saved_file_hash']):
+                connection_info['external_file_changes'] = \
+                    check_external_file_changes(
+                        file_path, connection_info['last_saved_file_hash'])
+
+            if not (file_deleted or connection_info['is_editor_dirty']):
+                # Send tool data only if file is deleted or edited
+                tool_data = None
+
+        return make_json_response(
+            data={
+                'status': True,
+                'msg': '',
+                'result': {
+                    'tool_name': result.tool_name,
+                    'connection_info': connection_info,
+                    'tool_data': tool_data,
+                    'id': result.id
+                }
             }
-        }
-    )
+        )
+    else:
+        return (
+            make_json_response(
+                success=0,
+                errormsg=gettext(
+                    'There is no saved content available for this tab.'),
+                status=404
+            ))
 
 
 @blueprint.route(

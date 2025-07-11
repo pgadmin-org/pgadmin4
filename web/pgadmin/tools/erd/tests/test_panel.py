@@ -31,7 +31,8 @@ class ERDPanel(BaseTestGenerator):
                    did=self.did)
 
         response = self.tester.post(
-            url, data={"title": "panel_title", "close_url": "the/close/url"},
+            url, data={"connectionTitle": "panel_title",
+                       "close_url": "the/close/url"},
             content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 200)
 

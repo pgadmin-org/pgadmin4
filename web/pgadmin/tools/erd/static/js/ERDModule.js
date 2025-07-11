@@ -147,7 +147,7 @@ export default class ERDModule {
       'pgadmin:tool:show',
       `${BROWSER_PANELS.ERD_TOOL}_${transId}`,
       panelUrl,
-      {sql_id: toolDataId, title: _.escape(panelTitle), db_name:parentData.database.label, server_name: parentData.server.label, user: parentData.server.user.name, server_type: parentData.server.server_type},
+      {sql_id: toolDataId, connectionTitle: _.escape(panelTitle), db_name:parentData.database.label, server_name: parentData.server.label, user: parentData.server.user.name, server_type: parentData.server.server_type},
       {title: 'Untitled', icon: 'fa fa-sitemap'},
       Boolean(open_new_tab?.includes('erd_tool'))
     );

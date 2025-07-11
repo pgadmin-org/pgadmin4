@@ -5,7 +5,7 @@ import { LAYOUT_EVENTS } from './helpers/Layout';
 import { styled } from '@mui/material/styles';
 import { FormHelperText, Box } from '@mui/material';
 import HTMLReactParse from 'html-react-parser';
-import { deleteToolData } from '../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
 
 const StyledBox = styled(Box)(({theme}) => ({
   color: theme.palette.text.primary,
@@ -16,14 +16,12 @@ const StyledBox = styled(Box)(({theme}) => ({
   height: '100%',
 }));
 
-export default function ToolErrorView({error, panelId, panelDocker, toolDataId}){
+export default function ToolErrorView({error, panelId, panelDocker}){
+  const { deleteToolData } = useApplicationState();
   panelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
     if(panelId == id) {
       panelDocker.close(panelId, true);
-      if(toolDataId){
-        let transId = toolDataId.replace('-','_');
-        deleteToolData(transId, transId);
-      }
+      deleteToolData(panelId);
     }
   });
 

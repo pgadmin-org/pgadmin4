@@ -32,7 +32,7 @@ import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
-import { useApplicationState, getToolData } from '../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
   _.each(Object.keys(script_array).reverse(), function (s) {
@@ -117,7 +117,7 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
-  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
+  const {saveToolData, isSaveToolDataEnabled, getToolContent } = useApplicationState();
   const [oldSchemaDiffData, setOldSchemaDiffData] = useState([]);
 
   useEffect(() => {
@@ -140,9 +140,15 @@ export function SchemaDiffCompare({ params }) {
   }, []);
 
   useEffect(()=>{
-    let oldSchemaDiffData1 = getToolData(params.params?.toolDataId);
-    setOldSchemaDiffData(oldSchemaDiffData1);
-  },[]);
+    if(params.restore == 'true'){
+      async function fetchData() {
+        const response = await getToolContent(params.transId);
+        setOldSchemaDiffData(response?.data);
+      }
+      fetchData();
+    }
+  },[params.transId]);
+
 
   useEffect(()=>{
     if(oldSchemaDiffData){

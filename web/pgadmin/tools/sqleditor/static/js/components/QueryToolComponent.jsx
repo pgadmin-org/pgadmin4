@@ -38,6 +38,7 @@ import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import usePreferences from '../../../../../preferences/static/js/store';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 import { connectServer, connectServerModal } from './connectServer';
+import { FileManagerUtils  } from '../../../../../misc/file_manager/static/js/components/FileManager';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -86,6 +87,7 @@ function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
   } else {
     docker.setInternalAttrs(panelId, {
       isDirty: dirty,
+      fileName: qtState.current_file
     });
     setQueryToolDockerTitle(docker, panelId, true, title, qtState.current_file);
   }
@@ -168,7 +170,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
   const modal = useModal();
-  const {isSaveToolDataEnabled, deleteToolData} = useApplicationState();
+  const {isSaveToolDataEnabled, getToolContent} = useApplicationState();
+  const fmUtilsObj = useMemo(()=>new FileManagerUtils(api, {modal}), []);
 
   /* Connection status poller */
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
@@ -291,32 +294,27 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
-    } else if (qtState.params.toolDataId) {
-      populateEditorData();
+    } else if (qtState.params.restore == 'true') {
+      restoreToolContent();
     } else {
       setQtStatePartial({ editor_disabled: false });
     }
   };
 
-  const populateEditorData = () =>{
-    let populateQueryContent = true;
-
-    if(qtState.params.open_file_name){
-      if(qtState.params.file_deleted == 'false' &&  qtState.params.is_editor_dirty == 'false'){
-        // call load file from disk as no file changes
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, qtState.params.open_file_name, qtState.params?.storage);
-        populateQueryContent = false;
-        deleteToolData();
-      }else if(qtState.params.file_deleted != 'true'){
-        if(qtState.params.external_file_changes == 'true'){
-          populateQueryContent = false;
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, qtState.params.open_file_name);
-        }else{
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, qtState.params.open_file_name, true);
-        }
+  const restoreToolContent = async () =>{
+    let toolContent = await getToolContent(qtState.params.trans_id);
+    if(toolContent){
+      if (toolContent?.modifiedExternally) {
+        toolContent = await fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent.data, '');
+      }
+      
+      if(toolContent?.loadFile){
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, toolContent.fileName, params?.storage);
+      }else{
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, toolContent.data);
+        if(toolContent?.fileName)eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, toolContent.fileName, true);
       }
     }
-    if(populateQueryContent) eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT);
     setQtStatePartial({ editor_disabled: false });
   };
 

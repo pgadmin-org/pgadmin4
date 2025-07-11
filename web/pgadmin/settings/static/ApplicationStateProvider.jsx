@@ -13,31 +13,13 @@ import url_for from 'sources/url_for';
 import { getBrowser } from '../../static/js/utils';
 import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
+import { TOOLS_SUPPORTING_RESTORE } from '../../browser/static/js/constants';
+import gettext from 'sources/gettext';
 
 const ApplicationStateContext = React.createContext();
 export const useApplicationState = ()=>useContext(ApplicationStateContext);
 
-export function getToolData(localStorageId){
-  let toolDataJson = JSON.parse(localStorage.getItem(localStorageId));
-  localStorage.removeItem(localStorageId);   
-  return toolDataJson;
-}
-
-export function deleteToolData(panelId, closePanelId){
-  const saveAppState = usePreferences.getState().getPreferencesForModule('misc')?.save_app_state;
-  if(saveAppState){
-    if(panelId == closePanelId){
-      let api = getApiInstance();
-      api.delete(
-        url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
-      ).then(()=> { /* Sonar Qube */}).catch(function(error) {
-        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-      });
-    }  
-  }
-};
-
-export function ApplicationStateProvider({children, toolDataId}){
+export function ApplicationStateProvider({children}){
   const preferencesStore = usePreferences();
   const saveAppState = preferencesStore?.getPreferencesForModule('misc')?.save_app_state;
   const openNewTab = preferencesStore?.getPreferencesForModule('browser')?.new_browser_tab_open;
@@ -63,36 +45,64 @@ export function ApplicationStateProvider({children, toolDataId}){
     return saveAppState;
   };
 
-  async function getQueryToolContent() {
+  async function getToolContent(transId) {
     try {
-      let transId = toolDataId.split('-')[1];
       const res = await getApiInstance({'Content-Encoding': 'gzip'}).get(
         url_for('settings.get_tool_data', {
           'trans_id': transId,
         })
       );
-      return res.data.success? JSON.parse(res.data.data.result.tool_data): null;
+
+      if (!res?.data?.success) {
+        console.warn('Unable to retrieve tool content.');
+        return null;
+      }
+      
+      const toolData = res.data.data.result;
+      const connectionInfo = toolData?.connection_info;
+      const toolContent = JSON.parse(toolData.tool_data);
+
+      let loadFile = false;
+      let fileName = null;
+
+      if(connectionInfo?.open_file_name){
+        fileName = connectionInfo.open_file_name;
+
+        if(connectionInfo.is_editor_dirty){
+          if(connectionInfo.external_file_changes){
+            // file has external chages
+            return {loadFile: loadFile, fileName: fileName, data: toolContent, modifiedExternally: true};
+          }
+        }else{
+          loadFile = true;
+          return {loadFile: loadFile, fileName: fileName, data: null};
+        }
+      }
+      return {loadFile: loadFile, fileName: fileName, data: toolContent};
+
     } catch (error) {
-      pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      let errorMsg = gettext(error?.response?.data?.errormsg || error);
+      console.warn(errorMsg);
+      pgAdmin.Browser.notifier.pgRespErrorNotify(errorMsg);
       return null;
     }
   }
 
-  const deleteToolData = ()=>{
-    let transId = toolDataId.split('-')[1];
-    getApiInstance().delete(
-      url_for('settings.delete_application_state'), {data:{'panelId': transId}}
-    ).then(()=> { /* Sonar Qube */}).catch(function(error) {
-      pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-    });
-
+  const deleteToolData = (panelId)=>{
+    if (saveAppState && TOOLS_SUPPORTING_RESTORE.includes(panelId.split('_')[0])){
+      getApiInstance().delete(
+        url_for('settings.delete_application_state'), {data:{'panelId': panelId}}
+      ).then(()=> { /* Sonar Qube */}).catch(function(error) {
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
+      });
+    }
   };
 
   const value = useMemo(()=>({
     saveToolData,
     isSaveToolDataEnabled,
-    getQueryToolContent,
-    deleteToolData
+    deleteToolData,
+    getToolContent
   }), []);
 
   return <ApplicationStateContext.Provider value={value}>
@@ -103,5 +113,4 @@ export function ApplicationStateProvider({children, toolDataId}){
 
 ApplicationStateProvider.propTypes = {
   children: PropTypes.object,
-  toolDataId: PropTypes.string
 };

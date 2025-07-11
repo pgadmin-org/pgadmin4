@@ -246,7 +246,7 @@ export default class SQLEditor {
     root.render(
       <Theme>
         <PgAdminProvider value={pgAdmin}>
-          <ApplicationStateProvider toolDataId={params.toolDataId}>
+          <ApplicationStateProvider>
             <ModalProvider>
               <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
               { params.error ?   
@@ -254,7 +254,6 @@ export default class SQLEditor {
                   error={params.error}
                   panelId={`${BROWSER_PANELS.QUERY_TOOL}_${params.trans_id}`}
                   panelDocker={panelDocker}
-                  toolDataId={params.toolDataId}
                 /> :
                 <QueryToolComponent params={params} 
                   pgWindow={pgWindow} 

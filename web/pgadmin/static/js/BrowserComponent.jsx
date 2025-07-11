@@ -34,6 +34,7 @@ import WorkspaceToolbar from '../../misc/workspaces/static/js/WorkspaceToolbar';
 import { useWorkspace, WorkspaceProvider } from '../../misc/workspaces/static/js/WorkspaceProvider';
 import { PgAdminProvider, usePgAdmin } from './PgAdminProvider';
 import PreferencesComponent from '../../preferences/static/js/components/PreferencesComponent';
+import { ApplicationStateProvider } from '../../settings/static/ApplicationStateProvider';
 
 
 const objectExplorerGroup  = {
@@ -112,40 +113,44 @@ function Layouts({browser}) {
   const pgAdmin = usePgAdmin();
   const {config, enabled, currentWorkspace} = useWorkspace();
   return (
-    <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
-      {enabled && <WorkspaceToolbar/> }
-      <Layout
-        getLayoutInstance={(obj)=>{
-          pgAdmin.Browser.docker.default_workspace = obj;
-        }}
-        defaultLayout={defaultLayout}
-        layoutId='Browser/Layout'
-        savedLayout={pgAdmin.Browser.utils.layout}
-        groups={{
-          'object-explorer': objectExplorerGroup,
-          'playground': getMorePanelGroup(defaultTabsData),
-        }}
-        noContextGroups={['object-explorer']}
-        resetToTabPanel={BROWSER_PANELS.MAIN}
-        enableToolEvents
-        isLayoutVisible={!enabled || currentWorkspace == WORKSPACES.DEFAULT}
-      />
-      {enabled && config.map((item)=>(
+    <ApplicationStateProvider>
+      <div style={{display: 'flex', height: (browser != 'Electron' ? 'calc(100% - 30px)' : '100%')}}>
+        {enabled && <WorkspaceToolbar/> }
         <Layout
-          key={item.docker}
           getLayoutInstance={(obj)=>{
-            pgAdmin.Browser.docker[item.docker] = obj;
-            obj.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
+            pgAdmin.Browser.docker.default_workspace = obj;
           }}
-          defaultLayout={item.layout}
+          defaultLayout={defaultLayout}
+          layoutId='Browser/Layout'
+          savedLayout={pgAdmin.Browser.utils.layout}
           groups={{
-            'playground': item?.tabsData ? getMorePanelGroup(item?.tabsData) : {...getDefaultGroup()},
+            'object-explorer': objectExplorerGroup,
+            'playground': getMorePanelGroup(defaultTabsData),
           }}
+          noContextGroups={['object-explorer']}
           resetToTabPanel={BROWSER_PANELS.MAIN}
-          isLayoutVisible={currentWorkspace == item.workspace}
+          enableToolEvents
+          isLayoutVisible={!enabled || currentWorkspace == WORKSPACES.DEFAULT}
         />
-      ))}
-    </div>
+        {enabled && config.map((item)=>(
+          <Layout
+            key={item.docker}
+            getLayoutInstance={(obj)=>{
+              pgAdmin.Browser.docker[item.docker] = obj;
+              obj.eventBus.fireEvent(LAYOUT_EVENTS.INIT);
+            }}
+            defaultLayout={item.layout}
+            layoutId={`Workspace/Layout-${item.workspace}`}
+            savedLayout={pgAdmin.Browser.utils.layout}
+            groups={{
+              'playground': item?.tabsData ? getMorePanelGroup(item?.tabsData) : {...getDefaultGroup()},
+            }}
+            resetToTabPanel={BROWSER_PANELS.MAIN}
+            isLayoutVisible={currentWorkspace == item.workspace}
+          />
+        ))}
+      </div>
+    </ApplicationStateProvider>
   );
 }
 Layouts.propTypes = {
