@@ -362,6 +362,20 @@ basicSettings = createTheme(basicSettings, {
           }
         }
       }
+    },
+    MuiBadge: {
+      defaultProps: {
+        overlap: 'circular',
+        color: 'success',
+        variant: 'dot',
+      },
+      styleOverrides: {
+        badge: {
+          height: '6px',
+          minWidth: '6px',
+          right: '16%',
+        },
+      }
     }
   },
 });
