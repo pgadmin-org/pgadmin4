@@ -391,20 +391,19 @@ def upgrade_check():
                     'Exception when checking for update')
                 return internal_server_error('Failed to check for update')
 
+            if sys.platform == 'darwin':
+                platform = 'macos'
+            elif sys.platform == 'win32':
+                platform = 'windows'
+
+            # Check if the fetched data is valid and if the latest
+            # version is newer than the current version.
             if data is not None and \
                 data[config.UPGRADE_CHECK_KEY]['version_int'] > \
                     config.APP_VERSION_INT:
-                if sys.platform == 'darwin':
-                    platform = 'macos'
-                elif sys.platform == 'win32':
-                    platform = 'windows'
-                # Determine if auto-update is available and construct the
-                # response accordingly. If running in desktop mode
-                # (not SERVER_MODE) and an auto-update URL is provided for the
-                # platform, return a response indicating that auto-update is
-                # available, including relevant update details.
-                # Otherwise, return a response indicating that auto-update is
-                # not available, but an update exists.
+                # If running in desktop mode with a valid auto-update
+                # URL for the current platform, prepare a response that
+                # enables the auto-update feature in the client.
                 if not config.SERVER_MODE and data[config.UPGRADE_CHECK_KEY][
                         'auto_update_url'][platform] != '':
                     ret = {
@@ -425,6 +424,10 @@ def upgrade_check():
                             'download_url']
                     }
                 else:
+                    # For server mode or if auto-update is not supported,
+                    # indicate an update is available but disable
+                    # the auto-update feature. The user will be
+                    # directed to the download URL.
                     ret = {
                         "outdated": True,
                         "check_for_auto_updates": False,
@@ -435,6 +438,31 @@ def upgrade_check():
                         "download_url": data[config.UPGRADE_CHECK_KEY][
                             'download_url']
                     }
+            # This handles a specific desktop mode case: the current version
+            # is up-to-date, but we still need to inform the client
+            # about the auto-update capability.
+            elif (data[config.UPGRADE_CHECK_KEY]['version_int'] ==
+                  config.APP_VERSION_INT and
+                  not config.SERVER_MODE and
+                  data[config.UPGRADE_CHECK_KEY]['auto_update_url'][
+                      platform] != ''):
+                ret = {
+                    "outdated": False,
+                    "check_for_auto_updates": True,
+                    "auto_update_url": data[config.UPGRADE_CHECK_KEY][
+                        'auto_update_url'][platform],
+                    "platform": platform,
+                    "installer_type": config.UPGRADE_CHECK_KEY,
+                    "current_version": config.APP_VERSION,
+                    "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                        'version'],
+                    "current_version_int": config.APP_VERSION_INT,
+                    "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
+                        'version_int'],
+                    "product_name": config.APP_NAME,
+                    "download_url": data[config.UPGRADE_CHECK_KEY][
+                        'download_url']
+                }
 
         store_setting('LastUpdateCheck', today)
     return make_json_response(data=ret)
