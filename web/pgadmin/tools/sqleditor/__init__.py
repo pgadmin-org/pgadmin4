@@ -1258,8 +1258,10 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
         # rownums start from 0 but UI will ask from 1
         # to_rownum: Fetch 1 extra row to check whether next
         # recordset is available or not, this is required for server cursor.
+
         status, result = conn.async_fetchmany_2darray(
-            records=None, from_rownum=from_rownum - 1, to_rownum=to_rownum)
+            records=None, from_rownum=from_rownum - 1, to_rownum=to_rownum if
+            trans_obj.server_cursor else to_rownum - 1)
         if not status:
             status = 'Error'
         else:
@@ -1279,9 +1281,10 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
 
     # Check whether the next recordset/page is available or not
     next_page = 0
-    if len(result) > 0 and len(result) > page_size:
+    if trans_obj.server_cursor and len(result) > 0 and len(result) > page_size:
         result = result[0:len(result) - 1]
         next_page = 1
+        rows_fetched_to = rows_fetched_to - 1
 
     pagination = {
         'page_size': page_size,
