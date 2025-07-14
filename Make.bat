@@ -28,7 +28,7 @@ CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
 CALL :GENERATE_SBOM || EXIT /B 1
 CALL :CREATE_INSTALLER || EXIT /B 1
-CALL :SIGN_INSTALLER || EXIT /B 1
+CALL :VERIFY_SIGNATURE || EXIT /B 1
 
 EXIT /B %ERRORLEVEL%
 REM Main build sequence Ends
@@ -373,13 +373,14 @@ REM Main build sequence Ends
 
     EXIT /B 0
 
-:SIGN_INSTALLER
-    ECHO Attempting to sign the installer...
-    CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss"  "/Ssigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 "%DISTROOT%\%INSTALLERNAME%" $f"
+:VERIFY_SIGNATURE
+    ECHO Verifying the installer signature...
+
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" verify /pa /v "%DISTROOT%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
-        ECHO * Failed to sign the installer
+        ECHO * Failed to verify signature of the installer
         ECHO ************************************************************
         PAUSE
     )
