@@ -219,7 +219,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         the default client_kwargs is correctly included.
         """
 
-        with patch('pgadmin.authenticate.oauth2.OAuth.register') as mock_register:
+        with patch('pgadmin.authenticate.oauth2.OAuth.register') as \
+                mock_register:
             from pgadmin.authenticate.oauth2 import OAuth2Authentication
 
             OAuth2Authentication()
@@ -228,10 +229,14 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             client_kwargs = kwargs.get('client_kwargs', {})
 
             # Check that PKCE and default client_kwargs are included
-            self.assertEqual(client_kwargs.get('code_challenge_method'), 'S256')
-            self.assertEqual(client_kwargs.get('response_type'), 'code')
-            self.assertEqual(client_kwargs.get('scope'), 'openid email profile')
-            self.assertEqual(client_kwargs.get('verify'), 'true')
+            self.assertEqual(
+                client_kwargs.get('code_challenge_method'), 'S256')
+            self.assertEqual(
+                client_kwargs.get('response_type'), 'code')
+            self.assertEqual(
+                client_kwargs.get('scope'), 'openid email profile')
+            self.assertEqual(
+                client_kwargs.get('verify'), 'true')
 
     def mock_user_profile_with_additional_claims(self):
         profile = {'email': 'oauth2@gmail.com', 'wids': ['789']}
