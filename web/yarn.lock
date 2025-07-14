@@ -2624,7 +2624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^7.1.1, @mui/utils@npm:^7.2.0":
+"@mui/utils@npm:^7.2.0":
   version: 7.2.0
   resolution: "@mui/utils@npm:7.2.0"
   dependencies:
@@ -2644,13 +2644,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.5.2":
-  version: 8.7.0
-  resolution: "@mui/x-date-pickers@npm:8.7.0"
+"@mui/x-date-pickers@npm:^8.8.0":
+  version: 8.8.0
+  resolution: "@mui/x-date-pickers@npm:8.8.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
-    "@mui/utils": "npm:^7.1.1"
-    "@mui/x-internals": "npm:8.7.0"
+    "@mui/utils": "npm:^7.2.0"
+    "@mui/x-internals": "npm:8.8.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2688,21 +2688,21 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/964b2ab033b50925536319e67512055ae496631595de3cf488b37cc1d44c7f962645eae7942589c4817d8e82fa35fd819cae62108b4902cb916e8315774ce966
+  checksum: 10c0/5b3e27c30b07baabbbd7f93074b699d64507547fcc3bccd61e4a209ecb8fe64b0c9619514205fabc56dab96935b297b808a9a129eb62289b3f2b11b2955e43f8
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.7.0":
-  version: 8.7.0
-  resolution: "@mui/x-internals@npm:8.7.0"
+"@mui/x-internals@npm:8.8.0":
+  version: 8.8.0
+  resolution: "@mui/x-internals@npm:8.8.0"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
-    "@mui/utils": "npm:^7.1.1"
+    "@mui/utils": "npm:^7.2.0"
     reselect: "npm:^5.1.1"
   peerDependencies:
     "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/c3fab5603a046db85f739195576de4581cf9afed7c6b299322b6745ad9336534afb1e62e8fa9fc5a37e1e9eee942b51c7bccf2ccecf591efa27650a513071eed
+  checksum: 10c0/8f83c2b90c42a92ec2e3a0e52f8fa9f1d8c66b1b863bcda36b97ca5e8394a6420dbb0fce1a7f795d34f49165d58659111d3165301c226f032f5ee27a1992dfbe
   languageName: node
   linkType: hard
 
@@ -14070,7 +14070,7 @@ __metadata:
     "@fortawesome/fontawesome-free": "npm:latest"
     "@mui/icons-material": "npm:^7.1.1"
     "@mui/material": "npm:^7.1.0"
-    "@mui/x-date-pickers": "npm:^8.5.2"
+    "@mui/x-date-pickers": "npm:^8.8.0"
     "@nozbe/microfuzz": "npm:^1.0.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@simonwep/pickr": "npm:^1.5.1"
