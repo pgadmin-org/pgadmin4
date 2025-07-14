@@ -36,8 +36,12 @@ ArchitecturesInstallIn64BitMode={#MyAppArchitecturesMode}
 AllowNoIcons=yes
 WizardImageFile=sidebar.bmp
 MinVersion={#MinimumWindowsVer}
-SignTool=signtool
+SignTool=pgAdminSigntool
 SignedUninstaller=yes
+
+[SignTool]
+Name: "pgAdminSigntool"; \
+    Command: "{#GetEnv('PGADMIN_SIGNTOOL_DIR')}\signtool.exe sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 $f"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
