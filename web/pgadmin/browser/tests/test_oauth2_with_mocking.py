@@ -87,7 +87,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 'OAUTH2_ICON': 'briefcase',
                 'OAUTH2_BUTTON_COLOR': '#0000ff',
                 'OAUTH2_ADDITIONAL_CLAIMS': {
-                    'groups': ['123','456'],
+                    'groups': ['123', '456'],
                     'wids': ['789']
                 }
             },
@@ -97,10 +97,13 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 'OAUTH2_CLIENT_ID': 'testclientid',
                 'OAUTH2_CLIENT_SECRET': 'testclientsec',
                 'OAUTH2_TOKEN_URL':
-                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/openid-connect/token',
+                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/'
+                    'openid-connect/token',
                 'OAUTH2_AUTHORIZATION_URL':
-                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/openid-connect/auth',
-                'OAUTH2_API_BASE_URL': 'https://keycloak.org/auth/realms/TEST-REALM',
+                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/'
+                    'openid-connect/auth',
+                'OAUTH2_API_BASE_URL':
+                    'https://keycloak.org/auth/realms/TEST-REALM',
                 'OAUTH2_USERINFO_ENDPOINT': 'user',
                 'OAUTH2_SCOPE': 'openid email profile',
                 'OAUTH2_SSL_CERT_VERIFICATION': True,
