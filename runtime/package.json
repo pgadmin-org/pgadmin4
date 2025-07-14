@@ -13,7 +13,7 @@
   "packageManager": "yarn@3.8.7",
   "devDependencies": {
     "electron": "37.2.0",
-    "eslint": "^9.30.1",
+    "eslint": "^9.31.0",
     "eslint-plugin-unused-imports": "^4.1.4"
   },
   "dependencies": {
