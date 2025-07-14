@@ -65,12 +65,14 @@ define('pgadmin.node.tablespace', [
           category: 'create', priority: 4, label: gettext('Tablespace...'),
           data: {action: 'create'},
           enable: 'can_create_tablespace',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_tablespace', node: 'tablespace', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Tablespace...'),
           data: {action: 'create'},
           enable: 'can_create_tablespace',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },
         ]);
       },

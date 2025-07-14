@@ -81,8 +81,13 @@ export const PgMenuItem = (({hasCheck=false, checked=false, accesskey, shortcut,
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon  style={checked ? {} : {visibility: 'hidden', width: '1.3rem'}} data-label="CheckIcon"/>}
     {children}
-    <div style={{ marginLeft:'auto', fontSize:'0.8em', paddingLeft:'12px'}}>
-      {keyVal ? `(${keyVal})` : ''}
+    <div className="menu-shortcut-key">
+      {Array.isArray(keyVal)
+        ? keyVal.map((key, idx) => (
+          <div key={idx} className="ShortcutTitle-key">{key}</div>
+        ))
+        : <div className="ShortcutTitle-key"> {keyVal ? `${keyVal}` : ''}</div>
+      }
     </div>
   </MenuItem>;
 });

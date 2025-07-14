@@ -92,6 +92,7 @@ define('pgadmin.node.server', [
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 3, label: gettext('Server...'),
+          shortcut_preference: ['browser', 'sub_menu_create'],
           data: {action: 'create'}, enable: 'canCreate', permission: AllPermissionTypes.OBJECT_REGISTER_SERVER
         },{
           name: 'connect_server', node: 'server', module: this,

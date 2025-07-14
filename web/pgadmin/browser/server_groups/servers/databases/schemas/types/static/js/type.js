@@ -55,12 +55,14 @@ define('pgadmin.node.type', [
           category: 'create', priority: 4, label: gettext('Type...'),
           data: {action: 'create', check: true},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_type', node: 'type', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Type...'),
           data: {action: 'create', check: true},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_type', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

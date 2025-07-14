@@ -15,6 +15,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import { useForceUpdate } from './custom_hooks';
+import usePreferences from '../../preferences/static/js/store';
 
 
 const StyledBox = styled(Box)(({theme}) => ({
@@ -62,6 +63,7 @@ export default function AppMenuBar() {
 
   const forceUpdate = useForceUpdate();
   const pgAdmin = usePgAdmin();
+  const prefStore = usePreferences.getState();
 
   useEffect(()=>{
     pgAdmin.Browser.Events.on('pgadmin:enable-disable-menu-items', _.debounce(()=>{
@@ -73,6 +75,12 @@ export default function AppMenuBar() {
   }, []);
 
   const getPgMenuItem = (menuItem, i)=>{
+    let shortcut;
+    // Fetch shortcut from preferences if defined in menuItem.
+    if(menuItem.shortcut_preference) {
+      const [module, key] = menuItem.shortcut_preference;
+      shortcut = prefStore.getPreferences(module, key)?.value;
+    }
     if(menuItem.type == 'separator') {
       return <PgMenuDivider key={i}/>;
     }
@@ -90,6 +98,7 @@ export default function AppMenuBar() {
       hasCheck={hasCheck}
       checked={menuItem.checked}
       closeOnCheck={true}
+      shortcut={shortcut}
     >{menuItem.label}</PgMenuItem>;
   };
 

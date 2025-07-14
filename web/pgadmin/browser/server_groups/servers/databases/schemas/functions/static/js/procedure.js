@@ -60,11 +60,13 @@ define('pgadmin.node.procedure', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Procedure...'),
           data: {action: 'create', check: false}, enable: 'canCreateProc',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_procedure', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Procedure...'),
           data: {action: 'create', check: true}, enable: 'canCreateProc',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_procedure', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

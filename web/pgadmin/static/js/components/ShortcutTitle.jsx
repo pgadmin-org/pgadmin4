@@ -59,19 +59,19 @@ export function shortcutToString(shortcut, accesskey=null, asArray=false) {
     keys = getBrowserAccesskey();
     keys.push(_.capitalize(accesskey?.toUpperCase()));
   } else if(shortcut) {
-    shortcut.alt && keys.push((isMac() ? 'Option' : 'Alt'));
+    if(shortcut.alt) keys.push(isMac() ? '⌥' : 'Alt');
     if(isMac() && shortcut.ctrl_is_meta) {
-      shortcut.control && keys.push('Cmd');
+      if(shortcut.control) keys.push('⌘');
     } else {
-      shortcut.control && keys.push('Ctrl');
+      if(shortcut.control) keys.push(isMac() ? '⌃' : 'Ctrl');
     }
-    shortcut.shift && keys.push('Shift');
+    if(shortcut.shift) keys.push(isMac() ? '⇧' : 'Shift');
     keys.push(_.capitalize(shortcut.key.char));
   } else {
     return '';
   }
 
-  return asArray ? keys : keys.join(' + ');
+  return asArray || isMac() ? keys : keys.join(' + ');
 }
 
 /* The tooltip content to show shortcut details */
@@ -82,8 +82,8 @@ export default function ShortcutTitle({title, shortcut, accesskey}) {
     (<Root>
       <div className='ShortcutTitle-title'>{title}</div>
       <div className='ShortcutTitle-shortcut'>
-        {keys.map((key)=>{
-          return <div key={key} className='ShortcutTitle-key'>{key}</div>;
+        {keys.map((key, idx)=>{
+          return <div key={idx} className='ShortcutTitle-key'>{key}</div>;
         })}
       </div>
     </Root>)

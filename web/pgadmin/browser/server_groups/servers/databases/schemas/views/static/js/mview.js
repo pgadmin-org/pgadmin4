@@ -97,12 +97,14 @@ define('pgadmin.node.mview', [
           category: 'create', priority: 1,
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_mview', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1,
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_mview', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

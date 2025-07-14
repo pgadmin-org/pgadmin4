@@ -62,12 +62,14 @@ define('pgadmin.node.fts_configuration', [
           callback: 'show_obj_properties', category: 'create',
           label: gettext('FTS Configuration...'), data: {action: 'create'},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_fts_configuration', node: 'fts_configuration',
           module: this, applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create', priority: 4,
           label: gettext('FTS Configuration...'), data: {action: 'create'},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         }]);
       },
 

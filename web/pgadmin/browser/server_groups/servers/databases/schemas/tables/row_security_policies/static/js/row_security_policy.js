@@ -56,11 +56,13 @@ define('pgadmin.node.row_security_policy', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('RLS Policy...'),
           data: {action: 'create', check: true}, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_row_security_policy', node: 'row_security_policy', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('RLS Policy...'),
           data: {action: 'create', check: true}, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },
         {
           name: 'create_row_security_policy_on_coll', node: 'table', module: this,

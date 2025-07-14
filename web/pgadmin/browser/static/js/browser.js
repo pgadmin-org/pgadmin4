@@ -440,6 +440,7 @@ define('pgadmin.browser', [
                 below: _m.below,
                 applies: _m.applies,
                 permission: _m.permission,
+                shortcut_preference: _m.shortcut_preference,
               };
             };
 

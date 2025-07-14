@@ -48,6 +48,7 @@ export default class SearchObjectModule {
         data_disabled: gettext('Please select a database from the object explorer to search the database objects.'),
       },
       permission: 'tools_search_objects',
+      shortcut_preference: ['browser', 'sub_menu_search_objects'],
     }];
 
     pgBrowser.add_menus(menus);
