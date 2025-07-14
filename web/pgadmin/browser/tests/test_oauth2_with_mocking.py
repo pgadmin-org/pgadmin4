@@ -13,7 +13,7 @@ from regression.python_test_utils import test_utils as utils
 from pgadmin.authenticate.registry import AuthSourceRegistry
 from unittest.mock import patch, MagicMock
 from pgadmin.authenticate import AuthSourceManager
-from pgadmin.utils.constants import OAUTH2, LDAP, INTERNAL
+from pgadmin.utils.constants import OAUTH2, INTERNAL
 
 
 class Oauth2LoginMockTestCase(BaseTestGenerator):
@@ -33,10 +33,15 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             oauth2_provider='github',
             flag=2
         )),
-        ('Oauth2 Authentication', dict(
+        ('Oauth2 Additional Claims Authentication', dict(
             auth_source=['oauth2'],
             oauth2_provider='auth-with-additional-claim-check',
             flag=3
+        )),
+        ('Oauth2 PKCE Support', dict(
+            auth_source=['oauth2'],
+            oauth2_provider='keycloak-pkce',
+            flag=4
         )),
     ]
 
@@ -44,7 +49,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
     def setUpClass(cls):
         """
         We need to logout the test client as we are testing
-        spnego/kerberos login scenarios.
+        OAuth2 login scenarios.
         """
         cls.tester.logout()
 
@@ -63,7 +68,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     'https://github.com/login/oauth/authorize',
                 'OAUTH2_API_BASE_URL': 'https://api.github.com/',
                 'OAUTH2_USERINFO_ENDPOINT': 'user',
-                'OAUTH2_SCOPE': 'email profile',
+                'OAUTH2_SCOPE': 'openid email profile',
                 'OAUTH2_ICON': 'fa-github',
                 'OAUTH2_BUTTON_COLOR': '#3253a8',
             },
@@ -85,6 +90,24 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                     'groups': ['123','456'],
                     'wids': ['789']
                 }
+            },
+            {
+                'OAUTH2_NAME': 'keycloak-pkce',
+                'OAUTH2_DISPLAY_NAME': 'Keycloak with PKCE',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                'OAUTH2_CLIENT_SECRET': 'testclientsec',
+                'OAUTH2_TOKEN_URL':
+                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/openid-connect/token',
+                'OAUTH2_AUTHORIZATION_URL':
+                    'https://keycloak.org/auth/realms/TEST-REALM/protocol/openid-connect/auth',
+                'OAUTH2_API_BASE_URL': 'https://keycloak.org/auth/realms/TEST-REALM',
+                'OAUTH2_USERINFO_ENDPOINT': 'user',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SSL_CERT_VERIFICATION': True,
+                'OAUTH2_ICON': 'fa-black-tie',
+                'OAUTH2_BUTTON_COLOR': '#3253a8',
+                'OAUTH2_CHALLENGE_METHOD': 'S256',
+                'OAUTH2_RESPONSE_TYPE': 'code',
             }
         ]
 
@@ -101,6 +124,8 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self.test_oauth2_authentication()
         elif self.flag == 3:
             self.test_oauth2_authentication_with_additional_claims_success()
+        elif self.flag == 4:
+            self.test_oauth2_authentication_with_pkce()
 
     def test_external_authentication(self):
         """
@@ -183,6 +208,27 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
 
         respdata = 'Gravatar image for %s' % profile['email']
         self.assertTrue(respdata in res.data.decode('utf8'))
+
+    def test_oauth2_authentication_with_pkce(self):
+        """
+        Ensure that when PKCE parameters are configured, they are passed
+        to the OAuth client registration as part of client_kwargs, and that
+        the default client_kwargs is correctly included.
+        """
+
+        with patch('pgadmin.authenticate.oauth2.OAuth.register') as mock_register:
+            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+            OAuth2Authentication()
+
+            args, kwargs = mock_register.call_args
+            client_kwargs = kwargs.get('client_kwargs', {})
+
+            # Check that PKCE and default client_kwargs are included
+            self.assertEqual(client_kwargs.get('code_challenge_method'), 'S256')
+            self.assertEqual(client_kwargs.get('response_type'), 'code')
+            self.assertEqual(client_kwargs.get('scope'), 'openid email profile')
+            self.assertEqual(client_kwargs.get('verify'), 'true')
 
     def mock_user_profile_with_additional_claims(self):
         profile = {'email': 'oauth2@gmail.com', 'wids': ['789']}
