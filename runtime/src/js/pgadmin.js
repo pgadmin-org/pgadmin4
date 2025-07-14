@@ -444,10 +444,12 @@ function notifyUpdateInstalled() {
     configStore.set('update_installed', false);
     // Notify renderer
     if (pgAdminMainScreen) {
+      misc.writeServerLog('[Auto-Updater]: Update installed successfully...');
       pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});
     } else {
       // If main screen not ready, wait and send after it's created
       app.once('browser-window-created', (event, window) => {
+        misc.writeServerLog('[Auto-Updater]: Update installed successfully...');
         window.webContents.send('notifyAppAutoUpdate', {update_installed: true});
       });
     }

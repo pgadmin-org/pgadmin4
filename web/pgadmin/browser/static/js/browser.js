@@ -281,19 +281,24 @@ define('pgadmin.browser', [
         window.electronUI?.sendDataForAppUpdate({
           'check_for_updates': data.check_for_auto_updates,
         });
-        if (pgAdmin.server_mode == 'False' && (data.check_for_auto_updates && data.auto_update_url!=='')) {
-          // This is for desktop installers whose auto_update_url is mentioned in https://www.pgadmin.org/versions.json
-          const message = `${gettext('You are currently running version %s of %s, however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}`;
-          appAutoUpdateNotifier(
-            message,
-            'warning',
-            () => {
-              window.electronUI?.sendDataForAppUpdate(data);
-            },
-            null,
-            'Update available',
-            'download_update'
-          );
+        const isDesktopWithAutoUpdate = pgAdmin.server_mode == 'False' && data.check_for_auto_updates && data.auto_update_url !== '';
+        const isUpdateAvailable = data.upgrade_version_int > data.current_version_int;
+        const noUpdateMessage = 'No update available...';
+        // This is for desktop installers whose auto_update_url is mentioned in https://www.pgadmin.org/versions.json
+        if (isDesktopWithAutoUpdate) {
+          if (isUpdateAvailable) {
+            const message = `${gettext('You are currently running version %s of %s, however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}`;
+            appAutoUpdateNotifier(
+              message,
+              'warning',
+              () => {
+                window.electronUI?.sendDataForAppUpdate(data);
+              },
+              null,
+              'Update available',
+              'download_update'
+            );
+          }
         } else if(data.outdated) {
           //This is for server mode or auto-update not supported desktop installer or not mentioned auto_update_url
           pgAdmin.Browser.notifier.warning(
@@ -308,7 +313,7 @@ define('pgadmin.browser', [
         // If the user manually triggered a check for updates (trigger_update_check is true)
         // and no update is available (data.outdated is false), show an info notification.
         if (!data.outdated && trigger_update_check){
-          appAutoUpdateNotifier('No update available.....', 'info', null, 10000);
+          appAutoUpdateNotifier(noUpdateMessage, 'info', null, 10000);
         }
       }).catch((error)=>{
         console.error('Error during version check', error);
