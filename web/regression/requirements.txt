@@ -28,7 +28,7 @@ pbr==6.1.1
 pycodestyle>=2.5.0
 python-mimeparse==2.0.0
 # Do not upgrade selenium until latest version supports urllib3 2.5.*
-selenium==4.32.0
+selenium==4.34.2
 testscenarios==0.5.0
 testtools==2.7.2
 traceback2==1.4.0
