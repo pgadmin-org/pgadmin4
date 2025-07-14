@@ -49,13 +49,6 @@ const StyledPopper = styled(Popper)(({theme}) => ({
       textAlign: 'right',
     }
   },
-
-
-
-
-
-
-
 }));
 
 export default function FloatingNote({open, onClose, anchorEl, rows, noteNode}) {

@@ -1,4 +1,6 @@
 from flask_login import current_user
+import functools
+import json
 from pgadmin.model import Setting
 
 
@@ -34,3 +36,18 @@ def get_file_type_setting(file_types):
         return '*'
     else:
         return data.value
+
+
+def with_object_filters(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        data = Setting.query.filter_by(
+            user_id=current_user.id, setting='Object Explorer/Filter').first()
+        if not data or data.value is None:
+            data = {}
+        else:
+            data = json.loads(data.value)
+
+        return f(*args, **kwargs, object_filters=data)
+
+    return wrapped

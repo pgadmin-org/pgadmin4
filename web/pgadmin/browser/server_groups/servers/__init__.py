@@ -43,6 +43,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path
+from pgadmin.settings.utils import with_object_filters
 
 
 def has_any(data, keys):
@@ -220,8 +221,25 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         return servers
 
+    def has_tag(self, server, object_filters):
+        try:
+            # No tags filter, show all
+            if len(object_filters['tags']) == 0:
+                return True
+
+            # No tags on server, don't show
+            if server.tags is None or len(server.tags) == 0:
+                return False
+
+            # Check if any of the tag exists
+            return any([t['text'] in object_filters['tags']
+                        for t in server.tags])
+        except Exception as _:
+            return True
+
+    @with_object_filters
     @pga_login_required
-    def get_nodes(self, gid):
+    def get_nodes(self, gid, object_filters):
         """Return a JSON document listing the server groups for the user"""
 
         hide_shared_server = get_preferences()
@@ -241,6 +259,10 @@ class ServerModule(sg.ServerGroupPluginModule):
             wal_paused = None
             server_type = 'pg'
             user_info = None
+
+            if not self.has_tag(server, object_filters):
+                continue
+
             try:
                 manager = driver.connection_manager(server.id)
                 conn = manager.connection()
@@ -926,7 +948,7 @@ class ServerNode(PGChildNodeView):
                     )
 
     @pga_login_required
-    def list(self, gid):
+    def list(self, gid, object_filters):
         """
         Return list of attributes of all servers.
         """

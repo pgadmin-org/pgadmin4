@@ -13,6 +13,8 @@ the selected object node.
     :alt: pgAdmin Toolbar
     :align: center
 
+* Use the :ref:`Object filter <object-explorer-filter>` button to access
+  the Object Filter popup. It helps you filter objects in the Object Explorer tree.
 * Use the :ref:`Query Tool <query_tool>` button to open the Query Tool in the
   current database context.
 * Use the :ref:`View Data <editgrid>` button to view/edit the data stored in a
@@ -23,3 +25,26 @@ the selected object node.
   dialog. It helps you search any database object.
 * Use the :ref:`PSQL Tool <psql_tool>` button to open the PSQL in the current
   database context.
+
+
+
+.. _object-explorer-filter:
+
+*******************************
+`Object Explorer Filter`:index:
+*******************************
+
+
+.. image:: /images/object_explorer_filter.png
+  :alt: Object Explorer Filter Dialog
+  :align: center
+
+Use the Object Explorer Filter tool to filter nodes in the Object Explorer by
+following fields:
+
+* Use the *Server tags* field to filter the servers with one or more server tags. The
+  servers with any of the selected tags will be displayed in the Object Explorer.
+  You can also create a new tag by typing in the field and pressing Enter.
+
+Click the **Apply** button to apply the filter. Please note the object explorer will
+refresh after applying the filter.
