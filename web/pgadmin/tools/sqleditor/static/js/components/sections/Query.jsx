@@ -16,7 +16,6 @@ import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveC
 import gettext from 'sources/gettext';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { checkTrojanSource, isShortcutValue, parseKeyEventValue, parseShortcutValue } from '../../../../../../static/js/utils';
-import { parseApiError } from '../../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import ConfirmPromotionContent from '../dialogs/ConfirmPromotionContent';
 import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
@@ -25,6 +24,8 @@ import { getTitle } from '../../sqleditor_title';
 import PropTypes from 'prop-types';
 import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
+import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/components/FileManager';
+
 
 async function registerAutocomplete(editor, api, transId) {
   editor.registerAutocomplete((context, onAvailable)=>{
@@ -63,9 +64,10 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const pgAdmin = usePgAdmin();
-  const {saveToolData, isSaveToolDataEnabled, getQueryToolContent, deleteToolData} = useApplicationState();
+  const { saveToolData, isSaveToolDataEnabled } = useApplicationState();
   const preferencesStore = usePreferences();
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
+  const fmUtilsObj = useMemo(()=>new FileManagerUtils(queryToolCtx.api, {}), []);
 
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
@@ -159,21 +161,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     }
   };
 
-  const warnReloadFile = (fileName, storage=null)=>{
-    queryToolCtx.modal.confirm(
-      gettext('Reload file?'),
-      gettext('The file has been modified by another program. Do you want to reload it and loose changes made in pgadmin?'),
-      function() {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
-        deleteToolData();
-      },
-      function() {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
-      }
-    );
-  };
-
   useEffect(()=>{
     layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.QUERY && editor.current.focus();
@@ -191,34 +178,30 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
-      queryToolCtx.api.post(url_for('sqleditor.load_file'), {
-        'file_name': decodeURI(fileName),
-        'storage': storage
-      }, {transformResponse: [(data, headers) => {
-        if(headers['content-type'].includes('application/json')) {
-          return JSON.parse(data);
-        }
-        return data;
-      }]}).then((res)=>{
-        editor.current.setValue(res.data);
+    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, async (fileName, storage)=>{
+      const result = await fmUtilsObj.loadFile(fileName, storage);
+      if (result.success) {
+        const queryContent = result.data;
+        editor.current.setValue(queryContent);
         //Check the file content for Trojan Source
-        checkTrojanSource(res.data);
+        checkTrojanSource(queryContent);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true, storage);
         // Detect line separator from content and editor's EOL.
-        const lineSep = editor.current?.detectEOL(res.data);
+        const lineSep = editor.current?.detectEOL(queryContent);
         // Update the EOL if it differs from the current editor EOL
         setQtStatePartial({ eol: lineSep });
         // Mark the editor content as clean
         editor.current?.markClean();
-      }).catch((err)=>{
+
+      } else {
+        console.error('Failed to load file:', result.error);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false, storage);
-        pgAdmin.Browser.notifier.error(parseApiError(err));
-      });
-    });
+        pgAdmin.Browser.notifier.error(result.error);
+      }
+    } );
 
     eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE, (fileName)=>{
-      queryToolCtx.api.post(url_for('sqleditor.save_file'), {
+      queryToolCtx.api.post(url_for('file_manager.save_file'), {
         'file_name': decodeURI(fileName),
         'file_content': editor.current.getValue(false, true),
       }).then(()=>{
@@ -248,7 +231,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
-    
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.CHANGE_EOL, (lineSep)=>{
       // Set the new EOL character in the editor.
       editor.current?.setEOL(lineSep);
@@ -278,20 +261,10 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       (queryToolCtx.params.is_query_tool|| queryToolCtx.preferences.view_edit_promotion_warning) && editor.current.focus();
     }, 250);
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_RELOAD_FILE, warnReloadFile);
-
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA, ()=>{
       setSaveQtData(true);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_GET_QUERY_CONTENT, async ()=>{
-      let sqlValue = await getQueryToolContent();
-      if(sqlValue){
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
-        // call delete appplication state api
-        deleteToolData();
-      }
-    });
   }, []);
 
   useEffect(()=>{

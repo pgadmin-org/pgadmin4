@@ -9,7 +9,7 @@
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { Box, Grid } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
@@ -32,7 +32,7 @@ import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
-import { useApplicationState, getToolData } from '../../../../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 
 function generateFinalScript(script_array, scriptHeader, script_body) {
   _.each(Object.keys(script_array).reverse(), function (s) {
@@ -117,8 +117,8 @@ export function SchemaDiffCompare({ params }) {
   const [isInit, setIsInit] = useState(true);
 
   const pgAdmin = usePgAdmin();
-  const {saveToolData, isSaveToolDataEnabled} = useApplicationState();
-  const [oldSchemaDiffData, setOldSchemaDiffData] = useState([]);
+  const {saveToolData, isSaveToolDataEnabled, getToolContent } = useApplicationState();
+  const oldSchemaDiffData = useRef(null);
 
   useEffect(() => {
     schemaDiffToolContext.api.get(url_for('schema_diff.servers')).then((res) => {
@@ -140,13 +140,19 @@ export function SchemaDiffCompare({ params }) {
   }, []);
 
   useEffect(()=>{
-    let oldSchemaDiffData1 = getToolData(params.params?.toolDataId);
-    setOldSchemaDiffData(oldSchemaDiffData1);
-  },[]);
+    if(params.params?.restore == 'true'){
+      async function fetchData() {
+        const response = await getToolContent(params.transId);
+        oldSchemaDiffData.current = response?.data;
+      }
+      fetchData();
+    }
+  },[params.transId]);
+
 
   useEffect(()=>{
-    if(oldSchemaDiffData){
-      _.each(oldSchemaDiffData,(d)=>{
+    if(oldSchemaDiffData.current){
+      _.each(oldSchemaDiffData.current,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceSid(d.selectedSourceSid);
         }else{
@@ -671,8 +677,8 @@ export function SchemaDiffCompare({ params }) {
   }
 
   useEffect(()=>{
-    if(oldSchemaDiffData){
-      _.each(oldSchemaDiffData,(d)=>{
+    if(oldSchemaDiffData.current){
+      _.each(oldSchemaDiffData.current,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceDid(d.selectedSourceDid);
         }else{
@@ -695,8 +701,8 @@ export function SchemaDiffCompare({ params }) {
   }
 
   useEffect(()=>{
-    if(oldSchemaDiffData){
-      _.each(oldSchemaDiffData,(d)=>{
+    if(oldSchemaDiffData.current){
+      _.each(oldSchemaDiffData.current,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceScid(d.selectedSourceScid);
         }else{

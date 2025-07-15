@@ -30,12 +30,13 @@ from pgadmin.user_login_check import pga_login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, unauthorized, \
-    internal_server_error
+    internal_server_error, bad_request
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS, \
     MY_STORAGE
 from pgadmin.settings.utils import get_file_type_setting
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
+from config import SHARED_STORAGE
 
 # Checks if platform is Windows
 if _platform == "win32":
@@ -104,6 +105,49 @@ def is_folder_hidden(filepath):
         return os.path.basename(filepath).startswith('.')
 
 
+def read_file_generator(file, enc):
+    """
+    This will read the content of the file selected by user
+
+    Returns:
+        Content of file
+    """
+    try:
+        with codecs.open(file, 'r', encoding=enc) as fileObj:
+            while True:
+                # 4MB chunk (4 * 1024 * 1024 Bytes)
+                data = fileObj.read(4194304)
+                if not data:
+                    break
+                yield data
+    except UnicodeDecodeError:
+        # This is the closest equivalent Python 3 offers to the permissive
+        # Python 2 text handling model. The latin-1 encoding in Python
+        # implements ISO_8859-1:1987 which maps all possible byte values
+        # to the first 256 Unicode code points, and thus ensures decoding
+        # errors will never occur regardless of the configured error and
+        # handles most of the Windows encodings
+        # handler.
+        # Ref: https://goo.gl/vDhggS
+        with codecs.open(file, 'r', encoding='latin-1') as fileObj:
+            while True:
+                # 4MB chunk (4 * 1024 * 1024 Bytes)
+                data = fileObj.read(4194304)
+                if not data:
+                    break
+                yield data
+    except Exception:
+        # As a last resort we will use the provided encoding and then
+        # ignore the decoding errors
+        with codecs.open(file, 'r', encoding=enc, errors='ignore') as fileObj:
+            while True:
+                # 4MB chunk (4 * 1024 * 1024 Bytes)
+                data = fileObj.read(4194304)
+                if not data:
+                    break
+                yield data
+
+
 class FileManagerModule(PgAdminModule):
     """
     FileManager lists files and folders and does
@@ -138,7 +182,9 @@ class FileManagerModule(PgAdminModule):
             'file_manager.delete_trans_id',
             'file_manager.save_last_dir',
             'file_manager.save_file_dialog_view',
-            'file_manager.save_show_hidden_file_option'
+            'file_manager.save_show_hidden_file_option',
+            'file_manager.load_file',
+            'file_manager.save_file',
         ]
 
     def get_file_size_preference(self):
@@ -286,6 +332,137 @@ def save_file_dialog_view(trans_id):
 def save_show_hidden_file_option(trans_id):
     blueprint.show_hidden_files.set(req.json['show_hidden'])
     return make_json_response(status=200)
+
+
+@blueprint.route('/load_file/', methods=["PUT", "POST"],
+                 endpoint='load_file')
+@pga_login_required
+def load_file():
+    """
+    This function gets name of file from request data
+    reads the data and sends back in response
+    """
+    if req.data:
+        file_data = json.loads(req.data)
+
+    file_path = unquote(file_data['file_name'])
+
+    # get the current storage from request if available
+    # or get it from last_storage preference.
+    if 'storage' in file_data:
+        storage_folder = file_data['storage']
+    else:
+        storage_folder = Preferences.module('file_manager').preference(
+            'last_storage').get()
+
+    # retrieve storage directory path
+    storage_manager_path = get_storage_directory(
+        shared_storage=storage_folder)
+
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
+    if storage_manager_path:
+        # generate full path of file
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/').lstrip('\\')
+        )
+
+    (status, err_msg, is_binary,
+     is_startswith_bom, enc) = Filemanager.check_file_for_bom_and_binary(
+        file_path
+    )
+
+    if not status:
+        return internal_server_error(
+            errormsg=gettext(err_msg)
+        )
+
+    if is_binary:
+        return internal_server_error(
+            errormsg=gettext("File type not supported")
+        )
+
+    return Response(read_file_generator(file_path, enc), mimetype='text/plain')
+
+
+@blueprint.route('/save_file/', methods=["PUT", "POST"],
+                 endpoint='save_file')
+@pga_login_required
+def save_file():
+    """
+    This function retrieves file_name and data from request.
+    and then save the data to the file
+    """
+    if req.data:
+        file_data = json.loads(req.data)
+
+    # retrieve storage directory path
+    last_storage = Preferences.module('file_manager').preference(
+        'last_storage').get()
+    if last_storage != MY_STORAGE:
+        selected_dir_list = [sdir for sdir in SHARED_STORAGE if
+                             sdir['name'] == last_storage]
+        selected_dir = selected_dir_list[0] if len(
+            selected_dir_list) == 1 else None
+
+        if selected_dir and selected_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            return make_json_response(success=0,
+                                      errormsg=ACCESS_DENIED_MESSAGE,
+                                      info='ACCESS_DENIED',
+                                      status=403)
+        storage_manager_path = get_storage_directory(
+            shared_storage=last_storage)
+    else:
+        storage_manager_path = get_storage_directory()
+
+    # generate full path of file
+    file_path = unquote(file_data['file_name'])
+
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
+    if storage_manager_path is not None:
+        file_path = os.path.join(
+            storage_manager_path,
+            file_path.lstrip('/').lstrip('\\')
+        )
+
+    # Get value for encoding if file is already loaded to SQL editor
+    def get_file_encoding_of_loaded_file(file_name):
+        encoding = 'utf-8'
+        for ele in Filemanager.loaded_file_encoding_list:
+            if file_name in ele:
+                encoding = ele[file_name]
+        return encoding
+
+    enc = get_file_encoding_of_loaded_file(os.path.basename(file_path))
+
+    file_content = file_data['file_content'].encode(enc)
+    error_str = gettext("Error: {0}")
+
+    # write to file
+    try:
+        with open(file_path, 'wb+') as output_file:
+            output_file.write(file_content)
+    except IOError as e:
+        err_msg = error_str.format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+    except Exception as e:
+        err_msg = error_str.format(e.strerror)
+        return internal_server_error(errormsg=err_msg)
+
+    return make_json_response(
+        data={
+            'status': True,
+        }
+    )
 
 
 class Filemanager():

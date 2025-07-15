@@ -14,7 +14,7 @@ import { BROWSER_PANELS } from '../../browser/static/js/constants';
 import PropTypes from 'prop-types';
 import LayoutIframeTab from './helpers/Layout/LayoutIframeTab';
 import { LAYOUT_EVENTS } from './helpers/Layout';
-import { deleteToolData } from '../../settings/static/ApplicationStateProvider';
+import { useApplicationState } from '../../settings/static/ApplicationStateProvider';
 
 
 function ToolForm({actionUrl, params}) {
@@ -38,8 +38,31 @@ ToolForm.propTypes = {
   params: PropTypes.object,
 };
 
+export function getToolTabParams(panelId, toolUrl, formParams, tabParams, restore=false) {
+  return {
+    id: panelId,
+    title: panelId,
+    content: (
+      <LayoutIframeTab target={panelId} src={formParams ? undefined : toolUrl}>
+        {formParams && <ToolForm actionUrl={toolUrl} params={{...formParams, restore:restore, workSpace: tabParams?.workSpace }}/>}
+      </LayoutIframeTab>
+    ),
+    closable: true,
+    manualClose: true,
+    ...tabParams,
+    cache: false,
+    group: 'playground',
+    metaData: {
+      toolUrl: toolUrl,
+      formParams: formParams,
+      tabParams: tabParams,
+    },
+  };
+}
+
 export default function ToolView({dockerObj}) {
   const pgAdmin = usePgAdmin();
+  const { deleteToolData } = useApplicationState();
 
   useEffect(()=>{
     pgAdmin.Browser.Events.on('pgadmin:tool:show', (panelId, toolUrl, formParams, tabParams, newTab)=>{
@@ -60,26 +83,17 @@ export default function ToolView({dockerObj}) {
         // case of workspace layout.
         let handler = pgAdmin.Browser.getDockerHandler?.(panelId, dockerObj);
         const deregisterRemove = handler.docker.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (closePanelId)=>{
-          deleteToolData(panelId, closePanelId);
           if(panelId == closePanelId){
-            deregisterRemove();}
+            deleteToolData(panelId);
+            deregisterRemove();
+          }
         });
 
         handler.focus();
-        handler.docker.openTab({
-          id: panelId,
-          title: panelId,
-          content: (
-            <LayoutIframeTab target={panelId} src={formParams ? undefined : toolUrl}>
-              {formParams && <ToolForm actionUrl={toolUrl} params={formParams}/>}
-            </LayoutIframeTab>
-          ),
-          closable: true,
-          manualClose: true,
-          ...tabParams,
-          cache: false,
-          group: 'playground'
-        }, BROWSER_PANELS.MAIN, 'middle', true);
+        handler.docker.openTab(
+          getToolTabParams(panelId, toolUrl, formParams, tabParams),
+          BROWSER_PANELS.MAIN, 'middle', true
+        );
       }
     });
   }, []);
