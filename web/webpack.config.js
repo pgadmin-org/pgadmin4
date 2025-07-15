@@ -354,12 +354,21 @@ module.exports = [{
       new ImageMinimizerPlugin({
         test: /\.(jpe?g|png|gif)$/i,
         minimizer: {
-          implementation: ImageMinimizerPlugin.imageminMinify,
+          implementation: ImageMinimizerPlugin.sharpMinify,
           options: {
-            plugins: [
-              ['mozjpeg', { progressive: true }],
-              ['optipng', { optimizationLevel: 7 }],
-            ],
+            encodeOptions: {
+              jpeg: {
+                quality: 100,
+              },
+              webp: {
+                lossless: true,
+              },
+              avif: {
+                lossless: true,
+              },
+              png: {},
+              gif: {},
+            },
           },
         },
       }),
