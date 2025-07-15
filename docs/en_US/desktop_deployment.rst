@@ -177,7 +177,7 @@ Technical Architecture
 
    Handles core update functionality:
 
-   File: runtime/src/js/pgadmin.js
+   File: runtime/src/js/autoUpdaterHandler.js
 
    .. code-block:: javascript
 
