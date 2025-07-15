@@ -1252,8 +1252,12 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
 
     if status and conn is not None and session_obj is not None:
         # rownums start from 0 but UI will ask from 1
+        # to_rownum: Fetch 1 extra row to check whether next
+        # recordset is available or not, this is required for server cursor.
+
         status, result = conn.async_fetchmany_2darray(
-            records=None, from_rownum=from_rownum - 1, to_rownum=to_rownum - 1)
+            records=None, from_rownum=from_rownum - 1, to_rownum=to_rownum if
+            trans_obj.server_cursor else to_rownum - 1)
         if not status:
             status = 'Error'
         else:
@@ -1270,14 +1274,22 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
         result = error_msg
 
     page_size = to_rownum - from_rownum + 1
+
+    # Check whether the next recordset/page is available or not
+    next_page = 0
+    if trans_obj.server_cursor and len(result) > 0 and len(result) > page_size:
+        result = result[0:len(result) - 1]
+        next_page = 1
+        rows_fetched_to = rows_fetched_to - 1
+
     pagination = {
         'page_size': page_size,
         'page_count': math.ceil(conn.total_rows / page_size),
         'page_no': math.floor((rows_fetched_from - 1) / page_size) + 1,
         'rows_from': rows_fetched_from,
-        'rows_to': rows_fetched_to
+        'rows_to': rows_fetched_to,
+        'next_page': next_page
     }
-
     return make_json_response(
         data={
             'status': status,
