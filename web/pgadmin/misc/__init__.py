@@ -344,14 +344,18 @@ def validate_binary_path():
                  methods=['GET'])
 @pga_login_required
 def upgrade_check():
+    """
+    Check for application updates and return update metadata to the client.
+    - Compares current version with remote version data.
+    - Supports auto-update in desktop mode.
+    """
+    # Determine if this check was manually triggered by the user
     trigger_update_check = (request.args.get('trigger_update_check', 'false')
                             .lower() == 'true')
-    # Get the current version info from the website, and flash a message if
-    # the user is out of date, and the check is enabled.
+
     platform = None
-    ret = {
-        "outdated": False,
-    }
+    ret = {"outdated": False}
+
     if config.UPGRADE_CHECK_ENABLED:
         last_check = get_setting('LastUpdateCheck', default='0')
         today = time.strftime('%Y%m%d')
@@ -360,6 +364,8 @@ def upgrade_check():
         url = '%s?version=%s' % (
             config.UPGRADE_CHECK_URL, config.APP_VERSION)
         current_app.logger.debug('Checking version data at: %s' % url)
+
+        # Attempt to fetch upgrade data from remote URL
         try:
             # Do not wait for more than 5 seconds.
             # It stuck on rendering the browser.html, while working in the
@@ -388,62 +394,39 @@ def upgrade_check():
                 'Exception when checking for update')
             return internal_server_error('Failed to check for update')
 
-        if data is not None:
+        if data:
+            # Determine platform
             if sys.platform == 'darwin':
                 platform = 'macos'
             elif sys.platform == 'win32':
                 platform = 'windows'
 
-            auto_update_supported_update_res = {
-                "outdated": True,
+            upgrade_version_int = data[config.UPGRADE_CHECK_KEY]['version_int']
+            auto_update_url_exists = data[config.UPGRADE_CHECK_KEY][
+                'auto_update_url'][platform] != ''
+
+            # Construct common response dicts for auto-update support
+            auto_update_common_res = {
                 "check_for_auto_updates": True,
                 "auto_update_url": data[config.UPGRADE_CHECK_KEY][
                     'auto_update_url'][platform],
                 "platform": platform,
                 "installer_type": config.UPGRADE_CHECK_KEY,
                 "current_version": config.APP_VERSION,
-                "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                    'version'],
+                "upgrade_version": data[config.UPGRADE_CHECK_KEY]['version'],
                 "current_version_int": config.APP_VERSION_INT,
-                "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
-                    'version_int'],
+                "upgrade_version_int": upgrade_version_int,
                 "product_name": config.APP_NAME,
-                "download_url": data[config.UPGRADE_CHECK_KEY][
-                    'download_url']
             }
-            auto_update_supported_no_update_res = {
-                "outdated": False,
-                "check_for_auto_updates": True,
-                "auto_update_url": data[config.UPGRADE_CHECK_KEY][
-                    'auto_update_url'][platform],
-                "platform": platform,
-                "installer_type": config.UPGRADE_CHECK_KEY,
-                "current_version": config.APP_VERSION,
-                "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                    'version'],
-                "current_version_int": config.APP_VERSION_INT,
-                "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
-                    'version_int'],
-                "product_name": config.APP_NAME,
-                "download_url": data[config.UPGRADE_CHECK_KEY][
-                    'download_url']
-            }
+
             # Check for updates if the last check was before today(daily check)
             if int(last_check) < int(today):
-                # Check if the fetched data is valid and if the latest
-                # version is newer than the current version.
-                if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                        config.APP_VERSION_INT:
-                    # In desktop mode with a valid URL, enable
-                    # auto-update in the client response.
-                    if (not config.SERVER_MODE and
-                            data[config.UPGRADE_CHECK_KEY][
-                                'auto_update_url'][platform] != ''):
-                        ret = auto_update_supported_update_res
+                # App is outdated
+                if upgrade_version_int > config.APP_VERSION_INT:
+                    if not config.SERVER_MODE and auto_update_url_exists:
+                        ret = {**auto_update_common_res, "outdated": True}
                     else:
-                        # For server mode or unsupported auto-update,
-                        # show update but disable auto-update and
-                        # provide download link.
+                        # Auto-update unsupported
                         ret = {
                             "outdated": True,
                             "check_for_auto_updates": False,
@@ -454,26 +437,21 @@ def upgrade_check():
                             "download_url": data[config.UPGRADE_CHECK_KEY][
                                 'download_url']
                         }
-                # In desktop mode, app is up-to-date but inform client
-                # about auto-update support.
-                elif (data[config.UPGRADE_CHECK_KEY]['version_int'] ==
-                      config.APP_VERSION_INT and
-                      not config.SERVER_MODE and
-                      data[config.UPGRADE_CHECK_KEY]['auto_update_url'][
-                          platform] != ''):
-                    ret = auto_update_supported_no_update_res
-            # If checked today, in desktop mode, and auto-update URL exists,
-            # inform client about auto-update support.
-            elif (int(last_check) == int(today) and not config.SERVER_MODE and
-                  data[config.UPGRADE_CHECK_KEY][
-                      'auto_update_url'][platform] != ''):
+                # App is up-to-date, but auto-update should be enabled
+                elif (upgrade_version_int == config.APP_VERSION_INT and
+                        not config.SERVER_MODE and auto_update_url_exists):
+                    ret = {**auto_update_common_res, "outdated": False}
+            # If already checked today,
+            # return auto-update info only if supported
+            elif (int(last_check) == int(today) and
+                    not config.SERVER_MODE and auto_update_url_exists):
                 # Check for updates when triggered by user
                 # and new version is available
-                if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                        config.APP_VERSION_INT and trigger_update_check:
-                    ret = auto_update_supported_update_res
+                if (upgrade_version_int > config.APP_VERSION_INT and
+                        trigger_update_check):
+                    ret = {**auto_update_common_res, "outdated": True}
                 else:
-                    ret = auto_update_supported_no_update_res
+                    ret = {**auto_update_common_res, "outdated": False}
 
         store_setting('LastUpdateCheck', today)
     return make_json_response(data=ret)

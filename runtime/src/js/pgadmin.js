@@ -14,7 +14,7 @@ import path from 'path';
 import * as misc from './misc.js';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
-import { setupMenu, refreshMenus } from './menu.js';
+import { setupMenu } from './menu.js';
 import contextMenu from 'electron-context-menu';
 import { setupDownloader } from './downloader.js';
 import { setupAutoUpdater, updateConfigAndMenus } from './autoUpdaterHandler.js';
