@@ -355,114 +355,125 @@ def upgrade_check():
     if config.UPGRADE_CHECK_ENABLED:
         last_check = get_setting('LastUpdateCheck', default='0')
         today = time.strftime('%Y%m%d')
-        # Check for updates if either:
-        # - The last check was before today (daily check), or
-        # - The user manually triggered an update check
-        if int(last_check) < int(today) or trigger_update_check:
-            data = None
-            url = '%s?version=%s' % (
-                config.UPGRADE_CHECK_URL, config.APP_VERSION)
-            current_app.logger.debug('Checking version data at: %s' % url)
-            try:
-                # Do not wait for more than 5 seconds.
-                # It stuck on rendering the browser.html, while working in the
-                # broken network.
-                if os.path.exists(config.CA_FILE) and sys.version_info >= (
-                        3, 13):
-                    # Use SSL context for Python 3.13+
-                    context = ssl.create_default_context(cafile=config.CA_FILE)
-                    response = urlopen(url, data=data, timeout=5,
-                                       context=context)
-                elif os.path.exists(config.CA_FILE):
-                    # Use cafile parameter for older versions
-                    response = urlopen(url, data=data, timeout=5,
-                                       cafile=config.CA_FILE)
-                else:
-                    response = urlopen(url, data, 5)
-                current_app.logger.debug(
-                    'Version check HTTP response code: %d' % response.getcode()
-                )
 
-                if response.getcode() == 200:
-                    data = json.loads(response.read().decode('utf-8'))
-                    current_app.logger.debug('Response data: %s' % data)
-            except Exception:
-                current_app.logger.exception(
-                    'Exception when checking for update')
-                return internal_server_error('Failed to check for update')
+        data = None
+        url = '%s?version=%s' % (
+            config.UPGRADE_CHECK_URL, config.APP_VERSION)
+        current_app.logger.debug('Checking version data at: %s' % url)
+        try:
+            # Do not wait for more than 5 seconds.
+            # It stuck on rendering the browser.html, while working in the
+            # broken network.
+            if os.path.exists(config.CA_FILE) and sys.version_info >= (
+                    3, 13):
+                # Use SSL context for Python 3.13+
+                context = ssl.create_default_context(cafile=config.CA_FILE)
+                response = urlopen(url, data=data, timeout=5,
+                                   context=context)
+            elif os.path.exists(config.CA_FILE):
+                # Use cafile parameter for older versions
+                response = urlopen(url, data=data, timeout=5,
+                                   cafile=config.CA_FILE)
+            else:
+                response = urlopen(url, data, 5)
+            current_app.logger.debug(
+                'Version check HTTP response code: %d' % response.getcode()
+            )
 
+            if response.getcode() == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                current_app.logger.debug('Response data: %s' % data)
+        except Exception:
+            current_app.logger.exception(
+                'Exception when checking for update')
+            return internal_server_error('Failed to check for update')
+
+        if data is not None:
             if sys.platform == 'darwin':
                 platform = 'macos'
             elif sys.platform == 'win32':
                 platform = 'windows'
 
-            # Check if the fetched data is valid and if the latest
-            # version is newer than the current version.
-            if data is not None and \
-                data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                    config.APP_VERSION_INT:
-                # If running in desktop mode with a valid auto-update
-                # URL for the current platform, prepare a response that
-                # enables the auto-update feature in the client.
-                if not config.SERVER_MODE and data[config.UPGRADE_CHECK_KEY][
-                        'auto_update_url'][platform] != '':
-                    ret = {
-                        "outdated": True,
-                        "check_for_auto_updates": True,
-                        "auto_update_url": data[config.UPGRADE_CHECK_KEY][
-                            'auto_update_url'][platform],
-                        "platform": platform,
-                        "installer_type": config.UPGRADE_CHECK_KEY,
-                        "current_version": config.APP_VERSION,
-                        "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                            'version'],
-                        "current_version_int": config.APP_VERSION_INT,
-                        "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
-                            'version_int'],
-                        "product_name": config.APP_NAME,
-                        "download_url": data[config.UPGRADE_CHECK_KEY][
-                            'download_url']
-                    }
+            auto_update_supported_update_res = {
+                "outdated": True,
+                "check_for_auto_updates": True,
+                "auto_update_url": data[config.UPGRADE_CHECK_KEY][
+                    'auto_update_url'][platform],
+                "platform": platform,
+                "installer_type": config.UPGRADE_CHECK_KEY,
+                "current_version": config.APP_VERSION,
+                "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                    'version'],
+                "current_version_int": config.APP_VERSION_INT,
+                "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
+                    'version_int'],
+                "product_name": config.APP_NAME,
+                "download_url": data[config.UPGRADE_CHECK_KEY][
+                    'download_url']
+            }
+            auto_update_supported_no_update_res = {
+                "outdated": False,
+                "check_for_auto_updates": True,
+                "auto_update_url": data[config.UPGRADE_CHECK_KEY][
+                    'auto_update_url'][platform],
+                "platform": platform,
+                "installer_type": config.UPGRADE_CHECK_KEY,
+                "current_version": config.APP_VERSION,
+                "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                    'version'],
+                "current_version_int": config.APP_VERSION_INT,
+                "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
+                    'version_int'],
+                "product_name": config.APP_NAME,
+                "download_url": data[config.UPGRADE_CHECK_KEY][
+                    'download_url']
+            }
+            # Check for updates if the last check was before today(daily check)
+            if int(last_check) < int(today):
+                # Check if the fetched data is valid and if the latest
+                # version is newer than the current version.
+                if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
+                        config.APP_VERSION_INT:
+                    # In desktop mode with a valid URL, enable
+                    # auto-update in the client response.
+                    if (not config.SERVER_MODE and
+                            data[config.UPGRADE_CHECK_KEY][
+                                'auto_update_url'][platform] != ''):
+                        ret = auto_update_supported_update_res
+                    else:
+                        # For server mode or unsupported auto-update,
+                        # show update but disable auto-update and
+                        # provide download link.
+                        ret = {
+                            "outdated": True,
+                            "check_for_auto_updates": False,
+                            "current_version": config.APP_VERSION,
+                            "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                                'version'],
+                            "product_name": config.APP_NAME,
+                            "download_url": data[config.UPGRADE_CHECK_KEY][
+                                'download_url']
+                        }
+                # In desktop mode, app is up-to-date but inform client
+                # about auto-update support.
+                elif (data[config.UPGRADE_CHECK_KEY]['version_int'] ==
+                      config.APP_VERSION_INT and
+                      not config.SERVER_MODE and
+                      data[config.UPGRADE_CHECK_KEY]['auto_update_url'][
+                          platform] != ''):
+                    ret = auto_update_supported_no_update_res
+            # If checked today, in desktop mode, and auto-update URL exists,
+            # inform client about auto-update support.
+            elif (int(last_check) == int(today) and not config.SERVER_MODE and
+                  data[config.UPGRADE_CHECK_KEY][
+                      'auto_update_url'][platform] != ''):
+                # Check for updates when triggered by user
+                # and new version is available
+                if data[config.UPGRADE_CHECK_KEY]['version_int'] > \
+                        config.APP_VERSION_INT and trigger_update_check:
+                    ret = auto_update_supported_update_res
                 else:
-                    # For server mode or if auto-update is not supported,
-                    # indicate an update is available but disable
-                    # the auto-update feature. The user will be
-                    # directed to the download URL.
-                    ret = {
-                        "outdated": True,
-                        "check_for_auto_updates": False,
-                        "current_version": config.APP_VERSION,
-                        "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                            'version'],
-                        "product_name": config.APP_NAME,
-                        "download_url": data[config.UPGRADE_CHECK_KEY][
-                            'download_url']
-                    }
-            # This handles a specific desktop mode case: the current version
-            # is up-to-date, but we still need to inform the client
-            # about the auto-update capability.
-            elif (data[config.UPGRADE_CHECK_KEY]['version_int'] ==
-                  config.APP_VERSION_INT and
-                  not config.SERVER_MODE and
-                  data[config.UPGRADE_CHECK_KEY]['auto_update_url'][
-                      platform] != ''):
-                ret = {
-                    "outdated": False,
-                    "check_for_auto_updates": True,
-                    "auto_update_url": data[config.UPGRADE_CHECK_KEY][
-                        'auto_update_url'][platform],
-                    "platform": platform,
-                    "installer_type": config.UPGRADE_CHECK_KEY,
-                    "current_version": config.APP_VERSION,
-                    "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                        'version'],
-                    "current_version_int": config.APP_VERSION_INT,
-                    "upgrade_version_int": data[config.UPGRADE_CHECK_KEY][
-                        'version_int'],
-                    "product_name": config.APP_NAME,
-                    "download_url": data[config.UPGRADE_CHECK_KEY][
-                        'download_url']
-                }
+                    ret = auto_update_supported_no_update_res
 
         store_setting('LastUpdateCheck', today)
     return make_json_response(data=ret)
