@@ -416,8 +416,7 @@ GLOBALLY_DELIVERABLE = True
 UPGRADE_CHECK_ENABLED = True
 
 # Where should we get the data from?
-# UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
-UPGRADE_CHECK_URL = 'http://127.0.0.1:8000/versions.json'
+UPGRADE_CHECK_URL = 'https://www.pgadmin.org/versions.json'
 
 # What key should we look at in the upgrade data file?
 UPGRADE_CHECK_KEY = 'pgadmin4'
