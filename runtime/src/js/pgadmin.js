@@ -440,18 +440,26 @@ let splashWindow;
 // Helper to notify update installed after restart
 function notifyUpdateInstalled() {
   if (configStore.get('update_installed')) {
-    // Reset the flag
-    configStore.set('update_installed', false);
-    // Notify renderer
-    if (pgAdminMainScreen) {
-      misc.writeServerLog('[Auto-Updater]: Update installed successfully...');
-      pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});
-    } else {
-      // If main screen not ready, wait and send after it's created
-      app.once('browser-window-created', (event, window) => {
+    try {
+      // Notify renderer
+      if (pgAdminMainScreen) {
         misc.writeServerLog('[Auto-Updater]: Update installed successfully...');
-        window.webContents.send('notifyAppAutoUpdate', {update_installed: true});
-      });
+        setTimeout(() => {
+          pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});
+        }, 10000);
+      } else {
+        // If main screen not ready, wait and send after it's created
+        app.once('browser-window-created', (event, window) => {
+          misc.writeServerLog('[Auto-Updater]: Update installed successfully...');
+          setTimeout(() => {
+            pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});
+          }, 10000);
+        });
+      }
+      // Reset the flag
+      configStore.set('update_installed', false);
+    } catch (err) {
+      misc.writeServerLog(`[Auto-Updater]: ${err}`);
     }
   }
 }

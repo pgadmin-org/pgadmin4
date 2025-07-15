@@ -97,7 +97,7 @@ export function appAutoUpdateNotifier(desc, type, onClick, hideDuration=null, ti
 
   // Mark this warning as active
   activeWarningKeys.add(uniqueKey);
-
+  console.warn('before if',desc,type);
   if (type == 'warning') {
     pgAdmin.Browser.notifier.notify(
       <UpdateWarningNotifier
@@ -113,6 +113,7 @@ export function appAutoUpdateNotifier(desc, type, onClick, hideDuration=null, ti
       />, null
     );
   } else if(type == 'success') {
+    console.warn('inside if',desc,type);
     pgAdmin.Browser.notifier.success(desc, hideDuration);
   } else if(type == 'info') {
     pgAdmin.Browser.notifier.info(desc, hideDuration);

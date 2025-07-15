@@ -205,6 +205,7 @@ export default function BrowserComponent({pgAdmin}) {
       } else if (data.error) {
         appAutoUpdateNotifier(`${data.errMsg}`, 'error');
       } else if (data.update_installed) {
+        console.warn('in browsercomp------','Update installed');
         const UPDATE_INSTALLED_MESSAGE = gettext('Update installed successfully!');
         appAutoUpdateNotifier(UPDATE_INSTALLED_MESSAGE, 'success');
       }
