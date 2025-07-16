@@ -103,7 +103,7 @@ define('pgadmin.node.database', [
         },{
           name: 'delete_database_force', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'delete_database_force',
-          category: 'delete', priority: 2, label: gettext('Delete (Force)'),
+          category: 'delete', priority: 2, label: gettext('Drop (Force)'),
           enable : canDeleteWithForce,
         }, {
           name: 'disconnect_database', node: 'database', module: this,

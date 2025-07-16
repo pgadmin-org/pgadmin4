@@ -155,7 +155,7 @@ define('pgadmin.browser.node', [
           applies: ['object', 'context'],
           callback: 'delete_obj',
           priority: self.dropPriority,
-          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Delete'),
+          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Drop'),
           data: {
             'url': 'drop',
             data_disabled: gettext('The selected tree node does not support this option.'),
@@ -176,7 +176,7 @@ define('pgadmin.browser.node', [
             applies: ['object', 'context'],
             callback: 'delete_obj',
             priority: 2,
-            label: gettext('Delete (Cascade)'),
+            label: gettext('Drop (Cascade)'),
             data: {
               'url': 'delete',
             },
@@ -532,13 +532,13 @@ define('pgadmin.browser.node', [
         let msg, title;
 
         if (input.url == 'delete' && d._type === 'database') {
-          msg = gettext('Delete database with the force option will attempt to terminate all existing connections to the <b>"%s"</b> database. Are you sure you want to proceed?', d.label);
-          title = gettext('Delete FORCE %s?', obj.label);
+          msg = gettext('Drop database with the force option will attempt to terminate all existing connections to the <b>"%s"</b> database. Are you sure you want to proceed?', d.label);
+          title = gettext('Drop FORCE %s?', obj.label);
 
         } else if (input.url == 'delete') {
-          msg = gettext('Are you sure you want to delete the %s <b>"%s"</b> and all the objects that depend on it?',
+          msg = gettext('Are you sure you want to drop the %s <b>"%s"</b> and all the objects that depend on it?',
             obj.label.toLowerCase(), d.label);
-          title = gettext('Delete CASCADE %s?', obj.label);
+          title = gettext('Drop CASCADE %s?', obj.label);
 
           if (!(_.isFunction(obj.canDropCascade) ?
             obj.canDropCascade(d, i) : obj.canDropCascade)) {
@@ -553,8 +553,8 @@ define('pgadmin.browser.node', [
             msg = gettext('Are you sure you want to remove the %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
             title = gettext('Remove %s?', obj.label);
           } else {
-            msg = gettext('Are you sure you want to delete the %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
-            title = gettext('Delete %s?', obj.label);
+            msg = gettext('Are you sure you want to drop the %s <b>"%s"</b>?', obj.label.toLowerCase(), d.label);
+            title = gettext('Drop %s?', obj.label);
           }
 
           if (!(_.isFunction(obj.canDrop) ?
@@ -605,7 +605,7 @@ define('pgadmin.browser.node', [
             });
           },
           () => {},
-          gettext('Delete'),
+          obj.dropAsRemove ? gettext('Remove') : gettext('Drop'),
           gettext('Cancel'),
         );
       },
@@ -735,7 +735,7 @@ define('pgadmin.browser.node', [
           }, 0);
         }
         pgBrowser.Node.callbacks.change_server_background(item, data);
-        // Suppress added tree event being called during object search operations 
+        // Suppress added tree event being called during object search operations
         // where tree.select clashes due to previous tree state restore
         const suppressPath = pgBrowser.tree.suppressEventsForPath;
         if (suppressPath) {
@@ -745,7 +745,7 @@ define('pgadmin.browser.node', [
             return;
           }
         }
-        
+
         pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state', item);
       },
       // Callback called - when a node is selected in browser tree.
@@ -792,7 +792,7 @@ define('pgadmin.browser.node', [
       opened: function(item) {
         let tree = pgBrowser.tree,
           auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
-        // Suppress opened tree event being called during object search operations 
+        // Suppress opened tree event being called during object search operations
         // where tree.select clashes due to only child of parent opens automatically.
         const suppressPath = pgBrowser.tree.suppressEventsForPath;
         if (suppressPath) {

@@ -63,11 +63,11 @@ following options (in alphabetical order):
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
 |                             | Your selection opens a *Create* dialog for creating a new object.                                                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Delete*                    | Click to delete the currently selected object from the server.                                                           |
+| *Drop*                      | Click to drop the currently selected object from the server.                                                             |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Delete (Cascade)*          | Click to delete the currently selected object and all dependent objects from the server.                                 |
+| *Drop (Cascade)*            | Click to drop the currently selected object and all dependent objects from the server.                                   |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Delete (Force)*            | Click to delete the currently selected database with force option.                                                       |
+| *Drop (Force)*              | Click to drop the currently selected database with force option.                                                         |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect from server*    | Click to disconnect from the currently selected server.                                                                  |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+

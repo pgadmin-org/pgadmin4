@@ -47,7 +47,7 @@ function CustomHeader({node, nodeData, nodeItem, treeNodeInfo, selectedObject, o
         <PgIconButton
           icon={<DeleteIcon style={{height: '1.35rem'}}/>}
           aria-label="Delete"
-          title={gettext('Delete')}
+          title={gettext('Drop')}
           onClick={() => {
             onDrop('drop');
           }}
@@ -59,8 +59,8 @@ function CustomHeader({node, nodeData, nodeItem, treeNodeInfo, selectedObject, o
         ></PgIconButton>
         {node.type !== 'coll-database' ? <PgIconButton
           icon={<DeleteSweepIcon style={{height: '1.5rem'}} />}
-          aria-label="Delete Cascade"
-          title={gettext('Delete (Cascade)')}
+          aria-label="Drop Cascade"
+          title={gettext('Drop (Cascade)')}
           onClick={() => {
             onDrop('dropCascade');
           }}
@@ -72,8 +72,8 @@ function CustomHeader({node, nodeData, nodeItem, treeNodeInfo, selectedObject, o
         ></PgIconButton> :
           <PgIconButton
             icon={<DeleteForeverIcon style={{height: '1.4rem'}} />}
-            aria-label="Delete Force"
-            title={gettext('Delete (Force)')}
+            aria-label="Drop Force"
+            title={gettext('Drop (Force)')}
             onClick={() => {
               onDrop('dropForce');
             }}
@@ -144,8 +144,8 @@ export default function CollectionNodeProperties({
 
     if (selRows.length === 0) {
       pgAdmin.Browser.notifier.alert(
-        gettext('Delete Multiple'),
-        gettext('Please select at least one object to delete.')
+        gettext('Drop Multiple'),
+        gettext('Please select at least one object to drop.')
       );
       return;
     }
@@ -155,19 +155,19 @@ export default function CollectionNodeProperties({
     if (type === 'dropCascade') {
       url = selNode.generate_url(selItem, 'delete');
       msg = gettext(
-        'Are you sure you want to delete all the selected objects and all the objects that depend on them?'
+        'Are you sure you want to drop all the selected objects and all the objects that depend on them?'
       );
-      title = gettext('Delete CASCADE multiple objects?');
+      title = gettext('Drop CASCADE multiple objects?');
     } else if (type === 'dropForce') {
       url = selNode.generate_url(selItem, 'delete');
       msg = gettext(
-        'Delete databases with the force option will attempt to terminate all the existing connections to the selected databases. Are you sure you want to proceed?'
+        'Drop databases with the force option will attempt to terminate all the existing connections to the selected databases. Are you sure you want to proceed?'
       );
-      title = gettext('Delete FORCE multiple objects?');
+      title = gettext('Drop FORCE multiple objects?');
     } else {
       url = selNode.generate_url(selItem, 'drop');
-      msg = gettext('Are you sure you want to delete all the selected objects?');
-      title = gettext('Delete multiple objects?');
+      msg = gettext('Are you sure you want to drop all the selected objects?');
+      title = gettext('Drop multiple objects?');
     }
 
     const api = getApiInstance();
@@ -198,7 +198,7 @@ export default function CollectionNodeProperties({
     };
 
     if (confirm) {
-      pgAdmin.Browser.notifier.confirmDelete(title, msg, dropNodeProperties, () => {}, gettext('Delete'), gettext('Cancel'));
+      pgAdmin.Browser.notifier.confirmDelete(title, msg, dropNodeProperties, () => {}, gettext('Drop'), gettext('Cancel'));
     } else {
       dropNodeProperties();
     }
