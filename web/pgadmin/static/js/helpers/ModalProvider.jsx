@@ -101,7 +101,7 @@ function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes')
   }, {id: modalId});
 }
 
-function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = gettext('Drop'), cancelLabel = gettext('Cancel')) {
+function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = gettext('Delete'), cancelLabel = gettext('Cancel')) {
   this.showModal(
     title,
     (closeModal)=>{

@@ -181,7 +181,7 @@ class Notifier {
     this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel, okIcon, modalId);
   }
 
-  confirmDelete(title, text, onDeleteClick, onCancelClick, okLabel = gettext('Drop'), cancelLabel = gettext('Cancel')){
+  confirmDelete(title, text, onDeleteClick, onCancelClick, okLabel = gettext('Delete'), cancelLabel = gettext('Cancel')){
     this.modal.confirmDelete(title, text, onDeleteClick, onCancelClick, okLabel, cancelLabel);
   }
 

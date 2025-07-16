@@ -600,7 +600,7 @@ define('pgadmin.browser.node', [
             });
           },
           () => {},
-          gettext('Drop'),
+          obj.dropAsRemove ? gettext('Remove') : gettext('Drop'),
           gettext('Cancel'),
         );
       },
