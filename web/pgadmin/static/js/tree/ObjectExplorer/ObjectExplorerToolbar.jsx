@@ -8,16 +8,17 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect, useState } from 'react';
-import { usePgAdmin } from '../PgAdminProvider';
-import { Box } from '@mui/material';
-import { QueryToolIcon, RowFilterIcon, ViewDataIcon } from '../components/ExternalIcon';
+import { usePgAdmin } from '../../PgAdminProvider';
+import { Badge, Box } from '@mui/material';
+import { QueryToolIcon, RowFilterIcon, ViewDataIcon } from '../../components/ExternalIcon';
 import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { PgButtonGroup, PgIconButton } from '../components/Buttons';
+import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
+import { PgButtonGroup, PgIconButton } from '../../components/Buttons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import CustomPropTypes from '../custom_prop_types';
-import usePreferences from '../../../preferences/static/js/store';
+import CustomPropTypes from '../../custom_prop_types';
+import usePreferences from '../../../../preferences/static/js/store';
 import gettext from 'sources/gettext';
 
 function ToolbarButton({menuItem, ...props}) {
@@ -40,7 +41,9 @@ export default function ObjectExplorerToolbar() {
     'psql': undefined,
   });
   const browserPref = usePreferences().getPreferencesForModule('browser');
+  const [hasFilters, setHasFilters] = useState(false);
   const pgAdmin = usePgAdmin();
+
   const checkMenuState = ()=>{
     const viewMenus = pgAdmin.Browser.MainMenus.
       find((m)=>(m.name=='object'))?.
@@ -63,15 +66,31 @@ export default function ObjectExplorerToolbar() {
 
   useEffect(()=>{
     const deregister = pgAdmin.Browser.Events.on('pgadmin:enable-disable-menu-items', _.debounce(checkMenuState, 100));
+
+    const deregisterFilter = pgAdmin.Browser.Events.on('pgadmin:object-explorer:filter:apply', (hasFilters)=>{
+      setHasFilters(hasFilters);
+    });
     checkMenuState();
     return ()=>{
       deregister();
+      deregisterFilter();
     };
   }, []);
 
   return (
     <Box display="flex" alignItems="center" gap="2px">
       <PgButtonGroup size="small">
+        <ToolbarButton icon={
+          <Badge badgeContent=" " overlap="circular" variant='dot' color="success" invisible={!hasFilters}>
+            <FilterAltRoundedIcon />
+          </Badge>
+        } menuItem={{
+          label: gettext('Filter Objects'),
+          isDisabled: false,
+          callback: () => {
+            pgAdmin.Browser.Events.trigger('pgadmin:object-explorer:filter:show');
+          }
+        }} id="filter-objects" isDropdown />
         <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} shortcut={browserPref?.sub_menu_query_tool} />
         <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context'] ??
           {label :gettext('All Rows')}}
