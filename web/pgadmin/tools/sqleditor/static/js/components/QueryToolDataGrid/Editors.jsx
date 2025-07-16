@@ -416,6 +416,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   const [hasError, setHasError] = React.useState(false);
 
   const onChange = React.useCallback((newVal)=>{
+    newVal = newVal == '' ? null : newVal;
     setLocalVal(newVal);
   }, []);
   const onOK = ()=>{
@@ -453,7 +454,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
         className='Editors-jsonEditor' data-label="pg-editor" resizeKey={'json'} defaultSize={{height:'500px', width:'600px'}} onKeyDown={suppressEnterKey} >
         <JsonEditor
           setJsonEditorSize={setJsonEditorSize}
-          value={localVal}
+          value={localVal??''}
           options={{
             onChange: onChange,
             onValidationError: (errors)=>{setHasError(Boolean(errors));}
