@@ -82,7 +82,7 @@ describe('Menu', ()=>{
         }
       });
       const menuItem = screen.getByRole('menuitem');
-      expect(menuItem.textContent).toBe('Test(Ctrl + Shift + K)');
+      expect(menuItem.textContent).toBe('Test Ctrl + Shift + K');
     });
 
     it('not checked', ()=>{

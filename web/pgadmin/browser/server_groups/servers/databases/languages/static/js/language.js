@@ -61,11 +61,13 @@ define('pgadmin.node.language', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Language...'),
           data: {action: 'create'},
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_language', node: 'language', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Language...'),
           data: {action: 'create'},
+          shortcut_preference: ['browser', 'sub_menu_create'],
         }]);
       },
 

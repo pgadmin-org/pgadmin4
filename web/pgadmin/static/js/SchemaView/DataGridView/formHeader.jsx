@@ -112,7 +112,7 @@ export function DataGridFormHeader({tableEleRef, rows}) {
   }, [canAddRow, rows?.length, addOnTop]);
 
   useEffect(() => {
-    if (newRowIndex.current < -1) return;
+    if (isNaN(newRowIndex.current) || newRowIndex.current <= -1) return;
 
     virtualizer.scrollToIndex(newRowIndex.current);
 

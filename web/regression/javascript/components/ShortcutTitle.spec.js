@@ -59,7 +59,7 @@ describe('ShortcutTitle', ()=>{
     it('mac meta key', ()=>{
       shortcut.ctrl_is_meta = true;
       jest.spyOn(keyShort, 'isMac').mockReturnValue(true);
-      expect(shortcutToString(shortcut)).toBe('Cmd + Shift + K');
+      expect(shortcutToString(shortcut)).toEqual(['⌘', '⇧', 'K']);
     });
   });
 });

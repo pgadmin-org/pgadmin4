@@ -45,6 +45,7 @@ define([
           name: 'refresh', node: this.type, module: this,
           applies: ['object', 'context'], callback: 'refresh',
           priority: 2, label: gettext('Refresh'),
+          shortcut_preference: ['browser', 'sub_menu_refresh'],
         }]);
 
         // show query tool only in context menu of supported nodes.
@@ -55,6 +56,7 @@ define([
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool'),
               permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
+              shortcut_preference: ['browser', 'sub_menu_query_tool'],
             }]);
 
             // show search objects same as query tool
@@ -63,6 +65,7 @@ define([
               applies: ['context'], callback: 'show_search_objects',
               priority: 997, label: gettext('Search Objects...'),
               permission: AllPermissionTypes.TOOLS_SEARCH_OBJECTS,
+              shortcut_preference: ['browser', 'sub_menu_search_objects'],
             }]);
 
             // show psql tool same as query tool.

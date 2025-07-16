@@ -35,6 +35,7 @@ define('pgadmin.node.server_group', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Server Group...'),
           data: {'action': 'create'},
+          shortcut_preference: ['browser', 'sub_menu_create'],
         }]);
       },
       getSchema: ()=>new ServerGroupSchema(),

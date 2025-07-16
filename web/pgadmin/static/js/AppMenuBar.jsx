@@ -90,6 +90,7 @@ export default function AppMenuBar() {
       hasCheck={hasCheck}
       checked={menuItem.checked}
       closeOnCheck={true}
+      shortcut={menuItem.shortcut}
     >{menuItem.label}</PgMenuItem>;
   };
 

@@ -27,6 +27,7 @@ export default function ContextMenu({menuItems, position, onClose, label='contex
       }}
       hasCheck={hasCheck}
       checked={menuItem.checked}
+      shortcut={menuItem.shortcut} 
     >{menuItem.label}</PgMenuItem>;
   };
 

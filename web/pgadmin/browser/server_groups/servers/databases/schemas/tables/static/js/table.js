@@ -68,12 +68,14 @@ define('pgadmin.node.table', [
           category: 'create', priority: 1, label: gettext('Table...'),
           data: {action: 'create', check: true},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_table', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Table...'),
           data: {action: 'create', check: true},
           enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_table__on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

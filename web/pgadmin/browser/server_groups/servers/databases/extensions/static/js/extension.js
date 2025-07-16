@@ -77,11 +77,13 @@ define('pgadmin.node.extension', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
           data: {action: 'create'},
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_extension', node: 'extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
           data: {action: 'create'},
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

@@ -107,6 +107,7 @@ export default class SQLEditor {
         data_disabled: gettext('Please select a database from the object explorer to access Query Tool.'),
       },
       permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
+      shortcut_preference: ['browser', 'sub_menu_query_tool'],
     }];
 
     // Create context menu
@@ -125,7 +126,8 @@ export default class SQLEditor {
         priority: 101,
         label: gettext('All Rows'),
         permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
-      },{
+        shortcut_preference: ['browser', 'sub_menu_view_data'],
+      }, {
         name: 'view_first_100_rows_context_' + supportedNode,
         node: supportedNode,
         module: this,

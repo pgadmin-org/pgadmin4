@@ -58,11 +58,13 @@ define('pgadmin.node.fts_parser', [
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Parser...'),
           data: {action: 'create'}, module: this, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_fts_parser', node: 'fts_parser', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Parser...'),
           data: {action: 'create'}, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         }]);
 
       },

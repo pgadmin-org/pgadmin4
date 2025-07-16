@@ -60,11 +60,13 @@ define('pgadmin.node.foreign_table', ['pgadmin.tables.js/enable_disable_triggers
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           data: {action: 'create', check: true}, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_foreign_table', node: 'foreign_table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           data: {action: 'create', check: true}, enable: 'canCreate',
+          shortcut_preference: ['browser', 'sub_menu_create'],
         },{
           name: 'create_foreign_table', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',

@@ -56,7 +56,7 @@ export function DataGridHeader({tableEleRef}) {
   }, [canAddRow, rows?.length]);
 
   useEffect(() => {
-    if (newRowIndex.current < -1) return;
+    if (isNaN(newRowIndex.current) || newRowIndex.current <= -1) return;
 
     virtualizer.scrollToIndex(newRowIndex.current);
 

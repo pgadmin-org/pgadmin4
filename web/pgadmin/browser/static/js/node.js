@@ -113,7 +113,7 @@ define('pgadmin.browser.node', [
       if (self.node_initialized)
         return;
       self.node_initialized = true;
-
+      
       pgAdmin.Browser.add_menus([{
         name: 'refresh',
         node: self.type,
@@ -122,6 +122,7 @@ define('pgadmin.browser.node', [
         callback: 'refresh',
         priority: 2,
         label: gettext('Refresh...'),
+        shortcut_preference: ['browser', 'sub_menu_refresh'],        
         enable: true,
       }]);
 
@@ -137,6 +138,7 @@ define('pgadmin.browser.node', [
           data: {
             'action': 'edit',
           },
+          shortcut_preference: ['browser', 'sub_menu_properties'],
           enable: _.isFunction(self.canEdit) ?
             function() {
               return !!(self.canEdit(...arguments));
@@ -158,6 +160,7 @@ define('pgadmin.browser.node', [
             'url': 'drop',
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
+          shortcut_preference: ['browser', 'sub_menu_delete'],
           enable: _.isFunction(self.canDrop) ?
             function() {
               return !!(self.canDrop(...arguments));
@@ -205,6 +208,7 @@ define('pgadmin.browser.node', [
           label: gettext('Query Tool'),
           enable: enable,
           permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
+          shortcut_preference: ['browser', 'sub_menu_query_tool'],        
         }]);
 
         // show search objects same as query tool
@@ -214,6 +218,7 @@ define('pgadmin.browser.node', [
           priority: 997, label: gettext('Search Objects...'),
           icon: 'fa fa-search', enable: enable,
           permission: AllPermissionTypes.TOOLS_SEARCH_OBJECTS,
+          shortcut_preference: ['browser', 'sub_menu_search_objects'],
         }]);
 
         if(pgAdmin['enable_psql']) {
