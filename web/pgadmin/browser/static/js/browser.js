@@ -213,6 +213,8 @@ define('pgadmin.browser', [
         this.restore_pgadmin_state();
         pgBrowser.docker.default_workspace.focus();
       }
+      // Assign and Update shortcuts from preferences.
+      MainMenuFactory.subscribeShortcutChanges();
     },
     check_corrupted_db_file: function() {
       getApiInstance().get(
@@ -441,6 +443,7 @@ define('pgadmin.browser', [
                 applies: _m.applies,
                 permission: _m.permission,
                 shortcut_preference: _m.shortcut_preference,
+                shortcut:_m.shortcut
               };
             };
 
@@ -455,7 +458,7 @@ define('pgadmin.browser', [
               }
               _menus[m.name]['menu_items'] = sub_menu_items;
             }
-          } else  {
+          } else {
             console.warn(
               'Developer warning: Category \'' +
                   a +

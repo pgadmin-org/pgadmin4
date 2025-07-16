@@ -23,26 +23,12 @@ export default function szhMenuOverride(theme) {
     '& .szh-menu__item': {
       display: 'flex',
       padding: '3px 12px',
-      // Add shortcut key style.
-      '& .menu-shortcut-key': {
-        marginLeft: 'auto',
-        fontSize: '0.8em',
-        paddingLeft: '12px',
-        display: 'flex',
-        gap: '1px',
-        fontWeight: 550,
-        color: '#888888',
-      },
       '&:after': {
         right: '0.75rem',
       },
       '&.szh-menu__item--active, &.szh-menu__item--hover': {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
-        // On hover, the shortcut key color will change.
-        '& .menu-shortcut-key': {
-          color: theme.palette.primary.contrastText,
-        },
       },
       '&.szh-menu__item--disabled':{
         color: theme.palette.text.muted,

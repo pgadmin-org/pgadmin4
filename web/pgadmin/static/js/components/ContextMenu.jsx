@@ -11,17 +11,9 @@ import React from 'react';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './Menu';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-import usePreferences from '../../../preferences/static/js/store';
 
 export default function ContextMenu({menuItems, position, onClose, label='context'}) {
-  const prefStore = usePreferences.getState();
   const getPgMenuItem = (menuItem, i)=>{
-    let shortcut;
-    // Fetch shortcut from preferences if defined in menuItem.
-    if(menuItem.shortcut_preference) {
-      const [module, key] = menuItem.shortcut_preference;
-      shortcut = prefStore.getPreferences(module, key)?.value;
-    }
     if(menuItem.type == 'separator') {
       return <PgMenuDivider key={i}/>;
     }
@@ -35,7 +27,7 @@ export default function ContextMenu({menuItems, position, onClose, label='contex
       }}
       hasCheck={hasCheck}
       checked={menuItem.checked}
-      shortcut={shortcut} 
+      shortcut={menuItem.shortcut} 
     >{menuItem.label}</PgMenuItem>;
   };
 

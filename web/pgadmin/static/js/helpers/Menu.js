@@ -124,7 +124,7 @@ export class MenuItem {
       'checked', 'below', 'menu_items', 'is_checkbox', 'action', 'applies', 'is_native_only', 'type',
       'permission',
     ];
-    this.shortcut_preference = options.shortcut_preference;
+    this.shortcut = options.shortcut;
     let defaults = {
       url: '#',
       target: '_self',

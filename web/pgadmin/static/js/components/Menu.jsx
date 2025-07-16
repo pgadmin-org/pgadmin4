@@ -20,6 +20,7 @@ import {
 export {MenuDivider as PgMenuDivider} from '@szhsin/react-menu';
 import { shortcutToString } from './ShortcutTitle';
 import CustomPropTypes from '../custom_prop_types';
+import { Box } from '@mui/material';
 
 export function PgMenu({open, className='', label, menuButton=null, ...props}) {
   const state = open ? 'open' : 'closed';
@@ -81,14 +82,26 @@ export const PgMenuItem = (({hasCheck=false, checked=false, accesskey, shortcut,
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon  style={checked ? {} : {visibility: 'hidden', width: '1.3rem'}} data-label="CheckIcon"/>}
     {children}
-    <div className="menu-shortcut-key">
+    <Box
+      sx={{
+        marginLeft: 'auto',
+        fontSize: '0.8em',
+        paddingLeft: '12px',
+        display: 'flex',
+        gap: '1px',
+        color: 'text.muted',
+        '.szh-menu__item--hover &': {
+          color: 'primary.contrastText',
+        },
+      }}
+    >
       {Array.isArray(keyVal)
         ? keyVal.map((key, idx) => (
-          <div key={idx} className="ShortcutTitle-key">{key}</div>
+          <Box key={idx} component="div">{key}</Box>
         ))
-        : <div className="ShortcutTitle-key"> {keyVal ? `${keyVal}` : ''}</div>
+        : <Box component="div"> {keyVal ? `${keyVal}` : ''}</Box>
       }
-    </div>
+    </Box>
   </MenuItem>;
 });
 
