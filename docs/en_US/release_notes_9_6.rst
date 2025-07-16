@@ -28,6 +28,7 @@ Housekeeping
 ************
 
   | `Issue #8828 <https://github.com/pgadmin-org/pgadmin4/issues/8828>`_ -  Ensure that pgAdmin 4 is compatible with PG/EPAS v18.
+  | `Issue #8958 <https://github.com/pgadmin-org/pgadmin4/issues/8958>`_ -  Use 'Drop' instead of 'Delete' for object commands to make destructive actions more deliberate.
 
 Bug fixes
 *********
