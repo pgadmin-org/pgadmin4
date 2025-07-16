@@ -133,11 +133,11 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.ANY_ITEM_SELECTED, (selected)=>{
         setDisableButton('drop-table', !selected);
       }],
-      [ERD_EVENTS.DIRTY, (isDirty, data)=>{
+      [ERD_EVENTS.DIRTY, (isDirty, data, fileName)=>{
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
-        if(isDirty && isSaveToolDataEnabled('ERD')){
-          setSaveERDData(data);
+        if((isDirty || fileName) && isSaveToolDataEnabled('ERD')){
+          setSaveERDData({data, fileName, isDirty});
         }
       }],
     ];
@@ -152,8 +152,8 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   }, []);
 
   const [saveERDData, setSaveERDData] = useState(null);
-  useDelayDebounce((erdData)=>{
-    saveToolData('ERD', connectionInfo,  connectionInfo.trans_id, erdData);
+  useDelayDebounce(({data, fileName, isDirty})=>{
+    saveToolData('ERD', {...connectionInfo,'open_file_name':fileName, 'is_editor_dirty': isDirty}, connectionInfo.trans_id, data);
   }, saveERDData, 500);
 
   useEffect(()=>{

@@ -7,9 +7,9 @@
 #
 ##########################################################################
 import os
+
+from pgadmin.misc.file_manager import read_file_generator
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.tools.sqleditor.utils.query_tool_fs_utils import \
-    read_file_generator
 
 
 class TestReadFileGeneratorForEncoding(BaseTestGenerator):

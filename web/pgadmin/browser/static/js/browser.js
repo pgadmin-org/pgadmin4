@@ -12,10 +12,9 @@ import _ from 'lodash';
 import { checkMasterPassword, showQuickSearch } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
-import getApiInstance, {parseApiError} from '../../../static/js/api_instance';
+import getApiInstance from '../../../static/js/api_instance';
 import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
 import checkNodeVisibility from '../../../static/js/check_node_visibility';
-import * as showQueryTool from '../../../tools/sqleditor/static/js/show_query_tool';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'sources/pgadmin',
@@ -297,47 +296,6 @@ define('pgadmin.browser', [
 
       }).catch(function() {
         // Suppress any errors
-      });
-    },
-
-    restore_pgadmin_state: function () {
-      getApiInstance({'Content-Encoding': 'gzip'}).get(
-        url_for('settings.get_application_state')
-      ).then((res)=> {
-        if(res.data.success && res.data.data.result.length > 0){
-          let deleteToolDataIds = [];
-          _.each(res.data.data.result, function(toolState){
-            let toolNme = toolState.tool_name;
-            let toolDataId = `${toolNme}-${toolState.id}`;
-            let connectionInfo = toolState.connection_info;
-            
-            if (toolNme == 'sqleditor'){
-              showQueryTool.relaunchSqlTool(connectionInfo, toolDataId);
-            }else{
-              localStorage.setItem(toolDataId, toolState.tool_data);
-              deleteToolDataIds.push(toolState.id);
-              if(toolNme == 'psql'){
-                pgAdmin.Tools.Psql.openPsqlTool(null, null, connectionInfo);
-              }else if(toolNme == 'ERD'){
-                pgAdmin.Tools.ERD.showErdTool(null, null, false, connectionInfo, toolDataId);
-              }else if(toolNme == 'schema_diff'){
-                pgAdmin.Tools.SchemaDiff.launchSchemaDiff(toolDataId);
-              }
-            }
-          });
-
-          // call clear application state data.
-          if(deleteToolDataIds.length > 0){
-            try {
-              getApiInstance().delete(url_for('settings.delete_application_state'), {data:{'trans_ids': deleteToolDataIds}});
-            } catch (error) {
-              console.error(error);
-              pgAdmin.Browser.notifier.error(gettext('Failed to remove query data.') + parseApiError(error));
-            }}
-        }
-      }).catch(function(error) {
-        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
-        getApiInstance().delete(url_for('settings.delete_application_state'), {});
       });
     },
 

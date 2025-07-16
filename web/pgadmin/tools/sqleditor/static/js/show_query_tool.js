@@ -9,11 +9,9 @@
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-import {getPanelTitle, getTitle} from './sqleditor_title';
+import {getPanelTitle} from './sqleditor_title';
 import {getRandomInt} from 'sources/utils';
 import pgAdmin from 'sources/pgadmin';
-import usePreferences from '../../../../preferences/static/js/store';
-import pgWindow from 'sources/window';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;
@@ -114,32 +112,6 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
   launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, {});
 }
 
-export function relaunchSqlTool(connectionInfo, toolDataId){
-  let browserPref = usePreferences.getState().getPreferencesForModule('browser');
-  let parentData = {
-    server_group: {
-      _id: connectionInfo.sgid || 0,
-    },
-    server: {
-      _id: connectionInfo.sid,
-      label: connectionInfo.server,
-    },
-    database: {
-      _id: connectionInfo.did,
-      label: connectionInfo.database_name,
-      _label: connectionInfo.database_name,
-    },
-  };
-
-  const transId = getRandomInt(1, 9999999);
-  const qtUrl = generateUrl(transId, parentData, null);
-  const title = getTitle(pgAdmin, browserPref, parentData, false, connectionInfo.server_name, connectionInfo.database_name, connectionInfo.role || connectionInfo.user);
-  launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, qtUrl, title, {
-    toolDataId: toolDataId,
-    ...connectionInfo,
-  });
-
-}
 
 export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, params) {
   let retVal = queryToolMod.launch(transId, gridUrl, true, queryToolTitle, params);
