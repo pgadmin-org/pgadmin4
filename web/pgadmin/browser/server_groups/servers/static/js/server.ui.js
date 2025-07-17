@@ -354,7 +354,7 @@ export default class ServerSchema extends BaseUISchema {
           maxLength: null,
           autoComplete: 'new-password'
         },
-        readonly: function( state) {
+        readonly: function(state) {
           if (obj.isNew())
             return false;
           return state.connected || !state.save_password;
