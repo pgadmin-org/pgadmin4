@@ -744,6 +744,8 @@ class ServerNode(PGChildNodeView):
             'port': 'port',
             'db': 'maintenance_db',
             'username': 'username',
+            'password': 'password',
+            'save_password': 'save_password',
             'gid': 'servergroup_id',
             'comment': 'comment',
             'role': 'role',
@@ -877,9 +879,16 @@ class ServerNode(PGChildNodeView):
                               sharedserver):
 
         idx = 0
+
+        crypt_key_present, crypt_key = get_crypt_key()
+        if not crypt_key_present:
+            raise CryptKeyMissing
+
         for arg in config_param_map:
             if arg in data:
                 value = data[arg]
+                if arg == 'password':
+                    value = encrypt(data[arg], crypt_key)
                 # sqlite3 do not have boolean type so we need to convert
                 # it manually to integer
                 if 'shared' in data and not data['shared']:
@@ -1020,6 +1029,8 @@ class ServerNode(PGChildNodeView):
             'host': server.host,
             'port': server.port,
             'db': server.maintenance_db,
+            'password': server.password,
+            'save_password': server.save_password,
             'shared': server.shared if config.SERVER_MODE else None,
             'shared_username': server.shared_username
             if config.SERVER_MODE else None,
