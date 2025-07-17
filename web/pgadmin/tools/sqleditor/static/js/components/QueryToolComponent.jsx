@@ -288,12 +288,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
           setQtStatePartial({ editor_disabled: true });
         });
-    } else if (qtState.params.sql_id) {
+    } else if (qtState.params.sql_id && qtState.params.restore != 'true') {
       let sqlValue = localStorage.getItem(qtState.params.sql_id);
       localStorage.removeItem(qtState.params.sql_id);
       if (sqlValue) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
       }
+      setQtStatePartial({ editor_disabled: false });
     } else if (qtState.params.restore == 'true') {
       restoreToolContent();
     } else {

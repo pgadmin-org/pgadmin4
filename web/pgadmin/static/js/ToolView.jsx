@@ -39,6 +39,9 @@ ToolForm.propTypes = {
 };
 
 export function getToolTabParams(panelId, toolUrl, formParams, tabParams, restore=false) {
+  if(tabParams?.internal?.orig_title){
+    tabParams.title = tabParams.internal.title;
+  }
   return {
     id: panelId,
     title: panelId,

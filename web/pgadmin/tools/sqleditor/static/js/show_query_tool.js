@@ -104,7 +104,7 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
     },
     database: {
       _id: parentData.did,
-      label: parentData.database,
+      _label: parentData.database,
     },
   };
 
