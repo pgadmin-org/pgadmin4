@@ -206,12 +206,6 @@ define('pgadmin.browser', [
     uiloaded: function() {
       this.set_master_password('');
       this.check_version_update();
-      const prefStore = usePreferences.getState();
-      let save_the_workspace = prefStore.getPreferencesForModule('misc').save_app_state;
-      if(save_the_workspace){
-        this.restore_pgadmin_state();
-        pgBrowser.docker.default_workspace.focus();
-      }
       // Assign and Update shortcuts from preferences.
       MainMenuFactory.subscribeShortcutChanges();
     },

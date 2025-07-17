@@ -27,7 +27,7 @@ export function ApplicationStateProvider({children}){
   const saveToolData = (toolName, connectionInfo, transId, toolData) =>{
     let data = {
       'tool_name': toolName,
-      'connection_info': connectionInfo, 
+      'connection_info': connectionInfo,
       'trans_id': transId,
       'tool_data': toolData
     };
@@ -57,7 +57,7 @@ export function ApplicationStateProvider({children}){
         console.warn('Unable to retrieve tool content.');
         return null;
       }
-      
+
       const toolData = res.data.data.result;
       const connectionInfo = toolData?.connection_info;
       const toolContent = JSON.parse(toolData.tool_data);
@@ -83,7 +83,6 @@ export function ApplicationStateProvider({children}){
     } catch (error) {
       let errorMsg = gettext(error?.response?.data?.errormsg || error);
       console.warn(errorMsg);
-      pgAdmin.Browser.notifier.pgRespErrorNotify(errorMsg);
       return null;
     }
   }
