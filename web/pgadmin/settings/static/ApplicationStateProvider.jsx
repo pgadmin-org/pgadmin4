@@ -73,6 +73,8 @@ export function ApplicationStateProvider({children}){
             // file has external chages
             return {loadFile: loadFile, fileName: fileName, data: toolContent, modifiedExternally: true};
           }
+        }else if(connectionInfo.file_deleted){
+          return {loadFile: loadFile, fileName: null, data: toolContent};
         }else{
           loadFile = true;
           return {loadFile: loadFile, fileName: fileName, data: null};

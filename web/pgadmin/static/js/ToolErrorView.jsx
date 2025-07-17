@@ -35,5 +35,4 @@ ToolErrorView.propTypes = {
   error: PropTypes.string,
   panelId: PropTypes.string,
   panelDocker: PropTypes.object,
-  toolDataId: PropTypes.string
 };

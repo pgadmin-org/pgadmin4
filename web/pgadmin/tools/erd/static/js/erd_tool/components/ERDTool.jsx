@@ -397,6 +397,8 @@ export default class ERDTool extends React.Component {
         this.diagram.clearSelection();
         this.registerModelEvents();
         if(toolContent.fileName)this.setState({current_file: toolContent.fileName});
+        this.setState({dirty: true});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, toolContent.data);
       }
     }
   };
