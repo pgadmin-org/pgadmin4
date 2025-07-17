@@ -365,7 +365,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'save_password', label: gettext('Save password?'),
         type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
         deps: ['kerberos_conn'],
-        readonly: function( state) {
+        readonly: function(state) {
           return state.connected;
         },
         disabled: function(state) {
