@@ -348,22 +348,25 @@ export default class ServerSchema extends BaseUISchema {
       },{
         id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
-        mode: ['create'],
-        deps: ['connect_now', 'kerberos_conn'],
-        visible: function(state) {
-          return state.connect_now && obj.isNew(state);
-        },
+        mode: ['create', 'edit'],
+        deps: ['kerberos_conn', 'save_password'],
         controlProps: {
           maxLength: null,
           autoComplete: 'new-password'
         },
+        readonly: function(state) {
+          if (obj.isNew())
+            return false;
+          return state.connected || !state.save_password;
+        },
         disabled: function(state) {return state.kerberos_conn;},
+        helpMessage: gettext('In edit mode the password field is enabled only if Save Password is set to true.')
       },{
         id: 'save_password', label: gettext('Save password?'),
-        type: 'switch', group: gettext('Connection'), mode: ['create'],
-        deps: ['connect_now', 'kerberos_conn'],
-        visible: function(state) {
-          return state.connect_now && obj.isNew(state);
+        type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
+        deps: ['kerberos_conn'],
+        readonly: function(state) {
+          return state.connected;
         },
         disabled: function(state) {
           return !current_user.allow_save_password || state.kerberos_conn;
