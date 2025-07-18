@@ -23,6 +23,21 @@ const MAIN_MENUS = [
 
 export default class MainMenuFactory {
   static electronCallbacks = {};
+  // Use to convert shortcut to accelerator for electron.
+  static convertShortcutToAccelerator({ control, meta, shift, alt, key } = {}) {
+    // Store active modifier keys into an array.
+    const mods = [
+      control && 'Ctrl',
+      meta && 'Cmd',
+      shift && 'Shift',
+      alt && 'Alt',
+    ].filter(Boolean); // Remove any falsy values
+    // Get the actual key character and convert to uppercase.
+    const k = key?.char?.toUpperCase();
+    if (!k) return;
+    // Combine modifiers and key into a single string.
+    return [...mods, k].join('+');
+  }
 
   static toElectron() {
     // we support 2 levels of submenu
@@ -34,10 +49,12 @@ export default class MainMenuFactory {
           MainMenuFactory.electronCallbacks[smName] = sm.callback;
           return {
             ...sm.serialize(),
+            accelerator: MainMenuFactory.convertShortcutToAccelerator(sm.shortcut),
             submenu: sm.getMenuItems()?.map((smsm)=>{
               MainMenuFactory.electronCallbacks[`${smName}_${smsm.name}`] = smsm.callback;
               return {
                 ...smsm.serialize(),
+                accelerator: MainMenuFactory.convertShortcutToAccelerator(smsm.shortcut),
               };
             })
           };
@@ -123,6 +140,7 @@ export default class MainMenuFactory {
   static subscribeShortcutChanges() {
     MainMenuFactory.updateShortcutsFromPreferences(usePreferences.getState());
     usePreferences.subscribe(MainMenuFactory.updateShortcutsFromPreferences);
+    MainMenuFactory.createMainMenus();
   }
 
   static enableDisableMenus(item) {
