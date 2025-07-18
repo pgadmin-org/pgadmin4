@@ -132,7 +132,7 @@ class DictCursor(_cursor):
       identifies duplicate column name
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         self._odt_desc = None
         _cursor.__init__(self, *args, row_factory=dict_row)
 
@@ -401,8 +401,8 @@ class AsyncDictServerCursor(AsyncDictCursor, _async_server_cursor):
 
     def __init__(self, *args, name=None, **kwargs):
         self._odt_desc = None
-        _async_server_cursor.__init__(self, name=name, *args,
-                                      row_factory=dict_row)
+        kwargs['row_factory'] = dict_row
+        _async_server_cursor.__init__(self, name=name, *args, **kwargs)
         self.cursor = _async_server_cursor
 
     def get_rowcount(self):
