@@ -132,7 +132,7 @@ class DictCursor(_cursor):
       identifies duplicate column name
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self._odt_desc = None
         _cursor.__init__(self, *args, row_factory=dict_row)
 
