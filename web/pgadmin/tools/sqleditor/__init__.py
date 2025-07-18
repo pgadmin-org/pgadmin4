@@ -1080,7 +1080,10 @@ def poll(trans_id):
             rows_affected = conn.rows_affected()
 
             st, result = \
-                conn.async_fetchmany_2darray(data_result_rows_per_page)
+                conn.async_fetchmany_2darray(data_result_rows_per_page + 1
+                                             if trans_obj.server_cursor
+                                             else data_result_rows_per_page
+                                             )
 
             # There may be additional messages even if result is present
             # eg: Function can provide result as well as RAISE messages
@@ -1201,12 +1204,22 @@ def poll(trans_id):
         if trans_obj is not None and hasattr(trans_obj, 'did') else 0
 
     page_size = rows_fetched_to - rows_fetched_from + 1
+
+    # Check the next recordset/page is available or not for the server cursor
+    next_page = 0
+    if (trans_obj.server_cursor and result and len(result) > 0 and
+            len(result) > data_result_rows_per_page):
+        result = result[0:len(result) - 1]
+        next_page = 1
+        rows_fetched_to = rows_fetched_to - 1
+
     pagination = {
         'page_size': page_size,
         'page_count': math.ceil(conn.total_rows / page_size),
         'page_no': math.floor((rows_fetched_from - 1) / page_size) + 1,
         'rows_from': rows_fetched_from,
-        'rows_to': rows_fetched_to
+        'rows_to': rows_fetched_to,
+        'next_page': next_page
     }
 
     return make_json_response(
@@ -1275,7 +1288,7 @@ def fetch_window(trans_id, from_rownum=0, to_rownum=0):
 
     page_size = to_rownum - from_rownum + 1
 
-    # Check whether the next recordset/page is available or not
+    # Check the next recordset/page is available or not for the server cursor
     next_page = 0
     if trans_obj.server_cursor and len(result) > 0 and len(result) > page_size:
         result = result[0:len(result) - 1]
