@@ -1207,7 +1207,7 @@ def poll(trans_id):
 
     # Check the next recordset/page is available or not for the server cursor
     next_page = 0
-    if (trans_obj.server_cursor and len(result) > 0 and
+    if (trans_obj.server_cursor and result and len(result) > 0 and
             len(result) > data_result_rows_per_page):
         result = result[0:len(result) - 1]
         next_page = 1
