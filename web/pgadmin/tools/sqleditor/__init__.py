@@ -1080,7 +1080,7 @@ def poll(trans_id):
             rows_affected = conn.rows_affected()
 
             st, result = \
-                conn.async_fetchmany_2darray(data_result_rows_per_page +1
+                conn.async_fetchmany_2darray(data_result_rows_per_page + 1
                                              if trans_obj.server_cursor
                                              else data_result_rows_per_page
                                              )
@@ -1203,13 +1203,12 @@ def poll(trans_id):
     data_obj['db_id'] = trans_obj.did \
         if trans_obj is not None and hasattr(trans_obj, 'did') else 0
 
-
     page_size = rows_fetched_to - rows_fetched_from + 1
 
     # Check the next recordset/page is available or not for the server cursor
     next_page = 0
-    if (trans_obj.server_cursor and len(result) > 0 and len(result)
-        > data_result_rows_per_page):
+    if (trans_obj.server_cursor and len(result) > 0 and
+            len(result) > data_result_rows_per_page):
         result = result[0:len(result) - 1]
         next_page = 1
         rows_fetched_to = rows_fetched_to - 1
