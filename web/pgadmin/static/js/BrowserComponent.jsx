@@ -35,7 +35,7 @@ import { useWorkspace, WorkspaceProvider } from '../../misc/workspaces/static/js
 import { PgAdminProvider, usePgAdmin } from './PgAdminProvider';
 import PreferencesComponent from '../../preferences/static/js/components/PreferencesComponent';
 import { ApplicationStateProvider } from '../../settings/static/ApplicationStateProvider';
-
+import { appAutoUpdateNotifier } from './helpers/appAutoUpdateNotifier';
 
 const objectExplorerGroup  = {
   tabLocked: true,
@@ -180,6 +180,36 @@ export default function BrowserComponent({pgAdmin}) {
     },
     isNewTab: true,
   });
+
+  // Called when Install and Restart btn called for auto-update install
+  function installUpdate() {
+    if (window.electronUI) {
+      window.electronUI.sendDataForAppUpdate({
+        'install_update_now': true
+      });
+    }}
+  
+  // Listen for auto-update events from the Electron main process and display notifications
+  // to the user based on the update status (e.g., update available, downloading, downloaded, installed, or error).
+  if (window.electronUI && typeof window.electronUI.notifyAppAutoUpdate === 'function') {
+    window.electronUI.notifyAppAutoUpdate((data)=>{
+      if (data?.check_version_update) {
+        pgAdmin.Browser.check_version_update(true);
+      } else if (data.update_downloading) {
+        appAutoUpdateNotifier('Update downloading...', 'info', null, 10000);
+      } else if (data.no_update_available) {
+        appAutoUpdateNotifier('No update available...', 'info', null, 10000);
+      } else if (data.update_downloaded) {
+        const UPDATE_DOWNLOADED_MESSAGE = gettext('An update is ready. Restart the app now to install it, or later to keep using the current version.');
+        appAutoUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', installUpdate, null, 'Update downloaded', 'update_downloaded');
+      } else if (data.error) {
+        appAutoUpdateNotifier(`${data.errMsg}`, 'error');
+      } else if (data.update_installed) {
+        const UPDATE_INSTALLED_MESSAGE = gettext('Update installed successfully!');
+        appAutoUpdateNotifier(UPDATE_INSTALLED_MESSAGE, 'success');
+      }
+    });
+  }
 
   useEffect(()=>{
     if(uiReady) {

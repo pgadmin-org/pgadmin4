@@ -35,7 +35,7 @@ class SettingsModule(PgAdminModule):
             'file_items': [
                 MenuItem(
                     name='mnu_resetlayout',
-                    priority=998,
+                    priority=997,
                     module="pgAdmin.Settings",
                     callback='show',
                     label=gettext('Reset Layout')
