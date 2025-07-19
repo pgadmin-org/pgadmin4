@@ -85,7 +85,6 @@ export const PgMenuItem = (({hasCheck=false, checked=false, accesskey, shortcut,
     <Box
       sx={{
         marginLeft: 'auto',
-        fontSize: '0.8em',
         paddingLeft: '12px',
         display: 'flex',
         gap: '1px',
