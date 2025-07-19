@@ -547,11 +547,71 @@ def create_app(app_name=None):
         paranoid.redirect_view = _INDEX_PATH
 
     ##########################################################################
+    # add all default server
+    ##########################################################################
+    
+    def add_servers_to_all_users_from_config(postgresql_servers):
+        users = User.query.all()
+        server_groups = ServerGroup.query.all()
+
+        for user in users:
+            user_id = user.id
+            servergroup_id = server_groups.get(user_id)
+
+            if not servergroup_id:
+                print(f"⚠️  Aucun servergroup trouvé pour user_id {user_id}.")
+                continue
+
+            for config in postgresql_servers:
+                name = config.get("name")
+                host = config.get("host", "localhost")
+                port = config.get("port", 5432)
+                username = config.get("username", "postgres")
+                password = config.get("password", "")
+                maintenance_db = config.get("maintenance_db", "postgres")
+                comment = config.get("comment", "")
+
+                existing = Server.query.filter_by(
+                    user_id=user_id,
+                    name=name,
+                    host=host,
+                    port=port
+                ).first()
+
+                if existing:
+                    continue  # déjà ajouté
+
+                svr = Server(
+                    user_id=user_id,
+                    servergroup_id=servergroup_id,
+                    name=name,
+                    host=host,
+                    port=port,
+                    maintenance_db=maintenance_db,
+                    username=username,
+                    password=password,
+                    comment=comment,
+                    connection_params={
+                        "sslmode": "prefer",
+                        "connect_timeout": 10
+                    }
+                )
+
+                db.session.add(svr)
+                print(f"✅ Ajouté: {name} pour user {user.email}")
+
+        db.session.commit()
+    
+    import postgresql_servers from "config"
+    add_servers_to_all_users_from_config(postgresql_servers)
+
+    ##########################################################################
     # Load all available server drivers
     ##########################################################################
     driver.init_app(app)
     authenticate.init_app(app)
     heartbeat.init_app(app)
+    
 
     ##########################################################################
     # Register language to the preferences after login
