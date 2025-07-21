@@ -544,7 +544,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
       pgAdmin.Browser.notifier.error(error.response.data.errormsg);
-    }if(error?.response?.status == 428) {
+      
+    }else if(error?.response?.status == 428) {
       connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
 
         await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
