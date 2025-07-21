@@ -155,6 +155,7 @@ export class MenuItem {
       priority: this.priority,
       type: [true, false].includes(this.checked) ? 'checkbox' : this.type,
       checked: this.checked,
+      shortcut: this.shortcut,
     };
   }
 

@@ -375,6 +375,7 @@ define('pgadmin.browser', [
                 _m.callback = () => {
                   showQuickSearch();
                 };
+                _m.shortcut_preference =['browser', 'open_quick_search'];
               }
 
               return {

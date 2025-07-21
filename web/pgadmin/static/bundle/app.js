@@ -51,6 +51,10 @@ define('app', [
   // Create menus after all modules are initialized.
   MainMenuFactory.createMainMenus();
 
+  // Listen to menu click events and callback pgAdmin js code.
+  // This will be internally ignored if not running in electron.
+  MainMenuFactory.listenToElectronMenuClick();
+
   const root = ReactDOM.createRoot(document.querySelector('#root'));
   root.render(
     <Theme>

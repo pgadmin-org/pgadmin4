@@ -411,7 +411,7 @@ ipcMain.on('log', (_e, text) => ()=>{
 });
 ipcMain.on('focus', (e) => {
   app.focus({steal: true});
-  const callerWindow = BrowserWindow.fromWebContents(e.sender)
+  const callerWindow = BrowserWindow.fromWebContents(e.sender);
   if (callerWindow) {
     if (callerWindow.isMinimized()) callerWindow.restore();
     callerWindow.focus();

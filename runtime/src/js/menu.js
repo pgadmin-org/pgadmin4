@@ -7,11 +7,27 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { app, Menu, ipcMain, BrowserWindow } from 'electron';
+import { app, Menu, ipcMain, BrowserWindow, globalShortcut } from 'electron';
 
 const isMac = process.platform == 'darwin';
 const isLinux = process.platform == 'linux';
 let mainMenu;
+
+// Use to convert shortcut to accelerator for electron.
+function convertShortcutToAccelerator({ control, meta, shift, alt, key } = {}) {
+  // Store active modifier keys into an array.
+  const mods = [
+    control && 'Ctrl',
+    meta && 'Cmd',
+    shift && 'Shift',
+    alt && 'Alt',
+  ].filter(Boolean); // Remove any falsy values
+  // Get the actual key character and convert to uppercase.
+  const k = key?.char?.toUpperCase();
+  if (!k) return;
+  // Combine modifiers and key into a single string.
+  return [...mods, k].join('+');
+}
 
 function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
   const template = [];
@@ -24,13 +40,27 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
         const smName = `${menuItem.name}_${subMenuItem.name}`;
         return {
           ...subMenuItem,
-          click: ()=>{
+          accelerator: convertShortcutToAccelerator(subMenuItem.shortcut),
+          click: (_menuItem, _browserWindow, event)=>{
+            if(event?.triggeredByAccelerator) {
+              // We will ignore the click event if it is triggered by an accelerator.
+              // We use accelerator to only show the shortcut title in the menu.
+              // The actual shortcut is already handled by pgAdmin.
+              return;
+            }
             pgAdminMainScreen.webContents.send('menu-click', smName);
           },
           submenu: subMenuItem.submenu?.map((deeperSubMenuItem)=>{
             return {
               ...deeperSubMenuItem,
-              click: ()=>{
+              accelerator: convertShortcutToAccelerator(deeperSubMenuItem.shortcut),
+              click: (_menuItem, _browserWindow, event)=>{
+                if(event?.triggeredByAccelerator) {
+                  // We will ignore the click event if it is triggered by an accelerator.
+                  // We use accelerator to only show the shortcut title in the menu.
+                  // The actual shortcut is already handled by pgAdmin.
+                  return;
+                }
                 pgAdminMainScreen.webContents.send('menu-click', `${smName}_${deeperSubMenuItem.name}`);
               },
             };
@@ -109,6 +139,9 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, callbacks) {
 export function setupMenu(pgAdminMainScreen, callbacks={}) {
   ipcMain.on('setMenus', (event, menus)=>{
     mainMenu = buildMenu(menus, pgAdminMainScreen, callbacks);
+    // this is important because the shortcuts are registered multiple times
+    // when the menu is set multiple times using accelerators.
+    globalShortcut.unregisterAll();
     if(isMac) {
       Menu.setApplicationMenu(mainMenu);
     } else {

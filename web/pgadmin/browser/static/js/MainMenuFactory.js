@@ -46,6 +46,12 @@ export default class MainMenuFactory {
     });
   }
 
+  static listenToElectronMenuClick() {
+    window.electronUI?.onMenuClick((menuName)=>{
+      MainMenuFactory.electronCallbacks[menuName]?.();
+    });
+  }
+
   static createMainMenus() {
     pgAdmin.Browser.MainMenus = [];
     MAIN_MENUS.forEach((_menu) => {
@@ -60,10 +66,6 @@ export default class MainMenuFactory {
 
     // enable disable will take care of dynamic menus.
     MainMenuFactory.enableDisableMenus();
-
-    window.electronUI?.onMenuClick((menuName)=>{
-      MainMenuFactory.electronCallbacks[menuName]?.();
-    });
 
     window.electronUI?.setMenus(MainMenuFactory.toElectron());
   }
@@ -117,6 +119,7 @@ export default class MainMenuFactory {
     };
     let allMenus = pgAdmin.Browser?.all_menus_cache || {};
     Object.values(allMenus).forEach(updateShortcuts);
+    MainMenuFactory.createMainMenus();
   };
 
   // Assign and Update menu shortcuts using preference.
