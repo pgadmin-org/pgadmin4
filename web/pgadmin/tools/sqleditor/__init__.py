@@ -204,11 +204,24 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     else:
         _data = request.args or request.form
 
-    filter_sql = _data['filter_sql'] if 'filter_sql' in _data else None
+    filter_sql = _data['sql_filter'] if 'sql_filter' in _data else None
     server_cursor = _data['server_cursor'] if\
         'server_cursor' in _data and (
             _data['server_cursor'] == 'true' or _data['server_cursor'] is True
     ) else False
+    dbname = _data['dbname'] if 'dbname' in _data else None
+
+    kwargs = {
+        'user': _data['user'] if 'user' in _data else None,
+        'role': _data['role'] if 'role' in _data else None,
+        'password': _data['password'] if 'password' in _data else None
+    }
+
+    server = Server.query.filter_by(id=sid).first()
+    if kwargs.get('password', None) is None:
+        kwargs['encpass'] = server.password
+    else:
+        kwargs['encpass'] = None
 
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
@@ -216,11 +229,36 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         # default_conn is same connection which is created when user connect to
         # database from tree
-        default_conn = manager.connection(did=did)
-        conn = manager.connection(did=did, conn_id=conn_id,
+        conn = manager.connection(conn_id=conn_id,
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
-                                  array_to_string=True)
+                                  array_to_string=True,
+                                  **({"database": dbname} if dbname is not None
+                                     else {"did": did}
+                                     ))
+        status, msg, is_ask_password, user, _, _ = _connect(
+            conn,**kwargs)
+        if not status:
+            current_app.logger.error(msg)
+            if is_ask_password:
+                return make_json_response(
+                    success=0,
+                    status=428,
+                    result={
+                        "server_label": server.name,
+                        "username": user or server.username,
+                        "errmsg": msg,
+                        "prompt_password": True,
+                        "allow_save_password": True
+                        if ALLOW_SAVE_PASSWORD and
+                        session.get('allow_save_password', None)
+                        else False,
+                    }
+                )
+            else:
+                return internal_server_error(
+                    errormsg=str(msg))
+        default_conn = manager.connection(did=did)
     except (ConnectionLost, SSHTunnelConnectionLost):
         raise
     except Exception as e:

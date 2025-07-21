@@ -308,7 +308,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if (toolContent?.modifiedExternally) {
         toolContent = await fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent.data, '');
       }
-      
+
       if(toolContent?.loadFile){
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, toolContent.fileName, params?.storage);
       }else{
@@ -338,13 +338,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     }
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SERVER_CURSOR, executeServerCursor);
-    api.post(baseUrl, qtState.params.is_query_tool ? {
+    let requestParams = {
       user: selectedConn.user,
       role: selectedConn.role,
       password: password,
       dbname: selectedConn.database_name
-    } : {sql_filter: qtState.params.sql_filter,
-      server_cursor: qtState.params.server_cursor})
+    };
+    api.post(baseUrl, qtState.params.is_query_tool ?
+      {...requestParams} :
+      {sql_filter: qtState.params.sql_filter, server_cursor: qtState.params.server_cursor, ...requestParams})
       .then(()=>{
         setQtStatePartial({
           connected: true,
@@ -391,7 +393,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             connected: false,
             obtaining_conn: false,
           });
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, ()=>{});
         }
       });
   };
@@ -511,6 +513,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
 
   const handleApiError = (error, handleParams)=>{
+    let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     if(error.response?.status == 503 && error.response.data?.info == 'CONNECTION_LOST') {
       // We will display re-connect dialog, no need to display error message again
       modal.confirm(
@@ -529,7 +532,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         gettext('Cancel')
       );
     } else if(handleParams?.checkTransaction && error.response?.data.info == 'DATAGRID_TRANSACTION_REQUIRED') {
-      let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
       initConnection(api, {
         'gid': selectedConn.sgid,
         'sid': selectedConn.sid,
@@ -542,6 +544,17 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
       pgAdmin.Browser.notifier.error(error.response.data.errormsg);
+      
+    }else if(error?.response?.status == 428) {
+      connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
+
+        await connectServer(api, modal, selectedConn.sid, selectedConn.user, passwordData, async ()=>{
+          initializeQueryTool();
+        });
+
+      }, ()=>{
+        /*This is intentional (SonarQube)*/
+      });
     }else {
       let msg = parseApiError(error);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
