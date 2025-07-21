@@ -49,13 +49,6 @@ SELECT DISTINCT ON (cls.relname)
     ) AS fillfactor,
     COALESCE(
         CASE am.amname
-            WHEN 'btree' THEN substring(array_to_string(cls.reloptions, ',') FROM 'deduplicate_items=([a-z]*)')::boolean
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'btree' THEN TRUE ELSE NULL END
-    ) AS deduplicate_items,
-    COALESCE(
-        CASE am.amname
             WHEN 'gin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'gin_pending_list_limit=([0-9]*)')::int
             ELSE NULL
         END,
