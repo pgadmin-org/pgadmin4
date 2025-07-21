@@ -120,7 +120,7 @@ export function usePgMenuGroup() {
   const prevMenuOpenIdRef = useRef(null);
 
   const toggleMenu = React.useCallback((e)=>{
-    const name = e.currentTarget?.getAttribute('name') || e.currentTarget?.name;
+    const name = e.currentTarget?.getAttribute?.('name') || e.currentTarget?.name;
     setOpenMenuName(()=>{
       return prevMenuOpenIdRef.current == name ? null : name;
     });
