@@ -129,7 +129,7 @@ export default class MainMenuFactory {
   }
 
   static enableDisableMenus(item) {
-    let itemData = item ? pgAdmin.Browser.tree.itemData(item) : undefined;
+    let itemData = item ? pgAdmin.Browser.tree.itemData(item) : pgAdmin.Browser.tree?.selected();
 
     const checkForItems = (items)=>{
       items.forEach((mitem) => {

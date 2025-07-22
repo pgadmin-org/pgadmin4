@@ -389,7 +389,7 @@ export default class ERDTool extends React.Component {
       if(toolContent?.modifiedExternally){
         toolContent = await this.fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent?.data, '');
       }
-          
+
       if(toolContent.loadFile){
         this.openFile(toolContent.fileName);
       }else{
@@ -632,7 +632,7 @@ export default class ERDTool extends React.Component {
         dirty: false,
       });
       this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false, toolContent, fileName);
-      this.setTitle(fileName); 
+      this.setTitle(fileName);
       this.diagram.deserialize(toolContent);
       this.diagram.clearSelection();
       this.registerModelEvents();
@@ -670,7 +670,7 @@ export default class ERDTool extends React.Component {
         dirty: false,
       });
       this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
-      this.setTitle(this.state.current_file); 
+      this.setTitle(fileName);
       this.setLoading(null);
       if(this.closeOnSave) {
         this.forceClose();
@@ -896,7 +896,7 @@ export default class ERDTool extends React.Component {
 
     try {
       let response = await this.apiObj.post(
-        initUrl, 
+        initUrl,
         {server_name: this.props.params.server_name,
           server_type : this.props.params.server_type,
           user: this.props.params.user,

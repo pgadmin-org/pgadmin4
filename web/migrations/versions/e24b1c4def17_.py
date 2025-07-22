@@ -19,8 +19,9 @@ def upgrade():
     # delete all data from the table
     op.execute("DELETE FROM application_state")
 
-    # drop the 'tool_name' column
-    op.drop_column('application_state', 'tool_name')
+    # Drop unused columns
+    with op.batch_alter_table('application_state') as batch_op:
+        batch_op.drop_column('tool_name')
 
 
 def downgrade():

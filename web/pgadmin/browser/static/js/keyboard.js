@@ -212,8 +212,10 @@ _.extend(pgBrowser.keyboardNavigation, {
     if (!tree.d)
       return;
 
+    // Check if the query tool is enabled for the current node
+    let disabled = pgBrowser.MainMenus.find((m)=>(m.name=='tools'))?.menuItems?.find((m)=>(m.name=='query_tool'))?.isDisabled;
     // Call data grid method to render query tool
-    pgAdmin.Tools.SQLEditor.showQueryTool('', tree.i);
+    !disabled && pgAdmin.Tools.SQLEditor.showQueryTool('', tree.i);
   },
   bindSubMenuViewData: function() {
     const tree = this.getTreeDetails();
@@ -230,8 +232,10 @@ _.extend(pgBrowser.keyboardNavigation, {
     if (!tree.d)
       return;
 
+    // Check if the search objects is enabled for the current node
+    let disabled = pgBrowser.MainMenus.find((m)=>(m.name=='tools'))?.menuItems?.find((m)=>(m.name=='search_objects'))?.isDisabled;
     // Call show search object to open the search object dialog.
-    pgAdmin.Tools.SearchObjects.show_search_objects('', tree.i);
+    !disabled && pgAdmin.Tools.SearchObjects.show_search_objects('', tree.i);
   },
   bindSubMenuProperties: function() {
     const tree = this.getTreeDetails();
