@@ -2,7 +2,7 @@
 Version 9.6
 ***********
 
-Release date: 2025-07-24
+Release date: 2025-07-25
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v9.5.
 
