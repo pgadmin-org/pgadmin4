@@ -21,7 +21,7 @@ import Dependencies from '../../misc/dependencies/static/js/Dependencies';
 import Dependents from '../../misc/dependents/static/js/Dependents';
 import ModalProvider from './helpers/ModalProvider';
 import { NotifierProvider } from './helpers/Notifier';
-import ObjectExplorerToolbar from './helpers/ObjectExplorerToolbar';
+import ObjectExplorerToolbar from './tree/ObjectExplorer/ObjectExplorerToolbar';
 import MainMoreToolbar from './helpers/MainMoreToolbar';
 import Dashboard from '../../dashboard/static/js/Dashboard';
 import usePreferences from '../../preferences/static/js/store';
@@ -91,8 +91,10 @@ let defaultLayout = {
             size: 20,
             tabs: [
               LayoutDocker.getPanel({
-                id: BROWSER_PANELS.OBJECT_EXPLORER, title: gettext('Object Explorer'),
-                content: <ObjectExplorer />, group: 'object-explorer'
+                id: BROWSER_PANELS.OBJECT_EXPLORER,
+                title: gettext('Object Explorer'),
+                content: <ObjectExplorer />,
+                group: 'object-explorer'
               }),
             ],
           },
