@@ -52,6 +52,8 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.browser.register_browser_preferences import \
     register_browser_preferences
+from pgadmin.browser.register_editor_preferences import \
+    register_editor_preferences
 from pgadmin.utils.master_password import validate_master_password, \
     set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
     set_crypt_key, process_masterpass_disabled, \
@@ -87,6 +89,7 @@ class BrowserModule(PgAdminModule):
 
     def register_preferences(self):
         register_browser_preferences(self)
+        register_editor_preferences(self)
 
     def get_exposed_url_endpoints(self):
         """

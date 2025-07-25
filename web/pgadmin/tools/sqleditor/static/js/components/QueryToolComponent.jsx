@@ -123,6 +123,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       sqleditor: {...preferencesStore.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
       graphs: preferencesStore.getPreferencesForModule('graphs'),
       misc: preferencesStore.getPreferencesForModule('misc'),
+      editor: preferencesStore.getPreferencesForModule('editor'),
     },
     is_new_tab: window.location == window.parent?.location,
     is_visible: true,
@@ -467,6 +468,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         sqleditor: {...state.getPreferencesForModule('sqleditor'), ...FIXED_PREF},
         graphs: state.getPreferencesForModule('graphs'),
         misc: state.getPreferencesForModule('misc'),
+        editor: state.getPreferencesForModule('editor'),
       }});
     }
   ), []);

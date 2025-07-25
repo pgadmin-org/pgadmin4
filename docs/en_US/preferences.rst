@@ -262,6 +262,90 @@ Use the fields on the *Options* panel to manage ERD preferences.
   It allows to set the limit on the depth level pgAdmin should traverse
   to find the relations. Use -1 to set no limit.
 
+
+The Editor Node
+*****************
+
+Expand the *Editor* node to access panels that allow you to specify your preferences
+for the editor across pgAdmin 4
+
+.. image:: images/preferences_editor_keyboard_shortcuts.png
+    :alt: Preferences editor keyboard shortcuts section
+    :align: center
+
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
+editor.
+
+.. image:: images/preferences_editor_options.png
+    :alt: Preferences editor options section
+    :align: center
+
+Use the fields on the *Options* panel to manage editor preferences.
+
+* Use the *Auto-indent new line?* switch to specify whether the editor will
+  automatically indent new lines. When set to *True*, the editor will indent
+  new lines according to the indentation of the previous line.
+
+* When the *Brace matching?* switch is set to *True*, the editor will highlight
+  pairs of matched braces.
+
+* When the *Code folding?* switch is set to *False*, the editor will disable
+  code folding. Disabling will improve editor performance with large files.
+
+* Use the *Font family* field to be used for all SQL editors. The specified
+  font should already be installed on your system. If the font is not found,
+  the editor will fall back to the default font, Source Code Pro.
+
+* When the *Font ligatures?* switch is set to *True*, ligatures will be
+  enabled in SQL text boxes and editors provided the configured font family
+  supports them.
+
+* Use the *Font size* field to specify the font size that will be used in text
+  boxes and editors.
+
+* When the *Highlight selection matches?* switch is set to *True*, the editor will
+  highlight matched selected text.
+
+* When the *Insert bracket pairs?* switch is set to *True*, the editor will
+  automatically insert paired brackets.
+
+* When the *Line wrapping* switch is set to *True*, the editor will implement
+  line-wrapping behavior.
+
+* When the *Plain text mode?* switch is set to *True*, the editor mode will be
+  changed to text/plain. Keyword highlighting and code folding will be disabled.
+  This will improve editor performance with large files.
+
+.. image:: images/preferences_editor_sql_formatting.png
+    :alt: Preferences SQL Formatting section
+    :align: center
+
+Use the fields on the *SQL formatting* panel to specify your preferences for
+reformatting of SQL.
+
+* Use the *Data type case* option to specify whether to change data types
+  into upper, lower, or preserve case.
+* Use the *Expression width* option to specify maximum number of characters
+  in parenthesized expressions to be kept on single line.
+* Use the *Function case* option to specify whether to change function
+  names into upper, lower, or preserve case.
+* Use the *Identifier case* option to specify whether to change identifiers
+  (object names) into upper, lower, or capitalized case.
+* Use the *Keyword case* option to specify whether to change keywords into
+  upper, lower, or preserve case.
+* Use *Lines between queries* to specify how many empty lines to leave
+  between SQL statements. If set to zero it puts no new line.
+* Use *Logical operator new line* to specify newline placement before or
+  after logical operators (AND, OR, XOR).
+* Use *New line before semicolon?* to specify whether to place query
+  separator (;) on a separate line.
+* Use the *Spaces around operators?* option to specify whether or not to include
+  spaces on either side of operators.
+* Use the *Tab size* option to specify the number of spaces per tab or indent.
+* Use the *Use spaces?* option to select whether to use spaces or tabs when
+  indenting.
+
+
 The Graphs Node
 ***************
 
@@ -427,46 +511,6 @@ Tool display.
 * When the *Show query success notification?* switch is set to *True*, the Query Tool
   will show notifications on successful query execution.
 
-.. image:: images/preferences_sql_editor.png
-    :alt: Preferences sqleditor editor settings
-    :align: center
-
-Use the fields on the *Editor* panel to change settings of the query editor.
-
-* Use the *Auto-indent new line?* switch to specify whether the editor will
-  automatically indent new lines. When set to *True*, the editor will indent
-  new lines according to the indentation of the previous line.
-
-* When the *Brace matching?* switch is set to *True*, the editor will highlight
-  pairs of matched braces.
-
-* When the *Code folding?* switch is set to *False*, the editor will disable
-  code folding. Disabling will improve editor performance with large files.
-
-* Use the *Font family* field to be used for all SQL editors. The specified
-  font should already be installed on your system. If the font is not found,
-  the editor will fall back to the default font, Source Code Pro.
-
-* When the *Font ligatures?* switch is set to *True*, ligatures will be
-  enabled in SQL text boxes and editors provided the configured font family
-  supports them.
-
-* Use the *Font size* field to specify the font size that will be used in text
-  boxes and editors.
-
-* When the *Highlight selection matches?* switch is set to *True*, the editor will
-  highlight matched selected text.
-
-* When the *Insert bracket pairs?* switch is set to *True*, the editor will
-  automatically insert paired brackets.
-
-* When the *Line wrapping* switch is set to *True*, the editor will implement
-  line-wrapping behavior.
-
-* When the *Plain text mode?* switch is set to *True*, the editor mode will be
-  changed to text/plain. Keyword highlighting and code folding will be disabled.
-  This will improve editor performance with large files.
-
 .. image:: images/preferences_sql_explain.png
     :alt: Preferences sqleditor explain options
     :align: center
@@ -592,34 +636,6 @@ preferences for copied data.
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 Query Tool window navigation.
 
-.. image:: images/preferences_sql_formatting.png
-    :alt: Preferences SQL Formatting section
-    :align: center
-
-Use the fields on the *SQL formatting* panel to specify your preferences for
-reformatting of SQL.
-
-* Use the *Data type case* option to specify whether to change data types
-  into upper, lower, or preserve case.
-* Use the *Expression width* option to specify maximum number of characters
-  in parenthesized expressions to be kept on single line.
-* Use the *Function case* option to specify whether to change function
-  names into upper, lower, or preserve case.
-* Use the *Identifier case* option to specify whether to change identifiers
-  (object names) into upper, lower, or capitalized case.
-* Use the *Keyword case* option to specify whether to change keywords into
-  upper, lower, or preserve case.
-* Use *Lines between queries* to specify how many empty lines to leave
-  between SQL statements. If set to zero it puts no new line.
-* Use *Logical operator new line* to specify newline placement before or
-  after logical operators (AND, OR, XOR).
-* Use *New line before semicolon?* to specify whether to place query
-  separator (;) on a separate line.
-* Use the *Spaces around operators?* option to specify whether or not to include
-  spaces on either side of operators.
-* Use the *Tab size* option to specify the number of spaces per tab or indent.
-* Use the *Use spaces?* option to select whether to use spaces or tabs when
-  indenting.
 
 The Schema Diff Node
 ********************
