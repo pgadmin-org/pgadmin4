@@ -128,7 +128,7 @@ def read_file_generator(file, enc):
         # errors will never occur regardless of the configured error and
         # handles most of the Windows encodings
         # handler.
-        # Ref: https://goo.gl/vDhggS
+        # Ref: https://python-notes.curiousefficiency.org/en/latest/python3/text_file_processing.html
         with codecs.open(file, 'r', encoding='latin-1') as fileObj:
             while True:
                 # 4MB chunk (4 * 1024 * 1024 Bytes)
@@ -740,7 +740,7 @@ class Filemanager():
         """
         Prevents 'there is no disk in drive' waning on windows
         """
-        # StackOverflow Ref: https://goo.gl/9gYdef
+        # StackOverflow Ref: https://stackoverflow.com/q/29059399/164233
         if _platform == "win32":
             kernel32.SetThreadErrorMode(SEM_FAIL, ctypes.byref(oldmode))
 
