@@ -309,8 +309,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     };
 
     const unregisterEditorExecCmd = eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, (cmd='')=>{
-      let key = {}, gotolinecol = queryToolCtx.preferences.sqleditor.goto_line_col,
-        formatSql = queryToolCtx.preferences.sqleditor.format_sql;
+      let key = {}, gotolinecol = queryToolCtx.preferences.editor.goto_line_col,
+        formatSql = queryToolCtx.preferences.editor.format_sql;
       switch(cmd) {
       case 'gotoLineCol':
         key = createKeyObjectFromShortcut(gotolinecol);
@@ -326,8 +326,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
     });
 
     const unregisterFindReplace = eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, (replace=false)=>{
-      let findShortcut = queryToolCtx.preferences.sqleditor.find;
-      let replaceShortcut = queryToolCtx.preferences.sqleditor.replace;
+      let findShortcut = queryToolCtx.preferences.editor.find;
+      let replaceShortcut = queryToolCtx.preferences.editor.replace;
       let key ={};
       editor.current?.focus();
       if (!replace) {

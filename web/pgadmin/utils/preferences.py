@@ -90,7 +90,7 @@ class _Preference():
             db.session.add(res)
             db.session.commit()
             res = PrefTable.query.filter_by(
-                name=name
+                name=name, cid=cid
             ).first()
 
         # Save this id for letter use.
