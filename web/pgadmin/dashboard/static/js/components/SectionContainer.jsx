@@ -32,6 +32,12 @@ const StyledBox = styled(Box)(({theme}) => ({
       width: '100%',
     }
   },
+  // Added this to remove the borders from pgrt.
+  '& .pgrt': {
+    borderRight: 'none !important',
+    borderLeft: 'none !important',
+    borderBottom: 'none !important',
+  },
 }));
 
 export default function SectionContainer({title, titleExtras, children, style}) {
