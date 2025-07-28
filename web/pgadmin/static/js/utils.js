@@ -560,17 +560,6 @@ export function requestAnimationAndFocus(ele) {
   });
 }
 
-export function measureText(text, font) {
-  if(!measureText.ele) {
-    measureText.ele = document.createElement('div');
-    measureText.ele.style.cssText = `position: absolute; visibility: hidden; white-space: nowrap; font: ${font}`;
-    document.body.appendChild(measureText.ele);
-  }
-  measureText.ele.textContent = text;
-  const dim = measureText.ele.getBoundingClientRect();
-  return {width: dim.width, height: dim.height};
-}
-
 const CHART_THEME_COLORS = {
   'light':['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B',
     '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF', '#3366CC', '#DC3912', '#FF9900',
