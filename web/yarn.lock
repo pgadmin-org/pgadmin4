@@ -3780,7 +3780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*, @types/prop-types@npm:^15.7.15":
+"@types/prop-types@npm:^15.7.15":
   version: 15.7.15
   resolution: "@types/prop-types@npm:15.7.15"
   checksum: 10c0/b59aad1ad19bf1733cf524fd4e618196c6c7690f48ee70a327eb450a42aab8e8a063fbe59ca0a5701aebe2d92d582292c0fb845ea57474f6a15f6994b0e260b2
@@ -3805,13 +3805,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.2":
-  version: 18.3.23
-  resolution: "@types/react@npm:18.3.23"
+"@types/react@npm:^19.1.8":
+  version: 19.1.8
+  resolution: "@types/react@npm:19.1.8"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/49331800b76572eb2992a5c44801dbf8c612a5f99c8f4e4200f06c7de6f3a6e9455c661784a6c5469df96fa45622cb4a9d0982c44e6a0d5719be5f2ef1f545ed
+  checksum: 10c0/4908772be6dc941df276931efeb0e781777fa76e4d5d12ff9f75eb2dcc2db3065e0100efde16fde562c5bafa310cc8f50c1ee40a22640459e066e72cd342143e
   languageName: node
   linkType: hard
 
@@ -12507,6 +12506,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react@npm:^19.1.1":
+  version: 19.1.1
+  resolution: "react@npm:19.1.1"
+  checksum: 10c0/8c9769a2dfd02e603af6445058325e6c8a24b47b185d0e461f66a6454765ddcaecb3f0a90184836c68bb509f3c38248359edbc42f0d07c23eb500a5c30c87b4e
+  languageName: node
+  linkType: hard
+
 "read-only-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "read-only-stream@npm:2.0.0"
@@ -12896,7 +12902,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.5.2"
     "@types/classnames": "npm:^2.3.4"
     "@types/jest": "npm:^30.0.0"
-    "@types/react": "npm:^18.0.2"
+    "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^18.0.0"
     "@xterm/addon-fit": "npm:^0.10.0"
     "@xterm/addon-search": "npm:^0.15.0"
@@ -12957,7 +12963,7 @@ __metadata:
     process: "npm:^0.11.10"
     prop-types: "npm:^15.7.2"
     rc-dock: "npm:^3.3.2"
-    react: "npm:^18.2.0"
+    react: "npm:^19.1.1"
     react-arborist: "npm:^3.2.0"
     react-aspen: "npm:^1.1.0"
     react-checkbox-tree: "npm:^1.7.2"
