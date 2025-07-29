@@ -7,7 +7,7 @@ CREATE TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#"
     ON public.tablefortrigger
     FOR EACH ROW
     WHEN (old.col2 IS DISTINCT FROM new.col2)
-    EXECUTE PROCEDURE public."Trig1_$%{}[]()&*^!@""'`\/#"();
+    EXECUTE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"();
 
 COMMENT ON TRIGGER "trig_be4r_update_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger
     IS 'test comment';

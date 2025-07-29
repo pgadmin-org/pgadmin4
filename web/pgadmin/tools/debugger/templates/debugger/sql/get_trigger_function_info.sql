@@ -1,6 +1,6 @@
 {### To fetch trigger function information ###}
 SELECT t.oid, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable,   nspname, des.description, l.lanname, p.prosrc,
-  COALESCE(pg_catalog.substring(pg_catalog.pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE PROCEDURE'), pg_catalog.substring(pg_catalog.pg_get_triggerdef(t.oid), 'WHEN (.*)  \$trigger')) AS whenclause
+  COALESCE(pg_catalog.substring(pg_catalog.pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE FUNCTION'), pg_catalog.substring(pg_catalog.pg_get_triggerdef(t.oid), 'WHEN (.*)  \$trigger')) AS whenclause
   FROM pg_catalog.pg_trigger t
   JOIN pg_catalog.pg_class cl ON cl.oid=tgrelid
   JOIN pg_catalog.pg_namespace na ON na.oid=relnamespace

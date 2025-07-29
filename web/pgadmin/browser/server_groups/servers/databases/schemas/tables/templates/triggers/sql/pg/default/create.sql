@@ -29,7 +29,7 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
     WHEN {% if not data.oid %}({% endif %}{{ data.whenclause }}{% if not data.oid %}){% endif %}{% endif %}
 
     {% if data.prosrc is defined and
-    (data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL') %}{{ data.prosrc }}{% else %}EXECUTE PROCEDURE {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%}{% endif%};
+    (data.lanname == 'edbspl' or data.tfunction == 'Inline EDB-SPL') %}{{ data.prosrc }}{% else %}EXECUTE FUNCTION {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%}{% endif%};
 
 {% if data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}

@@ -24,6 +24,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #6384 <https://github.com/pgadmin-org/pgadmin4/issues/6384>`_ -  Replace keyword PROCEDURE with FUNCTION while creating trigger and event trigger.
   | `Issue #8861 <https://github.com/pgadmin-org/pgadmin4/issues/8861>`_ -  Introduced an ‘Editor’ preferences category and migrated all editor related settings into it.
 
 Bug fixes

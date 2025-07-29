@@ -840,46 +840,46 @@ ALTER FUNCTION public.evt_tri_fun2()
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_tar ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 COMMENT ON EVENT TRIGGER evt_tri_tar
     IS 'Event Trigger Source';
 ALTER EVENT TRIGGER evt_tri_tar
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_event1 ON DDL_COMMAND_END
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event1
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_event2 ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event2
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_event3 ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_event3
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_enable_status1 ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status1
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_enable_status2 ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status2
     DISABLE;
 ALTER EVENT TRIGGER evt_tri_diff_enable_status2
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_enable_status3 ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun();
+    EXECUTE FUNCTION public.evt_tri_fun();
 ALTER EVENT TRIGGER evt_tri_diff_enable_status3
     OWNER TO postgres;
 
 CREATE EVENT TRIGGER evt_tri_diff_func ON DDL_COMMAND_START
-    EXECUTE PROCEDURE public.evt_tri_fun2();
+    EXECUTE FUNCTION public.evt_tri_fun2();
 ALTER EVENT TRIGGER evt_tri_diff_func
     OWNER TO postgres;
 

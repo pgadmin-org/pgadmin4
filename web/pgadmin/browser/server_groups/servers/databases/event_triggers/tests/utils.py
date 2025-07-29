@@ -50,7 +50,7 @@ def create_event_trigger(server, db_name, schema_name, func_name,
         set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute('''CREATE EVENT TRIGGER "%s" ON DDL_COMMAND_END
-         EXECUTE PROCEDURE "%s"."%s"()''' % (trigger_name, schema_name,
+         EXECUTE FUNCTION "%s"."%s"()''' % (trigger_name, schema_name,
                                              func_name))
         set_isolation_level(connection, old_isolation_level)
         connection.commit()

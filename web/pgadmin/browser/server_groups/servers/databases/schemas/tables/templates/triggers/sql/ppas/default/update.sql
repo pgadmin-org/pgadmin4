@@ -48,9 +48,9 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
 {% endif %}
 {% else %}
 {% if (data.tfunction is defined) %}
-    EXECUTE PROCEDURE {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%};
+    EXECUTE FUNCTION {{ data.tfunction }}{% if data.tgargs %}({{ data.tgargs }}){% else %}(){% endif%};
 {% else %}
-    EXECUTE PROCEDURE {{ o_data.tfunction }}{% if o_data.tgargs %}({{ o_data.tgargs }}){% else %}(){% endif%};
+    EXECUTE FUNCTION {{ o_data.tfunction }}{% if o_data.tgargs %}({{ o_data.tgargs }}){% else %}(){% endif%};
 {% endif %}
 {% endif %}
 
