@@ -513,6 +513,7 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "Shared", server.shared)
             add_value(attr_dict, "SharedUsername", server.shared_username)
             add_value(attr_dict, "DBRestriction", server.db_res)
+            add_value(attr_dict, "DBRestrictionType", server.db_res_type)
             add_value(attr_dict, "BGColor", server.bgcolor)
             add_value(attr_dict, "FGColor", server.fgcolor)
             add_value(attr_dict, "Service", server.service)
@@ -731,6 +732,8 @@ def load_database_servers(input_file, selected_servers,
             new_server.comment = obj.get("Comment", None)
 
             new_server.db_res = obj.get("DBRestriction", None)
+
+            new_server.db_res_type = obj.get("DBRestrictionType", None)
 
             if 'ConnectionParameters' in obj:
                 new_server.connection_params = \
