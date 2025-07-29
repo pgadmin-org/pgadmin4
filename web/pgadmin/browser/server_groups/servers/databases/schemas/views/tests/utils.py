@@ -133,9 +133,9 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
         pg_cursor = connection.cursor()
         query = "CREATE TRIGGER %s INSTEAD OF DELETE ON %s.%s FOR EACH ROW " \
                 "EXECUTE FUNCTION %s.%s(%s)" % (trigger_name, schema_name,
-                                                 table_name, schema_name,
-                                                 trigger_func_name,
-                                                 trigger_func_arg)
+                                                table_name, schema_name,
+                                                trigger_func_name,
+                                                trigger_func_arg)
         pg_cursor.execute(query)
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()

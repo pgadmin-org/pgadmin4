@@ -195,7 +195,8 @@ def format_email_html(data, skip_issues_set=None):
     )
     output += (
         f'For more details please see the release notes at:'
-        f'<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{release_url}">{release_url}</a></p>\n'
+        f'<p>&nbsp;&nbsp;&nbsp;&nbsp;'
+        f'<a href="{release_url}">{release_url}</a></p>\n'
     )
     output += (
         '<p>pgAdmin is the leading Open Source graphical management '
@@ -230,7 +231,8 @@ def format_email_html(data, skip_issues_set=None):
     output += (
         "Docker Container, RPM, DEB Package, and source code tarball from:<br>"
     )
-    output += f'&nbsp;&nbsp;&nbsp;&nbsp;<a href="{download_url}">{download_url}</a></p>\n'
+    output += (f'&nbsp;&nbsp;&nbsp;&nbsp;'
+               f'<a href="{download_url}">{download_url}</a></p>\n')
 
     return output
 
