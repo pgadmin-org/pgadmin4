@@ -173,7 +173,15 @@ def format_email_html(data, skip_issues_set=None):
     num_bugs_housekeeping = len(filtered_bugs)
 
     # Build HTML output
-    output = f"<h2><strong>pgAdmin 4 v{version} Released</strong></h2>\n"
+    output = """<style>
+    * {
+        font-size: 14px;
+        font-family: sans-serif;
+    }
+    li {
+        margin-bottom: 4px;
+    }
+    </style>"""
     output += (
         f"<p>The pgAdmin Development Team is pleased to announce "
         f"pgAdmin 4 version {version}.</p>\n"
@@ -186,8 +194,8 @@ def format_email_html(data, skip_issues_set=None):
         f"{'s' if num_bugs_housekeeping != 1 else ''}. "
     )
     output += (
-        f'For more details please see the '
-        f'<a href="{release_url}">Release Notes</a>.</p>\n'
+        f'For more details please see the release notes at:'
+        f'<p>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{release_url}">{release_url}</a></p>\n'
     )
     output += (
         '<p>pgAdmin is the leading Open Source graphical management '
@@ -199,7 +207,7 @@ def format_email_html(data, skip_issues_set=None):
 
     # Add features section only if items remain after filtering
     if filtered_features:
-        output += "<p><strong>Features</strong></p>\n<ul>\n"
+        output += "<p><strong>Features:</strong></p>\n<ul>\n"
         for item in filtered_features:
             desc = html.escape(item.get('description', 'N/A').strip())
             output += f"    <li>{desc}.</li>\n"
@@ -209,7 +217,7 @@ def format_email_html(data, skip_issues_set=None):
     if filtered_bugs:
         # Note: Heading was "Bugs/Housekeeping" in pasted code,
         # changed to "Bug fixes" to match GDoc style mentioned earlier
-        output += "<p><strong>Bug fixes</strong></p>\n<ul>\n"
+        output += "<p><strong>Bug fixes:</strong></p>\n<ul>\n"
         for item in filtered_bugs:
             desc = html.escape(item.get('description', 'N/A').strip())
             output += f"    <li>{desc}.</li>\n"
@@ -222,9 +230,7 @@ def format_email_html(data, skip_issues_set=None):
     output += (
         "Docker Container, RPM, DEB Package, and source code tarball from:<br>"
     )
-    output += f'<a href="{download_url}">{download_url}</a></p>\n'
-    # Note: Adjusted sign-off slightly from pasted code to match GDoc examples
-    output += "<p>--<br>The pgAdmin Team</p>\n"
+    output += f'&nbsp;&nbsp;&nbsp;&nbsp;<a href="{download_url}">{download_url}</a></p>\n'
 
     return output
 

@@ -29,5 +29,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #8650 <https://github.com/pgadmin-org/pgadmin4/issues/8650>`_ -  Make Dashboard tables to be vertically resizable.
   | `Issue #8756 <https://github.com/pgadmin-org/pgadmin4/issues/8756>`_ -  Fixed an issue in Firefox where the query window would shift to the left after opening the history tab or selecting a column header in the results grid.
+  | `Issue #8867 <https://github.com/pgadmin-org/pgadmin4/issues/8867>`_ -  Ensure DB restriction type is preserved while import and export server.
   | `Issue #8969 <https://github.com/pgadmin-org/pgadmin4/issues/8969>`_ -  Fixed incorrect behaviour of the option deduplicate items after creating the index.
