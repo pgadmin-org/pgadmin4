@@ -1,5 +1,13 @@
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
 
-"""empty message
+"""
 
 Revision ID: e24b1c4def17
 Revises: c62bcc14c3d6
