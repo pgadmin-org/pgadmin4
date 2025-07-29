@@ -10,15 +10,15 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
+import { Resizable } from 're-resizable';
 
 const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.all,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden !important',
-  height: '100%',
+  height: 'auto',
   width: '100%',
-  minHeight: '400px',
   borderRadius: theme.shape.borderRadius,
   '& .SectionContainer-cardHeader': {
     backgroundColor: theme.otherVars.tableBg,
@@ -32,20 +32,36 @@ const StyledBox = styled(Box)(({theme}) => ({
       width: '100%',
     }
   },
+  // Added this to remove the borders from pgrt.
+  '& .pgrt': {
+    borderRight: 'none !important',
+    borderLeft: 'none !important',
+    borderBottom: 'none !important',
+  },
 }));
 
 export default function SectionContainer({title, titleExtras, children, style}) {
   return (
     <StyledBox className='SectionContainer-root' style={style}>
-      <Box className='SectionContainer-cardHeader' title={title}>
-        <div className='SectionContainer-cardTitle'>{title}</div>
-        <div style={{marginLeft: 'auto'}}>
-          {titleExtras}
-        </div>
-      </Box>
-      <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
-        {children}
-      </Box>
+      <Resizable
+        enable={{ bottom: true }}
+        defaultSize={{ height: 'auto', width: '100%' }}
+        minHeight={25}
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Box className='SectionContainer-cardHeader' title={title}>
+          <div className='SectionContainer-cardTitle'>{title}</div>
+          <div style={{marginLeft: 'auto'}}>
+            {titleExtras}
+          </div>
+        </Box>
+        <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
+          {children}
+        </Box>
+      </Resizable>
     </StyledBox>
   );
 }
