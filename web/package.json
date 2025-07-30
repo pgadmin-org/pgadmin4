@@ -171,7 +171,7 @@
     "test:js-coverage": "yarn run test:js-once --collect-coverage",
     "test:feature": "yarn run bundle && python regression/runtests.py --pkg feature_tests",
     "test": "yarn run test:js-once && yarn run bundle && python regression/runtests.py",
-    "pep8": "pycodestyle --config=../.pycodestyle ../docs && pycodestyle --config=../.pycodestyle ../pkg && pycodestyle --config=../.pycodestyle ../tools && pycodestyle --config=../.pycodestyle ../web",
+    "pep8": "pycodestyle --config=../.pycodestyle ../docs ../pkg ../tools ../web",
     "auditjs-html": "yarn audit --json | yarn run yarn-audit-html --output ../auditjs.html",
     "auditjs": "yarn audit --groups dependencies",
     "auditpy": "safety check --full-report -i 51668 -i 52495",
