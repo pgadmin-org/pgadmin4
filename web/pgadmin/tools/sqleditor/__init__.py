@@ -915,7 +915,7 @@ def start_view_data(trans_id):
             if response is not None:
                 return response
 
-        status, msg = default_conn.connect()
+        status, _ = default_conn.connect()
         if not status:
             return service_unavailable(
                 gettext("Connection to the server has been lost."),
@@ -1535,7 +1535,7 @@ def save(trans_id):
             if response is not None:
                 return response
 
-        is_error, errmsg, conn = _check_and_connect(trans_obj)
+        is_error, _, conn = _check_and_connect(trans_obj)
         if is_error:
             return service_unavailable(
                 gettext("Connection to the server has been lost."),

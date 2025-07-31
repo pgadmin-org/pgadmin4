@@ -57,14 +57,18 @@ PgMenu.propTypes = {
   menuButton: PropTypes.element,
 };
 
-export const PgSubMenu = (({label, ...props})=>{
+export const PgSubMenu = (({label, alignCheck, ...props})=>{
+  if(alignCheck) {
+    label = <><CheckIcon style={{visibility: 'hidden', width: '1.3rem'}} data-label="CheckIcon"/>{label}</>;
+  }
   return (
     <SubMenu label={label}  itemProps={{'data-label': label}} {...props} />
   );
 });
 
 PgSubMenu.propTypes = {
-  label: PropTypes.string
+  label: PropTypes.string,
+  alignCheck: PropTypes.bool
 };
 
 export const PgMenuItem = (({hasCheck=false, checked=false, accesskey, shortcut, children, closeOnCheck=false, ...props})=>{
