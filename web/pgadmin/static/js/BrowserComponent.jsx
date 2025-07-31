@@ -122,7 +122,7 @@ function Layouts({browser}) {
           }}
           defaultLayout={defaultLayout}
           layoutId='Browser/Layout'
-          savedLayout={pgAdmin.Browser.utils.layout}
+          savedLayout={pgAdmin.Browser.utils.layout['Browser/Layout']}
           groups={{
             'object-explorer': objectExplorerGroup,
             'playground': getMorePanelGroup(defaultTabsData),
@@ -141,7 +141,7 @@ function Layouts({browser}) {
             }}
             defaultLayout={item.layout}
             layoutId={`Workspace/Layout-${item.workspace}`}
-            savedLayout={pgAdmin.Browser.utils.layout}
+            savedLayout={pgAdmin.Browser.utils.layout[`Workspace/Layout-${item.workspace}`]}
             groups={{
               'playground': item?.tabsData ? getMorePanelGroup(item?.tabsData) : {...getDefaultGroup()},
             }}
