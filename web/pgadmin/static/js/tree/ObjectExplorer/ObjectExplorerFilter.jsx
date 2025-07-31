@@ -26,6 +26,7 @@ const ObjectExplorerFilterRoot = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   padding: '8px',
   flexDirection: 'column',
+  gap: '8px',
   ...theme.mixins.panelBorder?.bottom,
 }));
 
@@ -143,14 +144,14 @@ export default function ObjectExplorerFilter() {
   return (
     <ObjectExplorerFilterRoot sx={{ display: open ? 'flex' : 'none' }}>
       <Loader message={loadingText} />
-      <FormInputSelect inputRef={firstEleRef} label={gettext('Server tags')} controlProps={{
+      <FormInputSelect inputRef={firstEleRef} label={gettext('Tags')} controlProps={{
         multiple: true,
         allowClear: true,
         creatable: true,
         noDropdown: true,
       }} value={currFilter.tags} onChange={onChange} placeholder={gettext('Specify the tags...')} />
       <FormNote text={gettext('Applying the filter will only hide the servers from view, it won\'t close any active connections.')} />
-      <Box sx={{display: 'flex', justifyContent: 'flex-end', marginTop: '8px'}}>
+      <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
         <DefaultButton size="small" onClick={()=>onClose()}>Close</DefaultButton>
         <PrimaryButton size="small" onClick={applyFilter} sx={{marginLeft: '8px'}}>Apply</PrimaryButton>
       </Box>

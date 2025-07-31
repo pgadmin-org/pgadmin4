@@ -33,16 +33,14 @@ the selected object node.
 *******************************
 `Object Explorer Filter`:index:
 *******************************
-
-
 .. image:: /images/object_explorer_filter.png
   :alt: Object Explorer Filter Dialog
   :align: center
 
-Use the Object Explorer Filter tool to filter nodes in the Object Explorer by
+Use this tool to filter objects in the Object Explorer by
 following fields:
 
-* Use the *Server tags* field to filter the servers with one or more server tags. The
+* Use the *Tags* field to filter the servers with one or more server tags. The
   servers with any of the selected tags will be displayed in the Object Explorer.
   You can also create a new tag by typing in the field and pressing Enter.
 
