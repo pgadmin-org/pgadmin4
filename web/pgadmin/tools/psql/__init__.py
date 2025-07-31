@@ -235,7 +235,7 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
                       'error': False},
                      namespace='/pty', room=sid)
 
-    sio.sleep(0)
+    sio.sleep(0.01)
 
 
 def windows_platform(connection_data, sid, max_read_bytes, server_id):
@@ -249,7 +249,7 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
     open_psql_connections[request.sid] = server_id
     set_term_size(process, 50, 50)
 
-    while True:
+    while process.isalive():
         read_stdout(process, sid, max_read_bytes,
                     win_emit_output=True)
 
