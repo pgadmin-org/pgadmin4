@@ -219,9 +219,9 @@ export class LayoutDocker {
     }
   }
 
-  loadLayout(savedLayout, layoutId) {
+  loadLayout(savedLayout) {
     try {
-      this.layoutObj.loadLayout(JSON.parse(savedLayout[layoutId]));
+      this.layoutObj.loadLayout(JSON.parse(savedLayout));
     } catch {
       /* Fallback to default */
       this.layoutObj.loadLayout(this.defaultLayout);
@@ -505,7 +505,7 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     flattenLayout(props.defaultLayout.dockbox);
     return flat;
   }, [props.defaultLayout]);
-  
+
   const loadTab = (tab)=>{
     const tabData = flatDefaultLayout.find((t)=>t.id == tab.id);
     if(!tabData && tab.metaData) {
@@ -529,7 +529,7 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
               if(obj) {
                 layoutDockerObj.layoutObj = obj;
                 getLayoutInstance?.(layoutDockerObj);
-                layoutDockerObj.loadLayout(savedLayout, layoutId);
+                layoutDockerObj.loadLayout(savedLayout);
               }
             }}
             loadTab={loadTab}
@@ -565,7 +565,7 @@ Layout.propTypes = {
   noContextGroups: PropTypes.array,
   getLayoutInstance: PropTypes.func,
   layoutId: PropTypes.string,
-  savedLayout: PropTypes.any,
+  savedLayout: PropTypes.string,
   resetToTabPanel: PropTypes.string,
   enableToolEvents: PropTypes.bool,
   isLayoutVisible: PropTypes.bool

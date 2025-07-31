@@ -82,7 +82,7 @@ define('pgadmin.browser.utils',
   ];
 
   pgBrowser.utils = {
-    layout: {{ layout }},
+    layout: {{ layout|tojson }},
     theme: '{{ theme }}',
     pg_help_path: '{{ pg_help_path }}',
     app_name: '{{ app_name }}',
