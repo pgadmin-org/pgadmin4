@@ -66,6 +66,7 @@ describe('SchemaView', ()=>{
         });
       },
       simulateValidData = async ()=>{
+
         await user.type(ctrl.container.querySelector('[name="field1"]'), 'val1');
         await user.type(ctrl.container.querySelector('[name="field2"]'), '2');
         await user.type(ctrl.container.querySelector('[name="field5"]'), 'val5');
@@ -74,6 +75,10 @@ describe('SchemaView', ()=>{
         await user.click(ctrl.container.querySelector('button[data-test="add-row"]'));
         await user.type(ctrl.container.querySelectorAll('[name="field5"]')[0], 'rval51');
         await user.type(ctrl.container.querySelectorAll('[name="field5"]')[1], 'rval52');
+        // Wait for validations to run
+        await act(async ()=>{
+          await new Promise(resolve => setTimeout(resolve));
+        });
       };
 
     describe('form fields', ()=>{
