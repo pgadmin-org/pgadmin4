@@ -32,4 +32,10 @@ contextBridge.exposeInMainWorld('electronUI', {
   downloadStreamSaveEnd: (...args) => ipcRenderer.send('download-stream-save-end', ...args),
   downloadBase64UrlData: (...args) => ipcRenderer.invoke('download-base64-url-data', ...args),
   downloadTextData: (...args) => ipcRenderer.invoke('download-text-data', ...args),
+  //Auto-updater related functions
+  sendDataForAppUpdate: (data) => ipcRenderer.send('sendDataForAppUpdate', data),
+  notifyAppAutoUpdate: (callback) => {
+    ipcRenderer.removeAllListeners('notifyAppAutoUpdate'); // Clean up previous listeners
+    ipcRenderer.on('notifyAppAutoUpdate', (_, data) => callback(data));
+  },
 });

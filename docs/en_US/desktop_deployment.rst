@@ -128,3 +128,10 @@ The configuration settings are stored in *runtime_config.json* file, which
 will be available on Unix systems (~/.local/share/pgadmin/),
 on Mac OS X (~/Library/Preferences/pgadmin),
 and on Windows (%APPDATA%/pgadmin).
+
+For details on the auto-update system for the desktop application, see
+
+.. toctree::
+   :maxdepth: 1
+
+   auto_update_desktop_app

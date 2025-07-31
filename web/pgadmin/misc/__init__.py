@@ -21,7 +21,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.ajax import precondition_required, make_json_response, \
-    internal_server_error
+    internal_server_error, make_response
 from pgadmin.utils.heartbeat import log_server_heartbeat, \
     get_server_heartbeat, stop_server_heartbeat
 import config
@@ -32,6 +32,7 @@ import os
 import sys
 import ssl
 from urllib.request import urlopen
+from urllib.parse import unquote
 from pgadmin.settings import get_setting, store_setting
 
 MODULE_NAME = 'misc'
@@ -171,7 +172,7 @@ class MiscModule(PgAdminModule):
         return ['misc.ping', 'misc.index', 'misc.cleanup',
                 'misc.validate_binary_path', 'misc.log_heartbeat',
                 'misc.stop_heartbeat', 'misc.get_heartbeat',
-                'misc.upgrade_check']
+                'misc.upgrade_check', 'misc.auto_update']
 
     def register(self, app, options):
         """
@@ -343,59 +344,138 @@ def validate_binary_path():
                  methods=['GET'])
 @pga_login_required
 def upgrade_check():
-    # Get the current version info from the website, and flash a message if
-    # the user is out of date, and the check is enabled.
-    ret = {
-        "outdated": False,
-    }
+    """
+    Check for application updates and return update metadata to the client.
+    - Compares current version with remote version data.
+    - Supports auto-update in desktop mode.
+    """
+    # Determine if this check was manually triggered by the user
+    trigger_update_check = (request.args.get('trigger_update_check', 'false')
+                            .lower() == 'true')
+
+    platform = None
+    ret = {"outdated": False}
+
     if config.UPGRADE_CHECK_ENABLED:
         last_check = get_setting('LastUpdateCheck', default='0')
         today = time.strftime('%Y%m%d')
-        if int(last_check) < int(today):
-            data = None
-            url = '%s?version=%s' % (
-                config.UPGRADE_CHECK_URL, config.APP_VERSION)
-            current_app.logger.debug('Checking version data at: %s' % url)
-            try:
-                # Do not wait for more than 5 seconds.
-                # It stuck on rendering the browser.html, while working in the
-                # broken network.
-                if os.path.exists(config.CA_FILE) and sys.version_info >= (
-                        3, 13):
-                    # Use SSL context for Python 3.13+
-                    context = ssl.create_default_context(cafile=config.CA_FILE)
-                    response = urlopen(url, data=data, timeout=5,
-                                       context=context)
-                elif os.path.exists(config.CA_FILE):
-                    # Use cafile parameter for older versions
-                    response = urlopen(url, data=data, timeout=5,
-                                       cafile=config.CA_FILE)
+
+        data = None
+        url = '%s?version=%s' % (
+            config.UPGRADE_CHECK_URL, config.APP_VERSION)
+        current_app.logger.debug('Checking version data at: %s' % url)
+
+        # Attempt to fetch upgrade data from remote URL
+        try:
+            # Do not wait for more than 5 seconds.
+            # It stuck on rendering the browser.html, while working in the
+            # broken network.
+            if os.path.exists(config.CA_FILE) and sys.version_info >= (
+                    3, 13):
+                # Use SSL context for Python 3.13+
+                context = ssl.create_default_context(cafile=config.CA_FILE)
+                response = urlopen(url, data=data, timeout=5,
+                                   context=context)
+            elif os.path.exists(config.CA_FILE):
+                # Use cafile parameter for older versions
+                response = urlopen(url, data=data, timeout=5,
+                                   cafile=config.CA_FILE)
+            else:
+                response = urlopen(url, data, 5)
+            current_app.logger.debug(
+                'Version check HTTP response code: %d' % response.getcode()
+            )
+
+            if response.getcode() == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                current_app.logger.debug('Response data: %s' % data)
+        except Exception:
+            current_app.logger.exception(
+                'Exception when checking for update')
+            return internal_server_error('Failed to check for update')
+
+        if data:
+            # Determine platform
+            if sys.platform == 'darwin':
+                platform = 'macos'
+            elif sys.platform == 'win32':
+                platform = 'windows'
+
+            upgrade_version_int = data[config.UPGRADE_CHECK_KEY]['version_int']
+            auto_update_url_exists = data[config.UPGRADE_CHECK_KEY][
+                'auto_update_url'][platform] != ''
+
+            # Construct common response dicts for auto-update support
+            auto_update_common_res = {
+                "check_for_auto_updates": True,
+                "auto_update_url": data[config.UPGRADE_CHECK_KEY][
+                    'auto_update_url'][platform],
+                "platform": platform,
+                "installer_type": config.UPGRADE_CHECK_KEY,
+                "current_version": config.APP_VERSION,
+                "upgrade_version": data[config.UPGRADE_CHECK_KEY]['version'],
+                "current_version_int": config.APP_VERSION_INT,
+                "upgrade_version_int": upgrade_version_int,
+                "product_name": config.APP_NAME,
+            }
+
+            # Check for updates if the last check was before today(daily check)
+            if int(last_check) < int(today):
+                # App is outdated
+                if upgrade_version_int > config.APP_VERSION_INT:
+                    if not config.SERVER_MODE and auto_update_url_exists:
+                        ret = {**auto_update_common_res, "outdated": True}
+                    else:
+                        # Auto-update unsupported
+                        ret = {
+                            "outdated": True,
+                            "check_for_auto_updates": False,
+                            "current_version": config.APP_VERSION,
+                            "upgrade_version": data[config.UPGRADE_CHECK_KEY][
+                                'version'],
+                            "product_name": config.APP_NAME,
+                            "download_url": data[config.UPGRADE_CHECK_KEY][
+                                'download_url']
+                        }
+                # App is up-to-date, but auto-update should be enabled
+                elif (upgrade_version_int == config.APP_VERSION_INT and
+                        not config.SERVER_MODE and auto_update_url_exists):
+                    ret = {**auto_update_common_res, "outdated": False}
+            # If already checked today,
+            # return auto-update info only if supported
+            elif (int(last_check) == int(today) and
+                    not config.SERVER_MODE and auto_update_url_exists):
+                # Check for updates when triggered by user
+                # and new version is available
+                if (upgrade_version_int > config.APP_VERSION_INT and
+                        trigger_update_check):
+                    ret = {**auto_update_common_res, "outdated": True}
                 else:
-                    response = urlopen(url, data, 5)
-                current_app.logger.debug(
-                    'Version check HTTP response code: %d' % response.getcode()
-                )
-
-                if response.getcode() == 200:
-                    data = json.loads(response.read().decode('utf-8'))
-                    current_app.logger.debug('Response data: %s' % data)
-            except Exception:
-                current_app.logger.exception(
-                    'Exception when checking for update')
-                return internal_server_error('Failed to check for update')
-
-            if data is not None and \
-                data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-                    config.APP_VERSION_INT:
-                ret = {
-                    "outdated": True,
-                    "current_version": config.APP_VERSION,
-                    "upgrade_version": data[config.UPGRADE_CHECK_KEY][
-                        'version'],
-                    "product_name": config.APP_NAME,
-                    "download_url": data[config.UPGRADE_CHECK_KEY][
-                        'download_url']
-                }
+                    ret = {**auto_update_common_res, "outdated": False}
 
         store_setting('LastUpdateCheck', today)
     return make_json_response(data=ret)
+
+
+@blueprint.route("/auto_update/<current_version_int>/<latest_version>"
+                 "/<latest_version_int>/<product_name>/<path:ftp_url>/",
+                 methods=['GET'])
+@pgCSRFProtect.exempt
+def auto_update(current_version_int, latest_version, latest_version_int,
+                product_name, ftp_url):
+    """
+    Get auto-update information for the desktop app.
+
+    Returns update metadata (download URL and version name)
+    if a newer version is available. Responds with HTTP 204
+    if the current version is up to date.
+    """
+    if latest_version_int > current_version_int:
+        update_info = {
+            'url': unquote(ftp_url),
+            'name': f'{product_name} v{latest_version}',
+        }
+        current_app.logger.debug(update_info)
+        return make_response(response=update_info, status=200)
+    else:
+        return make_response(status=204)
