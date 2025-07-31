@@ -8,16 +8,17 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {Tree} from './tree';
-import * as pgadminUtils from '../utils';
+import {Tree} from '../tree';
+import * as pgadminUtils from '../../utils';
 
 import { Directory } from 'react-aspen';
-import { ManageTreeNodes } from './tree_nodes';
-import { FileTreeX, TreeModelX } from '../components/PgTree';
-import ContextMenu from '../components/ContextMenu';
-import { generateNodeUrl } from '../../../browser/static/js/node_ajax';
-import { copyToClipboard } from '../clipboard';
-import { usePgAdmin } from '../PgAdminProvider';
+import { ManageTreeNodes } from '../tree_nodes';
+import { FileTreeX, TreeModelX } from '../../components/PgTree';
+import ContextMenu from '../../components/ContextMenu';
+import { generateNodeUrl } from '../../../../browser/static/js/node_ajax';
+import { copyToClipboard } from '../../clipboard';
+import { usePgAdmin } from '../../PgAdminProvider';
+import ObjectExplorerFilter from './ObjectExplorerFilter';
 
 function postTreeReady(b) {
   const draggableTypes = [
@@ -198,6 +199,7 @@ export default function ObjectExplorer() {
           contextPos && setContextPos(null);
         }}
       />
+      <ObjectExplorerFilter />
       <ContextMenu position={contextPos} onClose={()=>setContextPos(null)}
         menuItems={contextMenuItems} label="Object Context Menu" />
     </>

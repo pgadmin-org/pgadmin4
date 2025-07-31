@@ -32,7 +32,6 @@ const StyledBox = styled(Box)(({theme}) => ({
     bottom: '0.25rem',
     right: '0.25rem',
     borderColor: theme.otherVars.borderColor,
-    // box-shadow: 0 0.125rem 0.5rem rgb(132 142 160 / 28%);
     wordBreak: 'break-all',
     display: 'flex',
     flexDirection: 'column',

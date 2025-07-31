@@ -108,7 +108,7 @@ _.extend(pgBrowser.browserTreeState, {
     /* Using fetch with keepalive as the browser may
     cancel the axios request on tab close. keepalive will
     make sure the request is completed */
-    callFetch(
+    return callFetch(
       url_for('settings.save_tree_state'), {
         keepalive: true,
         method: 'POST',

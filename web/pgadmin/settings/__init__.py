@@ -57,7 +57,8 @@ class SettingsModule(PgAdminModule):
             'settings.save_application_state',
             'settings.get_application_state',
             'settings.delete_application_state',
-            'settings.get_tool_data'
+            'settings.get_tool_data',
+            'settings.object_explorer_filter'
         ]
 
 
@@ -438,6 +439,31 @@ def get_tool_data(trans_id):
                     'There is no saved content available for this tab.'),
                 status=404
             ))
+
+
+@blueprint.route(
+    '/object_explorer_filter',
+    methods=["GET", "PUT"], endpoint='object_explorer_filter')
+@pga_login_required
+def object_explorer_filter():
+    if request.method == 'GET':
+        result = get_setting('Object Explorer/Filter', '{}')
+        return make_json_response(
+            data={
+                'status': True,
+                'msg': '',
+                'result': json.loads(result)
+            }
+        )
+    else:
+        data = json.loads(request.data.decode('utf-8'))
+        store_setting('Object Explorer/Filter', json.dumps(data))
+        return make_json_response(
+            data={
+                'status': True,
+                'msg': 'Success',
+            }
+        )
 
 
 @blueprint.route(
