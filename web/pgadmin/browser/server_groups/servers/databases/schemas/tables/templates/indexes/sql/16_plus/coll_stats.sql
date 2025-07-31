@@ -14,5 +14,5 @@ FROM
 WHERE
     schemaname = '{{schema}}'
     AND stat.relname = '{{table}}'
-    AND con.contype IS NULL
+    AND (con.contype IS NULL OR con.contype = 'p')
 ORDER BY indexrelname;
