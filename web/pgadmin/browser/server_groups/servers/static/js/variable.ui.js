@@ -141,6 +141,14 @@ export default class VariableSchema extends BaseUISchema {
           placeholder: this.getPlaceHolderMsg(variable)
         }
       };
+    case 'password':
+      return {
+        cell: 'password',
+        controlProps: {
+          maxLength: null,
+          autoComplete: 'new-password'
+        }
+      };
     default:
       return '';
     }

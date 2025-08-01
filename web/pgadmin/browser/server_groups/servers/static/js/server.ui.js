@@ -48,7 +48,7 @@ class TagsSchema extends BaseUISchema {
 }
 
 export function getConnectionParameters() {
-  return [{
+  let conParams = [{
     'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
   }, {
     'value': 'passfile', 'label': gettext('Password file'), 'vartype': 'file'
@@ -136,7 +136,52 @@ export function getConnectionParameters() {
     'value': 'load_balance_hosts', 'label': gettext('Load balance hosts'),
     'vartype': 'enum', 'min_server_version': '16',
     'enumvals': [gettext('disable'), gettext('random')]
+  }, {
+    'value': 'gssdelegation', 'label': gettext('GSS delegation?'), 'vartype': 'bool',
+    'min_server_version': '16'
+  }, {
+    'value': 'require_auth', 'label': gettext('Require authentication'), 'vartype': 'string',
+    'min_server_version': '16'
+  }, {
+    'value': 'sslnegotiation', 'label': gettext('SSL negotiation'),
+    'vartype': 'enum', 'enumvals': [gettext('postgres'), gettext('direct')],
+    'min_server_version': '17'
+  }, {
+    'value': 'sslkeylogfile', 'label': gettext('SSL Key Logfile'), 'vartype': 'file',
+    'min_server_version': '18'
+  }, {
+    'value': 'min_protocol_version', 'label': gettext('Min protocol version'),
+    'vartype': 'enum', 'min_server_version': '18',
+    'enumvals': [gettext('3.0'), gettext('3.2'), gettext('latest')]
+  }, {
+    'value': 'max_protocol_version', 'label': gettext('Max protocol version'),
+    'vartype': 'enum', 'min_server_version': '18',
+    'enumvals': [gettext('3.0'), gettext('3.2'), gettext('latest')]
+  }, {
+    'value': 'scram_client_key', 'label': gettext('Scram client key'), 'vartype': 'string',
+    'min_server_version': '18'
+  }, {
+    'value': 'scram_server_key', 'label': gettext('Scram server key'), 'vartype': 'string',
+    'min_server_version': '18'
+  }, {
+    'value': 'oauth_issuer', 'label': gettext('OAuth issuer'), 'vartype': 'string',
+    'min_server_version': '18'
+  }, {
+    'value': 'oauth_client_id', 'label': gettext('OAuth client id'), 'vartype': 'string',
+    'min_server_version': '18'
+  }, {
+    'value': 'oauth_client_secret', 'label': gettext('OAuth client secret'), 'vartype': 'password',
+    'min_server_version': '18'
+  }, {
+    'value': 'oauth_scope', 'label': gettext('OAuth scope'), 'vartype': 'string',
+    'min_server_version': '18'
   }];
+
+  conParams.sort(function (a, b) {
+    return pgAdmin.natural_sort(a.value, b.value);
+  });
+
+  return conParams;
 };
 
 export default class ServerSchema extends BaseUISchema {

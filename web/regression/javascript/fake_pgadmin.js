@@ -96,6 +96,7 @@ const Browser = {
 
 const fakePgAdmin = {
   Browser: Browser,
+  natural_sort: ()=>{ return 1;}
 };
 
 export default fakePgAdmin;
