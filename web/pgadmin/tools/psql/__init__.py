@@ -246,6 +246,7 @@ def windows_platform(connection_data, sid, max_read_bytes, server_id):
     process.write("\r\n")
     app.config['sessions'][request.sid] = process
     pdata[request.sid] = process
+    cdata[request.sid] = process.fd
     open_psql_connections[request.sid] = server_id
     set_term_size(process, 50, 50)
 
