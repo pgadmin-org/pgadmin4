@@ -60,6 +60,18 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_EXPLAIN
     )
 
+    self.explain_generic_plan = self.preference.register(
+        'Explain', 'explain_generic_plan',
+        gettext("Show generic plan?"), 'boolean', False,
+        category_label=PREF_LABEL_EXPLAIN
+    )
+
+    self.explain_memory = self.preference.register(
+        'Explain', 'explain_memory',
+        gettext("Show memory?"), 'boolean', False,
+        category_label=PREF_LABEL_EXPLAIN
+    )
+
     self.auto_commit = self.preference.register(
         'Options', 'auto_commit',
         gettext("Auto commit?"), 'boolean', True,

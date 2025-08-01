@@ -140,20 +140,27 @@ Query Execution
    |                      |                                                                                                   |                |
    |                      | Navigate through the *Explain Options* menu to select options for the EXPLAIN command:            |                |
    |                      |                                                                                                   |                |
-   |                      |  * Select *Verbose* to display additional information regarding the query plan.                   |                |
+   |                      |  * Select *Buffers* to include information on buffer usage.                                       |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Costs* to include information on the estimated startup and total cost of each          |                |
    |                      |    plan node, as well as the estimated number of rows and the estimated width of each             |                |
    |                      |    row.                                                                                           |                |
    |                      |                                                                                                   |                |
-   |                      |  * Select *Buffers* to include information on buffer usage.                                       |                |
+   |                      |  * Select *Generic Plan* to include the information on the Generic Plan.                          |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Memory* to include the information on memory consumption by the query planning phase.  |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Serialize* to include information on the cost of serializing the query's output data,  |                |
+   |                      |    that is converting it to text or binary format to send to the client.                          |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Settings* to include the information on the configuration parameters.                  |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Summary* to include the summary information about the query plan.                      |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Timing* to include information about the startup time and the amount of time           |                |
    |                      |    spent in each node of the query.                                                               |                |
    |                      |                                                                                                   |                |
-   |                      |  * Select *Summary* to include the summary information about the query plan.                      |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Settings* to include the information on the configuration parameters.                  |                |
+   |                      |  * Select *Verbose* to display additional information regarding the query plan.                   |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Wal* to include the information on WAL record generation.                              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
