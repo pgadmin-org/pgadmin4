@@ -34,7 +34,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows 10, OSX monterey]
- - Version: [e.g. 6.15]
+ - pgAdmin version: [e.g. 6.15]
  - Mode: [e.g Desktop or Server]
  - Browser (if running in server mode): [e.g. chrome, safari]
  - Package type: [e.g. RPM, DEB, Python, Container, etc.]
