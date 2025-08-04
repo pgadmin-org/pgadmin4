@@ -153,7 +153,7 @@
     "valid-filename": "^4.0.0",
     "vanilla-jsoneditor": "^3.3.1",
     "wkx": "^0.5.0",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.7"
   },
   "resolutions": {
     "rc-resize-observer": "1.4.0"
