@@ -28,8 +28,10 @@ const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 let isSharpAvailable = true;
 try {
-  require.resolve('sharp');
-} catch (e) {
+  const sharp = require('sharp');
+  // It is possible that sharp is installed but fails on running
+  sharp();
+} catch {
   isSharpAvailable = false;
   console.warn('Sharp is not available, image optimization will be disabled.');
 }
