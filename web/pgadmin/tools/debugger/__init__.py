@@ -1464,7 +1464,13 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     # For multilevel function debugging, we need to fetch current selected
     # frame's function oid for setting the breakpoint. For single function
     # the frame id will be 0.
-    foid = res_stack['rows'][de_inst.debugger_data['frame_id']]['func']
+    frame_id = de_inst.debugger_data['frame_id']
+    rows = res_stack.get('rows', [])
+    if not rows or frame_id < 0 or frame_id >= len(rows):
+        return make_json_response(
+            data={'status': False, 'result': 'Empty stack info.'}
+        )
+    foid = rows[frame_id]['func']
 
     # Check the result of the stack before setting the breakpoint
     if conn.connected():
