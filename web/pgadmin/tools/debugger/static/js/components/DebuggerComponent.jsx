@@ -87,9 +87,9 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     if (!editor.current) return;
     editor.current.clearBreakpoints();
     if (Array.isArray(breakpoints)) {
-      breakpoints.forEach(brk_val => {
-        if (brk_val && brk_val !== -1) {
-          editor.current.toggleBreakpoint(brk_val, true, true); // silent, set to true
+      breakpoints.forEach(breakVal => {
+        if (breakVal && breakVal !== -1) {
+          editor.current.toggleBreakpoint(breakVal, true, true); // silent, set to true
         }
       });
     }
@@ -122,13 +122,13 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
   };
 
   const clearAllBreakpoint = (transId) => {
-    let clearBreakpoint = (br_list) => {
+    let clearBreakpoint = (brList) => {
       // If there is no break point to clear then we should return from here.
-      if ((br_list.length == 1) && (br_list[0].linenumber == -1))
+      if ((brList.length == 1) && (brList[0].linenumber == -1))
         return;
 
       disableToolbarButtons();
-      let breakpoint_list = getBreakpointList(br_list);
+      let breakpointList = getBreakpointList(brList);
 
       // Make ajax call to listen the database message
       let baseUrl = url_for('debugger.clear_all_breakpoint', {
@@ -139,7 +139,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         url: baseUrl,
         method: 'POST',
         data: {
-          'breakpoint_list': breakpoint_list.length > 0 ? breakpoint_list.join() : null,
+          'breakpoint_list': breakpointList.length > 0 ? breakpointList.join() : null,
         },
       })
         .then(function (res) {
@@ -386,13 +386,13 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
   }, []);
 
   const triggerClearBreakpoint = () => {
-    let clearBreakpoint = (br_list) => {
+    let clearBreakpoint = (brList) => {
       // If there is no break point to clear then we should return from here.
-      if ((br_list.length == 1) && (br_list[0].linenumber == -1))
+      if ((brList.length == 1) && (brList[0].linenumber == -1))
         return;
 
       disableToolbarButtons();
-      let breakpoint_list = getBreakpointList(br_list);
+      let breakpointList = getBreakpointList(brList);
 
       // Make ajax call to listen the database message
       let _baseUrl = url_for('debugger.clear_all_breakpoint', {
@@ -403,7 +403,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
         url: _baseUrl,
         method: 'POST',
         data: {
-          'breakpoint_list': breakpoint_list.join(),
+          'breakpoint_list': breakpointList.join(),
         },
       })
         .then(function () {
@@ -765,26 +765,26 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
 
   };
 
-  const getBreakpointList = (br_list) => {
-    let breakpoint_list = [];
-    for (let val of br_list) {
+  const getBreakpointList = (brList) => {
+    let breakpointList = [];
+    for (let val of brList) {
       if (val.linenumber != -1) {
-        breakpoint_list.push(val.linenumber);
+        breakpointList.push(val.linenumber);
       }
     }
 
-    return breakpoint_list;
+    return breakpointList;
   };
 
   // Function to get the latest breakpoint information
   const updateBreakpoint = (transId, updateLocalVar = false) => {
-    let callBackFunc = (br_list) => {
-      if ((br_list.length == 1) && (br_list[0].linenumber == -1))
+    const callBackFunc = (brList) => {
+      if ((brList.length == 1) && (brList[0].linenumber == -1))
         return;
 
-      let breakpoint_list = getBreakpointList(br_list);
+      const breakpointList = getBreakpointList(brList);
       // Apply all breakpoints to the editor
-      applyBreakpointsToEditor(breakpoint_list);
+      applyBreakpointsToEditor(breakpointList);
       if (updateLocalVar) {
         // Call function to create and update local variables ....
         getLocalVariables(params.transId);
