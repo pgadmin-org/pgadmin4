@@ -82,6 +82,19 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
     return httpStatus.data.data.status === 'Busy';
   };
 
+  // Function to set breakpoints in the editor given a list of line numbers
+  const applyBreakpointsToEditor = (breakpoints) => {
+    if (!editor.current) return;
+    editor.current.clearBreakpoints();
+    if (Array.isArray(breakpoints)) {
+      breakpoints.forEach(brk_val => {
+        if (brk_val && brk_val !== -1) {
+          editor.current.toggleBreakpoint(brk_val, true, true); // silent, set to true
+        }
+      });
+    }
+  };
+
   // Function to get the breakpoint information from the server
   const getBreakpointInformation = (transId, callBackFunc) => {
     let result = '';
@@ -765,7 +778,13 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
 
   // Function to get the latest breakpoint information
   const updateBreakpoint = (transId, updateLocalVar = false) => {
-    let callBackFunc = () => {
+    let callBackFunc = (br_list) => {
+      if ((br_list.length == 1) && (br_list[0].linenumber == -1))
+        return;
+
+      let breakpoint_list = getBreakpointList(br_list);
+      // Apply all breakpoints to the editor
+      applyBreakpointsToEditor(breakpoint_list);
       if (updateLocalVar) {
         // Call function to create and update local variables ....
         getLocalVariables(params.transId);
