@@ -13010,6 +13010,9 @@ __metadata:
     wkx: "npm:^0.5.0"
     yarn-audit-html: "npm:7.3.2"
     zustand: "npm:^5.0.5"
+  dependenciesMeta:
+    sharp:
+      optional: true
   languageName: unknown
   linkType: soft
 
