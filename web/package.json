@@ -20,7 +20,7 @@
     "@emotion/styled": "^11.11.0",
     "@emotion/utils": "^1.0.0",
     "@svgr/webpack": "^8.1.0",
-    "@testing-library/dom": "10.4.0",
+    "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "^14.5.2",
@@ -57,7 +57,7 @@
     "svgo": "^4.0.0",
     "svgo-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.12",
-    "typescript": "^5.4.5",
+    "typescript": "^5.9.2",
     "typescript-eslint": "^8.35.0",
     "url-loader": "^4.1.1",
     "webfonts-loader": "^8.0.1",
@@ -80,12 +80,12 @@
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.0",
-    "@mui/x-date-pickers": "^8.8.0",
+    "@mui/x-date-pickers": "^8.9.2",
     "@nozbe/microfuzz": "^1.0.0",
     "@projectstorm/react-diagrams": "^7.0.4",
     "@simonwep/pickr": "^1.5.1",
     "@szhsin/react-menu": "^4.4.1",
-    "@tanstack/react-query": "^5.83.0",
+    "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-table": "^8.16.0",
     "@tanstack/react-virtual": "^3.13.6",
     "@types/classnames": "^2.3.4",
@@ -153,7 +153,7 @@
     "valid-filename": "^4.0.0",
     "vanilla-jsoneditor": "^3.3.1",
     "wkx": "^0.5.0",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.7"
   },
   "resolutions": {
     "rc-resize-observer": "1.4.0"
