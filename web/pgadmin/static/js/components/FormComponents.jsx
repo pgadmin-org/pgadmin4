@@ -537,9 +537,7 @@ export function InputSwitch({ cid, helpid, value, onChange, readonly, controlPro
         readonly ? () => {/*This is intentional (SonarQube)*/ } : onChange
       }
       id={cid}
-      inputProps={{
-        'aria-describedby': helpid,
-      }}
+      slotProps={{input: { 'aria-describedby': helpid }}}
       {...controlProps}
       {...props}
       className={(readonly || props.disabled) ? 'Form-readOnlySwitch' : null}
@@ -586,7 +584,7 @@ export function InputCheckbox({ cid, helpid, value, onChange, controlProps, read
           checked={Boolean(value)}
           onChange={readonly ? () => {/*This is intentional (SonarQube)*/ } : onChange}
           color="primary"
-          inputProps={{ 'aria-describedby': helpid, 'title': controlProps.label}}
+          slotProps={{input: { 'aria-describedby': helpid, 'title': controlProps.label }}}
           {...props} />
       }
       disabled={disabled}
@@ -639,7 +637,7 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, la
           }
           value={value}
           name="radio-button-demo"
-          inputProps={{ 'aria-label': value, 'aria-describedby': helpid }}
+          slotProps={{input: { 'aria-label': value, 'aria-describedby': helpid }}}
           disableRipple
         />
       }

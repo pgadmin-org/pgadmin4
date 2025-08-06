@@ -403,7 +403,7 @@ export function getCheckboxCell({title}) {
           checked={table.getIsAllRowsSelected()}
           indeterminate={table.getIsSomeRowsSelected()}
           onChange={table.getToggleAllRowsSelectedHandler()}
-          inputProps={{ 'aria-label': title }}
+          slotProps={{input: { 'aria-label': title }}}
         />
       </div>
     );
@@ -427,7 +427,7 @@ export function getCheckboxHeaderCell({title}) {
           indeterminate={row.getIsSomeSelected()}
           disabled={!row.getCanSelect()}
           onChange={row.getToggleSelectedHandler()}
-          inputProps={{ 'aria-label': title }}
+          slotProps={{input: { 'aria-label': title}}}
         />
       </div>
     );
