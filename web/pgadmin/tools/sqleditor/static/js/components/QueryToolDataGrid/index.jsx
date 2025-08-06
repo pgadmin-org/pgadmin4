@@ -256,7 +256,7 @@ function cellClassGetter(col, isSelected, dataChangeStore, rowKeyGetter){
   };
 }
 
-function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength) {
+function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength, qtPanelId) {
   let retColumns = [
     ...columns,
   ];
@@ -265,7 +265,7 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColum
   canvasContext.font = '12px Roboto';
 
   for(const col of retColumns) {
-    col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength);
+    col.width = getColumnWidth(col, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength, qtPanelId);
     col.resizable = true;
     col.editorOptions = {
       commitOnOutsideClick: false,
@@ -336,8 +336,15 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onColumnSelect
 
   return retColumns;
 }
+// Helper to get or initialize the widths store on window
+function getWidthsStore() {
+  if (!window.pgAdminGridColumnWidths) {
+    window.pgAdminGridColumnWidths = {};
+  }
+  return window.pgAdminGridColumnWidths;
+}
 
-function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength) {
+function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDataDisplayLength, qtPanelId) {
   const dataWidthReducer = (longest, nextRow) => {
     let value = nextRow[column.key];
     if(_.isNull(value) || _.isUndefined(value)) {
@@ -369,7 +376,12 @@ function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDat
       width = columnHeaderLen;
     }
   }
-  return width;
+
+  // Use window object for storing widths
+  const widthsStore = getWidthsStore();
+  const savedWidths = widthsStore[qtPanelId] || {};
+
+  return savedWidths[column.display_name] || width;
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
@@ -377,6 +389,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   const [readyColumns, setReadyColumns] = useState([]);
   const [lastSelectedColumn, setLastSelectedColumn] = useState(null);
   const eventBus = useContext(QueryToolEventsContext);
+  const qtPanelId = props.qtPanelId;
   const onColumnSelected = (columnIdx, isSelected, isShiftClick)=>{
     const newSelectedCols = new Set(selectedColumns);
     const start = isShiftClick && lastSelectedColumn ? Math.min(columnIdx, lastSelectedColumn) : columnIdx;
@@ -430,8 +443,17 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     onSelectedCellChange, handleShortcuts, startRowNum
   }), [onSelectedCellChange]);
 
+  // Save column width to window object on resize
+  const handleColumnResize = (column, width) => {
+    const widthsStore = getWidthsStore();
+    if (!widthsStore[qtPanelId]) {
+      widthsStore[qtPanelId] = {};
+    }
+    widthsStore[qtPanelId][column.display_name] = width;
+  };
+
   useEffect(()=>{
-    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength);
+    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength, qtPanelId);
     setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
   }, [columns]);
 
@@ -453,6 +475,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         enableCellSelect={true}
         onCopy={handleCopy}
         onMultiCopy={handleCopy}
+        onColumnResize={handleColumnResize} // <-- Add this line
         renderers={{
           renderRow: renderCustomRow,
         }}
@@ -497,4 +520,5 @@ QueryToolDataGrid.propTypes = {
   columnWidthBy: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   startRowNum: PropTypes.number,
   maxColumnDataDisplayLength: PropTypes.number,
+  qtPanelId: PropTypes.string,
 };

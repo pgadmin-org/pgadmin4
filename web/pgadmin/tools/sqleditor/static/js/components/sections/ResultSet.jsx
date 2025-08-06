@@ -1549,6 +1549,7 @@ export function ResultSet() {
             onSelectedCellChange={setSelectedCell}
             onSelectedRangeChange={setSelectedRange}
             stripedRows={queryToolCtx.preferences?.sqleditor?.striped_rows}
+            qtPanelId={queryToolCtx.qtPanelId}
           />
         </Box>
       </>}
