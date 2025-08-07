@@ -881,7 +881,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eol: qtState.eol,
     connection_list: qtState.connection_list,
     current_file: qtState.current_file,
-    qtPanelId: qtPanelId,
     toggleQueryTool: () => setQtStatePartial((prev)=>{
       return {
         ...prev,
