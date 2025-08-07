@@ -47,7 +47,7 @@ python-dateutil==2.*
 pytz==2025.*
 pywinpty==2.0.*; sys_platform=="win32"
 qrcode[pil]==8.*; python_version >= '3.9'
-setuptools==80.*; python_version >= '3.12'
+setuptools==80.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*

@@ -34,6 +34,8 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7057 <https://github.com/pgadmin-org/pgadmin4/issues/7057>`_ -  Fixed an issue where custom column widths in the result grid of Query Tool or View/Edit Data were reset after re-executing a query.
+  | `Issue #7617 <https://github.com/pgadmin-org/pgadmin4/issues/7617>`_ -  Fixed the issue where updating the name of a table column does not reflect in the corresponding primary key constraint.
   | `Issue #8149 <https://github.com/pgadmin-org/pgadmin4/issues/8149>`_ -  Fixed an issue where pgAdmin failed to update the server connection status when the server was disconnected in the background and a refresh was performed on that server.
   | `Issue #8650 <https://github.com/pgadmin-org/pgadmin4/issues/8650>`_ -  Make Dashboard tables to be vertically resizable.
   | `Issue #8756 <https://github.com/pgadmin-org/pgadmin4/issues/8756>`_ -  Fixed an issue in Firefox where the query window would shift to the left after opening the history tab or selecting a column header in the results grid.
