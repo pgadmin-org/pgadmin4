@@ -137,13 +137,40 @@ export class ConstraintsSchema extends BaseUISchema {
           return {primary_key: []};
         }
         /* If columns changed */
-        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[actionObj.path.length-1] == 'columns') {
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[0] == 'columns' &&
+        actionObj.path[actionObj.path.length-1] == 'name' && state.oid === undefined) {
           /* Sync up the pk flag */
-          let columns = state.primary_key[0].columns.map((c)=>c.column);
-          state.columns = state.columns.map((c)=>({
-            ...c, is_primary_key: columns.indexOf(c.name) > -1,
-          }));
-          return {columns: state.columns};
+          if (state.primary_key?.length >0) {
+            let keys = _.keys(actionObj.oldState.columns),
+              tabColPath = _.slice(actionObj.path, 0, -1),
+              columnData = _.get(state, tabColPath),
+              currPk = state.primary_key[0],
+              columns = state.primary_key[0].columns.map((c)=>c.column),
+              stateCols = state.columns.map((c)=>c.name),
+              ids = keys.map((k)=>{
+                if (columns.indexOf(actionObj.oldState.columns[k].name) > -1) return parseInt(k);
+              });
+            if (ids.indexOf(actionObj.path[1]) > -1) {
+              // If PK col is changed, remove it
+              currPk.columns = _.filter(currPk.columns, (c)=>stateCols.indexOf(c.column) > -1);
+              // Add changed col to the pk columns
+              currPk.columns.push({
+                column: columnData.name,
+              });
+            }
+
+            let inc_ids = keys.map((k)=>{
+              if (currPk.include.indexOf(actionObj.oldState.columns[k].name) > -1) return parseInt(k);
+            });
+            if (inc_ids.indexOf(actionObj.path[1]) > -1) {
+              // If PK include col is changed, remove it
+              currPk.include = _.filter(currPk.include, (c)=>stateCols.indexOf(c) > -1);
+              // Add changed col to the pk include
+              currPk.include.push(columnData.name);
+            }
+            return {primary_key: [currPk]};
+          }
+
         }
         /* If column or primary key is deleted */
         if(actionObj.type === SCHEMA_STATE_ACTIONS.DELETE_ROW) {
