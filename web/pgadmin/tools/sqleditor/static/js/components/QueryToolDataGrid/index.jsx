@@ -369,7 +369,9 @@ function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDat
       width = columnHeaderLen;
     }
   }
-  return width;
+
+  // If column width is set in window object then use that.
+  return window.columnWidths?.[column.display_name] || width;
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
@@ -430,6 +432,12 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     onSelectedCellChange, handleShortcuts, startRowNum
   }), [onSelectedCellChange]);
 
+  // Save column width to window object on resize
+  const handleColumnResize = (column, width) => {
+    window.columnWidths = window.columnWidths || {};
+    window.columnWidths[column.display_name] = width;
+  };
+
   useEffect(()=>{
     let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy, maxColumnDataDisplayLength);
     setReadyColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onColumnSelected, onSelectedColumnsChangeWrapped, props.rowKeyGetter));
@@ -453,6 +461,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         enableCellSelect={true}
         onCopy={handleCopy}
         onMultiCopy={handleCopy}
+        onColumnResize={handleColumnResize}
         renderers={{
           renderRow: renderCustomRow,
         }}
