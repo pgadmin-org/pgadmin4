@@ -370,8 +370,8 @@ function getColumnWidth(column, rows, canvasContext, columnWidthBy, maxColumnDat
     }
   }
 
-  if (!window.columnWidths) window.columnWidths = {};
-  return window.columnWidths[column.display_name] || width;
+  // If column width is set in window object then use that.
+  return window.columnWidths?.[column.display_name] || width;
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
@@ -434,7 +434,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
   // Save column width to window object on resize
   const handleColumnResize = (column, width) => {
-    if (!window.columnWidths) window.columnWidths = {};
+    window.columnWidths = window.columnWidths || {};
     window.columnWidths[column.display_name] = width;
   };
 
