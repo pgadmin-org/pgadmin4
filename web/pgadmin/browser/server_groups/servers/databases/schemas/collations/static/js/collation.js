@@ -79,7 +79,8 @@ define('pgadmin.node.collation', [
           {
             owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
             schema: ('schema' in treeNodeInfo)? treeNodeInfo.schema.label : ''
-          }
+          },
+          treeNodeInfo
         );
       }
     });
