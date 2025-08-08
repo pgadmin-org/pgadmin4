@@ -3,7 +3,7 @@
 -- DROP COLLATION IF EXISTS testschema."Cl1_$%{}[]()&*^!@""'`\/#";
 
 CREATE COLLATION IF NOT EXISTS testschema."Cl1_$%{}[]()&*^!@""'`\/#"
-    (LC_COLLATE = 'C', LC_CTYPE = 'C', PROVIDER = 'c', DETERMINISTIC = true);
+    (LC_COLLATE = 'C', LC_CTYPE = 'C', PROVIDER = 'libc', DETERMINISTIC = true);
 
 ALTER COLLATION testschema."Cl1_$%{}[]()&*^!@""'`\/#"
     OWNER TO <OWNER>;
