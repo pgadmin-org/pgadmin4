@@ -40,6 +40,9 @@ settings:
   as the existing one, but will be an independent object. If you choose to copy
   an existing collation, you cannot modify the collation properties displayed on
   this tab.
+* Use the drop-down listbox next to *Provider* to select a locale services associated
+  with the collation. Possible values are: icu, libc and builtin.
+  **Note:** The builtin option is available from v17 onwards.
 * Use the *Locale* field to specify a locale; a locale specifies language and
   language formatting characteristics. If you specify this, you cannot specify
   either of the following parameters. To view a list of locales supported by
@@ -50,8 +53,6 @@ settings:
 * Use the *LC_CTYPE* field to specify a locale with specified character
   classification. The locale must be applicable to the current database encoding.
   (See CREATE DATABASE for details.)
-* Use the drop-down listbox next to *Locale Provider* to select a locale services associated
-  with the collation. Possible values are: icu, libc. libc is the default.
 * Move the switch next to *Deterministic* to *YES* to specify whether the collation should use
   deterministic comparisons. By default, this option is set to true. In a
   deterministic comparison, strings that are not byte-wise equal are considered

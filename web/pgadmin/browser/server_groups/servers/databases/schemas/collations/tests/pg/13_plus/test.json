@@ -33,12 +33,12 @@
       "name": "Drop Collation",
       "endpoint": "NODE-collation.delete_id",
       "data": {
-        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b"
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#a"
       }
     },
     {
       "type": "create",
-      "name": "Create Collation with extra parameters",
+      "name": "Create Collation with icu provider",
       "endpoint": "NODE-collation.obj",
       "sql_endpoint": "NODE-collation.sql_id",
       "data": {
@@ -53,6 +53,40 @@
       },
       "store_object_id": true,
       "expected_sql_file": "create_collation_with_extra_params.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Collation",
+      "endpoint": "NODE-collation.delete_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Collation with libc provider",
+      "endpoint": "NODE-collation.obj",
+      "sql_endpoint": "NODE-collation.sql_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b",
+        "schema": "testschema",
+        "owner": "postgres",
+        "description": "libc",
+        "locale": "C",
+        "provider": "libc",
+        "is_deterministic": true,
+        "version": "1"
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_collation_with_libc.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Collation",
+      "endpoint": "NODE-collation.delete_id",
+      "data": {
+        "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b"
+      }
     }
   ]
 }

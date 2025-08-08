@@ -1,6 +1,7 @@
 SELECT c.oid, c.collname AS name, COALESCE(c.collcollate, c.colllocale) AS lc_collate,
 	COALESCE(c.collctype, c.colllocale) AS lc_type, c.collisdeterministic AS is_deterministic, c.collversion AS version,
-    c.collprovider AS provider, c.collicurules AS rules,
+    CASE WHEN c.collprovider = 'i' THEN 'icu' WHEN c.collprovider = 'b' THEN 'builtin'
+    ELSE 'libc' END provider, c.collicurules AS rules,
     pg_catalog.pg_get_userbyid(c.collowner) AS owner, description, n.nspname AS schema
 FROM pg_catalog.pg_collation c
     JOIN pg_catalog.pg_namespace n ON n.oid=c.collnamespace

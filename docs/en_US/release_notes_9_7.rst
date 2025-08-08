@@ -23,6 +23,7 @@ New features
   | `Issue #5766 <https://github.com/pgadmin-org/pgadmin4/issues/5766>`_ -  Add support for automatic updates in the pgAdmin 4 Desktop application on macOS.
   | `Issue #6456 <https://github.com/pgadmin-org/pgadmin4/issues/6456>`_ -  Added GENERIC_PLAN, MEMORY, SERIALIZE option to EXPLAIN/EXPLAIN ANALYZE command.
   | `Issue #8917 <https://github.com/pgadmin-org/pgadmin4/issues/8917>`_ -  Add support for server tag-based filtering in the Object Explorer.
+  | `Issue #8931 <https://github.com/pgadmin-org/pgadmin4/issues/8931>`_ -  Added support for builtin locale provider while creating Collation.
   | `Issue #8935 <https://github.com/pgadmin-org/pgadmin4/issues/8935>`_ -  Added all new connection string parameters introduced in PostgreSQL 16 and later.
 
 Housekeeping
