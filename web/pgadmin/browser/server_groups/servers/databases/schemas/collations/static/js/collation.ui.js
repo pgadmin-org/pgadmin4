@@ -12,7 +12,7 @@ import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
 export default class CollationSchema extends BaseUISchema {
-  constructor(fieldOptions = {},initValues={}) {
+  constructor(fieldOptions = {}, initValues={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -30,6 +30,7 @@ export default class CollationSchema extends BaseUISchema {
     this.schemaList = fieldOptions.schemaList;
     this.ownerList = fieldOptions.rolesList;
     this.collationsList = fieldOptions.collationsList;
+    this.nodeInfo = nodeInfo;
   }
 
   get idAttribute() {
@@ -86,16 +87,24 @@ export default class CollationSchema extends BaseUISchema {
         deps: ['locale', 'lc_collate', 'lc_type'],
       },
       {
-        id: 'provider', label: gettext('Locale Provider'),
+        id: 'provider', label: gettext('Provider'),
         editable: false, type: 'select',mode: ['create'], group: gettext('Definition'),
         readonly: function (state) { return !obj.isNew(state); },
-        options: [{
-          label: gettext('icu'),
-          value: 'icu',
-        }, {
-          label: gettext('libc'),
-          value: 'libc',
-        }],
+        options: function() {
+          let options = [{
+            label: gettext('icu'),
+            value: 'icu',
+          }, {
+            label: gettext('libc'),
+            value: 'libc',
+          }];
+          if(obj.getServerVersion() >= 170000) {
+            options.push({
+              label: gettext('builtin'), value: 'builtin',
+            });
+          }
+          return Promise.resolve(options);
+        },
         min_version: 110000,
         deps: ['copy_collation'],
         depChange: (state)=>{
@@ -110,7 +119,7 @@ export default class CollationSchema extends BaseUISchema {
         }
       },
       {
-        id: 'provider', label: gettext('Locale Provider'),
+        id: 'provider', label: gettext('Provider'),
         type: 'text',mode: ['properties', 'edit'], group: gettext('Definition'),
         readonly: true,
         min_version: 110000,
