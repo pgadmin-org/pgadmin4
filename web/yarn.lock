@@ -2743,19 +2743,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^7.1.1":
-  version: 7.3.0
-  resolution: "@mui/icons-material@npm:7.3.0"
+"@mui/icons-material@npm:^7.3.1":
+  version: 7.3.1
+  resolution: "@mui/icons-material@npm:7.3.1"
   dependencies:
     "@babel/runtime": "npm:^7.28.2"
   peerDependencies:
-    "@mui/material": ^7.3.0
+    "@mui/material": ^7.3.1
     "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/d836b592a4065e0b1dea32250b83c341cd7ff5006842ca9d2cc4f1341d2f1d8a65bd79e2fdd28c5fed7afa53a59c0ab350f4c6c33a2b490d7c4c9ad2708b1de4
+  checksum: 10c0/cd35a2417e5c655b3cda5ef9e90cdb9ff7482d36a0d74b05d22ea5fd43b5dd02be004e3ab314e57defcbabc55342e8bbb910660907ab219551fffd7a3bbc85fa
   languageName: node
   linkType: hard
 
@@ -12887,7 +12887,7 @@ __metadata:
     "@emotion/styled": "npm:^11.11.0"
     "@emotion/utils": "npm:^1.0.0"
     "@fortawesome/fontawesome-free": "npm:latest"
-    "@mui/icons-material": "npm:^7.1.1"
+    "@mui/icons-material": "npm:^7.3.1"
     "@mui/material": "npm:^7.1.0"
     "@mui/x-date-pickers": "npm:^8.9.2"
     "@nozbe/microfuzz": "npm:^1.0.0"
