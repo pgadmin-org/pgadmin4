@@ -2897,13 +2897,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.9.2":
-  version: 8.9.2
-  resolution: "@mui/x-date-pickers@npm:8.9.2"
+"@mui/x-date-pickers@npm:^8.10.0":
+  version: 8.10.0
+  resolution: "@mui/x-date-pickers@npm:8.10.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.2.0"
-    "@mui/x-internals": "npm:8.9.2"
+    "@mui/x-internals": "npm:8.10.0"
     "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2941,22 +2941,21 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/65883c735b76c4e7fcd77d27f149c1cc9993ae23dba4814706d5a29b8beadaf867346674b581cbebf1e3ced7fe3f48a3533e37e79710603d5f8f80f9eb0d13a5
+  checksum: 10c0/dcd55e4833f07296d45f7f7ff6773a176c1a165496aa0b4a3843f4b980dfacbf90522e486016a881c9f472be95b56c5115ad04d27570d6006510855ff39b3005
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:8.9.2":
-  version: 8.9.2
-  resolution: "@mui/x-internals@npm:8.9.2"
+"@mui/x-internals@npm:8.10.0":
+  version: 8.10.0
+  resolution: "@mui/x-internals@npm:8.10.0"
   dependencies:
     "@babel/runtime": "npm:^7.28.2"
     "@mui/utils": "npm:^7.2.0"
     reselect: "npm:^5.1.1"
     use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
-    "@mui/system": ^5.15.14 || ^6.0.0 || ^7.0.0
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/56d459aa947452fdcc415364bc3fd4f2b2e71b7b2843da28eb18cba1e9ed0914576e6fda51be41b5dae061e31fba526afd2a138aa1f2a654223d72f667b1b256
+  checksum: 10c0/fddf1522d0d882672b5579cc4d1bb707f6baec6b8a8e17efb532d068d2a9dbdb0fec8fc3a3b0f367b6662fdf474528a515a4433df1cd0277d1ed51ab4b863fa9
   languageName: node
   linkType: hard
 
@@ -12889,7 +12888,7 @@ __metadata:
     "@fortawesome/fontawesome-free": "npm:latest"
     "@mui/icons-material": "npm:^7.1.1"
     "@mui/material": "npm:^7.1.0"
-    "@mui/x-date-pickers": "npm:^8.9.2"
+    "@mui/x-date-pickers": "npm:^8.10.0"
     "@nozbe/microfuzz": "npm:^1.0.0"
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@simonwep/pickr": "npm:^1.5.1"
