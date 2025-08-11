@@ -79,7 +79,7 @@
     "@emotion/sheet": "^1.0.1",
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^7.1.1",
-    "@mui/material": "^7.1.0",
+    "@mui/material": "^7.3.1",
     "@mui/x-date-pickers": "^8.9.2",
     "@nozbe/microfuzz": "^1.0.0",
     "@projectstorm/react-diagrams": "^7.0.4",
