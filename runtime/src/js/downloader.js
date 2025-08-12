@@ -10,7 +10,7 @@
 import { app, ipcMain, dialog, BrowserWindow, shell } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import Buffer from 'buffer';
+import { Buffer } from 'buffer';
 import { setBadge, clearBadge, clearProgress, setProgress } from './progress.js';
 import { writeServerLog } from './misc.js';
 
