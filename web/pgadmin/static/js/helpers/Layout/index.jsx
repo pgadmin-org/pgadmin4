@@ -396,6 +396,7 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const layoutDockerObj = React.useMemo(()=>new LayoutDocker(layoutId, props.defaultLayout, resetToTabPanel, noContextGroups), []);
   const prefStore = usePreferences();
   const dynamicTabsStyleRef = useRef();
+  const saveAppStateRef = useRef(prefStore?.getPreferencesForModule('misc')?.save_app_state);
   const { deleteToolData } = useApplicationState();
 
   useEffect(()=>{
@@ -411,6 +412,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
 
   useEffect(()=>{
     const dynamicTabs = prefStore.getPreferencesForModule('browser')?.dynamic_tabs;
+    const saveAppState = prefStore?.getPreferencesForModule('misc')?.save_app_state;
+
     // Add a class to set max width for non dynamic Tabs
     if(!dynamicTabs && !dynamicTabsStyleRef.current) {
       const css = '.dock-tab:not(div.dock-tab-active) { max-width: 180px; }',
@@ -423,6 +426,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
       dynamicTabsStyleRef.current.remove();
       dynamicTabsStyleRef.current = null;
     }
+
+    if(!saveAppState && saveAppStateRef.current){
+      layoutDockerObj.saveLayout();
+    }
+    saveAppStateRef.current = saveAppState;
+
   }, [prefStore]);
 
   const getTabMenuItems = (panelId)=>{
@@ -470,10 +479,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const saveTab = (tab) => {
   // 'tab' here is the full TabData object, potentially with 'title', 'content', etc.
   // We only want to save the 'id' and any custom properties needed by loadTab.
-    const savedTab = {
-      id: tab.id,
-    };
-    if (tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
+    const savedTab = { id: tab.id };
+    if (saveAppStateRef.current && tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
     // add custom properties that were part of the original TabBase
       const updatedMetaData = {
         ...tab.metaData,
