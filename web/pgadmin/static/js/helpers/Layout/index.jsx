@@ -428,9 +428,9 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     }
 
     if(!saveAppState && saveAppStateRef.current){
-      saveAppStateRef.current = saveAppState;
       layoutDockerObj.saveLayout();
     }
+    saveAppStateRef.current = saveAppState;
 
   }, [prefStore]);
 
@@ -479,8 +479,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   const saveTab = (tab) => {
   // 'tab' here is the full TabData object, potentially with 'title', 'content', etc.
   // We only want to save the 'id' and any custom properties needed by loadTab.
-    const saveAppState = prefStore?.getPreferencesForModule('misc')?.save_app_state;
-    if (saveAppState && tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
+    const savedTab = { id: tab.id };
+    if (saveAppStateRef.current && tab.metaData && !BROWSER_PANELS.DEBUGGER_TOOL.includes(tab.id.split('_')[0])) {
     // add custom properties that were part of the original TabBase
       const updatedMetaData = {
         ...tab.metaData,
@@ -492,13 +492,9 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
         },
         restore: true,
       };
-      return {
-        id: tab.id,
-        metaData: updatedMetaData
-      };
-    }else{
-      return {id: tab.id};
+      savedTab.metaData = updatedMetaData;
     }
+    return savedTab;
   };
 
   const flatDefaultLayout = useMemo(()=>{

@@ -47,3 +47,4 @@ Bug fixes
   | `Issue #9007 <https://github.com/pgadmin-org/pgadmin4/issues/9007>`_ -  Ensure the scratch pad in the Query Tool is not restored after it is closed.
   | `Issue #9008 <https://github.com/pgadmin-org/pgadmin4/issues/9008>`_ -  Update the documentation for parameters that require file paths.
   | `Issue #9047 <https://github.com/pgadmin-org/pgadmin4/issues/9047>`_ -  Fixed an issue where downloading images on the ERD tool was not working in desktop mode.
+  | `Issue #9067 <https://github.com/pgadmin-org/pgadmin4/issues/9067>`_ -  Ensure that disabling "Save Application State" in Preferences prevents tool data from being saved and stops it from being restored on application restart.

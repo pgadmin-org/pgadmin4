@@ -215,11 +215,11 @@ class AdHocConnectionSchema extends BaseUISchema {
         disabled: (state) => state.sid,
       },{
         id: 'did', label: gettext('Database'), deps: ['sid', 'connected'],
-        controlProps: {creatable: true},
         type: (state) => {
           if (state?.sid) {
             return {
               type: 'select',
+              controlProps: {creatable: true},
               options: () => this.getOtherOptions(
                 state.sid, 'get_new_connection_database'
               ),
@@ -238,11 +238,11 @@ class AdHocConnectionSchema extends BaseUISchema {
         }
       }, {
         id: 'user', label: gettext('User'), deps: ['sid', 'connected'],
-        controlProps: {creatable: true},
         type: (state) => {
           if (state?.sid) {
             return {
               type: 'select',
+              controlProps: {creatable: true},
               options: () => this.getOtherOptions(
                 state.sid, 'get_new_connection_user'
               ),
@@ -266,9 +266,9 @@ class AdHocConnectionSchema extends BaseUISchema {
         }
       },{
         id: 'role', label: gettext('Role'), deps: ['sid', 'connected'],
-        controlProps: {creatable: true},
         type: (state)=>({
           type: 'select',
+          controlProps: {creatable: true},
           options: () => this.getOtherOptions(
             state.sid, 'get_new_connection_role'
           ),
