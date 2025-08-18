@@ -7,7 +7,7 @@
   ],
   "license": "PostgreSQL",
   "devDependencies": {
-    "@babel/core": "^7.28.0",
+    "@babel/core": "^7.28.3",
     "@babel/eslint-parser": "^7.26.5",
     "@babel/eslint-plugin": "^7.26.10",
     "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
