@@ -22,6 +22,7 @@ New features
 
   | `Issue #5766 <https://github.com/pgadmin-org/pgadmin4/issues/5766>`_ -  Add support for automatic updates in the pgAdmin 4 Desktop application on macOS.
   | `Issue #6456 <https://github.com/pgadmin-org/pgadmin4/issues/6456>`_ -  Added GENERIC_PLAN, MEMORY, SERIALIZE option to EXPLAIN/EXPLAIN ANALYZE command.
+  | `Issue #8712 <https://github.com/pgadmin-org/pgadmin4/issues/8712>`_ -  Add support for changing cursor blink rate within the editors.
   | `Issue #8917 <https://github.com/pgadmin-org/pgadmin4/issues/8917>`_ -  Add support for server tag-based filtering in the Object Explorer.
   | `Issue #8931 <https://github.com/pgadmin-org/pgadmin4/issues/8931>`_ -  Added support for builtin locale provider while creating Collation.
 
@@ -43,7 +44,7 @@ Bug fixes
   | `Issue #8867 <https://github.com/pgadmin-org/pgadmin4/issues/8867>`_ -  Ensure DB restriction type is preserved while import and export server.
   | `Issue #8969 <https://github.com/pgadmin-org/pgadmin4/issues/8969>`_ -  Fixed incorrect behaviour of the option deduplicate items after creating the index.
   | `Issue #8971 <https://github.com/pgadmin-org/pgadmin4/issues/8971>`_ -  Added PKEY index in the index statistics summary.
-  | `Issue #8982 <https://github.com/pgadmin-org/pgadmin4/issues/8982>`_ -  Fixed an issue where adding breakpoints caused errors, and stepping out of a nested function removed breakpoints from the parent function.
+  | `Issue #9073 <https://github.com/pgadmin-org/pgadmin4/issues/9073>`_ -  Fixed an issue where adding breakpoints caused errors, and stepping out of a nested function removed breakpoints from the parent function.
   | `Issue #9007 <https://github.com/pgadmin-org/pgadmin4/issues/9007>`_ -  Ensure the scratch pad in the Query Tool is not restored after it is closed.
   | `Issue #9008 <https://github.com/pgadmin-org/pgadmin4/issues/9008>`_ -  Update the documentation for parameters that require file paths.
   | `Issue #9047 <https://github.com/pgadmin-org/pgadmin4/issues/9047>`_ -  Fixed an issue where downloading images on the ERD tool was not working in desktop mode.
