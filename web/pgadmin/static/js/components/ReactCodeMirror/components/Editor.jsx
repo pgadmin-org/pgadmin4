@@ -120,7 +120,6 @@ function insertTabWithUnit({ state, dispatch }) {
 /* React wrapper for CodeMirror */
 const defaultExtensions = [
   highlightSpecialChars(),
-  drawSelection(),
   rectangularSelection(),
   dropCursor(),
   crosshairCursor(),
@@ -398,6 +397,16 @@ export default function Editor({
         },
       }));
     }
+
+    const CURSOR_BLINK_RATE_MAP = {
+      'none': 0,
+      'slow': 1800,
+      'medium': 1200,
+      'fast': 600,
+    };
+    newConfigExtn.push(drawSelection({
+      cursorBlinkRate: CURSOR_BLINK_RATE_MAP[editorPref.cursor_blink_rate] ?? 1200
+    }));
 
     // add fold service conditionally
     if(!editorPref.plain_editor_mode && editorPref.code_folding && language == 'pgsql') {

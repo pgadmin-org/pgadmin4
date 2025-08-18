@@ -292,6 +292,9 @@ Use the fields on the *Options* panel to manage editor preferences.
 * When the *Code folding?* switch is set to *False*, the editor will disable
   code folding. Disabling will improve editor performance with large files.
 
+* Use the *Cursor blink rate* field to adjust the speed at which the text cursor
+  blinks within the editors.
+
 * Use the *Font family* field to be used for all SQL editors. The specified
   font should already be installed on your system. If the font is not found,
   the editor will fall back to the default font, Source Code Pro.

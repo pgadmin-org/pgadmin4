@@ -151,6 +151,24 @@ def register_editor_preferences(self, migration_gettext=None):
     )
 
     self.editor_preference.register(
+        'options', 'cursor_blink_rate',
+        gettext("Cursor blink rate"), 'options', 'medium',
+        category_label=PREF_LABEL_OPTIONS,
+        options=[{'label': gettext('None'), 'value': 'none'},
+                 {'label': gettext('Slow'), 'value': 'slow'},
+                 {'label': gettext('Medium'), 'value': 'medium'},
+                 {'label': gettext('Fast'), 'value': 'fast'}],
+        control_props={
+            'allowClear': False,
+            'creatable': False,
+        },
+        help_str=gettext(
+            'Adjust the speed at which the text cursor blinks within '
+            'the editors.'
+        )
+    )
+
+    self.editor_preference.register(
         'options', 'wrap_code',
         gettext("Line wrapping?"), 'boolean', False,
         category_label=PREF_LABEL_OPTIONS,
