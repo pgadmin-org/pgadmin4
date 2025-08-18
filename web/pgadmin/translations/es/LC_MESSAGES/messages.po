@@ -20,16 +20,16 @@ msgstr ""
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
-msgstr ""
+msgstr "Nombre de usuario o contraseña incorrectos."
 
 #: pgadmin/__init__.py:353
 msgid "Unauthorised access, permission denied."
-msgstr ""
+msgstr "Acceso no autorizado, permiso denegado."
 
 #: pgadmin/__init__.py:665 pgadmin/__init__.py:714
 #, python-brace-format
 msgid "Auto-detected {0} installation with the data directory at {1}"
-msgstr ""
+msgstr "Instalación detectada automáticamente {0} con el directorio de datos en {1}"
 
 #: pgadmin/__init__.py:797
 msgid "403 FORBIDDEN"
@@ -37,7 +37,7 @@ msgstr ""
 
 #: pgadmin/__init__.py:933
 msgid " You need to refresh the page."
-msgstr ""
+msgstr " Debe actualizar la página."
 
 #: pgadmin/about/__init__.py:42
 #, python-format
@@ -85,7 +85,7 @@ msgstr ""
 
 #: pgadmin/about/static/js/AboutComponent.jsx:62
 msgid "Python Version"
-msgstr ""
+msgstr "Versión de Python"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:70
 msgid "Current User"
@@ -93,7 +93,7 @@ msgstr "Usuario Actual"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:79
 msgid "Electron Version"
-msgstr ""
+msgstr "Versión de Electron"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:88 pgadmin/browser/__init__.py:88
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:35
@@ -102,7 +102,7 @@ msgstr "Navegador"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:97
 msgid "Operating System"
-msgstr ""
+msgstr "Sistema operativo"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:107
 #, fuzzy
@@ -111,11 +111,11 @@ msgstr "Cargando el archivo..."
 
 #: pgadmin/about/static/js/AboutComponent.jsx:117
 msgid "Log File"
-msgstr ""
+msgstr "Archivo de registro"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:127
 msgid "pgAdmin Server Configuration"
-msgstr ""
+msgstr "Configuración del servidor pgAdmin"
 
 #: pgadmin/about/static/js/about.js:43
 #, python-format
@@ -124,53 +124,53 @@ msgstr "Acerca de %s"
 
 #: pgadmin/authenticate/__init__.py:132
 msgid "Your account is locked. Please contact the Administrator."
-msgstr ""
+msgstr "Tu cuenta está bloqueada. Ponte en contacto con el administrador."
 
 #: pgadmin/authenticate/__init__.py:149
 #, python-brace-format
 msgid "{0} more attempts remaining."
-msgstr ""
+msgstr "{0} intentos restantes."
 
 #: pgadmin/authenticate/__init__.py:153
 #, python-brace-format
 msgid "{0} more attempt remaining."
-msgstr ""
+msgstr "{0} intento restante."
 
 #: pgadmin/authenticate/internal.py:27
 msgid "Login failed"
-msgstr ""
+msgstr "Inicio de sesión fallido"
 
 #: pgadmin/authenticate/internal.py:28
 msgid "Email/Username not provided"
-msgstr ""
+msgstr "No se ha proporcionado el correo electrónico/nombre de usuario."
 
 #: pgadmin/authenticate/internal.py:29
 msgid "Password not provided"
-msgstr ""
+msgstr "Contraseña no proporcionada"
 
 #: pgadmin/authenticate/internal.py:30
 msgid "Email/Username is not valid"
-msgstr ""
+msgstr "El correo electrónico/nombre de usuario no es válido."
 
 #: pgadmin/authenticate/internal.py:96
 msgid "internal"
-msgstr ""
+msgstr "interno"
 
 #: pgadmin/authenticate/kerberos.py:161
 msgid "kerberos"
-msgstr ""
+msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:170
 msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
-msgstr ""
+msgstr "La autenticación Kerberos no se puede utilizar porque no se ha podido cargar el módulo GSSAPI."
 
 #: pgadmin/authenticate/kerberos.py:210
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
-msgstr ""
+msgstr "La autenticación Kerberos ha fallado. No se ha encontrado el ticket Kerberos."
 
 #: pgadmin/authenticate/kerberos.py:240
 msgid "Delegated credentials not supplied."
-msgstr ""
+msgstr "No se han proporcionado las credenciales delegadas."
 
 #: pgadmin/authenticate/ldap.py:31
 #, python-brace-format
@@ -180,20 +180,20 @@ msgstr ""
 #: pgadmin/authenticate/ldap.py:34
 #, python-brace-format
 msgid "Error connecting to the LDAP server: {}\n"
-msgstr ""
+msgstr "Error al buscar en el directorio LDAP: {}"
 
 #: pgadmin/authenticate/ldap.py:48
 msgid "ldap"
-msgstr ""
+msgstr "ldap"
 
 #: pgadmin/authenticate/ldap.py:66
 msgid "LDAP configuration error: Set the bind password."
-msgstr ""
+msgstr "Error de configuración LDAP: Establezca la contraseña de enlace."
 
 #: pgadmin/authenticate/ldap.py:148
 #, python-brace-format
 msgid "Error binding to the LDAP server: {}\n"
-msgstr ""
+msgstr "Error al conectarse al servidor LDAP: {}\n"
 
 #: pgadmin/authenticate/ldap.py:153
 #, python-brace-format
@@ -203,7 +203,7 @@ msgstr ""
 #: pgadmin/authenticate/ldap.py:230
 #, python-brace-format
 msgid "LDAP configuration error: {}\n"
-msgstr ""
+msgstr "Error al iniciar TLS: {}\n"
 
 #: pgadmin/authenticate/ldap.py:246
 msgid "LDAP configuration error: Set the proper LDAP URI."
@@ -211,44 +211,44 @@ msgstr ""
 
 #: pgadmin/authenticate/ldap.py:276
 msgid "LDAP configuration error: Set the Search Domain."
-msgstr ""
+msgstr "Error de configuración LDAP: Establezca la URI LDAP correcta."
 
 #: pgadmin/authenticate/ldap.py:312
 msgid "More than one result found."
-msgstr ""
+msgstr "Se ha encontrado más de un resultado."
 
 #: pgadmin/authenticate/ldap.py:315
 msgid "Could not find the specified user."
-msgstr ""
+msgstr "No se ha encontrado el usuario especificado."
 
 #: pgadmin/authenticate/oauth2.py:284
 msgid "Please set the configuration parameters properly."
-msgstr ""
+msgstr "Por favor, configure los parámetros correctamente."
 
 #: pgadmin/authenticate/webserver.py:74
 msgid "webserver"
-msgstr ""
+msgstr "servidor web"
 
 #: pgadmin/authenticate/webserver.py:91
 msgid "Webserver authenticate failed."
-msgstr ""
+msgstr "Error en la autenticación del servidor web."
 
 #: pgadmin/authenticate/mfa/__init__.py:76
 #, python-brace-format
 msgid "'{}' is not a valid multi-factor authentication method"
-msgstr ""
+msgstr "'{}' no es un método válido de autenticación multifactorial."
 
 #: pgadmin/authenticate/mfa/__init__.py:105
 msgid "No valid multi-factor authentication found, hence - disabling it."
-msgstr ""
+msgstr "No se ha encontrado ninguna autenticación multifactorial válida, por lo que se desactivará."
 
 #: pgadmin/authenticate/mfa/authenticator.py:31
 msgid "Authenticator App"
-msgstr ""
+msgstr "Aplicación de autenticación"
 
 #: pgadmin/authenticate/mfa/authenticator.py:32
 msgid "Enter code"
-msgstr ""
+msgstr "Introduzca el código"
 
 #: pgadmin/authenticate/mfa/authenticator.py:62
 msgid ""
@@ -258,7 +258,7 @@ msgstr ""
 
 #: pgadmin/authenticate/mfa/authenticator.py:68
 msgid "User does not have valid HASH to generate the OTP."
-msgstr ""
+msgstr "El usuario no tiene un HASH válido para generar la OTP."
 
 #: pgadmin/authenticate/mfa/authenticator.py:126
 msgid ""
@@ -268,7 +268,7 @@ msgstr ""
 
 #: pgadmin/authenticate/mfa/authenticator.py:164
 msgid "TOTP Authenticator QRCode"
-msgstr ""
+msgstr "Código QR del autenticador TOTP"
 
 #: pgadmin/authenticate/mfa/authenticator.py:166
 msgid ""
@@ -278,61 +278,61 @@ msgstr ""
 
 #: pgadmin/authenticate/mfa/authenticator.py:195
 msgid "Failed to validate the code"
-msgstr ""
+msgstr "No se ha podido validar el código."
 
 #: pgadmin/authenticate/mfa/authenticator.py:200
 msgid "TOTP Authenticator registered successfully for authentication."
-msgstr ""
+msgstr "El autenticador TOTP se ha registrado correctamente para la autenticación."
 
 #: pgadmin/authenticate/mfa/email.py:67 pgadmin/authenticate/mfa/email.py:171
 msgid "Not accessible"
-msgstr ""
+msgstr "No accesible"
 
 #: pgadmin/authenticate/mfa/email.py:73
 msgid "No email address is available."
-msgstr ""
+msgstr "No hay ninguna dirección de correo electrónico disponible."
 
 #: pgadmin/authenticate/mfa/email.py:80
 #, python-brace-format
 msgid "{} - Verification Code"
-msgstr ""
+msgstr "{} - Código de verificación"
 
 #: pgadmin/authenticate/mfa/email.py:91
 msgid "Failed to send the code to email."
-msgstr ""
+msgstr "No se ha podido enviar el código al correo electrónico."
 
 #: pgadmin/authenticate/mfa/email.py:95
 #, python-brace-format
 msgid "A verification code was sent to {}. Check your email and enter the code."
-msgstr ""
+msgstr "Se ha enviado un código de verificación a {}. Comprueba tu correo electrónico e introduce el código."
 
 #: pgadmin/authenticate/mfa/email.py:150
 msgid "User has not registered for email authentication"
-msgstr ""
+msgstr "El usuario no se ha registrado para la autenticación por correo electrónico."
 
 #: pgadmin/authenticate/mfa/email.py:182
 msgid "Email Authentication"
-msgstr ""
+msgstr "Autenticación de correo electrónico"
 
 #: pgadmin/authenticate/mfa/email.py:206
 msgid "Verify with Email Authentication"
-msgstr ""
+msgstr "Verificar con autenticación por correo electrónico"
 
 #: pgadmin/authenticate/mfa/email.py:207
 msgid "Send Code"
-msgstr ""
+msgstr "Enviar código"
 
 #: pgadmin/authenticate/mfa/email.py:208
 msgid "Sending Code..."
-msgstr ""
+msgstr "Enviando código..."
 
 #: pgadmin/authenticate/mfa/email.py:216
 msgid "Enter the email address to send a code"
-msgstr ""
+msgstr "Introduzca la dirección de correo electrónico para enviar un código."
 
 #: pgadmin/authenticate/mfa/email.py:217
 msgid "Email address"
-msgstr ""
+msgstr "Dirección de correo electrónico"
 
 #: pgadmin/authenticate/mfa/email.py:219
 #: pgadmin/browser/templates/browser/js/messages.js:39
@@ -350,15 +350,15 @@ msgstr ""
 
 #: pgadmin/authenticate/mfa/email.py:242
 msgid "Enter code here"
-msgstr ""
+msgstr "Introduzca el código aquí"
 
 #: pgadmin/authenticate/mfa/email.py:260
 msgid "Email Authentication registered successfully."
-msgstr ""
+msgstr "Autenticación de correo electrónico registrada correctamente."
 
 #: pgadmin/authenticate/mfa/email.py:267
 msgid "Invalid code"
-msgstr ""
+msgstr "Código no válido"
 
 #: pgadmin/authenticate/mfa/views.py:58
 msgid "No authentication method provided."
@@ -366,38 +366,38 @@ msgstr ""
 
 #: pgadmin/authenticate/mfa/views.py:64
 msgid "No user supported authentication method provided"
-msgstr ""
+msgstr "No se ha proporcionado ningún método de autenticación."
 
 #: pgadmin/authenticate/mfa/views.py:175
 #, python-brace-format
 msgid "'{}' is already registered'"
-msgstr ""
+msgstr "'{}' ya está registrado'"
 
 #: pgadmin/authenticate/mfa/views.py:183
 #, python-brace-format
 msgid "'{}' unregistered from the authentication list."
-msgstr ""
+msgstr "'{}' eliminado de la lista de autenticación."
 
 #: pgadmin/authenticate/mfa/views.py:189
 #, python-brace-format
 msgid "'{}' is not found in the authentication list."
-msgstr ""
+msgstr "'{}' no se encuentra en la lista de autenticación."
 
 #: pgadmin/authenticate/mfa/views.py:265
 msgid "Please close the dialog."
-msgstr ""
+msgstr "Por favor, cierre el cuadro de diálogo."
 
 #: pgadmin/authenticate/mfa/views.py:341
 msgid "Can't access this page, when multi factor authentication is disabled."
-msgstr ""
+msgstr "No se puede acceder a esta página cuando la autenticación multifactor está desactivada."
 
 #: pgadmin/authenticate/mfa/views.py:346
 msgid "Complete the authentication process first"
-msgstr ""
+msgstr "Complete primero el proceso de autenticación"
 
 #: pgadmin/browser/__init__.py:77
 msgid "Your password has not been changed."
-msgstr ""
+msgstr "Tu contraseña no ha sido modificada."
 
 #: pgadmin/browser/__init__.py:79
 #, python-brace-format
@@ -437,15 +437,15 @@ msgstr ""
 
 #: pgadmin/browser/__init__.py:791
 msgid "Incorrect master password"
-msgstr ""
+msgstr "Contraseña maestra incorrecta"
 
 #: pgadmin/browser/__init__.py:837
 msgid "Master password cannot be empty"
-msgstr ""
+msgstr "La contraseña maestra no puede estar vacía."
 
 #: pgadmin/browser/__init__.py:921
 msgid "pgAdmin user password changed successfully"
-msgstr ""
+msgstr "La contraseña de usuario de pgAdmin se ha cambiado correctamente."
 
 #: pgadmin/browser/__init__.py:968
 #, python-brace-format
@@ -466,7 +466,7 @@ msgstr "¿Mostrar objetos del sistema?"
 
 #: pgadmin/browser/register_browser_preferences.py:28
 msgid "Show empty object collections?"
-msgstr ""
+msgstr "¿Mostrar colecciones de objetos vacías?"
 
 #: pgadmin/browser/register_browser_preferences.py:31
 msgid ""
@@ -476,11 +476,11 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:38
 msgid "Show template databases?"
-msgstr ""
+msgstr "¿Mostrar bases de datos de plantillas?"
 
 #: pgadmin/browser/register_browser_preferences.py:45
 msgid "Hide shared servers?"
-msgstr ""
+msgstr "¿Ocultar servidores compartidos?"
 
 #: pgadmin/browser/register_browser_preferences.py:46
 #: pgadmin/utils/constants.py:22
@@ -489,11 +489,11 @@ msgstr "Mostrar"
 
 #: pgadmin/browser/register_browser_preferences.py:48
 msgid "If set to True, then all shared servers will be hidden from browser tree"
-msgstr ""
+msgstr "Si se establece en True, todos los servidores compartidos se ocultarán del árbol del navegador."
 
 #: pgadmin/browser/register_browser_preferences.py:55
 msgid "Object explorer tree state saving interval"
-msgstr ""
+msgstr "Intervalo de guardado del estado del árbol del explorador de objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:58
 msgid ""
@@ -503,7 +503,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:65
 msgid "Confirm on close or refresh?"
-msgstr ""
+msgstr "¿Confirmar al cerrar o actualizar?"
 
 #: pgadmin/browser/register_browser_preferences.py:68
 msgid ""
@@ -513,7 +513,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:75
 msgid "Confirm before Close/Reset in object properties dialog?"
-msgstr ""
+msgstr "¿Confirmar antes de cerrar/restablecer en el cuadro de diálogo de propiedades del objeto?"
 
 #: pgadmin/browser/register_browser_preferences.py:79
 msgid ""
@@ -523,7 +523,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:86
 msgid "Auto-expand sole children"
-msgstr ""
+msgstr "Expandir automáticamente los hijos únicos"
 
 #: pgadmin/browser/register_browser_preferences.py:89
 msgid ""
@@ -555,12 +555,12 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:113
 msgid "Process details/logs retention days"
-msgstr ""
+msgstr "Detalles del proceso/días de retención de registros"
 
 #: pgadmin/browser/register_browser_preferences.py:115
 #: pgadmin/static/js/BrowserComponent.jsx:47
 msgid "Processes"
-msgstr ""
+msgstr "Procesos"
 
 #: pgadmin/browser/register_browser_preferences.py:117
 msgid ""
@@ -595,7 +595,7 @@ msgstr "Alt/Opción"
 #: pgadmin/static/js/BrowserComponent.jsx:95
 #: pgadmin/tools/user_management/PgAdminPermissions.py:38
 msgid "Object Explorer"
-msgstr ""
+msgstr "Explorador de objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:147
 msgid "Tabbed panel backward"
@@ -603,7 +603,7 @@ msgstr "Panel con pestañas hacia atras"
 
 #: pgadmin/browser/register_browser_preferences.py:162
 msgid "Close tab panel"
-msgstr ""
+msgstr "Cerrar panel de pestañas"
 
 #: pgadmin/browser/register_browser_preferences.py:177
 msgid "Tabbed panel forward"
@@ -636,7 +636,7 @@ msgstr "Ver datos"
 #: pgadmin/browser/register_browser_preferences.py:283
 #: pgadmin/tools/search_objects/__init__.py:28
 msgid "Search objects"
-msgstr ""
+msgstr "Buscar objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:298
 msgid "Create object"
@@ -656,7 +656,7 @@ msgstr "Depuración directa"
 
 #: pgadmin/browser/register_browser_preferences.py:358
 msgid "Refresh object explorer"
-msgstr ""
+msgstr "Actualizar el explorador de objetos"
 
 #: pgadmin/browser/register_browser_preferences.py:373
 msgid "Add grid row"
@@ -666,11 +666,11 @@ msgstr ""
 #: pgadmin/help/__init__.py:27 pgadmin/static/js/Dialogs/index.jsx:388
 #: pgadmin/static/js/QuickSearch/index.jsx:266
 msgid "Quick Search"
-msgstr ""
+msgstr "Búsqueda rápida"
 
 #: pgadmin/browser/register_browser_preferences.py:400
 msgid "Dynamic tab size"
-msgstr ""
+msgstr "Tamaño dinámico de la pestaña"
 
 #: pgadmin/browser/register_browser_preferences.py:403
 msgid ""
@@ -680,7 +680,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:409
 msgid "Query tool tab title"
-msgstr ""
+msgstr "Título de la pestaña de la herramienta de consulta"
 
 #: pgadmin/browser/register_browser_preferences.py:413
 #: pgadmin/browser/register_browser_preferences.py:484
@@ -692,7 +692,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:422
 msgid "View/Edit data tab title"
-msgstr ""
+msgstr "Ver/Editar título de la pestaña de datos"
 
 #: pgadmin/browser/register_browser_preferences.py:426
 msgid ""
@@ -704,7 +704,7 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:435
 msgid "Debugger tab title"
-msgstr ""
+msgstr "Título de la pestaña del depurador"
 
 #: pgadmin/browser/register_browser_preferences.py:439
 #, python-format
@@ -746,7 +746,7 @@ msgstr ""
 #: pgadmin/tools/erd/static/js/ERDModule.js:59
 #: pgadmin/tools/user_management/PgAdminPermissions.py:111
 msgid "ERD Tool"
-msgstr ""
+msgstr "Herramienta ERD"
 
 #: pgadmin/browser/register_browser_preferences.py:455
 #: pgadmin/browser/static/js/collection.js:76
@@ -754,7 +754,7 @@ msgstr ""
 #: pgadmin/tools/psql/static/js/PsqlModule.js:92
 #: pgadmin/tools/user_management/PgAdminPermissions.py:66
 msgid "PSQL Tool"
-msgstr ""
+msgstr "Herramienta PSQL"
 
 #: pgadmin/browser/register_browser_preferences.py:459
 msgid "Open in new browser tab"
@@ -768,11 +768,11 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:472
 msgid "Select open new tab..."
-msgstr ""
+msgstr "Seleccionar abrir nueva pestaña..."
 
 #: pgadmin/browser/register_browser_preferences.py:480
 msgid "PSQL tool tab title"
-msgstr ""
+msgstr "Título de la pestaña de la herramienta PSQL"
 
 #: pgadmin/browser/register_browser_preferences.py:493
 msgid "Enable object breadcrumbs?"
@@ -794,20 +794,20 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:16
 msgid "Upper case"
-msgstr ""
+msgstr "Mayúscula"
 
 #: pgadmin/browser/register_editor_preferences.py:17
 msgid "Lower case"
-msgstr ""
+msgstr "Minúscula"
 
 #: pgadmin/browser/register_editor_preferences.py:18
 msgid "Preserve"
-msgstr ""
+msgstr "Conservar"
 
 #: pgadmin/browser/register_editor_preferences.py:33
 #: pgadmin/utils/constants.py:26
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: pgadmin/browser/register_editor_preferences.py:39
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:614
@@ -822,20 +822,20 @@ msgstr "Reemplazar"
 
 #: pgadmin/browser/register_editor_preferences.py:77
 msgid "Go to line/column"
-msgstr ""
+msgstr "Ir a la línea/columna"
 
 #: pgadmin/browser/register_editor_preferences.py:96
 msgid "Toggle comment"
-msgstr ""
+msgstr "Activar/desactivar comentarios"
 
 #: pgadmin/browser/register_editor_preferences.py:115
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Format SQL"
-msgstr ""
+msgstr "Formato SQL"
 
 #: pgadmin/browser/register_editor_preferences.py:133
 msgid "Plain text mode?"
-msgstr ""
+msgstr "¿Modo de texto sin formato?"
 
 #: pgadmin/browser/register_editor_preferences.py:136
 msgid ""
@@ -846,7 +846,7 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:144
 msgid "Code folding?"
-msgstr ""
+msgstr "¿Plegado de código?"
 
 #: pgadmin/browser/register_editor_preferences.py:147
 msgid ""
@@ -873,11 +873,11 @@ msgstr "Especifica si se insertan o no pares de corchetes en el editor."
 
 #: pgadmin/browser/register_editor_preferences.py:174
 msgid "Highlight selection matches?"
-msgstr ""
+msgstr "¿Resaltar la selección coincidente?"
 
 #: pgadmin/browser/register_editor_preferences.py:177
 msgid "Specifies whether or not to highlight matched selected text in the editor."
-msgstr ""
+msgstr "Especifica si se debe resaltar o no el texto seleccionado que coincide en el editor."
 
 #: pgadmin/browser/register_editor_preferences.py:184
 msgid "Brace matching?"
@@ -929,7 +929,7 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:231
 msgid "Auto-indent new line?"
-msgstr ""
+msgstr "¿Sangría automática en la nueva línea?"
 
 #: pgadmin/browser/register_editor_preferences.py:234
 msgid ""
@@ -971,7 +971,7 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:289
 msgid "Spaces around operators?"
-msgstr ""
+msgstr "¿Espacios alrededor de los operadores?"
 
 #: pgadmin/browser/register_editor_preferences.py:291
 msgid "If set to True, spaces are used around all operators."
@@ -1013,11 +1013,11 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:329
 msgid "Before"
-msgstr ""
+msgstr "Antes"
 
 #: pgadmin/browser/register_editor_preferences.py:330
 msgid "After"
-msgstr ""
+msgstr "Después"
 
 #: pgadmin/browser/register_editor_preferences.py:333
 msgid ""
@@ -1027,7 +1027,7 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:340
 msgid "Lines between queries"
-msgstr ""
+msgstr "Líneas entre consultas"
 
 #: pgadmin/browser/register_editor_preferences.py:345
 msgid ""
@@ -1037,11 +1037,11 @@ msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:352
 msgid "New line before semicolon?"
-msgstr ""
+msgstr "¿Una nueva línea antes del punto y coma?"
 
 #: pgadmin/browser/register_editor_preferences.py:355
 msgid "Whether to place query separator (;) on a separate line."
-msgstr ""
+msgstr "Si se debe colocar el separador de consultas (;) en una línea separada."
 
 #: pgadmin/browser/utils.py:304
 #, python-brace-format
@@ -1077,7 +1077,7 @@ msgstr "Se ha perdido la conexión con el servidor."
 #: pgadmin/browser/utils.py:733
 #, python-brace-format
 msgid "Could not find the specified {}."
-msgstr ""
+msgstr "No se ha encontrado el elemento especificado {}."
 
 #: pgadmin/browser/server_groups/__init__.py:202
 #: pgadmin/browser/server_groups/__init__.py:211
@@ -1107,12 +1107,12 @@ msgstr "Servidores"
 #: pgadmin/browser/server_groups/servers/__init__.py:619
 #, python-brace-format
 msgid "The specified server group with id# {0} could not be found."
-msgstr "No se puede encontrar el grupo de servidores especificado con id#{0}."
+msgstr "No se puede encontrar el grupo de servidores especificado con id# {0}."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:640
 #, python-brace-format
 msgid "Could not find the server with id# {0}."
-msgstr ""
+msgstr "No se pudo encontrar el servidor con el id# {0}."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:726
 msgid ""
@@ -1190,7 +1190,7 @@ msgstr "Rol"
 #: pgadmin/browser/server_groups/servers/__init__.py:1173
 #: pgadmin/misc/workspaces/__init__.py:104
 msgid "Not a valid Host address"
-msgstr ""
+msgstr "Dirección de host no válida"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:849
 msgid "No parameters were changed."
@@ -1264,7 +1264,7 @@ msgstr "El servidor no tiene conexiones activas para generar estadísticas."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1463
 msgid "Please enter the server details to connect"
-msgstr ""
+msgstr "Introduzca los datos del servidor para conectarse."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1641
 #: pgadmin/tools/schema_diff/__init__.py:374
@@ -1296,7 +1296,7 @@ msgstr "Creado punto de restauración por nombre: {0}"
 #: pgadmin/browser/server_groups/servers/__init__.py:1764
 #, python-brace-format
 msgid "Named restore point creation failed ({0})"
-msgstr ""
+msgstr "Error al crear el punto de restauración con nombre ({0})"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1821
 #: pgadmin/browser/server_groups/servers/__init__.py:1833
@@ -1327,7 +1327,7 @@ msgstr "Reproduccion de WAL en pausa"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1944
 msgid "WAL replay resumed"
-msgstr ""
+msgstr "Reanudada la repetición de WAL."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1950
 #: pgadmin/browser/server_groups/servers/__init__.py:2008
@@ -1337,7 +1337,7 @@ msgstr "Por favor conectar el servidor."
 #: pgadmin/browser/server_groups/servers/__init__.py:2129
 #: pgadmin/browser/server_groups/servers/__init__.py:2161
 msgid "The saved password cleared successfully."
-msgstr ""
+msgstr "La contraseña guardada se ha borrado correctamente."
 
 #: pgadmin/browser/server_groups/servers/ppas.py:15
 #: pgadmin/browser/server_groups/servers/types.py:118
@@ -1382,7 +1382,7 @@ msgstr "Rutas a ejecutables"
 #: pgadmin/browser/server_groups/servers/types.py:132
 #, python-brace-format
 msgid "Type: {0}, Description: {1}, Priority: {2}"
-msgstr ""
+msgstr "Tipo: {0}, Descripción: {1}, Prioridad: {2}"
 
 #: pgadmin/browser/server_groups/servers/types.py:173
 #, python-format
@@ -1424,7 +1424,7 @@ msgstr "No se puede encontrar la base de datos en el servidor."
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:997
 msgid "Database could not be deleted."
-msgstr ""
+msgstr "No se pudo eliminar la base de datos."
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:1039
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:526
@@ -1517,7 +1517,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:721
 msgid "Could not generate reversed engineered SQL for the cast node."
-msgstr ""
+msgstr "No se pudo generar SQL de ingeniería inversa para el nodo de conversión."
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.js:39
 msgid "Cast"
@@ -1568,7 +1568,7 @@ msgstr "Conversion..."
 #: pgadmin/tools/user_management/static/js/RoleDialog.jsx:55
 #: pgadmin/tools/user_management/static/js/UserDialog.jsx:208
 msgid "Something went wrong"
-msgstr ""
+msgstr "Algo salió mal"
 
 #: pgadmin/browser/server_groups/servers/databases/casts/static/js/cast.ui.js:49
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:67
@@ -2179,7 +2179,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:103
 msgid "Program Name"
-msgstr ""
+msgstr "Nombre del programa"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:104
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:117
@@ -2205,12 +2205,12 @@ msgstr "Código no puede estar vacío."
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:149
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_programs/static/js/dbms_program.ui.js:70
 msgid "Procedure cannot be empty."
-msgstr ""
+msgstr "El procedimiento no puede estar vacío."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:159
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.ui.js:64
 msgid "Either Start time or Repeat interval must be specified."
-msgstr ""
+msgstr "Se debe especificar la hora de inicio o el intervalo de repetición."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:175
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_schedules/static/js/dbms_schedule.ui.js:80
@@ -2220,7 +2220,7 @@ msgstr "Fecha de inicio tiene que ser menor que la fecha de finalización"
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:185
 msgid "Pre-Defined program name cannot be empty."
-msgstr ""
+msgstr "El nombre del programa predefinido no puede estar vacío."
 
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/dbms_jobs/static/js/dbms_job.ui.js:191
 msgid "Pre-Defined schedule name cannot be empty."
