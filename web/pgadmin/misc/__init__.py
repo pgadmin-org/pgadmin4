@@ -394,22 +394,28 @@ def upgrade_check():
                 'Exception when checking for update')
             return internal_server_error('Failed to check for update')
 
-        if data:
+        if data and config.UPGRADE_CHECK_KEY and \
+                config.UPGRADE_CHECK_KEY in data:
             # Determine platform
-            if sys.platform == 'darwin':
+            if sys.platform.startswith("darwin"):
                 platform = 'macos'
-            elif sys.platform == 'win32':
+            elif sys.platform.startswith("win"):
                 platform = 'windows'
+            elif sys.platform.startswith("linux"):
+                platform = 'linux'
 
             upgrade_version_int = data[config.UPGRADE_CHECK_KEY]['version_int']
-            auto_update_url_exists = data[config.UPGRADE_CHECK_KEY][
-                'auto_update_url'][platform] != ''
+            auto_update_url_dict = (data[config.UPGRADE_CHECK_KEY]
+                                    .get('auto_update_url', {}))
+            auto_update_url_exists = (
+                platform in auto_update_url_dict and
+                auto_update_url_dict[platform] != ''
+            )
 
             # Construct common response dicts for auto-update support
             auto_update_common_res = {
                 "check_for_auto_updates": True,
-                "auto_update_url": data[config.UPGRADE_CHECK_KEY][
-                    'auto_update_url'][platform],
+                "auto_update_url": auto_update_url_dict.get(platform, ''),
                 "platform": platform,
                 "installer_type": config.UPGRADE_CHECK_KEY,
                 "current_version": config.APP_VERSION,
