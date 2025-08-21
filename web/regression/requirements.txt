@@ -24,7 +24,7 @@
 extras==1.0.0
 fixtures==4.2.6
 linecache2==1.0.0
-pbr==6.1.1
+pbr==7.0.0
 pycodestyle>=2.5.0
 python-mimeparse==2.0.0
 # Do not upgrade selenium until latest version supports urllib3 2.5.*

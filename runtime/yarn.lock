@@ -207,20 +207,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 24.2.1
-  resolution: "@types/node@npm:24.2.1"
+  version: 24.3.0
+  resolution: "@types/node@npm:24.3.0"
   dependencies:
     undici-types: "npm:~7.10.0"
-  checksum: 10c0/439a3c7edf88a298e0c92e46f670234070b892589c3b06e82cc86c47a7e1cf220f4a4b4736ec6ac7e4b9e1c40d7b6d443a1e22f99dd17f13f9dd15de3b32011b
+  checksum: 10c0/96bdeca01f690338957c2dcc92cb9f76c262c10398f8d91860865464412b0f9d309c24d9b03d0bdd26dd47fa7ee3f8227893d5c89bc2009d919a525a22512030
   languageName: node
   linkType: hard
 
 "@types/node@npm:^22.7.7":
-  version: 22.17.1
-  resolution: "@types/node@npm:22.17.1"
+  version: 22.17.2
+  resolution: "@types/node@npm:22.17.2"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/b04063bdabfc4146af05d14d4fd23ee68615194473d0ef971ddef549b80b791f52c8f93abdd8d1092ee0257f3dea862fa233519244fd051e79233cdce614de14
+  checksum: 10c0/23cd13aa35da6322a6d66cf4b3a45dbd40764ba726ab8681960270156c3abba776dd8dc173250c467f708d40612ecd725755d7659b775b513904680d5205eaff
   languageName: node
   linkType: hard
 
@@ -299,9 +299,9 @@ __metadata:
   linkType: hard
 
 "ansi-regex@npm:^6.0.1":
-  version: 6.1.0
-  resolution: "ansi-regex@npm:6.1.0"
-  checksum: 10c0/a91daeddd54746338478eef88af3439a7edf30f8e23196e2d6ed182da9add559c601266dbef01c2efa46a958ad6f1f8b176799657616c702b5b02e799e7fd8dc
+  version: 6.2.0
+  resolution: "ansi-regex@npm:6.2.0"
+  checksum: 10c0/20a2e55ae9816074a60e6729dbe3daad664cd967fc82acc08b02f5677db84baa688babf940d71f50acbbb184c02459453789705e079f4d521166ae66451de551
   languageName: node
   linkType: hard
 
@@ -616,13 +616,13 @@ __metadata:
   linkType: hard
 
 "electron-context-menu@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "electron-context-menu@npm:4.1.0"
+  version: 4.1.1
+  resolution: "electron-context-menu@npm:4.1.1"
   dependencies:
     cli-truncate: "npm:^4.0.0"
     electron-dl: "npm:^4.0.0"
     electron-is-dev: "npm:^3.0.1"
-  checksum: 10c0/ec5b12107d8ddad419f41a486e325ff3dc7b17384c13f6d325611d12297064e6ca850e8f414a48df850b50c225f3ddd87af654bfbcbbcf6ac62619d46265ed60
+  checksum: 10c0/3e2eb5298a311f320734427fadb1cf22ef6685c8d86387d1a2d558b698b079de8eabb4d7a8790cab100cf5eba3607df887846067f5a805d1c011016b9eccdf70
   languageName: node
   linkType: hard
 
@@ -654,16 +654,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:37.2.6":
-  version: 37.2.6
-  resolution: "electron@npm:37.2.6"
+"electron@npm:37.3.0":
+  version: 37.3.0
+  resolution: "electron@npm:37.3.0"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/d0653bbaf6b449260d65d51aa12717ad8acaffce337d32e9892aea5cb70e1dc70f0da54393548595dd3a57cce1dbf699e3fa5d9155427f4151ada572f4430778
+  checksum: 10c0/6f08ca2955c65591368cb0dadbd637d86749040c8d4cd616d7265e1c71ece854f23c678b7cfc23746100327dcdb34f4815504745e97ca3ac2f40c72b951e1044
   languageName: node
   linkType: hard
 
@@ -760,16 +760,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unused-imports@npm:^4.1.4":
-  version: 4.1.4
-  resolution: "eslint-plugin-unused-imports@npm:4.1.4"
+"eslint-plugin-unused-imports@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "eslint-plugin-unused-imports@npm:4.2.0"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
     eslint: ^9.0.0 || ^8.0.0
   peerDependenciesMeta:
     "@typescript-eslint/eslint-plugin":
       optional: true
-  checksum: 10c0/3899f64b0e8b23fa6b81e2754fc10f93d8741e051d70390a8100ca39af7878bde8625f234b76111af69562ef2512104b52c3703e986ccb3ac9adc07911896acf
+  checksum: 10c0/b6293323670dda64b0b5931ace1ab45f731e399e87da591c208da09c6bf89a84591b160b8e15e3b47f8f1f662dc80306368a60c09f833de0f6f1dbd97c247949
   languageName: node
   linkType: hard
 
@@ -1570,11 +1570,11 @@ __metadata:
   resolution: "pgadmin4@workspace:."
   dependencies:
     axios: "npm:^1.11.0"
-    electron: "npm:37.2.6"
+    electron: "npm:37.3.0"
     electron-context-menu: "npm:^4.1.0"
     electron-store: "npm:^10.1.0"
     eslint: "npm:^9.33.0"
-    eslint-plugin-unused-imports: "npm:^4.1.4"
+    eslint-plugin-unused-imports: "npm:^4.2.0"
   languageName: unknown
   linkType: soft
 
@@ -1837,9 +1837,9 @@ __metadata:
   linkType: hard
 
 "uint8array-extras@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "uint8array-extras@npm:1.4.0"
-  checksum: 10c0/eaffd3388634b7e5e1496073b878dd19136043137d3e7e0d2a453e37f566a5a551e640819e1a6596c6df9b9d1f7b70884cc29db6a357bdd424811f3598d504dd
+  version: 1.4.1
+  resolution: "uint8array-extras@npm:1.4.1"
+  checksum: 10c0/28419bd94bc43ea013054d0fcdc2ab14f944c178861039bf2997d09e114f4114fd83aeecbee3b57b33cdf21a51808e45638635d8af10336caea005b1b269f919
   languageName: node
   linkType: hard
 

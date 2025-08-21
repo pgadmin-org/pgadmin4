@@ -12,9 +12,9 @@
   },
   "packageManager": "yarn@4.9.2",
   "devDependencies": {
-    "electron": "37.2.6",
+    "electron": "37.3.0",
     "eslint": "^9.33.0",
-    "eslint-plugin-unused-imports": "^4.1.4"
+    "eslint-plugin-unused-imports": "^4.2.0"
   },
   "dependencies": {
     "axios": "^1.11.0",
