@@ -140,8 +140,6 @@ _build_runtime() {
     fi
 
     ELECTRON_VERSION="$(npm info electron version)"
-    # Can't use the latest as it is not compatible with few OS versions.
-    ELECTRON_VERSION="35.4.0"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
