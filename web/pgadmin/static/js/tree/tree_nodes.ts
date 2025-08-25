@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import * as BrowserFS from 'browserfs';
 import url_for from 'sources/url_for';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
@@ -129,10 +128,9 @@ export class ManageTreeNodes {
       }
     }
 
-    const Path = BrowserFS.BFSRequire('path');
     for (const idx in treeData) {
       const _node: any = treeData[idx];
-      const _pathl = Path.join(_path, _node.id);
+      const _pathl = unix.join(_path, _node.id);
       await self.addNode(temp_tree_path, _pathl, _node);
     }
     if (node.children.length > 0) return node.children;
