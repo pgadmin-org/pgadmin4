@@ -4862,15 +4862,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:^2.1.4":
-  version: 2.6.4
-  resolution: "async@npm:2.6.4"
-  dependencies:
-    lodash: "npm:^4.17.14"
-  checksum: 10c0/0ebb3273ef96513389520adc88e0d3c45e523d03653cc9b66f5c46f4239444294899bfd13d2b569e7dbfde7da2235c35cf5fd3ece9524f935d41bbe4efccdad0
-  languageName: node
-  linkType: hard
-
 "async@npm:^3.2.6":
   version: 3.2.6
   resolution: "async@npm:3.2.6"
@@ -5224,18 +5215,6 @@ __metadata:
   dependencies:
     resolve: "npm:^1.17.0"
   checksum: 10c0/06c43adf3cb1939825ab9a4ac355b23272820ee421a20d04f62e0dabd9ea305e497b97f3ac027f87d53c366483aafe8673bbe1aaa5e41cd69eeafa65ac5fda6e
-  languageName: node
-  linkType: hard
-
-"browserfs@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "browserfs@npm:1.4.3"
-  dependencies:
-    async: "npm:^2.1.4"
-    pako: "npm:^1.0.4"
-  bin:
-    make_xhrfs_index: ./dist/scripts/make_xhrfs_index.js
-  checksum: 10c0/46545966bdd89331dc307bf08ced530412de3277067e90abcc606c915de40073c4673f8dd3ef77e42291b65c640ca27a7123d7b532c2606791b5869ca8c3c36f
   languageName: node
   linkType: hard
 
@@ -10081,7 +10060,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4, lodash@npm:4.*, lodash@npm:^4.14.1, lodash@npm:^4.17.10, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:4, lodash@npm:4.*, lodash@npm:^4.14.1, lodash@npm:^4.17.10, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -11141,7 +11120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^1.0.0, pako@npm:^1.0.4, pako@npm:~1.0.5":
+"pako@npm:^1.0.0, pako@npm:~1.0.5":
   version: 1.0.11
   resolution: "pako@npm:1.0.11"
   checksum: 10c0/86dd99d8b34c3930345b8bbeb5e1cd8a05f608eeb40967b293f72fe469d0e9c88b783a8777e4cc7dc7c91ce54c5e93d88ff4b4f060e6ff18408fd21030d9ffbe
@@ -12911,7 +12890,6 @@ __metadata:
     babelify: "npm:~10.0.0"
     bignumber.js: "npm:^9.2.0"
     brace: "npm:^0.11.1"
-    browserfs: "npm:^1.4.3"
     browserify: "npm:^17.0.0"
     buffer: "npm:^6.0.3"
     chart.js: "npm:^4.4.7"
