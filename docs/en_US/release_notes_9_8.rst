@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #8891 <https://github.com/pgadmin-org/pgadmin4/issues/8891>`_ -  Allow user to configure security related gunicorn parameters.
   | `Issue #9093 <https://github.com/pgadmin-org/pgadmin4/issues/9093>`_ -  Change the default pgAdmin theme to System.
 
 Housekeeping
@@ -30,3 +31,4 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9090 <https://github.com/pgadmin-org/pgadmin4/issues/9090>`_ -  Pin Paramiko to version 3.5.1 to fix the DSSKey error introduced in the latest release.

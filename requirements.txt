@@ -39,6 +39,7 @@ jsonformatter~=0.3.4
 keyring==25.*
 ldap3==2.*
 libgravatar==1.0.*
+paramiko==3.5.1
 passlib==1.*
 psutil==7.0.*
 psycopg[c]==3.2.9
