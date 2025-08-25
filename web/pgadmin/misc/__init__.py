@@ -80,7 +80,7 @@ class MiscModule(PgAdminModule):
 
         self.preference.register(
             'user_interface', 'theme',
-            gettext("Theme"), 'options', 'light',
+            gettext("Theme"), 'options', 'system',
             category_label=PREF_LABEL_USER_INTERFACE,
             options=theme_options,
             control_props={

@@ -20,10 +20,12 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #9093 <https://github.com/pgadmin-org/pgadmin4/issues/9093>`_ -  Change the default pgAdmin theme to System.
 
 Housekeeping
 ************
 
+  | `Issue #7448 <https://github.com/pgadmin-org/pgadmin4/issues/7448>`_ -  Remove usage of BrowserFS as it is deprecated.
 
 Bug fixes
 *********
