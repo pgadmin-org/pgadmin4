@@ -17,6 +17,7 @@ Create Date: 2025-07-15 12:27:48.780562
 """
 from alembic import op
 from sqlalchemy.orm.session import Session
+from sqlalchemy import update
 from pgadmin.model import Preferences, ModulePreference, PreferenceCategory,\
     UserPreference
 from pgadmin.browser import register_editor_preferences
@@ -85,14 +86,12 @@ def upgrade():
                 pref_map[pref.id] = new_pref.id
 
     for key, val in pref_map.items():
-        record_to_update = session.query(UserPreference).filter_by(
-            pid=key).first()
-        if record_to_update:
-            record_to_update.pid = val
+        stmt = update(UserPreference).where(UserPreference.pid == key).\
+            values(pid=val)
+        session.execute(stmt)
 
     # Delete the old preferences and categories
-    session.query(Preferences).filter(Preferences.name.in_(prefs),
-                                      Preferences.cid.in_(category_ids)
+    session.query(Preferences).filter(Preferences.cid.in_(category_ids)
                                       ).delete(synchronize_session=False)
 
     session.query(PreferenceCategory).filter(
