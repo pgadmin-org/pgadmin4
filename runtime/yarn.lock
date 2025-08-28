@@ -216,11 +216,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^22.7.7":
-  version: 22.17.2
-  resolution: "@types/node@npm:22.17.2"
+  version: 22.18.0
+  resolution: "@types/node@npm:22.18.0"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/23cd13aa35da6322a6d66cf4b3a45dbd40764ba726ab8681960270156c3abba776dd8dc173250c467f708d40612ecd725755d7659b775b513904680d5205eaff
+  checksum: 10c0/02cce4493eee8408e66e76fcad164f33c0600ed0854ad08e5519a76a06402da5b589b278cf71bc975c9e014f2668bdf758bc3be7fed63bdbfd0900495372797c
   languageName: node
   linkType: hard
 
@@ -797,7 +797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.33.0":
+"eslint@npm:^9.34.0":
   version: 9.34.0
   resolution: "eslint@npm:9.34.0"
   dependencies:
@@ -948,9 +948,9 @@ __metadata:
   linkType: hard
 
 "fast-uri@npm:^3.0.1":
-  version: 3.0.6
-  resolution: "fast-uri@npm:3.0.6"
-  checksum: 10c0/74a513c2af0584448aee71ce56005185f81239eab7a2343110e5bad50c39ad4fb19c5a6f99783ead1cac7ccaf3461a6034fda89fffa2b30b6d99b9f21c2f9d29
+  version: 3.1.0
+  resolution: "fast-uri@npm:3.1.0"
+  checksum: 10c0/44364adca566f70f40d1e9b772c923138d47efeac2ae9732a872baafd77061f26b097ba2f68f0892885ad177becd065520412b8ffeec34b16c99433c5b9e2de7
   languageName: node
   linkType: hard
 
@@ -1573,7 +1573,7 @@ __metadata:
     electron: "npm:37.3.1"
     electron-context-menu: "npm:^4.1.0"
     electron-store: "npm:^10.1.0"
-    eslint: "npm:^9.33.0"
+    eslint: "npm:^9.34.0"
     eslint-plugin-unused-imports: "npm:^4.2.0"
   languageName: unknown
   linkType: soft
