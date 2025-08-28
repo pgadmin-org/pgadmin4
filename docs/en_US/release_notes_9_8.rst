@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #6396 <https://github.com/pgadmin-org/pgadmin4/issues/6396>`_ -  Add menu items for truncating foreign tables.
+  | `Issue #7928 <https://github.com/pgadmin-org/pgadmin4/issues/7928>`_ -  Added Debian Trixie as a supported platform for pgAdmin.
   | `Issue #8891 <https://github.com/pgadmin-org/pgadmin4/issues/8891>`_ -  Allow user to configure security related gunicorn parameters.
   | `Issue #9093 <https://github.com/pgadmin-org/pgadmin4/issues/9093>`_ -  Change the default pgAdmin theme to System.
 
