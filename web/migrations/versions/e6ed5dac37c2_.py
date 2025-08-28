@@ -15,6 +15,7 @@ Revises: e24b1c4def17
 Create Date: 2025-07-15 12:27:48.780562
 
 """
+import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm.session import Session
 from pgadmin.model import Preferences, ModulePreference, PreferenceCategory,\
@@ -84,15 +85,21 @@ def upgrade():
             if pref.name == new_pref.name:
                 pref_map[pref.id] = new_pref.id
 
+    # get metadata from current connection
+    meta = sa.MetaData()
+    # define table representation
+    meta.reflect(op.get_bind(), only=('user_preferences',))
+    user_pref_table = sa.Table('user_preferences', meta)
+
+    # Update the user preferences with new preference ids
     for key, val in pref_map.items():
-        record_to_update = session.query(UserPreference).filter_by(
-            pid=key).first()
-        if record_to_update:
-            record_to_update.pid = val
+        op.execute(
+            user_pref_table.update().where(
+                user_pref_table.c.pid == key).values(pid=val)
+        )
 
     # Delete the old preferences and categories
-    session.query(Preferences).filter(Preferences.name.in_(prefs),
-                                      Preferences.cid.in_(category_ids)
+    session.query(Preferences).filter(Preferences.cid.in_(category_ids)
                                       ).delete(synchronize_session=False)
 
     session.query(PreferenceCategory).filter(
