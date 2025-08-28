@@ -12,6 +12,7 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import ForeignTableSchema from './foreign_table.ui';
 import _ from 'lodash';
 import Notify from '../../../../../../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../../../../../../static/js/api_instance';
 
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign_table', ['pgadmin.tables.js/enable_disable_triggers',
@@ -73,6 +74,21 @@ define('pgadmin.node.foreign_table', ['pgadmin.tables.js/enable_disable_triggers
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
           data: {action: 'create', check: false}, enable: 'canCreate',
         },{
+          name: 'truncate_foreign_table', node: 'foreign_table', module: this,
+          applies: ['object', 'context'], callback: 'truncate_foreign_table',
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
+          enable : 'canCreate',
+        },{
+          name: 'truncate_foreign_table_cascade', node: 'foreign_table', module: this,
+          applies: ['object', 'context'], callback: 'truncate_foreign_table_cascade',
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
+          enable : 'canCreate',
+        },{
+          name: 'truncate_foreign_table_identity', node: 'foreign_table', module: this,
+          applies: ['object', 'context'], callback: 'truncate_foreign_table_identity',
+          category: gettext('Truncate'), priority: 3, label: gettext('Truncate Restart Identity'),
+          enable : 'canCreate',
+        },{
           // To enable/disable all triggers for the table
           name: 'enable_all_triggers', node: 'foreign_table', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
@@ -110,6 +126,56 @@ define('pgadmin.node.foreign_table', ['pgadmin.tables.js/enable_disable_triggers
             Notify,
             this.generate_url.bind(this),
             args
+          );
+        },
+        /* Truncate foreign table */
+        truncate_foreign_table: function(args) {
+          let params = {'cascade': false };
+          this.callbacks.truncate.apply(this, [args, params]);
+        },
+        /* Truncate foreign table with cascade */
+        truncate_foreign_table_cascade: function(args) {
+          let params = {'cascade': true };
+          this.callbacks.truncate.apply(this, [args, params]);
+        },
+        /* Truncate foreign table with identity */
+        truncate_foreign_table_identity: function(args) {
+          let params = {'identity': true };
+          this.callbacks.truncate.apply(this, [args, params]);
+        },
+        truncate: function(args, params) {
+          let input = args || {},
+            obj = this,
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i  ? t.itemData(i) : undefined;
+
+          if (!d)
+            return false;
+
+          pgBrowser.notifier.confirm(
+            gettext('Truncate Foreign Table'),
+            gettext('Are you sure you want to truncate foreign table <b>%s</b>?', d.label),
+            function () {
+              let data = d;
+              getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
+                .then(({data: res})=>{
+                  if (res.success == 1) {
+                    pgBrowser.notifier.success(res.info);
+                    t.removeIcon(i);
+                    data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
+                    t.addIcon(i, {icon: data.icon});
+                    t.updateAndReselectNode(i, data);
+                  }
+                  if (res.success == 2) {
+                    pgBrowser.notifier.error(res.info);
+                  }
+                })
+                .catch((error)=>{
+                  pgBrowser.notifier.pgRespErrorNotify(error);
+                  t.refresh(i);
+                });
+            }, function() {/*This is intentional (SonarQube)*/}
           );
         },
       },

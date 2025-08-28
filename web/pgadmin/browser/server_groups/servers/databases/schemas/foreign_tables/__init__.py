@@ -37,6 +37,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     columns import utils as column_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     triggers import utils as trigger_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    utils import BaseTableView
 
 
 class ForeignTableModule(SchemaChildModule):
@@ -102,7 +104,7 @@ class ForeignTableModule(SchemaChildModule):
 blueprint = ForeignTableModule(__name__)
 
 
-class ForeignTableView(PGChildNodeView, DataTypeReader,
+class ForeignTableView(BaseTableView, DataTypeReader,
                        SchemaDiffObjectCompare):
     """
     class ForeignTableView(PGChildNodeView)
@@ -187,6 +189,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
     * compare(**kwargs):
       - This function will compare the foreign table nodes from two different
         schemas.
+
+    * truncate(gid, sid, scid, tid):
+      - This function will truncate foreign table object
     """
 
     node_type = blueprint.node_type
@@ -211,6 +216,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             {'get': 'list', 'post': 'create', 'delete': 'delete'}
         ],
         'delete': [{'delete': 'delete'}, {'delete': 'delete'}],
+        'truncate': [{'put': 'truncate'}],
         'children': [{'get': 'children'}],
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
@@ -408,6 +414,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # on the server version.
             self.template_path = \
                 self.BASE_TEMPLATE_PATH.format(self.manager.version)
+
+            self.table_template_path = compile_template_path(
+                'tables/sql', self.manager.version)
 
             self.foreign_table_column_template_path = compile_template_path(
                 'foreign_table_columns/sql', self.manager.version)
@@ -881,6 +890,39 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     **other_node_info
                 )
             )
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    @check_precondition
+    def truncate(self, gid, sid, did, scid, foid):
+        """
+        This function will truncate the foreign table.
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           foid: Foreign Table ID
+        """
+
+        try:
+            SQL = render_template(
+                "/".join([self.template_path, self._PROPERTIES_SQL]),
+                did=did, scid=scid, foid=foid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+            )
+            status, res = self.conn.execute_dict(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            if len(res['rows']) == 0:
+                return gone(gettext(self.not_found_error_msg()))
+
+            return super().truncate(
+                gid, sid, did, scid, foid, res
+            )
+
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
