@@ -32,7 +32,7 @@ if [ "${PGADMIN_PLATFORM_TYPE}" == "" ]; then
         fi
     else
         echo "Failed to detect the platform. This may mean you're running on a Linux distribution that isn't supported by pgAdmin."
-        echo "Please set the PGADMIN_PLATFORM_TYPE environment variable to one of 'redhat' or 'debian' and try again."
+        echo "Please set the PGADMIN_PLATFORM_TYPE environment variable to one of 'redhat', 'debian' or 'suse' and try again."
         exit 1
     fi
 else
@@ -58,7 +58,7 @@ case ${PLATFORM_TYPE} in
         ;;
 
     *)
-        echo "Invalid value for the PGADMIN_PLATFORM_TYPE environment variable. Please set it to one of 'redhat' or 'debian' and try again."
+        echo "Invalid value for the PGADMIN_PLATFORM_TYPE environment variable. Please set it to one of 'redhat', 'debian' or 'suse' and try again."
         exit 1
         ;;
 esac
