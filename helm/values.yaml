@@ -1,0 +1,140 @@
+global:
+  imageRegistry: ""
+  defaultStorageClass: "" 
+  imagePullSecrets: []
+  compatibility:
+    openshift:
+      adaptSecurityContext: auto
+
+fullname: pgadmin4
+
+image:
+  registry: docker.io
+  repository: dpage/pgadmin4
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+commonLabels:
+  app: pgadmin4
+commonAnnotations: {}
+
+extraDeploy: []
+
+replicas: 1
+
+containerPort: 8080
+disablePostfix: true
+auth:
+  email: admin@pgadmin.org
+  password: ""
+  existingSecret: ""
+  passwordKey: password
+extraEnvVars: []
+# - name: PGADMIN_CONFIG_LOGIN_BANNER
+#   value: '"Welcome to pgAdmin4 :)"'
+extraVolumes: []
+extraVolumeMounts: []
+
+serverDefinitions:
+  enabled: false
+  servers: {}
+#   "1":
+#     Name: Minimally Defined Server
+#     Group: Servers
+#     Port: 5432
+#     Username: postgres
+#     Host: myHost
+#     MaintenanceDB: postgres
+#     ConnectionParameters:
+#       sslmode: prefer
+#       connect_timeout: 10
+
+preferences:
+  enabled: false
+  data: {}
+#   misc:user_interface:theme: dark
+#   file_manager:options:file_upload_size: 500
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 250m
+    memory: 512Mi
+
+persistence:
+  enabled: false
+  size: 1Gi
+  storageClass: ""
+  accessModes: ["ReadWriteMany"]
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+  loadBalancerIP: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  automountServiceAccountToken: false
+
+ingress:
+  enabled: false
+  hostname: pgadmin4.local
+  annotations: {}
+
+startupProbe:
+  enabled: false
+  httpGet:
+    path: /misc/ping
+    port: http
+  initialDelaySeconds: null
+  periodSeconds: null
+  timeoutSeconds: null
+  failureThreshold: null
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /misc/ping
+    port: http
+  initialDelaySeconds: null
+  periodSeconds: null
+  timeoutSeconds: null
+  failureThreshold: null
+
+livenessProbe:
+  enabled: false
+  httpGet:
+    path: /misc/ping
+    port: http
+  initialDelaySeconds: null
+  periodSeconds: null
+  timeoutSeconds: null
+  failureThreshold: null
+
+podSecurityContext:
+  enabled: true
+  fsGroupChangePolicy: Always
+  sysctls: []
+  supplementalGroups: []
+  fsGroup: 1001
+
+containerSecurityContext:
+  enabled: true
+  seLinuxOptions: {}
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  privileged: false
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  seccompProfile:
+    type: RuntimeDefault
+  windowsOptions:
+    hostProcess: false
