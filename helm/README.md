@@ -2,9 +2,11 @@
 
 Its been a struggle to deploy pgadmin4 container on different restricted k8s distributions for example openshift, gke or vanilla k8s pod security standards.  
 This helm chart follows best security measures and practices and compatible with all different security contexts and restrictions.  
-Further explanation about the security implementation can be read here: https://korenp1.github.io
+Further explanation about the security implementation can be read here: https://korenp1.github.io  
 
-It is known that not all yaml fields are customizable or tpl'able, open for contributions.
+The helm chart also implements most pgadmin4 features, for instance predefined server definitions or preferences.
+
+The majority of features and values are covered in the helm chart but always can be more customable or tpl'able, open for contributions.
 
 ### Installation Example: 
 `helm install mypgadmin4 oci://docker.io/dpage/pgadmin4-helm --set ingress.enabled=true`
