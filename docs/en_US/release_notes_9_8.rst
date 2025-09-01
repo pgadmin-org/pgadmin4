@@ -35,4 +35,5 @@ Bug fixes
 
   | `Issue #9090 <https://github.com/pgadmin-org/pgadmin4/issues/9090>`_ -  Pin Paramiko to version 3.5.1 to fix the DSSKey error introduced in the latest release.
   | `Issue #9095 <https://github.com/pgadmin-org/pgadmin4/issues/9095>`_ -  Fixed an issue where pgAdmin config migration was failing while upgrading to v9.7.
+  | `Issue #9114 <https://github.com/pgadmin-org/pgadmin4/issues/9114>`_ -  Fixed Cross-Origin Opener Policy (COOP) vulnerability in the OAuth 2.0 authentication flow (CVE-2025-9636).
   | `Issue #9116 <https://github.com/pgadmin-org/pgadmin4/issues/9116>`_ -  Fixed an issue where editor shortcuts fail when using Option key combinations on macOS, due to macOS treating Option+Key as a different key input.
