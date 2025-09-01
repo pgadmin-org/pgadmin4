@@ -18,7 +18,7 @@
 
 # Application version number components
 APP_RELEASE = 9
-APP_REVISION = 7
+APP_REVISION = 8
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -27,7 +27,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 90700
+APP_VERSION_INT = 90800
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
