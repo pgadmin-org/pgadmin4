@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 17.2
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 17.5
 
 
 New features
@@ -37,3 +37,4 @@ Bug fixes
   | `Issue #9095 <https://github.com/pgadmin-org/pgadmin4/issues/9095>`_ -  Fixed an issue where pgAdmin config migration was failing while upgrading to v9.7.
   | `Issue #9114 <https://github.com/pgadmin-org/pgadmin4/issues/9114>`_ -  Fixed Cross-Origin Opener Policy (COOP) vulnerability in the OAuth 2.0 authentication flow (CVE-2025-9636).
   | `Issue #9116 <https://github.com/pgadmin-org/pgadmin4/issues/9116>`_ -  Fixed an issue where editor shortcuts fail when using Option key combinations on macOS, due to macOS treating Option+Key as a different key input.
+  | `Issue #9125 <https://github.com/pgadmin-org/pgadmin4/issues/9125>`_ -  Fixed an issue where the pgAdmin configuration database wasn't being created on a fresh install when an external database was used for the configuration.

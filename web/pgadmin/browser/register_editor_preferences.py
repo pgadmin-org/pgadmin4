@@ -18,16 +18,10 @@ LOWER_CASE_STR = gettext('Lower case')
 PRESERVE_STR = gettext('Preserve')
 
 
-def register_editor_preferences(self, migration_gettext=None):
+def register_editor_preferences(self):
     """
     Registers the editor preferences
     """
-    # migration_getttext is used once in case of migration
-    # In that case gettext will be used from migration_gettext
-    # instead of flask_babel gettext.
-    from flask_babel import gettext
-    if migration_gettext is not None:
-        gettext = migration_gettext
 
     self.editor_preference = Preferences(
         'editor', gettext('Editor')
