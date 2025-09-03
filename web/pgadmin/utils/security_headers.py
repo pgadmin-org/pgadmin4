@@ -21,6 +21,7 @@ class SecurityHeaders:
             'X_CONTENT_TYPE_OPTIONS': 'X-Content-Type-Options',
             'X_XSS_PROTECTION': 'X-XSS-Protection',
             'WEB_SERVER': 'Server',
+            'CROSS_ORIGIN_OPENER_POLICY': 'Cross-Origin-Opener-Policy'
         }
 
         # X-Frame-Options for security

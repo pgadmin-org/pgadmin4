@@ -129,6 +129,17 @@ WEB_SERVER = 'Python'
 # See https://tools.ietf.org/html/rfc7034 for more info.
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
+
+# The Cross-Origin-Opener-Policy allows a website to control whether
+# a new top-level document, opened using Window.open() or by navigating
+# to a new page, is opened in the same browsing context group (BCG)
+# or in a new browsing context group.
+# Set to 'unsafe-none', 'same-origin-allow-popups', 'same-origin',
+# or 'noopener-allow-popups'
+
+CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+
+
 # The Content-Security-Policy header allows you to restrict how resources
 # such as JavaScript, CSS, or pretty much anything that the browser loads.
 # see https://content-security-policy.com/#source_list for more info
