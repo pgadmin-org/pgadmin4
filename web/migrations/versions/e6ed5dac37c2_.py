@@ -18,9 +18,7 @@ Create Date: 2025-07-15 12:27:48.780562
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm.session import Session
-from pgadmin.model import Preferences, ModulePreference, PreferenceCategory,\
-    UserPreference
-from pgadmin.browser import register_editor_preferences
+from pgadmin.model import Preferences, ModulePreference, PreferenceCategory
 
 
 # revision identifiers, used by Alembic.
@@ -30,21 +28,11 @@ branch_labels = None
 depends_on = None
 
 
-class Migration:
-    """
-    This is a placeholder class for registering editor preferences
-    """
-    def __init__(self, value=None):
-        self.editor_preference = value
-
-
 def upgrade():
-    migration_obj = Migration()
-    register_editor_preferences(migration_obj, migration_gettext=lambda x: x)
 
     session = Session(bind=op.get_bind())
-    pref_categories = ['keyboard_shortcuts', 'editor', 'Editor']
-    new_categories = ['keyboard_shortcuts', 'sql_formatting', 'options']
+    old_pref_categories = ['keyboard_shortcuts', 'editor', 'Editor']
+    new_pref_categories = ['keyboard_shortcuts', 'sql_formatting', 'options']
     prefs = ['find', 'replace', 'goto_line_col',
              'comment', 'format_sql', 'plain_editor_mode',
              'code_folding', 'wrap_code', 'insert_pair_brackets',
@@ -54,14 +42,76 @@ def upgrade():
              'data_type_case', 'spaces_around_operators', 'tab_size',
              'use_spaces', 'expression_width', 'logical_operator_new_line',
              'lines_between_queries', 'new_line_before_semicolon']
+    preference_map = {
+        'keyboard_shortcuts': [
+            'find', 'replace', 'goto_line_col', 'comment', 'format_sql'
+        ],
+        'options': [
+            'plain_editor_mode', 'code_folding', 'cursor_blink_rate',
+            'wrap_code', 'insert_pair_brackets', 'highlight_selection_matches',
+            'brace_matching', 'sql_font_size', 'sql_font_ligatures',
+            'sql_font_family', 'indent_new_line'
+        ],
+        'sql_formatting': [
+            'keyword_case', 'identifier_case', 'function_case',
+            'data_type_case', 'spaces_around_operators', 'tab_size',
+            'use_spaces', 'expression_width', 'logical_operator_new_line',
+            'lines_between_queries', 'new_line_before_semicolon'
+        ]
+    }
     category_ids = []
     new_ids = []
     pref_map = {}
 
+    # get metadata from current connection
+    meta = sa.MetaData()
+    # define table representation
+    meta.reflect(op.get_bind(), only=('user_preferences', 'module_preference',
+                                      'preference_category', 'preferences'))
+    module_pref_table = sa.Table('module_preference', meta)
+
+    module_id = session.query(ModulePreference).filter_by(
+        name='editor').first()
+
+    # Insert the 'editor' module in module_preference table
+    if not module_id:
+        op.execute(
+            module_pref_table.insert().values(name='editor')
+        )
+
+        module_id = session.query(ModulePreference).filter_by(
+            name='editor').first().id
+
+        # Insert the new preference categories in preference_category table
+        pref_category_table = sa.Table('preference_category', meta)
+
+        op.bulk_insert(pref_category_table, [
+            {'mid': module_id, 'name': 'keyboard_shortcuts'},
+            {'mid': module_id, 'name': 'sql_formatting'},
+            {'mid': module_id, 'name': 'options'},
+        ])
+
+        # Insert the new preferences in preferences table
+        prefs_table = sa.Table('preferences', meta)
+
+        for category in new_pref_categories:
+            category_id = session.query(PreferenceCategory
+                                        ).filter_by(name=category,
+                                                    mid=module_id).first().id
+
+            op.bulk_insert(
+                prefs_table,
+                [
+                    {'cid':category_id, 'name': pref_name}
+                    for pref_name in preference_map[category]
+                ]
+            )
+
+    # Migrate the preferences from 'sqleditor' module to 'editor'
     category_data = session.query(ModulePreference, PreferenceCategory,).join(
         PreferenceCategory).filter(
             ModulePreference.name == 'sqleditor',
-            PreferenceCategory.name.in_(pref_categories)).all()
+            PreferenceCategory.name.in_(old_pref_categories)).all()
 
     for module_data, pref_cat in category_data:
         category_ids.append(pref_cat.id)
@@ -69,7 +119,7 @@ def upgrade():
     new_data = session.query(ModulePreference, PreferenceCategory).join(
         PreferenceCategory).filter(
             ModulePreference.name == 'editor', PreferenceCategory.name.in_(
-                new_categories)).all()
+                new_pref_categories)).all()
 
     for module_data, pref_cat in new_data:
         new_ids.append(pref_cat.id)
@@ -85,10 +135,6 @@ def upgrade():
             if pref.name == new_pref.name:
                 pref_map[pref.id] = new_pref.id
 
-    # get metadata from current connection
-    meta = sa.MetaData()
-    # define table representation
-    meta.reflect(op.get_bind(), only=('user_preferences',))
     user_pref_table = sa.Table('user_preferences', meta)
 
     # Update the user preferences with new preference ids

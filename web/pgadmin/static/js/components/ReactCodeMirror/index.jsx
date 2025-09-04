@@ -25,7 +25,7 @@ import CustomPropTypes from '../../custom_prop_types';
 import FindDialog from './components/FindDialog';
 import GotoDialog from './components/GotoDialog';
 import usePreferences from '../../../../preferences/static/js/store';
-import { toCodeMirrorKey } from '../../utils';
+import { parseKeyEventValue, parseShortcutValue } from '../../utils';
 
 const Root = styled('div')(() => ({
   position: 'relative',
@@ -103,39 +103,46 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     }
   };
 
-  const finalCustomKeyMap = useMemo(()=>[{
-    key: toCodeMirrorKey(editorPrefs.find), run: () => {
-      setShowFind(prevVal => [true, false, !prevVal[2]]);
+  // We're not using CodeMirror keymap and using any instead
+  // because on Mac, the alt key combination creates special
+  // chars and https://github.com/codemirror/view/commit/3cea8dba19845fe75bea4eae756c6103694f49f3
+  const customShortcuts = {
+    [parseShortcutValue(editorPrefs.find, true)]: () => {
+      setTimeout(()=>{
+        setShowFind(prevVal => [true, false, !prevVal[2]]);
+      }, 0);
     },
-    preventDefault: true,
-    stopPropagation: true,
-  }, {
-    key: toCodeMirrorKey(editorPrefs.replace), run: () => {
-      setShowFind(prevVal => [true, true, !prevVal[2]]);
+    [parseShortcutValue(editorPrefs.replace, true)]: () => {
+      setTimeout(()=>{
+        setShowFind(prevVal => [true, true, !prevVal[2]]);
+      }, 0);
     },
-    preventDefault: true,
-    stopPropagation: true,
-  }, {
-    key: toCodeMirrorKey(editorPrefs.goto_line_col), run: () => {
+    [parseShortcutValue(editorPrefs.goto_line_col, true)]: () => {
       setShowGoto(true);
     },
-    preventDefault: true,
-    stopPropagation: true,
-  }, {
-    key: toCodeMirrorKey(editorPrefs.comment), run: () => {
+    [parseShortcutValue(editorPrefs.comment, true)]: () => {
       editor.current?.execCommand('toggleComment');
     },
-    preventDefault: true,
-    stopPropagation: true,
-  },{
-    key: toCodeMirrorKey(editorPrefs.format_sql), run: formatSQL,
-    preventDefault: true,
-    stopPropagation: true,
-  },{
-    key: toCodeMirrorKey(preferences.auto_complete), run: startCompletion,
-    preventDefault: true,
-  },
-  ...customKeyMap], [customKeyMap]);
+    [parseShortcutValue(editorPrefs.format_sql, true)]: formatSQL,
+    [parseShortcutValue(preferences.auto_complete, true)]: startCompletion,
+  };
+
+  const finalCustomKeyMap = useMemo(() => [
+    {
+      any: (view, e) => {
+        const eventStr = parseKeyEventValue(e, true);
+        const callback = customShortcuts[eventStr];
+        if(callback) {
+          e.preventDefault();
+          e.stopPropagation();
+          callback(view);
+          return true;
+        }
+        return false;
+      }
+    },
+    ...customKeyMap
+  ], [customKeyMap]);
 
   const closeFind = () => {
     setShowFind([false, false, false]);
