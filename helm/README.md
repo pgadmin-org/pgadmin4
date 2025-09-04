@@ -4,7 +4,7 @@ Its been a struggle to deploy pgadmin4 container on different restricted k8s dis
 This helm chart follows best security measures and practices and compatible with all different security contexts and restrictions.  
 Further explanation about the security implementation can be read here: https://korenp1.github.io  
 
-The helm chart also implements most pgadmin4 features, for instance predefined server definitions or preferences.
+The helm chart also implements most pgadmin4 features, for instance, config_local.py, predefined server definitions or preferences.
 
 The majority of features and values are covered in the helm chart but always can be more customable or tpl'able, open for contributions.
 
