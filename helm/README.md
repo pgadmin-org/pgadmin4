@@ -14,7 +14,7 @@ The majority of features and values are covered in the helm chart but always can
 ### Important Values
 | Value | Description | Default |
 | --------- | ----------- | ------- |
-| `containerPort` | Internal PgAdmin4 Port | `8080` |
+| `containerPort` | Internal PgAdmin4 Port | `5050` |
 | `image.registry` | Image registry | `"docker.io"` |
 | `image.repository` | Image Repository | `"dpage/pgadmin4"` |
 | `image.tag` | Image tag (If empty, will use .Chart.AppVersion) | `""` |
@@ -22,9 +22,12 @@ The majority of features and values are covered in the helm chart but always can
 | `auth.password` | Admin password (If both auth.password and auth.existingSecret are empty, the password will be randomly generated) | `""` |
 | `auth.existingSecret` | Existing secret name for admin password (If both auth.password and auth.existingSecret are empty, the password will be randomly generated) | `""` |
 | `extraEnvVars` | Extra environment variables | `[]` |
-| `serverDefinitions.enabled` | Do predefined server definitions should be created | `false` |
-| `serverDefinitions.servers` | Server definitions to load | `{}` |
-| `preferences.enabled` | Do preferences should be initialized | `false` |
+| `config_local.enabled` | Whether to mount config_local.py file | `false` |
+| `config_local.data` | config_local.py configuration content | `""` |
+| `config_local.existingSecret` | Existing secret name containing config_local.py file | `""` |
+| `serverDefinitions.enabled` | Whether to mount servers.json | `false` |
+| `serverDefinitions.data` | Server definitions to import | `{}` |
+| `preferences.enabled` | Whether to mount preferences.json | `false` |
 | `preferences.data` | Preferences to load | `{}` |
 | `resources.*` | Allocated requests and limits resources | `{"requests": {...}, "limits": {...}}` |
 | `persistence.enabled` | PVC resource creation | `false` |

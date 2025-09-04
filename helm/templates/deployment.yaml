@@ -31,11 +31,14 @@ spec:
         {{- if not .Values.existingSecret }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.preferences.enabled }}
-        checksum/configmap-preferences: {{ include (print $.Template.BasePath "/configmap-preferences.yaml") . | sha256sum }}
+        {{- if and .Values.config_local.enabled (empty .Values.config_local.existingSecret) }}
+        checksum/secret-config: {{ include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum }}
         {{- end }}
         {{- if .Values.serverDefinitions.enabled }}
         checksum/configmap-server-definitions: {{ include (print $.Template.BasePath "/configmap-serverDefinitions.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.preferences.enabled }}
+        checksum/configmap-preferences: {{ include (print $.Template.BasePath "/configmap-preferences.yaml") . | sha256sum }}
         {{- end }}
       {{- end }}
     spec:
@@ -54,6 +57,14 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ template "pgadmin4.fullname" . }}
+      {{- end }}
+      {{- if .Values.config_local.enabled }}
+        - name: config-local
+          secret:
+            secretName: {{ default (printf "%s-config" (include "pgadmin4.fullname" .)) .Values.config_local.existingSecret }}
+            items:
+              - key: {{ .Values.config_local.configKey }}
+                path: {{ .Values.config_local.configKey }}
       {{- end }}
       {{- if .Values.serverDefinitions.enabled }}
         - name: server-definitions
@@ -127,6 +138,11 @@ spec:
             - name: empty-dir
               mountPath: /var/log/pgadmin
               subPath: logs
+              {{- if .Values.config_local.enabled }}
+            - name: config-local
+              mountPath: /pgadmin4/config_local.py
+              subPath: {{ .Values.config_local.configKey }}
+              {{- end }}
               {{- if .Values.serverDefinitions.enabled }}
             - name: server-definitions
               mountPath: /pgadmin4/servers.json
