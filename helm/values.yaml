@@ -5,6 +5,8 @@ global:
   compatibility:
     openshift:
       adaptSecurityContext: auto
+    appArmor:
+      enabled: false
 
 fullname: pgadmin4
 
@@ -68,7 +70,7 @@ persistence:
   enabled: false
   size: 1Gi
   storageClass: ""
-  accessModes: ["ReadWriteMany"]
+  accessModes: ["ReadWriteOnce"]
 
 service:
   type: ClusterIP
@@ -135,6 +137,8 @@ containerSecurityContext:
   capabilities:
     drop: ["ALL"]
   seccompProfile:
+    type: RuntimeDefault
+  appArmorProfile:
     type: RuntimeDefault
   windowsOptions:
     hostProcess: false

@@ -178,6 +178,10 @@ spec:
               drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
+            {{- if .Values.global.compatibility.appArmor.enabled }}
+            appArmorProfile:
+              type: RuntimeDefault
+            {{- end }}
             windowsOptions:
               hostProcess: false
         - name: unset-python3-cli-net-cap
@@ -208,5 +212,9 @@ spec:
               drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
+            {{- if .Values.global.compatibility.appArmor.enabled }}
+            appArmorProfile:
+              type: RuntimeDefault
+            {{- end }}
             windowsOptions:
               hostProcess: false
