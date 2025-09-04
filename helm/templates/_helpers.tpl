@@ -21,5 +21,8 @@
 {{- if $securityContext.privileged }}
   {{- $securityContext = omit $securityContext "capabilities" -}}
 {{- end -}}
+{{- if not .context.Values.global.compatibility.appArmor.enabled }}
+  {{- $securityContext = omit $securityContext "appArmorProfile" -}}
+{{- end -}}
 {{- $securityContext | toYaml -}}
 {{- end -}}
