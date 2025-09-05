@@ -536,7 +536,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             enum_list = []
             for row in rset['rows']:
                 properties_list.append(row['enumlabel'])
-                enum_list.append({'label': row['enumlabel']})
+                enum_list.append({'label': row['enumlabel'],
+                                  'old_label': row['enumlabel']})
 
             # Adding both results in ouput
             res['enum_list'] = ', '.join(properties_list)
@@ -1226,6 +1227,10 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         for key, val in req.items():
             if key in ['composite', 'enum', 'seclabels', 'typacl']:
                 data[key] = json.loads(val)
+            elif key in ['typreceive', 'typsend', 'typmodin', 'typmodout',
+                         'typanalyze', 'typsubscript','typstorage'] and \
+                    val == 'null':
+                data[key] = json.loads(val)
             else:
                 data[key] = val
 
@@ -1338,6 +1343,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if tid is None:
             return self._get_new_sql(data, is_sql)
+
+        data = self._convert_for_sql(data)
 
         for key in ['added', 'changed', 'deleted']:
             if key in data.get('typacl', []):

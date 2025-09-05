@@ -46,6 +46,18 @@
       "expected_msql_file": "alter_enum_type_acl_description.msql"
     },
     {
+      "type": "alter",
+      "name": "alter ENUM type and rename ENUM",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql_id",
+      "data": {
+        "enum": {"changed": [{"label": "a_new", "old_label":  "a"}, {"label": "d_new", "old_label":  "d"}]}
+      },
+      "expected_sql_file": "alter_enum_type_rename_enum.sql",
+      "expected_msql_file": "alter_enum_type_rename_enum.msql"
+    },
+    {
       "type": "delete",
       "name": "Drop ENUM type",
       "endpoint": "NODE-type.obj_id",

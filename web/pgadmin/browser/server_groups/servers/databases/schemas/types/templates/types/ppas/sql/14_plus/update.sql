@@ -107,14 +107,15 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% endif %}
 {#======================================#}
 {### The sql given below will update External type ###}
-{% if (data.typreceive is defined and data.typreceive != o_data.typreceive) or (data.typsend is defined and data.typsend != o_data.typsend) or (data.typmodin is defined and data.typmodin != o_data.typmodin) or (data.typmodout is defined and data.typmodout != o_data.typmodout) or (data.typanalyze is defined and data.typanalyze != o_data.typanalyze) or (data.typstorage is defined and data.typstorage != o_data.typstorage)%}
+{% if (data.typreceive is defined and data.typreceive != o_data.typreceive) or (data.typsend is defined and data.typsend != o_data.typsend) or (data.typmodin is defined and data.typmodin != o_data.typmodin) or (data.typmodout is defined and data.typmodout != o_data.typmodout) or (data.typanalyze is defined and data.typanalyze != o_data.typanalyze) or (data.typsubscript is defined and data.typsubscript != o_data.typsubscript) or (data.typstorage is defined and data.typstorage != o_data.typstorage)%}
 {% set ns = namespace(add_comma=false) %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }} SET (
     {% if data.typreceive is defined %}RECEIVE = {{data.typreceive}}{% set ns.add_comma = true%}{% endif %}{% if data.typsend is defined %}{% if ns.add_comma %},
     {% endif %}SEND = {{data.typsend}}{% set ns.add_comma = true%}{% endif %}{% if data.typmodin is defined %}{% if ns.add_comma %},
     {% endif %}TYPMOD_IN = {{data.typmodin}}{% set ns.add_comma = true%}{% endif %}{% if data.typmodout is defined %}{% if ns.add_comma %},
     {% endif %}TYPMOD_OUT = {{data.typmodout}}{% set ns.add_comma = true%}{% endif %}{% if data.typanalyze is defined %}{% if ns.add_comma %},
-    {% endif %}ANALYZE = {{data.typanalyze}}{% set ns.add_comma = true%}{% endif %}{% if data.typstorage is defined %}{% if ns.add_comma %},
+    {% endif %}ANALYZE = {{data.typanalyze}}{% set ns.add_comma = true%}{% endif %}{% if data.typsubscript is defined %}{% if ns.add_comma %},
+    {% endif %}SUBSCRIPT = {{data.typsubscript}}{% set ns.add_comma = true%}{% endif %}{% if data.typstorage is defined %}{% if ns.add_comma %},
     {% endif %}STORAGE =  {{data.typstorage}}{% endif %}
 
 );

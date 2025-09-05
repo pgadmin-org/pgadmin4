@@ -1,0 +1,5 @@
+CREATE TYPE public."range_type_$%{}[]()&*^!@""'`\/#" AS RANGE
+(
+    SUBTYPE=bool,
+    MULTIRANGE_TYPE_NAME = multirange_type
+);

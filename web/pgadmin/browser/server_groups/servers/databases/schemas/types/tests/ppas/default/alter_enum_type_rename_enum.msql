@@ -1,0 +1,4 @@
+ALTER TYPE public."enum_type_$%{}[]()&*^!@""'`\/#"
+    RENAME VALUE 'a' TO 'a_new';
+ALTER TYPE public."enum_type_$%{}[]()&*^!@""'`\/#"
+    RENAME VALUE 'd' TO 'd_new';

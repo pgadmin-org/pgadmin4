@@ -20,6 +20,8 @@ SELECT t.oid, t.typname AS name,
         WHERE pr.oid = t.typmodout::oid) AS typmodout,
 	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
         WHERE pr.oid = t.typanalyze::oid) AS typanalyze,
+	(SELECT pg_catalog.concat(nspname, '.', proname,'') FROM pg_proc pr JOIN pg_namespace nsp ON pr.pronamespace = nsp.oid
+        WHERE pr.oid = t.typsubscript::oid) AS typsubscript,
     pg_catalog.format_type(t.oid, null) AS alias,
     pg_catalog.pg_get_userbyid(t.typowner) as typeowner, e.typname as element,
     description, ct.oid AS taboid,
