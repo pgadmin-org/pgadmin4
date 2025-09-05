@@ -192,7 +192,6 @@ function isVisible(state, type) {
 }
 
 class EnumerationSchema extends BaseUISchema {
-
   constructor() {
     super({
       oid: undefined,
@@ -201,18 +200,14 @@ class EnumerationSchema extends BaseUISchema {
   }
 
   get idAttribute() {
-    return 'oid';
+    return 'old_label';
   }
 
   get baseFields() {
-    let obj = this;
     return [
       {
         id: 'label', label: gettext('Label'),
         type: 'text', cell: 'text', minWidth: 620,
-        editable: (state) => {
-          return _.isUndefined(obj.isNew) ? true : obj.isNew(state);
-        }
       }
     ];
   }
@@ -395,6 +390,15 @@ class RangeSchema extends BaseUISchema {
           }
         };
       },
+    }, {
+      id: 'rngmultirangetype', label: gettext('Multirange type name'),
+      cell: 'string', group: gettext('Range Type'),
+      type: 'text', mode: ['properties', 'create', 'edit'],
+      disabled: () => obj.inCatalog(),
+      readonly: function (state) {
+        return !obj.isNew(state);
+      },
+      min_version: 140000,
     }
     ];
   }
@@ -562,9 +566,6 @@ class ExternalSchema extends BaseUISchema {
       group: gettext('Optional-1'),
       mode: ['properties', 'create', 'edit'],
       disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'typsend', label: gettext('Send function'),
@@ -586,9 +587,6 @@ class ExternalSchema extends BaseUISchema {
       },
       mode: ['properties', 'create', 'edit'],
       disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'typmodin', label: gettext('Typmod in function'),
@@ -623,9 +621,6 @@ class ExternalSchema extends BaseUISchema {
       },
       mode: ['properties', 'create', 'edit'], group: gettext('Optional-1'),
       disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'typmodout', label: gettext('Typmod out function'),
@@ -661,21 +656,28 @@ class ExternalSchema extends BaseUISchema {
       },
       mode: ['properties', 'create', 'edit'],
       disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
+    },{
+      id: 'typanalyze', label: gettext('Analyze function'),
+      group: gettext('Optional-1'),
+      type: (state) => {
+        return obj.getFunctionType(state);
       },
+      mode: ['properties', 'create','edit'],
+      disabled: () => obj.inCatalog(),
+      controlProps: { allowClear: true, placeholder: '', width: '100%' },
+    },{
+      id: 'typsubscript', label: gettext('Subscript function'),
+      group: gettext('Optional-1'), min_version: 140000,
+      type: (state) => {
+        return obj.getFunctionType(state);
+      },
+      mode: ['properties', 'create','edit'],
+      disabled: () => obj.inCatalog(),
+      controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'typlen', label: gettext('Internal length'),
       cell: 'integer', group: gettext('Optional-1'),
       type: 'int', mode: ['properties', 'create', 'edit'],
-      disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
-    },{
-      id: 'variable', label: gettext('Variable?'), cell: 'switch',
-      group: gettext('Optional-1'), type: 'switch',
-      mode: ['create','edit'],
       disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
@@ -688,18 +690,6 @@ class ExternalSchema extends BaseUISchema {
       readonly: function (state) {
         return !obj.isNew(state);
       },
-    },{
-      id: 'typanalyze', label: gettext('Analyze function'),
-      group: gettext('Optional-1'),
-      type: (state) => {
-        return obj.getFunctionType(state);
-      },
-      mode: ['properties', 'create','edit'],
-      disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
-      controlProps: { allowClear: true, placeholder: '', width: '100%' },
     },{
       id: 'typcategory', label: gettext('Category type'),
       cell: 'string',
@@ -792,9 +782,6 @@ class ExternalSchema extends BaseUISchema {
       type: 'select', mode: ['properties', 'create', 'edit'],
       group: gettext('Optional-2'), cell: 'string',
       disabled: () => obj.inCatalog(),
-      readonly: function (state) {
-        return !obj.isNew(state);
-      },
       controlProps: { allowClear: true, placeholder: '', width: '100%' },
       options: obj.fieldOptions.typStorageOptions,
     },{
@@ -1258,14 +1245,13 @@ export default class TypeSchema extends BaseUISchema {
     },
     {
       id: 'typtype', label: gettext('Type'),
-      mode: ['create','edit'], group: gettext('Definition'),
-      type: 'select',
+      mode: ['create','edit', 'properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
       readonly: function (state) {
         return !obj.isNew(state);
       },
       controlProps: { allowClear: false },
-      options: function() {
+      type: (state)=>{
         let typetype = [
           {label: gettext('Composite'), value: 'c'},
           {label: gettext('Enumeration'), value: 'e'},
@@ -1273,6 +1259,13 @@ export default class TypeSchema extends BaseUISchema {
           {label: gettext('Range'), value: 'r'},
           {label: gettext('Shell'), value: 'p'},
         ];
+
+        if (!obj.isNew(state)) {
+          typetype.push(
+            {label: gettext('Multirange'), value: 'm'}
+          );
+        }
+
         if (obj.fieldOptions.server_info.server_type === 'ppas' &&
         obj.fieldOptions.server_info.version >= 90500){
           typetype.push(
@@ -1280,7 +1273,12 @@ export default class TypeSchema extends BaseUISchema {
             {label: gettext('Varying Array'), value: 'V'}
           );
         }
-        return typetype;
+
+        return {
+          type: 'select',
+          options: typetype,
+          optionsReloadBasis: state.typtype,
+        };
       },
     },
     {
@@ -1305,6 +1303,7 @@ export default class TypeSchema extends BaseUISchema {
       schema: new EnumerationSchema(),
       type: 'collection',
       group: gettext('Definition'), mode: ['edit', 'create'],
+      uniqueCol: ['label'],
       canAddRow: function(state) {
         return !obj.isInvalidColumnAdded(state);
       },
@@ -1385,6 +1384,12 @@ export default class TypeSchema extends BaseUISchema {
     },
     {
       id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
+      type: 'text', mode: ['properties'], group: gettext('Definition'),
+      disabled: () => obj.inCatalog(),
+      visible: (state) => isVisible(state, 'r'),
+    },
+    {
+      id: 'rngmultirangetype', label: gettext('Multirange type name'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
       visible: (state) => isVisible(state, 'r'),
