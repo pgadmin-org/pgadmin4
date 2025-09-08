@@ -12958,7 +12958,7 @@ __metadata:
     snapsvg-cjs: "npm:^0.0.6"
     socket.io-client: "npm:^4.5.0"
     split.js: "npm:^1.5.10"
-    sql-formatter: "npm:^15.6.2"
+    sql-formatter: "npm:^15.6.8"
     style-loader: "npm:^4.0.0"
     stylis: "npm:^4.3.4"
     svgo: "npm:^4.0.0"
@@ -13616,15 +13616,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sql-formatter@npm:^15.6.2":
-  version: 15.6.6
-  resolution: "sql-formatter@npm:15.6.6"
+"sql-formatter@npm:^15.6.8":
+  version: 15.6.8
+  resolution: "sql-formatter@npm:15.6.8"
   dependencies:
     argparse: "npm:^2.0.1"
     nearley: "npm:^2.20.1"
   bin:
     sql-formatter: bin/sql-formatter-cli.cjs
-  checksum: 10c0/32fc38574d9aa41adeb74f94d36f21259682617ed430311c39f44849c8049f8d1ec4b25a30c6ab51d933aaeb2f12ab22470b6536a6a0feb77b8d5414dfcb18e7
+  checksum: 10c0/bf7bbe3d097c8643832303aae50cd30847cd122c5463b5ae4bcc9d7a0b4385c65dbb60886757e52874d2c0a05b48c30a189d35775d33e0a7697dca5d5f2b6c4e
   languageName: node
   linkType: hard
 
