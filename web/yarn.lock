@@ -7079,6 +7079,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es-toolkit@npm:^1.39.6":
+  version: 1.39.10
+  resolution: "es-toolkit@npm:1.39.10"
+  dependenciesMeta:
+    "@trivago/prettier-plugin-sort-imports@4.3.0":
+      unplugged: true
+    prettier-plugin-sort-re-exports@0.0.1:
+      unplugged: true
+  checksum: 10c0/244dd6be25bc8c7af9f085f5b9aae08169eca760fc7d4735020f8f711b6a572e0bf205400326fa85a7924e20747d315756dba1b3a5f0d2887231374ec3651a98
+  languageName: node
+  linkType: hard
+
 "escalade@npm:^3.1.1, escalade@npm:^3.2.0":
   version: 3.2.0
   resolution: "escalade@npm:3.2.0"
@@ -12374,14 +12386,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resize-detector@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "react-resize-detector@npm:12.1.0"
+"react-resize-detector@npm:^12.3.0":
+  version: 12.3.0
+  resolution: "react-resize-detector@npm:12.3.0"
   dependencies:
-    lodash: "npm:^4.17.21"
+    es-toolkit: "npm:^1.39.6"
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
-  checksum: 10c0/9c40d1a3c98afee4334ea83733a4514e74082c3503492b0a2cc194969546fac618212f21195848e931bc16527073cf2d7136caedaaff28227d2b309f45a9a74f
+  checksum: 10c0/58075af4f7842debc97934bee15947d7ac1db1af8849832258fc986482487de97489d80b15edea6658260edbe826ac8f8acf6c2df2a28e527c8f63a4bff3436f
   languageName: node
   linkType: hard
 
@@ -12947,7 +12959,7 @@ __metadata:
     react-frame-component: "npm:^5.2.6"
     react-leaflet: "npm:^4.2.1"
     react-new-window: "npm:^1.0.1"
-    react-resize-detector: "npm:^12.1.0"
+    react-resize-detector: "npm:^12.3.0"
     react-rnd: "npm:^10.5.1"
     react-select: "npm:^5.7.2"
     react-timer-hook: "npm:^4.0.1"
