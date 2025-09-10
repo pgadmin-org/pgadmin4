@@ -482,7 +482,7 @@ export class Tree {
     let item;
     try {
       item = TreeNode.prototype.isPrototypeOf(identifier) ? identifier : this.findNode(identifier.path);
-    } catch (error) {
+    } catch {
       // It is possible that the requested path is not present in the tree anymore
       item = null;
     }

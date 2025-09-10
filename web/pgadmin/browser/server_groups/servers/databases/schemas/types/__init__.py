@@ -258,7 +258,6 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data['rngmultirangetype'] is not None and
                 data['rngmultirangetype'] != '')
 
-
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
