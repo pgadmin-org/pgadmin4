@@ -249,6 +249,16 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         return wrap
 
+    def has_dependent_type(self, data):
+        """
+        This function is used to check the type has dependent
+        on another type.
+        """
+        return ('rngmultirangetype' in data and
+                data['rngmultirangetype'] is not None and
+                data['rngmultirangetype'] != '')
+
+
     @check_precondition
     def list(self, gid, sid, did, scid):
         """
@@ -317,7 +327,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             rset['rows'][0]['oid'],
             scid,
             rset['rows'][0]['name'],
-            icon=self.icon_str % self.node_type
+            icon=self.icon_str % self.node_type,
+            has_dependent=self.has_dependent_type(rset['rows'][0])
         )
 
         return make_json_response(
@@ -359,7 +370,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     scid,
                     row['name'],
                     icon=self.icon_str % self.node_type,
-                    description=row['description']
+                    description=row['description'],
+                    has_dependent=self.has_dependent_type(row)
                 ))
 
         return make_json_response(
@@ -1064,7 +1076,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     tid,
                     scid,
                     data['name'],
-                    icon="icon-type"
+                    icon="icon-type",
+                    has_dependent=self.has_dependent_type(data)
                 )
             )
         except Exception as e:
@@ -1087,7 +1100,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             request.data
         )
         try:
-            SQL, name = self.get_sql(gid, sid, data, scid, tid)
+            SQL, name, has_dependent = self.get_sql(gid, sid, data, scid, tid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -1115,6 +1128,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     scid,
                     name,
                     icon=self.icon_str % self.node_type,
+                    has_dependent=has_dependent,
                     **other_node_info
                 )
             )
@@ -1235,7 +1249,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data[key] = val
 
         try:
-            sql, _ = self.get_sql(gid, sid, data, scid, tid)
+            sql, _, _ = self.get_sql(gid, sid, data, scid, tid)
             # Most probably this is due to error
             if not isinstance(sql, str):
                 return sql
@@ -1418,7 +1432,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             data=data, o_data=old_data, conn=self.conn
         )
 
-        return SQL, old_data['name']
+        return (SQL, data['name'] if 'name' in data else old_data['name'],
+                self.has_dependent_type(old_data))
 
     @check_precondition
     def sql(self, gid, sid, did, scid, tid, **kwargs):
@@ -1485,7 +1500,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if data[k] == '-':
                 data[k] = None
 
-        SQL, _ = self.get_sql(gid, sid, data, scid, tid=None, is_sql=True)
+        SQL, _, _ = self.get_sql(gid, sid, data, scid, tid=None, is_sql=True)
         # Most probably this is due to error
         if not isinstance(SQL, str):
             return SQL
@@ -1595,8 +1610,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if data:
             if target_schema:
                 data['schema'] = target_schema
-            sql, _ = self.get_sql(gid=gid, sid=sid, scid=scid, data=data,
-                                  tid=oid)
+            sql, _, _ = self.get_sql(gid=gid, sid=sid, scid=scid, data=data,
+                                     tid=oid)
         else:
             if drop_sql:
                 sql = self.delete(gid=gid, sid=sid, did=did,

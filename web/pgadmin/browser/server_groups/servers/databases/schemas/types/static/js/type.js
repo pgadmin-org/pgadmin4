@@ -42,6 +42,9 @@ define('pgadmin.node.type', [
       hasSQL: true,
       hasDepends: true,
       width: pgBrowser.stdW.md + 'px',
+      refreshParent: function(node) {
+        return node?._metadata?.data?.has_dependent;
+      },
       Init: function() {
         /* Avoid multiple registration of menus */
         if (this.initialized)
