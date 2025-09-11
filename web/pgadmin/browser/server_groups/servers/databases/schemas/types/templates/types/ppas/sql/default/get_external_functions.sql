@@ -1,7 +1,7 @@
 {### Input/Output/Send/Receive/Analyze function list also append into TypModeIN/TypModOUT ###}
 {% if extfunc %}
 SELECT proname, nspname,
-    CASE WHEN (length(nspname::text) > 0 AND nspname != 'public') and length(proname::text) > 0  THEN
+    CASE WHEN length(nspname::text) > 0 and length(proname::text) > 0  THEN
         pg_catalog.concat(pg_catalog.quote_ident(nspname), '.', pg_catalog.quote_ident(proname))
     WHEN length(proname::text) > 0 THEN
         pg_catalog.quote_ident(proname)

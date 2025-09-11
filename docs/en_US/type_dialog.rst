@@ -109,17 +109,17 @@ On the *Optional-1* tab:
   to select a type_modifier_output_function. It is allowed to omit the
   type_modifier_output_function, in which case the default display format is the
   stored typmod integer value enclosed in parentheses.
+* Use the drop-down listbox next to the optional *Analyze function* field to
+  select a function for performing type-specific statistics collection for
+  columns of the data type.
+* Use the drop-down listbox next to the optional *Subscript function* field to
+  select a function for allows the data type to be subscripted in SQL commands.
 * Use the optional *Internal length* to specify a value for internal
   representation.
-* Move the *Variable?* switch to specify the internal representation is of
-  variable length (VARIABLE). The default is a fixed length positive integer.
 * Specify a default value in the optional *Default* field in cases where a
   column of the data type defaults to something other than the null value.
   Specify the default with the DEFAULT key word. (A default can be overridden
   by an explicit DEFAULT clause attached to a particular column.)
-* Use the drop-down listbox next to the optional *Analyze function* field to
-  select a function for performing type-specific statistics collection for
-  columns of the data type.
 * Use the drop-down listbox next to the optional *Category type* field to help
   control which implicit cast will be applied in ambiguous situations.
 * Move the *Preferred?* switch to *Yes* to specify the selected category type is
@@ -162,6 +162,9 @@ disabled.
   values to a canonical form.
 * Use the drop-down listbox next to *Sub-type diff function* to select a
   user-defined subtype_diff function.
+* Specify the optional *Multirange type name* parameter to specifies the
+  name of the corresponding multirange type. If not specified, this name is
+  chosen automatically.
 
 If you select *Shell* in the *Type* field, the *Definition* tab displays the
 *Shell* panel:
