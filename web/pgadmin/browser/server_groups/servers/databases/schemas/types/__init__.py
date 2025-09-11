@@ -1348,7 +1348,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                         self._CREATE_SQL]),
                               data=data, conn=self.conn, is_sql=is_sql)
 
-        return SQL, data['name']
+        return SQL, data['name'], False
 
     def get_sql(self, gid, sid, data, scid, tid=None, is_sql=False):
         """
