@@ -48,7 +48,7 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
           oauth2Config.map((oauth)=>{
             return (
               <SecurityButton key={oauth.OAUTH2_NAME} name="oauth2_button" value={oauth.OAUTH2_NAME} style={{backgroundColor: oauth.OAUTH2_BUTTON_COLOR}}>
-                <Icon className={'fab '+oauth.OAUTH2_ICON} style={{ fontSize: '1.5em', marginRight: '8px' }} />{gettext('Login with %s', oauth.OAUTH2_DISPLAY_NAME)}
+                <Icon className={'fa '+oauth.OAUTH2_ICON} style={{ fontSize: '1.5em', marginRight: '8px' }} />{gettext('Login with %s', oauth.OAUTH2_DISPLAY_NAME)}
               </SecurityButton>
             );
           })
