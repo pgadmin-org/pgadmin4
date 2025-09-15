@@ -13,6 +13,7 @@ import { InputText, ToggleCheckButton } from './FormComponents';
 import PropTypes from 'prop-types';
 import { isMac } from '../keyboard_shortcuts';
 import gettext from 'sources/gettext';
+import { getCode } from '@fluentui/keyboard-key';
 
 export default function KeyboardShortcuts({ value, onChange, fields, name }) {
   const keyCid = `key-${name}`;
@@ -29,7 +30,7 @@ export default function KeyboardShortcuts({ value, onChange, fields, name }) {
     }
     newVal.key = {
       char: _val,
-      key_code: e.keyCode
+      key_code: getCode(e),
     };
     onChange(newVal);
   };

@@ -102,7 +102,6 @@ function handlePaste(e) {
   checkTrojanSource(copiedText, true);
 }
 
-
 function insertTabWithUnit({ state, dispatch }) {
   if (state.selection.ranges.some(r => !r.empty))
     return indentMore({ state, dispatch });

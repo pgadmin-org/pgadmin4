@@ -1967,6 +1967,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fluentui/keyboard-key@npm:^0.4.23":
+  version: 0.4.23
+  resolution: "@fluentui/keyboard-key@npm:0.4.23"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: 10c0/f4c159f40632387e227efc2d7f1a0b4ec088da2c2cc669bc0598b4dd3c00953dbc554d665961fd57bbb9952a5081ab7f39b2c67d4cfc46d0a2a70d54fc60def2
+  languageName: node
+  linkType: hard
+
 "@fortawesome/fontawesome-common-types@npm:6.7.2":
   version: 6.7.2
   resolution: "@fortawesome/fontawesome-common-types@npm:6.7.2"
@@ -12861,6 +12870,7 @@ __metadata:
     "@emotion/sheet": "npm:^1.0.1"
     "@emotion/styled": "npm:^11.11.0"
     "@emotion/utils": "npm:^1.0.0"
+    "@fluentui/keyboard-key": "npm:^0.4.23"
     "@fortawesome/fontawesome-free": "npm:latest"
     "@mui/icons-material": "npm:^7.3.2"
     "@mui/material": "npm:^7.3.2"
@@ -14351,7 +14361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.3, tslib@npm:^2.4.0, tslib@npm:^2.7.0":
+"tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.7.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62

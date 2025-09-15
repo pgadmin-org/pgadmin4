@@ -15,7 +15,7 @@ import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import gettext from 'sources/gettext';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
-import { checkTrojanSource, isShortcutValue, parseKeyEventValue, parseShortcutValue, shortcutCharToCode } from '../../../../../../static/js/utils';
+import { checkTrojanSource, isShortcutValue, parseKeyEventValue, parseShortcutValue } from '../../../../../../static/js/utils';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import ConfirmPromotionContent from '../dialogs/ConfirmPromotionContent';
 import ConfirmExecuteQueryContent from '../dialogs/ConfirmExecuteQueryContent';
@@ -296,7 +296,6 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       // this function creates a key object from the shortcut preference
       let key = {
         keyCode: pref.key.key_code,
-        code: shortcutCharToCode(pref.key.char),
         metaKey: false,
         ctrlKey: pref.control,
         shiftKey: pref.shift,
