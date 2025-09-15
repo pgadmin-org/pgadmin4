@@ -652,6 +652,14 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             if len(res['rows']) == 0:
                 return gone(self._NOT_FOUND_PUB_INFORMATION)
 
+            if self.manager.version >= 150000:
+                res['rows'][0]['two_phase'] = \
+                    self.two_phase_mapping[res['rows'][0]['two_phase']]
+
+            if self.manager.version >= 160000:
+                res['rows'][0]['streaming'] = \
+                    self.streaming_mapping[res['rows'][0]['streaming']]
+
             old_data = res['rows'][0]
 
             data, old_data = self.get_required_details(data, old_data)

@@ -30,6 +30,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       password_required:true,
       run_as_owner:false,
       origin:'any',
+      failover:false,
       copy_data_after_refresh:false,
       sync:'off',
       refresh_pub: false,
@@ -419,9 +420,18 @@ export default class SubscriptionSchema extends BaseUISchema{
       helpMessageMode: ['edit', 'create'],
     },
     {
-      id: 'two_phase', label: gettext('Two phase?'),
-      type: 'switch', mode: ['create', 'properties'],
+      id: 'two_phase',
+      label: gettext('Two phase?'),
+      type: 'switch',
       group: gettext('With'),
+      mode: (() => {
+        if (obj.version >= 180000) {
+          return ['create', 'edit', 'properties'];
+        } else if (obj.version >= 150000 && obj.version < 180000) {
+          return ['create', 'properties'];
+        }
+        return [];
+      })(),
       min_version: 150000,
       helpMessage: gettext('Specifies whether two-phase commit is enabled for this subscription.'),
       helpMessageMode: ['edit', 'create'],
@@ -463,6 +473,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       ],
       min_version: 160000,
       helpMessage: gettext('Specifies whether the subscription will request the publisher to only send changes that do not have an origin or send changes regardless of origin. Setting origin to none means that the subscription will request the publisher to only send changes that do not have an origin. Setting origin to any means that the publisher sends changes regardless of their origin.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'failover', label: gettext('Failover'),
+      type: 'switch', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      min_version: 170000,
+      helpMessage: gettext('Specifies whether the replication slots associated with the subscription are enabled to be synced to the standbys so that logical replication can be resumed from the new primary after failover'),
       helpMessageMode: ['edit', 'create'],
     },
     ];
