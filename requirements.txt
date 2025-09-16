@@ -34,7 +34,7 @@ Flask-WTF==1.2.*
 Flask==3.1.*
 google-api-python-client==2.*
 google-auth-oauthlib==1.2.2
-gssapi==1.9.*
+gssapi==1.10.*
 jsonformatter~=0.3.4
 keyring==25.*
 ldap3==2.*
@@ -42,7 +42,7 @@ libgravatar==1.0.*
 paramiko==3.5.1
 passlib==1.*
 psutil==7.0.*
-psycopg[c]==3.2.9
+psycopg[c]==3.2.10
 pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*
@@ -52,7 +52,7 @@ setuptools==80.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
-typer[all]==0.16.*
+typer[all]==0.17.*
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.5.*;  python_version > '3.9'
 user-agents==2.2.0

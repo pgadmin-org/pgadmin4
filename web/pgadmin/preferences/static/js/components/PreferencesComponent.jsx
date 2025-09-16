@@ -182,8 +182,8 @@ export default function PreferencesComponent({panelId}) {
       });
 
       valuesVersionRef.current = new Date().getTime();
-      setPrefTreeData(treeNodesData);
       setInitValues(values);
+      setPrefTreeData(treeNodesData);
       setSelectedItem(selectedItem || treeNodesData[0]?.children[0]);
       prefSchema.current = new PreferencesSchema(values, schemaFields);
       setLoaderText(null);
@@ -241,6 +241,7 @@ export default function PreferencesComponent({panelId}) {
 
     if (_data.length === 0) {
       // No changes to save, just close modal
+      setLoaderText(null);
       return;
     }
 
@@ -309,7 +310,7 @@ export default function PreferencesComponent({panelId}) {
           }
         }
         preferencesStore.cache(); // Refresh preferences cache
-        fetchPreferences();
+        await fetchPreferences();
       } catch (err) {
         pgAdmin.Browser.notifier.alert(err.response?.data || err.message || gettext('Failed to save preferences.'));
       }
@@ -328,7 +329,7 @@ export default function PreferencesComponent({panelId}) {
         gettext('Cancel')
       );
     } else {
-      saveData();
+      await saveData();
     }
   };
 

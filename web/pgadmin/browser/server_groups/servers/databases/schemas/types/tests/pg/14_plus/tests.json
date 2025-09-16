@@ -40,7 +40,7 @@
       "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
-        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"enterprisedb","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
       "expected_sql_file": "alter_enum_type_acl_description.sql",
       "expected_msql_file": "alter_enum_type_acl_description.msql"
@@ -65,45 +65,7 @@
       "data": {}
     },
 
-    {
-      "type": "create",
-      "name": "Create Nested Table type",
-      "endpoint": "NODE-type.obj",
-      "sql_endpoint": "NODE-type.sql_id",
-      "msql_endpoint": "NODE-type.msql",
-      "data": {
-        "name": "nested_table_type_$%{}[]()&*^!@\"'`\\/#",
-        "is_sys_type":false,
-        "typtype":"N",
-        "schema":"public",
-        "type": "numeric",
-        "tlength": 2,
-        "precision": 1,
-        "typacl":[],
-        "seclabels":[],
-        "description":""
-      },
-      "expected_sql_file": "create_nested_table_type.sql"
-    },
-     {
-      "type": "create",
-      "name": "Create Varray type",
-      "endpoint": "NODE-type.obj",
-      "sql_endpoint": "NODE-type.sql_id",
-      "msql_endpoint": "NODE-type.msql",
-      "data": {
-        "name": "varray_type_$%{}[]()&*^!@\"'`\\/#",
-        "is_sys_type":false,
-        "typtype":"V",
-        "schema":"public",
-        "type": "integer",
-        "maxsize": 10,
-        "typacl":[],
-        "seclabels":[],
-        "description":""
-      },
-      "expected_sql_file": "create_varray_type.sql"
-    },
+
     {
       "type": "create",
       "name": "Create Composite type",
@@ -159,7 +121,7 @@
       "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
-        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"enterprisedb","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
       "expected_sql_file": "alter_composite_type_acl_description.sql",
       "expected_msql_file": "alter_composite_type_acl_description.msql"
@@ -267,7 +229,7 @@
       "msql_endpoint": "NODE-type.msql_id",
       "data": {
         "description":"this is test",
-        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"enterprisedb","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
+        "typacl": {"added": [{"grantee":"PUBLIC","grantor":"postgres","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}]}]}
       },
       "expected_sql_file": "alter_range_type_acl_description.sql",
       "expected_msql_file": "alter_range_type_acl_description.msql"
@@ -283,7 +245,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege_type": "U",
@@ -307,8 +269,8 @@
             "changed": [
               {
                 "grantee": "PUBLIC",
-                "grantor": "enterprisedb",
-                "old_grantee": "enterprisedb",
+                "grantor": "postgres",
+                "old_grantee": "postgres",
                 "privileges": [
                   {
                     "privilege_type": "U",
@@ -322,6 +284,34 @@
       },
       "expected_sql_file": "alter_acl_grantee_change.sql",
       "expected_msql_file": "alter_acl_grantee_change_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop RANGE type",
+      "endpoint": "NODE-type.obj_id",
+      "sql_endpoint": "NODE-type.sql_id",
+      "data": {}
+    },
+    {
+      "type": "create",
+      "name": "Create Multi RANGE type",
+      "endpoint": "NODE-type.obj",
+      "sql_endpoint": "NODE-type.sql_id",
+      "msql_endpoint": "NODE-type.msql",
+      "data": {
+        "name": "range_type_$%{}[]()&*^!@\"'`\\/#",
+        "is_sys_type":false,
+        "typtype":"r",
+        "schema":"public",
+        "composite":[],
+        "enum":[],
+        "typacl":[],
+        "seclabels":[],
+        "typname":"bool",
+        "rngmultirangetype": "multirange_type"
+      },
+      "expected_sql_file": "create_multi_range_type.sql",
+      "expected_msql_file": "create_multi_range_type.msql"
     },
     {
       "type": "delete",

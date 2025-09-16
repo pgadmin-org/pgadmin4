@@ -113,7 +113,7 @@ define('pgadmin.browser.node', [
       if (self.node_initialized)
         return;
       self.node_initialized = true;
-      
+
       pgAdmin.Browser.add_menus([{
         name: 'refresh',
         node: self.type,
@@ -122,7 +122,7 @@ define('pgadmin.browser.node', [
         callback: 'refresh',
         priority: 2,
         label: gettext('Refresh...'),
-        shortcut_preference: ['browser', 'sub_menu_refresh'],        
+        shortcut_preference: ['browser', 'sub_menu_refresh'],
         enable: true,
       }]);
 
@@ -208,7 +208,7 @@ define('pgadmin.browser.node', [
           label: gettext('Query Tool'),
           enable: enable,
           permission: AllPermissionTypes.TOOLS_QUERY_TOOL,
-          shortcut_preference: ['browser', 'sub_menu_query_tool'],        
+          shortcut_preference: ['browser', 'sub_menu_query_tool'],
         }]);
 
         // show search objects same as query tool
@@ -587,6 +587,11 @@ define('pgadmin.browser.node', [
                   }, 10);
                   selectNextNode = false;
                 }
+                if (obj.refreshParent?.(i)) {
+                  obj.callbacks.refresh('refresh', t.parent(i));
+                  return;
+                }
+
                 pgBrowser.removeTreeNode(i, selectNextNode);
               }
               return true;
