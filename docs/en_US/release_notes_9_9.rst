@@ -31,3 +31,5 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9158 <https://github.com/pgadmin-org/pgadmin4/issues/9158>`_ -  Fixed an issue where saving the newly changed preferences was not reflecting on the preferences tab.
+
