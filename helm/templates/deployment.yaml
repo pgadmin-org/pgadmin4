@@ -49,6 +49,7 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       {{- if .Values.podSecurityContext.enabled }}
       securityContext: {{- include "renderSecurityContext" (dict "securityContext" .Values.podSecurityContext "context" .) | nindent 8 }}
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
       {{- end }}
       volumes:
         - name: empty-dir

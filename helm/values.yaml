@@ -27,6 +27,7 @@ replicas: 1
 
 containerPort: 5050
 disablePostfix: true
+enableServiceLinks: false
 auth:
   email: admin@pgadmin.org
   password: ""
