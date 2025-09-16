@@ -30,6 +30,10 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 
     ROWS {{data.prorows}}
 {% endif %}
+{% if data.prosupportfunc %}
+
+    SUPPORT {{ data.prosupportfunc }}
+{% endif -%}
 {% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor %}
