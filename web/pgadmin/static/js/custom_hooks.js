@@ -10,6 +10,7 @@ import React, {useRef, useEffect, useState, useCallback, useLayoutEffect} from '
 import moment from 'moment';
 import { isMac } from './keyboard_shortcuts';
 import { getBrowser } from './utils';
+import { getCode } from '@fluentui/keyboard-key';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {
@@ -185,7 +186,7 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
 
   const matchFound = (shortcut, e)=>{
     if(!shortcut) return false;
-    let keyCode = e.which || e.keyCode;
+    let keyCode = getCode(e);
     const ctrlKey = (isMac() && shortcut.ctrl_is_meta) ? e.metaKey : e.ctrlKey;
 
     return Boolean(shortcut.alt) == e.altKey &&
@@ -193,9 +194,10 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
       Boolean(shortcut.control) == ctrlKey &&
       shortcut.key.key_code == keyCode;
   };
+
   useEffect(()=>{
     let ele = eleRef.current ?? document;
-    const keydownCallback = (e)=>{
+    const dispatch = (e)=>{
       Promise.resolve(0).then(()=>{
         let allListeners = _.filter(shortcutsRef.current, (s)=>matchFound(s.shortcut, e));
         for(const {options} of allListeners) {
@@ -209,9 +211,11 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
         }
       });
     };
-    ele.addEventListener('keydown', keydownCallback);
+    ele.addEventListener('keydown', dispatch);
+    ele.addEventListener('keyup', dispatch);
     return ()=>{
-      ele.removeEventListener('keydown', keydownCallback);
+      ele.removeEventListener('keydown', dispatch);
+      ele.removeEventListener('keyup', dispatch);
     };
   }, [eleRef.current]);
 

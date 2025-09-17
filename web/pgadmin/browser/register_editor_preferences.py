@@ -52,13 +52,13 @@ def register_editor_preferences(self):
         gettext('Replace'),
         'keyboardshortcut',
         {
-            'alt': True,
+            'alt': False,
             'shift': False,
             'control': True,
             'ctrl_is_meta': True,
             'key': {
-                'key_code': 70,
-                'char': 'f'
+                'key_code': 82,
+                'char': 'r'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,

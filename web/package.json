@@ -77,6 +77,7 @@
     "@date-io/core": "^3.0.0",
     "@date-io/date-fns": "3.x",
     "@emotion/sheet": "^1.0.1",
+    "@fluentui/keyboard-key": "^0.4.23",
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",

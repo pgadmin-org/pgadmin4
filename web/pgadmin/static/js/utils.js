@@ -17,8 +17,9 @@ import usePreferences from '../../preferences/static/js/store';
 import pgAdmin from 'sources/pgadmin';
 import { isMac } from './keyboard_shortcuts';
 import { WORKSPACES } from '../../browser/static/js/constants';
+import { getCode } from '@fluentui/keyboard-key';
 
-export function parseShortcutValue(obj, useKeyboardCode=false) {
+export function parseShortcutValue(obj, useCode=false) {
   let shortcut = '';
   if (!obj){
     return null;
@@ -27,11 +28,11 @@ export function parseShortcutValue(obj, useKeyboardCode=false) {
   if (obj.shift) { shortcut += 'shift+'; }
   if (isMac() && obj.ctrl_is_meta) { shortcut += 'meta+'; }
   else if (obj.control) { shortcut += 'ctrl+'; }
-  shortcut += useKeyboardCode ? shortcutCharToCode(obj?.key.char) : obj?.key.char?.toLowerCase();
+  shortcut += useCode ? obj?.key.key_code : obj?.key.char?.toLowerCase();
   return shortcut;
 }
 
-export function parseKeyEventValue(e, useKeyboardCode=false) {
+export function parseKeyEventValue(e, useCode=false) {
   let shortcut = '';
   if(!e) {
     return null;
@@ -40,7 +41,7 @@ export function parseKeyEventValue(e, useKeyboardCode=false) {
   if (e.shiftKey) { shortcut += 'shift+'; }
   if (isMac() && e.metaKey) { shortcut += 'meta+'; }
   else if (e.ctrlKey) { shortcut += 'ctrl+'; }
-  shortcut += useKeyboardCode? e.code : e.key.toLowerCase();
+  shortcut += useCode? getCode(e) : e.key.toLowerCase();
   return shortcut;
 }
 
@@ -48,43 +49,6 @@ export function isShortcutValue(obj) {
   if(!obj) return false;
   return [obj.alt, obj.control, obj?.key, obj?.key?.char].every((k)=>!_.isUndefined(k));
 }
-
-// Map shortcut character to key code
-export function shortcutCharToCode(char) {
-  const punctuationMap = {
-    '`': 'Backquote',
-    '-': 'Minus',
-    '=': 'Equal',
-    '[': 'BracketLeft',
-    ']': 'BracketRight',
-    '\\': 'Backslash',
-    ';': 'Semicolon',
-    '\'': 'Quote',
-    ',': 'Comma',
-    '.': 'Period',
-    '/': 'Slash',
-    ' ': 'Space',
-  };
-
-  const mappedCode = punctuationMap[char.toLowerCase()];
-  if (mappedCode) {
-    return mappedCode;
-  }
-
-  // Fallback for alphanumeric keys (A-Z, 0-9)
-  const isAlphanumeric = /^[a-z0-9]$/i.test(char);
-  if (isAlphanumeric) {
-    if (char.length === 1 && /[a-zA-Z]/.test(char)) {
-      return `Key${char.toUpperCase()}`;
-    }
-    if (char.length === 1 && /[0-9]/.test(char)) {
-      return `Digit${char}`;
-    }
-  }
-
-  return char;
-}
-
 
 export function getEnterKeyHandler(clickHandler) {
   return (e)=>{
