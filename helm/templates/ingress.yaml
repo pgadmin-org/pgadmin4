@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "pgadmin4.fullname" . }}
+  {{- with .Values.commonLabels }}
+  labels: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.ingress.annotations .Values.commonAnnotations }}
+  annotations: {{ merge .Values.ingress.annotations .Values.commonAnnotations | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  - host: {{ tpl .Values.ingress.hostname . }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ template "pgadmin4.fullname" . }}
+            port:
+              name: http
+        path: /
+        pathType: Prefix
+{{- end }}
