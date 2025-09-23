@@ -8,6 +8,10 @@ The helm chart also implements most pgadmin4 features, for instance, config_loca
 
 The majority of features and values are covered in the helm chart but always can be more customable or tpl'able, open for contributions.
 
+### Package && Push
+The chart should dump its version and appVersion in the Chart.yaml file every release and pushed to docker.io/dpage repository.
+`helm package . && helm push pgadmin4-helm-<VERSION>.tgz oci://docker.io/dpage`
+
 ### Installation Example: 
 `helm install mypgadmin4 oci://docker.io/dpage/pgadmin4-helm --set ingress.enabled=true`
 
