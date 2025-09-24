@@ -64,6 +64,7 @@ jobs:
           brew install postgresql@${{ matrix.pgver }}
           echo "/opt/homebrew/opt/postgresql@${{ matrix.pgver }}/bin" >> $GITHUB_PATH
 
+
       - name: Uninstall PostgreSQL if already present on windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
@@ -84,6 +85,14 @@ jobs:
           REM Ignore error 3010 (reboot required)
           IF %ERRORLEVEL% EQU 3010 cmd /c "exit /b 0"
         shell: cmd
+
+      - name: Add pg_config path to PATH
+        shell: pwsh
+        run: |
+          $pgPath = "C:\\PostgreSQL\\${{ matrix.pgver }}\\bin"
+          Write-Output $pgPath
+          Add-Content -Path $env:GITHUB_PATH -Value $pgPath
+          pg_config --version
 
       - name: Create the tablespace directory on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}

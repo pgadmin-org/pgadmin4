@@ -73,6 +73,14 @@ jobs:
           IF %ERRORLEVEL% EQU 3010 cmd /c "exit /b 0"
         shell: cmd
 
+      - name: Add pg_config path to PATH
+        shell: pwsh
+        run: |
+          $pgPath = "C:\\EPAS\\${{ matrix.pgver }}\\bin"
+          Write-Output $pgPath
+          Add-Content -Path $env:GITHUB_PATH -Value $pgPath
+          pg_config --version
+
       - name: Create the tablespace directory on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
