@@ -35,6 +35,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                     "funcowner": "",
                     "pronamespace": 2200,
                     "prorettypename": "character varying",
+                    "dependsonextensions": [],
                     "lanname": "sql",
                     "arguments": [],
                     "prosrc": "select '1'",
@@ -67,7 +68,8 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                     "probin": "$libdir/",
                     "variables": [],
                     "seclabels": [],
-                    "acl": []
+                    "acl": [],
+                    "dependsonextensions": ["non_existing_extension"]
                 },
                 mock_data={
                     "function_name": '_get_sql',
@@ -178,7 +180,6 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
             func_name = "test_function_delete_%s" % str(uuid.uuid4())[1:8]
             function_info = funcs_utils.create_function(
                 self.server, self.db_name, self.schema_name, func_name)
-
             func_id = function_info[0]
             self.test_data['oid'] = func_id
             self.test_data['name'] = func_name
@@ -187,6 +188,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                 self.schema_id) + '/' + str(func_id) + '?' + (
                 urlencode(self.test_data))
         else:
+            self.test_data['dependsonextensions'] = json.dumps(["plpgsql"])
             url = self.url + str(utils.SERVER_GROUP) + '/' + str(
                 self.server_id) + '/' + str(self.db_id) + '/' + str(
                 self.schema_id) + '/?' + (urlencode(self.test_data))
