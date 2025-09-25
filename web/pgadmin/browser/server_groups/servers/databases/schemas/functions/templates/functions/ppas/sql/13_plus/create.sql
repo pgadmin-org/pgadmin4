@@ -31,6 +31,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
     ROWS {{data.prorows}}
 {% endif %}
 {% if data.prosupportfunc %}
+
     SUPPORT {{ data.prosupportfunc }}
 {% endif -%}
 {% if data.variables %}{% for v in data.variables %}
@@ -38,13 +39,10 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor %}
 {% endif %}
 
-{% if data.is_pure_sql %}{{ data.prosrc }}
-{% else %}
 AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral(conn) }}, {{ data.prosrc_c|qtLiteral(conn) }}
 {% else %}
 $BODY${{ data.prosrc }}$BODY${% endif -%};
-{% endif -%}
 {% if data.funcowner %}
 
 ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})

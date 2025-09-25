@@ -70,6 +70,7 @@ describe('FunctionSchema', ()=>{
       getLanguage: [],
       getTypes: [],
       getSupportFunctions: [],
+      extensionsList: [],
     },
     {
       node_info: {
@@ -109,10 +110,6 @@ describe('FunctionSchema', ()=>{
   let schemaObj = createSchemaObj();
   let getInitData = ()=>Promise.resolve({});
 
-
-
-
-
   beforeEach(()=>{
     genericBeforeEach();
   });
@@ -131,6 +128,13 @@ describe('FunctionSchema', ()=>{
 
   it('properties', async ()=>{
     await getPropertiesView(createSchemaObj(), getInitData);
+  });
+
+  it('dependsonextensions field exists', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='dependsonextensions');
+    expect(field).toBeTruthy();
+    expect(field.type).toBe('select');
+    expect(field.controlProps.multiple).toBe(true);
   });
 
   it('proiswindow visible', async ()=>{
@@ -449,7 +453,7 @@ describe('FunctionSchema', ()=>{
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('prosrc_c', null);
   });
-
+  
   it('validate', ()=>{
     let state = {prorettypename: 'char'};
     let setError = jest.fn();

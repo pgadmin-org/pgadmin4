@@ -1,0 +1,2 @@
+ALTER FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
+    NO DEPENDS ON EXTENSION postgres_fdw;

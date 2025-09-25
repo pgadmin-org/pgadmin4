@@ -50,6 +50,15 @@ $BODY${{ data.prosrc }}$BODY${% endif -%};
 ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
     OWNER TO {{ conn|qtIdent(data.funcowner) }};
 {% endif -%}
+
+{% if data.dependsonextensions %}
+{% for ext in data.dependsonextensions %}
+
+ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endfor %}
+{% endif %}
+
 {% if data.acl %}
 {% for p in data.acl %}
 
