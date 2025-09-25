@@ -130,4 +130,20 @@ ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{o_data.proargtype
     SET SCHEMA {{ conn|qtIdent(data.pronamespace) }};
 {% endif -%}
 
+{% set old_exts = (o_data.dependsonextensions or []) | list %}
+{% set new_exts = data.dependsonextensions if 'dependsonextensions' in data else None %}
+
+{% if new_exts is not none and old_exts != new_exts %}
+{% for ext in (old_exts + new_exts) | unique %}
+
+{% if ext in new_exts and ext not in old_exts %}
+ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtypenames }})
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% elif ext in old_exts and ext not in new_exts %}
+ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({{ o_data.proargtypenames }})
+    NO DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endif %}
+{% endfor %}
+{% endif %}
+
 {% endif %}
