@@ -34,7 +34,7 @@
     "cross-env": "^10.0.0",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",
-    "eslint": "^9.35.0",
+    "eslint": "^9.36.0",
     "eslint-plugin-jest": "^29.0.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-unused-imports": "^4.2.0",
@@ -58,7 +58,7 @@
     "svgo-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.12",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.35.0",
+    "typescript-eslint": "^8.44.0",
     "url-loader": "^4.1.1",
     "webfonts-loader": "^8.0.1",
     "webpack": "^5.101.0",
@@ -67,13 +67,13 @@
     "yarn-audit-html": "7.3.2"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.3"
+    "sharp": "^0.34.4"
   },
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-react": "^7.12.13",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/lang-sql": "^6.9.1",
+    "@codemirror/lang-sql": "^6.10.0",
     "@date-io/core": "^3.0.0",
     "@date-io/date-fns": "3.x",
     "@emotion/sheet": "^1.0.1",
@@ -81,7 +81,7 @@
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
-    "@mui/x-date-pickers": "^8.10.0",
+    "@mui/x-date-pickers": "^8.11.3",
     "@nozbe/microfuzz": "^1.0.0",
     "@projectstorm/react-diagrams": "^7.0.4",
     "@simonwep/pickr": "^1.5.1",
