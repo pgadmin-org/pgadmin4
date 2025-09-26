@@ -493,6 +493,23 @@ export class ResultSetUtils {
     }
   }
 
+  async saveBinaryResultsToFile(fileName, rowPos, colPos, onProgress) {
+    try {
+      await DownloadUtils.downloadFileStream({
+        url: url_for('sqleditor.download_binary_data', {
+          'trans_id': this.transId,
+        }),
+        options: {
+          method: 'POST',
+          body: JSON.stringify({filename: fileName, rowpos: rowPos, colpos: colPos})
+        }}, fileName, 'application/octet-stream', onProgress);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
+    } catch (error) {
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
+    }
+  }
+
   includeFilter(reqData) {
     return this.api.post(
       url_for('sqleditor.inclusive_filter', {
@@ -1033,6 +1050,15 @@ export function ResultSet() {
       }
       setLoaderText(gettext('Downloading results...'));
       await rsu.current.saveResultsToFile(fileName, (p)=>{
+        setLoaderText(gettext('Downloading results(%s)...', p));
+      });
+      setLoaderText('');
+    });
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, async (rowPos, colPos)=>{
+      let fileName = 'data-' + new Date().getTime();
+      setLoaderText(gettext('Downloading results...'));
+      await rsu.current.saveBinaryResultsToFile(fileName, rowPos, colPos, (p)=>{
         setLoaderText(gettext('Downloading results(%s)...', p));
       });
       setLoaderText('');
