@@ -6,12 +6,17 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import { useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import usePreferences from '../../../../../../preferences/static/js/store';
-
+import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
+import { PgIconButton } from '../../../../../../static/js/components/Buttons';
+import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
+import { QueryToolEventsContext } from '../QueryToolComponent';
 
 const StyledNullAndDefaultFormatter = styled(NullAndDefaultFormatter)(({theme}) => ({
   '& .Formatters-disabledCell': {
@@ -70,10 +75,14 @@ NumberFormatter.propTypes = FormatterPropTypes;
 
 export function BinaryFormatter({row, column}) {
   let value = row[column.key];
-
+  const eventBus = useContext(QueryToolEventsContext);
+  const downloadBinaryData = usePreferences().getPreferences('misc', 'enable_binary_data_download').value;
   return (
     <StyledNullAndDefaultFormatter value={value} column={column}>
-      <span className='Formatters-disabledCell'>[{value}]</span>
+      <span className='Formatters-disabledCell'>[{value}]</span>&nbsp;&nbsp;
+      {downloadBinaryData && 
+        <PgIconButton size="xs" title={gettext('Download binary data')} icon={<GetAppRoundedIcon />}
+          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, row.__temp_PK, column.pos)}/>}
     </StyledNullAndDefaultFormatter>
   );
 }
