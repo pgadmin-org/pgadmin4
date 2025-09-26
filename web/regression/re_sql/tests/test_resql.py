@@ -95,6 +95,35 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Added line break after scenario name
         print("")
 
+        # Create replication slot if it does not exist for the
+        # RESQL test-cases of Subscriptions for PGv17 and above
+        if self.server_information['server_version'] >= 170000:
+            try:
+                self.get_db_connection()
+                pg_cursor = self.connection.cursor()
+                pg_cursor.execute("""
+                    SELECT 1 FROM pg_replication_slots
+                    WHERE slot_name = 'test_create_subscription'
+                """)
+                exists = pg_cursor.fetchone()
+                if not exists:
+                    pg_cursor.execute("""
+                        SELECT pg_create_logical_replication_slot(
+                            'test_create_subscription',
+                            'pgoutput',
+                            failover := false
+                        );
+                    """)
+                    self.connection.commit()
+                    print("Replication slot "
+                          "'test_create_subscription' created.")
+                else:
+                    print("Replication slot 'test_create_subscription' "
+                          "already exists.")
+                pg_cursor.close()
+            except Exception as e:
+                print("Could not create replication slot: ", e)
+
     def runTest(self):
         """ Create the module list on which reverse engineeredsql test
         cases will be executed."""
@@ -154,6 +183,29 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         self.assertEqual(self.final_test_status, True)
 
     def tearDown(self):
+        # Drop the replication slot created for the RESQL test-cases of
+        # Subscriptions, if it exists before disconnecting for PGv17 and above
+        if self.server_information['server_version'] >= 170000:
+            try:
+                self.get_db_connection()
+                pg_cursor = self.connection.cursor()
+                pg_cursor.execute("""
+                    SELECT 1 FROM pg_replication_slots
+                    WHERE slot_name = 'test_create_subscription'
+                """)
+                exists = pg_cursor.fetchone()
+                if exists:
+                    pg_cursor.execute("""
+                        SELECT
+                        pg_drop_replication_slot('test_create_subscription');
+                    """)
+                    self.connection.commit()
+                    print("Replication slot "
+                          "'test_create_subscription' dropped.")
+                pg_cursor.close()
+            except Exception as e:
+                print("Could not drop replication slot: ", e)
+
         database_utils.disconnect_database(
             self, self.server_information['server_id'],
             self.server_information['db_id'])

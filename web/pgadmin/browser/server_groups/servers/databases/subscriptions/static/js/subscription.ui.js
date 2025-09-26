@@ -26,10 +26,11 @@ export default class SubscriptionSchema extends BaseUISchema{
       binary:false,
       two_phase:false,
       disable_on_error:false,
-      streaming:false,
+      streaming: (node_info?.node_info?.version >= 180000) ? 'parallel' : false,
       password_required:true,
       run_as_owner:false,
       origin:'any',
+      failover:false,
       copy_data_after_refresh:false,
       sync:'off',
       refresh_pub: false,
@@ -72,13 +73,7 @@ export default class SubscriptionSchema extends BaseUISchema{
             (this.node_info['node_info'].host == 'localhost' || this.node_info['node_info'].host == '127.0.0.1')){
       host = this.node_info['node_info'].host;
     }
-    if (host == this.node_info['node_info'].host && port == this.node_info['node_info'].port){
-      state.create_slot = false;
-      return true;
-    } else {
-      state.create_slot = true;
-    }
-    return false;
+    return (host == this.node_info['node_info'].host && port == this.node_info['node_info'].port);
   }
   isAllConnectionDataEnter(state){
     let host = state.host,
@@ -317,6 +312,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       readonly: obj.isConnect, deps :['connect', 'host', 'port'],
       helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.This field will be disabled and set to false if subscription connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang.'),
       helpMessageMode: ['edit', 'create'],
+      depChange: (state) => {
+        // Set create_slot to false if same DB, else true
+        if(obj.isSameDB(state)) {
+          state.create_slot = false;
+        } else {
+          state.create_slot = true;
+        }
+      },
     },
     {
       id: 'enabled', label: gettext('Enabled?'),
@@ -419,9 +422,18 @@ export default class SubscriptionSchema extends BaseUISchema{
       helpMessageMode: ['edit', 'create'],
     },
     {
-      id: 'two_phase', label: gettext('Two phase?'),
-      type: 'switch', mode: ['create', 'properties'],
+      id: 'two_phase',
+      label: gettext('Two phase?'),
+      type: 'switch',
       group: gettext('With'),
+      mode: (() => {
+        if (obj.version >= 180000) {
+          return ['create', 'edit', 'properties'];
+        } else if (obj.version >= 150000 && obj.version < 180000) {
+          return ['create', 'properties'];
+        }
+        return [];
+      })(),
       min_version: 150000,
       helpMessage: gettext('Specifies whether two-phase commit is enabled for this subscription.'),
       helpMessageMode: ['edit', 'create'],
@@ -463,6 +475,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       ],
       min_version: 160000,
       helpMessage: gettext('Specifies whether the subscription will request the publisher to only send changes that do not have an origin or send changes regardless of origin. Setting origin to none means that the subscription will request the publisher to only send changes that do not have an origin. Setting origin to any means that the publisher sends changes regardless of their origin.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'failover', label: gettext('Failover'),
+      type: 'switch', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      min_version: 170000,
+      helpMessage: gettext('Specifies whether the replication slots associated with the subscription are enabled to be synced to the standbys so that logical replication can be resumed from the new primary after failover'),
       helpMessageMode: ['edit', 'create'],
     },
     ];

@@ -105,8 +105,13 @@ jobs:
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
           sudo su -c "echo local all all trust > /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo su -c "echo host all all 127.0.0.1/32 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo su -c "echo host all all ::1/128 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo su -c "echo host replication postgres 127.0.0.1/32 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo su -c "echo host replication postgres ::1/128 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
           sudo sed -i "s/port = 544[0-9]/port = 58${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          echo "wal_level = logical" | sudo tee -a /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${{ matrix.pgver }}-main.epas_stat_tmp"
           sudo systemctl restart edb-as@${{ matrix.pgver }}-main
           
@@ -114,6 +119,16 @@ jobs:
             >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
             sleep 2
           done
+
+      - name: Start PostgreSQL on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          echo host    replication     postgres        127.0.0.1/32            trust >> "C:\EPAS\${{ matrix.pgver }}\data\pg_hba.conf"
+          echo host    replication     postgres        ::1/128                 trust >> "C:\EPAS\${{ matrix.pgver }}\data\pg_hba.conf"
+          echo wal_level = logical >> "C:\EPAS\${{ matrix.pgver }}\data\postgresql.conf"
+          net stop epas-${{ matrix.pgver }}
+          net start epas-${{ matrix.pgver }}
+        shell: cmd
 
       - name: Create pgagent extension on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
