@@ -86,10 +86,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.35.0":
-  version: 9.35.0
-  resolution: "@eslint/js@npm:9.35.0"
-  checksum: 10c0/d40fe38724bc76c085c0b753cdf937fa35c0d6807ae76b2632e3f5f66c3040c91adcf1aff2ce70b4f45752e60629fadc415eeec9af3be3c274bae1cac54b9840
+"@eslint/js@npm:9.36.0":
+  version: 9.36.0
+  resolution: "@eslint/js@npm:9.36.0"
+  checksum: 10c0/e3f6fb7d6f117d79615574f7bef4f238bcfed6ece0465d28226c3a75d2b6fac9cc189121e8673562796ca8ccea2bf9861715ee5cf4a3dbef87d17811c0dac22c
   languageName: node
   linkType: hard
 
@@ -200,20 +200,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 24.4.0
-  resolution: "@types/node@npm:24.4.0"
+  version: 24.5.2
+  resolution: "@types/node@npm:24.5.2"
   dependencies:
-    undici-types: "npm:~7.11.0"
-  checksum: 10c0/3aefa4c6b006b3478f2d28a48d830ab7350ce24efdaf352011418e3ee17ed7683ca9c0a1840e770685ce78f413344badafa91e034be02488efe2eb6b612bd542
+    undici-types: "npm:~7.12.0"
+  checksum: 10c0/96baaca6564d39c6f7f6eddd73ce41e2a7594ef37225cd52df3be36fad31712af8ae178387a72d0b80f2e2799e7fd30c014bc0ae9eb9f962d9079b691be00c48
   languageName: node
   linkType: hard
 
 "@types/node@npm:^22.7.7":
-  version: 22.18.3
-  resolution: "@types/node@npm:22.18.3"
+  version: 22.18.6
+  resolution: "@types/node@npm:22.18.6"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/29ec5674a7eaac50c4c779e937c4449e813ff70c411eb525b6e12837e7b88c39219c3c2f29e39ea8f72cd6b7975f8696dc05f78c07bce35a241e0c9eaf5523a8
+  checksum: 10c0/7ba190da2e64e56c59270661af8cd682c830a1375b6f965ab153be90baabfdaa867aa1d63f87b42de80956996d46dfe1cf93ecefe982d9a16e485b6756949f9a
   languageName: node
   linkType: hard
 
@@ -647,16 +647,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:38.0.0":
-  version: 38.0.0
-  resolution: "electron@npm:38.0.0"
+"electron@npm:38.1.2":
+  version: 38.1.2
+  resolution: "electron@npm:38.1.2"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/df3e4eaead2b0de4612a1b593f46667dfd4aff4755727371b5630aada40094cddf82b3837ce0ba3babed8c503275da59187f11da9f4ab26cd20e1362dc103ea6
+  checksum: 10c0/63f768e8ac396221db17c280e483ac838067e881ee61eb78c5c8f587017e51c587cc1eb687f29672b5e63c0af8a5d818d721d49aef20bac082544a8cf2d323ea
   languageName: node
   linkType: hard
 
@@ -790,9 +790,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.35.0":
-  version: 9.35.0
-  resolution: "eslint@npm:9.35.0"
+"eslint@npm:^9.36.0":
+  version: 9.36.0
+  resolution: "eslint@npm:9.36.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.1"
@@ -800,7 +800,7 @@ __metadata:
     "@eslint/config-helpers": "npm:^0.3.1"
     "@eslint/core": "npm:^0.15.2"
     "@eslint/eslintrc": "npm:^3.3.1"
-    "@eslint/js": "npm:9.35.0"
+    "@eslint/js": "npm:9.36.0"
     "@eslint/plugin-kit": "npm:^0.3.5"
     "@humanfs/node": "npm:^0.16.6"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
@@ -836,7 +836,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10c0/798c527520ccf62106f8cd210bd1db1f8eb1b0e7a56feb0a8b322bf3a1e6a0bc6dc3a414542c22b1b393d58d5e3cd0252c44c023049de9067b836450503a2f03
+  checksum: 10c0/0e2705a94847813b03f2f3c1367c0708319cbb66458250a09b2d056a088c56e079a1c1d76c44feebf51971d9ce64d010373b2a4f007cd1026fc24f95c89836df
   languageName: node
   linkType: hard
 
@@ -1563,10 +1563,10 @@ __metadata:
   resolution: "pgadmin4@workspace:."
   dependencies:
     axios: "npm:^1.12.0"
-    electron: "npm:38.0.0"
+    electron: "npm:38.1.2"
     electron-context-menu: "npm:^4.1.0"
     electron-store: "npm:^10.1.0"
-    eslint: "npm:^9.35.0"
+    eslint: "npm:^9.36.0"
     eslint-plugin-unused-imports: "npm:^4.2.0"
   languageName: unknown
   linkType: soft
@@ -1610,11 +1610,11 @@ __metadata:
   linkType: hard
 
 "pupa@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "pupa@npm:3.1.0"
+  version: 3.3.0
+  resolution: "pupa@npm:3.3.0"
   dependencies:
     escape-goat: "npm:^4.0.0"
-  checksum: 10c0/02afa6e4547a733484206aaa8f8eb3fbfb12d3dd17d7ca4fa1ea390a7da2cb8f381e38868bbf68009c4d372f8f6059f553171b6a712d8f2802c7cd43d513f06c
+  checksum: 10c0/9707e0a7f00e5922d47527d1c8d88d4224b1e86502da2fca27943eb0e9bb218121c91fa0af6c30531a2ee5ade0c326b5d33c40fdf61bc593c4224027412fd9b7
   languageName: node
   linkType: hard
 
@@ -1843,10 +1843,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.11.0":
-  version: 7.11.0
-  resolution: "undici-types@npm:7.11.0"
-  checksum: 10c0/24ff69baeaebc7d09f4dae68564df850b4ff561810148ff6c37d3fc64dd1460c55e59e604420495e73b1fb48594a1c98e69f6732086a24e01b88f2d926378af1
+"undici-types@npm:~7.12.0":
+  version: 7.12.0
+  resolution: "undici-types@npm:7.12.0"
+  checksum: 10c0/326e455bbc0026db1d6b81c76a1cf10c63f7e2f9821db2e24fdc258f482814e5bfa8481f8910d07c68e305937c5c049610fdc441c5e8b7bb0daca7154fb8a306
   languageName: node
   linkType: hard
 

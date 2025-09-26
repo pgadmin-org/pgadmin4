@@ -13,13 +13,13 @@
 ###############################################################################
 
 Authlib==1.6.*
-azure-identity==1.24.0
+azure-identity==1.25.0
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==24.0.0
 azure-mgmt-subscription==3.1.1
 bcrypt==4.3.*
 boto3==1.40.*
-cryptography==45.0.*
+cryptography==46.0.*
 Flask-Babel==4.0.*
 Flask-Compress==1.*
 Flask-Login==0.*
@@ -41,7 +41,7 @@ ldap3==2.*
 libgravatar==1.0.*
 paramiko==3.5.1
 passlib==1.*
-psutil==7.0.*
+psutil==7.1.*
 psycopg[c]==3.2.10
 pyotp==2.*
 python-dateutil==2.*
@@ -52,7 +52,7 @@ setuptools==80.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
-typer[all]==0.17.*
+typer[all]==0.19.*
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.5.*;  python_version > '3.9'
 user-agents==2.2.0
