@@ -30,6 +30,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9098 <https://github.com/pgadmin-org/pgadmin4/issues/9098>`_ -  Fixed an issue where the query tool displayed 'default' instead of 'null' for null text data in the data output.
   | `Issue #9158 <https://github.com/pgadmin-org/pgadmin4/issues/9158>`_ -  Fixed an issue where saving the newly changed preferences was not reflecting on the preferences tab.
   | `Issue #9125 <https://github.com/pgadmin-org/pgadmin4/issues/9125>`_ -  Fixed an issue where the pgAdmin configuration database wasn't being created on a fresh install when an external database was used for the configuration.
   | `Issue #9157 <https://github.com/pgadmin-org/pgadmin4/issues/9157>`_ -  Fixed an issue where shortcuts are not working as expected on multiple keyboard layouts.

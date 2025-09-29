@@ -428,7 +428,7 @@ export class ResultSetUtils {
               async (formData) => {
                 try {
                   await connectServer(
-                    this.api, 
+                    this.api,
                     this.queryToolCtx.modal,
                     this.queryToolCtx.params.sid,
                     this.queryToolCtx.params.user,
@@ -669,8 +669,9 @@ export class ResultSetUtils {
     return columnVal;
   }
 
-  processRows(result, columns, fromClipboard=false, pasteSerials=false) {
+  processRows(result, columns, options={}) {
     let retVal = [];
+    let {fromClipboard=false, pasteSerials=false, isNewRow=false} = options;
     if(!_.isArray(result) || !_.size(result)) {
       return retVal;
     }
@@ -685,8 +686,9 @@ export class ResultSetUtils {
       // Convert 2darray to dict.
       let rowObj = {};
       for(const col of columns) {
-        // if column data is undefined and there is not default value then set it to null.
-        let columnVal = rec[col.pos] ?? (col.has_default_val ? undefined : null);
+        // if column data is not present for existing rows then use null
+        // for new rows, it should be undefined if there is default value.
+        let columnVal = rec[col.pos] ?? ((col.has_default_val && isNewRow) ? undefined : null);
         /* If the source is clipboard, then it needs some extra handling */
         if(fromClipboard) {
           columnVal = this.processClipboardVal(columnVal, col, copiedRowsObjects[recIdx]?.[col.key], pasteSerials);
@@ -1379,7 +1381,7 @@ export function ResultSet() {
   }, [selectedRows, queryData, dataChangeStore, rows, allRowsSelect]);
 
   useEffect(()=>{
-    const triggerAddRows = (_rows, fromClipboard, pasteSerials)=>{
+    const triggerAddRows = (_rows, options)=>{
       let insPosn = 0;
       if(selectedRows.size > 0) {
         let selectedRowsSorted = Array.from(selectedRows);
@@ -1396,7 +1398,7 @@ export function ResultSet() {
           return x;
         });
       }
-      let newRows = rsu.current.processRows(_rows, columns, fromClipboard, pasteSerials);
+      let newRows = rsu.current.processRows(_rows, columns, options);
       setRows((prev)=>[
         ...prev.slice(0, insPosn),
         ...newRows,
