@@ -480,20 +480,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conf@npm:^14.0.0":
-  version: 14.0.0
-  resolution: "conf@npm:14.0.0"
+"conf@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "conf@npm:15.0.0"
   dependencies:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
     atomically: "npm:^2.0.3"
     debounce-fn: "npm:^6.0.0"
-    dot-prop: "npm:^9.0.0"
+    dot-prop: "npm:^10.0.0"
     env-paths: "npm:^3.0.0"
     json-schema-typed: "npm:^8.0.1"
     semver: "npm:^7.7.2"
-    uint8array-extras: "npm:^1.4.0"
-  checksum: 10c0/d1472ea24dad78d0d33dee47a795dfefe92fcdf2633763a8b35563989f22b2658e768c9d338de8e8e5f9163525d22df9e5f8733094d822a8329f4571dedce208
+    uint8array-extras: "npm:^1.5.0"
+  checksum: 10c0/50d7c479276541540773ee31becdf2861b02338d257f219e17773c170419d7c24353dc564b0d392fb77090fa96e66a46d5110ad4f9b965a349e98b1392140693
   languageName: node
   linkType: hard
 
@@ -588,12 +588,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dot-prop@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "dot-prop@npm:9.0.0"
+"dot-prop@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "dot-prop@npm:10.0.0"
   dependencies:
-    type-fest: "npm:^4.18.2"
-  checksum: 10c0/4bac49a2f559156811862ac92813906f70529c50da918eaab81b38dd869743c667d578e183607f5ae11e8ae2a02e43e98e32c8a37bc4cae76b04d5b576e3112f
+    type-fest: "npm:^5.0.0"
+  checksum: 10c0/549e1c7f8440dac358f934367047c6993797dd0d52bfb1617dcad43f1d6ebeb15a1a4658f2b268e105de47e3dd59e9fd4ff9b61bdbc6159723df0d96dbcd2226
   languageName: node
   linkType: hard
 
@@ -637,13 +637,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-store@npm:^10.1.0":
-  version: 10.1.0
-  resolution: "electron-store@npm:10.1.0"
+"electron-store@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "electron-store@npm:11.0.0"
   dependencies:
-    conf: "npm:^14.0.0"
-    type-fest: "npm:^4.41.0"
-  checksum: 10c0/a527a1957b09decbbb36828e299bb06c239ed9a7d406ceda07abe84d2a9dfd1920120c63859e42c9c7a0922b95b840c4f4e5d8db90256814445f22a8a48de07e
+    conf: "npm:^15.0.0"
+    type-fest: "npm:^5.0.1"
+  checksum: 10c0/9253ae08ec4e1b58518b47bcfdd016b1779a035b9b80956c6051e090af473f9fa4531818a68119b71211ad26964a67688e13a8a31ed55075423b9baf7bd51a8a
   languageName: node
   linkType: hard
 
@@ -1565,7 +1565,7 @@ __metadata:
     axios: "npm:^1.12.0"
     electron: "npm:38.1.2"
     electron-context-menu: "npm:^4.1.0"
-    electron-store: "npm:^10.1.0"
+    electron-store: "npm:^11.0.0"
     eslint: "npm:^9.36.0"
     eslint-plugin-unused-imports: "npm:^4.2.0"
   languageName: unknown
@@ -1806,6 +1806,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tagged-tag@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "tagged-tag@npm:1.0.0"
+  checksum: 10c0/91d25c9ffb86a91f20522cefb2cbec9b64caa1febe27ad0df52f08993ff60888022d771e868e6416cf2e72dab68449d2139e8709ba009b74c6c7ecd4000048d1
+  languageName: node
+  linkType: hard
+
 "type-check@npm:^0.4.0, type-check@npm:~0.4.0":
   version: 0.4.0
   resolution: "type-check@npm:0.4.0"
@@ -1822,14 +1829,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.18.2, type-fest@npm:^4.41.0":
-  version: 4.41.0
-  resolution: "type-fest@npm:4.41.0"
-  checksum: 10c0/f5ca697797ed5e88d33ac8f1fec21921839871f808dc59345c9cf67345bfb958ce41bd821165dbf3ae591cedec2bf6fe8882098dfdd8dc54320b859711a2c1e4
+"type-fest@npm:^5.0.0, type-fest@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "type-fest@npm:5.0.1"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10c0/8d248edd9705e0da3cc14f4f4ca7fb40a6c5b2c822fe4ba8fc226743578bc229f66fa4ff66e7d4070806ab8312adc64199ce0f0836d20ede13922ced2ff36118
   languageName: node
   linkType: hard
 
-"uint8array-extras@npm:^1.4.0":
+"uint8array-extras@npm:^1.5.0":
   version: 1.5.0
   resolution: "uint8array-extras@npm:1.5.0"
   checksum: 10c0/0e74641ac7dadb02eadefc1ccdadba6010e007757bda824960de3c72bbe2b04e6d3af75648441f412148c4103261d54fcb60be45a2863beb76643a55fddba3bd
