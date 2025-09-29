@@ -25,6 +25,7 @@
           "streaming":false,
           "password_required":true,
           "run_as_owner":false,
+          "failover": false,
           "origin":"any",
           "pub": ["sample__1"]
       },
