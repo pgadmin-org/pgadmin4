@@ -53,6 +53,7 @@ The default binary paths set in the container are as follows:
 .. code-block:: bash
 
     DEFAULT_BINARY_PATHS = {
+        'pg-18': '/usr/local/pgsql-18',
         'pg-17': '/usr/local/pgsql-17',
         'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
