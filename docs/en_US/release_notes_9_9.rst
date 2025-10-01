@@ -8,7 +8,7 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 13, 14, 15, 16 and 17
+**PostgreSQL**: 13, 14, 15, 16, 17 and 18
 
 **EDB Advanced Server**: 13, 14, 15, 16 and 17
 
@@ -20,8 +20,10 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #6385 <https://github.com/pgadmin-org/pgadmin4/issues/6385>`_ -  Add support of DEPENDS/NO DEPENDS ON EXTENSION for ALTER FUNCTION.
   | `Issue #6394 <https://github.com/pgadmin-org/pgadmin4/issues/6394>`_ -  Added "MULTIRANGE_TYPE_NAME" option while creating a Range Type.
   | `Issue #6395 <https://github.com/pgadmin-org/pgadmin4/issues/6395>`_ -  Added "SUBSCRIPT" option while creating a External Type.
+  | `Issue #6996 <https://github.com/pgadmin-org/pgadmin4/issues/6996>`_ -  Added option to skip the password dialog when using an identity file.
   | `Issue #8932 <https://github.com/pgadmin-org/pgadmin4/issues/8932>`_ -  Added 'failover' and 'two_phase' parameter support in CREATE/ALTER SUBSCRIPTION for PostgreSQL v17+.
 
 Housekeeping
