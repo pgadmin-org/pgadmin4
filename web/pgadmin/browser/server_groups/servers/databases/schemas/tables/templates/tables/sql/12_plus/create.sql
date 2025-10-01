@@ -13,7 +13,7 @@
  add empty bracket with table name
 #}
 {% set empty_bracket = ""%}
-{% if data.coll_inherits|length == 0 and  data.columns|length == 0 and not data.typname and not data.like_relation and data.primary_key|length == 0 and data.unique_constraint|length == 0 and data.foreign_key|length == 0 and data.check_constraint|length == 0 and data.exclude_constraint|length == 0 %}
+{% if not (data.coll_inherits or data.columns or data.typname or data.like_relation or data.primary_key or data.unique_constraint or data.foreign_key or data.check_constraint or data.exclude_constraint) %}
 {% set empty_bracket = "\n(\n)"%}
 {% endif %}
 {% set with_clause = false%}
