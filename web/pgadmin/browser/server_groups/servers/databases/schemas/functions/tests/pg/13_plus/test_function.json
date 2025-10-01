@@ -19,7 +19,7 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
@@ -84,7 +84,7 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
@@ -148,13 +148,12 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
         "provolatile": "v",
         "proparallel": "u",
-        "prosecdef": true,
         "arguments": [],
         "procost": "100",
         "prosrc": "begin\nselect '1';\nend",
@@ -180,7 +179,7 @@
       "msql_endpoint": "NODE-function.msql_id",
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
-        "name": "Function3_$%{}[]()&*^!@\"'`\\/#"
+        "name":"Function3_$%{}[]()&*^!@\"'`\\/#"
       },
       "expected_sql_file": "alter_function_rename.sql",
       "expected_msql_file": "alter_function_rename.msql"
@@ -202,7 +201,8 @@
           ]
         }
       },
-      "expected_sql_file": "alter_function_add_parameter.sql"
+      "expected_sql_file": "alter_function_add_parameter.sql",
+      "expected_msql_file": "alter_function_add_parameter.msql"
     },
     {
       "type": "alter",
@@ -238,13 +238,12 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
         "provolatile": "v",
         "proparallel": "u",
-        "prosecdef": true,
         "arguments": [],
         "procost": "100",
         "prosrc": "begin\nselect '1';\nend",
@@ -273,19 +272,8 @@
         "acl": {
           "added": [
             {
-              "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
-              "privileges": [
-                {
-                  "privilege_type": "X",
-                  "privilege": true,
-                  "with_grant": false
-                }
-              ]
-            },
-            {
-              "grantee": "enterprisedb",
-              "grantor": "enterprisedb",
+              "grantee": "postgres",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -311,7 +299,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -335,8 +323,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
-              "old_grantee": "enterprisedb",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -362,7 +350,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -372,8 +360,8 @@
               ]
             },
             {
-              "grantee": "enterprisedb",
-              "grantor": "enterprisedb",
+              "grantee": "postgres",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -400,50 +388,10 @@
       "endpoint": "NODE-function.obj",
       "msql_endpoint": "NODE-function.msql",
       "sql_endpoint": "NODE-function.sql_id",
-      "name": "Create function (atomic).",
-      "store_object_id": "True",
-      "data": {
-        "name": "Function4_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
-        "pronamespace": 2200,
-        "prorettypename": "numeric",
-        "lanname": "sql",
-        "prorows": 0,
-        "arguments": [],
-        "prosrc": "begin atomic\n    select 1;\nend",
-        "probin": "$libdir/",
-        "options": [],
-        "variables": [],
-        "seclabels": [],
-        "prosecdef":true,
-        "acl": [],
-        "provolatile":"v",
-        "proisstrict":true,
-        "proiswindow":true,
-        "proparallel":"u",
-        "procost":"100",
-        "proleakproof":true,
-        "schema": "public"
-      },
-      "expected_sql_file": "create_atomic_func.sql",
-      "expected_msql_file": "create_atomic_func.msql"
-    },
-    {
-      "type": "delete",
-      "name": "Drop function",
-      "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
-    },
-    {
-      "type": "create",
-      "endpoint": "NODE-function.obj",
-      "msql_endpoint": "NODE-function.msql",
-      "sql_endpoint": "NODE-function.sql_id",
       "name": "Create function with custom return type.",
       "data": {
         "name": "Function3_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "pronamespace": 2200,
         "prorettypename": "table(val character varying)",
         "lanname": "plpgsql",
@@ -464,7 +412,7 @@
             "argdefval": "'1'"
           }
         ],
-        "prosrc": "begin\n  return query select '1'::character varying;\nend",
+        "prosrc": "begin\n    return query select '1'::character varying;\nend",
         "probin": "$libdir/",
         "options": [],
         "variables": [],

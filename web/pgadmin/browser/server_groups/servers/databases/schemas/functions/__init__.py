@@ -260,7 +260,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         list_params = []
         if request.method == 'GET':
             list_params = ['arguments', 'variables', 'proacl',
-                           'seclabels', 'acl', 'args']
+                           'seclabels', 'acl', 'args', 'dependsonextensions']
 
         if key in list_params and req[key] != '' and req[key] is not None:
             # Coverts string into python list as expected.
@@ -1170,6 +1170,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 old_data['proparallel'] is not None:
             old_data['proparallel'] = \
                 parallel_dict[old_data['proparallel']]
+
+        if self.node_type == 'function' and \
+                old_data['dependsonextensions'] is None:
+            old_data['dependsonextensions'] = []
 
         # If any of the below argument is changed,
         # then CREATE OR REPLACE SQL statement should be called

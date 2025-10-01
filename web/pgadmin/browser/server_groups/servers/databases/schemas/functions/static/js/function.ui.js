@@ -137,6 +137,7 @@ export default class FunctionSchema extends BaseUISchema {
       role: [],
       schema: [],
       getTypes: [],
+      extensionsList: [],
       ...fieldOptions,
     };
   }
@@ -274,8 +275,21 @@ export default class FunctionSchema extends BaseUISchema {
 
         return this.node_info && 'catalog' in this.node_info;
       }
-    },
-    {
+    },{
+      id: 'dependsonextensions',
+      label: gettext('Depends on extensions'),
+      group: gettext('Definition'),
+      type: 'select',
+      options: this.fieldOptions.extensionsList,
+      controlProps: {
+        multiple: true,
+        allowClear: true,
+        allowSelectAll: true,
+        placeholder: gettext('Select the Depends on extensions...'),
+      },
+      min_version: 130000,
+      mode: ['create', 'edit', 'properties'],
+    },{
       id: 'probin', label: gettext('Object file'), cell: 'string',
       type: 'text', group: gettext('Definition'), deps: ['lanname'], visible:
       function(state) {

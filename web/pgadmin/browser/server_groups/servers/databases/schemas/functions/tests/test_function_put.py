@@ -75,7 +75,7 @@ class FunctionPutTestCase(BaseTestGenerator):
             }
         )),
         (
-            'Fetch Function update with arguments',
+            'Fetch Function update with arguments and depends on exxtensions.',
             dict(
                 url='/browser/function/obj/',
                 is_positive_test=True,
@@ -155,7 +155,8 @@ class FunctionPutTestCase(BaseTestGenerator):
 
         data = {
             "description": "This is a procedure update comment",
-            "id": func_id
+            "id": func_id,
+            "dependsonextensions": ["plpgsql"]
         }
 
         if hasattr(self, "is_add_argument") and self.is_add_argument:

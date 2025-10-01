@@ -41,6 +41,9 @@ Use the fields in the *Definition* tab to define the function:
   will change to an input text field.
 * Use the drop-down listbox next to *Language* to select the implementation
   language. The default is *sql*.
+* Use the drop-down listbox next to *Depends on extensions* to select the extension that this function
+  depends on (for example, plpgsql). If set, dropping the extension will automatically drop the
+  function as well.
 * Use the fields in the *Arguments* to define an argument. Click the *Add*
   icon (+) to set parameters and values for the argument:
 

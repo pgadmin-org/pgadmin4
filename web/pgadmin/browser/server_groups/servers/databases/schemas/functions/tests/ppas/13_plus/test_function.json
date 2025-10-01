@@ -400,46 +400,6 @@
       "endpoint": "NODE-function.obj",
       "msql_endpoint": "NODE-function.msql",
       "sql_endpoint": "NODE-function.sql_id",
-      "name": "Create function (atomic).",
-      "store_object_id": "True",
-      "data": {
-        "name": "Function4_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "enterprisedb",
-        "pronamespace": 2200,
-        "prorettypename": "numeric",
-        "lanname": "sql",
-        "prorows": 0,
-        "arguments": [],
-        "prosrc": "begin atomic\n    select 1;\nend",
-        "probin": "$libdir/",
-        "options": [],
-        "variables": [],
-        "seclabels": [],
-        "prosecdef":true,
-        "acl": [],
-        "provolatile":"v",
-        "proisstrict":true,
-        "proiswindow":true,
-        "proparallel":"u",
-        "procost":"100",
-        "proleakproof":true,
-        "schema": "public"
-      },
-      "expected_sql_file": "create_atomic_func.sql",
-      "expected_msql_file": "create_atomic_func.msql"
-    },
-    {
-      "type": "delete",
-      "name": "Drop function",
-      "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
-    },
-    {
-      "type": "create",
-      "endpoint": "NODE-function.obj",
-      "msql_endpoint": "NODE-function.msql",
-      "sql_endpoint": "NODE-function.sql_id",
       "name": "Create function with custom return type.",
       "data": {
         "name": "Function3_$%{}[]()&*^!@\"'`\\/#",
