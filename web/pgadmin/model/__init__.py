@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 47
+SCHEMA_VERSION = 48
 
 ##########################################################################
 #
@@ -246,6 +246,11 @@ class Server(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
+    tunnel_prompt_password = db.Column(
+        db.Integer(), db.CheckConstraint(
+            'tunnel_prompt_password >= 0 AND tunnel_prompt_password <= 1'),
+        nullable=False
+    )
     tunnel_password = db.Column(PgAdminDbBinaryString())
     tunnel_keep_alive = db.Column(db.Integer(), nullable=True, default=0)
     shared = db.Column(db.Boolean(), nullable=False)
@@ -483,6 +488,11 @@ class SharedServer(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
+    tunnel_prompt_password = db.Column(
+        db.Integer(), db.CheckConstraint(
+            'tunnel_prompt_password >= 0 AND tunnel_prompt_password <= 1'),
+        nullable=False
+    )
     tunnel_password = db.Column(PgAdminDbBinaryString())
     tunnel_keep_alive = db.Column(db.Integer(), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)

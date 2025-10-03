@@ -525,6 +525,8 @@ def dump_database_servers(output_file, selected_servers,
                       server.tunnel_authentication)
             add_value(attr_dict, "TunnelIdentityFile",
                       server.tunnel_identity_file)
+            add_value(attr_dict, "TunnelPromptPassword",
+                      server.tunnel_prompt_password)
             add_value(attr_dict, "TunnelKeepAlive",
                       server.tunnel_keep_alive)
             add_value(attr_dict, "KerberosAuthentication",
@@ -772,6 +774,9 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.tunnel_identity_file = \
                 obj.get("TunnelIdentityFile", None)
+
+            new_server.tunnel_prompt_password = \
+                obj.get("TunnelPromptPassword", 0)
 
             new_server.tunnel_keep_alive = \
                 obj.get("TunnelKeepAlive", None)
