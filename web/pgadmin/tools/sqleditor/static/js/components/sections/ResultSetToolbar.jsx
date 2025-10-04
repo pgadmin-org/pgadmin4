@@ -281,13 +281,13 @@ export function ResultSetToolbar({query, canEdit, totalRowCount, pagination, all
       field_separator: queryToolPref.results_grid_field_separator,
     });
     let copiedRows = copyUtils.getCopiedRows();
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows, true, checkedMenuItems['paste_with_serials']);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows, {fromClipboard: true, pasteSerials: checkedMenuItems['paste_with_serials']});
   }, [queryToolPref, checkedMenuItems['paste_with_serials']]);
   const copyData = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.COPY_DATA, checkedMenuItems['copy_with_headers']);
   };
   const addRow = useCallback(()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]]);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, [[]], {isNewRow: true});
   }, []);
   const downloadResult = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS);

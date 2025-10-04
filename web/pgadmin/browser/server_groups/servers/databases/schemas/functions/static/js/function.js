@@ -76,6 +76,7 @@ define('pgadmin.node.function', [
 
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
+        let nodeObj = pgBrowser.Nodes['extension'];
         return new FunctionSchema(
           (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
           ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, false),
@@ -85,6 +86,16 @@ define('pgadmin.node.function', [
               cacheLevel: 'database'
             }
             ),
+            extensionsList:()=>getNodeAjaxOptions('nodes', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
+              (data)=>{
+                let res = [];
+                if (data && _.isArray(data)) {
+                  _.each(data, function(d) {
+                    res.push({label: d.label, value: d.label, data: d});
+                  });
+                }
+                return res;
+              }),
             getTypes: ()=>getNodeAjaxOptions('get_types', this, treeNodeInfo, itemNodeData),
             getLanguage: ()=>getNodeAjaxOptions('get_languages', this, treeNodeInfo, itemNodeData),
             getSupportFunctions: ()=>getNodeAjaxOptions('get_support_functions', this, treeNodeInfo, itemNodeData, {

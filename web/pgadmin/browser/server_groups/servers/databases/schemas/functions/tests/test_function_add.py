@@ -76,6 +76,19 @@ class FunctionAddTestCase(BaseTestGenerator):
                 "status_code": 500
             }
         )),
+        ('Create Function With Invalid Depends On Extension Fail', dict(
+            url='/browser/function/obj/',
+            is_positive_test=False,
+            mocking_required=True,
+            is_mock_function=True,
+            mock_data={
+                "function_name": "_get_sql",
+                "return_value": "(False, 'Invalid extension specified')"
+            },
+            expected_data={
+                "status_code": 500
+            }
+        ))
     ]
 
     def create_function(self, data):
@@ -113,6 +126,7 @@ class FunctionAddTestCase(BaseTestGenerator):
             "lanname": "sql",
             "name": "test_function",
             "options": [],
+            "dependsonextensions": ["plpgsql"],
             "proleakproof": True,
             "pronamespace": 2200,
             "prorettypename": "integer",
@@ -143,10 +157,13 @@ class FunctionAddTestCase(BaseTestGenerator):
             )
 
             data['prosupportfuc'] = support_function_name
-
         if self.is_positive_test:
             response = self.create_function(data)
         else:
+            if "Invalid Depends On Extension" in getattr(
+                self, 'scenario_name', ''
+            ):
+                data["dependsonextensions"] = ["non_existing_extensions"]
             if hasattr(self, 'is_mock_function'):
                 def _get_sql(self, **kwargs):
                     return False, ''

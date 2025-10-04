@@ -10,6 +10,12 @@ SELECT
     pg_catalog.pg_get_function_sqlbody(pr.oid) AS prosrc_sql,
     CASE WHEN pr.prosqlbody IS NOT NULL THEN true ELSE false END as is_pure_sql,
     pr.pronargdefaults, proconfig, pg_catalog.pg_get_userbyid(proowner) AS funcowner, description,
+    (
+      SELECT array_agg(DISTINCT e.extname)
+      FROM pg_depend d
+      JOIN pg_extension e ON d.refobjid = e.oid
+      WHERE d.objid = pr.oid
+    ) AS dependsonextensions,
     CASE WHEN prosupport = 0::oid THEN ''
     ELSE (
         SELECT pg_catalog.quote_ident(nspname) || '.' || pg_catalog.quote_ident(proname) AS tfunctions

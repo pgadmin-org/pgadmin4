@@ -153,7 +153,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         # Check the final status of the test case
         self.assertEqual(self.final_test_status, True)
 
-    def tearDown(self):
         database_utils.disconnect_database(
             self, self.server_information['server_id'],
             self.server_information['db_id'])
@@ -601,7 +600,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         try:
             pg_cursor.execute(precondition_sql)
             precondition_result = pg_cursor.fetchone()
-            if len(precondition_result) >= 1 and precondition_result[0] == '1':
+            if ((len(precondition_result) >= 1 and
+                precondition_result[0] == '1') or
+                (isinstance(precondition_result, tuple) and
+                 precondition_result[0] == 1)):
                 precondition_flag = True
         except Exception as e:
             traceback.print_exc()
