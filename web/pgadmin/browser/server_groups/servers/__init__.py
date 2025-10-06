@@ -1432,8 +1432,9 @@ class ServerNode(PGChildNodeView):
         """
         prompt_tunnel_password = True
         # In case of identity file check the value of tunnel_prompt_password.
-        if server.tunnel_identity_file is not None and \
-                server.tunnel_prompt_password != 1:
+        if server.tunnel_password is not None or \
+            (server.tunnel_identity_file is not None and
+             server.tunnel_prompt_password != 1):
             prompt_tunnel_password = False
 
         return prompt_tunnel_password
@@ -1595,7 +1596,7 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             return self.get_response_for_password(
-                server, 401, True, prompt_tunnel_password,
+                server, 401, not server.save_password, prompt_tunnel_password,
                 getattr(e, 'message', str(e)))
 
         if not status:
@@ -1607,7 +1608,8 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, True, prompt_tunnel_password, errmsg)
+                server, 401, not server.save_password,
+                prompt_tunnel_password, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:

@@ -612,8 +612,12 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
             current_app.logger.exception(e)
-            return False, gettext("Failed to create the SSH tunnel.\n"
-                                  "Error: {0}").format(str(e))
+            return False, gettext(
+                "Failed to create the SSH tunnel. Possible causes:\n"
+                "1. Enter the correct tunnel password (Clear saved password "
+                "if it has changed).\n 2. If using an identity file that "
+                "requires a password, enable “Prompt for Password?” in the "
+                "server dialog. \n 3. Verify the host address.")
 
         # Update the port to communicate locally
         self.local_bind_port = self.tunnel_object.local_bind_port
