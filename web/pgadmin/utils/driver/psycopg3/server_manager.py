@@ -99,6 +99,7 @@ class ServerManager(object):
                 if server.tunnel_authentication is None \
                 else server.tunnel_authentication
             self.tunnel_identity_file = server.tunnel_identity_file
+            self.tunnel_prompt_password = server.tunnel_prompt_password
             self.tunnel_password = server.tunnel_password
             self.tunnel_keep_alive = server.tunnel_keep_alive
         else:
@@ -108,6 +109,7 @@ class ServerManager(object):
             self.tunnel_username = None
             self.tunnel_authentication = None
             self.tunnel_identity_file = None
+            self.tunnel_prompt_password = 0
             self.tunnel_password = None
             self.tunnel_keep_alive = 0
 
@@ -610,8 +612,12 @@ WHERE db.oid = {0}""".format(did))
             self.tunnel_created = True
         except BaseSSHTunnelForwarderError as e:
             current_app.logger.exception(e)
-            return False, gettext("Failed to create the SSH tunnel.\n"
-                                  "Error: {0}").format(str(e))
+            return False, gettext(
+                "Failed to create the SSH tunnel. Possible causes:\n"
+                "1. Enter the correct tunnel password (Clear saved password "
+                "if it has changed).\n 2. If using an identity file that "
+                "requires a password, enable “Prompt for Password?” in the "
+                "server dialog. \n 3. Verify the host address.")
 
         # Update the port to communicate locally
         self.local_bind_port = self.tunnel_object.local_bind_port

@@ -36,6 +36,7 @@
             "TunnelPort": "22",
             "TunnelUsername": "username",
             "TunnelAuthentication": 0,
+            "TunnelPromptPassword": 0,
             "PasswordExecCommand": "echo 'test'",
             "PasswordExecExpiration": 100
         }

@@ -109,21 +109,23 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight,
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton ref={okBtnRef} data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
-          let postFormData = new FormData();
-          if(data.prompt_tunnel_password) {
-            postFormData.append('tunnel_password', formData.tunnel_password);
-            formData.save_tunnel_password &&
-              postFormData.append('save_tunnel_password', formData.save_tunnel_password);
-          }
-          if(data.prompt_password) {
-            postFormData.append('password', formData.password);
-            formData.save_password &&
-              postFormData.append('save_password', formData.save_password);
-          }
-          onOK?.(postFormData);
-          closeModal();
-        }} >{gettext('OK')}</PrimaryButton>
+        {(data.prompt_password || data.prompt_tunnel_password) && <>
+          <PrimaryButton ref={okBtnRef} data-test="save" startIcon={<CheckRoundedIcon />} onClick={()=>{
+            let postFormData = new FormData();
+            if(data.prompt_tunnel_password) {
+              postFormData.append('tunnel_password', formData.tunnel_password);
+              formData.save_tunnel_password &&
+                postFormData.append('save_tunnel_password', formData.save_tunnel_password);
+            }
+            if(data.prompt_password) {
+              postFormData.append('password', formData.password);
+              formData.save_password &&
+                postFormData.append('save_password', formData.save_password);
+            }
+            onOK?.(postFormData);
+            closeModal();
+          }} >{gettext('OK')}</PrimaryButton>
+        </>}
       </ModalFooter>
     </ModalContent>
   );

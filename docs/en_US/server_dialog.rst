@@ -177,6 +177,9 @@ not be able to connect directly.
   *Identity file* field to specify the location of the key file.
 * If the SSH host is expecting a password of the user name or an identity file
   if being used, use the *Password* field to specify the password.
+* Check the box next to *Prompt for password?* to to have pgAdmin prompt for
+  a password if the identity file includes one. This setting applies only when
+  using an identity file, which may or may not require a password.
 * Check the box next to *Save password?* to instruct pgAdmin to save the
   password for future use. Use
   :ref:`Clear SSH Tunnel Password <clear_saved_passwords>` to remove the saved
