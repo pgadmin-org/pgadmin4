@@ -633,6 +633,7 @@
         "tunnel_password": "user123",
         "tunnel_identity_file": "pkey_rsa",
         "tunnel_keep_alive": 0,
+        "tunnel_prompt_password": 0,
         "service": null,
         "server_info": {
           "id": 1,

@@ -167,6 +167,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_password = sharedserver.tunnel_password
         server.save_password = sharedserver.save_password
         server.tunnel_identity_file = sharedserver.tunnel_identity_file
+        server.tunnel_prompt_password = sharedserver.tunnel_prompt_password
         if hasattr(server, 'connection_params') and \
             hasattr(sharedserver, 'connection_params') and \
             'passfile' in server.connection_params and \
@@ -413,6 +414,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
                 tunnel_keep_alive=0,
+                tunnel_prompt_password=0,
                 shared=True,
                 connection_params=data.connection_params,
                 prepare_threshold=data.prepare_threshold
@@ -790,6 +792,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_username': 'tunnel_username',
             'tunnel_authentication': 'tunnel_authentication',
             'tunnel_identity_file': 'tunnel_identity_file',
+            'tunnel_prompt_password': 'tunnel_prompt_password',
             'tunnel_keep_alive': 'tunnel_keep_alive',
             'shared': 'shared',
             'shared_username': 'shared_username',
@@ -1086,6 +1089,8 @@ class ServerNode(PGChildNodeView):
             'tunnel_username': tunnel_username,
             'tunnel_identity_file': server.tunnel_identity_file
             if server.tunnel_identity_file else None,
+            'tunnel_prompt_password': server.tunnel_prompt_password
+            if server.tunnel_identity_file else 0,
             'tunnel_authentication': tunnel_authentication,
             'tunnel_keep_alive': tunnel_keep_alive,
             'kerberos_conn': bool(server.kerberos_conn),
@@ -1212,6 +1217,8 @@ class ServerNode(PGChildNodeView):
                 tunnel_authentication=1 if data.get('tunnel_authentication',
                                                     False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
+                tunnel_prompt_password=1 if data.get('tunnel_prompt_password',
+                                                     True) else 0,
                 tunnel_keep_alive=data.get('tunnel_keep_alive', 0),
                 shared=data.get('shared', None),
                 shared_username=data.get('shared_username', None),
@@ -1419,6 +1426,19 @@ class ServerNode(PGChildNodeView):
             }
         )
 
+    def is_prompt_tunnel_password(self, server):
+        """
+        This function will check whether to prompt tunnel password or not.
+        """
+        prompt_tunnel_password = True
+        # In case of identity file check the value of tunnel_prompt_password.
+        if server.tunnel_password is not None or \
+            (server.tunnel_identity_file is not None and
+             server.tunnel_prompt_password != 1):
+            prompt_tunnel_password = False
+
+        return prompt_tunnel_password
+
     def connect(self, gid, sid, is_qt=False, server=None):
         """
         Connect the Server and return the connection object.
@@ -1502,11 +1522,12 @@ class ServerNode(PGChildNodeView):
 
         # If server using SSH Tunnel
         if server.use_ssh_tunnel:
-            if 'tunnel_password' not in data:
-                if server.tunnel_password is None:
-                    prompt_tunnel_password = True
-                else:
-                    tunnel_password = server.tunnel_password
+            if 'tunnel_password' not in data and \
+                    server.tunnel_password is None:
+                prompt_tunnel_password = self.is_prompt_tunnel_password(server)
+            elif 'tunnel_password' not in data and \
+                    server.tunnel_password is not None:
+                tunnel_password = server.tunnel_password
             else:
                 tunnel_password = data['tunnel_password'] \
                     if 'tunnel_password' in data else ''
@@ -1562,6 +1583,10 @@ class ServerNode(PGChildNodeView):
             return self.get_response_for_password(
                 server, 428, prompt_password, prompt_tunnel_password)
 
+        # Check whether to prompt for the tunnel password in case if
+        # password is saved in server object or in data.
+        prompt_tunnel_password = self.is_prompt_tunnel_password(server)
+
         try:
             status, errmsg = conn.connect(
                 password=password,
@@ -1571,7 +1596,7 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             return self.get_response_for_password(
-                server, 401, True, True,
+                server, 401, not server.save_password, prompt_tunnel_password,
                 getattr(e, 'message', str(e)))
 
         if not status:
@@ -1583,7 +1608,8 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, True, True, errmsg)
+                server, 401, not server.save_password,
+                prompt_tunnel_password, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
