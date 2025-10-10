@@ -289,6 +289,7 @@ export default class FunctionSchema extends BaseUISchema {
       },
       min_version: 130000,
       mode: ['create', 'edit', 'properties'],
+      visible: obj.isVisible
     },{
       id: 'probin', label: gettext('Object file'), cell: 'string',
       type: 'text', group: gettext('Definition'), deps: ['lanname'], visible:
