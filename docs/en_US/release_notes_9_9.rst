@@ -25,6 +25,7 @@ New features
   | `Issue #6395 <https://github.com/pgadmin-org/pgadmin4/issues/6395>`_ -  Added "SUBSCRIPT" option while creating a External Type.
   | `Issue #6996 <https://github.com/pgadmin-org/pgadmin4/issues/6996>`_ -  Added option to skip the password dialog when using an identity file.
   | `Issue #8932 <https://github.com/pgadmin-org/pgadmin4/issues/8932>`_ -  Added 'failover' and 'two_phase' parameter support in CREATE/ALTER SUBSCRIPTION for PostgreSQL v17+.
+  | `Issue #9225 <https://github.com/pgadmin-org/pgadmin4/issues/9225>`_ -  Add support for initializing the pgAdmin4 Kubernetes Helm chart.
 
 Housekeeping
 ************

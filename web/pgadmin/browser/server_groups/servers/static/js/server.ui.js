@@ -158,12 +158,6 @@ export function getConnectionParameters() {
     'vartype': 'enum', 'min_server_version': '18',
     'enumvals': [gettext('3.0'), gettext('3.2'), gettext('latest')]
   }, {
-    'value': 'scram_client_key', 'label': gettext('Scram client key'), 'vartype': 'string',
-    'min_server_version': '18'
-  }, {
-    'value': 'scram_server_key', 'label': gettext('Scram server key'), 'vartype': 'string',
-    'min_server_version': '18'
-  }, {
     'value': 'oauth_issuer', 'label': gettext('OAuth issuer'), 'vartype': 'string',
     'min_server_version': '18'
   }, {
