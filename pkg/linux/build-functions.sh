@@ -22,7 +22,13 @@ _setup_env() {
     # Setting up the correct Python version for Ubuntu 18 and EL-8, which have
     # new Python versions installed parallel to the old ones.
     OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
-    SYSTEM_PYTHON_PATH='/usr/bin/python3'
+    if [ -n "$VIRTUAL_ENV" ]; then
+        SYSTEM_PYTHON_PATH="$VIRTUAL_ENV/bin/python3"
+        echo "Detected virtual environment: $VIRTUAL_ENV"
+    else
+        SYSTEM_PYTHON_PATH='/usr/bin/python3'
+        echo "Not in a virtual environment, using system Python path."
+    fi
     PYTHON_BINARY=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print('python%d.%.d' % (sys.version_info.major, sys.version_info.minor))")
     PYTHON_BINARY_WITHOUT_DOTS='python3'
     if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
@@ -203,9 +209,7 @@ _build_docs() {
     cd "${SERVERROOT}" && mkdir -p "usr/${APP_NAME}/share/docs/en_US/html"
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
-    SYS_PYTHONPATH=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print(':'.join([p for p in sys.path if p]))")
-    # shellcheck disable=SC2153
-    PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+    "${SYSTEM_PYTHON_PATH}" -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
 }
 
 _copy_code() {
