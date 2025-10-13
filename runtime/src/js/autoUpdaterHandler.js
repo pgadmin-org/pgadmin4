@@ -21,24 +21,24 @@ export function updateConfigAndMenus(event, configStore, pgAdminMainScreen, menu
 // This function registers autoUpdater event listeners ONCE
 function registerAutoUpdaterEvents({ pgAdminMainScreen, configStore, menuCallbacks }) {
   autoUpdater.on('checking-for-update', () => {
-    misc.writeServerLog('[Auto-Updater]: Checking for update...');
+    misc.writeServerLog('[Auto-Updater]: Checking for update.');
   });
 
   autoUpdater.on('update-available', () => {
     updateConfigAndMenus('update-available', configStore, pgAdminMainScreen, menuCallbacks);
-    misc.writeServerLog('[Auto-Updater]: Update downloading...');
+    misc.writeServerLog('[Auto-Updater]: Update downloading.');
     pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', { update_downloading: true });
   });
 
   autoUpdater.on('update-not-available', () => {
     updateConfigAndMenus('update-not-available', configStore, pgAdminMainScreen, menuCallbacks);
-    misc.writeServerLog('[Auto-Updater]: No update available...');
+    misc.writeServerLog('[Auto-Updater]: No update available.');
     pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', { no_update_available: true });
   });
 
   autoUpdater.on('update-downloaded', () => {
     updateConfigAndMenus('update-downloaded', configStore, pgAdminMainScreen, menuCallbacks);
-    misc.writeServerLog('[Auto-Updater]: Update downloaded...');
+    misc.writeServerLog('[Auto-Updater]: Update downloaded.');
     pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', { update_downloaded: true });
   });
 
@@ -82,7 +82,7 @@ function handleSendDataForAppUpdate({
 
       try {
         autoUpdater.setFeedURL({ url: serverUrl });
-        misc.writeServerLog('[Auto-Updater]: Initiating update check...');
+        misc.writeServerLog('[Auto-Updater]: Initiating update check.');
         autoUpdater.checkForUpdates();
       } catch (err) {
         misc.writeServerLog('[Auto-Updater]: Error setting autoUpdater feed URL: ' + err.message);

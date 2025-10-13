@@ -34,6 +34,7 @@ import ssl
 from urllib.request import urlopen
 from urllib.parse import unquote
 from pgadmin.settings import get_setting, store_setting
+import html
 
 MODULE_NAME = 'misc'
 
@@ -389,10 +390,11 @@ def upgrade_check():
             if response.getcode() == 200:
                 data = json.loads(response.read().decode('utf-8'))
                 current_app.logger.debug('Response data: %s' % data)
-        except Exception:
-            current_app.logger.exception(
-                'Exception when checking for update')
-            return internal_server_error('Failed to check for update')
+        except Exception as e:
+            current_app.logger.exception(e)
+            # Escaping the error message to prevent HTML execution in UI
+            escaped_error = html.escape(str(e))
+            return internal_server_error(errormsg=escaped_error)
 
         if data and config.UPGRADE_CHECK_KEY and \
                 config.UPGRADE_CHECK_KEY in data:

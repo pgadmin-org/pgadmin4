@@ -198,9 +198,9 @@ export default function BrowserComponent({pgAdmin}) {
       if (data?.check_version_update) {
         pgAdmin.Browser.check_version_update(true);
       } else if (data.update_downloading) {
-        appAutoUpdateNotifier('Update downloading...', 'info', null, 10000);
+        appAutoUpdateNotifier('Update downloading.', 'info', null, 10000);
       } else if (data.no_update_available) {
-        appAutoUpdateNotifier('No update available...', 'info', null, 10000);
+        appAutoUpdateNotifier('No update available.', 'info', null, 10000);
       } else if (data.update_downloaded) {
         const UPDATE_DOWNLOADED_MESSAGE = gettext('An update is ready. Restart the app now to install it, or later to keep using the current version.');
         appAutoUpdateNotifier(UPDATE_DOWNLOADED_MESSAGE, 'warning', installUpdate, null, 'Update downloaded', 'update_downloaded');
