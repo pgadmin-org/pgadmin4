@@ -47,7 +47,7 @@ pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*
 # pinned for https://github.com/andfoy/pywinpty/issues/545
-pywinpty==2.0.*; sys_platform=="win32"
+pywinpty==3.0.*; sys_platform=="win32"
 qrcode[pil]==8.*; python_version >= '3.9'
 setuptools==80.*
 SQLAlchemy==2.*
