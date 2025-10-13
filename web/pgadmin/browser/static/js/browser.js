@@ -282,7 +282,7 @@ define('pgadmin.browser', [
         });
         const isDesktopWithAutoUpdate = pgAdmin.server_mode == 'False' && data.check_for_auto_updates && data.auto_update_url !== '';
         const isUpdateAvailable = data.outdated && data.upgrade_version_int > data.current_version_int;
-        const noUpdateMessage = 'No update available...';
+        const noUpdateMessage = 'No update available.';
         // This is for desktop installers whose auto_update_url is mentioned in https://www.pgadmin.org/versions.json
         if (isDesktopWithAutoUpdate) {
           if (isUpdateAvailable) {

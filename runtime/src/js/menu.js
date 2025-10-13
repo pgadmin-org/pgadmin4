@@ -75,7 +75,7 @@ function handleAutoUpdateMenu(menuFile, configStore, callbacks) {
     menuFile.submenu.unshift({
       name: 'mnu_restart_to_update',
       id: 'mnu_restart_to_update',
-      label: 'Restart to Update...',
+      label: 'Restart to Update',
       enabled: true,
       priority: 998,
       click: callbacks['restart_to_update'],
