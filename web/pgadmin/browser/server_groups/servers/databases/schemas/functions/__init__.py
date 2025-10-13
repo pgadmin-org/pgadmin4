@@ -1171,9 +1171,11 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             old_data['proparallel'] = \
                 parallel_dict[old_data['proparallel']]
 
-        if self.node_type == 'function' and \
-                old_data['dependsonextensions'] is None:
-            old_data['dependsonextensions'] = []
+        if self.node_type == 'function':
+            old_data['dependsonextensions'] = \
+                old_data.get('dependsonextensions') or []
+            data['dependsonextensions'] = \
+                data.get('dependsonextensions') or []
 
         # If any of the below argument is changed,
         # then CREATE OR REPLACE SQL statement should be called

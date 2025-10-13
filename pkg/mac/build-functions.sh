@@ -1,5 +1,11 @@
 # shellcheck shell=bash
 
+# uname -m returns "x86_64" on Intel, but we need "x64"
+ARCH="x64"
+if [ "$(uname -m)" == "arm64" ]; then
+    ARCH="arm64"
+fi
+
 _setup_env() {
     FUNCS_DIR=$(cd "$(dirname "$0")" && pwd)/../..
     APP_RELEASE=$(grep "^APP_RELEASE" "${FUNCS_DIR}/web/version.py" | cut -d"=" -f2 | sed 's/ //g')
@@ -11,14 +17,7 @@ _setup_env() {
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
-
-    # uname -m returns "x86_64" on Intel, but we need "x64"
-    DMG_ARCH="$(uname -m)"
-    if [ "${DMG_ARCH}" == "x86_64" ]; then
-        DMG_ARCH="x64"
-    fi
-
-    DMG_NAME="${DIST_ROOT}/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}-${DMG_ARCH}.dmg"
+    DMG_NAME="${DIST_ROOT}/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}-${ARCH}.dmg"
     PYTHON_OS_VERSION="11"
 }
 
@@ -34,20 +33,14 @@ _build_runtime() {
 
     test -d "${BUILD_ROOT}" || mkdir "${BUILD_ROOT}"
     # Get a fresh copy of electron
-    # uname -m returns "x86_64" on Intel, but we need "x64"
-    ELECTRON_ARCH="x64"
-    if [ "$(uname -m)" == "arm64" ]; then
-      ELECTRON_ARCH="arm64"
-    fi
-
     ELECTRON_VERSION="$(npm info electron version)"
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
-            wget "https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip" && break
-            rm "electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip"
+            wget "https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-darwin-${ARCH}.zip" && break
+            rm "electron-v${ELECTRON_VERSION}-darwin-${ARCH}.zip"
         done
-        unzip "electron-v${ELECTRON_VERSION}-darwin-${ELECTRON_ARCH}.zip"
+        unzip "electron-v${ELECTRON_VERSION}-darwin-${ARCH}.zip"
     popd > /dev/null || exit
     # WGET END
 
