@@ -212,10 +212,8 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
       });
     };
     ele.addEventListener('keydown', dispatch);
-    ele.addEventListener('keyup', dispatch);
     return ()=>{
       ele.removeEventListener('keydown', dispatch);
-      ele.removeEventListener('keyup', dispatch);
     };
   }, [eleRef.current]);
 
