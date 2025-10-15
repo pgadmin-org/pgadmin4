@@ -117,7 +117,7 @@ spec:
             - name: PGADMIN_DISABLE_POSTFIX
               value: {{ .Values.disablePostfix | quote }}
           {{- with .Values.extraEnvVars }}
-          {{- tpl (. | toYaml) $ | nindent 14 }}
+          {{- tpl (. | toYaml) $ | nindent 12 }}
           {{- end }}
           volumeMounts:
             - mountPath: /var/lib/pgadmin
