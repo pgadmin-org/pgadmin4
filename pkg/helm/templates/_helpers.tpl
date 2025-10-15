@@ -26,3 +26,24 @@
 {{- end -}}
 {{- $securityContext | toYaml -}}
 {{- end -}}
+
+{{- define "tpl.preserve.variable" -}}
+{{- $obj := . }}
+{{- if kindIs "map" $obj }}
+  {{- range $k, $v := $obj }}
+    {{- if kindIs "string" $v }}
+      {{- if regexMatch "^[0-9]+$" $v }}
+        {{- $_ := set $obj $k (atoi $v) }}
+      {{- else if regexMatch "(?i)^(true|false)$" $v }}
+        {{- $_ := set $obj $k (eq (lower $v) "true") }}
+      {{- end }}
+    {{- else }}
+      {{- include "tpl.preserve.variable" $v }}
+    {{- end }}
+  {{- end }}
+{{- else if kindIs "slice" $obj }}
+  {{- range $i, $v := $obj }}
+    {{- include "tpl.preserve.variable" $v }}
+  {{- end }}
+{{- end }}
+{{- end }}
