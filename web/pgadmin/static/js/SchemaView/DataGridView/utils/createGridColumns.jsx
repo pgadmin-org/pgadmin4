@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import { isModeSupportedByField } from 'sources/SchemaView/common';
 import { getMappedCell } from '../mappedCell';

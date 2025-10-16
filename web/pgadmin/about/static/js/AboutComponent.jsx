@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Box, Grid, InputLabel } from '@mui/material';
 import { InputSQL } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';

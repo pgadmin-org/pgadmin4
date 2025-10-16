@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { forwardRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { flexRender } from '@tanstack/react-table';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -161,7 +161,15 @@ const StyledDiv = styled('div')(({theme})=>({
   }
 }));
 
-export const PgReactTableCell = forwardRef(({row, cell, children, className}, ref)=>{
+export function PgReactTableCell(
+  {
+    ref,
+    row,
+    cell,
+    children,
+    className
+  }
+) {
   let classNames = ['pgrd-row-cell'];
   if (typeof (cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
     classNames.push('btn-cell');
@@ -195,7 +203,7 @@ export const PgReactTableCell = forwardRef(({row, cell, children, className}, re
       <div className='pgrd-row-cell-content'>{children}</div>
     </div>
   );
-});
+};
 
 PgReactTableCell.displayName = 'PgReactTableCell';
 PgReactTableCell.propTypes = {
@@ -205,26 +213,40 @@ PgReactTableCell.propTypes = {
   className: PropTypes.any,
 };
 
-export const PgReactTableRow = forwardRef(({ children, className, ...props }, ref)=>{
+export function PgReactTableRow (
+  {
+    ref,
+    children,
+    className,
+    ...props
+  }
+) {
   return (
     <div className={['pgrt-row', className].join(' ')} ref={ref} {...props}>
       {children}
     </div>
   );
-});
+};
 PgReactTableRow.displayName = 'PgReactTableRow';
 PgReactTableRow.propTypes = {
   children: CustomPropTypes.children,
   className: PropTypes.any,
 };
 
-export const PgReactTableRowContent = forwardRef(({children, className, ...props}, ref)=>{
+export function PgReactTableRowContent(
+  {
+    ref,
+    children,
+    className,
+    ...props
+  }
+) {
   return (
     <div className={['pgrt-row-content', className].join(' ')} ref={ref} {...props}>
       {children}
     </div>
   );
-});
+};
 PgReactTableRowContent.displayName = 'PgReactTableRowContent';
 PgReactTableRowContent.propTypes = {
   children: CustomPropTypes.children,
@@ -306,7 +328,17 @@ PgReactTableBody.propTypes = {
   children: CustomPropTypes.children,
 };
 
-export const PgReactTable = forwardRef(({children, table, rootClassName, tableClassName, onScrollFunc, ...props}, ref)=>{
+export function PgReactTable(
+  {
+    ref,
+    children,
+    table,
+    rootClassName,
+    tableClassName,
+    onScrollFunc,
+    ...props
+  }
+) {
   const columns = table.getAllColumns();
 
   useEffect(()=>{
@@ -339,7 +371,7 @@ export const PgReactTable = forwardRef(({children, table, rootClassName, tableCl
       </div>
     </StyledDiv>
   );
-});
+};
 PgReactTable.displayName = 'PgReactTable';
 PgReactTable.propTypes = {
   table: PropTypes.object,

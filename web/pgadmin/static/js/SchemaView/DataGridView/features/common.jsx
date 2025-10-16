@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 export const ACTION_COLUMN = {
   header: <>&nbsp;</>,

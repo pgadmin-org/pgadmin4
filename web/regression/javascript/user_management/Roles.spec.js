@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import { act, render } from '@testing-library/react';
 import MockAdapter from 'axios-mock-adapter';

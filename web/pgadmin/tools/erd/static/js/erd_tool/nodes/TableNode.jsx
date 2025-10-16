@@ -11,12 +11,12 @@ import React from 'react';
 import { DefaultNodeModel, DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/react-diagrams';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
-import SchemaIcon from 'top/browser/server_groups/servers/databases/schemas/static/img/schema.svg';
-import TableIcon from 'top/browser/server_groups/servers/databases/schemas/tables/static/img/table.svg';
-import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg';
-import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
-import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
-import UniqueKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/unique_constraint.svg';
+import SchemaIcon from 'top/browser/server_groups/servers/databases/schemas/static/img/schema.svg?svgr';
+import TableIcon from 'top/browser/server_groups/servers/databases/schemas/tables/static/img/table.svg?svgr';
+import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg?svgr';
+import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg?svgr';
+import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg?svgr';
+import UniqueKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/unique_constraint.svg?svgr';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
@@ -199,9 +199,11 @@ export class TableNodeModel extends DefaultNodeModel {
 }
 
 function RowIcon({icon}) {
+  const Icon = icon;
   return (
     <div style={{padding: '0rem 0.125rem'}}>
-      <img src={icon} alt="" crossOrigin="anonymous"/>
+      <Icon />
+      {/* <img src={icon} alt="" crossOrigin="anonymous"/> */}
     </div>
   );
 }

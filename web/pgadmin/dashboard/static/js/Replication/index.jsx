@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import LogReplication from './LogReplication';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';

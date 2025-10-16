@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import React, { act } from 'react';
+import { act } from 'react';
 
 import { render } from '@testing-library/react';
 import {TestSchema} from './TestSchema.ui';

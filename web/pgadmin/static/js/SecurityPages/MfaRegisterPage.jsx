@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import LoginImage from '../../img/login.svg?svgr';
 import { FormNote, InputText } from '../components/FormComponents';
 import BasePage, { SecurityButton } from './BasePage';

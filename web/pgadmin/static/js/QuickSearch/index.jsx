@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, {useRef,useState, useEffect} from 'react';
+import {useRef,useState, useEffect} from 'react';
 import { styled } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
 import {useDelayDebounce} from 'sources/custom_hooks';

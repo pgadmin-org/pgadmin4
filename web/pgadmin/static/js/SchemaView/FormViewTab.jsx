@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Tab } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useFieldOptions, useSchemaStateSubscriber } from './hooks';
 import { SchemaStateContext } from './SchemaState';
 import PropTypes from 'prop-types';

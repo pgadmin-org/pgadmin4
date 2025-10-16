@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import gettext from 'sources/gettext';
 import ReplicationSlotsSchema from './schema_ui/replication_slots.ui';

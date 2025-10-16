@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import { withTheme } from '../fake_theme';
 import { fireEvent, render, screen } from '@testing-library/react';

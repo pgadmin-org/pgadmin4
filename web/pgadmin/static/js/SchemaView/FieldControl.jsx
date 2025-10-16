@@ -7,15 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const FieldControl = ({schemaId, item}) => {
   const Control = item.control;
-  const props = item.controlProps;
+  const {key, ...props} = item.controlProps;
   const children = item.controls;
 
   return useMemo(() =>
-    <Control {...props}>
+    <Control key={key} {...props}>
       {
         children?.map(
           (child, idx) => <FieldControl key={`${child.controlProps.id}-${idx}`} item={child}/>

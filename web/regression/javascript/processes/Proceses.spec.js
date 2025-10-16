@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 
-import React from 'react';
 
 import { render } from '@testing-library/react';
 import { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessConstants';

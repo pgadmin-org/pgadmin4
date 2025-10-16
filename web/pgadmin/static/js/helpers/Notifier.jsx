@@ -38,9 +38,14 @@ const Root = styled('div')(({theme}) => ({
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
-export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
+export function FinalNotifyContent(
+  {
+    ref,
+    children
+  }
+) {
   return <SnackbarContent style= {{ justifyContent: 'end', maxWidth: '700px' }} ref={ref}>{children}</SnackbarContent>;
-});
+};
 FinalNotifyContent.displayName = 'FinalNotifyContent';
 FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,

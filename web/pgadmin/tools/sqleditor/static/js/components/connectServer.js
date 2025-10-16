@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React from 'react';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';

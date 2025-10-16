@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import {DebuggerContext, DebuggerEventsContext} from '../../../pgadmin/tools/debugger/static/js/components/DebuggerComponent';

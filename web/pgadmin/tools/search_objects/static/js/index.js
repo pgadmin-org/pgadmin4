@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'top/browser/static/js/browser';
-import React from 'react';
 import gettext from 'sources/gettext';
 import SearchObjects from './SearchObjects';
 import {getPanelTitle} from '../../../sqleditor/static/js/sqleditor_title';

@@ -10,7 +10,7 @@ import gettext from 'sources/gettext';
 
 import { styled } from '@mui/material/styles';
 
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 import { Box } from '@mui/material';
 import { InputSQL } from '../../../../../static/js/components/FormComponents';

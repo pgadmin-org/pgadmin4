@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from './ConnectServerContent';
 import url_for from 'sources/url_for';

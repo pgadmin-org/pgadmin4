@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';

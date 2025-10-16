@@ -1,6 +1,5 @@
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';

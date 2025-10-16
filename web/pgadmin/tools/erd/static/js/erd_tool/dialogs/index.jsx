@@ -14,7 +14,6 @@ import {getOneToOneDialogSchema} from './OneToOneDialog';
 
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../../../../static/js/SchemaView';
-import React from 'react';
 export default class ERDDialogs {
   constructor(modalProvider) {
     this.modal = modalProvider;

@@ -11,7 +11,6 @@ import gettext from 'sources/gettext';
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
 import url_for from 'sources/url_for';
-import React from 'react';
 import { Box } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import { getBinaryPathSchema } from './binary_path.ui';

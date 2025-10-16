@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import React from 'react';
 import QuickSearch from '../../../pgadmin/static/js/QuickSearch';
 import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';

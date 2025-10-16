@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';

@@ -10,7 +10,6 @@
 import _ from 'lodash';
 import getApiInstance from '../../../static/js/api_instance';
 import { AllPermissionTypes, BROWSER_PANELS } from './constants';
-import React from 'react';
 import ObjectNodeProperties from '../../../misc/properties/ObjectNodeProperties';
 import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 import toPx from '../../../static/js/to_px';

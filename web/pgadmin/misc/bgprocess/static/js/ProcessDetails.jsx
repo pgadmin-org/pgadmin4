@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { forwardRef, useContext } from 'react';
+import { useContext } from 'react';
 import {
   RightAngleLinkModel,
   RightAngleLinkWidget,
@@ -354,8 +354,7 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
   }
 }
 
-const LinkSegment = forwardRef(({selected, path, ...props}, ref)=>{
-
+function LinkSegment({ref, selected, path, ...props}) {
   return (
     <path
       ref={ref}
@@ -366,7 +365,7 @@ const LinkSegment = forwardRef(({selected, path, ...props}, ref)=>{
     >
     </path>
   );
-});
+};
 LinkSegment.displayName = 'LinkSegment';
 LinkSegment.propTypes = {
   model: PropTypes.object,

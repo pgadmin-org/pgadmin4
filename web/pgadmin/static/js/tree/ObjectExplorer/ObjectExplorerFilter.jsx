@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { usePgAdmin } from '../../PgAdminProvider';
 import { Box, styled } from '@mui/material';
 import { DefaultButton, PrimaryButton } from '../../components/Buttons';

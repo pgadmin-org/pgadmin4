@@ -1,5 +1,4 @@
 
-import React from 'react';
 
 
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';

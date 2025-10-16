@@ -1,4 +1,3 @@
-import React from 'react';
 
 import {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE} from '../../../pgadmin/dashboard/static/js/Graphs';
 import { withTheme } from '../fake_theme';

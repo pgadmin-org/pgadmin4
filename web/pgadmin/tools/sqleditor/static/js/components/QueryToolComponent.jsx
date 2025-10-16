@@ -231,8 +231,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} setQtStatePartial={setQtStatePartial}/>}),
-                LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
-                  cached: undefined}),
+                LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />}),
               ],
             },
             {
@@ -546,7 +545,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
       pgAdmin.Browser.notifier.error(error.response.data.errormsg);
-      
+
     }else if(error?.response?.status == 428) {
       connectServerModal(modal, error.response?.data?.result, async (passwordData)=>{
 
@@ -914,7 +913,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     updateServerCursor: (state) => {
       setQtStatePartial(state);
     },
-  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor]);
+  }), [qtState.params, qtState.preferences, containerRef.current, qtState.editor_disabled, qtState.eol,  qtState.current_file, qtState.server_cursor, docker.current]);
 
 
   const queryToolConnContextValue = React.useMemo(()=>({

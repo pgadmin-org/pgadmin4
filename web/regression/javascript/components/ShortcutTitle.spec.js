@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 
-import React from 'react';
 
 import { withTheme } from '../fake_theme';
 import { render } from '@testing-library/react';

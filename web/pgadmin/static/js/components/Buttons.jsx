@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Button, ButtonGroup, Tooltip } from '@mui/material';
-import React, { forwardRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import ShortcutTitle from './ShortcutTitle';
@@ -125,7 +125,7 @@ const StyledButton = styled(Button)(({theme, color}) => ({
 
 
 /* pgAdmin primary button */
-export const PrimaryButton = forwardRef((props, ref)=>{
+export function PrimaryButton({ref, ...props}) {
   let {children, className, size, noBorder, ...otherProps} = props;
   let allClassName = ['Buttons-primaryButton', className];
   if(size == 'xs') {
@@ -137,7 +137,7 @@ export const PrimaryButton = forwardRef((props, ref)=>{
   return (
     <StyledButton ref={ref} size={size} className={allClassName.join(' ')} data-label={dataLabel} {...otherProps} color="primary" variant="contained">{children}</StyledButton>
   );
-});
+};
 PrimaryButton.displayName = 'PrimaryButton';
 PrimaryButton.propTypes = {
   size: PropTypes.string,
@@ -147,7 +147,7 @@ PrimaryButton.propTypes = {
 };
 
 /* pgAdmin default button */
-export const DefaultButton = forwardRef((props, ref)=>{
+export function DefaultButton({ref, ...props}) {
   let {children, className, size, noBorder, color, ...otherProps} = props;
   let variant = 'outlined';
   let allClassName = ['Buttons-defaultButton', className];
@@ -162,7 +162,7 @@ export const DefaultButton = forwardRef((props, ref)=>{
   return (
     <StyledButton variant={variant} ref={ref} size={size} className={allClassName.join(' ')} data-label={dataLabel} {...otherProps} color={color ?? 'default'} >{children}</StyledButton>
   );
-});
+};
 DefaultButton.displayName = 'DefaultButton';
 DefaultButton.propTypes = {
   size: PropTypes.string,
@@ -174,7 +174,7 @@ DefaultButton.propTypes = {
 
 
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, isDropdown, tooltipPlacement, ...props}, ref)=>{
+export function PgIconButton({ref, icon, title, shortcut, className, splitButton, style, color, isDropdown, tooltipPlacement, ...props}) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   let shortcutTitle = null;
   if(shortcut) {
@@ -245,7 +245,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       </Tooltip>
     );
   }
-});
+};
 PgIconButton.displayName = 'PgIconButton';
 PgIconButton.propTypes = {
   icon: CustomPropTypes.children,
@@ -261,14 +261,14 @@ PgIconButton.propTypes = {
   tooltipPlacement: PropTypes.string,
 };
 
-export const PgButtonGroup = forwardRef(({children, ...props}, ref)=>{
+export function PgButtonGroup({ref, children, ...props}) {
   /* Tooltip does not work for disabled items */
   return (
     <ButtonGroup ref={ref} {...props}>
       {children}
     </ButtonGroup>
   );
-});
+};
 PgButtonGroup.displayName = 'PgButtonGroup';
 PgButtonGroup.propTypes = {
   children: CustomPropTypes.children,

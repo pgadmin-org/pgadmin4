@@ -50,7 +50,7 @@ const providePlugin = new webpack.ProvidePlugin({
   'moment': 'moment',
   'window.moment':'moment',
   process: 'process/browser',
-  Buffer: ['buffer', 'Buffer']
+  Buffer: ['buffer', 'Buffer'],
 });
 
 // Helps in debugging each single file, it extracts the module files
@@ -131,22 +131,19 @@ module.exports = [{
         'webfonts-loader',
       ],
     },{
-      test: /\.jsx?$/,
-      exclude: [/node_modules/, /vendor/],
-      use: {
-        loader: 'babel-loader',
-      },
-    },{
       test: /\.m?js$/,
       resolve: {
         fullySpecified: false
       },
     },{
-      test: /\.tsx?$|\.ts?$/,
+      test: /\.tsx?$|\.ts?$|\.jsx?$/,
+      exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
         options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
+          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], ['@babel/preset-react', {
+            'runtime': 'automatic'
+          }], '@babel/preset-typescript'],
           plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
         },
       },

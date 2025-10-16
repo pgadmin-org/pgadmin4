@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import FloatingNote from 'pgadmin.tools.erd/erd_tool/components/FloatingNote';
 import Theme from '../../../../pgadmin/static/js/Theme';

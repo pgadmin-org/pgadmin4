@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import { FormHelperText, Box } from '@mui/material';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {InputSelect } from './FormComponents';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';

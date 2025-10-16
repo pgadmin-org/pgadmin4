@@ -7,7 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useMemo, useRef } from 'react';
+import { useContext, useMemo, useRef } from 'react';
+import Draggable from 'react-draggable';
 
 import { flexRender } from '@tanstack/react-table';
 
@@ -54,31 +55,33 @@ export function DataGridRow({row, isResizing}) {
   return useMemo(() => (
     !row ? <></> :
       <DataGridRowContext.Provider value={{ rowAccessPath, row }}>
-        <PgReactTableRowContent ref={rowRef}
-          className={classList.join[' ']}
-          data-test='data-table-row' style={{position: 'initial'}}
-          {...attributes}
-        >
-          {
-            row?.getVisibleCells().map((cell) => {
-              const columnDef = cell.column.columnDef;
-              const content = flexRender(
-                columnDef.cell, {
-                  key: columnDef.cell?.type ?? columnDef.id,
-                  row: row,
-                  getValue: cell.getValue,
-                }
-              );
+        <Draggable nodeRef={rowRef}>
+          <PgReactTableRowContent ref={rowRef}
+            className={classList.join[' ']}
+            data-test='data-table-row' style={{position: 'initial'}}
+            {...attributes}
+          >
+            {
+              row?.getVisibleCells().map((cell) => {
+                const columnDef = cell.column.columnDef;
+                const content = flexRender(
+                  columnDef.cell, {
+                    key: columnDef.cell?.type ?? columnDef.id,
+                    row: row,
+                    getValue: cell.getValue,
+                  }
+                );
 
-              return (
-                <PgReactTableCell cell={cell} row={row} key={cell.id}>
-                  {content}
-                </PgReactTableCell>
-              );
-            })
-          }
-          <div className='hover-overlay'></div>
-        </PgReactTableRowContent>
+                return (
+                  <PgReactTableCell cell={cell} row={row} key={cell.id}>
+                    {content}
+                  </PgReactTableCell>
+                );
+              })
+            }
+            <div className='hover-overlay'></div>
+          </PgReactTableRowContent>
+        </Draggable>
         {
           expandedRowContents.length ?
             <PgReactTableRowExpandContent

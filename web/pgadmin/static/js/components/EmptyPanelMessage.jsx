@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';

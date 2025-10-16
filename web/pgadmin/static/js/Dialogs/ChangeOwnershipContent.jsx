@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import BaseUISchema from '../SchemaView/base_schema.ui';

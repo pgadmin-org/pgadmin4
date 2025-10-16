@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 import { styled } from '@mui/material/styles';
 import _ from 'lodash';
-import React from 'react';
 import { InputCheckbox, InputText } from './FormComponents';
 import PropTypes from 'prop-types';
 

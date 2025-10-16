@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ForgotPasswordImage from '../../img/forgot_password.svg?svgr';
 import { InputText } from '../components/FormComponents';
 import BasePage, { SecurityButton } from './BasePage';
