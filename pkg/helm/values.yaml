@@ -78,7 +78,7 @@ resources:
     memory: 512Mi
 
 persistence:
-  enabled: true
+  enabled: false
   size: 1Gi
   storageClass: ""
   accessModes: ["ReadWriteOnce"]
@@ -152,4 +152,5 @@ containerSecurityContext:
   appArmorProfile:
     type: RuntimeDefault
   windowsOptions:
+
     hostProcess: false
