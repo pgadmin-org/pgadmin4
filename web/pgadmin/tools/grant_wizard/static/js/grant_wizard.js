@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React from 'react';
 import GrantWizard from './GrantWizard';
 import { AllPermissionTypes, BROWSER_PANELS } from '../../../../browser/static/js/constants';
 

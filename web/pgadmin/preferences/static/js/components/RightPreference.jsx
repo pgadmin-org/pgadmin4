@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import React, { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { Box, Link } from '@mui/material';
 import PropTypes from 'prop-types';
 import SchemaView from '../../../../static/js/SchemaView';

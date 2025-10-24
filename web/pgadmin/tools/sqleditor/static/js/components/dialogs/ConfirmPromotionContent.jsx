@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ModalContent } from '../../../../../../static/js/components/ModalContent';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';

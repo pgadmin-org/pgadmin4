@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import gettext from 'sources/gettext';
 import { LAYOUT_EVENTS } from './helpers/Layout';
 import { styled } from '@mui/material/styles';

@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import QueryToolSvg from '../../img/fonticon/query_tool.svg?svgr';
 import ViewDataSvg from '../../img/fonticon/view_data.svg?svgr';
 import SaveDataSvg from '../../img/fonticon/save_data_changes.svg?svgr';

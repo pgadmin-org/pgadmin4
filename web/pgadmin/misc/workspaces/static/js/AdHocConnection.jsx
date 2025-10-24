@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
@@ -229,7 +229,6 @@ class AdHocConnectionSchema extends BaseUISchema {
             return {type: 'text'};
           }
         },
-        optionsLoaded: (res) => this.dbs = res,
         depChange: (state) => {
           /* Once the option is selected get the name */
           return {

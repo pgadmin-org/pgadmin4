@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import PropTypes from 'prop-types';
 
 // Allow us to render IFrame using React

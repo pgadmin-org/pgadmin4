@@ -10,7 +10,6 @@
 import gettext from 'sources/gettext';
 import { BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
 import WorkspaceWelcomePage from './WorkspaceWelcomePage';
-import React from 'react';
 import { LayoutDocker } from '../../../../static/js/helpers/Layout';
 
 const welcomeQueryToolPanelData = [{

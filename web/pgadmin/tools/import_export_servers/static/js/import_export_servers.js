@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import gettext from 'sources/gettext';
 import ImportExportServers from './ImportExportServers';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';

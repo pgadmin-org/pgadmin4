@@ -32,7 +32,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
   private readonly pseudoActiveFileDec: Decoration;
   private activeFile: FileOrDir;
   private pseudoActiveFile: FileOrDir;
-  private readonly wrapperRef: React.RefObject<HTMLDivElement> = React.createRef();
+  private readonly wrapperRef: React.RefObject<HTMLDivElement | null> = React.createRef();
   private readonly events: Notificar<FileTreeXEvent>;
   private readonly disposables: DisposablesComposite;
   private keyboardHotkeys: KeyboardHotkeys;

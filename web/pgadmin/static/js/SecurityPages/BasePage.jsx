@@ -1,7 +1,7 @@
 import { Box, Button, darken } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { MESSAGE_TYPE, NotifierMessage } from '../components/FormComponents';
 import { FinalNotifyContent } from '../helpers/Notifier';
 import PropTypes from 'prop-types';

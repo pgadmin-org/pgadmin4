@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box, Grid, useTheme } from '@mui/material';
-import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import gettext from 'sources/gettext';
 import PgTable from 'sources/components/PgTable';

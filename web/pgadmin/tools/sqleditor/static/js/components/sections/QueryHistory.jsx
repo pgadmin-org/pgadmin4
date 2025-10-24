@@ -378,19 +378,34 @@ export function QueryHistory() {
   const queryToolConnCtx = React.useContext(QueryToolConnectionContext);
 
   const eventBus = React.useContext(QueryToolEventsContext);
-  const [selectedItemKey, setSelectedItemKey] = React.useState(1);
+  const [activeOnce, setActiveOnce] = React.useState(false);
+  const [selectedItemKey, setSelectedItemKey] = React.useState(null);
   const [showInternal, setShowInternal] = React.useState(true);
   const forceUpdate = useForceUpdate();
   const [loaderText, setLoaderText] = React.useState('');
   const selectedEntry = qhu.current.getEntry(selectedItemKey);
   const layoutDocker = useContext(LayoutDockerContext);
   const listRef = React.useRef();
+  const isVisible = queryToolCtx.docker?.isTabVisible(PANELS.HISTORY);
 
   React.useEffect(()=>{
-    layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
-      currentTabId == PANELS.HISTORY && listRef.current?.focus();
+    const unregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
+      if(currentTabId == PANELS.HISTORY) {
+        listRef.current?.focus();
+
+        if(!activeOnce) {
+          setActiveOnce(true);
+          setSelectedItemKey((prev)=>prev || 1);
+        }
+      }
     });
-  }, []);
+
+    if(isVisible && !activeOnce) {
+      setActiveOnce(true);
+    }
+
+    return () => unregister();
+  }, [isVisible]);
 
   const fetchQueryHistory = async() =>{
     if(!queryToolConnCtx.connected) {
@@ -436,11 +451,11 @@ export function QueryHistory() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
   };
 
-  React.useEffect(() =>{
-    fetchQueryHistory();
-  },[queryToolConnCtx.connected]);
+  React.useEffect(() => {
+    activeOnce && fetchQueryHistory();
+  }, [queryToolConnCtx.connected, activeOnce]);
 
-  const onRemove = async ()=>{
+  const onRemove = async () => {
     setLoaderText(gettext('Removing history entry...'));
     try {
       await queryToolCtx.api.delete(url_for('sqleditor.clear_query_history', {
@@ -494,52 +509,52 @@ export function QueryHistory() {
     }
   };
 
+  if(!activeOnce) {
+    return <></>;
+  }
+
   return (
     <Root>
       <Loader message={loaderText} />
-      {React.useMemo(()=>(
+      {qhu.current.size() == 0 ?
+        <EmptyPanelMessage text={gettext('No history found')} />:
         <>
-          {qhu.current.size() == 0 ?
-            <EmptyPanelMessage text={gettext('No history found')} />:
-            <>
-              <Box className='QuerySources-leftRoot'>
-                <Box className='QuerySources-header'>
-                  <Box marginRight="auto">
-                    {gettext('Show queries generated internally by pgAdmin?')}
-                    <InputSwitch value={showInternal} onChange={(e)=>{
-                      setShowInternal(e.target.checked);
-                      qhu.current.showInternal = e.target.checked;
-                      setSelectedItemKey(qhu.current.getNextItemKey());
-                    }} />
-                  </Box>
-                  <Box>
-                    <DefaultButton size="small" disabled={!selectedItemKey} onClick={onRemove}>{gettext('Remove')}</DefaultButton>
-                    <DefaultButton size="small" disabled={!qhu.current?.getGroups()?.length}
-                      className='QuerySources-removeBtnMargin' onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
-                  </Box>
-                </Box>
-                <Box flexGrow="1" overflow="auto" className='QuerySources-listRoot'>
-                  <List ref={listRef} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
-                    {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
-                      <ListItem key={`section-${groupKey}`} className='QuerySources-removePadding'>
-                        <List className='QuerySources-removePadding'>
-                          <ListSubheader className='QuerySources-listSubheader'>{groupHeader}</ListSubheader>
-                          {qhu.current.getGroupEntries(groupKey).map((entry) => (
-                            <HistoryEntry key={entry.itemKey} entry={entry} formatEntryDate={qhu.current.formatEntryDate}
-                              itemKey={entry.itemKey} selectedItemKey={selectedItemKey} onClick={()=>{setSelectedItemKey(entry.itemKey);}}/>
-                          ))}
-                        </List>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Box>
+          <Box className='QuerySources-leftRoot'>
+            <Box className='QuerySources-header'>
+              <Box marginRight="auto">
+                {gettext('Show queries generated internally by pgAdmin?')}
+                <InputSwitch value={showInternal} onChange={(e)=>{
+                  setShowInternal(e.target.checked);
+                  qhu.current.showInternal = e.target.checked;
+                  setSelectedItemKey(qhu.current.getNextItemKey());
+                }} />
               </Box>
-              <Box flexBasis="50%" maxWidth="50%" overflow="auto">
-                <QueryHistoryDetails entry={selectedEntry}/>
+              <Box>
+                <DefaultButton size="small" disabled={!selectedItemKey} onClick={onRemove}>{gettext('Remove')}</DefaultButton>
+                <DefaultButton size="small" disabled={!qhu.current?.getGroups()?.length}
+                  className='QuerySources-removeBtnMargin' onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
               </Box>
-            </>}
-        </>
-      ), [selectedItemKey, showInternal, qhu.current.size()])}
+            </Box>
+            <Box flexGrow="1" overflow="auto" className='QuerySources-listRoot'>
+              <List ref={listRef} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
+                {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
+                  <ListItem key={`section-${groupKey}`} className='QuerySources-removePadding'>
+                    <List className='QuerySources-removePadding'>
+                      <ListSubheader className='QuerySources-listSubheader'>{groupHeader}</ListSubheader>
+                      {qhu.current.getGroupEntries(groupKey).map((entry) => (
+                        <HistoryEntry key={entry.itemKey} entry={entry} formatEntryDate={qhu.current.formatEntryDate}
+                          itemKey={entry.itemKey} selectedItemKey={selectedItemKey} onClick={()=>{setSelectedItemKey(entry.itemKey);}}/>
+                      ))}
+                    </List>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Box>
+          <Box flexBasis="50%" maxWidth="50%" overflow="auto">
+            <QueryHistoryDetails entry={selectedEntry}/>
+          </Box>
+        </>}
     </Root>
   );
 }

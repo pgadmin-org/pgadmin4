@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import UplotReact from 'uplot-react';
 import { useResizeDetector } from 'react-resize-detector';
 import gettext from 'sources/gettext';

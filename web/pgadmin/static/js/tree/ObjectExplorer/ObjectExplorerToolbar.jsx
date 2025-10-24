@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePgAdmin } from '../../PgAdminProvider';
 import { Badge, Box } from '@mui/material';
 import { QueryToolIcon, RowFilterIcon, ViewDataIcon } from '../../components/ExternalIcon';

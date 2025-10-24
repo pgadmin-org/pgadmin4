@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 
-import React from 'react';
 
 import Privilege from 'sources/components/Privilege';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import {
   SEARCH_INPUT_ALIGNMENT, SEARCH_INPUT_SIZE, SearchInputText,

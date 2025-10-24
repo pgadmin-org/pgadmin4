@@ -1,4 +1,3 @@
-import React from 'react';
 import { ModalContent, ModalFooter } from '../../../static/js/components/ModalContent';
 import gettext from 'sources/gettext';
 import { Box } from '@mui/material';

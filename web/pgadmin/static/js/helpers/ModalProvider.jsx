@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box, Dialog, DialogContent, DialogTitle, Paper } from '@mui/material';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { getEpoch } from 'sources/utils';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../components/Buttons';
 import Draggable from 'react-draggable';
@@ -206,6 +206,7 @@ function setEnableResizing(props, resizeable) {
 function PaperComponent({minHeight, minWidth, ...props}) {
   let [dialogPosition, setDialogPosition] = useState(null);
   let resizeable = checkIsResizable(props);
+  const nodeRef = useRef(null);
 
   const setConditionalPosition = () => {
     return props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y };
@@ -249,8 +250,8 @@ function PaperComponent({minHeight, minWidth, ...props}) {
         <Paper {...props} style={{ width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' }} />
       </StyledRnd>
       :
-      <Draggable cancel={'[class*="MuiDialogContent-root"]'}>
-        <Paper {...props} style={{ minWidth: '600px' }} />
+      <Draggable nodeRef={nodeRef} cancel={'[class*="MuiDialogContent-root"]'}>
+        <Paper {...props} ref={nodeRef} style={{ minWidth: '600px' }} />
       </Draggable>
   );
 }
@@ -312,7 +313,11 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       open={true}
       onClose={closeModal}
       PaperComponent={PaperComponent}
-      PaperProps={{ 'isfullscreen': isFullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
+      slotProps={{
+        paper: {
+          'isfullscreen': isFullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth
+        },
+      }}
       fullScreen={isFullScreen}
       fullWidth={isFullWidth}
       disablePortal

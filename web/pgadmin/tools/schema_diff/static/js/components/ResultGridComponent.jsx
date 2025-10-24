@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { SelectColumn } from 'react-data-grid';
-import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';

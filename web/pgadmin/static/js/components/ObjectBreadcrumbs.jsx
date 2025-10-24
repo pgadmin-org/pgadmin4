@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CommentIcon from '@mui/icons-material/Comment';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';

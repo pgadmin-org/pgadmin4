@@ -9,7 +9,7 @@
 
 /* React HOC on color pickr */
 import Pickr from '@simonwep/pickr';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { fullHexColor } from '../utils';

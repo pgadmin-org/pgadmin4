@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import AboutComponent from './AboutComponent';

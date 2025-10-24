@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 
 import ConnectionBar, {STATUS} from 'pgadmin.tools.erd/erd_tool/components/ConnectionBar';
 import Theme from '../../../../pgadmin/static/js/Theme';

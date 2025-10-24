@@ -1,210 +1,299 @@
 # -*- coding: utf-8 -*-
 
-##########################################################################
-#
-# pgAdmin 4 - PostgreSQL Tools
-#
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
-# This software is released under the PostgreSQL Licence
-#
-##########################################################################
-
-# Get the correct version of chromedriver for the version of Chrome on the
-# machine and save it to the specified location.
-
 import argparse
 import os
 import platform
 import subprocess
 import sys
-from urllib.request import urlopen, urlretrieve
-from urllib.error import URLError
+import requests
 import zipfile
+import stat
+
+
+# --- Helper Functions for Auto-Detection ---
+
+
+def _find_chrome_executable():
+    """Find the Chrome executable path on Linux or macOS."""
+    system = platform.system()
+
+    if system == 'Darwin':
+        # macOS standard location
+        paths = [
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+        ]
+    elif system == 'Linux':
+        # Common Linux executables (Chromium and Google Chrome)
+        paths = [
+            'google-chrome',
+            'google-chrome-stable',
+            'chromium',
+            'chromium-browser',
+        ]
+    else:
+        return None
+
+    for path in paths:
+        try:
+            # Check if the command/path is callable (using 'which' or
+            # direct check)
+            if system == 'Linux':
+                # Use 'which' for common Linux commands/paths
+                result = subprocess.run(
+                    ['which', path],
+                    capture_output=True,
+                    text=True,
+                    check=False
+                )
+                if result.returncode == 0:
+                    return result.stdout.strip()
+
+            # For macOS, or if 'which' failed/is unavailable, check direct path
+            if os.path.exists(path):
+                return path
+
+        except FileNotFoundError:
+            continue
+
+    return None
 
 
 def read_command_line():
     """Read the command line arguments.
-
-    Returns:
-        ArgumentParser: The parsed arguments object
-    """
+    The 'chrome' argument is now removed."""
     parser = argparse.ArgumentParser(
-        description='Get the correct version of chromedriver for the '
-                    'specified Chrome installation and save it.')
-    if platform.system() != 'Windows':
-        parser.add_argument("chrome", metavar="CHROME",
-                            help="the Chrome executable")
-    parser.add_argument("directory", metavar="DIRECTORY",
-                        help="the directory in which to save chromedriver")
+        description=(
+            'Auto-detects Chrome version, gets the correct Chromedriver '
+            'using Chrome for Testing, and saves it.'
+        )
+    )
 
-    args = parser.parse_args()
+    # Only accept the directory argument
+    parser.add_argument(
+        'directory',
+        metavar='DIRECTORY',
+        help='the directory in which to save chromedriver'
+    )
 
-    return args
+    return parser.parse_args()
 
 
-def get_chrome_version(args):
-    """Get the Chrome version number.
+def get_chrome_version():
+    """Get the Chrome version number via OS-specific auto-detection."""
+    full_version = None
 
-    Args:
-        args: The parsed arguments object
-    Returns:
-        The Chrome version number
-    """
     if platform.system() == 'Windows':
-        # On Windows we need to examine the resource section of the binary
-        import winreg
-
-        def _read_registry(root, key, value):
-            try:
-                hkey = winreg.OpenKey(root, key)
-            except Exception:
-                return None
-            try:
-                (val, typ) = winreg.QueryValueEx(hkey, value)
-            except Exception:
-                winreg.CloseKey(hkey)
-                return None
-
-            winreg.CloseKey(hkey)
-            return val
-
-        key = r'SOFTWARE\Google\Chrome\BLBeacon'
-        version_str = _read_registry(winreg.HKEY_CURRENT_USER, key, 'Version')
-
-        # On a 64b host, look for a 32b installation
-        if not version_str:
-            key = r'SOFTWARE\Wow6432Node\Google\Chrome\BLBeacon'
-            version_str = _read_registry(winreg.HKEY_CURRENT_USER, key,
-                                         'Version')
-
-        if not version_str:
-            print('The Chrome version could not be read from the registry.')
-            sys.exit(1)
-
-        chrome_version = '.'.join(version_str.split()[-1].split('.')[:-1])
-    else:
-        # On Linux/Mac we run the Chrome executable with the --version flag,
-        # then parse the output.
         try:
-            result = subprocess.Popen([args.chrome, '--version'],
-                                      stdout=subprocess.PIPE)
-        except FileNotFoundError:
-            print('The specified Chrome executable could not be found.')
+            import winreg
+
+            def _read_registry(root, key, value):
+                try:
+                    with winreg.OpenKey(root, key) as hkey:
+                        val, _ = winreg.QueryValueEx(hkey, value)
+                        return val
+                except Exception:
+                    return None
+
+            keys = [
+                r'SOFTWARE\Google\Chrome\BLBeacon',
+                r'SOFTWARE\Wow6432Node\Google\Chrome\BLBeacon',
+            ]
+            version_str = None
+            for key in keys:
+                version_str = _read_registry(
+                    winreg.HKEY_CURRENT_USER, key, 'Version'
+                )
+                if version_str:
+                    break
+
+            if not version_str:
+                print(
+                    'Error: The Chrome version could not be read '
+                    'from the Windows registry.'
+                )
+                sys.exit(1)
+
+            full_version = (
+                version_str.split()[-1].strip()
+                if version_str.split()
+                else version_str.strip()
+            )
+
+        except ImportError:
+            print("Error: The 'winreg' module is required on Windows.")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error reading Windows registry: {e}")
             sys.exit(1)
 
-        version_str = result.stdout.read().decode("utf-8")
-        # Check for 'Chrom' not 'Chrome' in case the user is using Chromium.
-        if "Chrom" not in version_str:
-            print('The specified Chrome executable output an unexpected '
-                  'version string: {}.'.format(version_str))
+    else:
+        chrome_executable = _find_chrome_executable()
+
+        if not chrome_executable:
+            print(
+                'Error: Could not find the Google Chrome or Chromium '
+                'executable in common locations.'
+            )
             sys.exit(1)
-        # On some linux distro `chrome--version` gives output like
-        # 'Google Chrome 80.0.3987.132 unknown\n'
-        # so we need to check and remove the unknown string from the version
-        if version_str.endswith("unknown\n"):
-            version_str = version_str.strip("unknown\n").strip()
 
-        chrome_version = '.'.join(version_str.split()[-1].split('.')[:-1])
+        try:
+            result = subprocess.run(
+                [chrome_executable, '--version'],
+                capture_output=True,
+                text=True,
+                check=True
+            )
 
-    if chrome_version.count('.') != 2:
-        print('The specified Chrome executable output an unexpected '
-              'version string: {}.'.format(version_str))
+            version_str = result.stdout.strip()
+            if 'Chrom' not in version_str:
+                print(
+                    'Error: Executable output unexpected version string: '
+                    f'{version_str}'
+                )
+                sys.exit(1)
+
+            full_version = version_str.split()[-1]
+
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing '{chrome_executable} --version': {e}")
+            sys.exit(1)
+
+    if not full_version or full_version.count('.') < 3:
+        print(f'Error: Extracted Chrome version "{full_version}" '
+              f'seems invalid.')
         sys.exit(1)
 
-    return chrome_version
+    return full_version
 
 
-def get_chromedriver_version(chrome_version):
-    """Get the required chromedriver version number.
+def get_system_and_platform():
+    """Get the CfT platform name (e.g., mac-arm64, linux64)."""
+    system = platform.system()
 
-    Args:
-        chrome_version: The chrome version number
-    Returns:
-        The chromedriver version number
-    """
-    url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_{}' \
-        .format(chrome_version)
+    if system == 'Darwin':
+        if platform.machine() in ('arm64', 'aarch64'):
+            return 'mac-arm64'
+        return 'mac-x64'
+    if system == 'Linux':
+        return 'linux64'
+    if system == 'Windows':
+        return 'win64'
+
+    print(f'Error: Unknown or unsupported operating system: {system}')
+    sys.exit(1)
+
+
+def get_chromedriver_download_url(full_chrome_version, cft_platform):
+    """Get the required Chromedriver version and download URL using CfT."""
+    download_url = (
+        'https://storage.googleapis.com/chrome-for-testing-public/'
+        f'{full_chrome_version}/{cft_platform}/'
+        f'chromedriver-{cft_platform}.zip'
+    )
+    return full_chrome_version, download_url
+
+
+def download_and_extract(url, target_directory, cft_platform):
+    """Downloads the zip, extracts chromedriver, and sets permissions."""
+    print(f'Downloading from: {url}')
+
+    temp_zip_path = os.path.join(target_directory, 'chromedriver_temp.zip')
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        with open(temp_zip_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+    except Exception as e:
+        print(f'Error during download: {e}')
+        sys.exit(1)
+
+    print('Extracting chromedriver...')
+
+    chromedriver_in_zip_dir = f'chromedriver-{cft_platform}/'
+
+    if cft_platform.startswith('win'):
+        chromedriver_in_zip = chromedriver_in_zip_dir + 'chromedriver.exe'
+        chromedriver_target_name = 'chromedriver.exe'
+    else:
+        chromedriver_in_zip = chromedriver_in_zip_dir + 'chromedriver'
+        chromedriver_target_name = 'chromedriver'
+
+    target_path = os.path.join(target_directory, chromedriver_target_name)
+    found = False
 
     try:
-        fp = urlopen(url)
-    except URLError as e:
-        print('The chromedriver catalog URL could not be accessed: {}'
-              .format(e))
+        with zipfile.ZipFile(temp_zip_path, 'r') as z:
+            for name in z.namelist():
+                if name == chromedriver_in_zip:
+                    with z.open(name) as source, open(
+                        target_path, 'wb'
+                    ) as target:
+                        target.write(source.read())
+                    found = True
+                    break
+    except Exception as e:
+        print(f'Error during extraction: {e}')
+        sys.exit(1)
+    finally:
+        os.remove(temp_zip_path)
+
+    if not found:
+        print(f"Error: '{chromedriver_in_zip}' not found in archive.")
         sys.exit(1)
 
-    version = fp.read().decode("utf-8").strip()
-    fp.close()
+    if not cft_platform.startswith('win'):
+        print('Setting executable permissions.')
+        os.chmod(
+            target_path,
+            stat.S_IRWXU |
+            stat.S_IRGRP |
+            stat.S_IXGRP |
+            stat.S_IROTH |
+            stat.S_IXOTH
+        )
 
-    return version
+    print(f'\nSuccess! Chromedriver downloaded and saved to: {target_path}')
 
 
-def get_system():
-    """Get the system name as known to chromedriver
+# --- Core Logic ---
 
-    Returns:
-        The system name
-    """
-    if platform.system() == 'Darwin':
-        return 'mac64'
-    elif platform.system() == 'Linux':
-        return 'linux64'
-    elif platform.system() == 'Windows':
-        return 'win32'
-    else:
-        print("Unknown or unsupported operating system: {}"
-              .format(platform.system()))
+
+def main():
+    """The core structure of the app."""
+    try:
+        import requests  # noqa: F401
+    except ImportError:
+        print(
+            "Error: The 'requests' library is required. "
+            "Please install it with 'pip install requests'"
+        )
         sys.exit(1)
 
+    args = read_command_line()
 
-"""The core structure of the app."""
+    if not os.path.isdir(args.directory):
+        print(
+            f'Error: The specified output directory "{args.directory}" '
+            'could not be accessed.'
+        )
+        sys.exit(1)
 
-# Read the command line options
-args = read_command_line()
+    cft_platform = get_system_and_platform()
+    current_system = platform.system()
+    print(f'Detected OS: {current_system} | '
+          f'Target CfT Platform: {cft_platform}')
 
-chrome_version = get_chrome_version(args)
+    full_chrome_version = get_chrome_version()
+    print(f'Detected Chrome Version: {full_chrome_version}')
 
-# Check the directory exists
-if not os.path.isdir(args.directory):
-    print('The specified output directory could not be accessed.')
-    sys.exit(1)
+    chromedriver_version, download_url = get_chromedriver_download_url(
+        full_chrome_version, cft_platform
+    )
+    print(f'Downloading chromedriver v{chromedriver_version}...')
 
-chromedriver_version = get_chromedriver_version(chrome_version)
+    download_and_extract(download_url, args.directory, cft_platform)
 
-system = get_system()
 
-url = 'https://chromedriver.storage.googleapis.com/{}/chromedriver_{}.zip' \
-    .format(chromedriver_version, system)
-
-print('Downloading chromedriver v{} for Chrome v{} on {}...'
-      .format(chromedriver_version, chrome_version, system))
-
-try:
-    file, headers = urlretrieve(url)
-except URLError as e:
-    print('The chromedriver download URL could not be accessed: {}'
-          .format(e))
-    sys.exit(1)
-
-# Unzip chromedriver
-print('Extracting chromedriver...')
-
-found = False
-fp = open(file, 'rb')
-z = zipfile.ZipFile(fp)
-for name in z.namelist():
-    if (system == 'win32' and name == 'chromedriver.exe') or \
-            (system != 'win32' and name == 'chromedriver'):
-        z.extract(name, args.directory)
-        found = True
-fp.close()
-
-if not found:
-    print("chromedriver could not be found in the downloaded archive: {}"
-          .format(file))
-    sys.exit(1)
-
-# Set the permissions
-if system == 'mac64' or system == 'linux64':
-    os.chmod(os.path.join(args.directory, 'chromedriver'), 0o755)
-
-print('Chromedriver downloaded to: {}'.format(args.directory))
+if __name__ == '__main__':
+    main()

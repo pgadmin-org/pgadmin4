@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React from 'react';
 import CloudWizard from './CloudWizard';
 import getApiInstance from '../../../../static/js/api_instance';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';

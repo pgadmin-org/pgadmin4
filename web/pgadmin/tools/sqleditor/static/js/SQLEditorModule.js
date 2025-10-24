@@ -18,7 +18,6 @@ import pgBrowser from 'pgadmin.browser';
 import 'pgadmin.tools.user_management';
 import 'pgadmin.tools.file_manager';
 import gettext from 'sources/gettext';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';

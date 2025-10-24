@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, {useEffect, useMemo, useState } from 'react';
+import {useEffect, useMemo, useState } from 'react';
 import AppMenuBar from './AppMenuBar';
 import ObjectBreadcrumbs from './components/ObjectBreadcrumbs';
 import Layout, { LAYOUT_EVENTS, LayoutDocker, getDefaultGroup } from './helpers/Layout';

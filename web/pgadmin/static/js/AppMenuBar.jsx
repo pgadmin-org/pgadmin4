@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';

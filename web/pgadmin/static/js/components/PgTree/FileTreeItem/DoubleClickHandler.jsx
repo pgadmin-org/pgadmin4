@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import { useSingleAndDoubleClick } from '../../../custom_hooks';
-import * as React from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../../../../js/custom_prop_types';
 import { getEnterKeyHandler } from '../../../../js/utils';

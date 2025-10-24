@@ -1,4 +1,3 @@
-import React from 'react';
 import { PgAdminProvider } from '../../pgadmin/static/js/PgAdminProvider';
 import fakePgAdmin from './fake_pgadmin';
 

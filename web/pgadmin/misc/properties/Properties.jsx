@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import { styled } from '@mui/material/styles';
 import CollectionNodeProperties from './CollectionNodeProperties';
 import ErrorBoundary from '../../static/js/helpers/ErrorBoundary';

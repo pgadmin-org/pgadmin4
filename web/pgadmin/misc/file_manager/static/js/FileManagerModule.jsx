@@ -8,7 +8,6 @@
 //
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
-import React from 'react';
 import FileManager from './components/FileManager';
 import { getBrowser } from '../../../../static/js/utils';
 import pgAdmin from 'sources/pgadmin';

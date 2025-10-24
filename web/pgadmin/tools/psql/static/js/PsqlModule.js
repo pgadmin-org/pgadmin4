@@ -27,7 +27,6 @@ import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import * as csrfToken from 'sources/csrf';
 import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 import ToolErrorView from '../../../../static/js/ToolErrorView';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 

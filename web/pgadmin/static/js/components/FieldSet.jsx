@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import { styled } from '@mui/material/styles';
-import React from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 

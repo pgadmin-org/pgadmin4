@@ -1,8 +1,10 @@
-import React from 'react';
 
-const SvgrMock = React.forwardRef((props, ref) => (
-  <svg ref={ref} {...props} />
-));
+const SvgrMock = (
+  {
+    ref,
+    ...props
+  }
+) => (<svg ref={ref} {...props} />);
 
 SvgrMock.displayName = 'SvgrMock';
 

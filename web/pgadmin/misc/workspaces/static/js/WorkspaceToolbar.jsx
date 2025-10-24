@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePgAdmin } from '../../../../static/js/PgAdminProvider';
 import { Box } from '@mui/material';
 import { QueryToolIcon, SchemaDiffIcon } from '../../../../static/js/components/ExternalIcon';

@@ -1,5 +1,4 @@
 
-import React from 'react';
 
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 
