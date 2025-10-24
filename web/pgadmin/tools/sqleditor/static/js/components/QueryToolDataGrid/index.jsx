@@ -395,7 +395,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         newSelectedCols.add(i);
       }
     }
-    
+
     props.onSelectedRowsChange(new Set());
     setLastSelectedColumn(columnIdx);
     onSelectedColumnsChange(newSelectedCols);
@@ -482,9 +482,9 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
           // This is needed to prevent Codemirror from triggering copy.
           if(mode == 'SELECT' && (e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
-            // taken care by handleCopy.
             e.preventDefault();
             e.stopPropagation();
+            handleCopy();
           }
         }}
         {...props}
