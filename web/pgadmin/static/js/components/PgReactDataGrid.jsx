@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import ReactDataGrid, { Row } from 'react-data-grid';
+import { DataGrid, Row } from 'react-data-grid';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
@@ -16,7 +16,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import gettext from 'sources/gettext';
 import { styled } from '@mui/material/styles';
 
-const StyledReactDataGrid = styled(ReactDataGrid)(({theme})=>({
+const StyledReactDataGrid = styled(DataGrid)(({theme})=>({
   '&.ReactGrid-root': {
     height: '100%',
     color: theme.palette.text.primary,
