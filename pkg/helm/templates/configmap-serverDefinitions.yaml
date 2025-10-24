@@ -10,5 +10,7 @@ metadata:
   annotations: {{ . | toYaml | nindent 4 }}
   {{- end }}
 data:
-  servers.json: | {{ tpl (dict "Servers" .Values.serverDefinitions.data | toYaml) . | fromYaml | toPrettyJson | nindent 4 }}
+{{- $variableToPreserveTPL := tpl (dict "Servers" .Values.serverDefinitions.data | toYaml) . | fromYaml }}
+{{- include "tpl.preserve.variable" $variableToPreserveTPL }}
+  servers.json: | {{ $variableToPreserveTPL | toYaml | nindent 4 }}
 {{- end }}
