@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="0 0 64 64"
+   id="svg2"
+   sodipodi:docname="ex_citus.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.368263"
+     inkscape:cx="-1.055626"
+     inkscape:cy="63.970936"
+     inkscape:window-width="1440"
+     inkscape:window-height="786"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <path
+     fill="#1b324f"
+     d="M 39.722625,27.973765 C 40.337554,24.89912 31.523573,23.600937 26.467491,29.818551 20.79648,36.787746 32.206827,44.098567 45.18866,34.32803 53.456038,28.04209 56.12073,19.433085 51.269624,15.060257 41.840714,6.4512526 19.020018,14.445328 11.36757,31.526687 19.020018,18.61318 38.219466,12.532216 45.871914,20.389641 c 3.211296,3.279621 1.434835,9.907188 -4.441153,12.708531 -9.497235,4.441154 -8.609005,-5.261058 -1.708136,-5.124407"
+     id="path1"
+     style="stroke-width:0.683254" />
+  <path
+     fill="#239646"
+     d="M 39.244347,21.209547 C 23.529497,16.495092 2.2119613,35.762864 13.144031,48.471395 20.386527,56.943749 45.735264,52.844223 53.86599,27.29051 44.232104,44.918473 26.057538,47.514839 19.156669,42.458757 11.025942,36.514444 21.138107,19.843038 39.244347,21.209547"
+     id="path2"
+     style="stroke-width:0.683254" />
+</svg>

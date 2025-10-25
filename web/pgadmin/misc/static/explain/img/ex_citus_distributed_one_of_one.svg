@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .cls-5{fill:#34495e;}
+      .cls-6{fill:none;stroke-linecap:round;}
+      .cls-5,.cls-6{stroke-linejoin:round;stroke:#34495e;}
+    </style>
+  </defs>
+  <polygon class="cls-5" transform="translate(8)" points="45.4 31.6 42.8 29.6 42.8 33.6"/>
+  <line class="cls-6" x1="51.2" x2="41.4" y1="31.5" y2="31.5"/>
+  <g transform="translate(51.6 26.3)">
+    <path d="m-23.3 3.39c0.389-1.95-5.19-2.77-8.39 1.17-3.59 4.41 3.63 9.04 11.9 2.86 5.24-3.98 6.92-9.43 3.85-12.2-5.97-5.45-20.4-0.389-25.3 10.4 4.85-8.18 17-12 21.8-7.05 2.03 2.08 0.909 6.27-2.81 8.05-6.01 2.81-5.45-3.33-1.08-3.25" fill="#1b324f" style="stroke-width:.433"/>
+    <path d="m-23.6-0.895c-9.95-2.99-23.5 9.22-16.5 17.3 4.59 5.37 20.6 2.77 25.8-13.4-6.1 11.2-17.6 12.8-22 9.61-5.15-3.76 1.25-14.3 12.7-13.5" fill="#239646" style="stroke-width:.433"/>
+  </g>
+</svg>

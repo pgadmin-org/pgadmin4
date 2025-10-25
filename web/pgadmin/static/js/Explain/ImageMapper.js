@@ -41,9 +41,85 @@ const ImageMapper = {
     'image': 'ex_bmp_or.svg',
     'image_text': 'Bitmap OR',
   },
+  'Citus Job': function(data) {
+    // A 'Citus Job' represents a distributed query operation.
+    // The details of the distributed operation are in the sub-plans,
+    // but this node contains task count information, showing how many shards
+    // the query is being distributed to.
+
+    const taskCount = data['Task Count'];
+    const tasksShown = data['Tasks Shown'];
+    
+    // "Task Count" is the number of shard operations being run.
+    // "Tasks Shown" is either "All" or "One of N" depending on whether the returned query plan
+    // contains one sample task or all of them.
+
+    // We show single-shard or multi-shard with different images, and we show the
+    // literal value of 'Tasks Shown' as the image text.
+
+    const image = (taskCount === 1)
+      ? 'ex_citus_distributed_one_of_one.svg'
+      : 'ex_citus_distributed_one_of_many.svg';
+
+    return {
+      'image': image,
+      'image_text': tasksShown
+    };
+  },
+  'Citus Task': function(data) {
+    // A 'Citus Task' represents a Task executed on a particular worker node.
+    // The details of the Task are in the sub-plans, so for this node we just show
+    // some details of the worker node.
+
+    const node = data['Node'];
+    // "Node" has a value like "host=citus-worker-7 port=8394 dbname=postgres"
+    // That's a bit long to display, so we shrink it to 'citus-worker-7:8394 postgres'
+    const hostMatch = node.match(/host=(\S+)/);
+    const portMatch = node.match(/port=(\S+)/);
+    const dbnameMatch = node.match(/dbname=(\S+)/);
+
+    const host = hostMatch ? hostMatch[1] : '';
+    let port = portMatch ? portMatch[1] : '';
+    if (port === '5432') {
+      // Default port. Don't bother showing.
+      port = '';
+    }
+    const dbname = dbnameMatch ? dbnameMatch[1] : '';
+
+    let imageText = `Task ${host}`;
+    if (port) {
+      imageText += `:${port}`;
+    }
+    if (dbname) {
+      imageText += ` ${dbname}`;
+    }
+    return {
+      'image': 'ex_citus_worker_task.svg',
+      'image_text': imageText
+    };
+  },
   'CTE Scan': {
     'image': 'ex_cte_scan.svg',
     'image_text': 'CTE Scan',
+  },
+  'Custom Scan': function(data) {
+    const customPlanProvider = data['Custom Plan Provider'];
+
+    let image;
+
+    switch (customPlanProvider) {
+    case 'Citus Adaptive':
+      image = 'ex_citus.svg';
+      break;
+    default:
+      image = 'ex_unknown.svg';
+      break;
+    }
+
+    return {
+      'image': image,
+      'image_text': data['Custom Plan Provider']
+    };
   },
   'Function Scan': {
     'image': 'ex_result.svg',
