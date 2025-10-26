@@ -71,11 +71,11 @@ preferences:
 
 resources:
   requests:
-    cpu: 250m
-    memory: 512Mi
+    cpu: 500m
+    memory: 1Gi
   limits:
-    cpu: 250m
-    memory: 512Mi
+    cpu: 500m
+    memory: 1Gi
 
 persistence:
   enabled: true
@@ -152,4 +152,5 @@ containerSecurityContext:
   appArmorProfile:
     type: RuntimeDefault
   windowsOptions:
+
     hostProcess: false
