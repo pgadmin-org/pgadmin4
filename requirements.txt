@@ -12,7 +12,7 @@
 # relevant packages.
 ###############################################################################
 
-Authlib==1.6.*
+Authlib==1.6.5
 azure-identity==1.25.1
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==24.0.0
@@ -42,7 +42,7 @@ libgravatar==1.0.*
 paramiko==3.5.1
 passlib==1.*
 psutil==7.1.*
-psycopg[c]==3.2.11
+psycopg[c]==3.2.12
 pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*
@@ -53,7 +53,7 @@ setuptools==80.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
-typer[all]==0.19.*
+typer[all]==0.20.*
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.5.*;  python_version > '3.9'
 user-agents==2.2.0

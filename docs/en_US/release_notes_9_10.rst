@@ -20,11 +20,14 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #7885 <https://github.com/pgadmin-org/pgadmin4/issues/7885>`_ -  Add support for displaying detailed Citus query plans instead of 'Custom Scan' placeholder.
+
 Housekeeping
 ************
 
   | `Issue #8676 <https://github.com/pgadmin-org/pgadmin4/issues/8676>`_ -  Migrate pgAdmin UI to use React 19.
 
-
 Bug fixes
 *********
+
+  | `Issue #8504 <https://github.com/pgadmin-org/pgadmin4/issues/8504>`_ -  Fixed an issue where data output column resize is not sticking in Safari.
