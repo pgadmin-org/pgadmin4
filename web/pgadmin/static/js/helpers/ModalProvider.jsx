@@ -295,7 +295,7 @@ const StyleDialog = styled(Dialog)(({theme}) => ({
   },
 }));
 
-function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true }) {
+function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true, ...props }) {
   let useModalRef = useModal();
   let closeModal = (_e, reason) => {
     if(reason == 'backdropClick' && showTitle) {
@@ -321,6 +321,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       fullScreen={isFullScreen}
       fullWidth={isFullWidth}
       disablePortal
+      {...props}
     >
       { showTitle &&
         <DialogTitle className='modal-drag-area'>

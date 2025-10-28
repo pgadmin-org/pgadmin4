@@ -86,6 +86,9 @@ Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
+   | *Search table*       | Click to search for a table in the diagram. Selecting a table from the search results will bring  | Option/Alt +   |
+   |                      | it into view and highlight it.                                                                    | Ctrl + F       |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Add table*          | Click this button to add a new table to the diagram. On clicking, this will open a table dialog   | Option/Alt +   |
    |                      | where you can put the table details.                                                              | Ctrl + A       |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
@@ -109,11 +112,14 @@ Table Relationship Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *1M*                 | Click this button to open a one-to-many relationship dialog to add a relationship between the     | Option/Alt +   |
+   | *1-1*                | Click this button to open a one-to-one relationship dialog to add a relationship between the      | Option/Alt +   |
+   |                      | two tables. The selected table becomes the referencing table.                                     | Ctrl + B       |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *1-M*                | Click this button to open a one-to-many relationship dialog to add a relationship between the     | Option/Alt +   |
    |                      | two tables. The selected table becomes the referencing table and will have the *many* endpoint of | Ctrl + O       |
    |                      | the link.                                                                                         |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *MM*                 | Click this button to open a many-to-many relationship dialog to add a relationship between the    | Option/Alt +   |
+   | *M-M*                | Click this button to open a many-to-many relationship dialog to add a relationship between the    | Option/Alt +   |
    |                      | two tables. This option will create a new table based on the selected columns for the two relating| Ctrl + M       |
    |                      | tables and link them.                                                                             |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+

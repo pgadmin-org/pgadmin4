@@ -20,6 +20,7 @@ export class FakeNode {
   getColumnAt(pos) {return _.find(this.getColumns()||[], (c)=>c.attnum==pos);}
   remove() {/*This is intentional (SonarQube)*/}
   getSchemaTableName() {return [this.data.schema, this.data.name];}
+  getDisplayName() {return `(${this.data.schema}) ${this.data.name}`;}
   cloneData(tabName) {
     let retVal = {...this.data};
     retVal.name = tabName;

@@ -26,6 +26,9 @@ describe('ERD FloatingNote', ()=>{
       getSchemaTableName: function() {
         return ['schema1', 'table1'];
       },
+      getDisplayName: function() {
+        return '(schema1) table1';
+      }
     };
     const user = userEvent.setup();
 
