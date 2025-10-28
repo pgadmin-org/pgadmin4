@@ -5,8 +5,7 @@ SELECT
     pg_catalog.concat(cn.nspname, '."', c.collname,'"')
     ELSE '' END AS collname,
     d.typtypmod, d.typnotnull, d.typdefault, d.typndims, d.typdelim, bn.nspname as basensp,
-    description, (SELECT COUNT(1) FROM pg_catalog.pg_type t2 WHERE t2.typname=d.typname) > 1 AS domisdup,
-    (SELECT COUNT(1) FROM pg_catalog.pg_type t3 WHERE t3.typname=b.typname) > 1 AS baseisdup,
+    description,
     (SELECT
         pg_catalog.array_agg(provider || '=' || label)
     FROM

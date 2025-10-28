@@ -31,3 +31,4 @@ Bug fixes
 *********
 
   | `Issue #8504 <https://github.com/pgadmin-org/pgadmin4/issues/8504>`_ -  Fixed an issue where data output column resize is not sticking in Safari.
+  | `Issue #9117 <https://github.com/pgadmin-org/pgadmin4/issues/9117>`_ -  Fixed an issue where Schema Diff does not ignore Tablespace for indexes.
