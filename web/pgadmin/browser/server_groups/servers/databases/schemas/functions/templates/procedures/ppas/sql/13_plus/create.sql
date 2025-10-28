@@ -17,26 +17,15 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} PROCEDURE {{ conn|qtIden
 LANGUAGE {{ data.lanname|qtLiteral(conn) }}{% if data.prosecdef %}
 
     SECURITY DEFINER {% endif %}
-{% if data.lanname == 'edbspl' %}
-{% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
-{% if data.proisstrict %}STRICT {% endif %}
-{% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's' or data.proparallel == 'u') %}
-{% if data.proparallel == 'r' %}PARALLEL RESTRICTED{% elif data.proparallel == 's' %}PARALLEL SAFE{% elif data.proparallel == 'u' %}PARALLEL UNSAFE{% endif %} {% endif %}{% if data.procost %}
-
-    COST {{data.procost}}{% endif %}{% if data.prorows and (data.prorows | int) > 0 %}
-
-    ROWS {{data.prorows}}{% endif -%}{% endif %}{% if data.variables %}{% for v in data.variables %}
+{% if data.variables %}{% for v in data.variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor -%}
 {% endif %}
 
-{% if data.is_pure_sql %}{{ data.prosrc }}
-{% else %}
 AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral(conn) }}, {{ data.prosrc_c|qtLiteral(conn) }}
 {% else %}
 $BODY${{ data.prosrc }}$BODY${% endif -%};
-{% endif -%}
 
 {% if data.funcowner %}
 ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})

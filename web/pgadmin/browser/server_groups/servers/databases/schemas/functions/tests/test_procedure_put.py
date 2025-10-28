@@ -43,7 +43,8 @@ class ProcedurePutTestCase(BaseTestGenerator):
         proc_id = proc_info[0]
         data = {
             "description": "This is procedure update comment",
-            "id": proc_id
+            "id": proc_id,
+            "dependsonextensions": ["plpgsql"]
         }
 
         put_response = self.tester.put(

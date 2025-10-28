@@ -22,7 +22,7 @@
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
         "arguments": [{"argtype": "integer", "argmode": "IN", "argname": "i1", "argdefval": ""}],
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "lanname": "plpgsql",
         "options": [],
         "pronamespace": 2200,
@@ -78,7 +78,7 @@
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
         "arguments": [{"argtype": "integer", "argmode": "IN", "argname": "i1", "argdefval": ""}],
-        "funcowner": "enterprisedb",
+        "funcowner": "postgres",
         "lanname": "plpgsql",
         "options": [],
         "pronamespace": 2200,
@@ -94,7 +94,8 @@
         "probin": "$libdir/"
       },
       "expected_sql_file": "create_procedure.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure comment",
       "endpoint": "NODE-procedure.obj_id",
@@ -104,7 +105,8 @@
       },
       "expected_sql_file": "alter_proc_comment.sql",
       "expected_msql_file": "alter_proc_comment_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure param",
       "endpoint": "NODE-procedure.obj_id",
@@ -127,7 +129,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege": true,
@@ -137,8 +139,8 @@
               ]
             },
             {
-              "grantee": "enterprisedb",
-              "grantor": "enterprisedb",
+              "grantee": "postgres",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege": true,
@@ -161,7 +163,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
+              "grantor": "postgres",
               "privileges": [
                 {
                   "privilege": true,
@@ -184,8 +186,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "enterprisedb",
-              "old_grantee": "enterprisedb",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
               "privileges": [
                 {
                   "privilege": true,
@@ -199,42 +201,6 @@
       },
       "expected_sql_file": "alter_proc_change_grantee_priv.sql",
       "expected_msql_file": "alter_proc_change_grantee_priv.msql"
-    },
-    {
-      "type": "delete",
-      "name": "Drop procedure",
-      "endpoint": "NODE-procedure.delete_id",
-      "data": {
-      }
-    },
-    {
-      "type": "create",
-      "name": "Create procedure (atomic)",
-      "endpoint": "NODE-procedure.obj",
-      "sql_endpoint": "NODE-procedure.sql_id",
-      "data": {
-        "name":"Proc3_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner":"enterprisedb",
-        "pronamespace":2200,
-        "description":"demo comments",
-        "lanname":"sql",
-        "provolatile":null,
-        "proisstrict":false,
-        "proparallel":null,
-        "procost":null,
-        "prorows":0,
-        "proleakproof":false,
-        "arguments":[],
-        "prosrc":"begin atomic\nselect 1;\nend",
-        "probin":"$libdir/",
-        "options":[],
-        "seclabels":[],
-        "acl":[],
-        "schema": "public",
-        "variables":[{"name":"application_name","value":"demo"}]
-      },
-      "expected_sql_file": "create_atomic_proc.sql",
-      "expected_msql_file": "create_atomic_proc.msql"
     },
     {
       "type": "delete",

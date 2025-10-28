@@ -11,6 +11,12 @@ SELECT
     CASE WHEN pr.prosqlbody IS NOT NULL THEN true ELSE false END as is_pure_sql,
     pr.pronargdefaults, proconfig, pg_catalog.pg_get_userbyid(proowner) AS funcowner, description,
     (
+      SELECT array_agg(DISTINCT e.extname)
+      FROM pg_depend d
+      JOIN pg_extension e ON d.refobjid = e.oid
+      WHERE d.objid = pr.oid
+    ) AS dependsonextensions,
+    (
         WITH name_with_args_tab AS (SELECT pg_catalog.pg_get_function_identity_arguments(pr.oid) AS val)
         SELECT CASE WHEN
             val <> ''

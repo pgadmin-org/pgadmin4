@@ -9,7 +9,8 @@
         "name": "postgres_fdw",
         "version": "",
         "relocatable": true
-      }
+      },
+      "store_object_id": true
     },
     {
       "type": "create",
@@ -75,6 +76,15 @@
       "endpoint": "NODE-function.delete_id",
       "data": {
       }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<postgres_fdw>"]
+      },
+      "preprocess_data": true
     },
     {
       "type": "create",

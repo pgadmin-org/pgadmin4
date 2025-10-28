@@ -14,8 +14,6 @@ SELECT
       JOIN pg_extension e ON d.refobjid = e.oid
       WHERE d.objid = pr.oid
     ) AS dependsonextensions,
-    pg_catalog.pg_get_function_sqlbody(pr.oid) AS prosrc_sql,
-    CASE WHEN pr.prosqlbody IS NOT NULL THEN true ELSE false END as is_pure_sql,
     (
         WITH name_with_args_tab AS (SELECT pg_catalog.pg_get_function_identity_arguments(pr.oid) AS val)
         SELECT CASE WHEN
@@ -44,7 +42,7 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_description des ON (des.objoid=pr.oid AND des.classoid='pg_proc'::regclass and des.objsubid = 0)
 WHERE
-    pr.prokind = 'p'::char
+    pr.prokind = 'p'
     AND typname NOT IN ('trigger', 'event_trigger')
 {% if fnid %}
     AND pr.oid = {{fnid}}::oid

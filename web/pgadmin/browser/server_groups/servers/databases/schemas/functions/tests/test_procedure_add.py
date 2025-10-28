@@ -62,6 +62,7 @@ class ProcedureAddTestCase(BaseTestGenerator):
             "prosrc": "BEGIN RAISE EXCEPTION 'command % is disabled',"
                       " tg_tag; END;",
             "seclabels": [],
+            "dependsonextensions": ["plpgsql"],
             "variables": [
                 {
                     "name": "enable_sort",
