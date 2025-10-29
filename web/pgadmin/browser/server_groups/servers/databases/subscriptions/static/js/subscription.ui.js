@@ -11,6 +11,12 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
 
+function getDefaultStreaming(version) {
+  if (version >= 180000) return 'parallel';
+  if (version >= 160000) return 'off';
+  return false;
+}
+
 export default class SubscriptionSchema extends BaseUISchema{
   constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
@@ -26,7 +32,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       binary:false,
       two_phase:false,
       disable_on_error:false,
-      streaming: (node_info?.node_info?.version >= 180000) ? 'parallel' : false,
+      streaming: getDefaultStreaming(node_info?.node_info?.version),
       password_required:true,
       run_as_owner:false,
       origin:'any',
@@ -386,24 +392,19 @@ export default class SubscriptionSchema extends BaseUISchema{
       cell: 'text',
       group: gettext('With'), mode: ['create', 'edit', 'properties'],
       type: ()=>{
-        let options = [
-          {
-            'label': gettext('On'),
-            value: true,
-          },
-          {
-            'label': gettext('Off'),
-            value: false,
-          }
-        ];
-
+        let options;
         if (obj.version >= 160000) {
-          options.push({
-            'label': gettext('Parallel'),
-            value: 'parallel',
-          });
+          options = [
+            { label: gettext('On'), value: 'on' },
+            { label: gettext('Off'), value: 'off' },
+            { label: gettext('Parallel'), value: 'parallel' },
+          ];
+        } else {
+          options = [
+            { label: gettext('On'), value: true },
+            { label: gettext('Off'), value: false },
+          ];
         }
-
         return {
           type: 'toggle',
           options: options,

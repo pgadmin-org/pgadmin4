@@ -65,7 +65,7 @@ jobs:
         run: |
           FOR /f "delims=" %%F IN ('python tools\get_sb_package.py "${{ secrets.EDB_SBP_URL }}" "edb_as${{ matrix.pgver }}_dbserver" "windows-x64"') DO SET INSTALLER_EXE=%%F
           ECHO Running %INSTALLER_EXE%...
-          %INSTALLER_EXE% --prefix C:\EPAS\${{ matrix.pgver }} --datadir C:\EPAS\${{ matrix.pgver }}\data --serverport 59${{ matrix.pgver }} --superpassword enterprisedb --create_samples no --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components stackbuilderplus${{ matrix.pgver < 15 && ',pgadmin4' || '' }}
+          %INSTALLER_EXE% --prefix C:\EPAS\${{ matrix.pgver }} --datadir C:\EPAS\${{ matrix.pgver }}\data --serverport 58${{ matrix.pgver }} --superpassword enterprisedb --create_samples no --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components stackbuilderplus${{ matrix.pgver < 15 && ',pgadmin4' || '' }}
           
           choco install -y mitkerberos
           
@@ -105,38 +105,23 @@ jobs:
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
           sudo su -c "echo local all all trust > /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host all all 127.0.0.1/32 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host all all ::1/128 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host replication postgres 127.0.0.1/32 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host replication postgres ::1/128 trust >> /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo sed -i "s/port = 544[0-9]/port = 59${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo sed -i "s/port = 544[0-9]/port = 58${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
-          echo "wal_level = logical" | sudo tee -a /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
           sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${{ matrix.pgver }}-main.epas_stat_tmp"
           sudo systemctl restart edb-as@${{ matrix.pgver }}-main
           
-          until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }}" 2>/dev/null; do
+          until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${{ matrix.pgver }}/bin/pg_isready -p 58${{ matrix.pgver }}" 2>/dev/null; do
             >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
             sleep 2
           done
 
-      - name: Start PostgreSQL on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          echo host    replication     postgres        127.0.0.1/32            trust >> "C:\EPAS\${{ matrix.pgver }}\data\pg_hba.conf"
-          echo host    replication     postgres        ::1/128                 trust >> "C:\EPAS\${{ matrix.pgver }}\data\pg_hba.conf"
-          echo wal_level = logical >> "C:\EPAS\${{ matrix.pgver }}\data\postgresql.conf"
-          net stop edb-as-${{ matrix.pgver }}
-          net start edb-as-${{ matrix.pgver }}
-        shell: cmd
-
       - name: Create pgagent extension on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}
-        run: psql -U enterprisedb -d postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
       
       - name: Create postgis extension on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
-        run: psql -U enterprisedb -d postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+        run: psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
 
       - name: Install Python dependencies on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' }}
@@ -206,7 +191,7 @@ jobs:
                 "db_username": "enterprisedb",
                 "host": "/var/run/edb-as",
                 "db_password": "",
-                "db_port": 59${{ matrix.pgver }},
+                "db_port": 58${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
                 "tablespace_path": "/var/lib/edb-as/tablespaces/${{ matrix.pgver }}",
@@ -280,7 +265,7 @@ jobs:
             @echo.      "db_username": "enterprisedb",
             @echo.      "host": "127.0.0.1",
             @echo.      "db_password": "enterprisedb",
-            @echo.      "db_port": 59${{ matrix.pgver }},
+            @echo.      "db_port": 58${{ matrix.pgver }},
             @echo.      "maintenance_db": "postgres",
             @echo.      "sslmode": "prefer",
             @echo.      "tablespace_path": "C:\\EPAS\\${{ matrix.pgver }}\\tablespaces",

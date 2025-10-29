@@ -24,7 +24,7 @@
           "connect": false,
           "slot_name": "test_create_subscription",
           "sync": "remote_apply",
-          "streaming": true,
+          "streaming": "on",
           "binary": true,
           "two_phase": false,
           "disable_on_error": true,

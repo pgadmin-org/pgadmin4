@@ -184,8 +184,8 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
     # This mapping will be used PostgresSQL 16 above
     streaming_mapping = {
         'p': 'parallel',
-        't': True,
-        'f': False
+        't': 'on',
+        'f': 'off'
     }
     two_phase_mapping = {
         'p': True,

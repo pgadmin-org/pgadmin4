@@ -116,13 +116,8 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo su -c "echo local all all trust > /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host all all 127.0.0.1/32 trust >> /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host all all ::1/128 trust >> /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host replication postgres 127.0.0.1/32 trust >> /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
-          sudo su -c "echo host replication postgres ::1/128 trust >> /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
           sudo sed -i "s/port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
           sudo sed -i "s/#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/plugin_debugger'/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
-          echo "wal_level = logical" | sudo tee -a /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
           sudo su - postgres -c "/usr/lib/postgresql/${{ matrix.pgver }}/bin/postgres -D /var/lib/postgresql/${{ matrix.pgver }}/main -c config_file=/etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf &"
 
           until sudo runuser -l postgres -c "pg_isready -p 59${{ matrix.pgver }}" 2>/dev/null; do
@@ -138,12 +133,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           echo local all all trust > /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
-          echo 'host all all 127.0.0.1/32 trust' >> /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
-          echo 'host all all ::1/128 trust' >> /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
-          echo 'host replication postgres 127.0.0.1/32 trust' >> /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
-          echo 'host replication postgres ::1/128 trust' >> /opt/homebrew/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
           sed -i '' "s/#port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /opt/homebrew/var/postgresql@${{ matrix.pgver }}/postgresql.conf
-          echo "wal_level = logical" >> /opt/homebrew/var/postgresql@${{ matrix.pgver }}/postgresql.conf
           brew services restart postgresql@${{ matrix.pgver }}
 
           until /opt/homebrew/opt/postgresql@${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }} 2>/dev/null; do
@@ -152,16 +142,6 @@ jobs:
           done
 
           psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
-
-      - name: Start PostgreSQL on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          echo host    replication     postgres        127.0.0.1/32            trust >> "C:\PostgreSQL\${{ matrix.pgver }}\data\pg_hba.conf"
-          echo host    replication     postgres        ::1/128                 trust >> "C:\PostgreSQL\${{ matrix.pgver }}\data\pg_hba.conf"
-          echo wal_level = logical >> "C:\PostgreSQL\${{ matrix.pgver }}\data\postgresql.conf"
-          net stop postgresql-x64-${{ matrix.pgver }}
-          net start postgresql-x64-${{ matrix.pgver }}
-        shell: cmd
 
       - name: Install Python dependencies on Linux and macOS
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-22.04' }}

@@ -23,7 +23,7 @@
           "password": "edb",
           "sync": "remote_apply",
           "binary": true,
-          "streaming": true,
+          "streaming": "on",
           "disable_on_error": true,
           "two_phase": true,
           "password_required": true,
@@ -44,7 +44,7 @@
       "data": {
           "sync": "off",
           "binary": false,
-          "streaming": false,
+          "streaming": "parallel",
           "disable_on_error": false,
           "origin": "none"
       },
