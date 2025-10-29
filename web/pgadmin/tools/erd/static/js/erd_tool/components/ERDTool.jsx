@@ -677,9 +677,10 @@ export default class ERDTool extends React.Component {
 
   saveFile(fileName) {
     this.setLoading(gettext('Saving...'));
+    const serialFile = this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int);
     this.apiObj.post(url_for('file_manager.save_file'), {
       'file_name': decodeURI(fileName),
-      'file_content': JSON.stringify(this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)),
+      'file_content': JSON.stringify(serialFile, null, this.state.preferences.format_pgerd ? 4 : null),
     }).then(()=>{
       this.props.pgAdmin.Browser.notifier.success(gettext('Project saved successfully.'));
       this.setState({

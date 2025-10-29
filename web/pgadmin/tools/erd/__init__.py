@@ -457,6 +457,19 @@ class ERDModule(PgAdminModule):
             )
         )
 
+        self.preference.register(
+            'options',
+            'format_pgerd',
+            gettext('Format ERD Project File?'),
+            'boolean',
+            False,
+            category_label=PREF_LABEL_OPTIONS,
+            help_str=gettext(
+                'If enabled, the .pgerd project file of the ERD tool will '
+                'be formatted before saving.'
+            )
+        )
+
 
 blueprint = ERDModule(MODULE_NAME, __name__, static_url_path='/static')
 
