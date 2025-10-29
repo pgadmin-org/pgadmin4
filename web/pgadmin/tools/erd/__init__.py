@@ -432,6 +432,19 @@ class ERDModule(PgAdminModule):
         )
 
         self.preference.register(
+            'options', 'image_pixel_ratio',
+            gettext('Image Download Resolution'), 'radioModern', '1',
+            category_label=PREF_LABEL_OPTIONS, options=[
+                {'label': gettext('Good'), 'value': '1'},
+                {'label': gettext('High'), 'value': '3'},
+                {'label': gettext('Very High'), 'value': '5'},
+            ],
+            help_str=gettext(
+                'Higher values will use higher memory and slower rendering.'
+            ),
+        )
+
+        self.preference.register(
             'options',
             'sql_with_drop',
             gettext('SQL With DROP Table'),
