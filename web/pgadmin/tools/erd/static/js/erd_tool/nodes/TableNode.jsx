@@ -27,7 +27,7 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const TYPE = 'table';
-const TABLE_WIDTH = 175;
+const TABLE_WIDTH = 180;
 
 export class TableNodeModel extends DefaultNodeModel {
   constructor({otherInfo, ...options}) {
@@ -214,16 +214,31 @@ RowIcon.propTypes = {
 
 const StyledDiv = styled('div')(({theme})=>({
   '&.TableNode-tableNode': {
-    backgroundColor: theme.palette.background.default,
     color: theme.palette.text.primary,
-    ...theme.mixins.panelBorder.all,
-    borderRadius: theme.shape.borderRadius,
     position: 'relative',
     width: `${TABLE_WIDTH}px`,
     fontSize: '0.8em',
-    '& div:last-child': {
-      borderBottomLeftRadius: 'inherit',
-      borderBottomRightRadius: 'inherit',
+
+    '& .TableNode-tableContent': {
+      backgroundColor: theme.palette.background.default,
+      ...theme.mixins.panelBorder.all,
+      borderBottomLeftRadius: theme.shape.borderRadius,
+      borderBottomRightRadius: theme.shape.borderRadius,
+    },
+    '& .TableNode-tableToolbar': {
+      background: theme.otherVars.editorToolbarBg,
+      ...theme.mixins.panelBorder.all,
+      borderBottom: 'none',
+      borderTopLeftRadius: theme.shape.borderRadius,
+      borderTopRightRadius: theme.shape.borderRadius,
+      padding: '0.125rem 0.25rem',
+      display: 'flex',
+
+      '& .TableNode-noteBtn': {
+        marginLeft: 'auto',
+        backgroundColor: theme.palette.warning.main,
+        color: theme.palette.warning.contrastText,
+      },
     },
     '& .TableNode-tableSection': {
       ...theme.mixins.panelBorder.bottom,
@@ -236,16 +251,6 @@ const StyledDiv = styled('div')(({theme})=>({
         '& .TableNode-error': {
           color: theme.palette.error.main,
         },
-      },
-      '&.TableNode-tableToolbar': {
-        background: theme.otherVars.editorToolbarBg,
-        borderTopLeftRadius: 'inherit',
-        borderTopRightRadius: 'inherit',
-      },
-      '& .TableNode-noteBtn': {
-        marginLeft: 'auto',
-        backgroundColor: theme.palette.warning.main,
-        color: theme.palette.warning.contrastText,
       },
     },
     '& .TableNode-columnSection': {
@@ -370,7 +375,7 @@ export class TableNodeWidget extends React.Component {
     return (
       <StyledDiv className={['TableNode-tableNode', (this.props.node.isSelected() ? 'TableNode-tableNodeSelected': '')].join(' ')}
         onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}} style={styles}>
-        <div className={'TableNode-tableSection TableNode-tableToolbar'}>
+        <div className={'TableNode-tableToolbar'}>
           <PgIconButton size="xs" title={gettext('Show Details')} icon={this.state.show_details ? <VisibilityRoundedIcon /> : <VisibilityOffRoundedIcon />}
             onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
           {this.props.node.getNote() &&
@@ -381,24 +386,26 @@ export class TableNodeWidget extends React.Component {
               }}
             />}
         </div>
-        {tableMetaData.is_promise &&
+        <div className='TableNode-tableContent'>
+          {tableMetaData.is_promise &&
           <div className='TableNode-tableSection'>
             {!tableMetaData.data_failed && <div className='TableNode-tableNameText'>{gettext('Fetching...')}</div>}
             {tableMetaData.data_failed && <div className={'TableNode-tableNameText TableNode-error'}>{gettext('Failed to get data. Please delete this table.')}</div>}
           </div>}
-        {!tableMetaData.is_promise && <>
-          <div className='TableNode-tableSection'>
-            <RowIcon icon={SchemaIcon}/>
-            <div className='TableNode-tableNameText' data-test="schema-name">{tableData.schema}</div>
-          </div>
-          <div className='TableNode-tableSection'>
-            <RowIcon icon={TableIcon} />
-            <div className='TableNode-tableNameText' data-test="table-name">{tableData.name}</div>
-          </div>
-          {tableData.columns.length > 0 && <div>
-            {_.map(tableData.columns, (col)=>this.generateColumn(col, localFkCols, localUkCols))}
-          </div>}
-        </>}
+          {!tableMetaData.is_promise && <>
+            <div className='TableNode-tableSection'>
+              <RowIcon icon={SchemaIcon}/>
+              <div className='TableNode-tableNameText' data-test="schema-name">{tableData.schema}</div>
+            </div>
+            <div className='TableNode-tableSection'>
+              <RowIcon icon={TableIcon} />
+              <div className='TableNode-tableNameText' data-test="table-name">{tableData.name}</div>
+            </div>
+            {tableData.columns.length > 0 && <div>
+              {_.map(tableData.columns, (col)=>this.generateColumn(col, localFkCols, localUkCols))}
+            </div>}
+          </>}
+        </div>
       </StyledDiv>
     );
   }

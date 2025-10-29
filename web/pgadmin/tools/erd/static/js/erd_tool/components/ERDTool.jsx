@@ -103,6 +103,16 @@ const StyledBox = styled(Box)(({theme})=>({
   '& .ERDTool-html2canvasReset': {
     backgroundImage: 'none !important',
     overflow: 'auto !important',
+    textRendering: 'geometricPrecision',
+
+    '& .TableNode-tableToolbar': {
+      visibility: 'hidden',
+    },
+
+    '& .TableNode-tableContent': {
+      borderTopLeftRadius: theme.shape.borderRadius,
+      borderTopRightRadius: theme.shape.borderRadius,
+    },
   }
 }));
 
@@ -163,7 +173,6 @@ export default class ERDTool extends React.Component {
     this.keyboardActionObj = null;
     this.erdDialogs = new ERDDialogs(this.context);
     this.apiObj = getApiInstance();
-    this.preferencesStore = usePreferences.getState();
     this.fmUtilsObj = new FileManagerUtils(this.apiObj, {modal: this.context});
     this.restore = props.params.restore == 'true';
     this.eventBus = new EventBus();
@@ -328,17 +337,25 @@ export default class ERDTool extends React.Component {
     this.setLoading(gettext('Preparing...'));
     this.registerEvents();
     this.diagramContainerRef.current?.focus();
-    const erdPref = this.preferencesStore.getPreferencesForModule('erd');
+    const erdPref = usePreferences.getState().getPreferencesForModule('erd');
     this.setState({
       preferences: erdPref,
-      is_new_tab: (this.preferencesStore.getPreferencesForModule('browser').new_browser_tab_open || '')
+      is_new_tab: (usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open || '')
         .includes('erd_tool'),
-      is_close_tab_warning: this.preferencesStore.getPreferencesForModule('browser').confirm_on_refresh_close,
+      is_close_tab_warning: usePreferences.getState().getPreferencesForModule('browser').confirm_on_refresh_close,
       cardinality_notation: erdPref.cardinality_notation,
     }, ()=>{
       this.registerKeyboardShortcuts();
       if(this.state.current_file)this.setTitle(this.state.current_file);
     });
+
+    usePreferences.subscribe((state)=>{
+      this.setState({
+        preferences: state.getPreferencesForModule('erd'),
+        is_close_tab_warning: state.getPreferencesForModule('browser').confirm_on_refresh_close,
+      });
+    });
+
     this.registerModelEvents();
     this.realignGrid({
       backgroundSize: '45px 45px',
@@ -808,7 +825,7 @@ export default class ERDTool extends React.Component {
         height = 32766;
         isCut = true;
       }
-      toPng(this.canvasEle, {width, height})
+      toPng(this.canvasEle, {width, height, pixelRatio: this.state.preferences.image_pixel_ratio || 1})
         .then((dataUrl)=>{
           DownloadUtils.downloadBase64UrlData(dataUrl, `${this.getCurrentProjectName()}.png`);
         }).catch((err)=>{
