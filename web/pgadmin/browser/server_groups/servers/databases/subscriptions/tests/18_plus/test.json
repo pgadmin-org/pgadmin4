@@ -6,7 +6,6 @@
       "endpoint": "NODE-subscription.obj",
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql",
-      "precondition_sql": "SELECT 1 FROM pg_replication_slots WHERE slot_name = 'test_create_subscription' UNION ALL SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'test_create_subscription') AND pg_create_logical_replication_slot('test_create_subscription', 'pgoutput', false) IS NOT NULL LIMIT 1;",
       "data": {
           "name": "test_create_subscription",
           "subowner": "postgres",
@@ -24,7 +23,7 @@
           "connect": false,
           "slot_name": "test_create_subscription",
           "sync": "remote_apply",
-          "streaming": true,
+          "streaming": "on",
           "binary": true,
           "two_phase": false,
           "disable_on_error": true,
@@ -67,8 +66,7 @@
       "endpoint": "NODE-subscription.delete_id",
       "data": {
         "name": "test_create_subscription"
-      },
-      "post_scenario_sql": "SELECT 1 WHERE EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'test_create_subscription') AND (SELECT pg_drop_replication_slot('test_create_subscription')) IS NOT NULL UNION ALL SELECT 1 WHERE NOT EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'test_create_subscription') LIMIT 1;"
+      }
     }
   ]
 }
