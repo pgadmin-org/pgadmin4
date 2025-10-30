@@ -79,7 +79,7 @@ jobs:
         run: |
           FOR /f "delims=" %%F IN ('python tools\get_sb_package.py "https://www.postgresql.org/applications-v2.xml" "postgresql_${{ matrix.pgver }}" "windows-x64"') DO SET INSTALLER_EXE=%%F
           ECHO Running %INSTALLER_EXE%...
-          %INSTALLER_EXE% --prefix C:\PostgreSQL\${{ matrix.pgver }} --datadir C:\PostgreSQL\${{ matrix.pgver }}\data --serverport 59${{ matrix.pgver }} --superpassword postgres --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components pgAdmin,stackbuilder --enable-components server,commandlinetools"
+          %INSTALLER_EXE% --prefix C:\PostgreSQL_custom\${{ matrix.pgver }} --datadir C:\PostgreSQL_custom\${{ matrix.pgver }}\data --serverport 59${{ matrix.pgver }} --superpassword postgres --install_runtimes 0 --mode unattended --unattendedmodeui none --disable-components pgAdmin,stackbuilder --enable-components server,commandlinetools"
           choco install -y mitkerberos
 
           REM Ignore error 3010 (reboot required)
@@ -89,7 +89,7 @@ jobs:
       - name: Add pg_config path to PATH
         shell: pwsh
         run: |
-          $pgPath = "C:\\PostgreSQL\\${{ matrix.pgver }}\\bin"
+          $pgPath = "C:\\PostgreSQL_custom\\${{ matrix.pgver }}\\bin"
           Write-Output $pgPath
           Add-Content -Path $env:GITHUB_PATH -Value $pgPath
           pg_config --version
