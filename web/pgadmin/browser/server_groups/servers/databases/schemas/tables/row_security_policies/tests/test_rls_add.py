@@ -65,7 +65,7 @@ class RulesAddTestCase(BaseTestGenerator):
             "test_comment_add_%s" % (str(uuid.uuid4())[1:8])
 
         if hasattr(self, "owner_policy"):
-            self.test_data['policyowner'] = self.role_name
+            self.test_data['policyowner'] = [self.role_name]
 
         data = self.test_data
         if self.is_positive_test:

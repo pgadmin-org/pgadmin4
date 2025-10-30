@@ -30,6 +30,48 @@
     },
     {
       "type": "create",
+      "name": "Create Role to test multiple role for RLS policy",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "Role_1",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Role to test multiple role for RLS policy",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "role_2",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
       "name": "Create simple select event RLS policy",
       "endpoint": "NODE-row_security_policy.obj",
       "sql_endpoint": "NODE-row_security_policy.sql_id",
@@ -37,7 +79,7 @@
       "data": {
         "name": "test_select_policy_rls_$%{}[]()&*^!@\"'`\\/#",
         "event": "SELECT",
-        "policyowner": "public",
+        "policyowner": ["public"],
         "schema": "public",
         "type": "PERMISSIVE",
         "description": "This is test description"
@@ -75,7 +117,7 @@
       "msql_endpoint": "NODE-row_security_policy.msql",
       "data": {
         "name": "test_simple_insert_rls_policy_$%{}[]()&*^!@\"'`\\/#",
-        "policyowner": "public",
+        "policyowner": ["public"],
         "event": "INSERT",
         "withcheck": "",
         "type": "PERMISSIVE",
@@ -114,7 +156,7 @@
       "msql_endpoint": "NODE-row_security_policy.msql",
       "data": {
         "name": "test_update_rls_policy_$%{}[]()&*^!@\"'`\\/#",
-        "policyowner": "public",
+        "policyowner": ["public"],
         "event": "UPDATE",
         "using": "true",
         "withcheck": "name != null",
@@ -154,7 +196,7 @@
       "msql_endpoint": "NODE-row_security_policy.msql",
       "data": {
         "name": "test_delete_rls_policy_$%{}[]()&*^!@\"'`\\/#",
-        "policyowner": "public",
+        "policyowner": ["public"],
         "event": "DELETE",
         "using": "current_user = name",
         "withcheck": "",
@@ -194,7 +236,7 @@
       "msql_endpoint": "NODE-row_security_policy.msql",
       "data": {
         "name": "test_all_rls_policy_$%{}[]()&*^!@\"'`\\/#",
-        "policyowner": "public",
+        "policyowner": ["public"],
         "event": "ALL",
         "type": "RESTRICTIVE",
         "schema": "public"
@@ -256,7 +298,7 @@
       "data": {
         "name": "all_event_policy",
         "event": "ALL",
-        "policyowner": "public",
+        "policyowner": ["Role_1", "role_2"],
         "schema": "public",
         "using": "true",
         "withcheck": "true",
@@ -265,12 +307,43 @@
       "expected_sql_file": "create_all_event_policy.sql"
     },
     {
+      "type": "alter",
+      "name": "Alter policy owner",
+      "endpoint": "NODE-row_security_policy.obj_id",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "msql_endpoint": "NODE-row_security_policy.msql_id",
+      "data": {
+        "policyowner": ["role_2"]
+      },
+      "expected_sql_file": "alter_owner_policy.sql",
+      "expected_msql_file": "alter_owner_policy_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter policy owner remove all users",
+      "endpoint": "NODE-row_security_policy.obj_id",
+      "sql_endpoint": "NODE-row_security_policy.sql_id",
+      "msql_endpoint": "NODE-row_security_policy.msql_id",
+      "data": {
+        "policyowner": []
+      },
+      "expected_sql_file": "alter_remove_all_owner_policy.sql",
+      "expected_msql_file": "alter_remove_all_owner_policy_msql.sql"
+    },
+    {
       "type": "delete",
       "name": "Drop policy",
       "endpoint": "NODE-row_security_policy.delete_id",
       "data": {
         "name": "test_delete_policy_$%{}[]()&*^!@\"'`\\/#"
       }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Role",
+      "endpoint": "NODE-role.obj",
+      "data": {"ids": ["<Role_1>", "<role_2>"]},
+      "preprocess_data": true
     }
   ]
 }

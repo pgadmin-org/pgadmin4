@@ -7,7 +7,7 @@ SELECT
     rw.qual AS using_orig,
     rw.with_check AS withcheck,
     rw.with_check AS withcheck_orig,
-    pg_catalog.array_to_string(rw.roles::name[], ', ') AS policyowner,
+    rw.roles AS policyowner,
     des.description
 FROM
     pg_catalog.pg_policy pl

@@ -541,6 +541,8 @@ class RowSecurityView(PGChildNodeView):
         This function returns modified sql
         """
         data = dict(request.args)
+        if 'policyowner' in data and isinstance(data['policyowner'], str):
+            data['policyowner'] = json.loads(data['policyowner'])
 
         sql, _ = row_security_policies_utils.get_sql(
             self.conn, data=data, scid=scid, plid=plid, policy_table_id=tid,

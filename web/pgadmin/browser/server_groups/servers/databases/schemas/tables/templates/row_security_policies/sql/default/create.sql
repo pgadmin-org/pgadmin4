@@ -13,7 +13,7 @@ CREATE POLICY {{ conn|qtIdent(data.name) }}
     FOR {{ data.event|upper }}
 {% endif %}
 {% if data.policyowner %}
-    TO {{ conn|qtTypeIdent(data.policyowner) }}{% if add_semicolon_after == 'to' %};{% endif %}
+    TO {{ conn|qtIdent(data.policyowner)|join(', ') }}{% if add_semicolon_after == 'to' %};{% endif %}
 {% else %}
     TO public{% if add_semicolon_after == 'to' %};{% endif %}
 {% endif %}

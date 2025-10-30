@@ -80,7 +80,7 @@ class PolicyUpdateTestCase(BaseTestGenerator):
         self.test_data['id'] = self.policy_id
 
         if hasattr(self, 'owner_policy'):
-            self.test_data['policyowner'] = self.role_name
+            self.test_data['policyowner'] = [self.role_name]
 
         if not policy_name:
             raise Exception("Could not find the policy to update.")

@@ -6,6 +6,6 @@ CREATE POLICY all_event_policy
     ON public.test_rls_policy
     AS RESTRICTIVE
     FOR ALL
-    TO "Role_1", role_2
+    TO public
     USING (true)
     WITH CHECK (true);
