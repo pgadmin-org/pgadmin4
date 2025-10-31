@@ -283,7 +283,6 @@ def __handle_registration_view_for_post_method(
 
 
 @pgCSRFProtect.exempt
-@login_required
 def registration_view() -> Response:
     """
     A url end-point to register/deregister an authentication method.
@@ -310,10 +309,18 @@ def registration_view() -> Response:
         Response: A response object with list of auth methods, a registration
                   view, or redirect to 'next' url
     """
+    next_url = request.args.get("next", None)
+    if not current_user.is_authenticated:
+        flash(_("Session expired. Please refresh the page."),
+              MessageType.ERROR)
+        return Response(render_template(
+            'mfa/register.html', _=_,
+            mfa_list=[], mfa_view=None, next_url=next_url,
+            error_message=None,
+        ))
+
     mfa_auths = mfa_suppored_methods()
     mfa_list = list()
-
-    next_url = request.args.get("next", None)
 
     if request.method == 'POST':
         next_url, response, mfa_auths = \
