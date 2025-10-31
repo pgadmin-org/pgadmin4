@@ -979,7 +979,7 @@ export function InputSelect({ref, cid, helpid, onChange, options, readonly = fal
   const onChangeOption = useCallback((selectVal) => {
     if (_.isArray(selectVal)) {
       // Check if select all option is selected
-      if (!_.isUndefined(selectVal.find(x => x.label === '<Select All>'))) {
+      if (!_.isUndefined(selectVal.find(x => x.label === gettext('<Select All>')))) {
         selectVal = filteredOptions;
       }
       /* If multi select options need to be in some format by UI, use formatter */
