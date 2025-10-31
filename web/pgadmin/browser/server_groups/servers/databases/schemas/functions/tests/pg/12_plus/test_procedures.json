@@ -5,6 +5,7 @@
       "name": "Create procedure",
       "endpoint": "NODE-procedure.obj",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql",
       "data": {
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
@@ -24,22 +25,27 @@
         "proleakproof": false,
         "probin": "$libdir/"
       },
-      "expected_sql_file": "create_procedure.sql"
-    }, {
+      "expected_sql_file": "create_procedure.sql",
+      "expected_msql_file": "create_procedure.msql"
+    },
+    {
       "type": "alter",
       "name": "Alter procedure comment",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "description": "some comment"
       },
       "expected_sql_file": "alter_proc_comment.sql",
       "expected_msql_file": "alter_proc_comment_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure param",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "variables": {
           "added": [{"name": "application_name", "value": "pgadmin"}]
@@ -53,6 +59,7 @@
       "name": "Alter procedure add privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "added": [
@@ -80,13 +87,16 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_proc_add_priv.sql",
+      "expected_msql_file": "alter_proc_add_priv.msql"
     },
     {
       "type": "alter",
       "name": "Alter procedure delete privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "deleted": [
@@ -103,13 +113,16 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_proc_delete_priv.sql",
+      "expected_msql_file": "alter_proc_delete_priv.msql"
     },
     {
       "type": "alter",
       "name": "Alter procedure change privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "changed": [

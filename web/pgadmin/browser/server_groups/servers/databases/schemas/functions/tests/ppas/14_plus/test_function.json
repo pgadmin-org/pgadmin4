@@ -212,7 +212,8 @@
           ]
         }
       },
-      "expected_sql_file": "alter_function_add_parameter.sql"
+      "expected_sql_file": "alter_function_add_parameter.sql",
+      "expected_msql_file": "alter_function_add_parameter.msql"
     },
     {
       "type": "alter",
@@ -332,7 +333,9 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_func_remove_partial_pri.sql",
+      "expected_msql_file": "alter_func_remove_partial_pri.msql"
     },
     {
       "type": "alter",
