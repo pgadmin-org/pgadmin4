@@ -34,7 +34,7 @@ The chart should dump its version and appVersion in the Chart.yaml file every re
 | `preferences.enabled` | Whether to mount preferences.json | `false` |
 | `preferences.data` | Preferences to load | `{}` |
 | `resources.*` | Allocated requests and limits resources | `{"requests": {...}, "limits": {...}}` |
-| `persistence.enabled` | PVC resource creation | `false` |
+| `persistence.enabled` | PVC resource creation | `true` |
 | `service.type` | Service type | `"ClusterIP"` |
 | `service.loadBalancerIP` | Load balancer IP (Only if service.type is LoadBalancer) | `""` |
 | `ingress.enabled` | Ingress resource creation | `false` |
