@@ -42,6 +42,7 @@ import { useApplicationState } from '../../../../../../settings/static/Applicati
 import { connectServerModal, connectServer } from '../../../../../sqleditor/static/js/components/connectServer';
 import { useEffect } from 'react';
 import { FileManagerUtils } from '../../../../../../misc/file_manager/static/js/components/FileManager';
+import SearchNode from './SearchNode';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -178,9 +179,9 @@ export default class ERDTool extends React.Component {
     this.eventBus = new EventBus();
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
-      'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
+      'onImageClick', 'onSearchNode', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToOneClick', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onChangeColors', 'onDropNode', 'onNotationChange', 'closePanel'
+      'onChangeColors', 'onDropNode', 'onNotationChange', 'closePanel', 'scrollToNode'
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -249,6 +250,7 @@ export default class ERDTool extends React.Component {
     this.eventBus.registerListener(ERD_EVENTS.SAVE_DIAGRAM, this.onSaveDiagram);
     this.eventBus.registerListener(ERD_EVENTS.SHOW_SQL, this.onSQLClick);
     this.eventBus.registerListener(ERD_EVENTS.DOWNLOAD_IMAGE, this.onImageClick);
+    this.eventBus.registerListener(ERD_EVENTS.SEARCH_NODE, this.onSearchNode);
     this.eventBus.registerListener(ERD_EVENTS.ADD_NODE, this.onAddNewNode);
     this.eventBus.registerListener(ERD_EVENTS.EDIT_NODE, this.onEditTable);
     this.eventBus.registerListener(ERD_EVENTS.CLONE_NODE, this.onCloneNode);
@@ -284,6 +286,9 @@ export default class ERDTool extends React.Component {
       }],
       [this.state.preferences.download_image, ()=>{
         this.eventBus.fireEvent(ERD_EVENTS.DOWNLOAD_IMAGE);
+      }],
+      [this.state.preferences.search_table, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.SEARCH_NODE);
       }],
       [this.state.preferences.add_table, ()=>{
         this.eventBus.fireEvent(ERD_EVENTS.ADD_NODE);
@@ -488,12 +493,69 @@ export default class ERDTool extends React.Component {
     }
   }
 
+  scrollToNode(node) {
+    const engine = this.diagram.getEngine();
+    const model = engine.getModel();
+    const container = this.canvasEle;
+    if (!node || !container) return;
+
+    const { x, y } = node.getPosition();
+    const zoom = model.getZoomLevel() / 100;
+    const offsetX = model.getOffsetX();
+    const offsetY = model.getOffsetY();
+
+    const viewportWidth = container.clientWidth;
+    const viewportHeight = container.clientHeight;
+
+    const nodeWidth = node.width; // Approximate width of a table node
+    const nodeHeight = node.height; // Approximate height of a table node
+
+    // Node screen bounds
+    const nodeLeft = x * zoom + offsetX;
+    const nodeRight = nodeLeft + nodeWidth * zoom;
+    const nodeTop = y * zoom + offsetY;
+    const nodeBottom = nodeTop + nodeHeight * zoom;
+
+    let newOffsetX = offsetX;
+    let newOffsetY = offsetY;
+
+    // Check horizontal visibility
+    if (nodeLeft < 0) {
+      newOffsetX += -nodeLeft + 20; // 20px padding
+    } else if (nodeRight > viewportWidth) {
+      newOffsetX -= nodeRight - viewportWidth + 20;
+    }
+
+    // Check vertical visibility
+    if (nodeHeight * zoom >= viewportHeight) {
+    // Node taller than viewport: snap top of node to top of viewport
+      newOffsetY = offsetY + viewportHeight / 2 - (nodeHeight * zoom) / 2;
+      newOffsetY = offsetY - (nodeTop - 20); // aligns top
+    } else {
+    // Node fits in viewport: ensure fully visible
+      if (nodeTop < 0) {
+        newOffsetY += -nodeTop + 20;
+      } else if (nodeBottom > viewportHeight) {
+        newOffsetY -= nodeBottom - viewportHeight + 20;
+      }
+    }
+
+    // Update offset only if needed
+    if (newOffsetX !== offsetX || newOffsetY !== offsetY) {
+      model.setOffset(newOffsetX, newOffsetY);
+    }
+
+    this.diagram.repaint();
+    node.setSelected(true);
+    node.fireEvent({}, 'highlightFlash');
+  };
+
+
   addEditTable(node) {
     let dialog = this.getDialog('table_dialog');
     if(node) {
-      let [schema, table] = node.getSchemaTableName();
       let oldData = node.getData();
-      dialog(gettext('Table: %s (%s)', _.escape(table),_.escape(schema)), oldData, false, (newData)=>{
+      dialog(gettext('Table: %s', node.getDisplayName()), oldData, false, (newData)=>{
         if(this.diagram.anyDuplicateNodeName(newData, oldData)) {
           return gettext('Table name already exists');
         }
@@ -558,6 +620,12 @@ export default class ERDTool extends React.Component {
     if(selected.length == 1) {
       this.addEditTable(selected[0]);
     }
+  }
+
+  onSearchNode() {
+    this.context.showModal(gettext('Search'), (closeModal)=>(
+      <SearchNode tableNodes={this.diagram.getModel().getNodesDict()} onClose={closeModal} scrollToNode={this.scrollToNode} />
+    ), {id: 'id-erd-search-node', showTitle: false, disableRestoreFocus: true});
   }
 
   onAddNewNode() {

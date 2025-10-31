@@ -83,8 +83,7 @@ class OneToOneSchema extends BaseUISchema {
 export function getOneToOneDialogSchema(attributes, tableNodesDict) {
   let tablesData = [];
   _.forEach(tableNodesDict, (node, uid)=>{
-    let [schema, name] = node.getSchemaTableName();
-    tablesData.push({value: uid, label: `(${schema}) ${name}`, image: 'icon-table'});
+    tablesData.push({value: uid, label: node.getDisplayName(), image: 'icon-table'});
   });
 
   return new OneToOneSchema({

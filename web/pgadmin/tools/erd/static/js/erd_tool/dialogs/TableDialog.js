@@ -61,8 +61,7 @@ export function getTableDialogSchema(attributes, isNew, tableNodesDict, colTypes
           references: ()=>{
             let retOpts = [];
             _.forEach(tableNodesDict, (node, uid)=>{
-              let [schema, name] = node.getSchemaTableName();
-              retOpts.push({value: uid, label: `(${schema}) ${name}`});
+              retOpts.push({value: uid, label: node.getDisplayName()});
             });
             return retOpts;
           }

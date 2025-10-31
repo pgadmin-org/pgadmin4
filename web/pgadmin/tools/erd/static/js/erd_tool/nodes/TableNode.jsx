@@ -147,6 +147,10 @@ export class TableNodeModel extends DefaultNodeModel {
     return [this._data.schema, this._data.name];
   }
 
+  getDisplayName() {
+    return `(${this._data.schema}) ${this._data.name}`;
+  }
+
   remove() {
     Object.values(this.getPorts()).forEach((port)=>{
       port.removeAllLinks();
@@ -218,6 +222,19 @@ const StyledDiv = styled('div')(({theme})=>({
     position: 'relative',
     width: `${TABLE_WIDTH}px`,
     fontSize: '0.8em',
+    borderRadius: theme.shape.borderRadius,
+
+    '&.flash': {
+      animation: 'flash 2s ease-in-out',
+    },
+    '@keyframes flash': {
+      '0%': {
+        boxShadow: `0 0 10px 5px ${theme.palette.primary.main}`,
+      },
+      '100%': {
+        boxShadow: 'none',
+      },
+    },
 
     '& .TableNode-tableContent': {
       backgroundColor: theme.palette.background.default,
@@ -263,10 +280,21 @@ const StyledDiv = styled('div')(({theme})=>({
         padding: '0.125rem 0.25rem',
         wordBreak: 'break-all',
       },
+
+      '&:last-child': {
+        borderBottom: 'none',
+      },
     },
   },
   '&.TableNode-tableNodeSelected': {
-    borderColor: theme.palette.primary.main,
+    '& .TableNode-tableToolbar': {
+      borderColor: theme.palette.primary.main,
+    },
+    '& .TableNode-tableContent': {
+      borderLeftColor: theme.palette.primary.main,
+      borderRightColor: theme.palette.primary.main,
+      borderBottomColor: theme.palette.primary.main,
+    },
   },
 }));
 
@@ -276,6 +304,7 @@ export class TableNodeWidget extends React.Component {
 
     this.state = {
       show_details: true,
+      flash: false,
     };
 
     this.tableNodeEventListener = this.props.node.registerListener({
@@ -291,6 +320,12 @@ export class TableNodeWidget extends React.Component {
       dataAvaiable: ()=>{
         /* Just re-render */
         this.setState({});
+      },
+      highlightFlash: ()=>{
+        this.setState({flash: true});
+        setTimeout(()=>{
+          this.setState({flash: false});
+        }, 2000);
       }
     });
   }
@@ -368,13 +403,21 @@ export class TableNodeWidget extends React.Component {
     (tableData.unique_constraint||[]).forEach((uk)=>{
       localUkCols.push(...uk.columns.map((c)=>c.column));
     });
-    const styles = {
+    const contentStyles = {
       backgroundColor: tableMetaData.fillColor,
       color: tableMetaData.textColor,
     };
+
+    let classList = ['TableNode-tableNode'];
+    if(this.props.node.isSelected()) {
+      classList.push('TableNode-tableNodeSelected');
+    }
+    if(this.state.flash) {
+      classList.push('flash');
+    }
     return (
-      <StyledDiv className={['TableNode-tableNode', (this.props.node.isSelected() ? 'TableNode-tableNodeSelected': '')].join(' ')}
-        onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}} style={styles}>
+      <StyledDiv className={classList.join(' ')}
+        onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
         <div className={'TableNode-tableToolbar'}>
           <PgIconButton size="xs" title={gettext('Show Details')} icon={this.state.show_details ? <VisibilityRoundedIcon /> : <VisibilityOffRoundedIcon />}
             onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
@@ -386,7 +429,7 @@ export class TableNodeWidget extends React.Component {
               }}
             />}
         </div>
-        <div className='TableNode-tableContent'>
+        <div className='TableNode-tableContent' style={contentStyles}>
           {tableMetaData.is_promise &&
           <div className='TableNode-tableSection'>
             {!tableMetaData.data_failed && <div className='TableNode-tableNameText'>{gettext('Fetching...')}</div>}

@@ -160,6 +160,24 @@ class ERDModule(PgAdminModule):
 
         self.preference.register(
             'keyboard_shortcuts',
+            'search_table',
+            gettext('Search table'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': False,
+                'control': True,
+                'key': {
+                    'key_code': 70,
+                    'char': 'f'
+                }
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=shortcut_fields
+        )
+
+        self.preference.register(
+            'keyboard_shortcuts',
             'add_table',
             gettext('Add table'),
             'keyboardshortcut',

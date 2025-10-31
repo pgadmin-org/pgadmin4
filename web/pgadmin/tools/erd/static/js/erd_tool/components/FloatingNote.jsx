@@ -62,8 +62,7 @@ export default function FloatingNote({open, onClose, anchorEl, rows, noteNode}) 
 
   const header = useMemo(()=>{
     if(noteNode) {
-      let [schema, name] = noteNode.getSchemaTableName();
-      return `${name} (${schema})`;
+      return noteNode.getDisplayName();
     }
     return '';
   }, [open]);

@@ -28,6 +28,7 @@ import ImageRoundedIcon from '@mui/icons-material/ImageRounded';
 import FormatColorFillRoundedIcon from '@mui/icons-material/FormatColorFillRounded';
 import FormatColorTextRoundedIcon from '@mui/icons-material/FormatColorTextRounded';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
@@ -201,6 +202,11 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
             }} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
+          <PgIconButton title={gettext('Search Table')} icon={<SearchOutlinedIcon />}
+            shortcut={preferences.search_table}
+            onClick={()=>{
+              eventBus.fireEvent(ERD_EVENTS.SEARCH_NODE);
+            }} />
           <PgIconButton title={gettext('Add Table')} icon={<AddBoxIcon />}
             shortcut={preferences.add_table}
             onClick={()=>{
