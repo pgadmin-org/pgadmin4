@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() FROM PUBLIC;

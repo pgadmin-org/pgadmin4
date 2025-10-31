@@ -2,9 +2,79 @@
   "scenarios": [
     {
       "type": "create",
+      "name": "Create Extension",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "postgres_fdw",
+        "version": "",
+        "relocatable": true
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create procedure with extensions.",
+      "endpoint": "NODE-procedure.obj",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql",
+      "data": {
+        "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [],
+        "arguments": [{"argtype": "integer", "argmode": "IN", "argname": "i1", "argdefval": ""}],
+        "funcowner": "enterprisedb",
+        "lanname": "plpgsql",
+        "options": [],
+        "pronamespace": 2200,
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [],
+        "schema": "public",
+        "provolatile": null,
+        "proisstrict": false,
+        "proparallel": null,
+        "procost": null,
+        "proleakproof": false,
+        "probin": "$libdir/",
+        "dependsonextensions": ["plpgsql", "postgres_fdw"]
+      },
+      "expected_sql_file": "create_procedure_on_depends.sql",
+      "expected_msql_file": "create_procedure_on_depends.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter procedure with NO DEPENDS ON",
+      "endpoint": "NODE-procedure.obj_id",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
+      "data": {
+        "dependsonextensions": ["plpgsql"]
+      },
+      "expected_sql_file": "alter_proc_no_depends.sql",
+      "expected_msql_file": "alter_proc_no_depends.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop procedure",
+      "endpoint": "NODE-procedure.delete_id",
+      "data": {
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<postgres_fdw>"]
+      },
+      "preprocess_data": true
+    },
+    {
+      "type": "create",
       "name": "Create procedure",
       "endpoint": "NODE-procedure.obj",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql",
       "data": {
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
@@ -24,22 +94,27 @@
         "proleakproof": false,
         "probin": "$libdir/"
       },
-      "expected_sql_file": "create_procedure.sql"
-    }, {
+      "expected_sql_file": "create_procedure.sql",
+      "expected_msql_file": "create_procedure.msql"
+    },
+    {
       "type": "alter",
       "name": "Alter procedure comment",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "description": "some comment"
       },
       "expected_sql_file": "alter_proc_comment.sql",
       "expected_msql_file": "alter_proc_comment_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure param",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "variables": {
           "added": [{"name": "application_name", "value": "pgadmin"}]
@@ -53,6 +128,7 @@
       "name": "Alter procedure add privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "added": [
@@ -80,13 +156,16 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_proc_add_priv.sql",
+      "expected_msql_file": "alter_proc_add_priv.msql"
     },
     {
       "type": "alter",
       "name": "Alter procedure delete privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "deleted": [
@@ -103,13 +182,16 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_proc_delete_priv.sql",
+      "expected_msql_file": "alter_proc_delete_priv.msql"
     },
     {
       "type": "alter",
       "name": "Alter procedure change privileges",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql_id",
       "data": {
         "acl": {
           "changed": [
@@ -143,6 +225,7 @@
       "name": "Create procedure (atomic)",
       "endpoint": "NODE-procedure.obj",
       "sql_endpoint": "NODE-procedure.sql_id",
+      "msql_endpoint": "NODE-procedure.msql",
       "data": {
         "name":"Proc3_$%{}[]()&*^!@\"'`\\/#",
         "funcowner":"enterprisedb",

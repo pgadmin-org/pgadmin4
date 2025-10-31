@@ -1,0 +1,2 @@
+ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
+    NO DEPENDS ON EXTENSION postgres_fdw;

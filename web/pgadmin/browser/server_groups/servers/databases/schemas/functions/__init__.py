@@ -1171,7 +1171,10 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             old_data['proparallel'] = \
                 parallel_dict[old_data['proparallel']]
 
-        if self.node_type == 'function':
+        if self.node_type in ('function', 'procedure') and (
+            old_data.get('dependsonextensions') is None or
+            data.get('dependsonextensions') is None
+        ):
             old_data['dependsonextensions'] = \
                 old_data.get('dependsonextensions') or []
             data['dependsonextensions'] = \

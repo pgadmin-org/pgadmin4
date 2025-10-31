@@ -288,8 +288,7 @@ export default class FunctionSchema extends BaseUISchema {
         placeholder: gettext('Select the Depends on extensions...'),
       },
       min_version: 130000,
-      mode: ['create', 'edit', 'properties'],
-      visible: obj.isVisible
+      mode: ['create', 'edit', 'properties']
     },{
       id: 'probin', label: gettext('Object file'), cell: 'string',
       type: 'text', group: gettext('Definition'), deps: ['lanname'], visible:

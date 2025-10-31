@@ -9,7 +9,8 @@
         "name": "postgres_fdw",
         "version": "",
         "relocatable": true
-      }
+      },
+      "store_object_id": true
     },
     {
       "type": "create",
@@ -75,6 +76,15 @@
       "endpoint": "NODE-function.delete_id",
       "data": {
       }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<postgres_fdw>"]
+      },
+      "preprocess_data": true
     },
     {
       "type": "create",
@@ -202,7 +212,8 @@
           ]
         }
       },
-      "expected_sql_file": "alter_function_add_parameter.sql"
+      "expected_sql_file": "alter_function_add_parameter.sql",
+      "expected_msql_file": "alter_function_add_parameter.msql"
     },
     {
       "type": "alter",
@@ -322,7 +333,9 @@
             }
           ]
         }
-      }
+      },
+      "expected_sql_file": "alter_func_remove_partial_pri.sql",
+      "expected_msql_file": "alter_func_remove_partial_pri.msql"
     },
     {
       "type": "alter",
