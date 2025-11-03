@@ -27,7 +27,6 @@ class DBPasswordChange(BaseTestGenerator):
         utils.write_node_info("sid", server_dict)
 
     @patch('pgadmin.browser.server_groups.servers.render_template')
-    @patch('pgadmin.browser.server_groups.servers.pqencryptpassword')
     @patch('pgadmin.browser.server_groups.servers.decrypt')
     @patch('pgadmin.browser.server_groups.servers.get_driver')
     @patch('pgadmin.browser.server_groups.servers.db')
@@ -35,7 +34,7 @@ class DBPasswordChange(BaseTestGenerator):
     @patch('pgadmin.browser.server_groups.servers.User')
     @patch('pgadmin.browser.server_groups.servers.current_user')
     def runTest(self, current_user_mock, user_mock, server_mock, db_mock,
-                get_driver_mock, decrypt_mock, pqencryptpassword_mock,
+                get_driver_mock, decrypt_mock,
                 render_template_mock):
 
         current_user_mock.id = 1
@@ -54,7 +53,6 @@ class DBPasswordChange(BaseTestGenerator):
                  ['connection_execute_scalar_return_value'])
 
         decrypt_mock.return_value = self.manager.password
-        pqencryptpassword_mock.return_value = self.manager.password
 
         class TestMockServer():
             def __init__(self, name, sid, password, passfile):
