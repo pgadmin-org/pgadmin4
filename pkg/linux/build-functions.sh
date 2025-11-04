@@ -209,7 +209,10 @@ _build_docs() {
     cd "${SERVERROOT}" && mkdir -p "usr/${APP_NAME}/share/docs/en_US/html"
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
-    "${SYSTEM_PYTHON_PATH}" -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
+
+    SYS_PYTHON_PACKS=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print(':'.join([p for p in sys.path if p]))")
+    # shellcheck disable=SC2153
+    PYTHONPATH=$PYTHONPATH:${SYS_PYTHON_PACKS} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
 }
 
 _copy_code() {

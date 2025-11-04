@@ -55,7 +55,7 @@ export function DataGridRow({row, isResizing}) {
   return useMemo(() => (
     !row ? <></> :
       <DataGridRowContext.Provider value={{ rowAccessPath, row }}>
-        <Draggable nodeRef={rowRef}>
+        <Draggable nodeRef={rowRef} disabled>
           <PgReactTableRowContent ref={rowRef}
             className={classList.join[' ']}
             data-test='data-table-row' style={{position: 'initial'}}
