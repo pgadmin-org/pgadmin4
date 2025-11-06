@@ -792,7 +792,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
                 onKeyDown={async (e)=>{
                   if(e.code === 'Enter') {
                     e.preventDefault();
-                    await openDir(path);
+                    await openDir(path, selectedSS);
                   }
                 }} value={path} onChange={setPath} readonly={showUploader} />
 

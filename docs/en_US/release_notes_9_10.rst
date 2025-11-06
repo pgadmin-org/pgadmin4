@@ -39,4 +39,5 @@ Bug fixes
   | `Issue #9132 <https://github.com/pgadmin-org/pgadmin4/issues/9132>`_ -  Fixed an issue where the 2FA window redirected to the login page after session expiration.
   | `Issue #9233 <https://github.com/pgadmin-org/pgadmin4/issues/9233>`_ -  Fixed an issue where the Select All option on the columns tab of import/export data was not working in languages other than English.
   | `Issue #9240 <https://github.com/pgadmin-org/pgadmin4/issues/9240>`_ -  Fixed an issue where the Debian build process failed with a "Sphinx module not found" error when using a Python virtual environment.
+  | `Issue #9281 <https://github.com/pgadmin-org/pgadmin4/issues/9281>`_ -  Fixed an issue where the last used storage directory was reset to blank, leading to access denied errors during backup or restore operations.
   | `Issue #9304 <https://github.com/pgadmin-org/pgadmin4/issues/9304>`_ -  Fixed an issue that prevented assigning multiple users to an RLS policy.
