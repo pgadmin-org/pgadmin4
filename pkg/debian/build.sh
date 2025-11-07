@@ -7,6 +7,8 @@ set -e
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
 OS_ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
+DISTRO=$(lsb_release -cs)
+RELEASE=1
 
 # Stop creating pyc files.
 export PYTHONDONTWRITEBYTECODE=1
@@ -58,7 +60,7 @@ EOF
 
 # Build the Debian package for the server
 chmod -R u+rwX,go+rX,go-w "${SERVERROOT}"
-fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --build "${SERVERROOT}" "${DISTROOT}/${APP_NAME}-server_${APP_LONG_VERSION}-${RELEASE}.${DISTRO}_${OS_ARCH}.deb"
 
 #
 # Desktop package
@@ -102,7 +104,7 @@ EOF
 
 # Build the Debian package for the desktop
 chmod -R u+rwX,go+rX,go-w "${DESKTOPROOT}"
-fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_ARCH}.deb"
+fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}-${RELEASE}.${DISTRO}_${OS_ARCH}.deb"
 
 #
 # Web package
@@ -132,7 +134,7 @@ cp "${SOURCEDIR}/pkg/debian/pgadmin4.conf" "${WEBROOT}/etc/apache2/conf-availabl
 
 # Build the Debian package for the web
 chmod -R u+rwX,go+rX,go-w "${WEBROOT}"
-fakeroot dpkg-deb --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}_all.deb"
+fakeroot dpkg-deb --build "${WEBROOT}" "${DISTROOT}/${APP_NAME}-web_${APP_LONG_VERSION}-${RELEASE}.${DISTRO}_all.deb"
 
 #
 # Meta package
@@ -154,7 +156,7 @@ Description: Installs all required components to run pgAdmin in desktop and web 
 EOF
 
 # Build the Debian meta package
-fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}_all.deb"
+fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}-${RELEASE}.${DISTRO}_all.deb"
 
 # Get the libpq package
 pushd "${DISTROOT}" 1> /dev/null
