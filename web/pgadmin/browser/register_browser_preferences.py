@@ -33,6 +33,15 @@ def register_browser_preferences(self):
         )
     )
 
+    self.show_column_datatype = self.preference.register(
+        'display', 'show_column_datatype',
+        gettext("Show column data type?"), 'boolean', False,
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'If turned on, then the data type of columns will be displayed.'
+        )
+    )
+
     self.show_user_defined_templates = self.preference.register(
         'display', 'show_user_defined_templates',
         gettext("Show template databases?"), 'boolean', False,

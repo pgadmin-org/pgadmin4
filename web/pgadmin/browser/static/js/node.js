@@ -99,6 +99,9 @@ define('pgadmin.browser.node', [
       // during the copying process of any node.
       return d;
     },
+    getNodeLabel: function(data) {
+      return data._label;
+    },
     hasId: true,
     ///////
     // Initialization function

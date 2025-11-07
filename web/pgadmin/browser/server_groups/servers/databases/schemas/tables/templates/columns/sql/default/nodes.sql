@@ -1,4 +1,5 @@
 SELECT DISTINCT att.attname as name, att.attnum as OID, pg_catalog.format_type(ty.oid,NULL) AS datatype,
+pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
 att.attnotnull as not_null,
 CASE WHEN att.atthasdef OR att.attidentity != '' OR ty.typdefault IS NOT NULL THEN True
 ELSE False END as has_default_val, des.description, seq.seqtypid
