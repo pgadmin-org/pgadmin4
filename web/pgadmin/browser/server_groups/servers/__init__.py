@@ -21,7 +21,7 @@ from pgadmin.browser.server_groups.servers.types import ServerType
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, bad_request, forbidden, \
     make_response as ajax_response, internal_server_error, unauthorized, gone
-from pgadmin.utils.crypto import encrypt, decrypt, pqencryptpassword
+from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.utils.menu import MenuItem
 from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
@@ -1881,16 +1881,11 @@ class ServerNode(PGChildNodeView):
                     return unauthorized(gettext("Incorrect password."))
 
             # Hash new password before saving it.
-            if manager.sversion >= 100000:
-                password = conn.pq_encrypt_password_conn(data['newPassword'],
-                                                         manager.user)
-                if password is None:
-                    # Unable to encrypt the password so used the
-                    # old method of encryption
-                    password = pqencryptpassword(data['newPassword'],
-                                                 manager.user)
-            else:
-                password = pqencryptpassword(data['newPassword'], manager.user)
+            password = conn.pq_encrypt_password_conn(data['newPassword'],
+                                                     manager.user)
+            if password is None:
+                return internal_server_error(errormsg="Unable to"
+                                                      " change the password.")
 
             SQL = render_template(
                 "/servers/sql/#{0}#/change_password.sql".format(

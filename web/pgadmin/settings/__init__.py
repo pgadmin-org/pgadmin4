@@ -513,7 +513,7 @@ def delete_tool_data(trans_id=None):
 
 def compute_md5_hash_file(file_path, chunk_size=8192):
     """Compute md5 hash for large files by reading in chunks."""
-    md5_hash = hashlib.md5()
+    md5_hash = hashlib.sha256()
 
     # Open the file in binary mode
     with open(file_path, "rb") as file:
