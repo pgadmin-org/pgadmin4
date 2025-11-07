@@ -53,6 +53,13 @@ describe('MaterializedViewSchema', ()=>{
     await getPropertiesView(createSchemaObject(), getInitData);
   });
 
+  it('dependsonextensions field exists', ()=>{
+    let field = _.find(schemaObj.fields, (f)=>f.id=='dependsonextensions');
+    expect(field).toBeTruthy();
+    expect(field.type).toBe('select');
+    expect(field.controlProps.multiple).toBe(true);
+  });
+
   it('validate', ()=>{
     initializeSchemaWithData(schemaObj, {});
     let state = {};

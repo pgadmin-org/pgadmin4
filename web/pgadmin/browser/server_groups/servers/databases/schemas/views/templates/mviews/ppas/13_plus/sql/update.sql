@@ -27,7 +27,7 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(view_schema, view_name) }}
-{% if data.amname and data.amname != o_data.amname%}
+{% if data.amname and data.amname != o_data.amname %}
 USING {{ data.amname }}
 {% endif %}
 {% if data.fillfactor or o_data.fillfactor %}
@@ -64,9 +64,9 @@ COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% else %}
 {# ======= Alter Tablespace ========= #}
-{%- if data.spcname and o_data.spcname != data.spcname  -%}
+{%- if data.spcoid and o_data.spcoid != data.spcoid  -%}
 ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
-  SET TABLESPACE {{ data.spcname }};
+  SET TABLESPACE {{ data.spcoid }};
 
 {% endif %}
 {# ======= SET/RESET Fillfactor ========= #}
@@ -83,13 +83,6 @@ RESET(
 );
 
 {% endif %}
-{# ======= Change Access Method ========= #}
-{% if data.amname and o_data.amname != data.amname %}
-ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
-  SET ACCESS METHOD {{ data.amname }};
-
-{% endif %}
-{# ======= Change Access Method end ========= #}
 {# ===== Check for with_data property ===== #}
 {% if data.with_data is defined and o_data.with_data|lower != data.with_data|lower  %}
 REFRESH MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} WITH{{ ' NO' if data.with_data|lower == 'false' else '' }} DATA;
@@ -225,5 +218,4 @@ ALTER MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% endfor %}
 {% endif %}
-
 {% endif %}

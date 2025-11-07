@@ -1957,6 +1957,15 @@ class MViewNode(ViewNode, VacuumSettings):
         if 'schema' not in data:
             data['schema'] = res['schema']
 
+        if self.node_type == 'mview' and (
+            old_data.get('dependsonextensions') is None or
+            data.get('dependsonextensions') is None
+        ):
+            old_data['dependsonextensions'] = \
+                old_data.get('dependsonextensions') or []
+            data['dependsonextensions'] = \
+                data.get('dependsonextensions') or []
+
         # merge vacuum lists into one
         data['vacuum_data'] = {}
         data['vacuum_data']['changed'] = []
@@ -2025,6 +2034,12 @@ class MViewNode(ViewNode, VacuumSettings):
 
         if data.get('toast_autovacuum', False):
             data['vacuum_data'] += vacuum_toast
+
+        if self.node_type == 'mview' and (
+            data.get('dependsonextensions') is None
+        ):
+            data['dependsonextensions'] = \
+                data.get('dependsonextensions') or []
 
         # Privileges
         for aclcol in self.allowed_acls:

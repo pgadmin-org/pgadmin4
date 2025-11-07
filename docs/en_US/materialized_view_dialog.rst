@@ -47,6 +47,9 @@ Use the fields in the *Storage* tab to maintain the materialized view:
 * Use the *Fill Factor* field to specify a fill factor for the materialized
   view. The fill factor for a table is a percentage between 10 and 100. 100
   (complete packing) is the default.
+* Use the drop-down listbox next to *Depends on extensions* to select the extension that this materialized view
+  depends on (for example, edbspl). If set, dropping the extension will automatically drop the
+  materialized view as well.
 
 Click the *Code* tab to continue.
 

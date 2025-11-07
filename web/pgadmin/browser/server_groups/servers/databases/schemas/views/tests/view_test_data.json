@@ -88,7 +88,8 @@
         "datacl": [],
         "seclabels": [],
         "name": "test_mview_add_",
-        "definition": "SELECT 'test_pgadmin';"
+        "definition": "SELECT 'test_pgadmin';",
+        "dependsonextensions": ["plpgsql"]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1054,7 +1055,8 @@
         "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
-        "comment": "This is test comment"
+        "comment": "This is test comment",
+        "dependsonextensions": ["plpgsql"]
       },
       "mocking_required": false,
       "mock_data": {},
