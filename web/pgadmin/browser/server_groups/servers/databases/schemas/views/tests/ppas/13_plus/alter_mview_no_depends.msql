@@ -1,0 +1,2 @@
+ALTER MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
+    NO DEPENDS ON EXTENSION postgres_fdw;
