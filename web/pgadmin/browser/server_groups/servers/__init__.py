@@ -1887,7 +1887,6 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errormsg="Unable to"
                                                       " change the password.")
 
-
             SQL = render_template(
                 "/servers/sql/#{0}#/change_password.sql".format(
                     manager.version),
