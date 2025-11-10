@@ -24,7 +24,7 @@
 extras==1.0.0
 fixtures==4.2.6
 linecache2==1.0.0
-pbr==7.0.2
+pbr==7.0.3
 pycodestyle>=2.5.0
 python-mimeparse==2.0.0
 selenium==4.38.0
