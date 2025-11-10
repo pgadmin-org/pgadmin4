@@ -100,7 +100,7 @@ define('pgadmin.browser.node', [
       return d;
     },
     getNodeLabel: function(data) {
-      return data._label;
+      return data.label;
     },
     hasId: true,
     ///////

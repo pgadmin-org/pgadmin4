@@ -45,7 +45,7 @@ define('pgadmin.node.column', [
       // Overriding getNodeLabel to add datatype besides column name
       getNodeLabel: function(data) {
         let show_column_datatype = usePreferences.getState().getPreferences('browser', 'show_column_datatype');
-        let label = data._label;
+        let label = data.label;
         if (show_column_datatype?.value && data.datatype && data.displaytypname) {
           label += ` ${data.displaytypname}`;
         }

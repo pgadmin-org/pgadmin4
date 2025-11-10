@@ -59,13 +59,8 @@ export class ManageTreeNodes {
 
   public addNode = (_parent: string, _path: string, _data: []) => new Promise((res) => {
     _data.type = _data.inode ? FileType.Directory : FileType.File;
-    _data._label = _data.label;
 
-    const nodeClass = pgAdmin.Browser.Nodes[_data._type];
-
-    if (nodeClass && typeof nodeClass.getNodeLabel === 'function') {
-      _data._label = nodeClass.getNodeLabel(_data);
-    }
+    _data._label = pgAdmin.Browser.Nodes[_data._type]?.getNodeLabel(_data);
 
     _data.label = _.escape(_data.label);
 

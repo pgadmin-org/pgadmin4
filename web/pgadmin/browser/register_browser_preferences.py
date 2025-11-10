@@ -38,7 +38,8 @@ def register_browser_preferences(self):
         gettext("Show column data type?"), 'boolean', False,
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'If turned on, then the data type of columns will be displayed.'
+            'If turned on, then the data types of the columns '
+            'will be displayed alongside their column names.'
         )
     )
 
