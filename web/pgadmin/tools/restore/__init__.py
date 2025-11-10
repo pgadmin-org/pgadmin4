@@ -336,7 +336,7 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
                      False)
         set_multiple('indexes', '--index', data, args, driver, conn, False)
 
-    args.append(fs_short_path(filepath))
+    args.append(filepath)
 
     return args
 

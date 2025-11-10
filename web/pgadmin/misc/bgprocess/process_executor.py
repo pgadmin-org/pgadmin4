@@ -33,6 +33,7 @@ OUTDIR - Output directory
 # To make print function compatible with python2 & python3
 import sys
 import os
+import subprocess
 from datetime import datetime, timedelta, tzinfo, timezone
 from subprocess import Popen, PIPE
 from threading import Thread
@@ -319,7 +320,9 @@ def execute(argv):
 
         kwargs = dict()
         kwargs['close_fds'] = False
-        kwargs['shell'] = True if _IS_WIN else False
+        kwargs['shell'] = False
+        if _IS_WIN:
+            kwargs['creationflags'] = subprocess.CREATE_NO_WINDOW
 
         # We need environment variables & values in string
         kwargs['env'] = os.environ.copy()

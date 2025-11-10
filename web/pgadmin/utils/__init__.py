@@ -311,15 +311,19 @@ def filename_with_file_manager_path(_file, create_file=False,
     elif not os.path.isabs(_file):
         _file = os.path.join(document_dir(), _file)
 
-    def short_filepath():
-        short_path = fs_short_path(_file)
+    def short_filepath(file=_file):
+        short_path = fs_short_path(file)
         # fs_short_path() function may return empty path on Windows
         # if directory doesn't exists. In that case we strip the last path
         # component and get the short path.
         if os.name == 'nt' and short_path == '':
-            base_name = os.path.basename(_file)
-            dir_name = os.path.dirname(_file)
-            short_path = fs_short_path(dir_name) + '\\' + base_name
+            base_name = os.path.basename(file)
+            dir_name = os.path.dirname(file)
+            dir_short_path = fs_short_path(dir_name)
+            if dir_short_path == '' and file != "":
+                short_path = os.path.join(short_filepath(dir_name), base_name)
+            else:
+                short_path = os.path.join(dir_short_path, base_name)
         return short_path
 
     if create_file:
