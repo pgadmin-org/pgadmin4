@@ -98,6 +98,7 @@ ingress:
   enabled: false
   hostname: pgadmin4.local
   annotations: {}
+  tlsSecret: ""
 
 startupProbe:
   enabled: false
