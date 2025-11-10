@@ -43,3 +43,5 @@ Bug fixes
   | `Issue #9304 <https://github.com/pgadmin-org/pgadmin4/issues/9304>`_ -  Fixed an issue that prevented assigning multiple users to an RLS policy.
   | `Issue #9320 <https://github.com/pgadmin-org/pgadmin4/issues/9320>`_ -  Fixed remote code execution vulnerability when restoring PLAIN-format SQL dumps in server mode (CVE-2025-12762).
   | `Issue #9323 <https://github.com/pgadmin-org/pgadmin4/issues/9323>`_ -  Fixed Command injection vulnerability allowing arbitrary command execution on Windows (CVE-2025-12763).
+  | `Issue #9324 <https://github.com/pgadmin-org/pgadmin4/issues/9324>`_ -  Fixed LDAP authentication flow vulnerable to TLS certificate verification bypass (CVE-2025-12765).
+  | `Issue #9325 <https://github.com/pgadmin-org/pgadmin4/issues/9325>`_ -  Fixed LDAP injection vulnerability in LDAP authentication flow (CVE-2025-12764).

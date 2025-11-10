@@ -754,6 +754,9 @@ LDAP_CA_CERT_FILE = ''
 LDAP_CERT_FILE = ''
 LDAP_KEY_FILE = ''
 
+# TLS/SSL certificate Validation (True/False),
+# Make it false if certificate validation is not required.
+LDAP_CERT_VALIDATE = True
 ##########################################################################
 
 # Some flaky LDAP servers returns malformed schema. If True, no exception

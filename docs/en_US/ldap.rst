@@ -87,6 +87,8 @@ There are 3 ways to configure LDAP:
    "LDAP_KEY_FILE","Specifies the path to the server private key file. This parameter
    is applicable only if you are using *ldaps* as connection protocol or you have
    set *LDAP_USE_STARTTLS* parameter to *True*."
+   "LDAP_CERT_VALIDATE", "Set this parameter to *False* if you want to bypass
+   the TLS certificate validation. By default it is set to True."
    "LDAP_IGNORE_MALFORMED_SCHEMA", "Some flaky LDAP servers returns malformed schema.
    If this parameter set to *True*, no exception will be raised and schema is thrown away
    but authentication will be done. This parameter should remain False, as recommended."
