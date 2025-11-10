@@ -384,17 +384,22 @@ def has_meta_commands(path, chunk_size=8 * 1024 * 1024):
     # optional spaces, then backslash
     pattern = re.compile(br'(^|\n)[ \t]*\\')
 
-    with open(path, "rb") as f:
-        prev_tail = b""
-        while chunk := f.read(chunk_size):
-            data = prev_tail + chunk
+    try:
+        with open(path, "rb") as f:
+            prev_tail = b""
+            while chunk := f.read(chunk_size):
+                data = prev_tail + chunk
 
-            # Search for pattern
-            if pattern.search(data):
-                return True
+                # Search for pattern
+                if pattern.search(data):
+                    return True
 
-            # Keep a small tail to preserve line boundary context
-            prev_tail = data[-10:]  # keep last few bytes
+                # Keep a small tail to preserve line boundary context
+                prev_tail = data[-10:]  # keep last few bytes
+    except FileNotFoundError:
+        current_app.logger.error("File not found.")
+    except PermissionError:
+        current_app.logger.error("Insufficient permissions to access.")
 
     return False
 
