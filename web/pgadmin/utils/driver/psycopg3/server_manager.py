@@ -14,6 +14,7 @@ import os
 import datetime
 import config
 import logging
+import getpass
 from flask import current_app, session
 from flask_security import current_user
 from flask_babel import gettext
@@ -34,8 +35,8 @@ from psycopg.conninfo import make_conninfo
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 
-CONN_STRING = 'CONN:{0}'
-DB_STRING = 'DB:{0}'
+CONN_STRING = getpass.getuser() + ':{0}'
+DB_STRING = getpass.getuser() + ':{0}'
 
 
 class ServerManager(object):

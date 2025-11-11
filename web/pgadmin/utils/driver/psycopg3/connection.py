@@ -18,6 +18,7 @@ import secrets
 import datetime
 import asyncio
 import copy
+import getpass
 from collections import deque
 import psycopg
 from flask import g, current_app
@@ -330,7 +331,7 @@ class Connection(BaseConnection):
 
             import os
             os.environ['PGAPPNAME'] = '{0} - {1}'.format(
-                config.APP_NAME, conn_id)
+                getpass.getuser(), conn_id)
 
             ssl_key = get_complete_file_path(
                 manager.get_connection_param_value('sslkey'))
