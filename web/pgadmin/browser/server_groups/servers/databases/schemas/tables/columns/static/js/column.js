@@ -42,14 +42,13 @@ define('pgadmin.node.column', [
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
-      // Overriding getNodeLabel to add datatype besides column name
-      getNodeLabel: function(data) {
+      // Overriding getNodeInfoLabel to add datatype alongside column name
+      getNodeInfoLabel: function(data) {
         let show_column_datatype = usePreferences.getState().getPreferences('browser', 'show_column_datatype');
-        let label = data.label;
         if (show_column_datatype?.value && data.datatype && data.displaytypname) {
-          label += ` ${data.displaytypname}`;
+          return data.displaytypname;
         }
-        return label;
+        return null;
       },
       canDrop: function(itemData, item){
         let node = pgBrowser.tree.findNodeByDomElement(item);

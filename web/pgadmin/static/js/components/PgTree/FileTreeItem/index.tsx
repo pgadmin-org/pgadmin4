@@ -112,6 +112,9 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
           <span className='file-name'>
             { _.unescape(this.props.item.getMetadata('data')._label)}
           </span>
+          <span className="text-muted" style={{fontSize: '0.9em', whiteSpace: 'nowrap'}}>
+            {_.unescape(this.props.item.getMetadata('data').info_label)}
+          </span>
           <span className='children-count'>{itemChildren}</span>
           {tags.map((tag)=>(
             <div key={tag.text} className='file-tag' style={{'--tag-color': tag.color} as React.CSSProperties}>
