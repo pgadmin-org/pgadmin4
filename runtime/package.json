@@ -12,12 +12,12 @@
   },
   "packageManager": "yarn@4.9.2",
   "devDependencies": {
-    "electron": "39.0.0",
-    "eslint": "^9.39.0",
+    "electron": "39.1.1",
+    "eslint": "^9.39.1",
     "eslint-plugin-unused-imports": "^4.2.0"
   },
   "dependencies": {
-    "axios": "^1.13.1",
+    "axios": "^1.13.2",
     "electron-context-menu": "^4.1.0",
     "electron-store": "^11.0.2"
   }
