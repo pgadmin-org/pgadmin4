@@ -1,0 +1,237 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "pgadmin4.fullname" . }}
+  {{- with .Values.commonLabels }}
+  labels: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ default "pgadmin4" .Values.commonLabels.app }}
+        {{- with omit .Values.commonLabels "app" }}
+        {{- . | toYaml | nindent 6 }}
+        {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ default "pgadmin4" .Values.commonLabels.app }}
+        {{- with omit .Values.commonLabels "app" }}
+        {{- . | toYaml | nindent 8 }}
+        {{- end }}
+      {{- if or (not (empty .Values.commonAnnotations)) (not .Values.existingSecret) .Values.preferences.enabled .Values.serverDefinitions.enabled }}
+      annotations:
+        {{- with .Values.commonAnnotations }}
+        {{- . | toYaml | nindent 8 }}
+        {{- end }}
+        {{- if not .Values.existingSecret }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and .Values.config_local.enabled (empty .Values.config_local.existingSecret) }}
+        checksum/secret-config: {{ include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.serverDefinitions.enabled }}
+        checksum/configmap-server-definitions: {{ include (print $.Template.BasePath "/configmap-serverDefinitions.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.preferences.enabled }}
+        checksum/configmap-preferences: {{ include (print $.Template.BasePath "/configmap-preferences.yaml") . | sha256sum }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- if or .Values.global.imagePullSecrets .Values.image.pullSecrets }}
+      imagePullSecrets: {{- concat .Values.global.imagePullSecrets .Values.image.pullSecrets | toYaml | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ template "pgadmin4.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- include "renderSecurityContext" (dict "securityContext" .Values.podSecurityContext "context" .) | nindent 8 }}
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
+      {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+      {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ template "pgadmin4.fullname" . }}
+      {{- end }}
+      {{- if .Values.config_local.enabled }}
+        - name: config-local
+          secret:
+            secretName: {{ default (printf "%s-config" (include "pgadmin4.fullname" .)) .Values.config_local.existingSecret }}
+            items:
+              - key: {{ .Values.config_local.configKey }}
+                path: {{ .Values.config_local.configKey }}
+      {{- end }}
+      {{- if .Values.serverDefinitions.enabled }}
+        - name: server-definitions
+          configMap:
+            name: {{ template "pgadmin4.fullname" . }}-server-definitions
+            items:
+              - key: servers.json
+                path: servers.json
+      {{- end }}
+      {{- if .Values.preferences.enabled }}
+        - name: preferences
+          configMap:
+            name: {{ template "pgadmin4.fullname" . }}-preferences
+            items:
+              - key: preferences.json
+                path: preferences.json
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+      {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: pgadmin4
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- include "renderSecurityContext" (dict "securityContext" .Values.containerSecurityContext "context" .) | nindent 12 }}
+          {{- end }}
+          image: {{ template "pgadmin4.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: {{ .Values.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: {{ .Values.auth.email }}
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "pgadmin4.fullname" .) .Values.auth.existingSecret }}
+                  key: {{ .Values.auth.passwordKey }}
+            - name: PGADMIN_LISTEN_PORT
+              value: {{ .Values.containerPort | quote }}
+            - name: PGADMIN_DISABLE_POSTFIX
+              value: {{ .Values.disablePostfix | quote }}
+          {{- with .Values.extraEnvVars }}
+          {{- tpl (. | toYaml) $ | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /var/lib/pgadmin
+              {{- if .Values.persistence.enabled }}
+              name: data
+              {{- else }}
+              name: empty-dir
+              subPath: data
+              {{- end }}
+            - name: empty-dir
+              mountPath: /pgadmin4/config_distro.py
+              subPath: config_distro.py
+            - name: empty-dir
+              mountPath: /usr/bin/python3
+              subPath: python3
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp
+            - name: empty-dir
+              mountPath: /var/log/pgadmin
+              subPath: logs
+              {{- if .Values.config_local.enabled }}
+            - name: config-local
+              mountPath: /pgadmin4/config_local.py
+              subPath: {{ .Values.config_local.configKey }}
+              {{- end }}
+              {{- if .Values.serverDefinitions.enabled }}
+            - name: server-definitions
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+              {{- end }}
+              {{- if .Values.preferences.enabled }}
+            - name: preferences
+              mountPath: /pgadmin4/preferences.json
+              subPath: preferences.json
+              {{- end }}
+              {{- with .Values.extraVolumes }}
+              {{- . | toYaml | nindent 12 }}
+              {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+      initContainers:
+        - name: modify-config-distro-py-permissions
+          image: {{ template "pgadmin4.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-x", "-c"]
+          args: ['cp /pgadmin4/config_distro.py . && chmod 777 config_distro.py']
+          workingDir: /emptyDir
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /emptyDir
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            seLinuxOptions: {}
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if .Values.global.compatibility.appArmor.enabled }}
+            appArmorProfile:
+              type: RuntimeDefault
+            {{- end }}
+            windowsOptions:
+              hostProcess: false
+        - name: unset-python3-cli-net-cap
+          image: {{ template "pgadmin4.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-x", "-c"]
+          args: ['ls /usr/bin/python3.* | sort -V -r | head -n 1 | xargs -I {} cp {} python3']
+          workingDir: /emptyDir
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /emptyDir
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            seLinuxOptions: {}
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+            {{- if .Values.global.compatibility.appArmor.enabled }}
+            appArmorProfile:
+              type: RuntimeDefault
+            {{- end }}
+            windowsOptions:
+              hostProcess: false

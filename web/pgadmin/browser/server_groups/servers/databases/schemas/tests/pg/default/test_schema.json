@@ -1,0 +1,316 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Schema With All Options",
+      "endpoint": "NODE-schema.obj",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql",
+      "data": {
+        "name": "test_schema_$%{}[]()&*^!@\"\"'`\\/#",
+        "description": "This is a test comment",
+        "nspacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "C",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "seclabels": [],
+        "deftblacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "a",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "d",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "D",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "x",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "t",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "defseqacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deffuncacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "X",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deftypeacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }]
+      },
+      "expected_sql_file": "create_schema_all_options.sql",
+      "expected_msql_file": "create_schema_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Schema with all options",
+      "endpoint": "NODE-schema.obj_id",
+      "data": {
+        "name": "test_schema_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Schema with comments",
+      "endpoint": "NODE-schema.obj",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql",
+      "data": {
+        "name": "test_schema_$%{}[]()&*^!@\"\"'`\\/#",
+        "description": "This is a test comment"
+      },
+      "expected_sql_file": "create_schema_with_comment.sql",
+      "expected_msql_file": "create_schema_with_comment_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alert Schema Name",
+      "endpoint": "NODE-schema.obj_id",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql_id",
+      "data": {
+        "name": "test_schema1_$%{}[]()&*^!@\"\"'`\\/#"
+      },
+      "expected_sql_file": "alter_schema_name.sql",
+      "expected_msql_file": "alter_schema_name_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schema",
+      "endpoint": "NODE-schema.obj_id",
+      "data": {
+        "name": "test_schema1_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Schema",
+      "endpoint": "NODE-schema.obj",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "data": {
+        "name": "test_schema_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "alter",
+      "name": "Alert Schema Add Privileges",
+      "endpoint": "NODE-schema.obj_id",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql_id",
+      "data": {
+        "nspacl": {
+          "added": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+              "privilege_type": "C",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        },
+        "deftblacl": {
+          "added": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+            }, {
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "defseqacl": {
+          "added": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+            }, {
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "deffuncacl": {
+          "added": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "X",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "deftypeacl": {
+          "added": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_schema_add_priv.sql",
+      "expected_msql_file": "alter_schema_add_priv_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alert Schema Update Privileges",
+      "endpoint": "NODE-schema.obj_id",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql_id",
+      "data": {
+        "nspacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        },
+        "deftblacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "defseqacl": {
+          "changed": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_schema_update_priv.sql",
+      "expected_msql_file": "alter_schema_update_priv_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alert Schema Drop Privileges",
+      "endpoint": "NODE-schema.obj_id",
+      "sql_endpoint": "NODE-schema.sql_id",
+      "msql_endpoint": "NODE-schema.msql_id",
+      "data": {
+        "nspacl": {
+          "deleted": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+              "privilege_type": "C",
+              "privilege": true,
+              "with_grant": false
+            }]
+          }]
+        },
+        "defseqacl": {
+          "deleted": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+            }, {
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        },
+        "deftypeacl": {
+          "deleted": [{
+            "grantee": "PUBLIC",
+            "grantor": "postgres",
+            "privileges": [{
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_schema_drop_priv.sql",
+      "expected_msql_file": "alter_schema_drop_priv_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schema",
+      "endpoint": "NODE-schema.obj_id",
+      "data": {
+        "name": "test_schema_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }
+  ]
+}

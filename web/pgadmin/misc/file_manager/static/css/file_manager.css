@@ -1,0 +1,304 @@
+/*
+ * CSS for Storage Manager Dialog
+ */
+.uploadresponse {
+  display: none;
+}
+
+.fileinfo {
+  min-width: 100px;
+  overflow: auto;
+  /* no margin or border allowed */
+}
+
+.fileinfo #contents li .fm_file_rename,
+.fileinfo table#contents tr td:first-child input.fm_file_rename {
+  display: none;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  height: inherit;
+}
+
+.fileinfo > h1 {
+  font-size: 16px;
+  margin: 100px auto;
+}
+
+#toolbar {
+  display: block;
+  clear: left;
+  margin: 50px auto;
+}
+
+.file_manager h1 {
+  font-size: medium;
+}
+
+/** Input file Replacement */
+.file-input-container {
+  margin:0;
+  position:relative;
+  top:16px;
+  width:198px;
+  height:32px;
+  overflow: hidden;
+}
+
+/** Firefox hack */
+@-moz-document url-prefix() {
+  .file-input-container  {
+    top:11px;
+    width:255px;
+  }
+}
+
+/** Input file Replacement - end */
+.file_listing #contents.grid {
+  text-align: left;
+}
+
+div.clip {
+  margin: 10px auto;
+  overflow: hidden;
+}
+
+.file_listing #contents.grid p {
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.file_listing #contents.list {
+  width: 100%;
+}
+
+.file_listing #contents.list th,
+.file_listing #contents.list td {
+  text-align: left;
+  padding: 6px;
+  white-space: nowrap;
+}
+
+.file_listing #contents.list td:first-child {
+  display: table-cell;
+  width: 100%;
+  padding-left: 12px;
+  background-repeat: no-repeat;
+  background-position: 3px center;
+}
+
+.file_listing #contents.list td.tbl_file:first-child:before {
+  margin-right: 5px;
+}
+
+.meta {
+  display: none;
+}
+
+#activity {
+  margin: 100px auto;
+}
+
+button.grid span,
+button.list span {
+  width: 20px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.file_listing #contents li {
+  position: relative;
+}
+
+
+#dropzone-container {
+  min-height: 100%;
+}
+
+#dropzone-container h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.pgadmin-storage-body {
+  min-width: 750px !important;
+  min-height: 380px !important;
+}
+
+.pgadmin-storage-body .ajs-content {
+  top: 0px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.file_manager .upload_file #multiple-uploads .dz-message {
+  text-align: center;
+}
+
+.file_manager #uploader .btn-group .show_selected_file {
+  vertical-align: middle;
+  text-align: left;
+  padding: 4px 0 0 5px;
+  display: inline-block;
+  overflow: hidden;
+  width: calc(100% - 73px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.allowed_file_types .create_input {
+  position: absolute;
+  left: 5px;
+  width: 230px;
+}
+
+.allowed_file_types .create_input span {
+  padding-right: 5px;
+}
+
+.allowed_file_types .create_input input[type="text"] {
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  height: 22px;
+  font-size: 13px;
+  font-weight: normal;
+  display: inline;
+  width: 150px;
+}
+
+.allowed_file_types .change_file_types select {
+  width: 75px;
+  margin-left: 10px;
+  float: right;
+  height: 22px;
+}
+
+.upload_file .file_upload_main .show_error p.size {
+  text-align: center;
+}
+
+.upload_file .file_upload_main .show_error p.name {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.file_upload_main .dz-preview {
+  margin: 0;
+}
+
+a.dz-remove {
+  display: none !important;
+}
+
+.fileinfo .activity {
+  position: absolute;
+  left: 50%;
+  font-size: xx-large;
+  top: 30%;
+  z-index: 1;
+}
+
+.file_listing .no_folder_found {
+  text-align: center;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+div.change_file_types span {
+  padding-left:10px;
+}
+
+/* overall */
+.tablesorter .header,
+.tablesorter .tablesorter-header {
+    /* black (unsorted) double arrow */
+    background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+    background-repeat: no-repeat;
+    background-position: center right;
+    padding: 4px 18px 4px 4px;
+    white-space: normal;
+    cursor: pointer;
+}
+
+.tablesorter .headerSortUp,
+.tablesorter .tablesorter-headerSortUp,
+.tablesorter .tablesorter-headerAsc {
+    /* black asc arrow */
+    background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
+}
+
+.tablesorter .headerSortDown,
+.tablesorter .tablesorter-headerSortDown,
+.tablesorter .tablesorter-headerDesc {
+    /* black desc arrow */
+    background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
+}
+
+.tablesorter thead .sorter-false {
+    background-image: none;
+    cursor: default;
+    padding: 4px;
+}
+
+/* table processing indicator */
+.tablesorter .tablesorter-processing {
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-image: url('data:image/gif;base64,R0lGODlhFAAUAKEAAO7u7lpaWgAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQBCgACACwAAAAAFAAUAAACQZRvoIDtu1wLQUAlqKTVxqwhXIiBnDg6Y4eyx4lKW5XK7wrLeK3vbq8J2W4T4e1nMhpWrZCTt3xKZ8kgsggdJmUFACH5BAEKAAIALAcAAAALAAcAAAIUVB6ii7jajgCAuUmtovxtXnmdUAAAIfkEAQoAAgAsDQACAAcACwAAAhRUIpmHy/3gUVQAQO9NetuugCFWAAAh+QQBCgACACwNAAcABwALAAACE5QVcZjKbVo6ck2AF95m5/6BSwEAIfkEAQoAAgAsBwANAAsABwAAAhOUH3kr6QaAcSrGWe1VQl+mMUIBACH5BAEKAAIALAIADQALAAcAAAIUlICmh7ncTAgqijkruDiv7n2YUAAAIfkEAQoAAgAsAAAHAAcACwAAAhQUIGmHyedehIoqFXLKfPOAaZdWAAAh+QQFCgACACwAAAIABwALAAACFJQFcJiXb15zLYRl7cla8OtlGGgUADs=') !important;
+}
+
+.file_selection_ctrl .create_input span {
+  padding-right: 10px;
+  font-weight: bold;
+}
+
+.file_selection_ctrl .create_input input[type="text"] {
+  height: 23px;
+  padding: 2px;
+  width: 194px;
+  border-radius: 2px;
+}
+
+.file_selection_ctrl .browse_file_input {
+  display: inline-block;
+  width: 220px;
+  margin-right: 0;
+}
+
+.file_selection_ctrl button.select_item:focus,
+.file_selection_ctrl button.select_item:active {
+  outline: none;
+  box-shadow: none;
+}
+
+.file_selection_ctrl input[type="text"] {
+  width: calc(100% - 17px);
+  border: none;
+  margin-left: -6px;
+  margin-top: -3px;
+  height: 32px;
+  padding-left: 5px;
+}
+
+/* Overriding the css for the dropzone */
+.dropzone {
+  text-align: center;
+}
+
+.dropzone .dz-preview .dz-progress {
+  height: initial;
+}
+
+.dropzone.dz-clickable {
+  cursor: move;
+}
+
+.dropzone .dz-preview .dz-progress .dz-upload {
+  bottom: initial;
+}

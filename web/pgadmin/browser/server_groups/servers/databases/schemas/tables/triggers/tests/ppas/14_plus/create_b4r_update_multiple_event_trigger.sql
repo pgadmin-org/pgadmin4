@@ -1,0 +1,12 @@
+-- Trigger: trig_b4r_update_mul_events_$%{}[]()&*^!@"'`\/#
+
+-- DROP TRIGGER IF EXISTS "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger;
+
+CREATE OR REPLACE TRIGGER "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#"
+    BEFORE INSERT OR UPDATE OF col3
+    ON public.tablefortrigger
+    FOR EACH ROW
+    EXECUTE FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"();
+
+COMMENT ON TRIGGER "trig_b4r_update_mul_events_$%{}[]()&*^!@""'`\/#" ON public.tablefortrigger
+    IS 'multiple event trigger';

@@ -1,0 +1,269 @@
+{
+  "dbms_create_program": [
+    {
+      "name": "Create program when type is PLSQL_BLOCK",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_psql",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprenabled": true,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a PLSQL program.",
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create program when type is STORED_PROCEDURE with args",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_proc_args",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprenabled": true,
+        "jsprnoofargs": 2,
+        "jsprarguments": [{"argid":0,"argtype":"bigint","argmode":"IN","argname":"salary","argdefval":"10000"},{"argid":1,"argtype":"character varying","argmode":"IN","argname":"name","argdefval":" -"}],
+        "jsprdesc": "This is a STORED_PROCEDURE program.",
+        "jsprproc": "public.test_proc_with_args",
+        "jsprcode": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create program when type is STORED_PROCEDURE without args",
+      "url": "/browser/dbms_program/obj/",
+      "proc_name": "public.test_proc_without_args()",
+      "is_positive_test": true,
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_proc_without_args",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprenabled": false,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a STORED_PROCEDURE program.",
+        "jsprproc": "public.test_proc_without_args",
+        "jsprcode": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create program: while server is down",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": false,
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_psql",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprenabled": true,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a PLSQL program.",
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_delete_program": [
+    {
+      "name": "Delete program: With existing DBMS program.",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete multiple programs: With existing DBMS programs.",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "dbms_get_program": [
+    {
+      "name": "Get program: With existing DBMS program.",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get programs: With multiple existing DBMS programs.",
+      "url": "/browser/dbms_program/obj/",
+      "proc_name": "public.test_proc_with_args(IN salary bigint DEFAULT 10000, IN name character varying)",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get program: while server down.",
+      "url": "/browser/dbms_program/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "dbms_msql_program": [
+    {
+      "name": "Get program msql: For existing PLSQL program.",
+      "url": "/browser/dbms_program/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_psql",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprenabled": true,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a PLSQL program.",
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get program msql: For existing STORED_PROCEDURE program.",
+      "url": "/browser/dbms_program/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsprid": null,
+        "jsprname": "prg_with_proc_args",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprenabled": true,
+        "jsprnoofargs": 2,
+        "jsprarguments": "[{\"argid\":0,\"argtype\":\"bigint\",\"argmode\":\"IN\",\"argname\":\"salary\",\"argdefval\":\"10000\"},{\"argid\":1,\"argtype\":\"character varying\",\"argmode\":\"IN\",\"argname\":\"name\",\"argdefval\":\" -\"}]",
+        "jsprdesc": "This is a STORED_PROCEDURE program.",
+        "jsprproc": "public.test_proc_with_args",
+        "jsprcode": null
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "dbms_enable_program": [
+    {
+      "name": "Enable existing program",
+      "url": "/browser/dbms_program/enable_disable/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_enable_program": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_disable_program": [
+    {
+      "name": "Disable existing program",
+      "url": "/browser/dbms_program/enable_disable/",
+      "is_positive_test": true,
+      "test_data": {
+        "is_enable_program": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}

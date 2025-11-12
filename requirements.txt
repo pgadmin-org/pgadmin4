@@ -1,0 +1,62 @@
+###############################################################################
+#
+# IMPORTANT:
+#
+# If runtime or build time dependencies are changed in this file, the committer
+# *must* ensure the DEB and RPM package maintainers are informed as soon as
+# possible.
+#
+# The packages listed below are sorted alphabetically. It is recommended to add
+# new packages in alphabetical order. However, exceptions can be made to
+# preserve dependency order—please add a comment in such cases and specify the
+# relevant packages.
+###############################################################################
+
+Authlib==1.6.5
+azure-identity==1.25.1
+azure-mgmt-rdbms==10.1.0
+azure-mgmt-resource==24.0.0
+azure-mgmt-subscription==3.1.1
+bcrypt==5.0.*
+boto3==1.40.*
+cryptography==46.0.*
+Flask-Babel==4.0.*
+Flask-Compress==1.*
+Flask-Login==0.*
+Flask-Mail==0.*
+Flask-Migrate==4.*
+Flask-Paranoid==0.*
+Flask-Security-Too==5.4.*; python_version <= '3.9'
+Flask-Security-Too==5.6.*; python_version > '3.9'
+Flask-SocketIO==5.5.*
+Flask-SQLAlchemy==3.1.*
+Flask-WTF==1.2.*
+Flask==3.1.*
+google-api-python-client==2.*
+google-auth-oauthlib==1.2.3
+gssapi==1.10.*
+jsonformatter~=0.3.4
+keyring==25.*
+ldap3==2.*
+libgravatar==1.0.*
+paramiko==3.5.1
+passlib==1.*
+psutil==7.1.*
+psycopg[c]==3.2.12
+pyotp==2.*
+python-dateutil==2.*
+pytz==2025.*
+# pinned for https://github.com/andfoy/pywinpty/issues/545
+pywinpty==2.0.*; sys_platform=="win32"
+qrcode[pil]==8.*; python_version >= '3.9'
+setuptools==80.*
+SQLAlchemy==2.*
+sqlparse==0.*
+sshtunnel==0.*
+typer[all]==0.20.*
+urllib3==1.26.*; python_version <= '3.9'
+urllib3==2.5.*;  python_version > '3.9'
+user-agents==2.2.0
+Werkzeug==3.1.*
+WTForms==3.1.*; python_version <= '3.9'
+WTForms==3.2.*; python_version > '3.9'

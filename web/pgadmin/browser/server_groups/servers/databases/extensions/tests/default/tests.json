@@ -1,0 +1,74 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Extension with all options",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "msql_endpoint": "NODE-extension.msql",
+      "data": {
+        "name": "sslinfo",
+        "schema": "test_extension_schema",
+        "version": "1.2",
+        "cascade": true
+      },
+      "expected_sql_file": "create_extension_with_all_options.sql",
+      "expected_msql_file": "msql_create_extension_with_all_options.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.2';"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Extension schema",
+      "endpoint": "NODE-extension.obj_id",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "msql_endpoint": "NODE-extension.msql_id",
+      "data": {
+        "schema": "public"
+      },
+      "expected_sql_file": "alter_extension_schema.sql",
+      "expected_msql_file": "msql_alter_extension_schema.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.2';"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension with all options",
+      "endpoint": "NODE-extension.obj_id",
+      "data": {},
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='sslinfo' and e2.version='1.2';"
+    },
+    {
+      "type": "create",
+      "name": "Create Extension with default schema",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "msql_endpoint": "NODE-extension.msql",
+      "data": {
+        "name": "adminpack",
+        "version": "1.0"
+      },
+      "expected_sql_file": "create_extension_with_default_schema.sql",
+      "expected_msql_file": "msql_create_extension_with_default_schema.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='adminpack' and e2.version='1.0';"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Extension version",
+      "endpoint": "NODE-extension.obj_id",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "msql_endpoint": "NODE-extension.msql_id",
+      "data": {
+        "version": "1.1"
+      },
+      "expected_sql_file": "alter_extension_version.sql",
+      "expected_msql_file": "msql_alter_extension_version.sql",
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='adminpack' and e2.version='1.0';"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension default schema",
+      "endpoint": "NODE-extension.obj_id",
+      "data": {},
+      "precondition_sql": "select count(e1.name) \nfrom pg_available_extensions e1, pg_available_extension_versions e2\nwhere e1.name = e2.name and e1.name='adminpack' and e2.version='1.0';"
+    }
+  ]
+}

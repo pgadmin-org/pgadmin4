@@ -1,0 +1,20 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "pgadmin4.fullname" . }}
+  {{- with .Values.commonLabels }}
+  labels: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if or .Values.global.defaultStorageClass .Values.persistence.storageClass }}
+  storageClassName: {{ default .Values.global.defaultStorageClass .Values.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+  accessModes: {{ .Values.persistence.accessModes }}
+{{- end }}

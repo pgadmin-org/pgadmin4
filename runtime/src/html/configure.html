@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>pgAdmin 4 Runtime Configuration</title>
+  <link rel="stylesheet" href="../css/pgadmin-desktop.css"/>
+</head>
+<body>
+  <div class="content">
+    <div class="card">
+      <div class="card-header">Fixed Port</div>
+      <div class="card-body">
+        <div class="form-group">
+          <span>By default, pgAdmin uses a random port number to ensure it can always run successfully. If you need to use a predictable port number, you can set one here. Note that if the port is already in use, the application will be unable to start.</span>
+        </div>
+        <div class="form-group mt-4">
+          <div class="mr-3 form-group">
+            <label class="mr-2" for="fixedPortCheck">Fixed port number?</label>
+            <input type="checkbox" class="form-check-input" id="fixedPortCheck"
+              data-name="fixed_port"/>
+          </div>
+          <div class="form-group">
+            <label class="mr-1" for="portNo">Port Number</label>
+            <input type="number" class="form-input" id="portNo" min="1025" max="65535" value="5050" style="min-width: 100px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Connection Timeout</div>
+      <div class="card-body">
+        <div class="form-group">
+          <span>Connection Timeout will define how long to wait for the pgAdmin server to start before throwing an error. By default, pgAdmin will wait for 90 seconds.
+          </span>
+        </div>
+        <div class="form-group mt-4">
+          <label class="mr-2" for="timeOut">Timeout</label>
+          <input type="number" class="form-input" id="timeOut" min="10" max="600" value="90" style="min-width: 80px;">
+          <span class="ml-1">seconds</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Open Documentation</div>
+      <div class="card-body">
+        <div class="form-group">
+          <span>By checking this option, all documentation links will open in the default browser instead of a new window.
+          </span>
+        </div>
+        <div class="form-group mt-4 form-group">
+          <label class="mr-2" for="fixedPortCheck">Open Documentation in Default Browser?</label>
+          <input type="checkbox" class="form-check-input" id="openDocsInBrowser"
+            data-name="open_docs_in_browser"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="mr-auto" id="status-text"></div>
+    <div class="ml-auto">
+      <button id="btnSave" type="submit" class="btn btn-primary" disabled>Save</button>
+    </div>
+  </div>
+  <script type="text/javascript" >
+    let configData;
+
+    async function checkConfiguration() {
+      const portNo = configData.portNo;
+
+      if (document.getElementById('fixedPortCheck').checked && portNo !== document.getElementById('portNo').value) {
+        let fixedPort = parseInt(document.getElementById('portNo').value);
+        // get the available TCP port
+        if(await window.electronUI.checkPortAvailable(fixedPort)) {
+          saveConfiguration();
+        } else {
+          alert('The port specified is already in use. Please enter a free port number.');
+        }
+      } else {
+        saveConfiguration();
+      }
+    }
+
+    async function saveConfiguration() {
+      await window.electronUI.setConfigData({
+        'fixedPort': document.getElementById('fixedPortCheck').checked,
+        'portNo': parseInt(document.getElementById('portNo').value),
+        'connectionTimeout': parseInt(document.getElementById('timeOut').value),
+        'openDocsInBrowser': document.getElementById('openDocsInBrowser').checked
+      });
+
+      document.getElementById('status-text').innerHTML = 'Configuration Saved';
+      const result = await window.electronUI.showMessageBox({
+        'type': 'question',
+        'title': 'Confirmation',
+        'message': "pgAdmin 4 must be restarted for changes to take effect.\n\n Do you want to quit the application?",
+        'buttons': [
+            'Yes',
+            'No'
+        ]
+      });
+      if(result.response === 0) {
+        window.electronUI.restartApp();
+      }
+      window.close();
+    }
+
+    function onCheckChange() {
+      if (this.checked) {
+        document.getElementById('portNo').removeAttribute('disabled');
+      } else {
+        document.getElementById('portNo').setAttribute('disabled', 'disabled');
+      }
+
+      // Enable/Disable Save button
+      enableDisableSaveButton();
+    }
+
+    function enableDisableSaveButton() {
+      if (configData['fixedPort'] !== document.getElementById('fixedPortCheck').checked ||
+          configData['portNo'] != document.getElementById('portNo').value ||
+          configData['connectionTimeout'] != document.getElementById('timeOut').value ||
+          configData['openDocsInBrowser'] !== document.getElementById('openDocsInBrowser').checked) {
+        document.getElementById('btnSave').removeAttribute('disabled');
+      } else {
+        document.getElementById('btnSave').setAttribute('disabled', 'disabled');
+      }
+    }
+
+    window.onload = async function() {
+      configData = await window.electronUI.getConfigData();
+      document.getElementById('status-text').innerHTML = '';
+      // Set the GUI value as per configuration.
+      if (configData['fixedPort']) {
+        document.getElementById('fixedPortCheck').checked = true;
+        document.getElementById('portNo').disabled = false;
+      } else {
+        document.getElementById('fixedPortCheck').checked = false;
+        document.getElementById('portNo').disabled = true;
+      }
+      document.getElementById('portNo').value = configData['portNo'];
+      document.getElementById('timeOut').value = configData['connectionTimeout'];
+
+      if (configData['openDocsInBrowser']) {
+        document.getElementById('openDocsInBrowser').checked = true;
+      } else {
+        document.getElementById('openDocsInBrowser').checked = false;
+      }
+      // Add event listeners
+      document.getElementById('btnSave').addEventListener('click', checkConfiguration);
+      document.getElementById('fixedPortCheck').addEventListener('change', onCheckChange);
+      document.getElementById('portNo').addEventListener('change', enableDisableSaveButton);
+      document.getElementById('timeOut').addEventListener('change', enableDisableSaveButton);
+      document.getElementById('openDocsInBrowser').addEventListener('change', enableDisableSaveButton);
+    };
+
+
+  </script>
+</body>
+</html>

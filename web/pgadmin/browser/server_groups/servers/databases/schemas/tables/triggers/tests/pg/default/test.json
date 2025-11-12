@@ -1,0 +1,312 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "tablefortrigger",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "col2",
+            "cltype": "text"
+          },
+          {
+            "name": "col3",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create trigger function",
+      "endpoint": "NODE-trigger_function.obj",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [],
+        "args": [],
+        "funcowner": "postgres",
+        "lanname": "plpgsql",
+        "options": [],
+        "pronamespace": 2200,
+        "prorettypename": "trigger",
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_plain_trigger_function.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create before event trigger",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_test_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_insert": true
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_before_insert_event_trigger.sql",
+      "expected_msql_file": "create_before_insert_event_trigger_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter(disable) before event trigger",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_test_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "D"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_before_insert_event_trigger.sql",
+      "expected_msql_file": "alter_before_insert_event_trigger_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create before update event trigger",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_be4r_update_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_update": true,
+        "columns": "[\"col1\"]",
+        "whenclause": "OLD.col2 IS DISTINCT FROM NEW.col2"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_before_update_event_trigger.sql",
+      "expected_msql_file": "create_before_update_event_trigger_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter before update event trigger enable replica",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_be4r_update_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "R"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_before_update_event_trigger_enable_replica.sql",
+      "expected_msql_file": "alter_before_update_event_trigger_enable_replica_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create after update event trigger",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_update_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "comment for update event trigger",
+        "is_constraint_trigger": true,
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_update": true,
+        "whenclause": "OLD.col2 IS DISTINCT FROM NEW.col2",
+        "columns": "[\"col2\"]"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_update_event_trigger.sql",
+      "expected_msql_file": "create_after_update_event_trigger_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter after update event trigger enable always",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_after_update_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "A"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_after_update_event_trigger_enable_always.sql",
+      "expected_msql_file": "alter_after_update_event_trigger_enable_always_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on before for multiple events",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_b4r_update_mul_events_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "evnt_truncate": false,
+        "description": "multiple event trigger",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "columns": "[\"col3\"]",
+        "whenclause": ""
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_b4r_update_multiple_event_trigger.sql",
+      "expected_msql_file": "create_b4r_update_multiple_event_trigger_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on after delete event with arguments",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_delete_events_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "delete event trig",
+        "is_constraint_trigger": true,
+        "tgdeferrable": true,
+        "tginitdeferred": true,
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "tgargs": "12",
+        "evnt_delete": true
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_delete_event_trigger.sql",
+      "expected_msql_file": "create_after_delete_event_trigger_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete trigger on after delete event with arguments",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "data": {
+        "name": "trig_after_delete_events_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "schema": "public"
+    },
+    {
+      "type": "create",
+      "name": "Create before event trigger at statement level",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_test_statement_$%{}[]()&*^!@\\\"'`\\\\/#\"",
+        "is_row_trigger": false,
+        "fires": "BEFORE",
+        "evnt_truncate": true,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_insert": true,
+        "evnt_delete": true,
+        "evnt_update": true,
+        "whenclause": "",
+        "columns": "[\"col1\",\"col2\",\"col3\"]"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_before_insert_event_at_statement.sql",
+      "expected_msql_file": "create_before_insert_event_at_statement_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on after insert event with transition",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_insert_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "evnt_insert": true,
+        "tgnewtable": "inserted"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_insert_event_trigger_with_transition.sql",
+      "expected_msql_file": "create_after_insert_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter(disable) trigger on after inset event with transition",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_after_insert_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "D"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_after_insert_event_trigger_with_transition.sql",
+      "expected_msql_file": "alter_after_insert_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create trigger on after delete event with transition",
+      "endpoint": "NODE-trigger.obj",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql",
+      "data": {
+        "name": "trig_after_delete_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_row_trigger": true,
+        "fires": "AFTER",
+        "evnt_truncate": false,
+        "description": "test comment",
+        "tfunction": "public.\"Trig1_$%{}[]()&*^!@\"\"'`\\/#\"",
+        "is_constraint_trigger": false,
+        "evnt_delete": true,
+        "tgoldtable": "oldtab"
+      },
+      "schema": "public",
+      "store_object_id": true,
+      "expected_sql_file": "create_after_delete_event_trigger_with_transition.sql",
+      "expected_msql_file": "create_after_delete_event_trigger_with_transition_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter trigger on after delete event with transition always enable",
+      "endpoint": "NODE-trigger.obj_id",
+      "sql_endpoint": "NODE-trigger.sql_id",
+      "msql_endpoint": "NODE-trigger.msql_id",
+      "data": {
+        "name": "trig_after_delete_events_with_transition_$%{}[]()&*^!@\"'`\\/#",
+        "is_enable_trigger": "A"
+      },
+      "schema": "public",
+      "expected_sql_file": "alter_after_delete_event_trigger_with_transition.sql",
+      "expected_msql_file": "alter_after_delete_event_trigger_with_transition_msql.sql"
+    }
+  ]
+}

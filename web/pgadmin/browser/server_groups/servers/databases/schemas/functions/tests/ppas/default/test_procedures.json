@@ -1,0 +1,122 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create procedure",
+      "endpoint": "NODE-procedure.obj",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [],
+        "arguments": [
+          {
+            "argtype": "integer",
+            "argmode": "IN",
+            "argname": "i1",
+            "argdefval": ""
+          }
+        ],
+        "funcowner": "enterprisedb",
+        "lanname": "plpgsql",
+        "options": [],
+        "pronamespace": 2200,
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [],
+        "schema": "public",
+        "provolatile": null,
+        "proisstrict": false,
+        "proparallel": null,
+        "procost": null,
+        "proleakproof": false,
+        "probin": "$libdir/"
+      },
+      "expected_sql_file": "create_procedure.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter procedure comment",
+      "endpoint": "NODE-procedure.obj_id",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "description": "some comment"
+      },
+      "expected_sql_file": "alter_proc_comment.sql",
+      "expected_msql_file": "alter_proc_comment_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter procedure param",
+      "endpoint": "NODE-procedure.obj_id",
+      "provolatile": "s",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "variables": {
+          "added": [
+            {
+              "name": "application_name",
+              "value": "pgadmin"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_proc_param.sql",
+      "expected_msql_file": "alter_proc_param_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter procedure options",
+      "endpoint": "NODE-procedure.obj_id",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "provolatile": "s",
+        "proparallel": "r",
+        "description": "some comment",
+        "procost": "120"
+      },
+      "expected_sql_file": "alter_proc_opt.sql",
+      "expected_msql_file": "alter_proc_opt_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter procedure add privileges",
+      "endpoint": "NODE-procedure.obj_id",
+      "sql_endpoint": "NODE-procedure.sql_id",
+      "data": {
+        "acl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege": true,
+                  "privilege_type": "X",
+                  "with_grant": false
+                }
+              ]
+            },
+            {
+              "grantee": "enterprisedb",
+              "grantor": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege": true,
+                  "privilege_type": "X",
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop procedure",
+      "endpoint": "NODE-procedure.delete_id",
+      "data": {
+      }
+    }
+  ]
+}

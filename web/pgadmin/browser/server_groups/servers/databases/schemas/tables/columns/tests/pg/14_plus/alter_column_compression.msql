@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_comp_$%{}[]()&*^!@""'`\/#" SET COMPRESSION lz4;

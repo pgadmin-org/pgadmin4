@@ -1,0 +1,1 @@
+REVOKE ALL ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) FROM PUBLIC;

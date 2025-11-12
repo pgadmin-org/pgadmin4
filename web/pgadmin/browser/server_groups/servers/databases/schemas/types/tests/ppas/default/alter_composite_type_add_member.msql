@@ -1,0 +1,2 @@
+ALTER TYPE public."composite_type_$%{}[]()&*^!@""'`\/#"
+    ADD ATTRIBUTE mname4 bigint;

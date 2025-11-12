@@ -1,0 +1,1 @@
+GRANT test_rolemembership_1, test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;

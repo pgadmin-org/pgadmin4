@@ -1,0 +1,33 @@
+.preferences_dialog {
+  height: 100%;
+  width: 100%;
+}
+
+.preferences_content {
+  padding-top: 10px;
+  height: 100%;
+  overflow: auto;
+}
+
+div.pgadmin-preference-body div.ajs-content {
+  top: 0px !important;
+  bottom: 0px !important;
+}
+
+.pgadmin-preference-body {
+    min-width: 300px !important;
+    min-height: 400px !important;
+}
+
+@media (min-width: 768px) {
+  .pgadmin-preference-body {
+    min-width: 600px !important;
+    min-height: 480px !important;
+  }
+}
+
+.keyboard-shortcut-label {
+  font-weight: normal !important;
+}
+
+

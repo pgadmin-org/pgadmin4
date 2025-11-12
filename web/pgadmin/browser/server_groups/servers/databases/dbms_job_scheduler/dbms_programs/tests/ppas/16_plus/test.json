@@ -1,0 +1,145 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create extension 'edb_job_scheduler' for DBMS Program",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "edb_job_scheduler"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create extension 'dbms_scheduler' for DBMS Program",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "dbms_scheduler"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Program with PLSQL_BLOCK",
+      "endpoint": "NODE-dbms_program.obj",
+      "sql_endpoint": "NODE-dbms_program.sql_id",
+      "msql_endpoint": "NODE-dbms_program.msql",
+      "data": {
+        "jsprid": null,
+        "jsprname": "dbms_prg_with_psql",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprenabled": true,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a PLSQL program.",
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;"
+      },
+      "expected_sql_file": "create_program_psql.sql",
+      "expected_msql_file": "create_program_psql_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Program",
+      "endpoint": "NODE-dbms_program.obj_id",
+      "data": {
+        "name": "dbms_prg_with_psql"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Program with Stored Procedure without args",
+      "endpoint": "NODE-dbms_program.obj",
+      "sql_endpoint": "NODE-dbms_program.sql_id",
+      "msql_endpoint": "NODE-dbms_program.msql",
+      "data": {
+        "jsprid": null,
+        "jsprname": "dbms_prg_proc_without_args",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprenabled": false,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "This is a STORED_PROCEDURE program.",
+        "jsprproc": "public.test_proc_without_args",
+        "jsprcode": null
+      },
+      "expected_sql_file": "create_program_proc_without_args.sql",
+      "expected_msql_file": "create_program_proc_without_args_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Program",
+      "endpoint": "NODE-dbms_program.obj_id",
+      "data": {
+        "name": "dbms_prg_proc_without_args"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Program with Stored Procedure with args",
+      "endpoint": "NODE-dbms_program.obj",
+      "sql_endpoint": "NODE-dbms_program.sql_id",
+      "msql_endpoint": "NODE-dbms_program.msql",
+      "data": {
+        "jsprid": null,
+        "jsprname": "dbms_prg_proc_with_args",
+        "jsprtype": "STORED_PROCEDURE",
+        "jsprenabled": true,
+        "jsprnoofargs": 2,
+        "jsprarguments": [{"argid":0,"argtype":"bigint","argmode":"IN","argname":"salary","argdefval":"10000"},{"argid":1,"argtype":"character varying","argmode":"IN","argname":"name","argdefval":" -"}],
+        "jsprdesc": "This is a STORED_PROCEDURE program.",
+        "jsprproc": "public.test_proc_with_args",
+        "jsprcode": null
+      },
+      "expected_sql_file": "create_program_proc_with_args.sql",
+      "expected_msql_file": "create_program_proc_with_args_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Program",
+      "endpoint": "NODE-dbms_program.obj_id",
+      "data": {
+        "name": "dbms_prg_proc_with_args"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create disabled program",
+      "endpoint": "NODE-dbms_program.obj",
+      "sql_endpoint": "NODE-dbms_program.sql_id",
+      "msql_endpoint": "NODE-dbms_program.msql",
+      "data": {
+        "jsprid": null,
+        "jsprname": "dbms_prg_disabled",
+        "jsprtype": "PLSQL_BLOCK",
+        "jsprenabled": false,
+        "jsprnoofargs": 0,
+        "jsprarguments": [],
+        "jsprdesc": "",
+        "jsprproc": null,
+        "jsprcode": "BEGIN PERFORM 1; END;"
+      },
+      "expected_sql_file": "create_program_disabled.sql",
+      "expected_msql_file": "create_program_disabled_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Program",
+      "endpoint": "NODE-dbms_program.obj_id",
+      "data": {
+        "name": "dbms_prg_disabled"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<edb_job_scheduler>"]
+      },
+      "preprocess_data": true
+    }
+  ]
+}

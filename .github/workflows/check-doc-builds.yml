@@ -1,0 +1,61 @@
+name: Check documentation builds
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install platform dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev latexmk texlive-latex-recommended tex-gyre texlive-latex-extra
+
+      - name: Install Python dependencies
+        run: make install-python
+
+      - name: Check the HTML build
+        run: |
+          . venv/bin/activate
+          make docs
+
+      - name: Archive HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-html-build-output
+          path: docs/en_US/_build/html/*
+
+      - name: Check the ePub build
+        run: |
+          . venv/bin/activate
+          make docs-epub
+
+      - name: Archive ePub
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-epub-build-output
+          path: docs/en_US/_build/epub/pgAdmin4.epub
+
+      - name: Check the PDF build
+        run: |
+          . venv/bin/activate
+          make docs-pdf
+
+      - name: Archive PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-pdf-build-output
+          path: docs/en_US/_build/latex/pgadmin4.pdf

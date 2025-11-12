@@ -1,0 +1,6 @@
+{% macro APPLY(conn, type, schema_name, parent_object, child_object, provider, label) -%}
+SECURITY LABEL{% if provider and provider != '' %} FOR {{ conn|qtIdent(provider) }}{% endif %} ON {{ type }} {{ conn|qtIdent(schema_name, parent_object, child_object) }} IS {{ label|qtLiteral(conn) }};
+{%- endmacro %}
+{% macro DROP(conn, type, schema_name, parent_object, child_object, provider) -%}
+SECURITY LABEL{% if provider and provider != '' %} FOR {{ conn|qtIdent(provider) }}{% endif %} ON {{ type }} {{ conn|qtIdent(schema_name, parent_object, child_object) }} IS NULL;
+{%- endmacro %}

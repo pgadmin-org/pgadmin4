@@ -1,0 +1,34 @@
+name: Check translations
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install platform dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-babel python3-jinja2
+
+      - name: Check we can extract messages
+        run: make msg-extract
+
+      - name: Check we can update the catalogs
+        run: make msg-update
+
+      - name: Check the catalogs will compile
+        run: make msg-compile

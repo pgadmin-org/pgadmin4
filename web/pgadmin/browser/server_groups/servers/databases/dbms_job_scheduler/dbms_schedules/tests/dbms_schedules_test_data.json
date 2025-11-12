@@ -1,0 +1,335 @@
+{
+  "dbms_create_schedule": [
+    {
+      "name": "Create schedule: YEARLY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_yearly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is yearly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: YEARLY BY DATE",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_yearly_by_date",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is yearly by date test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "YEARLY",
+        "jsscdate": "20250113",
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: MONTHLY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_monthly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is monthly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "MONTHLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: WEEKLY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_weekly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is weekly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "WEEKLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: DAILY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_daily",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is daily test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "DAILY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: HOURLY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_hourly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is hourly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "HOURLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: MINUTELY",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_minutely",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is minutely test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "MINUTELY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create schedule: while server is down",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": false,
+      "test_data": {
+        "jsscid": null,
+        "jsscname": "dbms_test_sch_yearly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is yearly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "dbms_delete_schedule": [
+    {
+      "name": "Delete schedule: With existing DBMS schedule.",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete multiple schedules: With existing DBMS schedule.",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "dbms_get_schedule": [
+    {
+      "name": "Get schedule: With existing DBMS schedule.",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get schedules: With multiple existing DBMS schedules.",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get schedule: while server down.",
+      "url": "/browser/dbms_schedule/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "dbms_msql_schedule": [
+    {
+      "name": "Get schedule msql: For existing dbms schedule.",
+      "url": "/browser/dbms_schedule/msql/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "jsscname": "dbms_test_sch_msql",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is daily test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "DAILY",
+        "jsscdate": null,
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

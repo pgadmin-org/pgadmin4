@@ -1,0 +1,5 @@
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col_3_$%{}[]()&*^!@""'`\/#" time with time zone NOT NULL DEFAULT now();
+
+COMMENT ON COLUMN public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."col_3_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment';

@@ -1,0 +1,110 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table For Subscription",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_table",
+        "columns": [
+          {
+            "name": "emp_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          },
+          {
+            "name": "salary",
+            "cltype": "bigint"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Publication for Subscription",
+      "endpoint": "NODE-publication.obj",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql",
+      "data": {
+        "name": "test_publication",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": true,
+        "evnt_truncate": true,
+        "pubowner": "postgres",
+        "publish_via_partition_root": false,
+        "all_table": false,
+        "only_table": false,
+        "pubtable": [{
+          "table_name": "public.test_table"
+        }],
+        "pubschema": ""
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create  Subscription",
+      "endpoint": "NODE-subscription.obj",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "msql_endpoint": "NODE-subscription.msql",
+      "data": {
+          "name": "test_create_subscription",
+          "subowner": "postgres",
+          "host": "localhost",
+          "port": 5434,
+          "db": "postgres",
+          "username": "postgres",
+          "password": "postgres",
+          "connect_timeout": 10,
+          "pub": ["test_publication"],
+          "sslmode": "prefer",
+          "copy_data": false,
+          "create_slot": false,
+          "enabled": false,
+          "connect": false,
+          "slot_name": "test_create_subscription",
+          "sync": "remote_apply",
+          "streaming": "on",
+          "binary": true,
+          "two_phase": true,
+          "disable_on_error": true,
+          "run_as_owner": true,
+          "password_required": true,
+          "origin": "any",
+          "service": "",
+          "failover": false
+      },
+      "expected_sql_file": "create_subscription.sql",
+      "expected_msql_file": "create_subscription_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  slot_name parameter of subscription",
+      "endpoint": "NODE-subscription.obj_id",
+      "sql_endpoint": "NODE-subscription.sql_id",
+      "msql_endpoint": "NODE-subscription.msql_id",
+      "data": {
+        "slot_name": "None"
+      },
+      "expected_sql_file": "alter_slot_name_parameter.sql",
+      "expected_msql_file": "alter_slot_name_parameter_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop subscription",
+      "endpoint": "NODE-subscription.delete_id",
+      "data": {
+        "name": "test_create_subscription"
+      }
+    }
+  ]
+}

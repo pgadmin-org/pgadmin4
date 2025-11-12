@@ -1,0 +1,4 @@
+CREATE TYPE public."range_type_$%{}[]()&*^!@""'`\/#" AS RANGE
+(
+    SUBTYPE=bool
+);

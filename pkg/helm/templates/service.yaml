@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pgadmin4.fullname" . }}
+  {{- with .Values.commonLabels }}
+  labels: {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if or .Values.service.annotations .Values.commonAnnotations }}
+  annotations: {{ merge .Values.service.annotations .Values.commonAnnotations | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and (eq .Values.service.type "LoadBalancer") (not (empty .Values.service.loadBalancerIP)) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  selector:
+    app: {{ default "pgadmin4" .Values.commonLabels.app }}
+    {{- with omit .Values.commonLabels "app" }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
+  ports:
+    - name: http
+      protocol: TCP
+      targetPort: http
+      port: {{ .Values.service.port }}

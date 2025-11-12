@@ -1,0 +1,12 @@
+CREATE FUNCTION public."Function4_$%{}[]()&*^!@""'`\/#"()
+    RETURNS numeric
+    LANGUAGE 'sql'
+    COST 100
+    VOLATILE LEAKPROOF STRICT SECURITY DEFINER WINDOW PARALLEL UNSAFE
+
+begin atomic
+    select 1;
+end;
+
+ALTER FUNCTION public."Function4_$%{}[]()&*^!@""'`\/#"()
+    OWNER TO postgres;

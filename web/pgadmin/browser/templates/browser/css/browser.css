@@ -1,0 +1,3 @@
+{% for snip in snippets %}
+{{ snip }}
+{% endfor %}

@@ -1,0 +1,274 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW for foreign table",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "test_fdw_for_foreign_table",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create foreign server for foreign table",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "data": {
+        "name":"test_fs_for_foreign_table"
+      },
+      "store_object_id": "True"
+    }, {
+      "type": "create",
+      "name": "Create Foreign Table with all options",
+      "endpoint": "NODE-foreign_table.obj",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql",
+      "data": {
+        "name": "FT1_$%{}[]()&*^!@\"'`\\/#",
+        "owner":"enterprisedb",
+        "schema": "public",
+        "basensp":"public",
+        "description":"Test Comment",
+        "ftsrvname":"test_fs_for_foreign_table",
+        "columns":[{
+          "name":"col1",
+          "cltype":"bigint",
+          "coloptions":[]
+        },{
+          "name":"col2",
+          "cltype":"text",
+          "coloptions":[]
+        }],
+        "constraints":[{
+          "conname":"cons1",
+          "consrc":"true",
+          "connoinherit":true,
+          "convalidated":true
+        }],
+        "ftoptions":[{
+          "option":"schema_name",
+          "value":"public"
+        },{
+          "option":"table_name",
+          "value":"test_table"
+        }],
+        "relacl":[{
+          "grantee":"PUBLIC",
+          "grantor":"enterprisedb",
+          "privileges":[{
+            "privilege_type":"a",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"r",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"w",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"x",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"d",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"D",
+            "privilege":true,
+            "with_grant":false
+          },{
+            "privilege_type":"t",
+            "privilege":true,
+            "with_grant":false
+          }]
+        }]
+      },
+      "expected_sql_file": "create_foreign_table_with_all_options.sql",
+      "expected_msql_file": "create_foreign_table_with_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign table",
+      "endpoint": "NODE-foreign_table.delete_id"
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Table",
+      "endpoint": "NODE-foreign_table.obj",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "data": {
+        "name": "FT1_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "basensp": "public",
+        "ftsrvname": "test_fs_for_foreign_table",
+        "columns": []
+      }
+    }, {
+      "type": "alter",
+      "name": "Alter Foreign Table comment and add columns",
+      "endpoint": "NODE-foreign_table.obj_id",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql_id",
+      "data": {
+        "description":"Test Comment",
+        "columns": {
+          "added": [{
+            "name":"col1",
+            "cltype":"bigint",
+            "coloptions":[],
+            "attnotnull": true
+          },{
+            "name":"col2",
+            "cltype":"text",
+            "coloptions":[]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_comment_add_columns.sql",
+      "expected_msql_file": "alter_comment_add_columns_msql.sql"
+    },{
+      "type": "alter",
+      "name": "Alter Foreign Table add constraints and options",
+      "endpoint": "NODE-foreign_table.obj_id",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql_id",
+      "data": {
+        "constraints": {
+          "added": [{
+            "conname":"cons1",
+            "consrc":"true",
+            "connoinherit":true,
+            "convalidated":true
+          }]
+        },
+        "ftoptions": {
+          "added": [{
+            "option":"schema_name",
+            "value":"public"
+          },{
+            "option":"table_name",
+            "value":"test_table"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_add_cons_opts.sql",
+      "expected_msql_file": "alter_add_cons_opts_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Foreign Table add privileges",
+      "endpoint": "NODE-foreign_table.obj_id",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql_id",
+      "data": {
+        "relacl":{
+          "added": [{
+            "grantee":"PUBLIC",
+            "grantor":"enterprisedb",
+            "privileges":[{
+              "privilege_type":"r",
+              "privilege":true,
+              "with_grant":false
+            }]
+          }]
+        }
+      },
+      "expected_sql_file": "alter_add_priv.sql",
+      "expected_msql_file": "alter_add_priv_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Foreign Table change option and column",
+      "endpoint": "NODE-foreign_table.obj_id",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql_id",
+      "data": {
+        "ftoptions": {
+          "changed": [{
+            "option":"schema_name",
+            "value":"test_public"
+          }]
+        },
+        "columns": {
+          "changed": [{
+            "name": "col1",
+            "attnum": 1,
+            "attoptions": null,
+            "attnotnull":false,
+            "attstattarget": 10,
+            "collname": "",
+            "coloptions": [],
+            "cltype": "integer"
+          }],
+          "deleted": [{
+            "name":"col2",
+            "cltype":"text"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_col_opts.sql",
+      "expected_msql_file": "alter_col_opts_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Foreign Table remove option, constraint, privileges",
+      "endpoint": "NODE-foreign_table.obj_id",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "msql_endpoint": "NODE-foreign_table.msql_id",
+      "data": {
+        "relacl":{
+          "deleted": [{
+            "grantee":"PUBLIC",
+            "grantor":"enterprisedb",
+            "privileges":[{
+              "privilege_type":"a",
+              "privilege":true,
+              "with_grant":false
+            },{
+              "privilege_type":"r",
+              "privilege":true,
+              "with_grant":false
+            }]
+          }]
+        },
+        "constraints": {
+          "deleted": [{
+            "conname":"cons1",
+            "consrc":"true",
+            "connoinherit":true,
+            "convalidated":true
+          }]
+        },
+        "ftoptions": {
+          "deleted": [{
+            "option":"schema_name",
+            "value":"public"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_remove_opts_priv_cons.sql",
+      "expected_msql_file": "alter_remove_opts_priv_cons_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign table",
+      "endpoint": "NODE-foreign_table.delete_id"
+    }, {
+      "type": "delete",
+      "name": "Drop foreign server",
+      "endpoint": "NODE-foreign_server.delete_id",
+      "data": {
+        "name": "test_fs_for_foreign_table"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop FDW",
+      "endpoint": "NODE-foreign_data_wrapper.delete_id",
+      "data": {
+        "name": "test_fdw_for_foreign_table"
+      }
+    }
+  ]
+}

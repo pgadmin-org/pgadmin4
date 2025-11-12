@@ -1,0 +1,132 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "tablefor_primary_key_cons",
+        "columns": [{
+          "name": "col1",
+          "cltype": "integer",
+          "is_primary_key": false
+        }, {
+          "name": "col2",
+          "cltype": "integer",
+          "is_primary_key": false
+        }],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    }, {
+      "type": "create",
+      "name": "Create Index",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "data": {
+        "name": "uindex",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [{
+          "colname": "col1",
+          "sort_order": false,
+          "nulls": false,
+          "is_sort_nulls_applicable": true
+        }],
+        "indisunique": true,
+        "fillfactor": 20
+      }
+    }, {
+      "type": "create",
+      "name": "Create Primary Key Constraint -- 11 Plus",
+      "endpoint": "NODE-primary_key.obj",
+      "sql_endpoint": "NODE-primary_key.sql_id",
+      "msql_endpoint": "NODE-primary_key.msql",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "fillfactor": 20,
+        "columns": [{"column":"col1"}],
+        "include": ["col2"],
+        "condeferrable": true,
+        "condeferred": true
+      },
+      "expected_sql_file": "create_pkey_constraint.sql",
+      "expected_msql_file": "create_pkey_constraint_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Primary Key Constraint -- 11 Plus",
+      "endpoint": "NODE-primary_key.obj_id",
+      "sql_endpoint": "NODE-primary_key.sql_id",
+      "msql_endpoint": "NODE-primary_key.msql_id",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#a",
+        "fillfactor": 90,
+        "comment": "Comment for alter"
+      },
+      "expected_sql_file": "alter_pkey_constraint.sql",
+      "expected_msql_file": "alter_pkey_constraint_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Primary Key Constraint Reset Fill factor",
+      "endpoint": "NODE-primary_key.obj_id",
+      "sql_endpoint": "NODE-primary_key.sql_id",
+      "msql_endpoint": "NODE-primary_key.msql_id",
+      "data": {
+        "fillfactor": ""
+      },
+      "expected_sql_file": "alter_pkey_reset_fillfactor.sql",
+      "expected_msql_file": "alter_pkey_reset_fillfactor_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Primary Key Constraint -- 11 plus",
+      "endpoint": "NODE-primary_key.delete_id",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }, {
+      "type": "create",
+      "name": "Create Primary Key Constraint with Index -- 11 plus",
+      "endpoint": "NODE-primary_key.obj",
+      "sql_endpoint": "NODE-primary_key.sql_id",
+      "msql_endpoint": "NODE-primary_key.msql",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "index": "uindex"
+      },
+      "expected_sql_file": "create_pkey_constraint_with_index.sql",
+      "expected_msql_file": "create_pkey_constraint_with_index_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Primary Key Constraint with Index -- 11 plus",
+      "endpoint": "NODE-primary_key.obj_id",
+      "sql_endpoint": "NODE-primary_key.sql_id",
+      "msql_endpoint": "NODE-primary_key.msql_id",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#a",
+        "fillfactor": 90,
+        "comment": "Comment for alter"
+      },
+      "expected_sql_file": "alter_pkey_constraint_with_index.sql",
+      "expected_msql_file": "alter_pkey_constraint_with_index_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Primary Key Constraint with Index -- 11 plus",
+      "endpoint": "NODE-primary_key.delete_id",
+      "data": {
+        "name": "Pk_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    }, {
+      "type": "delete",
+      "name": "Drop Index Constraint Table -- 11 plus",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "tablefor_primary_key_cons"
+      }
+    }
+  ]
+}

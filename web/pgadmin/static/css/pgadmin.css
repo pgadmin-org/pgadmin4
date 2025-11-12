@@ -1,0 +1,54 @@
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("~top/static/fonts/SourceCodePro-Regular.ttf") format("truetype");
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("~top/static/fonts/Roboto-Regular.ttf") format("truetype");
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+@font-face {
+  font-family: "Roboto Medium";
+  src: url("~top/static/fonts/Roboto-Medium.ttf") format("truetype");
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+@font-face {
+  font-family: "Roboto Bold";
+  src: url("~top/static/fonts/Roboto-Bold.ttf") format("truetype");
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media screen and (forced-colors: active) {
+  body {
+    forced-color-adjust: none !important;
+  }
+}

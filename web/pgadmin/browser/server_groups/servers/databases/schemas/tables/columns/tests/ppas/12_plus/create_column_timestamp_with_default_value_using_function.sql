@@ -1,0 +1,9 @@
+-- Column: testschema."table_3_$%{}[]()&*^!@""'`\/#"."col__2_$%{}[]()&*^!@""'`\/#"
+
+-- ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "col__2_$%{}[]()&*^!@""'`\/#";
+
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col__2_$%{}[]()&*^!@""'`\/#" time(4) with time zone DEFAULT now();
+
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."col__2_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment';

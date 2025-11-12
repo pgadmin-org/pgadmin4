@@ -1,0 +1,250 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Role 1 for testing rolemembership",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "test_rolemembership_1",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Role 2 for testing rolemembership",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "test_rolemembership_2",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Role",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql",
+      "data": {
+          "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
+          "rolcanlogin": false,
+          "rolpassword": null,
+          "rolconnlimit": -1,
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolinherit": true,
+          "rolreplication": false,
+          "rolmembership": [],
+          "seclabels": [],
+          "variables": []
+      },
+      "expected_sql_file": "create_role.sql",
+      "expected_msql_file": "create_role.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role description",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "description": "This is detailed description"
+      },
+      "expected_sql_file": "alter_role_description.sql",
+      "expected_msql_file": "alter_role_description.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role name",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_role_name.sql",
+      "expected_msql_file": "alter_role_name.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 1",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolsuper": true,
+        "rolcreatedb": true,
+        "rolreplication": false,
+        "rolpassword": "abc123",
+        "rolconnlimit": 100,
+        "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
+        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] },
+        "rolmembership": { "added": [{"role": "test_rolemembership_1", "admin": true}, {"role": "test_rolemembership_2", "admin": false}] }
+      },
+      "expected_sql_file": "alter_role_options1.sql",
+      "expected_msql_file": "alter_role_options1.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 2",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": { "changed": [{"role": "test_rolemembership_1", "admin": false}, {"role": "test_rolemembership_2", "admin": true}] }
+      },
+      "expected_sql_file": "alter_role_options2.sql",
+      "expected_msql_file": "alter_role_options2.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 3",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": { "deleted": [{"role": "test_rolemembership_1"}] }
+      },
+      "expected_sql_file": "alter_role_options3.sql",
+      "expected_msql_file": "alter_role_options3.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
+    },
+    {
+      "type": "alter",
+      "name": "Alter Role options 4",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolmembership": {
+          "added": [{"role": "test_rolemembership_1", "admin": true}],
+          "changed": [{"role": "test_rolemembership_2", "admin": true}]
+        }
+      },
+      "expected_sql_file": "alter_role_options4.sql",
+      "expected_msql_file": "alter_role_options4.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true,
+      "replace_regex_pattern": ["VALID UNTIL '[0-9\\-T:+ ]*'"]
+    },
+    {
+      "type": "delete",
+      "name": "Drop Role",
+      "endpoint": "NODE-role.obj_id",
+      "data": {}
+    },
+    {
+      "type": "delete",
+      "name": "Drop Role",
+      "endpoint": "NODE-role.obj",
+      "data": {"ids": ["<test_rolemembership_1>", "<test_rolemembership_2>"]},
+      "preprocess_data": true
+    },
+    {
+      "type": "create",
+      "name": "Create Login Role",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql",
+      "data": {
+          "rolname": "Role1_$%{}[]()&*^!@\"'`\\/#",
+          "rolcanlogin": true,
+          "rolpassword": null,
+          "rolconnlimit": -1,
+          "rolsuper": true,
+          "rolcreaterole": true,
+          "rolcreatedb": true,
+          "rolinherit": true,
+          "rolreplication": true,
+          "rolbypassrls": true,
+          "rolmembership": [],
+          "seclabels": [],
+          "variables": []
+      },
+      "expected_sql_file": "create_login_role.sql",
+      "expected_msql_file": "create_login_role.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Login Role description",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "description": "This is detailed description"
+      },
+      "expected_sql_file": "alter_login_role_description.sql",
+      "expected_msql_file": "alter_login_role_description.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Login Role name",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolname": "Role2_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_login_role_name.sql",
+      "expected_msql_file": "alter_login_role_name.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Login Role options",
+      "endpoint": "NODE-role.obj_id",
+      "sql_endpoint": "NODE-role.sql_id",
+      "msql_endpoint": "NODE-role.msql_id",
+      "data": {
+        "rolsuper": false,
+        "rolcreatedb": false,
+        "rolreplication": false,
+        "rolbypassrls": false,
+        "rolpassword": "abc123",
+        "rolconnlimit": 100,
+        "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
+        "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] }
+      },
+      "expected_sql_file": "alter_login_role_options.sql",
+      "expected_msql_file": "alter_login_role_options.msql",
+      "convert_timestamp_columns": ["rolvaliduntil"],
+      "replace_password": true
+    },
+    {
+      "type": "delete",
+      "name": "Drop Login Role",
+      "endpoint": "NODE-role.obj_id",
+      "data": {}
+    }
+  ]
+}

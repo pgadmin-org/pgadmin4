@@ -1,0 +1,30 @@
+{% set page_name = 'login_user' %}
+{% set user_language = request.cookies.get('PGADMIN_LANGUAGE') or 'en' %}
+{% set ns = namespace(langOptions=[]) %}
+{% for key, lang in config.LANGUAGES.items() %}
+{% set _ = ns.langOptions.append({'value': key, 'label': lang}) %}
+{% endfor %}
+{% set oauth2_config = [] %}
+{% for i in config.OAUTH2_CONFIG %}
+  {% set _tmp = oauth2_config.append({'OAUTH2_NAME': config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_NAME', ''),
+    'OAUTH2_BUTTON_COLOR':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_BUTTON_COLOR', ''),
+    'OAUTH2_DISPLAY_NAME':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_DISPLAY_NAME', ''),
+    'OAUTH2_ICON':  config.OAUTH2_CONFIG[loop.index-1].get('OAUTH2_ICON', '')
+  }) %}
+{% endfor %}
+
+{% set page_props = {
+    'userLanguage': user_language,
+    'langOptions': ns.langOptions,
+    'forgotPassUrl': url_for('browser.forgot_password'),
+    'loginUrl': url_for('authenticate.login'),
+    'csrfToken': csrf_token(),
+    'authSources': config.AUTHENTICATION_SOURCES,
+    'authSourcesEnum': {
+        'OAUTH2': config.OAUTH2,
+        'KERBEROS': config.KERBEROS,
+    },
+    'oauth2Config': oauth2_config,
+    'loginBanner': config.LOGIN_BANNER|safe
+} %}
+{% extends "security/render_page.html" %}

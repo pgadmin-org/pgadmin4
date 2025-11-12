@@ -1,0 +1,191 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create trigger function",
+      "endpoint": "NODE-trigger_function.obj",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [],
+        "args": [],
+        "funcowner": "postgres",
+        "lanname": "plpgsql",
+        "options": [],
+        "pronamespace": 2200,
+        "prorettypename": "trigger",
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_plain_trigger.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter trigger function comment",
+      "endpoint": "NODE-trigger_function.obj_id",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "description": "some comment"
+      },
+      "expected_sql_file": "alter_ptrig_comment.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter trigger function Set 1 - Strict, Leakproof, Security of definer, Volatility",
+      "endpoint": "NODE-trigger_function.obj_id",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "proisstrict": true,
+        "proleakproof": true,
+        "prosecdef": true,
+        "provolatile": "s"
+      },
+      "expected_sql_file": "alter_ptrig_set_1.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter trigger function Set 2 - Cost, Volatility, Add Param",
+      "endpoint": "NODE-trigger_function.obj_id",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "procost": "123",
+        "provolatile": "i",
+        "variables": {
+          "added": [{
+            "name": "application_name",
+            "value": "appname"
+          },{
+            "name": "search_path",
+            "value": "public, pg_temp"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_ptrig_set_2.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter trigger function Set 3 - Add Param, Change Param",
+      "endpoint": "NODE-trigger_function.obj_id",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "variables": {
+          "added": [{
+            "name": "application_name",
+            "value": "appname2"
+          }],
+          "changed": [{
+            "name": "array_nulls",
+            "value": true
+          },{
+            "name": "search_path",
+            "value": "public, pg_catalog"
+          }]
+        }
+      },
+      "expected_sql_file": "alter_ptrig_set_3.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop trigger function",
+      "endpoint": "NODE-trigger_function.delete_id",
+      "data": {
+      }
+    }, {
+      "type": "create",
+      "name": "Create full fledged trigger function",
+      "endpoint": "NODE-trigger_function.obj",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [{
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "privileges": [
+            {
+              "privilege": true,
+              "privilege_type": "X",
+              "with_grant": true
+            }
+          ]
+        }],
+        "args": [],
+        "description": "some comment",
+        "funcowner": "postgres",
+        "lanname": "plpgsql",
+        "options": [],
+        "procost": "1234",
+        "proisstrict": true,
+        "proiswindow": true,
+        "proleakproof": true,
+        "pronamespace": 2200,
+        "proretset": true,
+        "prorettypename": "trigger",
+        "prorows": "4321",
+        "prosecdef": true,
+        "provolatile": "s",
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [{
+          "name": "application_name",
+          "value": "appname"
+        },{
+          "name": "search_path",
+          "value": "public, pg_temp"
+        }],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_plain_trigger_full.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop full fledged trigger function",
+      "endpoint": "NODE-trigger_function.delete_id",
+      "data": {
+      }
+    }, {
+      "type": "create",
+      "name": "Create full fledged event trigger function",
+      "endpoint": "NODE-trigger_function.obj",
+      "sql_endpoint": "NODE-trigger_function.sql_id",
+      "data": {
+        "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
+        "acl": [{
+          "grantee": "postgres",
+          "grantor": "postgres",
+          "privileges": [
+            {
+              "privilege": true,
+              "privilege_type": "X",
+              "with_grant": true
+            }
+          ]
+        }],
+        "args": [],
+        "description": "some comment",
+        "funcowner": "postgres",
+        "lanname": "plpgsql",
+        "options": [],
+        "procost": "1234",
+        "proisstrict": true,
+        "proiswindow": true,
+        "proleakproof": true,
+        "pronamespace": 2200,
+        "proretset": true,
+        "prorettypename": "event_trigger",
+        "prorows": "4321",
+        "prosecdef": true,
+        "provolatile": "s",
+        "prosrc": "begin\nselect 1;\nend;",
+        "seclabels": [],
+        "variables": [{
+          "name": "application_name",
+          "value": "appname"
+        }],
+        "schema": "public"
+      },
+      "expected_sql_file": "create_event_trigger_full.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop full fledged event trigger function",
+      "endpoint": "NODE-trigger_function.delete_id",
+      "data": {
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+CREATE PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
+LANGUAGE 'sql'
+    SET application_name='demo'
+
+begin atomic
+select 1;
+end;
+
+ALTER PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
+    OWNER TO postgres;
+
+COMMENT ON PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
+    IS 'demo comments';

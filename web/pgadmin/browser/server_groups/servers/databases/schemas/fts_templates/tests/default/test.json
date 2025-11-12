@@ -1,0 +1,63 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FTS Template",
+      "endpoint": "NODE-fts_template.obj",
+      "sql_endpoint": "NODE-fts_template.sql_id",
+      "msql_endpoint": "NODE-fts_template.msql",
+      "data": {
+        "name": "FTSTemp_$%{}[]()&*^!@\"'`\\/#",
+        "schema": "test_fts_template",
+        "schema_id": "<SCHEMA_ID>",
+        "tmplinit": "dsimple_init",
+        "tmpllexize": "dsimple_lexize"
+      },
+      "expected_sql_file": "create.sql",
+      "expected_msql_file": "create_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Rename FTS Template",
+      "endpoint": "NODE-fts_template.obj_id",
+      "sql_endpoint": "NODE-fts_template.sql_id",
+      "msql_endpoint": "NODE-fts_template.msql_id",
+      "data": {
+        "name": "FTSTemp1_$%{}[]()&*^!@\"'`\\/#"
+      },
+      "expected_sql_file": "alter_rename.sql",
+      "expected_msql_file": "alter_rename_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter comment of FTS Template",
+      "endpoint": "NODE-fts_template.obj_id",
+      "sql_endpoint": "NODE-fts_template.sql_id",
+      "msql_endpoint": "NODE-fts_template.msql_id",
+      "data": {
+        "description": "Comment on FTS Template"
+      },
+      "expected_sql_file": "alter_comment.sql",
+      "expected_msql_file": "alter_comment_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter schema of FTS Template",
+      "endpoint": "NODE-fts_template.obj_id",
+      "sql_endpoint": "NODE-fts_template.sql_id",
+      "msql_endpoint": "NODE-fts_template.msql_id",
+      "data": {
+        "schema": "2200"
+      },
+      "expected_msql_file": "alter_schema_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FTS template",
+      "endpoint": "NODE-fts_template.delete_id",
+      "data": {
+        "name": "FTSTemp_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]
+}

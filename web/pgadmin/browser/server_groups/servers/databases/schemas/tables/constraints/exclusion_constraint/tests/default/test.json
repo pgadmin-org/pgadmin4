@@ -1,0 +1,215 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "tableforexclusion",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "col2",
+            "cltype": "text"
+          },
+          {
+            "name": "col3",
+            "cltype": "integer"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Extension",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "btree_gist",
+        "version": "",
+        "relocatable": true
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.obj",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "fillfactor": "12",
+        "amname": "gist",
+        "condeferrable": true,
+        "condeferred": true,
+        "indconstraint": "col1 > 1",
+        "columns": [
+          {
+            "column": "col2",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": false
+          }
+        ]
+      },
+      "expected_sql_file": "create_exclusion_constraint.sql",
+      "expected_msql_file": "create_exclusion_constraint_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.obj_id",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "msql_endpoint": "NODE-exclusion_constraint.msql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#a",
+        "comment": "Comment for alter",
+        "fillfactor": "98"
+      },
+      "expected_sql_file": "alter_exclusion_constraint.sql",
+      "expected_msql_file": "alter_exclusion_constraint_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.delete_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Exclusion Constraint to remove Fillfactor",
+      "endpoint": "NODE-exclusion_constraint.obj",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1",
+        "comment": "Comment for create",
+        "fillfactor": "12",
+        "amname": "gist",
+        "columns": [
+          {
+            "column": "col2",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": false
+          }
+        ]
+      },
+      "expected_sql_file": "create_without_fillfactor.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter Exclusion Constraint to remove Fillfactor",
+      "endpoint": "NODE-exclusion_constraint.obj_id",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "msql_endpoint": "NODE-exclusion_constraint.msql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1a",
+        "comment": "Comment for alter",
+        "fillfactor": ""
+      },
+      "expected_sql_file": "alter_without_fillfactor.sql",
+      "expected_msql_file": "alter_without_fillfactor_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.delete_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1a"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Exclusion Constraint with expressions",
+      "endpoint": "NODE-exclusion_constraint.obj",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "fillfactor": "12",
+        "amname": "gist",
+        "condeferrable": true,
+        "condeferred": true,
+        "indconstraint": "col1 > 1",
+        "columns": [
+          {
+            "column": "col2",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": false
+          },
+          {
+            "column": "(col1+col3)",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": true
+          }
+        ]
+      },
+      "expected_sql_file": "create_exclusion_constraint_exp.sql",
+      "expected_msql_file": "exclusion_constraint_exp_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Exclusion Constraint",
+      "endpoint": "NODE-exclusion_constraint.delete_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#_1a"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Exclusion Constraint with expressions",
+      "endpoint": "NODE-exclusion_constraint.obj",
+      "sql_endpoint": "NODE-exclusion_constraint.sql_id",
+      "data": {
+        "name": "Exclusion_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "fillfactor": "12",
+        "amname": "gist",
+        "condeferrable": true,
+        "condeferred": true,
+        "indconstraint": "col1 > 1",
+        "columns": [
+          {
+            "column": "col2",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": false
+          },
+          {
+            "column": "(col1+col3)",
+            "order": false,
+            "nulls_order": false,
+            "operator": "<>",
+            "is_sort_nulls_applicable": false,
+            "is_exp": true
+          }
+        ]
+      },
+      "expected_sql_file": "create_exclusion_constraint_exp.sql",
+      "expected_msql_file": "exclusion_constraint_exp_msql.sql"
+    }
+  ]
+}

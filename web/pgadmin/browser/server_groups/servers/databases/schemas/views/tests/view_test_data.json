@@ -1,0 +1,1567 @@
+{
+  "view_create": [
+    {
+      "name": "Create view: With valid data.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "schema": "",
+        "owner": "",
+        "datacl": [],
+        "seclabels": [],
+        "name": "test_view_add_",
+        "definition": "SELECT 'Hello World';",
+        "security_invoker": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create mview: With valid data.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "toast_autovacuum_enabled": false,
+        "autovacuum_enabled": false,
+        "schema": "",
+        "owner": "",
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "datacl": [],
+        "seclabels": [],
+        "name": "test_mview_add_",
+        "definition": "SELECT 'test_pgadmin';"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create view: With insufficent data.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "owner": "",
+        "datacl": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "Could not find the required parameter (name).",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "view_get": [
+    {
+      "name": "Get view: With existing view.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s; GRANT ALL ON TABLE %s.%s TO %s; GRANT INSERT ON TABLE %s.%s TO PUBLIC;\" % (schema_name, view_name, schema_name, view_name, server['username'],schema_name, view_name,server['username'], schema_name, view_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view with rule.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s; CREATE OR REPLACE RULE view_rule AS ON DELETE TO %s.%s DO NOTHING;\" % (schema_name, view_name, schema_name, view_name, server['username'],schema_name, view_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view having brackets (<v16).",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "server_max_version": 159999,
+        "skip_msg": "Definition is different from v16 onwards."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((pg_db.datistemplate = false) AND (pg_db.datallowconn = true) AND ((pg_db.datconnlimit = '-1'::integer) OR (pg_db.datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;",
+          "pg_definition": " SELECT\n        CASE\n            WHEN pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = '-1'::integer OR pg_db.datacl IS NULL) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view having brackets (>=16).",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Definition is different from v16 onwards."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((datistemplate = false) AND (datallowconn = true) AND ((datconnlimit = '-1'::integer) OR (datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;",
+          "pg_definition": " SELECT\n        CASE\n            WHEN datistemplate = false AND datallowconn = true AND (datconnlimit = '-1'::integer OR datacl IS NULL) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get views list: With existing views.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get Mview: With existing non-default privileges Mview.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC; GRANT ALL ON TABLE %s.%s TO %s;\" % (schema_name, view_name, schema_name, view_name, server['username'], schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Mview: With existing Mview with index.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin'::text AS text WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s; CREATE INDEX mview_index ON %s.%s USING btree (text COLLATE pg_catalog.default) TABLESPACE pg_default; \" % (schema_name, view_name, schema_name, view_name, server['username'], schema_name, view_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With non-existing view.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view while server is down.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get views: With existing views while server is down.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get Mview: With non-existing Mview.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Mview: With existing Mview while server is down.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "view_delete": [
+    {
+      "name": "Delete view: With existing view.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete views list: With existing views.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete Mview: With existing Mview.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete view: With non-existing view.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete view: With existing view while server is down.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete view: With existing view while server is down-2.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "view_get_nodes": [
+    {
+      "name": "Get view: With existing view.",
+      "url": "/browser/view/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view having brackets.",
+      "url": "/browser/view/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((pg_db.datistemplate = false) AND (pg_db.datallowconn = true) AND ((pg_db.datconnlimit = '-1'::integer) OR (pg_db.datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;",
+          "pg_definition": " SELECT\n        CASE\n            WHEN pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = '-1'::integer OR pg_db.datacl IS NULL) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get views list: With existing views.",
+      "url": "/browser/view/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get Mview: With existing Mview.",
+      "url": "/browser/mview/nodes/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With non-existing view.",
+      "url": "/browser/view/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view while server is down.",
+      "url": "/browser/view/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get Mview: With non-existing Mview.",
+      "url": "/browser/mview/nodes/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "view_dependecies_dependents": [
+    {
+      "name": "Get view dependents: With existing view.",
+      "url": "/browser/view/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get view dependency: With existing view having brackets.",
+      "url": "/browser/view/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((pg_db.datistemplate = false) AND (pg_db.datallowconn = true) AND ((pg_db.datconnlimit = '-1'::integer) OR (pg_db.datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      },
+      "is_dependent": false
+    },
+    {
+      "name": "Get Mview dependents : With existing Mview.",
+      "url": "/browser/mview/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get Mview dependency : With existing Mview.",
+      "url": "/browser/mview/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "view_sql": [
+    {
+      "name": "Get view sql: With existing view.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view sql: With existing view having brackets.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((pg_db.datistemplate = false) AND (pg_db.datallowconn = true) AND ((pg_db.datconnlimit = '-1'::integer) OR (pg_db.datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      }
+    },
+    {
+      "name": "Get view sql: With existing view with rule.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s; GRANT ALL ON TABLE %s.%s TO %s; GRANT INSERT ON TABLE %s.%s TO PUBLIC; CREATE OR REPLACE RULE view_rule AS ON DELETE TO %s.%s DO NOTHING;\" % (schema_name, view_name, schema_name, view_name, server['username'],schema_name, view_name,server['username'],schema_name, view_name, schema_name, view_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view sql: With existing view having compound trigger.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s; CREATE OR REPLACE TRIGGER compound_trig FOR DELETE ON %s.%s COMPOUND TRIGGER var character varying(20) DEFAULT 'Global_var'; BEFORE STATEMENT IS BEGIN DBMS_OUTPUT.PUT_LINE('Before Statement: ' || var); var := 'BEFORE STATEMENT'; END; END compound_trig;\" % (schema_name, view_name, schema_name, view_name, server['username'], schema_name, view_name)"
+      },
+      "test_data": {
+        "server_min_version": 120000,
+        "skip_msg": "Compound Triggers are not supported by EPAS server less than 12"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview sql: With existing Mview.",
+      "url": "/browser/mview/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview sql: With existing Mview with index.",
+      "url": "/browser/mview/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin'::text AS text WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s; CREATE INDEX %s ON %s.%s USING btree (text COLLATE pg_catalog.default) TABLESPACE pg_default; \" % (schema_name, view_name, schema_name, view_name, server['username'], mview_index, schema_name, view_name)"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview sql : With existing non-default privileges Mview.",
+      "url": "/browser/mview/sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s; GRANT SELECT ON TABLE %s.%s TO PUBLIC; GRANT ALL ON TABLE %s.%s TO %s;\" % (schema_name, view_name, schema_name, view_name, server['username'], schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view sql: With non-existing view.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view sql: With existing view while server is down.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview sql: With non-existing Mview.",
+      "url": "/browser/mview/sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview sql: With existing Mview while server is down.",
+      "url": "/browser/mview/sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get select view sql: With existing view.",
+      "url": "/browser/view/select_sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get select Mview sql: With existing Mview.",
+      "url": "/browser/mview/select_sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get select view sql: With Non-existing view.",
+      "url": "/browser/view/select_sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get insert view sql: With existing view.",
+      "url": "/browser/view/insert_sql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get insert view sql: With Non-existing view.",
+      "url": "/browser/view/insert_sql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view: With existing view & trigger on it.",
+      "url": "/browser/view/sql/",
+      "is_positive_test": true,
+      "trigger_fun_required": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view children: With existing view & trigger on it.",
+      "url": "/browser/view/children/",
+      "is_positive_test": true,
+      "trigger_fun_required": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "view_put": [
+    {
+      "name": "Update view: With existing view.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update view: With existing view & change definition.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 1; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment",
+        "definition": " SELECT 3;"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update view: With existing view changing privilages.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "Changing privilages.",
+        "datacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: With existing Mview.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: With existing Mview by changing definition.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment",
+        "definition": "select 1"
+
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update view: With existing view while server is down.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_void",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Update view: With existing view while server is down.",
+      "url": "/browser/view/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Update: With existing Mview while server is down.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Update Mview: Enable custom auto vacuum and set the parameters for table without autovacuum_enabled.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment",
+        "autovacuum_custom": true,
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 20
+            },
+            {
+              "name": "autovacuum_vacuum_threshold",
+              "value": 20
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Change a parameter to zero value without autovacuum_enabled.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Enable autovacuum_enabled",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "autovacuum_enabled": "t"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Reset individual parameters for table.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "autovacuum_enabled": "x",
+        "vacuum_table": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": null
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Reset custom auto vacuum.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "autovacuum_custom": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Enable toast custom auto vacuum and set the parameters for table without autovacuum_enabled.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "toast_autovacuum": true,
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 20
+            },
+            {
+              "name": "autovacuum_vacuum_threshold",
+              "value": 20
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Change a toast parameter to zero value without autovacuum_enabled.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": 0
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Enable toast.autovacuum_enabled.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "toast_autovacuum_enabled": "t"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Reset individual toast parameters for table.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "toast_autovacuum_enabled": "x",
+        "vacuum_toast": {
+          "changed": [
+            {
+              "name": "autovacuum_vacuum_cost_delay",
+              "value": null
+            }
+          ]
+        }
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Update Mview: Reset auto vacuum.",
+      "url": "/browser/mview/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "toast_autovacuum": false
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "mview_refresh": [
+    {
+      "name": "Refresh Mview: Check utility route .",
+      "url": "browser/mview/check_utility_exists/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_put_request": false
+    },
+    {
+      "name": "Refresh Mview: With data.",
+      "url": "browser/mview/refresh_data/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "concurrent": "false",
+        "with_data": "true"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_put_request": true
+    },
+    {
+      "name": "Refresh Mview: With no data.",
+      "url": "browser/mview/refresh_data/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "concurrent": "false",
+        "with_data": "false"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_put_request": true
+    },
+    {
+      "name": "Refresh Mview: With data (concurrently).",
+      "url": "browser/mview/refresh_data/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "concurrent": "true",
+        "with_data": "true"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_put_request": true
+    },
+    {
+      "name": "Refresh Mview: With no data (concurrently).",
+      "url": "browser/mview/refresh_data/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "concurrent": "true",
+        "with_data": "false"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_put_request": true
+    },
+    {
+      "name": "Refresh Mview: With invalid oid.",
+      "url": "browser/mview/refresh_data/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "m_view_id": 999999,
+        "concurrent": "false",
+        "with_data": "false"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      },
+      "is_put_request": true
+    }
+  ],
+  "view_get_msql": [
+    {
+      "name": "Get view msql: With existing view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "Testing msql api"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get view msql: With Non-existing view.",
+      "url": "/browser/view/msql/",
+      "is_positive_test": false,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT 'Hello World'; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "view_id": 9999,
+        "comment": "Testing msql api"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified none.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get Mview msql: With existing Mview by changing definition.",
+      "url": "/browser/mview/msql/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE MATERIALIZED VIEW %s.%s TABLESPACE pg_default AS SELECT 'test_pgadmin' WITH NO DATA;ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "comment": "This is test comment",
+        "definition": "select 1"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}

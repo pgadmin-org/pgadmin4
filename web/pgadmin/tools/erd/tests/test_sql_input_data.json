@@ -1,0 +1,107 @@
+{
+  "nodes": {
+    "1d9dc56e-e4f9-48b9-889b-6084ec6446bf": {
+      "columns": [
+        {
+          "name": "id",
+          "attnum": 0,
+          "cltype": "integer",
+          "is_primary_key": true,
+          "attnotnull": false,
+          "attlen": null,
+          "attprecision": null,
+          "attidentity": "a",
+          "colconstype": "n"
+        },
+        {
+          "name": "col1",
+          "attnum": 1,
+          "cltype": "character varying",
+          "min_val_attlen": 1,
+          "max_val_attlen": 2147483647,
+          "is_primary_key": false,
+          "attnotnull": false,
+          "attlen": 50,
+          "attprecision": null,
+          "attidentity": "a",
+          "colconstype": "n"
+        }
+      ],
+      "name": "newtable1",
+      "schema": "public",
+      "primary_key": [
+        {
+          "columns": [
+            {
+              "column": "id"
+            }
+          ],
+          "include": []
+        }
+      ]
+    },
+    "c4fee4ad-cf32-4fc6-bb87-98b896bcab60": {
+      "name": "newtable2",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "table1_id",
+          "attnum": 0,
+          "cltype": "integer",
+          "is_primary_key": false,
+          "attnotnull": false,
+          "attlen": null,
+          "attprecision": null,
+          "attidentity": "a",
+          "colconstype": "n",
+          "old_attidentity": "a"
+        },
+        {
+          "name": "col2",
+          "attnum": 1,
+          "cltype": "character varying",
+          "min_val_attlen": 1,
+          "max_val_attlen": 2147483647,
+          "is_primary_key": false,
+          "attnotnull": false,
+          "attlen": 50,
+          "attprecision": null,
+          "attidentity": "a",
+          "colconstype": "n",
+          "old_attidentity": "a"
+        }
+      ],
+      "primary_key": [
+        {
+          "columns": [
+            {
+              "column": "id"
+            }
+          ],
+          "include": []
+        }
+      ],
+      "foreign_key": [
+        {
+          "schema": "public",
+          "table": "newtable2",
+          "remote_schema": "public",
+          "remote_table": "newtable1",
+          "columns": [
+            {
+              "local_column": "table1_id",
+              "referenced": "id",
+              "references": "1d9dc56e-e4f9-48b9-889b-6084ec6446bf"
+            }
+          ]
+        }
+      ]
+    },
+    "f001a770-d6fa-4572-b88b-11dd5e38d30c": {
+      "columns": [],
+      "name": "newtable3",
+      "schema": "public",
+      "primary_key": []
+    }
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "column_create": [
+    {
+      "name": "Create: Add FT column with valid data",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_ft_column_add_",
+        "description": "Comment for create",
+        "cltype": "numeric",
+        "attlen":"10",
+        "attprecision":"5",
+        "coloptions":[],
+        "colconstype":"n",
+        "attnotnull": true,
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add FT column with valid data while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_column_add_",
+        "cltype": "\"char\"",
+        "attacl": [],
+        "is_primary_key": false,
+        "attnotnull": false,
+        "attlen": null,
+        "attprecision": null,
+        "attoptions": [],
+        "seclabels": [],
+        "description": {
+          "comment": "jsoncomment"
+        }
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "column_delete": [
+    {
+      "name": "Delete: Existing FT column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Multiple existing FT column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Delete: Non-existing FT column",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "column_id": 9999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete: Existing FT column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "column_get": [
+    {
+      "name": "Get details: For existing FT column",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get details: For existing FT column while server down",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "[(False,'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{% set page_name = 'mfa_register' %}
+{% set page_props = {
+    'actionUrl': url_for('mfa.register'),
+    'mfaList': mfa_list,
+    'nextUrl': next_url,
+    'mfaView': mfa_view,
+    'errorMessage': error_message,
+} %}
+{% extends "security/render_page.html" %}

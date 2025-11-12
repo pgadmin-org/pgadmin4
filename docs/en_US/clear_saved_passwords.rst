@@ -1,0 +1,28 @@
+.. _clear_saved_passwords:
+
+******************************
+`Clear Saved Passwords`:index:
+******************************
+
+Use *Clear Saved Password* functionality to clear the saved password for the
+database server.
+
+.. image:: images/clear_saved_password.png
+    :alt: Clear saved password
+    :align: center
+
+*Clear Saved Password* shows in the context menu for the selected server as well
+as under the *Object* menu on the top menu bar.
+
+Use *Clear SSH Tunnel Password* functionality to clear the saved password of SSH
+Tunnel to connect to the database server.
+
+.. image:: images/clear_tunnel_password.png
+    :alt: Clear SSH tunnel password
+    :align: center
+
+*Clear SSH Tunnel Password* shows in the context menu for the selected server as
+well as under the *Object* menu on the top menu bar.
+
+**Note:** It will be enabled/visible when the password for the selected database
+server is already saved.

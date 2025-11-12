@@ -1,0 +1,17 @@
+.icon-server_group {
+  background-image: url('{{ url_for('NODE-server_group.static', filename='img/server_group.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}
+
+.icon-server_group_shared {
+  background-image: url('{{ url_for('NODE-server_group.static', filename='img/server_group_shared.svg') }}') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 1.3em;
+}

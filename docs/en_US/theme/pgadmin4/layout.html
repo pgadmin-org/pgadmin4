@@ -1,0 +1,27 @@
+{% if not favicon %}
+{% set favicon = 'favicon.ico' %}
+{% endif %}
+{%- extends "classic/layout.html" %}
+
+{%- block footer %}
+    <div class="footer" role="contentinfo">
+        <div class="related" role="navigation" aria-label="related navigation">
+          <ul>
+            {%- if show_copyright %}
+              {%- if hasdoc('copyright') %}
+              {% trans path=pathto('copyright'), copyright=copyright|e %}<li class="left" style="margin-left: 10px">&#169; <a href="{{ path }}">Copyright</a> {{ copyright }}.</li>{% endtrans %}
+              {%- else %}
+              {% trans copyright=copyright|e %}<li class="left" style="margin-left: 10px">&#169; Copyright {{ copyright }}.</li>{% endtrans %}
+              {%- endif %}
+            {%- endif %}
+            <li class="right" style="margin-right: 10px"><a href="genindex.html" title="General Index">index</a></li>
+            {%- if next %}
+            <li class="right" ><a href="{{ next.link|e }}" title="{{ next.title|striptags|e }}">next</a> |</li>
+            {%- endif %}
+            {%- if prev %}
+            <li class="right" ><a href="{{ prev.link|e }}" title="{{ prev.title|striptags|e }}">previous</a> |</li>
+            {%- endif %}
+          </ul>
+        </div>
+    </div>
+{%- endblock %}

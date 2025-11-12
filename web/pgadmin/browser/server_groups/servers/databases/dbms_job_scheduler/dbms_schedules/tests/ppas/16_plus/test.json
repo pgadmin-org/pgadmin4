@@ -1,0 +1,191 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create extension 'edb_job_scheduler' for DBMS Schedule",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "edb_job_scheduler"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create extension 'dbms_scheduler' for DBMS Schedule",
+      "endpoint": "NODE-extension.obj",
+      "sql_endpoint": "NODE-extension.sql_id",
+      "data": {
+        "name": "dbms_scheduler"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Schedule with all options",
+      "endpoint": "NODE-dbms_schedule.obj",
+      "sql_endpoint": "NODE-dbms_schedule.sql_id",
+      "msql_endpoint": "NODE-dbms_schedule.msql",
+      "data": {
+        "jsscname": "dbms_test_sch_yearly",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is yearly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "YEARLY",
+        "jsscdate": null,
+        "jsscweekdays": ["7", "1", "2", "3", "4", "5", "6"],
+        "jsscmonthdays": ["2", "8", "31", "27"],
+        "jsscmonths": ["1", "5", "12"],
+        "jsschours": ["05", "18", "22"],
+        "jsscminutes": ["45", "37", "58"]
+      },
+      "convert_timestamp_columns": ["jsscstart","jsscend"],
+      "expected_sql_file": "create_schedule_all.sql",
+      "expected_msql_file": "create_schedule_all_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schedule",
+      "endpoint": "NODE-dbms_schedule.obj_id",
+      "data": {
+        "name": "dbms_test_sch_yearly"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Schedule Yearly by date",
+      "endpoint": "NODE-dbms_schedule.obj",
+      "sql_endpoint": "NODE-dbms_schedule.sql_id",
+      "msql_endpoint": "NODE-dbms_schedule.msql",
+      "data": {
+        "jsscname": "dbms_test_sch_yearly_by_date",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "2024-02-28 00:00:00 +05:30",
+        "jsscdesc": "This is yearly by date test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "YEARLY",
+        "jsscdate": "20250113",
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "convert_timestamp_columns": ["jsscstart","jsscend"],
+      "expected_sql_file": "create_schedule_bydate.sql",
+      "expected_msql_file": "create_schedule_bydate_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schedule",
+      "endpoint": "NODE-dbms_schedule.obj_id",
+      "data": {
+        "name": "dbms_test_sch_yearly_by_date"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Schedule only start date",
+      "endpoint": "NODE-dbms_schedule.obj",
+      "sql_endpoint": "NODE-dbms_schedule.sql_id",
+      "msql_endpoint": "NODE-dbms_schedule.msql",
+      "data": {
+        "jsscname": "dbms_test_sch_monthly_start_date",
+        "jsscstart": "2024-02-27 00:00:00 +05:30",
+        "jsscend": "",
+        "jsscdesc": "",
+        "jsscrepeatint": "",
+        "jsscfreq": "MONTHLY",
+        "jsscdate": null,
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "convert_timestamp_columns": ["jsscstart"],
+      "expected_sql_file": "create_schedule_start_date.sql",
+      "expected_msql_file": "create_schedule_start_date_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schedule",
+      "endpoint": "NODE-dbms_schedule.obj_id",
+      "data": {
+        "name": "dbms_test_sch_monthly_start_date"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Schedule only frequency",
+      "endpoint": "NODE-dbms_schedule.obj",
+      "sql_endpoint": "NODE-dbms_schedule.sql_id",
+      "msql_endpoint": "NODE-dbms_schedule.msql",
+      "data": {
+        "jsscname": "dbms_test_sch_daily_freq",
+        "jsscstart": "",
+        "jsscend": "",
+        "jsscdesc": "",
+        "jsscrepeatint": "",
+        "jsscfreq": "DAILY",
+        "jsscdate": null,
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "expected_sql_file": "create_schedule_freq.sql",
+      "expected_msql_file": "create_schedule_freq_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schedule",
+      "endpoint": "NODE-dbms_schedule.obj_id",
+      "data": {
+        "name": "dbms_test_sch_daily_freq"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Schedule frequency with comment",
+      "endpoint": "NODE-dbms_schedule.obj",
+      "sql_endpoint": "NODE-dbms_schedule.sql_id",
+      "msql_endpoint": "NODE-dbms_schedule.msql",
+      "data": {
+        "jsscname": "dbms_test_sch_weekly_comm",
+        "jsscstart": "",
+        "jsscend": "",
+        "jsscdesc": "This is weekly test schedule",
+        "jsscrepeatint": "",
+        "jsscfreq": "WEEKLY",
+        "jsscdate": null,
+        "jsscweekdays": [],
+        "jsscmonthdays": [],
+        "jsscmonths": [],
+        "jsschours": [],
+        "jsscminutes": []
+      },
+      "expected_sql_file": "create_schedule_freq_comm.sql",
+      "expected_msql_file": "create_schedule_freq_comm_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Schedule",
+      "endpoint": "NODE-dbms_schedule.obj_id",
+      "data": {
+        "name": "dbms_test_sch_weekly_comm"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Extension",
+      "endpoint": "NODE-extension.delete",
+      "data": {
+        "ids": ["<edb_job_scheduler>"]
+      },
+      "preprocess_data": true
+    }
+  ]
+}

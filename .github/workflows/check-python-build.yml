@@ -1,0 +1,39 @@
+name: Check Python build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build-python-package:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install platform dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev
+
+      - name: Install Python dependencies
+        run: make install-python
+
+      - name: Check the Python wheel build
+        run: |
+          . venv/bin/activate
+          make pip
+
+      - name: Archive Python wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin4-python-build-output
+          path: dist/*

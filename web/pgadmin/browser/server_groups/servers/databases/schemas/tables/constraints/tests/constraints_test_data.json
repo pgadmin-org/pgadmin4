@@ -1,0 +1,48 @@
+{
+  "constraints_get": [
+    {"name": "Get constraints list: For existing multiple constraint ids.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+    "constraints_get_nodes": [
+    {
+      "name": "Get constraints nodes: For existing multiple constraint ids.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }],
+      "constraints_delete": [
+    {
+      "name": "Delete constraints nodes: For existing multiple constraint ids.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    }]
+}

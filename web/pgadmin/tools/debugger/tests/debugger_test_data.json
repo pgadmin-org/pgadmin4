@@ -1,0 +1,1711 @@
+{
+  "init_debugger_for_function": [
+    {
+      "name": "Debugger initialization",
+      "url": "/debugger/init/function/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "function",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger initialization nodetype",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "function",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialization: Function is not found",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "invalid_name": false,
+      "add_extension": true,
+      "node_type": "function",
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(True, {'rows': []})"
+      },
+      "expected_data": {
+        "status_code": 410
+      }
+    },
+    {
+      "name": "Debugger initialization: Check Function is debuggable",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "invalid_name": false,
+      "add_extension": true,
+      "node_type": "function",
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while checking function is debuggable.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialization: Check Function is debuggable fail",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_multiple_calls": true,
+      "invalid_name": false,
+      "add_extension": true,
+      "node_type": "function",
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, 0),(False, 'Mocked Internal Server Error ')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialization: Check Function name is valid",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "invalid_name": true,
+      "add_extension": true,
+      "node_type": "function",
+      "test_data": {},
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialization: pldggapi extension missing.",
+      "url": "/debugger/init/function/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "mock_multiple_calls": true,
+      "invalid_name": false,
+      "add_extension": true,
+      "node_type": "function",
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, '0'), (True, '0')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "init_debugger_for_trigger": [
+    {
+      "name": "Debugger initialization for trigger",
+      "url": "/debugger/init/trigger/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "trigger",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger initialization for trigger: fail",
+      "url": "/debugger/init/trigger/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "init_debugger_target": [
+    {
+      "name": "Debugger initialize target direct",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger initialize target direct negative",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target direct negative validate debugger",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target direct negative validate indirect debugger",
+      "url": "/debugger/initialize_target/indirect/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target direct negative connection error",
+      "url": "/debugger/initialize_target/indirect/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connect",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target indirect",
+      "url": "/debugger/initialize_target/indirect/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger initialize target direct with trigger id",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "create_trigger_func": true,
+      "add_extension": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger initialize target direct with trigger id",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "invalid_name": false,
+      "create_trigger_func": true,
+      "add_extension": true,
+      "type": "direct",
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize target direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target direct with trigger id fail",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "create_trigger_func": true,
+      "add_extension": true,
+      "mock_multiple": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, 0), (False, 'Mocked Internal Server Error while checking debugger initialize target direct.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target indirect with trigger id fail",
+      "url": "/debugger/initialize_target/indirect/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "create_trigger_func": true,
+      "add_extension": true,
+      "mock_multiple": false,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, {})"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger initialize target debugger version not valid.",
+      "url": "/debugger/initialize_target/direct/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "node_type": "trigger",
+      "type": "direct",
+      "invalid_name": false,
+      "create_trigger_func": true,
+      "add_extension": true,
+      "mock_multiple": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "is_row_trigger": true,
+        "fires": "BEFORE",
+        "columns": [],
+        "tfunction": "PLACE_HOLDER",
+        "evnt_insert": true
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(True, ''), (True, ''), (False,'Mocking invalid debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "close_debugger": [
+    {
+      "name": "Close Debugger",
+      "url": "debugger/close/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "node_type": "trigger",
+      "invalid_name": false,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "restart_debugger": [
+    {
+      "name": "Restart Debugger: Debugger not triggered.",
+      "url": "debugger/restart/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "trigger",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Restart Debugger: Debugger initialized.",
+      "url": "debugger/restart/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "trigger",
+      "invalid_name": false,
+      "init_target": true,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Restart Debugger: Server not connected.",
+      "url": "debugger/restart/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "trigger",
+      "invalid_name": false,
+      "init_target": true,
+      "add_extension": true,
+      "test_data": {},
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "start_listener": [
+    {
+      "name": "Debugger start listener",
+      "url": "debugger/start_listener/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger start listener fail",
+      "url": "debugger/start_listener/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger start listener connection fail",
+      "url": "debugger/start_listener/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger start listener indirect",
+      "url": "debugger/start_listener/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger start listener indirect disconnected",
+      "url": "debugger/start_listener/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "debugger_messages": [
+    {
+      "name": "Debugger Messages",
+      "url": "debugger/messages/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Messages: connection fail",
+      "url": "debugger/messages/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger Messages: debugger instace fail",
+      "url": "debugger/messages/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "start_execution": [
+    {
+      "name": "Debugger Start Execution",
+      "url": "debugger/start_execution/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "add_port_no": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "poll_end_execution_result": [
+    {
+      "name": "Debugger Poll Execution Results.",
+      "url": "debugger/poll_end_execution_result/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Poll Execution Results: Connection fail",
+      "url": "debugger/poll_end_execution_result/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Poll Execution Results: fail to poll data.",
+      "url": "debugger/poll_end_execution_result/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
+        "return_value": "(False, 'Mock internal server error while poll data for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "debugger_direct": [
+    {
+      "name": "Debugger Direct: Init debugger in direct mode",
+      "url": "debugger/direct/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Direct: Init debugger in direct mode fail",
+      "url": "debugger/direct/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "add_extension": true,
+      "invalid_trans": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "",
+        "return_value": ""
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Direct: Init debugger in direct with arguments",
+      "url": "debugger/direct/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "add_extension": true,
+      "invalid_trans": false,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "",
+        "return_value": ""
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "execute_query": [
+    {
+      "name": "Debugger execute: positive",
+      "url": "debugger/execute_query/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "query_type": "wait_for_breakpoint",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "abort_debugger": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger execute: Connection fail.",
+      "url": "debugger/execute_query/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "query_type": "wait_for_breakpoint",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "abort_debugger": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger execute: Debugger instance fail",
+      "url": "debugger/execute_query/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "query_type": "wait_for_breakpoint",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "abort_debugger": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger execute: Debugger continue",
+      "url": "debugger/execute_query/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "query_type": "continue",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "abort_debugger": false,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger execute: Debugger patch error",
+      "url": "debugger/execute_query/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "query_type": "wait_for_breakpoint",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "abort_debugger": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger execute: Debugger async fail",
+      "url": "debugger/execute_query/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "query_type": "continue",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "abort_debugger": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_async",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    }
+  ],
+  "poll_result": [
+    {
+      "name": "Debugger poll result",
+      "url": "debugger/poll_result/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger poll result: Disconnected",
+      "url": "debugger/poll_result/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger poll result: poll error",
+      "url": "debugger/poll_result/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
+        "return_value": "(False, 'Mocking internal error for poll debugger result.')"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger poll result: Debugger instance fail",
+      "url": "debugger/poll_result/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "indirect",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
+        "return_value": "(False, 'Mocking internal error for poll debugger result.')"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "set_breakpoint": [
+    {
+      "name": "Debugger Set breakpoint",
+      "url": "debugger/set_breakpoint/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Set breakpoint: debugger instance fail.",
+      "url": "debugger/set_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Set breakpoint: Search path error.",
+      "url": "debugger/set_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger Set breakpoint: Connection error",
+      "url": "debugger/set_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Set breakpoint: Clear breakpoint.",
+      "url": "debugger/set_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 2,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "clear_all_breakpoint": [
+    {
+      "name": "Debugger Clear all breakpoint: .",
+      "url": "debugger/clear_all_breakpoint/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Clear all breakpoint: Debugger instance error.",
+      "url": "debugger/clear_all_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": false,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Clear all breakpoint: search path error.",
+      "url": "debugger/clear_all_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
+      },
+      "expected_data": {
+        "status_code": 500
+      }
+    },
+    {
+      "name": "Debugger Clear all breakpoint: Connection error.",
+      "url": "debugger/clear_all_breakpoint/",
+      "is_positive_test": false,
+      "mocking_required": true,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Debugger Clear all breakpoint: No breakpoint to clear",
+      "url": "debugger/clear_all_breakpoint/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "no_breakpoint": true,
+      "test_data": {
+        "acl": [],
+        "arguments": [],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
+        "return_value": "False"
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "get_arguments": [
+    {
+      "name": "Debugger get arguments.",
+      "url": "debugger/get_arguments/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }],
+  "set_arguments": [
+    {
+      "name": "Debugger set arguments.",
+      "url": "debugger/set_arguments/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "clear_arguments": [
+    {
+      "name": "Debugger set arguments.",
+      "url": "debugger/clear_arguments/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "type": "direct",
+      "invalid_name": false,
+      "add_extension": true,
+      "init_target": true,
+      "query_type": 1,
+      "test_data": {
+        "acl": [],
+        "arguments": [
+          {
+            "argtype": "character varying",
+            "argmode": "IN",
+            "argname": "param",
+            "argdefval": "'1'"
+          }
+        ],
+        "funcowner": "",
+        "lanname": "plpgsql",
+        "name": "test_function_!@#$%^&*(",
+        "options": [],
+        "probin": "$libdir/",
+        "pronamespace": 2200,
+        "prorettypename": "character varying",
+        "prorows": 0,
+        "prosrc": "begin select '1'; end",
+        "seclabels": [],
+        "variables": []
+      },
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

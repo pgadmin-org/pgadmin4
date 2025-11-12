@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        Disable Sandboxing. This must be enabled for the app store, but it will
+        cause Electron to fail to start with an error like:
+
+            [1004/170922.238911:ERROR:directory_reader_posix.cc(42)] opendir /dev/fd: Operation not permitted (1)
+
+        We should figure out why that happens and fix it one day, but for now
+        we just don't support the app store.
+    -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <!--
+        Set the app group name for IPC and access to shared containers between
+        our processes.
+    -->
+    <key>com.apple.security.application-groups</key>
+    <string>%TEAMID%.org.pgadmin.pgadmin4</string>
+
+    <!--
+        We have no need for JIT on x86_64, but Electron won't start without it
+        on Apple Silicon.
+    -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+
+    <!--
+        Explicitly disallow executable code overwriting/patching.
+    -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <false/>
+
+    <!--
+        Explicitly disallow use of dynamic loader environment variables that
+        could be used for code injection.
+    -->
+    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    <false/>
+
+    <!--
+        Explicitly ensure that library validation is enabled so we only load
+        libraries and frameworks signed by us or Apple.
+    -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <false/>
+
+    <!--
+        We need to enable this, even though we don't modify our own executables.
+        Otherwise, Electron just bombs out.
+    -->
+    <key>com.apple.security.cs.disable-executable-page-protection</key>
+    <true/>
+
+    <!--
+        We're not a debugger (well, except for procedural languages in Postgres,
+        but that doesn't count).
+    -->
+    <key>com.apple.security.cs.debugger</key>
+    <false/>
+</dict>
+</plist>

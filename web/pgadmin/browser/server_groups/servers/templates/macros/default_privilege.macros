@@ -1,0 +1,38 @@
+{% macro APPLY(conn, type, role, privs, with_grant_privs, grantor) -%}
+{% if privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}}
+GRANT {{ privs|sort|join(', ') }} ON {{ type }} TO {{ role }};
+{% endif %}
+{% if with_grant_privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}}
+GRANT {{ with_grant_privs|sort|join(', ') }} ON {{ type }} TO {{ role }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro RESETALL(conn, type, role, grantor) -%}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}}
+    REVOKE ALL ON {{ type }} FROM {{ role }};
+{%- endmacro %}
+{### To allow create macro for specific database object ###}
+{% macro SET(conn, db_object_type, db_object_name, type, role, privs, with_grant_privs, grantor) -%}
+{% if privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}} IN {{ db_object_type }} {{ conn|qtIdent(db_object_name) }}
+GRANT {{ privs|sort|join(', ') }} ON {{ type }} TO {{ role }};
+{% endif %}
+{% if with_grant_privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}} IN {{ db_object_type }} {{ conn|qtIdent(db_object_name) }}
+GRANT {{ with_grant_privs|sort|join(', ') }} ON {{ type }} TO {{ role }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}
+{% macro UNSET(conn, db_object_type, db_object_name, type, role, grantor) -%}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}} IN {{ db_object_type }} {{ conn|qtIdent(db_object_name) }}
+    REVOKE ALL ON {{ type }} FROM {{ role }};
+{%- endmacro %}
+
+{% macro REMOVE(conn, type, role, privs, with_grant_privs, grantor) -%}
+{% if privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}} REVOKE {{ privs|sort|join(', ') }} ON {{ type }} FROM {{ role }};
+{% endif %}
+{% if with_grant_privs %}
+ALTER DEFAULT PRIVILEGES FOR ROLE {{grantor}} REVOKE {{ with_grant_privs|sort|join(', ') }} ON {{ type }} FROM {{ role }} WITH GRANT OPTION;
+{% endif %}
+{%- endmacro %}

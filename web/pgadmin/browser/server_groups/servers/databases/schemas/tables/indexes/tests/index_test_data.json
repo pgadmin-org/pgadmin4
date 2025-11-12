@@ -1,0 +1,843 @@
+{
+  "index_create": [
+    {
+      "name": "Create unnamed index: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index concurrently: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "isconcurrent": true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data with multiple columns.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          },
+          {
+            "colname": "id",
+            "sort_order": true,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data with multiple columns and expressions.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "is_exp": true,
+            "colname": "lower(name)",
+            "sort_order": false,
+            "nulls": false
+          },
+          {
+            "colname": "id",
+            "sort_order": true,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With invalid data - No column name.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "You must provide one or more column to create index.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "isconcurrent": false,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(False, 'Mocked Internal Server Error'),(True,True)]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data while server is down-2.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "isconcurrent": false,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "[(True, True),(False, 'Mocked Internal Server Error'),(False, 'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "table_id",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Unique index",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Unique index With nulls not distinct.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 150000,
+        "skip_msg": "Nulls not distinct is not supported by PPAS/PG 15.0 and below."
+      },
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Create btree index with storage parameters",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 130000,
+        "skip_msg": "Storage parameter deduplicate_items is not supported below PG 13.0."
+      },
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },{
+      "name": "Create index: Create btree index with storage parameters (fillfactor)",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ],
+  "index_get": [
+    {
+      "name": "Get index details: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get indexes list: With existing indexes.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get index details: With Non-existing index id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified index.",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get index details: With existing index id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get index lists : With existing index id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": true
+    }
+  ],
+  "index_delete": [
+    {
+      "name": "Delete index : With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete index : With Non-existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {
+        "index_id": 90123
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": "Error: Object not found",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete index : With existing index id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Delete index : With existing index id while server down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_delete_multiple": [
+    {
+      "name": "Delete multiple indexes : With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_put": [
+    {
+      "name": "Put index : With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {
+        "description": "This is test comment for index",
+        "name": "updating name for index using api tests"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put index statistics : With existing index id.",
+      "is_positive_test": true,
+      "update_statistics": true,
+      "inventory_data": {
+        "server_min_version": 110000,
+        "skip_msg": "Update statistics is not supported below PPAS/PG 11.0"
+      },
+      "test_data": {
+        "columns": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put index : With existing index id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_get_sql": [
+    {
+      "name": "Get index sql: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_create_get_collations": [
+    {
+      "name": "Create index get collations: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index get collations: With valid data while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "[(True,''),(False, 'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "index_create_get_op_class": [
+    {
+      "name": "Create index get op_class: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index get op_class: With valid data while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "[(True,''),(False, 'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "index_create_get_access_methods": [
+    {
+      "name": "Create index get collations: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index get collations: With valid data while server down.",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
+        "return_value": "[(True,''),(False, 'Mocked Internal Server Error')]"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "index_get_nodes": [
+    {
+      "name": "Get index node: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get index nodes: With existing indexes.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get index node: With Non-existing index id.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified index.",
+        "test_result_data": {
+        }
+      },
+      "is_list": false
+    }
+  ],
+  "index_get_dependencies_dependents": [
+    {
+      "name": "Get index dependents: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": true
+    },
+    {
+      "name": "Get indexes dependencies: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_dependent": false
+    }
+  ],
+  "index_get_statistics": [
+    {
+      "name": "Get index statistics: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get index statistics: With existing indexes .",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": true
+    },
+    {
+      "name": "Get index details: With existing index id while server is down.",
+      "is_positive_test": false,
+      "inventory_data": {
+      },
+      "test_data": {},
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False,'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500,
+        "error_msg": "Mocked Internal Server Error",
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ],
+  "index_get_index_msql": [
+    {
+      "name": "Get index msql: With existing index id.",
+      "is_positive_test": true,
+      "inventory_data": {
+      },
+      "test_data": {
+        "name": "modifying name",
+        "description": "Comments to test update"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+/* Styles for the main browser */
+.browser-pane-container {
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    width: 100%;
+    height: calc(100% - 50px); /* Offset for the nav bar */
+    z-index: -1;
+}
+
+.browser-browser-pane {
+    overflow: auto;
+}
+
+.browser-inner-pane {
+    padding: 0px;
+    overflow: hidden;
+}
+
+.browser-center-pane {
+    overflow: hidden;
+    padding: 0px;
+    padding-bottom: 50px /* Offset the nav bar to ensure there's enough scroll space */
+}
+
+.browser-tab-panes {
+    height: 100%;
+}
+
+.browser-tab-pane {
+    height: 100%;
+}
+
+.browser-tab-content {
+    width: 100%;
+    height: 100%;
+}
+
+.pgadmin-node-select option {
+  padding-left: 20px;
+}
+
+.pg-login-icon {
+  font-size: 16px;
+}
+
+.pgadmin_header_logo {
+  cursor: default;
+}

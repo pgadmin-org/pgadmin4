@@ -1,0 +1,130 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW for foreign table",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "test_fdw_for_foreign_table_columns",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create foreign server for foreign table",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "data": {
+        "name":"test_fs_for_foreign_table_column"
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Table for testing column node.",
+      "endpoint": "NODE-foreign_table.obj",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "data": {
+        "name": "foreign_table_2_$%{}[]()&*^!@\"'`\\/#",
+        "columns": [],
+        "schema": "public",
+        "basensp": "public",
+        "ftsrvname": "test_fs_for_foreign_table_column",
+        "owner": "enterprisedb",
+        "ftoptions": [],
+        "inherits": [],
+        "relacl": [],
+        "seclabels": []
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {
+        "name": "col_1_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for create",
+        "cltype": "numeric",
+        "attlen":"10",
+        "attprecision":"5",
+        "coloptions":[],
+        "colconstype":"n",
+        "attnotnull": true,
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      },
+      "expected_sql_file": "create_column_numeric.sql",
+      "expected_msql_file": "create_column_numeric.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data": {
+        "attnum": 1,
+        "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for alter",
+        "cltype": "real",
+        "coloptions":{"added":[{"option":"column_name","value":"test"}]}
+      },
+      "expected_sql_file": "alter_column_numeric.sql",
+      "expected_msql_file": "alter_column_numeric.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "data": {
+        "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column with text & default value",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {
+        "name": "col_2_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "text",
+        "description": "test comment",
+        "attnotnull": true,
+        "colconstype": "n",
+        "defval": "'xyz'"
+      },
+      "expected_sql_file": "create_column_text_with_default_value.sql",
+      "expected_msql_file": "create_column_text_with_default_value.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column with text & update default value",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data": {
+        "attnum": 2,
+        "defval": "'changed default value'"
+      },
+      "expected_sql_file": "alter_column_text_with_default_value.sql",
+      "expected_msql_file": "alter_column_text_with_default_value.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT column with text & update default value",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "data": {
+        "name": "col_2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]}

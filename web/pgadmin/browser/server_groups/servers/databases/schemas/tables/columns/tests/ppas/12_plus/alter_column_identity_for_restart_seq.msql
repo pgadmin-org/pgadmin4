@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_6_$%{}[]()&*^!@""'`\/#" SET GENERATED ALWAYS SET NO CYCLE RESTART SET START 2;

@@ -1,0 +1,27 @@
+{####################################################}
+{# This will be specific macro for Role objects     #}
+{####################################################}
+{% macro APPLY(conn, database, role, param, value) -%}
+{% set exclude_quoting = ['search_path'] %}
+ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+
+    SET {{ conn|qtIdent(param) }} TO {% if param in exclude_quoting %}{{ value }}{% else %}{{ value|qtLiteral(conn) }}{% endif %};
+{%- endmacro %}
+{% macro RESET(conn, database, role, param) -%}
+ALTER {% if role %}ROLE {{ self.conn|qtIdent(role) }}{% if database %} IN DATABASE {{ conn|qtIdent(database) }}{% endif %}{% else %}DATABASE {{ conn|qtIdent(database) }}{% endif %}
+
+    RESET {{ conn|qtIdent(param) }};
+{%- endmacro %}
+{################################################}
+{# This will be generic macro for other objects #}
+{################################################}
+{% macro SET(conn, object_type, object_name, options) -%}
+ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+    SET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}={{ opt.value }}{% endfor %});
+{%- endmacro %}
+{% macro UNSET(conn, object_type, object_name, options) -%}
+ALTER {{object_type}} {{ conn|qtIdent(object_name) }}
+    RESET ({% for opt in options %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(opt.name) }}{% endfor %});
+{%- endmacro %}

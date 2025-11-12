@@ -1,0 +1,7 @@
+ALTER TABLE testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col__2_$%{}[]()&*^!@""'`\/#" TYPE time(6) with time zone ;
+ALTER TABLE IF EXISTS testschema."table_3_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col__2_$%{}[]()&*^!@""'`\/#" SET NOT NULL;
+
+COMMENT ON COLUMN testschema."table_3_$%{}[]()&*^!@""'`\/#"."col__2_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment modification';

@@ -1,0 +1,79 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "tableforcon",
+        "columns": [{
+          "name": "col1",
+          "cltype": "integer",
+          "is_primary_key": true
+        }],
+        "is_partitioned": false,
+        "schema": "testschema",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Check Constraint",
+      "endpoint": "NODE-check_constraint.obj",
+      "sql_endpoint": "NODE-check_constraint.sql_id",
+      "data": {
+        "name": "Chk_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "consrc": "col1 > 1",
+        "connoinherit": false,
+        "convalidated": true
+      },
+      "expected_sql_file": "create_check_constraint.sql",
+      "expected_msql_file": "create_check_constraint_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter Check Constraint",
+      "endpoint": "NODE-check_constraint.obj_id",
+      "sql_endpoint": "NODE-check_constraint.sql_id",
+      "msql_endpoint": "NODE-check_constraint.msql_id",
+      "data": {
+        "name": "Chk_$%{}[]()&*^!@\"'`\\/#a",
+        "convalidated": false,
+        "comment": "Comment for alter"
+      },
+      "expected_sql_file": "alter_check_constraint.sql",
+      "expected_msql_file": "alter_check_constraint_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Check Constraint",
+      "endpoint": "NODE-check_constraint.delete_id",
+      "data": {
+        "name": "Chk_$%{}[]()&*^!@\"'`\\/#a"
+      }
+    },
+   {
+      "type": "create",
+      "name": "Create Check Constraint with valid = False, Inherit = True",
+      "endpoint": "NODE-check_constraint.obj",
+      "sql_endpoint": "NODE-check_constraint.sql_id",
+      "data": {
+        "name": "Chk_valid_$%{}[]()&*^!@\"'`\\/#",
+        "comment": "Comment for create",
+        "consrc": "col1 > 200",
+        "connoinherit": true,
+        "convalidated": false
+      },
+      "expected_sql_file": "create_check_constraint_with_valid.sql",
+      "expected_msql_file": "create_check_constraint_with_valid_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop Table for Check Constraint",
+      "endpoint": "NODE-table.delete_id",
+      "data": {
+        "name": "tableforcon"
+      }
+    }
+  ]
+}

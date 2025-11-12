@@ -1,0 +1,159 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table For publication",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_table_publication",
+        "columns": [
+          {
+            "name": "emp_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          },
+          {
+            "name": "salary",
+            "cltype": "bigint"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Second Table For Publication",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_table_publication_2",
+        "columns": [
+          {
+            "name": "dept_id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "dept_name",
+            "cltype": "text"
+          }
+        ],
+        "is_partitioned": false,
+        "schema": "public",
+        "spcname": "pg_default"
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create  Publication",
+      "endpoint": "NODE-publication.obj",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql",
+      "data": {
+        "name": "test_publication_create",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "pubowner": "postgres",
+        "all_table": true,
+        "pubtable": ""
+      },
+      "expected_sql_file": "create_publication.sql",
+      "expected_msql_file": "create_publication_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication name",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql_id",
+      "data": {
+        "name": "alterd_publication"
+      },
+      "expected_sql_file": "alter_publication.sql",
+      "expected_msql_file": "alter_publication_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication event",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql_id",
+      "data": {
+        "evnt_delete": true
+      },
+      "expected_sql_file": "alter_publication_event.sql",
+      "expected_msql_file": "alter_publication_event_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop publication",
+      "endpoint": "NODE-publication.delete_id",
+      "data": {
+        "name": "alterd_publication"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create  Publication for few tables",
+      "endpoint": "NODE-publication.obj",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql",
+      "data": {
+        "name": "test_publication_create",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": true,
+        "evnt_truncate": true,
+        "pubowner": "postgres",
+        "all_table": false,
+        "only_table": false,
+        "pubtable": ["public.test_table_publication"]
+      },
+      "expected_sql_file": "create_publication_few_tables.sql",
+      "expected_msql_file": "create_publication_few_tables_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication for few tables via adding new tables",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql_id",
+      "data": {
+        "pubtable": ["public.test_table_publication", "public.test_table_publication_2"]
+      },
+      "expected_sql_file": "alter_publication_add_tables.sql",
+      "expected_msql_file": "alter_publication_add_tables_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter  Publication for few tables via deleting tables",
+      "endpoint": "NODE-publication.obj_id",
+      "sql_endpoint": "NODE-publication.sql_id",
+      "msql_endpoint": "NODE-publication.msql_id",
+      "data": {
+        "pubtable": ["public.test_table_publication_2"]
+      },
+      "expected_sql_file": "alter_publication_drop_tables.sql",
+      "expected_msql_file": "alter_publication_drop_tables_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop publication for few tables",
+      "endpoint": "NODE-publication.delete_id",
+      "data": {
+        "name": "test_publication_create"
+      }
+    }
+  ]
+}

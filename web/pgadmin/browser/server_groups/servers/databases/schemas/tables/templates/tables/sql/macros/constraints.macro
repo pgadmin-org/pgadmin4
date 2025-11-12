@@ -1,0 +1,112 @@
+{##########################}
+{# Macros for Constraints #}
+{##########################}
+{#    CREATE MODE ONLY    #}
+{##########################}
+{% macro PRIMARY_KEY(conn, data) -%}
+{% if data.columns|length > 0 %}
+
+    {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}PRIMARY KEY ({% for c in data.columns%}
+{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
+
+        INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
+{% if data.fillfactor %}
+
+        WITH (FILLFACTOR={{data.fillfactor}}){% endif %}
+{% if data.spcname and data.spcname != "pg_default" %}
+
+        USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}
+{% if data.condeferrable %}
+
+        DEFERRABLE{% if data.condeferred %} INITIALLY DEFERRED{% endif%}{% endif%}
+{% endif %}
+{%- endmacro %}
+{% macro UNIQUE(conn, unique_data) -%}
+{% for data in unique_data %}
+{% if data.columns|length > 0 %}{% if loop.index !=1 %},{% endif %}
+
+    {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}UNIQUE {% if data.indnullsnotdistinct %}NULLS NOT DISTINCT {% endif %}({% for c in data.columns%}
+{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
+
+        INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
+{% if data.fillfactor %}
+
+        WITH (FILLFACTOR={{data.fillfactor}}){% endif %}
+{% if data.spcname and data.spcname != "pg_default" %}
+
+        USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}
+{% if data.condeferrable %}
+
+        DEFERRABLE{% if data.condeferred %} INITIALLY DEFERRED{% endif%}{% endif%}
+{% endif %}
+{% endfor %}
+{%- endmacro %}
+{% macro CHECK(conn, check_data) -%}
+{% for data in check_data %}{% if loop.index !=1 %},{% endif %}
+
+    {% if data.name %}CONSTRAINT {{ conn|qtIdent(data.name) }} {% endif%}CHECK ({{ data.consrc }}){% if data.convalidated %}
+ NOT VALID{% endif %}{% if data.connoinherit %} NO INHERIT{% endif %}
+{% endfor %}
+{%- endmacro %}
+{% macro FOREIGN_KEY(conn, foreign_key_data) -%}
+{% for data in foreign_key_data %}{% if loop.index != 1 %},{% endif %}
+
+    {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}FOREIGN KEY ({% for columnobj in data.columns %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(columnobj.local_column)}}{% endfor %})
+        REFERENCES {{ conn|qtIdent(data.remote_schema, data.remote_table) }} ({% for columnobj in data.columns %}{% if loop.index != 1 %}
+, {% endif %}{{ conn|qtIdent(columnobj.referenced)}}{% endfor %}) {% if data.confmatchtype %}MATCH FULL{% else %}MATCH SIMPLE{% endif%}
+
+        ON UPDATE{% if data.confupdtype  == 'a' %}
+ NO ACTION{% elif data.confupdtype  == 'r' %}
+ RESTRICT{% elif data.confupdtype  == 'c' %}
+ CASCADE{% elif data.confupdtype  == 'n' %}
+ SET NULL{% elif data.confupdtype  == 'd' %}
+ SET DEFAULT{% endif %}
+
+        ON DELETE{% if data.confdeltype  == 'a' %}
+ NO ACTION{% elif data.confdeltype  == 'r' %}
+ RESTRICT{% elif data.confdeltype  == 'c' %}
+ CASCADE{% elif data.confdeltype  == 'n' %}
+ SET NULL{% elif data.confdeltype  == 'd' %}
+ SET DEFAULT{% endif %}
+{% if data.condeferrable %}
+
+        DEFERRABLE{% if data.condeferred %}
+ INITIALLY DEFERRED{% endif%}
+{% endif%}
+{% if not data.convalidated %}
+
+        NOT VALID{% endif%}
+{% endfor %}
+{%- endmacro %}
+{% macro EXCLUDE(conn, exclude_data) -%}
+{% for data in exclude_data %}{% if loop.index != 1 %},{% endif %}
+
+    {% if data.name %}CONSTRAINT {{ conn|qtIdent(data.name) }} {% endif%}EXCLUDE {% if data.amname and data.amname != '' %}USING {{data.amname}}{% endif %} (
+        {% for col in data.columns %}{% if loop.index != 1 %},
+        {% endif %}{% if col.is_exp %}{{col.column}}{% else %}{{ conn|qtIdent(col.column)}}{% endif %}{% if col.oper_class and col.oper_class != '' %} {{col.oper_class}}{% endif%}{% if col.order is defined and col.is_sort_nulls_applicable %}{% if col.order %} ASC{% else %} DESC{% endif %} NULLS{% endif %} {% if col.nulls_order is defined and col.is_sort_nulls_applicable %}{% if col.nulls_order %}FIRST {% else %}LAST {% endif %}{% endif %}WITH {{col.operator}}{% endfor %})
+{% if data.include|length > 0 %}
+        INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %})
+{% endif %}{% if data.fillfactor %}
+        WITH (FILLFACTOR={{data.fillfactor}}){% endif %}{% if data.spcname and data.spcname != "pg_default" %}
+
+        USING INDEX TABLESPACE {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.indconstraint %}
+
+        WHERE ({{data.indconstraint}}){% endif%}{% if data.condeferrable %}
+
+        DEFERRABLE{% if data.condeferred %}
+ INITIALLY DEFERRED{% endif%}
+{% endif%}
+{% endfor %}
+{%- endmacro %}
+{##########################}
+{#     COMMENTS ONLY      #}
+{##########################}
+{% macro CONSTRAINT_COMMENTS(conn, schema, table, data) -%}
+{% for d in data %}
+{% if d.name and d.comment %}
+COMMENT ON CONSTRAINT {{ conn|qtIdent(d.name) }} ON {{ conn|qtIdent(schema, table) }}
+    IS {{ d.comment|qtLiteral(conn) }};
+{% endif %}
+{% endfor %}
+{%- endmacro %}

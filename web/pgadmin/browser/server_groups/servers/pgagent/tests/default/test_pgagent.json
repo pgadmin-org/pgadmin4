@@ -1,0 +1,503 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create SQL job with job step and schedule on local database",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "pgagent_test": "True",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_sql_job_local_db_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":true,
+          "jstconntype":true,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"",
+          "jstdbname":"postgres",
+          "jstonerror":"f",
+          "jstnextrun":""
+        }],
+        "jschedules": [{
+          "jscid":"",
+          "jscjobid":"",
+          "jscname":"schedule_1",
+          "jscdesc":"test schedule comment",
+          "jscenabled":true,
+          "jscstart":"2020-04-14 01:11:31 -07:00",
+          "jscend":"2020-04-15 01:11:34 -07:00",
+          "jscweekdays":[true,true,true,true,true,true,true],
+          "jscmonthdays":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscmonths":[true,true,true,true,true,true,true,true,true,true,true,true],
+          "jschours":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false],
+          "jscminutes":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscexceptions":[{"jexdate": "2020-04-18", "jextime": "01:18:00"}, {"jexdate": "2020-04-19", "jextime": "01:19:00"}]
+        }]
+      },
+      "expected_sql_file": "create_sql_job_local_db_with_all_options.sql",
+      "expected_msql_file": "create_sql_job_local_db_with_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the SQL job scheduled on local database with all the options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_sql_job_local_db_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create SQL job with job step on local database",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_sql_job_local_db_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":true,
+          "jstconntype":true,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"",
+          "jstdbname":"postgres",
+          "jstonerror":"f",
+          "jstnextrun":""
+        }]
+      },
+      "expected_sql_file": "create_sql_job_with_step_local_db.sql",
+      "expected_msql_file": "create_sql_job_with_step_local_db_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter job with all the options on local database",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jobname": "test_sql_job_local_db_updated_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": false,
+        "jobjclid": "4",
+        "jobhostagent": "test_host_updated",
+        "jobdesc": "test_job_step_schedule description updated"
+      },
+      "expected_sql_file": "alter_sql_job_all_options.sql",
+      "expected_msql_file": "alter_sql_job_all_options_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter job steps with all the options on local database",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstid":"",
+              "jstjobid":"",
+              "jstname": "step_2_added",
+              "jstdesc": "job step 2 description",
+              "jstenabled": true,
+              "jstkind": true,
+              "jstconntype": true,
+              "jstcode": "SELECT 3;",
+              "jstconnstr": "",
+              "jstdbname": "postgres",
+              "jstonerror": "s",
+              "jstnextrun": ""
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_job_step_all_options.sql",
+      "expected_msql_file": "alter_job_step_all_options_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter job schedule with all the options on local database",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "data": {
+        "jschedules": {
+          "added": [
+            {
+              "jscid":"",
+              "jscjobid":"",
+              "jscname":"schedule_2",
+              "jscdesc":"test schedule_2 comment",
+              "jscenabled":false,
+              "jscstart":"2020-04-14 05:11:31 -07:00",
+              "jscend":"2020-04-15 05:11:34 -07:00",
+              "jscweekdays":[false,false,true,true,true,true,true],
+              "jscmonthdays":[false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscmonths":[false,false,true,true,true,true,true,true,true,true,true,true],
+              "jschours":[false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false],
+              "jscminutes":[false,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscexceptions":[{"jexdate": "2020-04-22", "jextime": "01:22:00"}, {"jexdate": "2020-04-23", "jextime": "01:23:00"}]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_job_schedule_all_options.sql",
+      "expected_msql_file": "alter_job_schedule_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the SQL job scheduled on local database with all the options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_sql_job_local_db_updated_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create SQL job with job step and schedule on remote database",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_sql_job_remote_db_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":true,
+          "jstconntype":false,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"host=localhost port=5432 dbname=postgres connect_timeout=10",
+          "jstdbname":"",
+          "jstonerror":"s",
+          "jstnextrun":""
+        }],
+        "jschedules": [{
+          "jscid":"",
+          "jscjobid":"",
+          "jscname":"schedule_1",
+          "jscdesc":"test schedule comment",
+          "jscenabled":true,
+          "jscstart":"2020-04-14 01:11:31 -07:00",
+          "jscend":"2020-04-15 01:11:34 -07:00",
+          "jscweekdays":[true,true,true,true,true,true,true],
+          "jscmonthdays":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscmonths":[true,true,true,true,true,true,true,true,true,true,true,true],
+          "jschours":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false],
+          "jscminutes":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscexceptions":[]
+        }]
+      },
+      "expected_sql_file": "create_sql_job_remote_db_with_all_options.sql",
+      "expected_msql_file": "create_sql_job_remote_db_with_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the SQL job scheduled on remote database with all options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_sql_job_remote_db_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create SQL job with job step on remote database",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_sql_job_remote_db_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":true,
+          "jstconntype":false,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"host=localhost port=5432 dbname=postgres connect_timeout=10",
+          "jstdbname":"",
+          "jstonerror":"s",
+          "jstnextrun":""
+        }]
+      },
+      "expected_sql_file": "create_sql_job_step_remote_db.sql",
+      "expected_msql_file": "create_sql_job_step_remote_db_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter job steps with all the options on remote database",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstid":"",
+              "jstjobid":"",
+              "jstname":"step_2",
+              "jstdesc":"job step_2 description",
+              "jstenabled":false,
+              "jstkind":true,
+              "jstconntype":false,
+              "jstcode":"SELECT 5;",
+              "jstconnstr":"host=localhost port=5434 dbname=postgres connect_timeout=20",
+              "jstdbname":"",
+              "jstonerror":"f",
+              "jstnextrun":""
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_job_step_remote_db_all_options.sql",
+      "expected_msql_file": "alter_job_step_remote_db_all_options_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter job schedule with all the options on remote database",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jschedules": {
+          "added": [
+            {
+              "jscid":"",
+              "jscjobid":"",
+              "jscname":"schedule_2",
+              "jscdesc":"test schedule_2 comment",
+              "jscenabled":true,
+              "jscstart":"2020-04-15 05:11:31 -07:00",
+              "jscend":"2020-04-16 05:11:34 -07:00",
+              "jscweekdays":[false,false,false,false,false,false,false],
+              "jscmonthdays":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscmonths":[false,false,false,false,false,false,false,false,false,false,false,false],
+              "jschours":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscminutes":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscexceptions":[]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_job_schedule_remote_db_all_options.sql",
+      "expected_msql_file": "alter_job_schedule_remote_db_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the SQL job scheduled on remote database with all options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_sql_job_remote_db_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create batch job with all the options",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_batch_job_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":false,
+          "jstconntype":true,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"",
+          "jstdbname":"",
+          "jstonerror":"i",
+          "jstnextrun":""
+        }],
+        "jschedules": [{
+          "jscid":"",
+          "jscjobid":"",
+          "jscname":"schedule_1",
+          "jscdesc":"test schedule comment",
+          "jscenabled":true,
+          "jscstart":"2020-04-14 01:11:31 -07:00",
+          "jscend":"2020-04-15 01:11:34 -07:00",
+          "jscweekdays":[true,true,true,true,true,true,true],
+          "jscmonthdays":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscmonths":[true,true,true,true,true,true,true,true,true,true,true,true],
+          "jschours":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false],
+          "jscminutes":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+          "jscexceptions":[]
+        }]
+      },
+      "expected_sql_file": "create_batch_job_with_all_options.sql",
+      "expected_msql_file": "create_batch_job_with_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the batch job with step and schedule",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_batch_job_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }, {
+      "type": "create",
+      "name": "Create batch job with job step",
+      "endpoint": "NODE-pga_job.obj",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "jobname": "test_batch_job_$%{}[]()&*^!@\"\"'`\\/#",
+        "jobenabled": true,
+        "jobhostagent": "test_host",
+        "jobjclid": "1",
+        "jobdesc": "test_job_step_schedule description",
+        "jsteps": [{
+          "jstid":"",
+          "jstjobid":"",
+          "jstname":"step_1",
+          "jstdesc":"job step description",
+          "jstenabled":true,
+          "jstkind":false,
+          "jstconntype":true,
+          "jstcode":"SELECT 1;",
+          "jstconnstr":"",
+          "jstdbname":"",
+          "jstonerror":"i",
+          "jstnextrun":""
+        }]
+      },
+      "expected_sql_file": "create_batch_job_with_step.sql",
+      "expected_msql_file": "create_batch_job_with_step_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter batch job steps with all the options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jsteps": {
+          "added": [
+            {
+              "jstid":"",
+              "jstjobid":"",
+              "jstname":"step_2",
+              "jstdesc":"job step_2 description",
+              "jstenabled":false,
+              "jstkind":false,
+              "jstconntype":true,
+              "jstcode":"SELECT 10;",
+              "jstconnstr":"",
+              "jstdbname":"",
+              "jstonerror":"s",
+              "jstnextrun":""
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_batch_job_step_all_options.sql",
+      "expected_msql_file": "alter_batch_job_step_all_options_msql.sql"
+    }, {
+      "type": "alter",
+      "name": "Alter batch job schedule with all the options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "sql_endpoint": "NODE-pga_job.sql_id",
+      "msql_endpoint": "NODE-pga_job.msql_id",
+      "convert_timestamp_columns": { "jschedules": ["jscstart", "jscend"] },
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "pga_job_id": "<PGA_JOB_ID>",
+      "data": {
+        "jschedules": {
+          "added": [
+            {
+              "jscid":"",
+              "jscjobid":"",
+              "jscname":"schedule_2",
+              "jscdesc":"test schedule_2 comment",
+              "jscenabled":true,
+              "jscstart":"2020-04-15 05:11:31 -07:00",
+              "jscend":"2020-04-16 05:11:34 -07:00",
+              "jscweekdays":[true,true,false,false,false,false,false],
+              "jscmonthdays":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscmonths":[true,true,false,false,false,false,false,false,false,false,false,false],
+              "jschours":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscminutes":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+              "jscexceptions":[]
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_batch_job_schedule_all_options.sql",
+      "expected_msql_file": "alter_batch_job_schedule_all_options_msql.sql"
+    }, {
+      "type": "delete",
+      "name": "Drop the batch job with all the options",
+      "endpoint": "NODE-pga_job.obj_id",
+      "pgagent_test": "True",
+      "precondition_sql": "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema='pgagent' AND table_name='pga_jobstep' AND column_name='jstconnstr'",
+      "data": {
+        "name": "test_batch_job_$%{}[]()&*^!@\"\"'`\\/#"
+      }
+    }
+  ]
+}
