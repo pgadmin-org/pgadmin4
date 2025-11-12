@@ -60,6 +60,9 @@ Use the fields on the *Display* panel to specify general display preferences:
   all the shared servers from the object explorer. **Note:** This option is visible only when
   pgAdmin is running in server mode.
 
+* When the *Show column data type?* switch is turned off, then the data types 
+  of the columns will not be displayed alongside their column names.
+
 * When the *Show empty object collections?* switch is turned off, then all object
   collections which are empty will be hidden from browser tree.
 

@@ -99,6 +99,14 @@ define('pgadmin.browser.node', [
       // during the copying process of any node.
       return d;
     },
+    getNodeInfoLabel: function(data) {
+      // Adds an extra informational label appended to the node label.
+      // Override this function to return a string to display, or null for no extra label.
+      if(data.info_label) 
+        return data.info_label;
+      else
+        return null;
+    },
     hasId: true,
     ///////
     // Initialization function

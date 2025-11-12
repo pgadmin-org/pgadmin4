@@ -9,6 +9,7 @@
 
 import { getNodeColumnSchema } from './column.ui';
 import _ from 'lodash';
+import usePreferences from '../../../../../../../../../preferences/static/js/store';
 
 define('pgadmin.node.column', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
@@ -41,6 +42,14 @@ define('pgadmin.node.column', [
       sqlAlterHelp: 'sql-altertable.html',
       sqlCreateHelp: 'sql-altertable.html',
       dialogHelp: url_for('help.static', {'filename': 'column_dialog.html'}),
+      // Overriding getNodeInfoLabel to add datatype alongside column name
+      getNodeInfoLabel: function(data) {
+        let show_column_datatype = usePreferences.getState().getPreferences('browser', 'show_column_datatype');
+        if (show_column_datatype?.value && data.datatype && data.displaytypname) {
+          return data.displaytypname;
+        }
+        return null;
+      },
       canDrop: function(itemData, item){
         let node = pgBrowser.tree.findNodeByDomElement(item);
 
