@@ -21,4 +21,10 @@ spec:
               name: http
         path: /
         pathType: Prefix
+  {{- if .Values.ingress.tlsSecret }}
+  tls:
+  - hosts:
+    - {{ tpl .Values.ingress.hostname . }}
+    secretName: {{ .Values.ingress.tlsSecret }}
+  {{- end }}
 {{- end }}
