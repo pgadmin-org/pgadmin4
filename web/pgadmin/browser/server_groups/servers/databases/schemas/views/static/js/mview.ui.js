@@ -106,7 +106,23 @@ export default class MViewSchema extends BaseUISchema {
         id: 'fillfactor', label: gettext('Fill factor'),
         group: gettext('Definition'), mode: ['edit', 'create'],
         noEmpty: false, type: 'int', controlProps: {min: 10, max: 100}
-      },{
+      },
+      {
+        id: 'dependsonextensions',
+        label: gettext('Depends on extensions'),
+        group: gettext('Definition'),
+        type: 'select',
+        options: this.fieldOptions.extensionsList,
+        controlProps: {
+          multiple: true,
+          allowClear: true,
+          allowSelectAll: true,
+          placeholder: gettext('Select the Depends on extensions...'),
+        },
+        min_version: 130000,
+        mode: ['create', 'edit', 'properties']
+      },
+      {
         id: 'vacuum_settings_str', label: gettext('Storage settings'),
         type: 'multiline', group: gettext('Definition'), mode: ['properties'],
       },{
