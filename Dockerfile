@@ -68,14 +68,12 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 # Next, create the base environment for Python
 #########################################################################
 
-FROM alpine:latest AS env-builder
+FROM python:3-alpine AS env-builder
 
 # Install dependencies
 COPY requirements.txt /
 RUN apk add --no-cache \
-        make \
-        python3 \
-        py3-pip && \
+        make && \
     apk add --no-cache --virtual build-deps \
         build-base \
         openssl-dev \
@@ -86,8 +84,7 @@ RUN apk add --no-cache \
         cargo \
         zlib-dev \
         libjpeg-turbo-dev \
-        libpng-dev \
-        python3-dev && \
+        libpng-dev && \
     python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
@@ -164,7 +161,7 @@ COPY --from=pg18-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-18/
 # Assemble everything into the final container.
 #########################################################################
 
-FROM alpine:latest
+FROM python:3-alpine
 
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
@@ -172,12 +169,10 @@ COPY --from=env-builder /venv /venv
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
 COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/
-COPY --from=pg18-builder /usr/lib/libzstd.so.1.5.7 /usr/lib/
 COPY --from=pg18-builder /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.18 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.18 /usr/lib/libpq.so && \
-    ln -s libzstd.so.1.5.7 /usr/lib/libzstd.so.1 && \
     ln -s liblz4.so.1.10.0 /usr/lib/liblz4.so.1
 
 WORKDIR /pgadmin4
@@ -195,9 +190,7 @@ COPY LICENSE /pgadmin4/LICENSE
 
 # Install runtime dependencies and configure everything in one RUN step
 RUN apk add --no-cache \
-        python3 \
         bash \
-        py3-pip \
         postfix \
         krb5-libs \
         libjpeg-turbo \
@@ -217,7 +210,7 @@ RUN apk add --no-cache \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
     chmod g=u /etc/passwd && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.12 && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.[0-9][0-9] && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
