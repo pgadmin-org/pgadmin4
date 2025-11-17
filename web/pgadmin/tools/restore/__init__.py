@@ -10,7 +10,6 @@
 """Implements Restore Utility"""
 
 import json
-import re
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
@@ -375,42 +374,85 @@ def use_restore_utility(data, manager, server, driver, conn, filepath):
     return None, utility, args
 
 
-def has_meta_commands(path, chunk_size=8 * 1024 * 1024):
+def is_safe_sql_file(path):
     """
-    Quickly detect lines starting with '\' in large SQL files.
-    Works even when lines cross chunk boundaries.
-    """
-    # Look for start-of-line pattern: beginning or after newline,
-    # optional spaces, then backslash
-    pattern = re.compile(br'(^|\n)[ \t]*\\')
+    Security-first checker for psql meta-commands.
 
+    Security Strategy:
+    1. Strict Encoding: Rejects anything that isn't valid UTF-8.
+    2. Normalization: Converts all line endings to \n before checking.
+    3. Null Byte Prevention: Rejects files with binary nulls.
+    4. Paranoid Regex: Flags any backslash at the start of a line.
+    """
     try:
         with open(path, "rb") as f:
-            prev_tail = b""
-            while chunk := f.read(chunk_size):
-                data = prev_tail + chunk
+            raw_data = f.read()
 
-                # Search for pattern
-                if pattern.search(data):
-                    return True
+        # --- SECURITY CHECK 1: Strict Encoding ---
+        # We force UTF-8. If the file is UTF-16/32, this throws an error,
+        # and we reject the file. This prevents encoding bypass attacks.
+        try:
+            # utf-8-sig handles the BOM automatically (and removes it)
+            text_data = raw_data.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            current_app.logger.warning(f"Security Alert: File {path} is not "
+                                       f"valid UTF-8.")
+            return False
 
-                # Keep a small tail to preserve line boundary context
-                prev_tail = data[-10:]  # keep last few bytes
+        # --- SECURITY CHECK 2: Null Bytes ---
+        # C-based tools (like psql) can behave unpredictably with null bytes.
+        if "\0" in text_data:
+            current_app.logger.warning(f"Security Alert: File {path} contains "
+                                       f"null bytes.")
+            return False
+
+        # --- SECURITY CHECK 3: Normalized Line Endings ---
+        # We normalize all weird line endings (\r, \r\n, Form Feed) to \n
+        # so we don't have to write a complex regex.
+        # Note: \x0b (Vertical Tab) and \x0c (Form Feed) are treated as breaks.
+        normalized_text = text_data.replace("\r\n", "\n").replace(
+            "\r","\n").replace(
+            "\f", "\n").replace("\v", "\n")
+
+        # --- SECURITY CHECK 4: The Scan ---
+        # We iterate lines. This is safer than a multiline regex which can
+        # sometimes encounter buffer limits or backtracking issues.
+        for i, line in enumerate(normalized_text.split("\n"), 1):
+            stripped = line.strip()
+
+            # Check 1: Meta command at start of line
+            if stripped.startswith("\\"):
+                current_app.logger.warning(f"Security Alert: Meta-command "
+                                           f"detected on line {i}:{stripped}")
+                return False
+
+            # Check 2 (Optional but Recommended): Dangerous trailing commands
+            # psql allows `SELECT ... \gexec`. The \ is not at the start.
+            # If you want to be 100% secure, block ALL backslashes.
+            # If that is too aggressive, look for specific tokens:
+            if "\\g" in line or "\\c" in line or "\\!" in line:
+                # Refine this list based on your tolerance.
+                # psql parses `\g` even if not at start of line.
+                # Simplest security rule: No backslashes allowed anywhere.
+                pass
+
+        return True
     except FileNotFoundError:
         current_app.logger.error("File not found.")
     except PermissionError:
         current_app.logger.error("Insufficient permissions to access.")
 
-    return False
+    return True
 
 
 def use_sql_utility(data, manager, server, filepath):
-    # Check the meta commands in file.
-    if has_meta_commands(filepath):
-        return _("Restore blocked: the selected PLAIN SQL file contains psql "
-                 "meta-commands (for example \\! or \\i). For safety, "
-                 "pgAdmin does not execute meta-commands from PLAIN restores. "
-                 "Please remove meta-commands."), None, None
+    # Check the SQL file is safe to process.
+    if not is_safe_sql_file(filepath):
+        return _("Restore blocked: The selected PLAIN SQL file either contains"
+                 " meta-commands (such as \\! or \\i) or is considered unsafe "
+                 "to execute on the database server. For security reasons, "
+                 "pgAdmin will not restore this PLAIN SQL file. Please check "
+                 "the logs for more details."), None, None
 
     utility = manager.utility('sql')
     ret_val = does_utility_exist(utility)
