@@ -31,6 +31,12 @@ SELECT DISTINCT ON (cls.relname)
       WHEN con.contype IN ('p', 'u', 'x') THEN desp.description
       ELSE des.description
   END AS description,
+  (
+      SELECT array_agg(DISTINCT e.extname)
+      FROM pg_depend d
+      JOIN pg_extension e ON d.refobjid = e.oid
+      WHERE d.objid = cls.oid
+  ) AS dependsonextensions,
   pg_catalog.pg_get_expr(idx.indpred, idx.indrelid, true) AS indconstraint,
   con.contype,
   con.condeferrable,

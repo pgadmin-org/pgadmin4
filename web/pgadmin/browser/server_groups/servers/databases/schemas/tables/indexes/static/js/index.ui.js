@@ -505,7 +505,23 @@ export default class IndexSchema extends BaseUISchema {
             return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
           }
         },
-      },{
+      },
+      {
+        id: 'dependsonextensions',
+        label: gettext('Depends on extensions'),
+        group: gettext('Definition'),
+        type: 'select',
+        options: this.fieldOptions.extensionsList,
+        controlProps: {
+          multiple: true,
+          allowClear: true,
+          allowSelectAll: true,
+          placeholder: gettext('Select the Depends on extensions...'),
+        },
+        min_version: 130000,
+        mode: ['create', 'edit', 'properties']
+      },
+      {
         type: 'nested-fieldset', label: gettext('With'), group: gettext('Definition'),
         schema: this.withSchema,
       },{

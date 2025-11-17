@@ -125,6 +125,8 @@ define('pgadmin.node.index', [
       },
       getSchema: (treeNodeInfo, itemNodeData) => {
         let nodeObj = pgAdmin.Browser.Nodes['index'];
+        let nodeExtObj = pgBrowser.Nodes['extension'];
+
         return new IndexSchema(
           {
             tablespaceList: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
@@ -133,7 +135,17 @@ define('pgadmin.node.index', [
             amnameList : ()=>getNodeAjaxOptions('get_access_methods', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
             columnList: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, {}),
             collationList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
-            opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'})
+            opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
+            extensionsList:()=>getNodeAjaxOptions('nodes', nodeExtObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
+              (data)=>{
+                let res = [];
+                if (data && _.isArray(data)) {
+                  _.each(data, function(d) {
+                    res.push({label: d.label, value: d.label, data: d});
+                  });
+                }
+                return res;
+              }),
           },
           {
             node_info: treeNodeInfo

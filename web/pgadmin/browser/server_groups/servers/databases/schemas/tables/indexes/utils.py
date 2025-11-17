@@ -242,6 +242,9 @@ def get_sql(conn, **kwargs):
     show_sys_obj = kwargs.get('show_sys_objects', False)
 
     name = data['name'] if 'name' in data else None
+    if data.get('dependsonextensions') is None:
+        data['dependsonextensions'] = \
+            data.get('dependsonextensions') or []
     if idx is not None:
         sql = render_template("/".join([template_path, 'properties.sql']),
                               did=did, tid=tid, idx=idx,
@@ -272,7 +275,9 @@ def get_sql(conn, **kwargs):
             old_data['withcheck'].startswith('(') and \
                 old_data['withcheck'].endswith(')'):
             old_data['withcheck'] = old_data['withcheck'][1:-1]
-
+        if old_data.get('dependsonextensions') is None:
+            old_data['dependsonextensions'] = \
+                old_data.get('dependsonextensions') or []
         # If name is not present in data then
         # we will fetch it from old data, we also need schema & table name
         if 'name' not in data:

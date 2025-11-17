@@ -48,6 +48,9 @@ Use the fields in the *Definition* tab to define the index:
     * Select *brin* to create a BRIN index.  A BRIN index may improve
       performance when managing minimum and maximum values and ranges.
 
+* Use the drop-down listbox next to *Depends on extensions* to select the extension 
+  that this index depends on (for example, edbspl). If set, dropping the extension 
+  will automatically drop the index as well.
 * Use the *Fill Factor* field to specify a fill factor for the index. The fill
   factor specifies how full the selected method will try to fill each index
   page.
