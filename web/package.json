@@ -90,7 +90,7 @@
     "@tanstack/react-table": "^8.16.0",
     "@tanstack/react-virtual": "^3.13.6",
     "@types/classnames": "^2.3.4",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.2.5",
     "@types/react-dom": "^19.0.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-search": "^0.15.0",
