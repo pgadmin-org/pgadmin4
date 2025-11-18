@@ -146,8 +146,8 @@ export default function Query({onTextSelect, setQtStatePartial}) {
         const regex = /\$SELECTION\$/gi;
         query =  macroSQL.replace(regex, query);
         external = true;
-      } else if(executeCursor) {
-        /* Execute query at cursor position */
+      } else if(executeCursor || explainObject) {
+        /* Execute query at cursor position or explain query at cursor position */
         query = query || editor.current?.getQueryAt(editor.current?.state.selection.head).value || '';
       } else {
         /* Normal execution */
