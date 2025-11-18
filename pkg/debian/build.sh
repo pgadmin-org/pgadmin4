@@ -16,6 +16,9 @@ export PYTHONDONTWRITEBYTECODE=1
 # Common Linux build functions
 source pkg/linux/build-functions.sh
 
+echo "Running apt update..."
+apt update
+
 # Assemble the "standard" installation footprint
 _setup_env "$0" "debian"
 _cleanup "deb"
