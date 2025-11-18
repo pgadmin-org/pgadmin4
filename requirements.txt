@@ -27,7 +27,7 @@ Flask-Mail==0.*
 Flask-Migrate==4.*
 Flask-Paranoid==0.*
 Flask-Security-Too==5.4.*; python_version <= '3.9'
-Flask-Security-Too==5.6.*; python_version > '3.9'
+Flask-Security-Too==5.7.*; python_version > '3.9'
 Flask-SocketIO==5.5.*
 Flask-SQLAlchemy==3.1.*
 Flask-WTF==1.2.*

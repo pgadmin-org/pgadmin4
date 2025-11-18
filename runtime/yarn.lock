@@ -663,16 +663,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:39.1.1":
-  version: 39.1.1
-  resolution: "electron@npm:39.1.1"
+"electron@npm:39.2.1":
+  version: 39.2.1
+  resolution: "electron@npm:39.2.1"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/98fb7e57b968f580f1ed3c28b1b78589458b702e79e5f5b9cd1d1c27c336357ec94511db3cfec938f575b2aeaf5000f4ab6f6355e618ab3edeb58c1fd7f7ff36
+  checksum: 10c0/bb5356701d8dc36dfe49b916c39bf00161463b1e5c6c868a089616da68d7117ed32258c294281c8a7c266f50864ff3d815724d51e298ad38dd4e13ab1bab17fa
   languageName: node
   linkType: hard
 
@@ -1018,15 +1018,15 @@ __metadata:
   linkType: hard
 
 "form-data@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "form-data@npm:4.0.4"
+  version: 4.0.5
+  resolution: "form-data@npm:4.0.5"
   dependencies:
     asynckit: "npm:^0.4.0"
     combined-stream: "npm:^1.0.8"
     es-set-tostringtag: "npm:^2.1.0"
     hasown: "npm:^2.0.2"
     mime-types: "npm:^2.1.12"
-  checksum: 10c0/373525a9a034b9d57073e55eab79e501a714ffac02e7a9b01be1c820780652b16e4101819785e1e18f8d98f0aee866cc654d660a435c378e16a72f2e7cac9695
+  checksum: 10c0/dd6b767ee0bbd6d84039db12a0fa5a2028160ffbfaba1800695713b46ae974a5f6e08b3356c3195137f8530dcd9dfcb5d5ae1eeff53d0db1e5aad863b619ce3b
   languageName: node
   linkType: hard
 
@@ -1295,13 +1295,13 @@ __metadata:
   linkType: hard
 
 "js-yaml@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "js-yaml@npm:4.1.0"
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.js
-  checksum: 10c0/184a24b4eaacfce40ad9074c64fd42ac83cf74d8c8cd137718d456ced75051229e5061b8633c3366b8aada17945a7a356b337828c19da92b51ae62126575018f
+  checksum: 10c0/561c7d7088c40a9bb53cc75becbfb1df6ae49b34b5e6e5a81744b14ae8667ec564ad2527709d1a6e7d5e5fa6d483aa0f373a50ad98d42fde368ec4a190d4fae7
   languageName: node
   linkType: hard
 
@@ -1327,9 +1327,9 @@ __metadata:
   linkType: hard
 
 "json-schema-typed@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "json-schema-typed@npm:8.0.1"
-  checksum: 10c0/68dcffc20d3b4bdd30c6bc88ea32e7ef10812cea25ab0f0b03c6bee525072b5da5cd391029186257dec97d96bfb98ed405aaceb5ef5390e37dbd3aa2dd62e604
+  version: 8.0.2
+  resolution: "json-schema-typed@npm:8.0.2"
+  checksum: 10c0/89f5e2fb1495483b705c027203c07277ee6bf2665165ad25a9cb55de5af7f72570326d13d32565180781e4083ad5c9688102f222baed7b353c2f39c1e02b0428
   languageName: node
   linkType: hard
 
@@ -1588,7 +1588,7 @@ __metadata:
   resolution: "pgadmin4@workspace:."
   dependencies:
     axios: "npm:^1.13.2"
-    electron: "npm:39.1.1"
+    electron: "npm:39.2.1"
     electron-context-menu: "npm:^4.1.0"
     electron-store: "npm:^11.0.2"
     eslint: "npm:^9.39.1"
