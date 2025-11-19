@@ -11,6 +11,5 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Idx1_$%{}[]()&*^!@""'`\/#"
 
 ALTER TABLE IF EXISTS public.test_table_for_indexes
     CLUSTER ON "Idx1_$%{}[]()&*^!@""'`\/#";
-
 COMMENT ON INDEX public."Idx1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';

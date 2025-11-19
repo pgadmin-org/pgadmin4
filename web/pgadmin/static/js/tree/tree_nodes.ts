@@ -60,6 +60,9 @@ export class ManageTreeNodes {
   public addNode = (_parent: string, _path: string, _data: []) => new Promise((res) => {
     _data.type = _data.inode ? FileType.Directory : FileType.File;
     _data._label = _data.label;
+
+    _data.info_label = pgAdmin.Browser.Nodes[_data._type]?.getNodeInfoLabel(_data);
+
     _data.label = _.escape(_data.label);
 
     _data.is_collection = isCollectionNode(_data._type);

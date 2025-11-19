@@ -30,3 +30,10 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endfor %})
     TABLESPACE {{conn|qtIdent(data.spcname)}}{% endif %}{% if data.indconstraint %}
 
     WHERE {{data.indconstraint}}{% endif %};
+{% if data.dependsonextensions %}
+{% for ext in data.dependsonextensions %}
+
+ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
+    DEPENDS ON EXTENSION {{ conn|qtIdent(ext) }};
+{% endfor %}
+{% endif %}

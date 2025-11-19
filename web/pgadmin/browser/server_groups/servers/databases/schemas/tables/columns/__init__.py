@@ -305,7 +305,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     row['name'],
                     icon="icon-column",
                     datatype=row['datatype'],  # We need datatype somewhere in,
-                    description=row['description']
+                    description=row['description'],
+                    displaytypname=row['displaytypname'],
                 ),
                 status=200
             )
@@ -318,7 +319,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
                     row['name'],
                     icon="icon-column",
                     datatype=row['datatype'],  # We need datatype somewhere in
-                    description=row['description']
+                    description=row['description'],
+                    displaytypname=row['displaytypname'],
                 ))  # exclusion constraint.
 
         return make_json_response(

@@ -132,6 +132,7 @@ define('pgadmin.node.mview', [
         }]);
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
+        let nodeObj = pgBrowser.Nodes['extension'];
         return new MViewSchema(
           (privileges)=>getNodePrivilegeRoleSchema('', treeNodeInfo, itemNodeData, privileges),
           ()=>getNodeVacuumSettingsSchema(this, treeNodeInfo, itemNodeData),
@@ -142,6 +143,16 @@ define('pgadmin.node.mview', [
               return (m.label != 'pg_global');
             }),
             table_amname_list: ()=>getNodeAjaxOptions('get_access_methods', this, treeNodeInfo, itemNodeData),
+            extensionsList:()=>getNodeAjaxOptions('nodes', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
+              (data)=>{
+                let res = [];
+                if (data && _.isArray(data)) {
+                  _.each(data, function(d) {
+                    res.push({label: d.label, value: d.label, data: d});
+                  });
+                }
+                return res;
+              }),
             nodeInfo: treeNodeInfo,
           },
           {

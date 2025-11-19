@@ -1,26 +1,107 @@
 {
   "scenarios": [
-    {
-      "type": "create",
-      "name": "Create Table for indexes",
-      "endpoint": "NODE-table.obj",
-      "sql_endpoint": "NODE-table.sql_id",
-      "data": {
-        "name": "test_table_for_indexes",
-        "columns": [{
-          "name": "id",
-          "cltype": "bigint",
-          "is_primary_key": true
-        }, {
-          "name": "name",
-          "cltype": "text"
-        }],
-        "is_partitioned": false,
-        "spcname": "pg_default",
-        "schema": "public"
+      {
+        "type": "create",
+        "name": "Create Extension",
+        "endpoint": "NODE-extension.obj",
+        "sql_endpoint": "NODE-extension.sql_id",
+        "data": {
+          "name": "postgres_fdw",
+          "version": "",
+          "relocatable": true
+        },
+        "store_object_id": true
       },
-      "store_object_id": true
-    },
+      {
+        "type": "create",
+        "name": "Create Table for indexes",
+        "endpoint": "NODE-table.obj",
+        "sql_endpoint": "NODE-table.sql_id",
+        "data": {
+          "name": "test_table_for_indexes",
+          "columns": [{
+            "name": "id",
+            "cltype": "bigint",
+            "is_primary_key": true
+          }, {
+            "name": "name",
+            "cltype": "text"
+          }],
+          "is_partitioned": false,
+          "spcname": "pg_default",
+          "schema": "public"
+        },
+        "store_object_id": true
+      },
+      {
+        "type": "create",
+        "name": "Create btree index with extensions.",
+        "endpoint": "NODE-index.obj",
+        "sql_endpoint": "NODE-index.sql_id",
+        "msql_endpoint": "NODE-index.msql",
+        "data": {
+          "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
+          "spcname":"pg_default",
+          "amname":"btree",
+          "include": ["name", "id"],
+          "columns":[{
+            "colname":"id",
+            "collspcname":"",
+            "op_class":"",
+            "sort_order":false,
+            "nulls":false,
+            "is_sort_nulls_applicable":true
+          }, {
+            "colname":"name",
+            "collspcname":"pg_catalog.\"POSIX\"",
+            "op_class":"text_pattern_ops",
+            "sort_order":false,
+            "nulls":false,
+            "is_sort_nulls_applicable":true
+          }],
+          "description":"Test Comment",
+          "fillfactor":"10",
+          "deduplicate_items": false,
+          "indisunique":true,
+          "indnullsnotdistinct":true,
+          "indisclustered":false,
+          "isconcurrent":false,
+          "indconstraint":"id < 100",
+          "dependsonextensions": ["plpgsql", "postgres_fdw"]
+        },
+        "expected_sql_file": "create_index_with_ext.sql",
+        "expected_msql_file": "create_index_with_ext.msql"
+      },
+      {
+        "type": "alter",
+        "name": "Alter index with NO DEPENDS ON",
+        "endpoint": "NODE-index.obj_id",
+        "sql_endpoint": "NODE-index.sql_id",
+        "msql_endpoint": "NODE-index.msql_id",
+        "data": {
+          "name": "Idx_$%{}[]()&*^!@\"'`\\/#",
+          "dependsonextensions": ["plpgsql"]
+        },
+        "expected_sql_file": "alter_index_no_depends.sql",
+        "expected_msql_file": "alter_index_no_depends.msql"
+      },
+     {
+        "type": "delete",
+        "name": "Drop index -- 13 Plus",
+        "endpoint": "NODE-index.delete_id",
+        "data": {
+          "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
+        }
+      },
+      {
+        "type": "delete",
+        "name": "Drop Extension",
+        "endpoint": "NODE-extension.delete",
+        "data": {
+          "ids": ["<postgres_fdw>"]
+        },
+        "preprocess_data": true
+      },
     {
       "type": "create",
       "name": "Create btree index with ASC and NULLS LAST -- 15 Plus",

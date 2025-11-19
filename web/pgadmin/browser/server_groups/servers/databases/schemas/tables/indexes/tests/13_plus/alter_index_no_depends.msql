@@ -1,0 +1,2 @@
+ALTER INDEX public."Idx_$%{}[]()&*^!@""'`\/#"
+    NO DEPENDS ON EXTENSION postgres_fdw;

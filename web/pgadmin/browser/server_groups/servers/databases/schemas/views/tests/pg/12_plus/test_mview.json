@@ -272,7 +272,8 @@
           "definition": "SELECT 1 AS col1",
           "amname": "heap"
         },
-        "expected_msql_file": "create_mview_with_am_msql.sql"
+        "expected_msql_file": "create_mview_with_am_msql.sql",
+        "expected_sql_file": "create_mview_with_am.sql"
       }
     ]
   }

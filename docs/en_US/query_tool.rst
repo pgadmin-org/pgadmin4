@@ -275,6 +275,8 @@ the drop down on the right side of *Explain Analyze* button in the toolbar.
 
 Please note that pgAdmin generates the *Explain [Analyze]* plan in JSON format.
 
+**Note**: If multiple queries are present and none is selected, *Explain [Analyze]* runs the query located at the cursor position.
+
 On successful generation of *Explain* plan, it will create three tabs/panels
 under the Explain panel.
 

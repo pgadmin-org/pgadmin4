@@ -202,6 +202,13 @@ describe('IndexSchema', () => {
     });
   });
 
+  it('dependsonextensions field exists', ()=>{
+    let field = _.find(indexSchemaObj.fields, (f)=>f.id=='dependsonextensions');
+    expect(field).toBeTruthy();
+    expect(field.type).toBe('select');
+    expect(field.controlProps.multiple).toBe(true);
+  });
+
   it('columns formatter', () => {
     let formatter = _.find(indexSchemaObj.fields, (f) => f.id=='columns').cell().controlProps.formatter;
     expect(formatter.fromRaw([{

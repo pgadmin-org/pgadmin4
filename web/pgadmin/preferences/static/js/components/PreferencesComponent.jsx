@@ -267,7 +267,7 @@ export default function PreferencesComponent({panelId}) {
           });
         } else {
           const requiresTreeRefresh = _data.some((s) =>
-            ['show_system_objects', 'show_empty_coll_nodes', 'hide_shared_server', 'show_user_defined_templates'].includes(s.name) || s.name.startsWith('show_node_')
+            ['show_system_objects', 'show_empty_coll_nodes', 'hide_shared_server', 'show_user_defined_templates', 'show_column_datatype'].includes(s.name) || s.name.startsWith('show_node_')
           );
 
           let requiresFullPageRefresh = false;
