@@ -9,9 +9,6 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endif %}{% endfor %})
 {% if data.include|length > 0 %}
     INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %})
 {% endif %}
-{% if data.indnullsnotdistinct %}
-    NULLS NOT DISTINCT
-{% endif %}
 {% else %}
 {## We will get indented data from postgres for column ##}
     ({% for c in data.columns %}{% if loop.index != 1 %}, {% endif %}{{c.colname}}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.op_class %}
@@ -19,9 +16,6 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endif %}{% endfor %})
 FIRST{% else %}LAST{% endif %}{% endif %}{% endfor %})
 {% if data.include|length > 0 %}
     INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %})
-{% endif %}
-{% if data.indnullsnotdistinct %}
-    NULLS NOT DISTINCT
 {% endif %}
 {% endif %}
 {% if data.storage_parameters %}

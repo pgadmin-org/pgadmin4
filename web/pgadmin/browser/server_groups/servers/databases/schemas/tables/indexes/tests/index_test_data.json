@@ -31,6 +31,7 @@
         "name": "test_index_add",
         "spcname": "pg_default",
         "amname": "btree",
+        "dependsonextensions": ["plpgsql"],
         "columns": [
           {
             "colname": "id",
@@ -529,7 +530,8 @@
       },
       "test_data": {
         "description": "This is test comment for index",
-        "name": "updating name for index using api tests"
+        "name": "updating name for index using api tests",
+        "dependsonextensions": ["plpgsql"]
       },
       "mocking_required": false,
       "mock_data": {},
