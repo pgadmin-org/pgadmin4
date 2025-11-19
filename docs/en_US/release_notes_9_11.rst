@@ -30,4 +30,5 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9155 <https://github.com/pgadmin-org/pgadmin4/issues/9155>`_ -  Fix pkg_resources deprecation warning by migrating Docker base image to python:3-alpine from alpine:latest.
   | `Issue #9297 <https://github.com/pgadmin-org/pgadmin4/issues/9297>`_ -  Fixed an issue where EXPLAIN should run on query under cursor if no text is selected.
