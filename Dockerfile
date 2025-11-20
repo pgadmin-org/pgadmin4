@@ -183,8 +183,7 @@ COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/
-COPY --from=pg18-builder /usr/lib/liblz4.so.1.10.0 /usr/lib/
+COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.18 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.18 /usr/lib/libpq.so && \
@@ -196,8 +195,7 @@ ENV PYTHONPATH=/pgadmin4
 # Copy in the code and docs
 COPY --from=app-builder /pgadmin4/web /pgadmin4
 COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs
-COPY pkg/docker/run_pgadmin.py /pgadmin4
-COPY pkg/docker/gunicorn_config.py /pgadmin4
+COPY pkg/docker/run_pgadmin.py pkg/docker/gunicorn_config.py /pgadmin4/
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # License files
