@@ -163,6 +163,19 @@ COPY --from=pg18-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-18/
 
 FROM python:3-alpine
 
+# Install runtime dependencies
+RUN apk add --no-cache \
+        bash \
+        postfix \
+        krb5-libs \
+        libjpeg-turbo \
+        shadow \
+        sudo \
+        tzdata \
+        libedit \
+        libldap \
+        libcap
+
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
 
@@ -188,19 +201,8 @@ COPY pkg/docker/entrypoint.sh /entrypoint.sh
 # License files
 COPY LICENSE /pgadmin4/LICENSE
 
-# Install runtime dependencies and configure everything in one RUN step
-RUN apk add --no-cache \
-        bash \
-        postfix \
-        krb5-libs \
-        libjpeg-turbo \
-        shadow \
-        sudo \
-        tzdata \
-        libedit \
-        libldap \
-        libcap && \
-    /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
+# Configure everything in one RUN step
+RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
