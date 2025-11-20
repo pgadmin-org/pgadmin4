@@ -164,7 +164,8 @@ COPY --from=pg18-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-18/
 FROM python:3-alpine
 
 # Install runtime dependencies
-RUN apk add --no-cache \
+RUN apk update && apk upgrade && \
+    apk add \
         bash \
         postfix \
         krb5-libs \
@@ -174,7 +175,8 @@ RUN apk add --no-cache \
         tzdata \
         libedit \
         libldap \
-        libcap
+        libcap && \
+    rm -rf /var/cache/apk/*
 
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
