@@ -98,7 +98,8 @@ ingress:
   enabled: false
   hostname: pgadmin4.local
   annotations: {}
-
+  # If set, enables TLS configuration in the Ingress resource.
+  tlsSecret: ""
 startupProbe:
   enabled: false
   httpGet:
