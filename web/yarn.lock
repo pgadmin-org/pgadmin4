@@ -3972,12 +3972,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.2.5":
-  version: 19.2.6
-  resolution: "@types/react@npm:19.2.6"
+"@types/react@npm:^19.2.7":
+  version: 19.2.7
+  resolution: "@types/react@npm:19.2.7"
   dependencies:
     csstype: "npm:^3.2.2"
-  checksum: 10c0/23b1100f88662ce9f9e4fcca3a2b4ef9fff1ecde24ede2b2dcbd07731e48d6946fd7fd156cd133f5b25321694b0569cd9b8dd30b22c4e076d1cf4c8cdd9a75cb
+  checksum: 10c0/a7b75f1f9fcb34badd6f84098be5e35a0aeca614bc91f93d2698664c0b2ba5ad128422bd470ada598238cebe4f9e604a752aead7dc6f5a92261d0c7f9b27cfd1
   languageName: node
   linkType: hard
 
@@ -12927,7 +12927,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.5.2"
     "@types/classnames": "npm:^2.3.4"
     "@types/jest": "npm:^30.0.0"
-    "@types/react": "npm:^19.2.5"
+    "@types/react": "npm:^19.2.7"
     "@types/react-dom": "npm:^19.0.0"
     "@xterm/addon-fit": "npm:^0.10.0"
     "@xterm/addon-search": "npm:^0.15.0"
