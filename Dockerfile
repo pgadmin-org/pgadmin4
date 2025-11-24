@@ -32,16 +32,7 @@ RUN apk add --no-cache \
     zlib-dev
 
 COPY .git .git
-# Create the /pgadmin4 directory and copy the source into it. Explicitly
-# remove the node_modules directory as we'll recreate a clean version, as well
-# as various other files we don't want
 COPY web /pgadmin4/web
-RUN rm -rf /pgadmin4/web/*.log \
-           /pgadmin4/web/config_*.py \
-           /pgadmin4/web/node_modules \
-           /pgadmin4/web/regression \
-           `find /pgadmin4/web -type d -name tests` \
-           `find /pgadmin4/web -type f -name .DS_Store`
 
 WORKDIR /pgadmin4/web
 
