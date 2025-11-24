@@ -23,6 +23,7 @@ New features
   | `Issue #6388 <https://github.com/pgadmin-org/pgadmin4/issues/6388>`_ -  Add support of DEPENDS/NO DEPENDS ON EXTENSION for INDEX.
   | `Issue #6390 <https://github.com/pgadmin-org/pgadmin4/issues/6390>`_ -  Add support of DEPENDS/NO DEPENDS ON EXTENSION for MATERIALIZED VIEW.
   | `Issue #8968 <https://github.com/pgadmin-org/pgadmin4/issues/8968>`_ -  Add support for showing the column data type beside column name in the object explorer.
+  | `Issue #9263 <https://github.com/pgadmin-org/pgadmin4/issues/9263>`_ -  Added Ubuntu 25.10 and Fedora 43
 
 Housekeeping
 ************

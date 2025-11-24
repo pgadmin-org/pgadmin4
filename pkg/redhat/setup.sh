@@ -61,8 +61,6 @@ echo
 %_gpg_path ~/.gnupg
 %_gpg_name <your signing key>
 %_gpgbin /usr/bin/gpg2
-%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename
-} --digest-algo sha256 %{__plaintext_filename}
 EOF
 
 echo
