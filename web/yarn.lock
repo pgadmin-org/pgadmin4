@@ -3616,15 +3616,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@szhsin/react-menu@npm:^4.4.1":
-  version: 4.5.0
-  resolution: "@szhsin/react-menu@npm:4.5.0"
+"@szhsin/react-menu@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "@szhsin/react-menu@npm:4.5.1"
   dependencies:
     react-transition-state: "npm:^2.3.1"
   peerDependencies:
     react: ">=16.14.0"
     react-dom: ">=16.14.0"
-  checksum: 10c0/82cd128e9a2079e722f267927a012825882fde33ec9596a1bd472d99d369b17b635522e1f379a1674c9a2d838b27aa1d1ffa086da69474918ed34e82055450f6
+  checksum: 10c0/69a86cc52bf9915c74d70acd031e8f86080e95dcbcc84766af879b33345f2e38d8db8f8f01d5035d916e60af462e9c6838ca016a7a85e2d86ae6f32c92bf3044
   languageName: node
   linkType: hard
 
@@ -12917,7 +12917,7 @@ __metadata:
     "@projectstorm/react-diagrams": "npm:^7.0.4"
     "@simonwep/pickr": "npm:^1.5.1"
     "@svgr/webpack": "npm:^8.1.0"
-    "@szhsin/react-menu": "npm:^4.4.1"
+    "@szhsin/react-menu": "npm:^4.5.1"
     "@tanstack/react-query": "npm:^5.90.10"
     "@tanstack/react-table": "npm:^8.16.0"
     "@tanstack/react-virtual": "npm:^3.13.6"
