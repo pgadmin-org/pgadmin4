@@ -157,17 +157,6 @@ define([
       let extraData = this.setExtraParameters(typeOfDialog);
       this.showBackupDialog(gettext('Backup Server'), schema, treeItem, typeOfDialog, extraData);
     },
-    saveCallBack: function(data) {
-      if(data.errormsg) {
-        pgAdmin.Browser.notifier.alert(
-          gettext('Error'),
-          gettext(data.errormsg)
-        );
-      } else {
-
-        pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
-      }
-    },
     url_for_utility_exists(id, params){
       return url_for('backup.utility_exists', {
         'sid': id,

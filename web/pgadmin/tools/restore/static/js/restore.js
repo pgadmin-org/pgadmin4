@@ -91,16 +91,6 @@ define('tools.restore', [
         pgBrowser
       );
     },
-    saveCallBack: function(data) {
-      if(data.errormsg) {
-        pgAdmin.Browser.notifier.alert(
-          gettext('Error'),
-          gettext(data.errormsg)
-        );
-      } else {
-        pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
-      }
-    },
     setExtraParameters: function(treeInfo, nodeData) {
       let extraData = {};
       extraData['database'] = treeInfo.database._label;

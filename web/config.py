@@ -967,8 +967,17 @@ MAX_SERVER_TAGS_ALLOWED = 5
 #############################################################################
 # Number of records to fetch in one batch for server logs.
 ##############################################################################
-
 ON_DEMAND_LOG_COUNT = 10000
+
+############################################################################
+# PLAIN SQL RESTORE
+############################################################################
+# This will enable plain SQL restore in pgAdmin when running in server mode.
+# PLAIN SQL Restore is always enabled in Desktop mode; however, in
+# server mode it is disabled by default for security reasons. The
+# selected PLAIN SQL file may contain meta-commands (such as \\! or \\i)
+# or is considered unsafe to execute on the database server.
+ENABLE_PLAIN_SQL_RESTORE = False
 
 #############################################################################
 # Patch the default config with custom config and other manipulations

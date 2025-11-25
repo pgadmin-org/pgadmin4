@@ -524,6 +524,7 @@ def utils():
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
             vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
             enable_psql=config.ENABLE_PSQL,
+            enable_plain_sql_restore=config.ENABLE_PLAIN_SQL_RESTORE,
             _=gettext,
             auth_only_internal=auth_only_internal,
             mfa_enabled=is_mfa_enabled(),

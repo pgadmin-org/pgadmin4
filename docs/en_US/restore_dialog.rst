@@ -28,7 +28,9 @@ restore process:
    * Select *Custom or tar* to restore from a custom archive file to create a
      copy of the backed-up object.
    * Select *Plain* to restore a plain SQL backup. When selecting this option
-     all the other options will not be applicable.
+     all the other options will not be applicable. **Note:** This option is
+     disabled by default when running in server mode. To allow this functionality,
+     you must set the configuration setting ENABLE_PLAIN_SQL_RESTORE to True.
    * Select *Directory* to restore from a compressed directory-format archive.
 
 * Enter the complete path to the backup file in the *Filename* field.
