@@ -100,11 +100,22 @@ function UtilityViewContent({schema, treeNodeInfo, actionType, formType, onClose
       data: {...data, ...extraData},
     }).then((res)=>{
       /* Don't warn the user before closing dialog */
-      resolve(res.data);
-      onSave?.(res.data, data);
-      onClose();
+      if (res.data?.data?.confirmation_msg) {
+        pgAdmin.Browser.notifier.confirm(
+          gettext('Warning'),
+          res.data.data.confirmation_msg,
+          function() {
+            resolve(onSaveClick(isNew, {...data, confirmed: true}));
+          },
+          reject
+        );
+      } else {
+        resolve(res.data);
+        onSave?.(res.data, data);
+        onClose();
+      }
     }).catch((err)=>{
-      reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
+      reject(err instanceof Error ? err : new Error(gettext('Something went wrong')));
     });
   });
 
@@ -120,7 +131,7 @@ function UtilityViewContent({schema, treeNodeInfo, actionType, formType, onClose
         resolve(res.data.data);
       }).catch((err)=>{
         onError(err);
-        reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
+        reject(err instanceof Error ? err : new Error(gettext('Something went wrong')));
       });
     });
   };
@@ -170,7 +181,7 @@ function UtilityViewContent({schema, treeNodeInfo, actionType, formType, onClose
           } else if(err.message){
             console.error('error msg', err.message);
           }
-          reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
+          reject(err instanceof Error ? err : new Error(gettext('Something went wrong')));
         });
     }
 

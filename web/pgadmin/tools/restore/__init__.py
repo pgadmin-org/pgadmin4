@@ -10,7 +10,7 @@
 """Implements Restore Utility"""
 
 import json
-import re
+import config
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
@@ -375,51 +375,113 @@ def use_restore_utility(data, manager, server, driver, conn, filepath):
     return None, utility, args
 
 
-def has_meta_commands(path, chunk_size=8 * 1024 * 1024):
+def is_safe_sql_file(path):
     """
-    Quickly detect lines starting with '\' in large SQL files.
-    Works even when lines cross chunk boundaries.
-    """
-    # Look for start-of-line pattern: beginning or after newline,
-    # optional spaces, then backslash
-    pattern = re.compile(br'(^|\n)[ \t]*\\')
+    Security-first checker for psql meta-commands.
 
+    Security Strategy:
+    1. Strict Encoding: Rejects anything that isn't valid UTF-8.
+    2. Normalization: Converts all line endings to \n before checking.
+    3. Null Byte Prevention: Rejects files with binary nulls.
+    4. Paranoid Regex: Flags any backslash at the start of a line.
+    """
     try:
         with open(path, "rb") as f:
-            prev_tail = b""
-            while chunk := f.read(chunk_size):
-                data = prev_tail + chunk
+            raw_data = f.read()
 
-                # Search for pattern
-                if pattern.search(data):
-                    return True
+        # --- SECURITY CHECK 1: Strict Encoding ---
+        # We force UTF-8. If the file is UTF-16/32, this throws an error,
+        # and we reject the file. This prevents encoding bypass attacks.
+        try:
+            # utf-8-sig handles the BOM automatically (and removes it)
+            text_data = raw_data.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            current_app.logger.warning(f"Security Alert: File {path} is not "
+                                       f"valid UTF-8.")
+            return False
 
-                # Keep a small tail to preserve line boundary context
-                prev_tail = data[-10:]  # keep last few bytes
+        # --- SECURITY CHECK 2: Null Bytes ---
+        # C-based tools (like psql) can behave unpredictably with null bytes.
+        if "\0" in text_data:
+            current_app.logger.warning(f"Security Alert: File {path} contains "
+                                       f"null bytes.")
+            return False
+
+        # --- SECURITY CHECK 3: Normalized Line Endings ---
+        # We normalize all weird line endings (\r, \r\n, Form Feed) to \n
+        # so we don't have to write a complex regex.
+        # Note: \x0b (Vertical Tab) and \x0c (Form Feed) are treated as breaks.
+        normalized_text = text_data.replace("\r\n", "\n").replace(
+            "\r","\n").replace(
+            "\f", "\n").replace("\v", "\n")
+
+        # --- SECURITY CHECK 4: The Scan ---
+        # We iterate lines. This is safer than a multiline regex which can
+        # sometimes encounter buffer limits or backtracking issues.
+        for i, line in enumerate(normalized_text.split("\n"), 1):
+            stripped = line.strip()
+
+            # Check 1: Meta command at start of line
+            if stripped.startswith("\\"):
+                current_app.logger.warning(f"Security Alert: Meta-command "
+                                           f"detected on line {i}:{stripped}")
+                return False
+
+            # Check 2 (Optional but Recommended): Dangerous trailing commands
+            # psql allows `SELECT ... \gexec`. The \ is not at the start.
+            # If you want to be 100% secure, block ALL backslashes.
+            # If that is too aggressive, look for specific tokens:
+            if "\\g" in line or "\\c" in line or "\\!" in line:
+                current_app.logger.warning(f"Security Alert: Dangerous "
+                                           f"meta-command pattern detected "
+                                           f"on line {i}: {stripped}")
+                return False
+
+        return True
     except FileNotFoundError:
         current_app.logger.error("File not found.")
     except PermissionError:
         current_app.logger.error("Insufficient permissions to access.")
 
-    return False
+    return True
 
 
 def use_sql_utility(data, manager, server, filepath):
-    # Check the meta commands in file.
-    if has_meta_commands(filepath):
-        return _("Restore blocked: the selected PLAIN SQL file contains psql "
-                 "meta-commands (for example \\! or \\i). For safety, "
-                 "pgAdmin does not execute meta-commands from PLAIN restores. "
-                 "Please remove meta-commands."), None, None
+    block_msg = _("Restore Blocked: The selected PLAIN SQL file contains "
+                  "commands that are considered potentially unsafe or include "
+                  "meta-commands (like \\! or \\i) that could execute "
+                  "external shell commands or scripts on the pgAdmin server. "
+                  "For security reasons, pgAdmin will not restore this PLAIN "
+                  "SQL file. Please check the logs for more details.")
+    confirm_msg = _("The selected PLAIN SQL file contains commands that are "
+                    "considered potentially unsafe or include meta-commands "
+                    "(like \\! or \\i) that could execute external shell "
+                    "commands or scripts on the pgAdmin server.\n\n "
+                    "Do you still wish to continue?")
+
+    if config.SERVER_MODE and not config.ENABLE_PLAIN_SQL_RESTORE:
+        return _("Plain SQL restore is disabled by default when running in "
+                 "server mode. To allow this functionality, you must set the "
+                 "configuration setting ENABLE_PLAIN_SQL_RESTORE to True and "
+                 "then restart the pgAdmin application."), None, None, None
+
+    # If data has confirmed, then no need to check for the safe SQL file again
+    if not data.get('confirmed', False):
+        # Check the SQL file is safe to process.
+        safe_sql_file = is_safe_sql_file(filepath)
+        if not safe_sql_file and config.SERVER_MODE:
+            return block_msg, None, None, None
+        elif not safe_sql_file and not config.SERVER_MODE:
+            return None, None, None, confirm_msg
 
     utility = manager.utility('sql')
     ret_val = does_utility_exist(utility)
     if ret_val:
-        return ret_val, None, None
+        return ret_val, None, None, None
 
     args = get_sql_util_args(data, manager, server, filepath)
 
-    return None, utility, args
+    return None, utility, args, None
 
 
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint='create_job')
@@ -435,6 +497,7 @@ def create_restore_job(sid):
     Returns:
         None
     """
+    confirmation_msg = None
     is_error, errmsg, data, filepath = _get_create_req_data()
     if is_error:
         return errmsg
@@ -444,7 +507,7 @@ def create_restore_job(sid):
         return errmsg
 
     if data['format'] == 'plain':
-        error_msg, utility, args = use_sql_utility(
+        error_msg, utility, args, confirmation_msg = use_sql_utility(
             data, manager, server, filepath)
     else:
         error_msg, utility, args = use_restore_utility(
@@ -454,6 +517,12 @@ def create_restore_job(sid):
         return make_json_response(
             success=0,
             errormsg=error_msg
+        )
+
+    if confirmation_msg is not None:
+        return make_json_response(
+            success=0,
+            data={'confirmation_msg': confirmation_msg}
         )
 
     try:
