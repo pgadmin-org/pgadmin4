@@ -154,13 +154,27 @@ COPY --from=pg18-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-18/
 
 FROM python:3-alpine
 
+# Install runtime dependencies
+RUN apk update && apk upgrade && \
+    apk add \
+        bash \
+        postfix \
+        krb5-libs \
+        libjpeg-turbo \
+        shadow \
+        sudo \
+        tzdata \
+        libedit \
+        libldap \
+        libcap && \
+    rm -rf /var/cache/apk/*
+
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/
-COPY --from=pg18-builder /usr/lib/liblz4.so.1.10.0 /usr/lib/
+COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.18 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.18 /usr/lib/libpq.so && \
@@ -172,26 +186,14 @@ ENV PYTHONPATH=/pgadmin4
 # Copy in the code and docs
 COPY --from=app-builder /pgadmin4/web /pgadmin4
 COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs
-COPY pkg/docker/run_pgadmin.py /pgadmin4
-COPY pkg/docker/gunicorn_config.py /pgadmin4
+COPY pkg/docker/run_pgadmin.py pkg/docker/gunicorn_config.py /pgadmin4/
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # License files
 COPY LICENSE /pgadmin4/LICENSE
 
-# Install runtime dependencies and configure everything in one RUN step
-RUN apk add --no-cache \
-        bash \
-        postfix \
-        krb5-libs \
-        libjpeg-turbo \
-        shadow \
-        sudo \
-        tzdata \
-        libedit \
-        libldap \
-        libcap && \
-    /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
+# Configure everything in one RUN step
+RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
