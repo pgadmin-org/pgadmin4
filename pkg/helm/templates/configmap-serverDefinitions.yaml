@@ -12,5 +12,5 @@ metadata:
 data:
 {{- $variableToPreserveTPL := tpl (dict "Servers" .Values.serverDefinitions.data | toYaml) . | fromYaml }}
 {{- include "tpl.preserve.variable" $variableToPreserveTPL }}
-  servers.json: | {{ $variableToPreserveTPL | toYaml | nindent 4 }}
+  servers.json: | {{ $variableToPreserveTPL | toPrettyJson | nindent 4 }}
 {{- end }}
