@@ -49,7 +49,24 @@ SELECT
     pg_catalog.pg_get_function_identity_arguments(p.oid) AS signature,
 
     {% if hasFeatureFunctionDefaults %}
-        pg_catalog.pg_get_expr(p.proargdefaults, 'pg_catalog.pg_class'::regclass, false) AS proargdefaults,
+        pg_catalog.array_to_string(
+            ARRAY(
+                SELECT
+                    -- Removing type cast, then removing surrounding single quotes if present
+                    CASE
+                        WHEN regexp_replace(val, E'::[a-zA-Z_]+$', '') ~ E'^''.*''$'
+                        THEN substring(regexp_replace(val, E'::[a-zA-Z_]+$', '') FROM E'^''(.*)''$')
+                        ELSE regexp_replace(val, E'::[a-zA-Z_]+$', '')
+                    END
+                FROM unnest(
+                    regexp_split_to_array(
+                        pg_catalog.pg_get_expr(p.proargdefaults, 'pg_catalog.pg_class'::regclass, false),
+                        ',\s*'
+                    )
+                ) AS val
+            ),
+            ','
+        ) AS proargdefaults,
         p.pronargdefaults
     {%else%}
         '' AS proargdefaults, 0 AS pronargdefaults
