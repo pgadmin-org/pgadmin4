@@ -421,20 +421,20 @@ not-null constraints;  after saving the new or modified table, any changes to
 the original table will not be applied to the new table.
 
 * Use the drop-down listbox next to *Relation* to select a reference table.
-* Move the switch next to *With default values?* towards the *right position* to copy default
+* Move the switch next to *With default values?* to the *Yes* position to copy default
   values.
-* Move the switch next to *With constraints?* towards the *right position* to copy table and
+* Move the switch next to *With constraints?* to the *Yes* position to copy table and
   column constraints.
-* Move the switch next to *With indexes?* towards the *right position* to copy indexes.
-* Move the switch next to *With storage?* towards the *right position* to copy storage settings.
-* Move the switch next to *With comments?* towards the *right position* to copy comments.
-* Move the switch next to *With compression?* towards the *right position* to copy
+* Move the switch next to *With indexes?* to the *Yes* position to copy indexes.
+* Move the switch next to *With storage?* to the *Yes* position to copy storage settings.
+* Move the switch next to *With comments?* to the *Yes* position to copy comments.
+* Move the switch next to *With compression?* to the *Yes* position to copy
   compression method. This option is available only on PostgreSQL 14 and above.
-* Move the switch next to *With generated?* towards the *right position* to copy
+* Move the switch next to *With generated?* to the *Yes* position to copy
   generation expressions of copied column. This option is available only on PostgreSQL 12 and above.
-* Move the switch next to *With identity?* towards the *right position* to copy
+* Move the switch next to *With identity?* to the *Yes* position to copy
   any identity specifications of copied column.
-* Move the switch next to *With statistics?* towards the *right position* to copy
+* Move the switch next to *With statistics?* to the *Yes* position to copy
   extended statistics.
 
 With PostgreSQL 10 forward, the *Partition* tab will be visible.
@@ -531,7 +531,7 @@ function. Click the *Add* icon (+) to add each security label selection:
 
 * Specify a security label provider in the *Provider* field. The named provider
   must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a
+* Specify a security label in the *Security Label* field. The meaning of a
   given label is at the discretion of the label provider. PostgreSQL places no
   restrictions on whether or how a label provider must interpret security
   labels; it merely provides a mechanism for storing them.

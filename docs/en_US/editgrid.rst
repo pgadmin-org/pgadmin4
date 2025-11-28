@@ -49,7 +49,7 @@ To modify the displayed data:
 * To change a numeric value within the grid, double-click the value to select
   the field.  Modify the content in the square in which it is displayed.
 * To change a non-numeric value within the grid, double-click the content to
-  access the edit bubble.  After modifying the contentof the edit bubble, click
+  access the edit bubble.  After modifying the content of the edit bubble, click
   the *Ok* button to display your changes in the data grid, or *Cancel* to
   exit the edit bubble without saving.
 
@@ -62,7 +62,7 @@ table. As soon as you store the data, the row is assigned a row number, and a
 fresh empty line is added to the data grid.
 
 To write a SQL NULL to the table, simply leave the field empty. When you store
-the new row, the will server fill in the default value for that column. If you
+the new row, the server will fill in the default value for that column. If you
 store a change to an existing row, the value NULL will explicitly be written.
 
 To write an empty string to the table, enter the special string '' (two single
@@ -110,9 +110,9 @@ properties of the geometries directly in map, just click the specific geometry:
 
 **JSON Data Editor**
 
-A built in json editor is provided for *JSON/JSONB Data*.Double clicking on json/jsonb
-data type cell in data grid will open JSON Editor.Editor provides different mode to
-view and edit json data.
+A built-in JSON editor is provided for *JSON/JSONB Data*. Double-clicking on a JSON/JSONB
+data type cell in the data grid will open the JSON Editor. The editor provides different modes to
+view and edit JSON data.
 
 
 .. image:: images/json_editor_modes.png
@@ -120,21 +120,21 @@ view and edit json data.
     :align: center
 
 *Code Mode*:
-Provides way to format & compact json data.Also provides ability to repair json data
-by fixing quotes and escape characters, removing comments and JSONP notation and
-turn JavaScript objects into JSON.
+Provides a way to format and compact JSON data. Also provides the ability to repair JSON data
+by fixing quotes and escape characters, removing comments and JSONP notation, and
+turning JavaScript objects into JSON.
 
 *Tree Mode*:
-Enabled to change, add, move, remove, and duplicate fields and values.Provides ability
-to searh & hilight data.
+Enables changing, adding, moving, removing, and duplicating fields and values. Provides the ability
+to search and highlight data.
 
 *Form Mode*:
-Allows only to edit values in json data there by providing ability to keep data structure
+Allows editing only the values in JSON data, thereby providing the ability to keep the data structure
 unchanged while editing.
 
 *Preview Mode*:
-Provides ability to check data before saving and also shows size of current json data.
-Format and compact json data as well.
+Provides the ability to check data before saving and also shows the size of the current JSON data.
+Allows formatting and compacting JSON data as well.
 
 
 *Editor Toolbar*
@@ -170,18 +170,18 @@ Tree/Form mode:
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
    | *Transform*          | Click to *Transform*  to filter data  using JSME query language.                       | Code, Preview, Tree       |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Undo*               | Click to *Undo* to undo last action performed on data .                                | Code, Preview, Tree, From |
+   | *Undo*               | Click to *Undo* to undo last action performed on data.                                 | Code, Preview, Tree, Form |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Redo*               | Click to *Redo* to repat last action performed on data .                               | Code, Preview, Tree, From |
+   | *Redo*               | Click to *Redo* to repeat last action performed on data.                               | Code, Preview, Tree, Form |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Mode*               | Click to *Mode* dropdown to change dipaly mode of editor.Different modes avaialble     | Code, Tree, From, Preview |
-   |                      | are Code, Preview, Tree, From.                                                         |                           |
+   | *Mode*               | Click the *Mode* dropdown to change the display mode of the editor. Different modes    | Code, Tree, Form, Preview |
+   |                      | available are Code, Preview, Tree, and Form.                                           |                           |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Expand All*         | Click to *Expand All* to expand json data.                                             | Tree, From                |
+   | *Expand All*         | Click *Expand All* to expand JSON data.                                                | Tree, Form                |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Collapse All*       | Click to *Redo* to collapse json data.                                                 | Tree, From                |
+   | *Collapse All*       | Click *Collapse All* to collapse JSON data.                                            | Tree, Form                |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
-   | *Search Box*         | Enter partial/complete string to search in data.                                       | Tree, From                |
+   | *Search Box*         | Enter partial/complete string to search in data.                                       | Tree, Form                |
    +----------------------+----------------------------------------------------------------------------------------+---------------------------+
 
 
@@ -235,6 +235,6 @@ A View/Edit Data tab can be converted to a Query Tool Tab just by editing the qu
     :alt: Promote View/Edit Data tab to Query Tool tab warning
     :align: center
 
-You can disable the dialog by selecting the "Don't Ask again" checkbox. If you wish to resume the confirmation dialog, you can do it from "Prefrences -> Query Tool -> Editor -> Show View/Edit Data Promotion Warning?"
+You can disable the dialog by selecting the "Don't Ask again" checkbox. If you wish to resume the confirmation dialog, you can do it from "Preferences -> Query Tool -> Editor -> Show View/Edit Data Promotion Warning?"
 
 Once you chose to continue, you won't be able to use the features of View/Edit mode like the filter and sorting options, limit, etc. It is a one-way conversion. It will be a query tool now.

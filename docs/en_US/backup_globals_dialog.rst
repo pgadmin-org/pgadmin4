@@ -34,6 +34,6 @@ statements that should be included in the backup.
 Click the *Backup* button to build and execute a command based on your
 selections; click the *Cancel* button to exit without saving work.
 
-pgAdmin will run the backup process in background. You can view all the background
-process with there running status and logs on the :ref:`Processes <processes>`
-tab
+pgAdmin will run the backup process in the background. You can view all the background
+processes with their running status and logs on the :ref:`Processes <processes>`
+tab.

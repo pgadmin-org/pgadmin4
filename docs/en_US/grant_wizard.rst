@@ -46,7 +46,7 @@ Use the fields in the *Privileges Selection* window to grant
 privileges. If you grant a privilege WITH GRANT OPTION, the Grantee will have
 the right to grant privileges on the object to others. If WITH GRANT OPTION is
 subsequently revoked, any role who received access to that object from that
-Grantee (directly or through a chain of grants) will lose thier privileges on
+Grantee (directly or through a chain of grants) will lose their privileges on
 the object.
 
 * Click the *Add* icon (+) to assign a set of privileges.

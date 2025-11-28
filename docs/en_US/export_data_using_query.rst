@@ -58,8 +58,8 @@ Click the *Query* tab to continue.
 
 Use the fields in the *Query* tab to write the query that will be exported:
 
-* Use the *Export Data Query* field to specifies A SELECT, VALUES, INSERT, UPDATE,
-  DELETE, or MERGE command whose results are to be copied .
+* Use the *Export Data Query* field to specify a SELECT, VALUES, INSERT, UPDATE,
+  DELETE, or MERGE command whose results are to be copied.
 
 * Use *Force Quote columns* field to forces quoting to be used for all non-NULL
   values in each specified column. NULL output is never quoted. This is a creatable

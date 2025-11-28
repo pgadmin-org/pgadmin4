@@ -104,7 +104,7 @@ related settings:
     :align: center
 
 * Use *Enable object breadcrumbs?* to enable or disable object breadcrumbs
-  displayed on on object mouse hover.
+  displayed on object mouse hover.
 
 * Use *Show comment with object breadcrumbs?* to enable or disable the
   comment visibility which comes displayed with object breadcrumbs.
@@ -142,11 +142,11 @@ Use field on *Tab settings* panel to specify the tab related properties.
 
 * Use *Debugger tab title placeholder* field to customize the Debugger tab title.
 
-* When the *Dynamic tab size* If set to True, the tabs will take full size as per the title, it will also applicable for already opened tabs
+* When the *Dynamic tab size* switch is set to *True*, the tabs will take full size as per the title. This will also apply to already opened tabs.
 
 * Use the *PSQL tool tab title placeholder* field to customize the PSQL tool tab title.
 
-* When the *Open in new browser tab* filed is selected for Query tool, Schema Diff or Debugger, it will
+* When the *Open in new browser tab* field is selected for Query tool, Schema Diff or Debugger, it will
   open in a new browser tab when invoked.
 
 * Use the *Query tool tab title placeholder* field to customize the query tool tab title.
@@ -175,7 +175,7 @@ Expand the *Dashboards* node to specify your dashboard display preferences.
     :alt: Preferences dashboard refresh options
     :align: center
 
-Use the fields on the *Refresh rates* panel to specify your refersh rates
+Use the fields on the *Refresh rates* panel to specify your refresh rate
 preferences for the graphs on the *Dashboard* tab:
 
 * Use the *Average load statistics refresh rate* field to specify the number of
@@ -460,7 +460,7 @@ monitored databases:
   locations used by PostgreSQL.
 
 **Note:** Use the 'Validate path' button to check the existence of the utility
-programs (pg_dump, pg_dumpall, pg_restore and psql) and there respective versions.
+programs (pg_dump, pg_dumpall, pg_restore and psql) and their respective versions.
 
 .. image:: images/preferences_paths_help.png
     :alt: Preferences binary path help section

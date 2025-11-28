@@ -29,31 +29,31 @@ maintenance:
    * Move the *ANALYZE* switch to the *Yes* position to issue ANALYZE commands
      whenever the content of a table has changed sufficiently.
 
-   * Move the *DISABLE PAGE SKIPPING* switch to the *Yes* position to disables
+   * Move the *DISABLE PAGE SKIPPING* switch to the *Yes* position to disable
      all page-skipping behavior.
 
-   * Move the *SKIP LOCKED* switch to the *Yes* position to specifies that
+   * Move the *SKIP LOCKED* switch to the *Yes* position to specify that
      VACUUM should not wait for any conflicting locks to be released when
      beginning work on a relation. This option is available from v12 onwards.
 
-   * Move the *TRUNCATE* switch to the *Yes* position to specifies that VACUUM
+   * Move the *TRUNCATE* switch to the *Yes* position to specify that VACUUM
      should attempt to truncate off any empty pages at the end of the table and
      allow the disk space for the truncated pages to be returned to the operating
      system. This option is available from v12 onwards.
 
-   * Move the *PROCESS TOAST* switch to the *Yes* position to specifies that
+   * Move the *PROCESS TOAST* switch to the *Yes* position to specify that
      VACUUM should attempt to process the corresponding TOAST table for each
      relation, if one exists. This option is available from v14 onwards.
 
-   * Move the *PROCESS MAIN* switch to the *Yes* position to specifies that
+   * Move the *PROCESS MAIN* switch to the *Yes* position to specify that
      VACUUM should attempt to process the main relation. This option is available
      from v16 onwards.
 
-   * Move the *SKIP DATABASE STATS* switch to the *Yes* position to specifies
+   * Move the *SKIP DATABASE STATS* switch to the *Yes* position to specify
      that VACUUM should skip updating the database-wide statistics about oldest
      unfrozen XIDs. This option is available from v16 onwards.
 
-   * Move the *ONLY DATABASE STATS* switch to the *Yes* position to specifies
+   * Move the *ONLY DATABASE STATS* switch to the *Yes* position to specify
      that VACUUM should do nothing except update the database-wide statistics
      about oldest unfrozen XIDs . This option is available from v16 onwards.
 
@@ -64,7 +64,7 @@ maintenance:
      of VACUUM in parallel using integer background workers. This option is
      available from v13 onwards.
 
-   * Use the *BUFFER USAGE LIMIT* field to specifies the Buffer Access Strategy
+   * Use the *BUFFER USAGE LIMIT* field to specify the Buffer Access Strategy
      ring buffer size for VACUUM. This size is used to calculate the number of
      shared buffers which will be reused as part of this strategy. This option
      is available from v16 onwards
@@ -78,11 +78,11 @@ maintenance:
   This enables the query optimizer to select the fastest query plan for optimal
   performance.
 
-   * Move the *SKIP LOCKED* switch to the *Yes* position to specifies that
+   * Move the *SKIP LOCKED* switch to the *Yes* position to specify that
      ANALYZE should not wait for any conflicting locks to be released when
      beginning work on a relation. This option is available from v12 onwards.
 
-   * Use the *BUFFER USAGE LIMIT* field to specifies the Buffer Access Strategy
+   * Use the *BUFFER USAGE LIMIT* field to specify the Buffer Access Strategy
      ring buffer size for ANALYZE. This size is used to calculate the number of
      shared buffers which will be reused as part of this strategy. This option
      is available from v16 onwards
@@ -103,7 +103,7 @@ maintenance:
      without taking any locks that prevent concurrent inserts, updates, or
      deletes on the table. This option is available from v12 onwards.
 
-   * Use the *TABLESPACE* field to specifies that indexes will be rebuilt on
+   * Use the *TABLESPACE* field to specify that indexes will be rebuilt on
      a new tablespace. This option is available from v14 onwards.
 
 .. image:: images/maintenance_cluster.png
@@ -118,6 +118,6 @@ switch to the *No* position; by default, status messages are included.
 When you've completed the dialog, click *OK* to start the background process;
 to exit the dialog without performing maintenance operations, click *Cancel*.
 
-pgAdmin will run the maintenance process in background. You can view all the background
-process with there running status and logs on the :ref:`Processes <processes>`
+pgAdmin will run the maintenance process in the background. You can view all the background
+processes with their running status and logs on the :ref:`Processes <processes>`
 tab.
