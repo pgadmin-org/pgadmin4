@@ -26,7 +26,7 @@ define(
     'SQL_NO_CHANGE': gettext('Nothing changed'),
     'MUST_BE_INT' : gettext("'%s' must be an integer."),
     'MUST_BE_NUM' : gettext("'%s' must be a numeric."),
-    'INVALID_MIN_MAX' : gettext("Min and Max values are not valid"),
+    'INVALID_MIN_MAX' : gettext("Min and Max values are not valid."),
     'MUST_GR_EQ' : gettext("'%s' must be greater than or equal to %s."),
     'MUST_LESS_EQ' : gettext("'%s' must be less than or equal to %s."),
     'CANNOT_BE_EMPTY': gettext("'%s' cannot be empty."),

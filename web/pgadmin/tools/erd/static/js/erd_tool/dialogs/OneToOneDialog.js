@@ -73,7 +73,7 @@ class OneToOneSchema extends BaseUISchema {
   validate(state, setError) {
     let tableData = this.localTableData.getData();
     if (tableData.primary_key.length && state.constraint_type === 'primary_key') {
-      setError('constraint_type', gettext('Primary key already exists, please select different constraint.'));
+      setError('constraint_type', gettext('Primary key already exists, please select a different constraint.'));
       return true;
     }
     return false;

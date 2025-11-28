@@ -267,7 +267,7 @@ export class VacuumSchema extends BaseUISchema {
         }
         return false;
       },
-      helpMessage: gettext('Sizes should be specified as a string containing the numerical size followed by any one of the following memory units: kB (kilobytes), MB (megabytes), GB (gigabytes), or TB (terabytes)'),
+      helpMessage: gettext('Sizes should be specified as a string containing the numerical size followed by any one of the following memory units: kB (kilobytes), MB (megabytes), GB (gigabytes), or TB (terabytes).'),
       min_version: 160000,
     }, {
       id: 'reindex_system',

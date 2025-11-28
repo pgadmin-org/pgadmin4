@@ -505,7 +505,7 @@ class GoogleClusterSchema extends BaseUISchema {
 
   validate(data, setErr) {
     if ( !isEmptyString(data.name) && (!/^(?=[a-z])[a-z0-9-]*$/.test(data.name) || data.name.length > 97)) {
-      setErr('name',gettext('Name must only contain lowercase letters, numbers, and hyphens.Should start with a letter and must be 97 characters or less'));
+      setErr('name',gettext('Name must only contain lowercase letters, numbers, and hyphens. Should start with a letter and must be 97 characters or less.'));
       return true;
     }
     return false;

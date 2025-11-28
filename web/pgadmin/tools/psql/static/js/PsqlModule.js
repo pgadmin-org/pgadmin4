@@ -91,7 +91,7 @@ export default class Psql {
       label: gettext('PSQL Tool'),
       data:{
         applies: 'tools',
-        data_disabled: gettext('Please select a database from the object explorer to access Pql Tool.'),
+        data_disabled: gettext('Please select a database from the object explorer to access the PSQL Tool.'),
       },
       permission: AllPermissionTypes.TOOLS_PSQL_TOOL,
     }];

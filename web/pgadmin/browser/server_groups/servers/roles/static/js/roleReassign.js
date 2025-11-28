@@ -54,7 +54,7 @@ export default class RoleReassign extends BaseUISchema{
           { 'label': gettext('Reassign'), 'value': 'reassign' },
           { 'label': gettext('Drop'), 'value': 'drop' },
         ],
-        helpMessage: gettext('Change the ownership or\ndrop the database objects owned by a database role')
+        helpMessage: gettext('Change the ownership or\ndrop the database objects owned by a database role.')
       },
       {
         id: 'new_role_id',
@@ -96,7 +96,7 @@ export default class RoleReassign extends BaseUISchema{
             }
           };
         },
-        helpMessage: gettext('New owner of the affected objects'),
+        helpMessage: gettext('New owner of the affected objects.'),
         deps: ['role_op'],
         disabled: (state)=>{
           return state.role_op == 'drop';
@@ -128,13 +128,13 @@ export default class RoleReassign extends BaseUISchema{
         group: gettext('General'),
         type: 'switch',
         deps: ['role_op'],
-        helpMessage: gettext('Note: CASCADE will automatically drop objects that depend on the affected objects, and in turn all objects that depend on those objects')
+        helpMessage: gettext('Note: CASCADE will automatically drop objects that depend on the affected objects, and in turn all objects that depend on those objects.')
       },
       {
         id: 'did',
         label: gettext('From database'),
         group: gettext('General'),
-        helpMessage: gettext('Target database on which the operation will be carried out'),
+        helpMessage: gettext('Target database on which the operation will be carried out.'),
         type: ()=>{
           return {
             type: 'select',
@@ -162,13 +162,13 @@ export default class RoleReassign extends BaseUISchema{
     let obj = this;
 
     if (state.role_op == 'reassign' && isEmptyString(state.new_role_id)) {
-      errmsg = gettext('\'Reassign objects to\' can not be empty');
+      errmsg = gettext('\'Reassign objects to\' cannot be empty.');
       setError('new_role_id', errmsg);
       return true;
     }
 
     if (isEmptyString(state.did)) {
-      errmsg = gettext('\'From database \' can not be empty');
+      errmsg = gettext('\'From database\' cannot be empty.');
       setError('did', errmsg);
       return true;
     }
