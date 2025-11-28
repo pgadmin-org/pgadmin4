@@ -883,7 +883,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(
                     _(
-                        "Could not generate reversed engineered query for the "
+                        "Could not generate reverse-engineered query for the "
                         "FTS Parser.\n{0}"
                     ).format(res)
                 )
@@ -891,7 +891,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             if res is None:
                 return gone(
                     _(
-                        "Could not generate reversed engineered query for "
+                        "Could not generate reverse-engineered query for "
                         "FTS Parser node."
                     )
                 )

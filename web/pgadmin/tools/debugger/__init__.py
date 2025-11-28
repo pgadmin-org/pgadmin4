@@ -212,7 +212,7 @@ class DebuggerModule(PgAdminModule):
         self.preference.register(
             'keyboard_shortcuts',
             'switch_panel',
-            gettext('Switch Panel'),
+            gettext('Switch panel'),
             'keyboardshortcut',
             {
                 'alt': True,

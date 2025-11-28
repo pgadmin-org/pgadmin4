@@ -178,7 +178,7 @@ def create_maintenance_job(sid, did):
     if server is None:
         return make_json_response(
             success=0,
-            errormsg=_("Could not find the given server")
+            errormsg=_("Could not find the specified server.")
         )
 
     # To fetch MetaData for the server

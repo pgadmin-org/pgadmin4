@@ -99,10 +99,8 @@ class DashboardModule(PgAdminModule):
 
         self.cpu_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'cpu_stats_refresh',
-            gettext(
-                "Percentage of CPU time used by different process \
-                modes statistics refresh rate"
-            ), 'integer', 5, min_val=1, max_val=999999,
+            gettext("CPU usage by process mode refresh rate"),
+            'integer', 5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
@@ -198,16 +196,16 @@ class DashboardModule(PgAdminModule):
             gettext("Use different data point styles?"), 'boolean', False,
             category_label=PREF_LABEL_DISPLAY,
             help_str=gettext('If set to True, data points will be visible '
-                             'in a different style on each graph lines.')
+                             'in a different style on each graph line.')
         )
 
         self.graph_mouse_track = self.graphs_preference.register(
             'graphs', 'graph_mouse_track',
             gettext("Show mouse hover tooltip?"), 'boolean', True,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, tooltip will appear on mouse '
-                             'hover on the graph lines giving the data point '
-                             'details')
+            help_str=gettext('If set to True, a tooltip will appear on mouse '
+                             'hover on the graph lines showing the data point '
+                             'details.')
         )
 
         self.graph_line_border_width = self.graphs_preference.register(

@@ -693,8 +693,8 @@ class BatchProcess:
 
                 except ValueError as e:
                     current_app.logger.warning(
-                        _("Status for the background process '{0}' could "
-                          "not be loaded.").format(p.pid)
+                        _("Could not load status for background process "
+                          "'{0}'.").format(p.pid)
                     )
                     current_app.logger.exception(e)
                     return False, False
@@ -902,7 +902,7 @@ class BatchProcess:
             p.process_state = PROCESS_TERMINATED
         except psutil.Error as e:
             current_app.logger.warning(
-                _("Unable to kill the background process '{0}'").format(
+                _("Unable to kill the background process '{0}'.").format(
                     p.utility_pid)
             )
             current_app.logger.exception(e)

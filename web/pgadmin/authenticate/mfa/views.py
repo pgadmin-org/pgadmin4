@@ -172,7 +172,7 @@ def _mfa_registration_view(
 
     if form_data[mfa.name] == 'SETUP':
         if supported_mfa['registered'] is True:
-            flash(_("'{}' is already registered'").format(mfa.label),
+            flash(_("'{}' is already registered.").format(mfa.label),
                   MessageType.SUCCESS)
             return None
 
