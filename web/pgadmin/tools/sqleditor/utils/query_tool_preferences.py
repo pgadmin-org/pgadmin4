@@ -136,8 +136,8 @@ def register_query_tool_preferences(self):
         True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'Specifies whether or not to prompt the user to commit or rollback '
-            'an active transaction on Query Tool exit.'
+            'Specifies whether or not to prompt the user to commit or '
+            'rollback an active transaction on Query Tool exit.'
         )
     )
 
@@ -319,8 +319,8 @@ def register_query_tool_preferences(self):
         gettext("Data result rows per page"), 'integer',
         DATA_RESULT_ROWS_PER_PAGE, min_val=10,
         category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('Specify the number of records to fetch in one batch. '
-                         'Changing this value will override the '
+        help_str=gettext('Specify the number of records to fetch in one '
+                         'batch. Changing this value will override the '
                          'DATA_RESULT_ROWS_PER_PAGE setting from the config '
                          'file.')
     )
