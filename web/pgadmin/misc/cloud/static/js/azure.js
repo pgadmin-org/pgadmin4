@@ -31,7 +31,7 @@ export function AzureCredentials(props) {
           'static', { 'filename': 'img/loading.gif'}
         );
         const axiosApi = getApiInstance();
-        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Microsoft Azure authentication process is in progress..<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
+        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Microsoft Azure authentication process is in progress. <img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
         let _url = url_for('azure.verify_credentials');
         const post_data = {
           cloud: 'azure',
