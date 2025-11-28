@@ -131,6 +131,8 @@ def evaluate_and_patch_config(config: dict) -> dict:
         config['USER_INACTIVITY_TIMEOUT'] = 0
         # Enable PSQL in Desktop Mode.
         config['ENABLE_PSQL'] = True
+        # Enable Plain SQL Restore in Desktop Mode.
+        config['ENABLE_PLAIN_SQL_RESTORE'] = True
 
     if config.get('SERVER_MODE'):
         config.setdefault('USE_OS_SECRET_STORAGE', False)

@@ -9,6 +9,7 @@
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import gettext from 'sources/gettext';
+import pgAdmin from 'sources/pgadmin';
 import { isEmptyString } from 'sources/validators';
 
 export class RestoreSectionSchema extends BaseUISchema {
@@ -364,7 +365,7 @@ export default class RestoreSchema extends BaseUISchema {
       value: 'directory',
     }];
 
-    if(this.fieldOptions.nodeType == 'database') {
+    if(pgAdmin['enable_plain_sql_restore'] && this.fieldOptions.nodeType == 'database') {
       options.splice(1, 0, {
         label: gettext('Plain'),
         value: 'plain',
