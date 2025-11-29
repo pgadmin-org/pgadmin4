@@ -200,7 +200,7 @@ export default function UserDialog({user, options, onClose}) {
       try {
         api.post(url_for('user_management.save'), changeData)
           .then(()=>{
-            pgAdmin.Browser.notifier.success(gettext('Users Saved Successfully'));
+            pgAdmin.Browser.notifier.success(gettext('User saved successfully.'));
             resolve();
             onClose(null, true);
           })

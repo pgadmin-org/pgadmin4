@@ -89,7 +89,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
       if(isKeyring) {
         if(error){
           pgAdmin.Browser.notifier.alert(gettext('Migration failed'),
-            gettext(`Passwords previously saved can not be re-encrypted using encryption key stored in the ${res.data.data.keyring_name}. due to ${error}`));
+            gettext(`Passwords previously saved cannot be re-encrypted using the encryption key stored in the ${res.data.data.keyring_name} due to ${error}.`));
         }else{
           pgAdmin.Browser.notifier.alert(gettext('Migration successful'),
             gettext(`Passwords previously saved are re-encrypted using encryption key stored in the ${res.data.data.keyring_name}.`));

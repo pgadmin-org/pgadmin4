@@ -136,7 +136,7 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
             { icon: '', name: gettext('Host name'), value: gettext(os_info_obj['host_name']) },
             { icon: '', name: gettext('Domain name'), value: gettext(os_info_obj['domain_name']) },
             { icon: '', name: gettext('Architecture'), value: gettext(os_info_obj['architecture']) },
-            { icon: '', name: gettext('Os up since seconds'), value: gettext(os_info_obj['os_up_since_seconds']) },
+            { icon: '', name: gettext('OS uptime (seconds)'), value: gettext(os_info_obj['os_up_since_seconds']) },
           ];
           setOsStats(os_info_list);
 
@@ -145,7 +145,7 @@ export default function Summary({preferences, sid, did, pageVisible, enablePoll=
             { icon: '', name: gettext('Vendor'), value: gettext(cpu_info_obj['vendor']) },
             { icon: '', name: gettext('Description'), value: gettext(cpu_info_obj['description']) },
             { icon: '', name: gettext('Model name'), value: gettext(cpu_info_obj['model_name']) },
-            { icon: '', name: gettext('No of cores'), value: gettext(cpu_info_obj['no_of_cores']) },
+            { icon: '', name: gettext('Number of cores'), value: gettext(cpu_info_obj['no_of_cores']) },
             { icon: '', name: gettext('Architecture'), value: gettext(cpu_info_obj['architecture']) },
             { icon: '', name: gettext('Clock speed Hz'), value: gettext(cpu_info_obj['clock_speed_hz']) },
             { icon: '', name: gettext('L1 dcache size'), value: gettext(cpu_info_obj['l1dcache_size']) },

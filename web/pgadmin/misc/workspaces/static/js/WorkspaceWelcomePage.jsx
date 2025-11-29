@@ -89,13 +89,13 @@ export default function WorkspaceWelcomePage({ mode }) {
   let welcomeIcon = <QueryToolIcon style={{height: '1.5rem'}} />;
   let welcomeTitle = gettext('Welcome to the Query Tool Workspace!');
   let welcomeFirst = gettext('The Query Tool is a robust and versatile environment designed for executing SQL commands and reviewing result sets efficiently.');
-  let welcomeSecond = gettext('In this workspace, you can seamlessly open and manage multiple query tabs, making it easier to organize your work. You can select the existing servers or create a completely new ad-hoc connection to any database server as needed.');
+  let welcomeSecond = gettext('In this workspace, you can seamlessly open and manage multiple query tabs, making it easier to organize your work. You can connect to existing servers or create an ad-hoc connection to any database server as needed.');
 
   if (mode == WORKSPACES.PSQL_TOOL) {
     welcomeIcon = <TerminalRoundedIcon style={{height: '2rem', width: 'unset'}} />;
     welcomeTitle = gettext('Welcome to the PSQL Workspace!');
     welcomeFirst = gettext('The PSQL tool allows users to connect to PostgreSQL or EDB Advanced server using the psql command line interface.');
-    welcomeSecond = gettext('In this workspace, you can seamlessly open and manage multiple PSQL tabs, making it easier to organize your work. You can select the existing servers or create a completely new ad-hoc connection to any database server as needed.');
+    welcomeSecond = gettext('In this workspace, you can seamlessly open and manage multiple PSQL tabs, making it easier to organize your work. You can connect to existing servers or create an ad-hoc connection to any database server as needed.');
   }
 
   return (

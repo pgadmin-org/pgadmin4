@@ -101,7 +101,7 @@ class CloudDBCredSchema extends BaseUISchema {
       }, {
         id: 'session_token', label: gettext('AWS session token'), type: 'multiline',
         mode: ['create'], noEmpty: false,
-        helpMessage: gettext('Temporary AWS session required session token.')
+        helpMessage: gettext('Session token required for temporary AWS sessions.')
       }
     ];
   }

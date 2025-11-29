@@ -647,9 +647,9 @@ export default class ERDTool extends React.Component {
 
   onDeleteNode() {
     pgAdmin.Browser.notifier.confirmDelete(
-      gettext('Delete ?'),
+      gettext('Delete?'),
       gettext('You have selected %s tables and %s links.', this.diagram.getSelectedNodes().length, this.diagram.getSelectedLinks().length)
-        + '<br />' + gettext('Are you sure you want to delete ?'),
+        + '<br />' + gettext('Are you sure you want to delete?'),
       () => {
         this.diagram.getSelectedNodes().forEach((node)=>{
           this.diagram.removeNode(node);

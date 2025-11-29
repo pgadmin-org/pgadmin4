@@ -720,7 +720,7 @@ class AzureClusterSchema extends BaseUISchema {
 
   validate(data, setErr) {
     if ( !isEmptyString(data.name) && (!/^[a-z0-9-]*$/.test(data.name) || data.name.length < 3)) {
-      setErr('name',gettext('Name must be more than 2 characters and must only contain lowercase letters, numbers, and hyphens'));
+      setErr('name',gettext('Name must be more than 2 characters and must only contain lowercase letters, numbers, and hyphens.'));
       return true;
     }
 
