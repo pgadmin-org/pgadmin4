@@ -945,8 +945,8 @@ class ServerNode(PGChildNodeView):
                 if arg in data:
                     return forbidden(
                         errmsg=gettext(
-                            "'{0}' is not allowed to modify, "
-                            "when server is connected."
+                            "'{0}' cannot be modified "
+                            "when the server is connected."
                         ).format(disp_lbl[arg])
                     )
 
@@ -1968,7 +1968,7 @@ class ServerNode(PGChildNodeView):
                     info=msg,
                     data={'in_recovery': True, 'wal_pause': pause}
                 )
-            return gone(errormsg=gettext('Please connect the server.'))
+            return gone(errormsg=gettext('Please connect to the server.'))
         except Exception as e:
             current_app.logger.error(
                 'WAL replay pause/resume failed'
@@ -2026,7 +2026,7 @@ class ServerNode(PGChildNodeView):
             conn = manager.connection()
             if not conn.connected():
                 return gone(
-                    errormsg=gettext('Please connect the server.')
+                    errormsg=gettext('Please connect to the server.')
                 )
 
             if (not server.password or not manager.password) and \
@@ -2147,7 +2147,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            info=gettext("The saved password cleared successfully."),
+            info=gettext("The saved password was cleared successfully."),
             data={'is_password_saved': False}
         )
 
@@ -2179,7 +2179,7 @@ class ServerNode(PGChildNodeView):
 
         return make_json_response(
             success=1,
-            info=gettext("The saved password cleared successfully."),
+            info=gettext("The saved password was cleared successfully."),
             data={'is_tunnel_password_saved': False}
         )
 

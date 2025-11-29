@@ -355,7 +355,7 @@ def register_editor_preferences(self):
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
             'Decides how many empty lines to leave between SQL statements. '
-            'If zero it puts no new line.'
+            'A value of zero means no empty lines are added.'
         )
     )
 
