@@ -212,7 +212,7 @@ class DebuggerModule(PgAdminModule):
         self.preference.register(
             'keyboard_shortcuts',
             'switch_panel',
-            gettext('Switch Panel'),
+            gettext('Switch panel'),
             'keyboardshortcut',
             {
                 'alt': True,
@@ -1658,7 +1658,7 @@ def deposit_parameter_value(trans_id):
             if result['rows'][0]['pldbg_deposit_value']:
                 info = gettext('Value deposited successfully')
             else:
-                info = gettext('Error while setting the value')
+                info = gettext('Error setting the value')
             return make_json_response(
                 data={
                     'status': status,

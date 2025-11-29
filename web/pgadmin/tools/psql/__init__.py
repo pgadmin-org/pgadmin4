@@ -431,8 +431,8 @@ def enter_key_press(data):
         sio.emit('pty-output',
                  {
                      'result': gettext(
-                         'Connection terminated, To create new '
-                         'connection please open another psql'
+                         'Connection terminated. To create a new '
+                         'connection, please open another psql'
                          ' tool.'),
                      'error': True},
                  namespace='/pty', room=request.sid)

@@ -297,7 +297,7 @@ def create_import_export_job(sid):
         id=sid).first()
 
     if server is None:
-        return bad_request(errormsg=_("Could not find the given server"))
+        return bad_request(errormsg=_("Could not find the specified server."))
 
     # To fetch MetaData for the server
     from pgadmin.utils.driver import get_driver
@@ -333,13 +333,13 @@ def create_import_export_job(sid):
             return bad_request(errormsg=str(e))
 
         if not _file:
-            return bad_request(errormsg=_('Please specify a valid file'))
+            return bad_request(errormsg=_('Please specify a valid file.'))
         elif IS_WIN:
             _file = _file.replace('\\', '/')
 
         data['filename'] = _file
     else:
-        return bad_request(errormsg=_('Please specify a valid file'))
+        return bad_request(errormsg=_('Please specify a valid file.'))
 
     # Get required and other columns list
     cols = _get_formatted_column_list(data, 'columns', driver, conn)

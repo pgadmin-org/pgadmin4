@@ -596,8 +596,8 @@ def validate_unique_user(data):
     ).count()
 
     if exist_users != 0:
-        raise InternalServerError(_("User email/username must be unique "
-                                    "for an authentication source."))
+        raise InternalServerError(_("User email or username must be unique "
+                                    "for each authentication source."))
 
 
 def validate_user(data):
@@ -718,7 +718,7 @@ def update_user(uid, data):
 
     for f in non_editable_params:
         if f in data:
-            return False, _("'{0}' is not allowed to modify.").format(f)
+            return False, _("'{0}' cannot be modified.").format(f)
 
     try:
         new_data = validate_user(data)

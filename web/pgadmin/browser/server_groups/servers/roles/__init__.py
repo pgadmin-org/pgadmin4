@@ -904,7 +904,7 @@ rolmembership:{
 
         if not status:
             return internal_server_error(
-                _("Could not generate reversed engineered query for the "
+                _("Could not generate reverse-engineered query for the "
                   "role.\n{0}").format(
                     res
                 )
@@ -912,7 +912,7 @@ rolmembership:{
 
         if res is None or (len(res) == 0):
             return gone(
-                _("Could not generate reversed engineered query for the role.")
+                _("Could not generate reverse-engineered query for the role.")
             )
 
         return ajax_response(response=res.strip('\n'))
