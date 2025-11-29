@@ -334,7 +334,7 @@ class GoogleHighAvailabilitySchema extends BaseUISchema {
 
   validate(data, setErrMsg) {
     if (data.high_availability && (isEmptyString(data.secondary_availability_zone)) || (data.secondary_availability_zone == data.availability_zone)) {
-      setErrMsg('secondary_availability_zone', gettext('Please select Secondary availability zone different than primary.'));
+      setErrMsg('secondary_availability_zone', gettext('Please select a secondary availability zone different from the primary.'));
       return true;
     }
     return false;

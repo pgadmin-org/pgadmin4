@@ -166,7 +166,7 @@ class AzureCredSchema extends BaseUISchema {
         deps: ['auth_btn'],
         type: (state)=>({
           type: 'note',
-          text: `To complete the authenticatation, use a web browser to open the page https://microsoft.com/devicelogin and enter the code : <strong>${state.auth_code}</strong>`,
+          text: `To complete the authentication, use a web browser to open the page https://microsoft.com/devicelogin and enter the code: <strong>${state.auth_code}</strong>`,
         }),
         visible: (state)=>{
           return Boolean(state.auth_code);

@@ -77,7 +77,7 @@ export default class DBMSScheduleSchema extends BaseUISchema {
       end_time_js = moment(end_time_js[0] + ' ' + end_time_js[1]);
 
       if(end_time_js.isBefore(start_time_js)) {
-        setError('jsscend', gettext('Start time must be less than end time.'));
+        setError('jsscend', gettext('Start time must be earlier than end time.'));
         return true;
       } else {
         setError('jsscend', null);
