@@ -144,7 +144,7 @@ export default function Roles({roles, updateRoles}) {
     minSize: 50,
   },
   {
-    header: gettext('Decscription'),
+    header: gettext('Description'),
     accessorKey: 'description',
     size: 100,
     minSize: 100,
