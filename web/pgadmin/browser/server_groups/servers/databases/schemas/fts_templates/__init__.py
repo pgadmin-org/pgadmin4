@@ -755,14 +755,14 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(
                 gettext(
-                    "Could not generate reversed engineered query for the "
+                    "Could not generate reverse-engineered query for the "
                     "FTS Template.\n{0}").format(res)
             )
 
         if res is None:
             return gone(
                 gettext(
-                    "Could not generate reversed engineered query for "
+                    "Could not generate reverse-engineered query for "
                     "FTS Template node.")
             )
 

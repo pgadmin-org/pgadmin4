@@ -185,7 +185,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       id: 'pub', label: gettext('Publication'),
       group: gettext('Connection'), mode: ['create', 'edit'],
       deps: ['all_table', 'host', 'port', 'username', 'db', 'password'], disabled: obj.isAllConnectionDataEnter,
-      helpMessage: gettext('Click the refresh button to get the publications'),
+      helpMessage: gettext('Click the refresh button to get the publications.'),
       helpMessageMode: ['edit', 'create'],
       type: (state)=>{
         return {
@@ -316,7 +316,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('With'),
       disabled: obj.isSameDB,
       readonly: obj.isConnect, deps :['connect', 'host', 'port'],
-      helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher.This field will be disabled and set to false if subscription connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang.'),
+      helpMessage: gettext('Specifies whether the command should create the replication slot on the publisher. This field will be disabled and set to false if the subscription connects to the same database. Otherwise, the CREATE SUBSCRIPTION call will hang.'),
       helpMessageMode: ['edit', 'create'],
       depChange: (state) => {
         // Set create_slot to false if same DB, else true
@@ -332,7 +332,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('With'),
       readonly: obj.isConnect, deps :['connect'],
-      helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just setup but not started yet.'),
+      helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just set up but not started yet.'),
       helpMessageMode: ['edit', 'create'],
     },
     {
@@ -483,7 +483,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       type: 'switch', mode: ['create', 'edit', 'properties'],
       group: gettext('With'),
       min_version: 170000,
-      helpMessage: gettext('Specifies whether the replication slots associated with the subscription are enabled to be synced to the standbys so that logical replication can be resumed from the new primary after failover'),
+      helpMessage: gettext('Specifies whether the replication slots associated with the subscription are enabled to be synced to the standbys so that logical replication can be resumed from the new primary after failover.'),
       helpMessageMode: ['edit', 'create'],
     },
     ];
@@ -491,7 +491,7 @@ export default class SubscriptionSchema extends BaseUISchema{
 
   validate(state, setError) {
     let errmsg = null;
-    errmsg = gettext('Either Host name, Address must be specified.');
+    errmsg = gettext('Either Host name or Address must be specified.');
     if(isEmptyString(state.host)) {
       setError('host', errmsg);
       return true;

@@ -409,7 +409,7 @@ class RangeSchema extends BaseUISchema {
 
     if(state.typtype === 'r') {
       if (isEmptyString(state.typname)) {
-        errmsg = gettext('Subtype cannot be empty');
+        errmsg = gettext('Subtype cannot be empty.');
         setError('typname', errmsg);
         return true;
       }
@@ -812,13 +812,13 @@ class ExternalSchema extends BaseUISchema {
     if(state.typtype === 'b') {
 
       if (isEmptyString(state.typinput)) {
-        errmsg = gettext('Input function cannot be empty');
+        errmsg = gettext('Input function cannot be empty.');
         setError('typinput', errmsg);
         return true;
       }
 
       if (isEmptyString(state.typoutput)) {
-        errmsg = gettext('Output function cannot be empty');
+        errmsg = gettext('Output function cannot be empty.');
         setError('typoutput', errmsg);
         return true;
       }

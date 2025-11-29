@@ -713,12 +713,12 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_scalar(sql)
             if not status:
                 return internal_server_error(gettext(
-                    "Could not generate reversed engineered SQL for the cast."
+                    "Could not generate reverse-engineered SQL for the cast."
                 ) + "\n\n{0}".format(res))
 
             if res is None:
                 return gone(gettext(
-                    "Could not generate reversed engineered SQL for the "
+                    "Could not generate reverse-engineered SQL for the "
                     "cast node."
                 ))
 

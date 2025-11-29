@@ -2042,7 +2042,7 @@ class ServerNode(PGChildNodeView):
             )
         except Exception as e:
             current_app.logger.error(
-                'Cannot able to fetch pgpass status'
+                'Unable to fetch pgpass status'
             )
             return internal_server_error(errormsg=str(e))
 

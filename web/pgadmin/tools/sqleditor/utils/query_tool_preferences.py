@@ -56,7 +56,7 @@ def register_query_tool_preferences(self):
 
     self.explain_wal = self.preference.register(
         'Explain', 'explain_wal',
-        gettext("Show wal?"), 'boolean', False,
+        gettext("Show WAL?"), 'boolean', False,
         category_label=PREF_LABEL_EXPLAIN
     )
 
@@ -104,8 +104,8 @@ def register_query_tool_preferences(self):
         gettext("Prompt to save unsaved query changes?"), 'boolean', True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'Specifies whether or not to prompt user to save unsaved '
-            'query on query tool exit.'
+            'Specifies whether or not to prompt the user to save unsaved '
+            'queries on Query Tool exit.'
         )
     )
 
@@ -125,7 +125,7 @@ def register_query_tool_preferences(self):
         gettext("Prompt to save unsaved data changes?"), 'boolean', True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'Specifies whether or not to prompt user to save unsaved '
+            'Specifies whether or not to prompt the user to save unsaved '
             'data on data grid exit.'
         )
     )
@@ -136,7 +136,7 @@ def register_query_tool_preferences(self):
         True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'Specifies whether or not to prompt user to commit or rollback '
+            'Specifies whether or not to prompt the user to commit or rollback '
             'an active transaction on Query Tool exit.'
         )
     )
@@ -147,8 +147,8 @@ def register_query_tool_preferences(self):
         False,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'Specifies whether or not to copy SQL to query tool from '
-            'main window.'
+            'Specifies whether or not to copy SQL to the Query Tool from '
+            'the main window.'
         )
     )
 
@@ -168,8 +168,8 @@ def register_query_tool_preferences(self):
         'boolean', True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'If set to True, View/Edit Data tool will show promote to '
-            'Query tool confirm dialog on query edit.'
+            'If set to True, the View/Edit Data tool will show a confirmation '
+            'dialog to promote to Query Tool when the query is edited.'
         )
     )
 
@@ -179,7 +179,7 @@ def register_query_tool_preferences(self):
         'boolean', False,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'If set to True, query tool will parse and underline '
+            'If set to True, the Query Tool will parse and underline '
             'the query at the cursor position.'
         )
     )
@@ -190,9 +190,9 @@ def register_query_tool_preferences(self):
         'boolean', True,
         category_label=PREF_LABEL_OPTIONS,
         help_str=gettext(
-            'If set to True, query tool will warn upon clicking the '
-            'Execute Query button in the query tool. The warning will '
-            'appear only if Underline query at cursor? is set to False.'
+            'If set to True, the Query Tool will display a warning when '
+            'clicking the Execute Query button. The warning will appear '
+            'only if "Underline query at cursor?" is set to False.'
         )
     )
 
@@ -296,7 +296,7 @@ def register_query_tool_preferences(self):
                  {'label': gettext('Column name'), 'value': 'by_name'}],
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext(
-            'If set to \'Column data\' columns will auto-size to the maximum '
+            'If set to \'Column data\', columns will auto-size to the maximum '
             'width of the data in the column as loaded in the first batch. If '
             'set to \'Column name\', the column will be sized to the widest '
             'of the data type or column name.'
@@ -310,7 +310,7 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext(
             'Specify the maximum width of the column in pixels when '
-            '\'Columns sized by \' is set to \'Column data\'.'
+            '\'Columns sized by\' is set to \'Column data\'.'
         ),
     )
 
@@ -319,17 +319,17 @@ def register_query_tool_preferences(self):
         gettext("Data result rows per page"), 'integer',
         DATA_RESULT_ROWS_PER_PAGE, min_val=10,
         category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('Specify the number of records to fetch in one batch.'
-                         ' Changing this value will override'
-                         ' DATA_RESULT_ROWS_PER_PAGE setting from config '
-                         ' file.')
+        help_str=gettext('Specify the number of records to fetch in one batch. '
+                         'Changing this value will override the '
+                         'DATA_RESULT_ROWS_PER_PAGE setting from the config '
+                         'file.')
     )
 
     self.stripped_rows = self.preference.register(
         'Results_grid', 'striped_rows',
         gettext("Striped rows?"), 'boolean',
         True, category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('If set to true, the result grid will display'
+        help_str=gettext('If set to True, the result grid will display'
                          ' rows with alternating background colors.')
     )
 
@@ -337,8 +337,8 @@ def register_query_tool_preferences(self):
         'Results_grid', 'max_column_data_display_length',
         gettext("Max column data display length"), 'integer',
         200, category_label=PREF_LABEL_RESULTS_GRID,
-        help_str=gettext('Maximum number of characters to be visible in the'
-                         ' data output cell.')
+        help_str=gettext('Maximum number of characters to display in a '
+                         'data cell.')
     )
 
     self.display_connection_status = self.preference.register(
@@ -744,8 +744,8 @@ def register_query_tool_preferences(self):
         'auto_completion', 'keywords_in_uppercase',
         gettext("Keywords in uppercase"), 'boolean', True,
         category_label=gettext('Auto completion'),
-        help_str=gettext('If set to True, Keywords will be displayed '
-                         'in upper case for auto completion.')
+        help_str=gettext('If set to True, keywords will be displayed '
+                         'in upper case for autocomplete.')
     )
 
     self.preference.register(

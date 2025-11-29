@@ -55,8 +55,8 @@ def register_browser_preferences(self):
             gettext("Hide shared servers?"), 'boolean', False,
             category_label=gettext('Display'),
             help_str=gettext(
-                'If set to True, then all shared servers will be '
-                'hidden from browser tree'
+                'If set to True, all shared servers will be '
+                'hidden from the browser tree.'
             )
         )
 
@@ -75,8 +75,8 @@ def register_browser_preferences(self):
         gettext("Confirm on close or refresh?"), 'boolean',
         True, category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Confirm closure or refresh of the browser or browser tab is '
-            'intended before proceeding.'
+            'Confirm that closure or refresh of the browser or browser tab '
+            'is intended before proceeding.'
         )
     )
 
@@ -114,7 +114,7 @@ def register_browser_preferences(self):
         min_val=1, max_val=9999,
         help_str=gettext(
             'The maximum number of history rows to show on '
-            'the Statistics tab for pgAgent jobs'
+            'the Statistics tab for pgAgent jobs.'
         )
     )
 
@@ -410,8 +410,8 @@ def register_browser_preferences(self):
         gettext("Dynamic tab size"), 'boolean', False,
         category_label=PREF_LABEL_TABS_SETTINGS,
         help_str=gettext(
-            'If set to True, the tabs will take full size as per the title, '
-            'it will also applicable for already opened tabs')
+            'If set to True, the tabs will take full size as per the title. '
+            'This will also apply to already opened tabs.')
     )
 
     self.qt_tab_title = self.preference.register(
@@ -422,8 +422,7 @@ def register_browser_preferences(self):
         help_str=gettext(
             'Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. '
             'Users can provide any string with or without placeholders of'
-            ' their choice. The blank title will be revert back to the'
-            ' default title with placeholders.'
+            ' their choice. A blank title will revert to the default.'
         )
     )
 
@@ -435,8 +434,8 @@ def register_browser_preferences(self):
         help_str=gettext(
             'Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, '
             '%USERNAME%, and %SERVER%. Users can provide any string with or '
-            'without placeholders of their choice. The blank title will be '
-            'revert back to the default title with placeholders.'
+            'without placeholders of their choice. A blank title will revert '
+            'to the default.'
         )
     )
 
@@ -448,8 +447,8 @@ def register_browser_preferences(self):
         help_str=gettext(
             'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and'
             ' %DATABASE%. Users can provide any string with or '
-            'without placeholders of their choice. The blank title will be'
-            ' revert back to the default title with placeholders.'
+            'without placeholders of their choice. A blank title will revert '
+            'to the default.'
         )
     )
 
@@ -470,9 +469,9 @@ def register_browser_preferences(self):
         category_label=PREF_LABEL_OPTIONS,
         options=open_new_tab_options,
         help_str=gettext(
-            'Select Query Tool, Debugger, Schema Diff, ERD Tool '
-            'or PSQL Tool from the drop-down to set '
-            'open in new browser tab for that particular module.'
+            'Select Query Tool, Debugger, Schema Diff, ERD Tool, '
+            'or PSQL Tool from the drop-down to open that module '
+            'in a new browser tab.'
         ),
         control_props={
             'multiple': True, 'allowClear': False,
@@ -493,8 +492,8 @@ def register_browser_preferences(self):
             help_str=gettext(
                 'Supported placeholders are %DATABASE%, %USERNAME%, '
                 'and %SERVER%. Users can provide any string with or without'
-                ' placeholders of their choice. The blank title will be revert'
-                ' back to the default title with placeholders.'
+                ' placeholders of their choice. A blank title will revert '
+                'to the default.'
             )
         )
 

@@ -330,8 +330,8 @@ def register_editor_preferences(self):
         gettext("Expression Width"), 'integer', 50,
         category_label=PREF_LABEL_SQL_FORMATTING,
         help_str=gettext(
-            'maximum number of characters in parenthesized expressions to be '
-            'kept on single line.'
+            'Maximum number of characters in parenthesized expressions to be '
+            'kept on a single line.'
         )
     )
 

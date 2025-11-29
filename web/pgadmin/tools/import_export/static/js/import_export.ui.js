@@ -135,7 +135,7 @@ export default class ImportExportSchema extends BaseUISchema {
           return (state?.format == 'binary' || !state?.is_import);
         },
         visible: !obj.isQueryExport,
-        helpMessage: gettext('Specifies how to behave when encountering an error converting a columns input value into its data type. An error_action value of stop means fail the command, while ignore means discard the input row and continue with the next one. The default is stop. The ignore option is applicable only for COPY FROM when the FORMAT is text or csv.')
+        helpMessage: gettext('Specifies how to behave when encountering an error converting a column\'s input value into its data type. An error_action value of stop means fail the command, while ignore means discard the input row and continue with the next one. The default is stop. The ignore option is applicable only for COPY FROM when the FORMAT is text or csv.')
       },
       {
         id: 'log_verbosity',
@@ -271,7 +271,7 @@ export default class ImportExportSchema extends BaseUISchema {
         disabled: function(state) {
           return (state?.format == 'binary' || !state?.is_import);
         },
-        helpMessage: gettext('Specifies the string that represents a default value. Each time the string is found in the input file, the default value of the corresponding column will be used. This option is allowed only in COPY FROM, and only when not using binary format'),
+        helpMessage: gettext('Specifies the string that represents a default value. Each time the string is found in the input file, the default value of the corresponding column will be used. This option is allowed only in COPY FROM, and only when not using binary format.'),
       },
       {
         id: 'export_group', type: 'group', label: obj.isQueryExport ? gettext('Query') : gettext('Columns'),
@@ -317,7 +317,7 @@ export default class ImportExportSchema extends BaseUISchema {
         group: 'export_group',
         type: 'sql',
         visible: obj.isQueryExport,
-        helpMessage: gettext('Specifies A SELECT, VALUES, INSERT, UPDATE, DELETE, or MERGE command whose results are to be copied.'),
+        helpMessage: gettext('Specifies a SELECT, VALUES, INSERT, UPDATE, DELETE, or MERGE command whose results are to be copied.'),
       },
       {
         id: 'force_quote_columns',
@@ -407,7 +407,7 @@ export default class ImportExportSchema extends BaseUISchema {
     if (this.isQueryExport) {
       let errmsg = null;
       if (isEmptyString(state.query)) {
-        errmsg = gettext('Export Data Query can not be empty.');
+        errmsg = gettext('Export Data Query cannot be empty.');
         setError('query', errmsg);
         return true;
       } else {

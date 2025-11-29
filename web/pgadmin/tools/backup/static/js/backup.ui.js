@@ -596,7 +596,7 @@ export default class BackupSchema extends BaseUISchema {
     }, {
       id: 'server_note',
       label: gettext('Note'),
-      text: gettext('The backup format will be PLAIN'),
+      text: gettext('The backup format will be PLAIN.'),
       type: 'note',
       visible: function() {
         return obj.backupType === 'server';
@@ -744,7 +744,7 @@ export default class BackupSchema extends BaseUISchema {
       label: gettext('objects'),
       group: gettext('Objects'),
       type: 'tree',
-      helpMessage: gettext('If Schema(s) is selected then it will take the backup of that selected schema(s) only'),
+      helpMessage: gettext('If Schema(s) is selected then it will take the backup of the selected schema(s) only.'),
       treeData: this.treeData,
       visible: () => {
         return isVisibleForServerBackup(obj?.backupType);
