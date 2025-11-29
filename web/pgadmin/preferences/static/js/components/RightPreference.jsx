@@ -46,7 +46,7 @@ export default function RightPreference({ schema, filteredItemIds, selectedItem,
     return (
       <Box className='PreferencesComponent-preferencesContainer'>
         <Box className='PreferencesComponent-noSelection'>
-          <Box>{gettext('Navigate to any below item to view or edit its preferences.')}</Box>
+          <Box>{gettext('Select an item below to view or edit its preferences.')}</Box>
           {selectedItem.children.map((child) => (
             <Box key={child.id}>
               <Link component='button' onClick={()=>setSelectedItem(child)} underline="hover">{child.name}</Link>

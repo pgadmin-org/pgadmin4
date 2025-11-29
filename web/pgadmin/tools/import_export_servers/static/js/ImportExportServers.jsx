@@ -107,7 +107,7 @@ export default function ImportExportServers({onClose}) {
           pgAdmin.Browser.notifier.alert(gettext('Import Servers'), msg);
         })
         .catch((err) => {
-          pgAdmin.Browser.notifier.alert(gettext('Import error'), err.response.data.errormsg);
+          pgAdmin.Browser.notifier.alert(gettext('Import Error'), err.response.data.errormsg);
         });
     }
 

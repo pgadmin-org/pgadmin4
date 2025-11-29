@@ -868,7 +868,7 @@ function Dashboard({
           })
             .then((res) => {
               if (res?.data?.['logs_disabled']) {
-                setSsMsg(gettext('Please enable the logging to view the server logs or check the log file is in place or not.'));
+                setSsMsg(gettext('Please enable logging to view the server logs, or check if the log file is in place.'));
               } else {
                 setDashData(parseData(res.data));
               }

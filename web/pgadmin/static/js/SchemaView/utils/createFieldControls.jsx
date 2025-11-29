@@ -72,7 +72,7 @@ export const createFieldControls = ({
 
     if (field.isFullTab) {
       if (field.type === inlineGroup)
-        throw new Error('Inline group can not be full tab control');
+        throw new Error('Inline group cannot be a full tab control.');
 
       const { visible } = schemaState.options(accessPath.concat(field.id));
       currentGroup = createGroup(
@@ -107,11 +107,11 @@ export const createFieldControls = ({
 
     if (field.type === inlineGroup) {
       if (inlineGroupId) {
-        throw new Error('inline-group can not be created within inline-group');
+        throw new Error('An inline-group cannot be created within an inline-group.');
       }
       inlineGroup = currentGroup.inlineGroups[inlineGroupId];
       if (inlineGroup) {
-        throw new Error('inline-group must be unique-id within a tab group');
+        throw new Error('An inline-group must have a unique ID within a tab group.');
       }
       inlineGroup = currentGroup.inlineGroups[inlineGroupId] = {
         control: View('InlineView'),
