@@ -47,7 +47,7 @@ export default function RoleDialog({role, onClose}) {
       try {
         api.post(url_for('user_management.role_save'), changeData)
           .then(()=>{
-            pgAdmin.Browser.notifier.success(gettext('Role Saved Successfully'));
+            pgAdmin.Browser.notifier.success(gettext('Role saved successfully.'));
             resolve();
             onClose(null, true);
           })

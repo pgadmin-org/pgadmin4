@@ -412,8 +412,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         <WizardStep stepId={1} >
           <Box sx={{ position: 'relative',top: '20%'}}>
             {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <Box sx={{ marginBottom: '1em', display: 'flex'}}>
-              <Box>{gettext('The verification code to authenticate the pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
-                <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
+              <Box>{gettext('The verification code to authenticate pgAdmin to EDB BigAnimal is: ')} <strong>{verificationCode}</strong>
+                <br/>{gettext('By clicking the button below, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
               </Box>
             </Box>}
             {cloudProvider == CLOUD_PROVIDERS.BIGANIMAL && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated}>

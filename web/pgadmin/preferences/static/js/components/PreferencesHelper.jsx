@@ -32,7 +32,7 @@ export async function reloadPgAdmin() {
 export function getNoteField(node, subNode, nodeData, note = '') {
   // Check and add the note for the element.
   if (subNode.label === gettext('Nodes') && node.label === gettext('Browser')) {
-    note = gettext('This settings is to Show/Hide nodes in the object explorer.');
+    note = gettext('This setting is used to show/hide nodes in the Object Explorer.');
   }
 
   if (note.length > 0) {
