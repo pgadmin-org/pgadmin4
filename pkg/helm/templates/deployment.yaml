@@ -205,7 +205,7 @@ spec:
           image: {{ template "pgadmin4.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-x", "-c"]
-          args: ['ls /usr/bin/python3.* | sort -V -r | head -n 1 | xargs -I {} cp {} python3']
+          args: ['ls /usr/bin/python3.* | sort -V -r | head -n 1 | xargs -i cp {} python3']
           workingDir: /emptyDir
           volumeMounts:
             - name: empty-dir
