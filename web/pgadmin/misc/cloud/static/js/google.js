@@ -52,8 +52,8 @@ export function GoogleCredentials(props) {
             }
           })
           .catch((error) => {
-            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while authentication: ${error}`)]);
-            reject(new Error(gettext(`Error while authentication: ${error}`)));
+            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error during authentication: ${error}`)]);
+            reject(new Error(gettext(`Error during authentication: ${error}`)));
           });
         });
       },
