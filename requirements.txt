@@ -42,7 +42,7 @@ libgravatar==1.0.*
 paramiko==3.5.1
 passlib==1.*
 psutil==7.1.*
-psycopg[c]==3.2.13
+psycopg[c]==3.3.0
 pyotp==2.*
 python-dateutil==2.*
 pytz==2025.*
