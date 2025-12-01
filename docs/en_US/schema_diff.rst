@@ -79,13 +79,13 @@ same or different (and within the same server or from different servers).
 
 Use the drop-down near to *Compare* button to ignore owner, whitespace, tablespace and grants.
 
- * Ignore Owner – Select to ignores the owner while comparing the objects.
+ * Ignore Owner – Select to ignore the owner while comparing the objects.
 
- * Ignore Whitespace – Select to ignores the whitespace while comparing the string objects. Whitespace includes space, tabs, and CRLF.
+ * Ignore Whitespace – Select to ignore the whitespace while comparing the string objects. Whitespace includes space, tabs, and CRLF.
 
- * Ignore Tablespace – Select to ignores the tablespace while comparing the objects.
+ * Ignore Tablespace – Select to ignore the tablespace while comparing the objects.
 
- * Ignore Grant/Revoke – Select to ignores the grant and revoke command while comparing the objects.
+ * Ignore Grant/Revoke – Select to ignore the grant and revoke command while comparing the objects.
 
 After you select servers, and databases, click on the
 *Compare* button to obtain the *Comparison Result*.

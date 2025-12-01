@@ -57,7 +57,7 @@ settings:
   deterministic comparisons. By default, this option is set to true. In a
   deterministic comparison, strings that are not byte-wise equal are considered
   unequal, even if they are considered logically equal in the comparison.
-* Use the *Rules* field to specify a rules for customizing the behavior of the collation.
+* Use the *Rules* field to specify rules for customizing the behavior of the collation.
   It includes considerations such as character ordering, case sensitivity, and accent
   sensitivity.
 * Use the *Version* field to specify version string to store with the collation object.
@@ -65,8 +65,8 @@ settings:
 
 Click the *SQL* tab to continue.
 
-Your entries in the *Collation* dialog generate a SQL command (see an example b
-elow). Use the *SQL* tab for review; revisit or switch tabs to make any changes
+Your entries in the *Collation* dialog generate a SQL command (see an example
+below). Use the *SQL* tab for review; revisit or switch tabs to make any changes
 to the SQL command.
 
 Example
@@ -80,7 +80,7 @@ the *Collation* dialog:
     :align: center
 
 The example shown demonstrates creating a collation named *french* that uses the
-rules specified for the locale, *fr-BI-x-icu.  The collation is owned by
+rules specified for the locale, *fr-BI-x-icu*.  The collation is owned by
 *postgres*.
 
 * Click the *Info* button (i) to access online help. For more information about

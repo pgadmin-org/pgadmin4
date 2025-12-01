@@ -23,6 +23,8 @@ New features
   | `Issue #6388 <https://github.com/pgadmin-org/pgadmin4/issues/6388>`_ -  Add support of DEPENDS/NO DEPENDS ON EXTENSION for INDEX.
   | `Issue #6390 <https://github.com/pgadmin-org/pgadmin4/issues/6390>`_ -  Add support of DEPENDS/NO DEPENDS ON EXTENSION for MATERIALIZED VIEW.
   | `Issue #8968 <https://github.com/pgadmin-org/pgadmin4/issues/8968>`_ -  Add support for showing the column data type beside column name in the object explorer.
+  | `Issue #9263 <https://github.com/pgadmin-org/pgadmin4/issues/9263>`_ -  Added Ubuntu 25.10 and Fedora 43
+  | `Issue #9345 <https://github.com/pgadmin-org/pgadmin4/issues/9345>`_ -  Add conditional TLS support for the Ingress in the Helm chart.
 
 Housekeeping
 ************
@@ -32,3 +34,6 @@ Bug fixes
 
   | `Issue #9155 <https://github.com/pgadmin-org/pgadmin4/issues/9155>`_ -  Fix pkg_resources deprecation warning by migrating Docker base image to python:3-alpine from alpine:latest.
   | `Issue #9297 <https://github.com/pgadmin-org/pgadmin4/issues/9297>`_ -  Fixed an issue where EXPLAIN should run on query under cursor if no text is selected.
+  | `Issue #9351 <https://github.com/pgadmin-org/pgadmin4/issues/9351>`_ -  Fixed an issue where opening file in Query Tool does not retain file name in tab.
+  | `Issue #9354 <https://github.com/pgadmin-org/pgadmin4/issues/9354>`_ -  Fixed an issue where connection is failing via Query Tool/PSQL Tool workspaces.
+  | `Issue #9393 <https://github.com/pgadmin-org/pgadmin4/issues/9393>`_ -  Fixed the Helm chart server definition and changed the app version.

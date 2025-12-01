@@ -156,7 +156,7 @@ function. Click the *Add* icon (+) to add each security label selection:
 
 * Specify a security label provider in the *Provider* field. The named provider
   must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a
+* Specify a security label in the *Security Label* field. The meaning of a
   given label is at the discretion of the label provider. PostgreSQL places no
   restrictions on whether or how a label provider must interpret security
   labels; it merely provides a mechanism for storing them.
@@ -167,7 +167,7 @@ in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 
-Your entries in the *Function* dialog generate a generate a SQL command (see an
+Your entries in the *Function* dialog generate a SQL command (see an
 example below). Use the *SQL* tab for review; revisit or switch tabs to make any
 changes to the SQL command.
 
@@ -181,8 +181,8 @@ the *Function* dialog:
     :alt: Function dialog sql tab
     :align: center
 
-The example demonstrates creating an *plpgsql* function named *hire_salesmen*. The
-function have three columns (p_ename, p_sal and p_comm).
+The example demonstrates creating a *plpgsql* function named *hire_salesmen*. The
+function has three columns (p_ename, p_sal and p_comm).
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.

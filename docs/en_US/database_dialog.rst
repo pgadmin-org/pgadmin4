@@ -63,7 +63,7 @@ Use the *Definition* tab to set properties for the database:
 * Specify a connection limit in the *Connection Limit* field to configure the
   maximum number of connection requests. The default value (*-1*) allows
   unlimited connections to the database.
-* If the *templates?* is set to true, then database will be a template database.
+* If *Template?* is set to *Yes*, the database will be a template database.
 
 Click the *Security* tab to continue.
 
@@ -89,7 +89,7 @@ database. Click the *Add* icon (+) to add each security label selection:
 
 * Specify a security label provider in the *Provider* field. The named provider
   must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a
+* Specify a security label in the *Security Label* field. The meaning of a
   given label is at the discretion of the label provider. PostgreSQL places no
   restrictions on whether or how a label provider must interpret security
   labels; it merely provides a mechanism for storing them.
@@ -125,8 +125,8 @@ Use the *Advanced* tab to set advanced parameters for the database.
 
 * Use *Schema restriction* field to provide a SQL restriction that will be used
   against the pg_namespace table to limit the schemas that you see.
-  For example, you might enter: *public* so that only *public* are shown in
-  the pgAdmin browser.Separate entries with a comma or tab as you type.
+  For example, you might enter: *public* so that only *public* is shown in
+  the pgAdmin browser. Separate entries with a comma or tab as you type.
 
 Click the *SQL* tab to continue.
 

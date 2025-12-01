@@ -103,8 +103,8 @@ button to deploy the instance on EDB BigAnimal.
 
 Once you click on the finish, one background process will start which will
 deploy the instance in the cloud and monitor the progress of the deployment.
-You can view all the background process with there running status and logs
-on the :ref:`Processes <processes>` tab
+You can view all the background processes with their running status and logs
+on the :ref:`Processes <processes>` tab.
 
 The Server will be added to the tree with the cloud deployment icon. Once the
 deployment is done, the server details will be updated.

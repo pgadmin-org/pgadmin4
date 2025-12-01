@@ -55,11 +55,11 @@ Use the fields in the *Definition* tab to define the sequence:
   to be preallocated and stored in memory for faster access. The minimum value
   is 1 (only one value can be generated at a time, i.e., no cache), and this is
   also the default.
-* Move the switch next to *Cycled* towards the *right position* to allow the sequence to wrap
+* Move the switch next to *Cycled* to the *Yes* position to allow the sequence to wrap
   around when the MAXVALUE or the MINVALUE has been reached by an ascending or
   descending sequence respectively. If the limit is reached, the next number
   generated will be the MINVALUE or MAXVALUE, respectively. The default is *No*.
-* Move the switch next to *Unlogged?* towards the *right position* to make the sequence Unlogged.
+* Move the switch next to *Unlogged?* to the *Yes* position to make the sequence Unlogged.
   The default is *No*. This option is available only on PostgreSQL 15 and above.
 * The *OWNED BY* option causes the sequence to be associated with a specific
   table column, such that if that column (or its whole table) is dropped, the
@@ -93,7 +93,7 @@ sequence. Click the *Add* icon (+) to add each security label selection:
 
 * Specify a security label provider in the *Provider* field. The named provider
   must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a
+* Specify a security label in the *Security Label* field. The meaning of a
   given label is at the discretion of the label provider. PostgreSQL places no
   restrictions on whether or how a label provider must interpret security
   labels; it merely provides a mechanism for storing them.
@@ -104,7 +104,7 @@ in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 
-Your entries in the *Sequence* dialog generate a generate a SQL command (see an
+Your entries in the *Sequence* dialog generate a SQL command (see an
 example below). Use the *SQL* tab for review; revisit or switch tabs to make any
 changes to the SQL command.
 

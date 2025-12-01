@@ -67,7 +67,7 @@ in the *Delete Row* popup.
 
 Click the *SQL* tab to continue.
 
-Your entries in the *Event Trigger* dialog generate a generate a SQL command.
+Your entries in the *Event Trigger* dialog generate a SQL command.
 Use the *SQL* tab for review; revisit or switch tabs to make any changes to the
 SQL command.
 

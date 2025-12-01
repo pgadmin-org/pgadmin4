@@ -224,6 +224,7 @@ class AdHocConnectionSchema extends BaseUISchema {
                 state.sid, 'get_new_connection_database'
               ),
               optionsReloadBasis: `${state.sid} ${this.isServerConnected(state.sid)}`,
+              optionsLoaded: (res) => this.dbs = res,
             };
           } else {
             return {type: 'text'};

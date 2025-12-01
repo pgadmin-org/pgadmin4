@@ -34,7 +34,7 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
 * Move switches in the **Type of objects** field box to specify details about
   the type of objects that will be backed up.
 
-   * Move the switch next to *Only data* towards right position to limit the back
+   * Move the switch next to *Only data* to the *Yes* position to limit the back
      up to data.
 
    * Move the switch next to *Only schemas* to limit the back up to schema-level
@@ -52,39 +52,39 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
 * Move switches in the **Do not save** field box to select the objects that will
   not be included in the backup.
 
-   * Move the switch next to *Owner* towards right position to exclude commands
+   * Move the switch next to *Owner* to the *Yes* position to exclude commands
      that set object ownership.
 
-   * Move the switch next to *Role passwords* towards right position to exclude
+   * Move the switch next to *Role passwords* to the *Yes* position to exclude
      passwords for roles.
 
-   * Move the switch next to *Privileges* towards right position to exclude
+   * Move the switch next to *Privileges* to the *Yes* position to exclude
      commands that create access privileges.
 
-   * Move the switch next to *Tablespaces* towards right position to exclude
+   * Move the switch next to *Tablespaces* to the *Yes* position to exclude
      tablespaces.
 
-   * Move the switch next to *Unlogged table data* towards right position to
+   * Move the switch next to *Unlogged table data* to the *Yes* position to
      exclude the contents of unlogged tables.
 
-   * Move the switch next to *Comments* towards right position to exclude
+   * Move the switch next to *Comments* to the *Yes* position to exclude
      commands that set the comments. **Note:** This option is visible only for
      database server greater than or equal to 11.
 
-   * Move the switch next to *Publications* towards right position to exclude
+   * Move the switch next to *Publications* to the *Yes* position to exclude
      publications.
 
-   * Move the switch next to *Subscriptions* towards right position to exclude
+   * Move the switch next to *Subscriptions* to the *Yes* position to exclude
      subscriptions.
 
-   * Move the switch next to *Security labels* towards right position to exclude
+   * Move the switch next to *Security labels* to the *Yes* position to exclude
      Security labels.
 
-   * Move the switch next to *Toast compressions* towards right position to exclude
+   * Move the switch next to *Toast compressions* to the *Yes* position to exclude
      Toast compressions. **Note:** This option is visible only for
      database server greater than or equal to 14.
 
-   * Move the switch next to *Table access methods* towards right position to exclude
+   * Move the switch next to *Table access methods* to the *Yes* position to exclude
      Table access methods. **Note:** This option is visible only for
      database server greater than or equal to 15.
 
@@ -95,7 +95,7 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
 Click the *Query Options* tab to continue. Use these additional fields to specify
 the type of statements that should be included in the backup.
 
-   * Move the switch next to *Use INSERT commands* towards right position to
+   * Move the switch next to *Use INSERT commands* to the *Yes* position to
      dump the data in the form of INSERT statements rather than using a COPY
      command.  Please note: this may make restoration from backup slow.
 
@@ -110,12 +110,12 @@ the type of statements that should be included in the backup.
      **Note:** This option is visible only for database server greater than or
      equal to 12.
 
-   * Move the switch next to *Include DROP DATABASE statement* towards right
+   * Move the switch next to *Include DROP DATABASE statement* to the *Yes*
      position to include a command in the backup that will drop any existing
      database object with the same name before recreating the object during a
      backup.
 
-   * Move the switch next to *Include IF EXISTS clause* towards right
+   * Move the switch next to *Include IF EXISTS clause* to the *Yes*
      position to add an IF EXISTS clause to drop databases and other objects.
      This option is not valid unless *Include DROP DATABASE statement* is also set.
 
@@ -126,11 +126,11 @@ the type of statements that should be included in the backup.
 Click the *Table Options* tab to continue. Use the fields in the *Table Options*
 tab related to tables that should be included in the backup.
 
-   * Move the switch next to *Use Column INSERTS* towards right position to dump
+   * Move the switch next to *Use Column INSERTS* to the *Yes* position to dump
      the data in the form of INSERT statements and include explicit column
      names. Please note: this may make restoration from backup slow.
 
-   * Move the switch next to *Load via partition root* towards right position,
+   * Move the switch next to *Load via partition root* to the *Yes* position,
      so when dumping a COPY or INSERT statement for a partitioned table, target
      the root of the partitioning hierarchy which contains it rather than the
      partition itself. **Note:** This option is visible only for database server
@@ -147,10 +147,10 @@ tab to provide other backup options.
   that should be excluded from the backup.
 
    * Move the switch next to *Triggers* (active when creating a data-only backup)
-     towards right position to include commands that will disable triggers on the
+     to the *Yes* position to include commands that will disable triggers on the
      target table while the data is being loaded.
 
-   * Move the switch next to *$ quoting* towards right position to enable dollar
+   * Move the switch next to *$ quoting* to the *Yes* position to enable dollar
      quoting within function bodies; if disabled, the function body will be
      quoted using SQL standard string syntax.
 
@@ -161,13 +161,13 @@ tab to provide other backup options.
 * Move switches in the **Miscellaneous** field box to specify miscellaneous
   backup options.
 
-   * Move the switch next to *Verbose messages* towards left position to instruct
+   * Move the switch next to *Verbose messages* to the *No* position to instruct
      *pg_dumpall* to exclude verbose messages.
 
-   * Move the switch next to *Force double quotes on identifiers* towards right
+   * Move the switch next to *Force double quotes on identifiers* to the *Yes*
      position to force the quoting of all identifiers.
 
-   * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right
+   * Move the switch next to *Use SET SESSION AUTHORIZATION* to the *Yes*
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
 
@@ -177,9 +177,9 @@ tab to provide other backup options.
    * Use the *Extra float digits* field to use the specified value when dumping
      floating-point data, instead of the maximum available precision.
 
-   * Use the *Lock wait timeout* field to do not wait forever to acquire shared
-     table locks at the beginning of the dump. Instead, fail if unable to lock a
-     table within the specified timeout.
+   * Use the *Lock wait timeout* field to specify a timeout rather than waiting
+     indefinitely to acquire shared table locks at the beginning of the dump.
+     If unable to lock a table within the specified timeout, the operation will fail.
 
 When you’ve specified the details that will be incorporated into the pg_dumpall
 command:
@@ -189,6 +189,6 @@ command:
 
 * Click the *Cancel* button to exit without saving work.
 
-pgAdmin will run the backup process in background. You can view all the background
-process with there running status and logs on the :ref:`Processes <processes>`
-tab
+pgAdmin will run the backup process in the background. You can view all the background
+processes with their running status and logs on the :ref:`Processes <processes>`
+tab.

@@ -72,7 +72,7 @@ Export Options
    |                      | You can select the option *With DROP Table* if you wish to have DROP Table DDL statements before  |                |
    |                      | each CREATE Table DDL. You can see the option by clicking the down arrow beside the SQL button.   |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option/Alt +   |
+   | *Download image*     | Click the *Download image* icon to save the ERD diagram in an image format.                       | Option/Alt +   |
    |                      |                                                                                                   | Ctrl + I       |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
@@ -135,7 +135,7 @@ Node Color Options
    | Icon                 | Behavior                                                                                                 |
    +======================+==========================================================================================================+
    | *Fill Color*         | Use Fill Color to change the background color of a table node. This is helpful if you want to            |
-   |                      | identify a of group tables. Once set, all the newly added tables will take the same color.               |
+   |                      | identify a group of tables. Once set, all the newly added tables will take the same color.               |
    +----------------------+----------------------------------------------------------------------------------------------------------+
    | *Text Color*         | Use Text Color to change the text color of a table node based on the fill color to make text             |
    |                      | easily readable.                                                                                         |
@@ -154,7 +154,7 @@ Utility Options
    | *Add/Edit note*         | Click this button to make notes on tables nodes while designing the database.                  | Option/Alt +   |
    |                         |                                                                                                | Ctrl + N       |
    +-------------------------+------------------------------------------------------------------------------------------------+----------------+
-   | *Auto align*            | Click this button to auto align all tables and links to make it look more cleaner.             | Option/Alt +   |
+   | *Auto align*            | Click this button to auto-align all tables and links to make them look cleaner.                | Option/Alt +   |
    |                         |                                                                                                | Ctrl + L       |
    +-------------------------+------------------------------------------------------------------------------------------------+----------------+
    | *Show details*          | Click this button to toggle the column details visibility. It allows you to show few or more   | Option/Alt +   |
@@ -194,7 +194,7 @@ Table Dialog
 The table dialog allows you to:
 
 * Change the table structure details.
-* It can be used edit an existing table or add a new one.
+* It can be used to edit an existing table or add a new one.
 * Refer :ref:`table dialog <table_dialog>` for information on different fields.
 
 Table Node
@@ -206,11 +206,11 @@ Table Node
 
 The table node shows table details in a graphical representation:
 
-* The top bar has a *details toggle button* that is used to toggle column details visibility. There is also a *note button* that is visible only if there is some note added. you can click on this button to quickly change the note.
+* The top bar has a *details toggle button* that is used to toggle column details visibility. There is also a *note button* that is visible only if there is some note added. You can click on this button to quickly change the note.
 * The first row shows the schema name of the table. Eg. *public* in above image.
 * The second row shows the table name. Eg. *users* in above image.
 * All other rows below the table name are the columns of the table along with data type. If the column is a primary key then it will have lock key icon eg. id is the primary key in above image. Otherwise, it will have column icon.
-* you can click on the node and drag to move on the canvas.
+* You can click on the node and drag to move on the canvas.
 * Upon double click on the table node or by clicking the edit button from the toolbar, the table dialog opens where you can change the table details. Refer :ref:`table dialog <table_dialog>` for information on different fields.
 
 The One to One Link Dialog
@@ -225,7 +225,7 @@ The one to one link dialog allows you to:
 * Add a one to one relationship between two tables.
 * *Local Table* is the table that references a table and has the *one* end point.
 * *Local Column* the column that references.
-* *Select Constraint* To implement one to one relationship, the *Local Column* must have primaty key or unique constraint. The default is a unique constraint. Please note that this field is visible only when the selected *Local Column* does not have either of the mentioned constraints.
+* *Select Constraint* To implement a one-to-one relationship, the *Local Column* must have a primary key or unique constraint. The default is a unique constraint. Please note that this field is visible only when the selected *Local Column* does not have either of the mentioned constraints.
 * *Referenced Table* is the table that is being referred and has the *one* end point.
 * *Referenced Column* the column that is being referred.
 
@@ -272,7 +272,7 @@ The table link shows relationship between tables:
 * The single line endpoint of the link shows the column that is being referred.
 * The three line endpoint of the link shows the column that refers.
 * If one of the columns that is being referred or that refers is removed from the table then the link will get dropped.
-* you can click on the link and drag to move on the canvas.
+* You can click on the link and drag to move on the canvas.
 
 
 The Table Notes

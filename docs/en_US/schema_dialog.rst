@@ -49,7 +49,7 @@ panel:
 
 * Specify a security label provider in the *Provider* field. The named provider
   must be loaded and must consent to the proposed labeling operation.
-* Specify a a security label in the *Security Label* field. The meaning of a
+* Specify a security label in the *Security Label* field. The meaning of a
   given label is at the discretion of the label provider. PostgreSQL places no
   restrictions on whether or how a label provider must interpret security
   labels; it merely provides a mechanism for storing them.

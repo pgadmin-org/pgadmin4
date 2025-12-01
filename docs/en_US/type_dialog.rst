@@ -162,7 +162,7 @@ disabled.
   values to a canonical form.
 * Use the drop-down listbox next to *Sub-type diff function* to select a
   user-defined subtype_diff function.
-* Specify the optional *Multirange type name* parameter to specifies the
+* Specify the optional *Multirange type name* parameter to specify the
   name of the corresponding multirange type. If not specified, this name is
   chosen automatically.
 

@@ -23,7 +23,7 @@ Use the fields in the *General* tab to identify an extension:
 
 * Use the drop-down listbox in the *Name* field to select the extension. Each
   extension must have a unique name.
-* Move the switch next to *Cascade?* towards right position to automatically
+* Move the switch next to *Cascade?* to the *Yes* position to automatically
   install any extensions that this extension depends on that are not already
   installed.
 * Store notes about the extension in the *Comment* field.
