@@ -153,5 +153,5 @@ containerSecurityContext:
   appArmorProfile:
     type: RuntimeDefault
   windowsOptions:
-
     hostProcess: false
+
