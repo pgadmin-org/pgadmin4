@@ -13,7 +13,7 @@ export default function ForgotPasswordPage({csrfToken, actionUrl, ...props}) {
   };
 
   return (
-    <BasePage title={gettext('Forget Password')} pageImage={<ForgotPasswordImage style={{height: '100%', width: '100%'}} />} {...props} >
+    <BasePage title={gettext('Forgot Password')} pageImage={<ForgotPasswordImage style={{height: '100%', width: '100%'}} />} {...props} >
       <form style={{display:'flex', gap:'15px', flexDirection:'column'}} action={actionUrl} method="POST">
         <input name="csrf_token" defaultValue={csrfToken} hidden/>
         <div>{gettext('Enter the email address for the user account you wish to recover the password for:')}</div>

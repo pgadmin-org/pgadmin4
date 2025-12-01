@@ -430,7 +430,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       .catch(() => {
         pgAdmin.Browser.notifier.alert(
           gettext('Debugger Error'),
-          gettext('Unable to fetch the arguments from server')
+          gettext('Unable to fetch the arguments from the server.')
         );
       });
   }

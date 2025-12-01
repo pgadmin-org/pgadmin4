@@ -80,7 +80,7 @@ export function Results() {
   return (
     (<Root>
       <Box className='Results-header'>
-        <span>{gettext('DDL Comparision')}</span>
+        <span>{gettext('DDL Comparison')}</span>
       </Box>
       <Box className='Results-labelContainer'>
         <Box className='Results-label'>{gettext('Source')}</Box>

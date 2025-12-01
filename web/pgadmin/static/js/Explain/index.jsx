@@ -506,7 +506,7 @@ function parsePlanData(data, ctx) {
 }
 
 export default function Explain({plans=[],
-  emptyMessage=gettext('Use Explain/Explain analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".')
+  emptyMessage=gettext('Use the Explain/Explain Analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".')
 }) {
 
   const [tabValue, setTabValue] = React.useState(0);

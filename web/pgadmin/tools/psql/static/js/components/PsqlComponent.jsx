@@ -86,7 +86,7 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
         if(result.state === 'granted' || result.state === 'prompt') {
           copyToClipboard(selected_text);
         } else {
-          pgAdmin.Browser.notifier.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
+          pgAdmin.Browser.notifier.alert(gettext('Clipboard Write Permission Required'), gettext('To copy data from the PSQL terminal, clipboard write permission is required.'));
         }
       });
     } else {
@@ -106,7 +106,7 @@ function psql_terminal_io(term, socket, platform, pgAdmin) {
           }
         });
       } else{
-        pgAdmin.Browser.notifier.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+        pgAdmin.Browser.notifier.alert(gettext('Clipboard Read Permission Required'), gettext('To paste data on the PSQL terminal, clipboard read permission is required.'));
       }
     });
   });

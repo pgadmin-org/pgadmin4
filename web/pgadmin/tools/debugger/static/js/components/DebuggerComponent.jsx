@@ -225,7 +225,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panelId, 
           messages(transId);
         } else if (res.data.data.status === 'NotConnected') {
           pgAdmin.Browser.notifier.alert(
-            gettext('Not connected to server or connection with the server has been closed.'),
+            gettext('Not connected to the server or the connection to the server has been closed.'),
             res.data.result
           );
         }
