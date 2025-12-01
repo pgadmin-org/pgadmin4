@@ -21,7 +21,7 @@ export default function withCheckPermission(options, callback) {
     } else {
       pgAdmin.Browser.notifier.alert(
         gettext('Permission Denied'),
-        gettext('You don’t have the necessary permissions to access this feature. Please contact your administrator for assistance')
+        gettext('You don\'t have the necessary permissions to access this feature. Please contact your administrator for assistance.')
       );
     }
   };

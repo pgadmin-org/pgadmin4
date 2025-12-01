@@ -32,7 +32,7 @@ export function GoogleCredentials(props) {
           'static', { 'filename': 'img/loading.gif'}
         );
         const axiosApi = getApiInstance();
-        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Google authentication process is in progress..<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
+        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Google authentication process is in progress. <img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
         let _url = url_for('google.verify_credentials');
         const post_data = {
           cloud: 'google',
@@ -52,8 +52,8 @@ export function GoogleCredentials(props) {
             }
           })
           .catch((error) => {
-            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while authentication: ${error}`)]);
-            reject(new Error(gettext(`Error while authentication: ${error}`)));
+            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error during authentication: ${error}`)]);
+            reject(new Error(gettext(`Error during authentication: ${error}`)));
           });
         });
       },

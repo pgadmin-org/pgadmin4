@@ -93,7 +93,7 @@ export default class BackupGlobalSchema extends BaseUISchema {
     }, {
       id: 'globals_note',
       label: gettext('Note'),
-      text: gettext('Only objects global to the entire database will be backed up, in PLAIN format'),
+      text: gettext('Only objects global to the entire database will be backed up, in PLAIN format.'),
       type: 'note',
     }];
   }

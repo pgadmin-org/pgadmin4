@@ -220,7 +220,7 @@ export default class PgaJobStepSchema extends BaseUISchema {
     }
 
     if (isEmptyString(state.jstonerror)) {
-      setError('jstonerror', gettext('Please select valid on error option.'));
+      setError('jstonerror', gettext('Please select a valid on error option.'));
       return true;
     } else {
       setError('jstonerror', null);

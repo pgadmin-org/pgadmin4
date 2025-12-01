@@ -62,7 +62,7 @@ export default class DataFilterSchema extends BaseUISchema {
     let errmsg = null;
 
     if (isEmptyString(state.filter_sql)) {
-      errmsg = gettext('Data filter can not be empty.');
+      errmsg = gettext('Data filter cannot be empty.');
       setError('filter_sql', errmsg);
       return true;
     } else {
