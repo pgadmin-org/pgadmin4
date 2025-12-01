@@ -13017,7 +13017,7 @@ __metadata:
     webpack-cli: "npm:^6.0.1"
     wkx: "npm:^0.5.0"
     yarn-audit-html: "npm:7.3.2"
-    zustand: "npm:^5.0.7"
+    zustand: "npm:^5.0.9"
   dependenciesMeta:
     sharp:
       optional: true
@@ -15502,9 +15502,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^5.0.7":
-  version: 5.0.8
-  resolution: "zustand@npm:5.0.8"
+"zustand@npm:^5.0.9":
+  version: 5.0.9
+  resolution: "zustand@npm:5.0.9"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -15519,6 +15519,6 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10c0/e865a6f7f1c0e03571701db5904151aaa7acefd6f85541a117085e129bf16e8f60b11f8cc82f277472de5c7ad5dcb201e1b0a89035ea0b40c9d9aab3cd24c8ad
+  checksum: 10c0/552849e4546c7760704d6509a5c412d57c62a1fa9e53169c939ba5e3d75f8cb3df50a64c3a22e6c3f1c8cc00de7543e4edd61ab5ae0c9169ba9a98e28303aba6
   languageName: node
   linkType: hard
