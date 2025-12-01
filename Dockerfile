@@ -31,7 +31,10 @@ RUN apk add --no-cache \
     yarn \
     zlib-dev
 
-COPY .git .git
+COPY .git /pgadmin4/.git
+# Create the /pgadmin4 directory and copy the source into it. Explicitly
+# remove the node_modules directory as we'll recreate a clean version, as well
+# as various other files we don't want
 COPY web /pgadmin4/web
 
 WORKDIR /pgadmin4/web
