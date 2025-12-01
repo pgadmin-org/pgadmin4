@@ -23,7 +23,7 @@ ALLOWED_FILE_EXTENSIONS = (
     "LICENSE", "Dockerfile", "Makefile", ".ts", ".tsx"
 )
 
-EXCLUDE_DIR = ("node_modules")
+EXCLUDE_DIR = ("node_modules",)
 
 
 # Filter the files by its extension
