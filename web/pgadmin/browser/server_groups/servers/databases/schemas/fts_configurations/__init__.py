@@ -942,7 +942,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(
                     _(
-                        "Could not generate reversed engineered query for the "
+                        "Could not generate reverse-engineered query for the "
                         "FTS Configuration.\n{0}"
                     ).format(res)
                 )
@@ -950,7 +950,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             if res is None:
                 return gone(
                     _(
-                        "Could not generate reversed engineered query for "
+                        "Could not generate reverse-engineered query for "
                         "FTS Configuration node.")
                 )
 
