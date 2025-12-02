@@ -29,6 +29,10 @@ restore process:
      copy of the backed-up object.
    * Select *Plain* to restore a plain SQL backup. When selecting this option
      all the other options will not be applicable.
+     **Note:** The plain SQL restore process is executed in the backend using
+     the psql command with the \restrict option. The purpose of \restrict is to
+     enhance security by preventing dangerous commands embedded in a plain text
+     dump file from being executed on a PostgreSQL server.
    * Select *Directory* to restore from a compressed directory-format archive.
 
 * Enter the complete path to the backup file in the *Filename* field.
