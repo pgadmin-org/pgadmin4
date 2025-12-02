@@ -92,16 +92,6 @@ define([
         }
       );
     },
-    saveCallBack: function(data) {
-      if(data.errormsg) {
-        pgAdmin.Browser.notifier.alert(
-          gettext('Error'),
-          gettext(data.errormsg)
-        );
-      } else {
-        pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
-      }
-    },
     setExtraParameters(treeInfo) {
       let extraData = {};
       extraData['database'] = treeInfo.database._label;

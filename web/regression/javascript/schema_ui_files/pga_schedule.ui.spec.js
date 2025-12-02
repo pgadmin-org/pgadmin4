@@ -55,7 +55,7 @@ describe('PgaJobScheduleSchema', ()=>{
 
     state.jscend = '2021-08-04 11:35:00+05:30';
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('jscend', 'Start time must be less than end time');
+    expect(setError).toHaveBeenCalledWith('jscend', 'Start time must be earlier than end time.');
 
     state.jscend = '2021-08-04 15:35:00+05:30';
     schemaObj.validate(state, setError);

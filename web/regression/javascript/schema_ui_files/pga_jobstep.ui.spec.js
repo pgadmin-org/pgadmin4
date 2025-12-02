@@ -95,7 +95,7 @@ describe('PgaJobStepSchema', ()=>{
     state.jstonerror = null;
     setError.mockClear();
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('jstonerror', 'Please select valid on error option.');
+    expect(setError).toHaveBeenCalledWith('jstonerror', 'Please select a valid on error option.');
 
     state.jstonerror = 'f';
     setError.mockClear();

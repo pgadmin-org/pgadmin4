@@ -162,11 +162,11 @@ describe('TypeSchema', ()=>{
       let setError = jest.fn();
 
       externalCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('typinput', 'Input function cannot be empty');
+      expect(setError).toHaveBeenCalledWith('typinput', 'Input function cannot be empty.');
 
       state.typinput = 'demo_input';
       externalCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('typoutput', 'Output function cannot be empty');
+      expect(setError).toHaveBeenCalledWith('typoutput', 'Output function cannot be empty.');
     });
   });
 
@@ -187,7 +187,7 @@ describe('TypeSchema', ()=>{
       let setError = jest.fn();
 
       rangeCollObj.validate(state, setError);
-      expect(setError).toHaveBeenCalledWith('typname', 'Subtype cannot be empty');
+      expect(setError).toHaveBeenCalledWith('typname', 'Subtype cannot be empty.');
     });
   });
 

@@ -70,7 +70,7 @@ describe('SubscriptionSchema', () => {
 
     state.host = null;
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('host', 'Either Host name, Address must be specified.');
+    expect(setError).toHaveBeenCalledWith('host', 'Either Host name or Address must be specified.');
 
     state.host = '127.0.0.1';
     schemaObj.validate(state, setError);
