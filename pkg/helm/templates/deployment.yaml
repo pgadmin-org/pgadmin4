@@ -154,7 +154,7 @@ spec:
               mountPath: /pgadmin4/preferences.json
               subPath: preferences.json
               {{- end }}
-              {{- with .Values.extraVolumes }}
+              {{- with .Values.extraVolumeMounts }}
               {{- . | toYaml | nindent 12 }}
               {{- end }}
           {{- if .Values.startupProbe.enabled }}
