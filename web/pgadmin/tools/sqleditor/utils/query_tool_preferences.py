@@ -265,7 +265,7 @@ def register_query_tool_preferences(self):
 
     self.results_grid_quote_char = self.preference.register(
         'Results_grid', 'results_grid_quote_char',
-        gettext("Result copy quote character"), 'options', '"',
+        gettext("Result copy quote character. Not applied when copying a single cell."), 'options', '"',
         category_label=PREF_LABEL_RESULTS_GRID,
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],

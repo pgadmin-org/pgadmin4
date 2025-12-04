@@ -29,9 +29,10 @@ export default class CopyData {
   }
 
   copyRowsToCsv(rows=[], columns=[], withHeaders=false) {
+    const isSingleCell = rows.length === 1 && columns.length === 1 && !withHeaders;
     let csvRows = rows.reduce((prevCsvRows, currRow)=>{
       let csvRow = columns.reduce((prevCsvCols, column)=>{
-        prevCsvCols.push(this.csvCell(currRow[column.key], column));
+        prevCsvCols.push(this.csvCell(currRow[column.key], column, false, isSingleCell));
         return prevCsvCols;
       }, []).join(this.CSVOptions.field_separator);
       prevCsvRows.push(csvRow);
@@ -80,11 +81,13 @@ export default class CopyData {
     return value;
   }
 
-  csvCell(value, column, header=false) {
-    if (this.CSVOptions.quoting == 'all' || header) {
-      value = this.allQuoteCell(value);
+  csvCell(value, column, header, isSingleCell=false) {
+    if(isSingleCell) {
+      return value;
+    } else if (this.CSVOptions.quoting == 'all' || header) {
+      return this.allQuoteCell(value);
     } else if(this.CSVOptions.quoting == 'strings') {
-      value = this.stringQuoteCell(value, column);
+      return this.stringQuoteCell(value, column);
     }
     return value;
   }

@@ -459,8 +459,6 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         rowHeight={25}
         mincolumnWidthBy={50}
         enableCellSelect={true}
-        onCopy={handleCopy}
-        onMultiCopy={handleCopy}
         onColumnResize={handleColumnResize}
         renderers={{
           renderRow: renderCustomRow,
