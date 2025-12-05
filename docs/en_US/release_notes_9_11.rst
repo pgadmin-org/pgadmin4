@@ -41,3 +41,4 @@ Bug fixes
   | `Issue #9399 <https://github.com/pgadmin-org/pgadmin4/issues/9399>`_ -  Specify the correct hostname placeholder for the Password Exec command.
   | `Issue #9408 <https://github.com/pgadmin-org/pgadmin4/issues/9408>`_ -  Ensure the proper handling of extra volume mount configurations in the Helm deployment template by correcting the configuration value references.
   | `Issue #9036 <https://github.com/pgadmin-org/pgadmin4/issues/9036>`_ -  Fixed an issue on type casting of default string function/procedure arguments in debugger tool.
+  | `Issue #9393 <https://github.com/pgadmin-org/pgadmin4/issues/9393>`_ -  Fix the Helm chart server definition and change the app version.
