@@ -797,6 +797,7 @@ def filter_params_by_default(params_list, default_value_str):
     default_values = []
     if default_value_str:
         # Split at comma, strip spaces, and add a space after index 0
+        # as the arguments coming from frontend has space
         raw_defaults = str(default_value_str).split(',')
         default_values = [
             v.strip() if i == 0 else ' ' + v.strip()
@@ -813,6 +814,8 @@ def filter_params_by_default(params_list, default_value_str):
                         gettext("Once a default value is passed, no "
                                 "subsequent arguments should be provided."))
             return params_list[:idx], None
+
+    # No params matched defaults, return all params
     return params_list, None
 
 
@@ -902,15 +905,12 @@ def initialize_target(debug_type, trans_id, sid, did,
     # be be required
     if request.data:
         params_list = json.loads(request.data)
-        try:
-            params_list, error_msg = filter_params_by_default(
-                params_list,
-                de_inst.function_data['default_value']
-            )
-            if error_msg:
-                return internal_server_error(errormsg=error_msg)
-        except Exception as e:
-            return internal_server_error(errormsg=str(e))
+        params_list, error_msg = filter_params_by_default(
+            params_list,
+            de_inst.function_data['default_value']
+        )
+        if error_msg:
+            return internal_server_error(errormsg=error_msg)
         de_inst.function_data['args_value'] = params_list
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
