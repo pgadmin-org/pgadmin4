@@ -785,6 +785,37 @@ def get_search_path(conn):
     return True, res
 
 
+def filter_params_by_default(params_list, default_value_str):
+    """
+    Truncate params_list at the first index where the param matches the
+    default value. If any subsequent param is present after default,
+    error is raised.
+    :param params_list:
+    :param default_value_str:
+    :return:
+    """
+    default_values = []
+    if default_value_str:
+        # Split at comma, strip spaces, and add a space after index 0
+        raw_defaults = str(default_value_str).split(',')
+        default_values = [
+            v.strip() if i == 0 else ' ' + v.strip()
+            for i, v in enumerate(raw_defaults)
+        ]
+    # Check for default value usage and subsequent params
+    for idx, param in enumerate(params_list):
+        if (idx < len(default_values) and str(param.get('value', '')) ==
+                default_values[idx]):
+            # If any subsequent param is present after default, error
+            if any(str(p.get('value', '')) != default_values[i] for i, p in
+                   enumerate(params_list[idx + 1:], start=idx + 1)):
+                return (None,
+                        gettext("Once a default value is passed, no "
+                                "subsequent arguments should be provided."))
+            return params_list[:idx], None
+    return params_list, None
+
+
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>',
@@ -870,9 +901,17 @@ def initialize_target(debug_type, trans_id, sid, did,
     # provide the data from another session so below condition will
     # be be required
     if request.data:
-        de_inst.function_data['args_value'] = \
-            json.loads(request.data)
-
+        params_list = json.loads(request.data)
+        try:
+            params_list, error_msg = filter_params_by_default(
+                params_list,
+                de_inst.function_data['default_value']
+            )
+            if error_msg:
+                return internal_server_error(errormsg=error_msg)
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+        de_inst.function_data['args_value'] = params_list
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
     # When user select the frame from client we need to update the frame
