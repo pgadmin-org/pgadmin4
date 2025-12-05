@@ -569,7 +569,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Advanced'), controlProps: {maxLength: null},
         mode: ['properties', 'edit', 'create'],
         disabled: pgAdmin.server_mode == 'True' && pgAdmin.enable_server_passexec_cmd == 'False',
-        helpMessage: gettext('The server hostname, port, and username can be passed as variables by using the placeholders %HOST%, %PORT%, and %USERNAME%, which will be replaced with the corresponding server connection information.')
+        helpMessage: gettext('The server hostname, port, and username can be passed as variables by using the placeholders %HOSTNAME%, %PORT%, and %USERNAME%, which will be replaced with the corresponding server connection information.')
       },
       {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',

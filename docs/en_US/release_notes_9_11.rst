@@ -39,4 +39,5 @@ Bug fixes
   | `Issue #9354 <https://github.com/pgadmin-org/pgadmin4/issues/9354>`_ -  Fixed an issue where connection is failing via Query Tool/PSQL Tool workspaces.
   | `Issue #9372 <https://github.com/pgadmin-org/pgadmin4/issues/9372>`_ -  Fixed an issue where copying highlighted text in the query tool data output cell editor would copy the complete string.
   | `Issue #9373 <https://github.com/pgadmin-org/pgadmin4/issues/9373>`_ -  Fixed an issue where copying a single cell should not add quoting.
+  | `Issue #9399 <https://github.com/pgadmin-org/pgadmin4/issues/9399>`_ -  Specify the correct hostname placeholder for the Password Exec command.
   | `Issue #9408 <https://github.com/pgadmin-org/pgadmin4/issues/9408>`_ -  Ensure the proper handling of extra volume mount configurations in the Helm deployment template by correcting the configuration value references.
