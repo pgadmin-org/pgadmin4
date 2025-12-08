@@ -88,7 +88,7 @@
     "@szhsin/react-menu": "^4.5.1",
     "@tanstack/react-query": "^5.90.11",
     "@tanstack/react-table": "^8.16.0",
-    "@tanstack/react-virtual": "^3.13.6",
+    "@tanstack/react-virtual": "^3.13.13",
     "@types/classnames": "^2.3.4",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.0.0",
