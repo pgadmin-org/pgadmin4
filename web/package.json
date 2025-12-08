@@ -79,7 +79,7 @@
     "@emotion/sheet": "^1.0.1",
     "@fluentui/keyboard-key": "^0.4.23",
     "@fortawesome/fontawesome-free": "latest",
-    "@mui/icons-material": "^7.3.4",
+    "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.4",
     "@mui/x-date-pickers": "^8.19.0",
     "@nozbe/microfuzz": "^1.0.0",
