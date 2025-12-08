@@ -11,6 +11,7 @@
 
 import json
 import re
+import secrets
 
 from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
@@ -350,6 +351,7 @@ def get_sql_util_args(data, manager, server, filepath):
     :param filepath: File.
     :return: args list.
     """
+    restrict_key = secrets.token_hex(32)
     args = [
         '--host',
         manager.local_bind_host if manager.use_ssh_tunnel else server.host,
@@ -358,6 +360,7 @@ def get_sql_util_args(data, manager, server, filepath):
         else str(server.port),
         '--username', server.username, '--dbname',
         data['database'],
+        '-c', f'\\restrict {restrict_key}',
         '--file', fs_short_path(filepath)
     ]
 
@@ -375,43 +378,7 @@ def use_restore_utility(data, manager, server, driver, conn, filepath):
     return None, utility, args
 
 
-def has_meta_commands(path, chunk_size=8 * 1024 * 1024):
-    """
-    Quickly detect lines starting with '\' in large SQL files.
-    Works even when lines cross chunk boundaries.
-    """
-    # Look for start-of-line pattern: beginning or after newline,
-    # optional spaces, then backslash
-    pattern = re.compile(br'(^|\n)[ \t]*\\')
-
-    try:
-        with open(path, "rb") as f:
-            prev_tail = b""
-            while chunk := f.read(chunk_size):
-                data = prev_tail + chunk
-
-                # Search for pattern
-                if pattern.search(data):
-                    return True
-
-                # Keep a small tail to preserve line boundary context
-                prev_tail = data[-10:]  # keep last few bytes
-    except FileNotFoundError:
-        current_app.logger.error("File not found.")
-    except PermissionError:
-        current_app.logger.error("Insufficient permissions to access.")
-
-    return False
-
-
 def use_sql_utility(data, manager, server, filepath):
-    # Check the meta commands in file.
-    if has_meta_commands(filepath):
-        return _("Restore blocked: the selected PLAIN SQL file contains psql "
-                 "meta-commands (for example \\! or \\i). For safety, "
-                 "pgAdmin does not execute meta-commands from PLAIN restores. "
-                 "Please remove meta-commands."), None, None
-
     utility = manager.utility('sql')
     ret_val = does_utility_exist(utility)
     if ret_val:
