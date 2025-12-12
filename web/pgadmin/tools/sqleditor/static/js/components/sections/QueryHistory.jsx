@@ -272,12 +272,8 @@ QuerySourceIcon.propTypes = {
 };
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
-  return <ListItemButton component='li' tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
-    selectedItemKey==itemKey && ele?.scrollIntoView({
-      block: 'center',
-      behavior: 'smooth',
-    });
-  }} className={'QuerySources-fontSourceCode ' + (entry.status ? '' : 'QuerySources-itemError')} selected={selectedItemKey==itemKey} onClick={onClick}>
+  return <ListItemButton component='li' tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query}
+    className={'QuerySources-fontSourceCode ' + (entry.status ? '' : 'QuerySources-itemError')} selected={selectedItemKey==itemKey} onClick={onClick}>
     <Box whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" >
       <QuerySourceIcon source={entry.query_source}/>
       {entry.query}
@@ -397,6 +393,10 @@ export function QueryHistory() {
           setActiveOnce(true);
           setSelectedItemKey((prev)=>prev || 1);
         }
+
+        listRef.current?.querySelector('[data-label="history-entry"].Mui-selected')?.scrollIntoView({
+          block: 'center',
+        });
       }
     });
 
