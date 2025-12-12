@@ -24,6 +24,7 @@ import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import EditOffRoundedIcon from '@mui/icons-material/EditOffRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import AllInboxRoundedIcon from '@mui/icons-material/AllInboxRounded';
 
 import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
@@ -114,11 +115,15 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
     pageCount: pagination.page_count ?? 0,
   });
 
+  const fetchWindow = (from, to) => {
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, from, to);
+    clearSelection();
+  };
+
   const goToPage = (pageNo)=>{
     const from = (pageNo-1) * pagination.page_size + 1;
     const to = from + pagination.page_size - 1;
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, from, to, serverCursor);
-    clearSelection();
+    fetchWindow(from, to);
   };
 
   const onInputChange = (key, value)=>{
@@ -128,7 +133,7 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
   const onInputKeydown = (e)=>{
     if(e.code === 'Enter' && !errorInputs.from && !errorInputs.to) {
       e.preventDefault();
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, inputs.from, inputs.to);
+      fetchWindow(inputs.from, inputs.to);
     }
   };
 
@@ -204,33 +209,48 @@ function PaginationInputs({pagination, totalRowCount, clearSelection, serverCurs
             error={errorInputs['to']}
           />
         </Box> : <span>{gettext('Showing rows: %s to %s', inputs.from, inputs.to)}</span>}
-      <PgButtonGroup>
-        {!serverCursor && editPageRange && <PgIconButton size="xs"
-          title={editPageRange ? gettext('Apply (or press Enter on input)') : gettext('Edit range')}
-          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_WINDOW, inputs.from, inputs.to)}
-          disabled={errorInputs.from || errorInputs.to} icon={<CheckRoundedIcon />}
-        />}
-        {!serverCursor && <PgIconButton size="xs"
-          title={editPageRange ? gettext('Cancel edit') : gettext('Edit range')}
-          onClick={()=>setEditPageRange((prev)=>!prev)}
-          icon={editPageRange ? <EditOffRoundedIcon /> : <EditRoundedIcon />}
-        />}
-      </PgButtonGroup>
-      <div className='PaginationInputs-divider'>&nbsp;</div>
-      <span>{gettext('Page No:')}</span>
-      <InputText
-        type="int"
-        size="small"
-        controlProps={{maxLength: 7}}
-        style={{
-          maxWidth: '10ch'
-        }}
-        value={inputs.pageNo}
-        onChange={(value)=>onInputChange('pageNo', value)}
-        onKeyDown={onInputKeydownPageNo}
-        error={errorInputs['pageNo']}
-      />
-      <span> {gettext('of')} {pagination.page_count}</span>
+      {!serverCursor && <>
+        <PgButtonGroup>
+          {editPageRange && <PgIconButton size="xs"
+            title={editPageRange ? gettext('Apply (or press Enter on input)') : gettext('Edit range')}
+            onClick={()=>fetchWindow(inputs.from, inputs.to)}
+            disabled={errorInputs.from || errorInputs.to} icon={<CheckRoundedIcon />}
+          />}
+          <PgIconButton size="xs"
+            title={editPageRange ? gettext('Cancel edit') : gettext('Edit range')}
+            onClick={()=>setEditPageRange((prev)=>!prev)}
+            icon={editPageRange ? <EditOffRoundedIcon /> : <EditRoundedIcon />}
+          />
+        </PgButtonGroup>
+        <div className='PaginationInputs-divider'></div>
+        <PgButtonGroup>
+          <PgIconButton size="xs"
+            title={gettext('Show entire range')}
+            disabled={inputs.from == 1 && inputs.to == totalRowCount}
+            onClick={()=>{
+              onInputChange('from', 1);
+              onInputChange('to', totalRowCount);
+              fetchWindow(1, totalRowCount);
+            }}
+            icon={<AllInboxRoundedIcon />}
+          />
+        </PgButtonGroup>
+        <div className='PaginationInputs-divider'>&nbsp;</div>
+        <span>{gettext('Page No:')}</span>
+        <InputText
+          type="int"
+          size="small"
+          controlProps={{maxLength: 7}}
+          style={{
+            maxWidth: '10ch'
+          }}
+          value={inputs.pageNo}
+          onChange={(value)=>onInputChange('pageNo', value)}
+          onKeyDown={onInputKeydownPageNo}
+          error={errorInputs['pageNo']}
+        />
+        <span> {gettext('of')} {pagination.page_count}</span>
+      </>}
       <div className='PaginationInputs-divider'>&nbsp;</div>
       <PgButtonGroup size="small">
         <PgIconButton title={gettext('First Page')} disabled={pagination.page_no <= 1} onClick={()=>goToPage(1)} icon={<SkipPreviousRoundedIcon />}/>
