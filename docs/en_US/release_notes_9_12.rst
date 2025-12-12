@@ -20,12 +20,15 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #8890 <https://github.com/pgadmin-org/pgadmin4/issues/8890>`_ - Add a new button in the query tool data output toolbar to get entire range of data.
+
 
 Housekeeping
 ************
 
 Bug fixes
 *********
-| `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
+
+  | `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
 
 
