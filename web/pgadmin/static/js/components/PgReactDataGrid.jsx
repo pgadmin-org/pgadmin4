@@ -113,7 +113,10 @@ export function CustomRow({inTest=false, ...props}) {
     props.onRowClick?.(args.row);
   };
 
-  const onCellDoubleClick = (args) => {
+  const onCellDoubleClick = (args, e) => {
+    // check if grid default is prevented.
+    props.onCellDoubleClick?.(args, e);
+    if(e.isGridDefaultPrevented()) return;
     gridUtils.onItemEnter?.(args.row);
   };
 

@@ -29,6 +29,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9196 <https://github.com/pgadmin-org/pgadmin4/issues/9196>`_ - Fixed an issue where double click to open a file in the file manager is not working.
   | `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
 
 
