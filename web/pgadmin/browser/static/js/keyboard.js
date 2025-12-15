@@ -224,7 +224,8 @@ _.extend(pgBrowser.keyboardNavigation, {
       return;
 
     // Call data grid method to render view data
-    pgAdmin.Tools.SQLEditor.showViewData({'mnuid': 1}, tree.i);
+    // 1, 2 are used for limit
+    pgAdmin.Tools.SQLEditor.showViewData({'mnuid': 3}, tree.i);
   },
   bindSubMenuSearchObjects: function() {
     const tree = this.getTreeDetails();
