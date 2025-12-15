@@ -12,8 +12,8 @@
   },
   "packageManager": "yarn@4.9.2",
   "devDependencies": {
-    "electron": "39.2.6",
-    "eslint": "^9.39.1",
+    "electron": "39.2.7",
+    "eslint": "^9.39.2",
     "eslint-plugin-unused-imports": "^4.2.0"
   },
   "dependencies": {
