@@ -12444,10 +12444,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^19.2.1":
-  version: 19.2.1
-  resolution: "react@npm:19.2.1"
-  checksum: 10c0/2b5eaf407abb3db84090434c20d6c5a8e447ab7abcd8fe9eaf1ddc299babcf31284ee9db7ea5671d21c85ac5298bd632fa1a7da1ed78d5b368a537f5e1cd5d62
+"react@npm:^19.2.3":
+  version: 19.2.3
+  resolution: "react@npm:19.2.3"
+  checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
   languageName: node
   linkType: hard
 
@@ -12891,7 +12891,7 @@ __metadata:
     process: "npm:^0.11.10"
     prop-types: "npm:^15.7.2"
     rc-dock: "npm:^4.0.0-alpha.2"
-    react: "npm:^19.2.1"
+    react: "npm:^19.2.3"
     react-arborist: "npm:^3.2.0"
     react-aspen: "npm:^1.1.0"
     react-checkbox-tree: "npm:^1.7.2"
