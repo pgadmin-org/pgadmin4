@@ -48,6 +48,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
 from pgadmin.browser.utils import underscore_escape
 from pgadmin.utils.menu import MenuItem
+from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
     register_query_tool_preferences
@@ -144,6 +145,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_new_connection_role',
             'sqleditor.connect_server',
             'sqleditor.server_cursor',
+            'sqleditor.nlq_chat_stream',
         ]
 
     def on_logout(self):
@@ -2736,3 +2738,212 @@ def user_macros(json_resp=True):
     This method is used to fetch all user macros.
     """
     return get_user_macros()
+
+# =============================================================================
+# Natural Language Query (NLQ) to SQL
+# =============================================================================
+
+@blueprint.route(
+    '/nlq/chat/<int:trans_id>/stream',
+    methods=["POST"],
+    endpoint='nlq_chat_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def nlq_chat_stream(trans_id):
+    """
+    Stream NLQ chat response via Server-Sent Events (SSE).
+
+    This endpoint accepts a natural language query and streams back
+    the generated SQL query along with progress updates.
+
+    Args:
+        trans_id: Transaction ID for the current Query Tool session
+
+    Request Body (JSON):
+        message: The natural language query from the user
+        conversation_id: Optional ID to continue a conversation
+        history: Optional list of previous messages for context
+
+    Returns:
+        SSE stream with events:
+        - {type: "thinking", message: "..."} - Progress updates
+        - {type: "sql", sql: "...", explanation: "..."} - Generated SQL
+        - {type: "complete", sql: "...", explanation: "...",
+           conversation_id: "..."} - Final response
+        - {type: "error", message: "..."} - Error message
+    """
+    from flask import stream_with_context
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.chat import chat_with_database
+    from pgadmin.llm.prompts.nlq import NLQ_SYSTEM_PROMPT
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'AI features are not configured. Please configure an LLM '
+                'provider in Preferences > AI.'
+            )
+        )
+
+    # Get session data for this transaction
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if not status:
+        return make_json_response(
+            success=0,
+            errormsg=error_msg or ERROR_MSG_TRANS_ID_NOT_FOUND
+        )
+
+    if not conn or not trans_obj:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Database connection not available.')
+        )
+
+    # Parse request data
+    data = request.get_json(silent=True) or {}
+    user_message = data.get('message', '').strip()
+    conversation_id = data.get('conversation_id')
+
+    if not user_message:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Please provide a message.')
+        )
+
+    def generate():
+        """Generator for SSE events."""
+        import secrets as py_secrets
+
+        try:
+            # Send thinking status
+            yield _nlq_sse_event({
+                'type': 'thinking',
+                'message': gettext('Analyzing your request...')
+            })
+
+            # Call the LLM with database tools
+            response_text, _ = chat_with_database(
+                user_message=user_message,
+                sid=trans_obj.sid,
+                did=trans_obj.did,
+                system_prompt=NLQ_SYSTEM_PROMPT
+            )
+
+            # Try to parse the response as JSON
+            sql = None
+            explanation = ''
+
+            # First, try to extract JSON from markdown code blocks
+            json_text = response_text.strip()
+
+            # Look for ```json ... ``` blocks
+            json_match = re.search(
+                r'```json\s*\n?(.*?)\n?```',
+                json_text,
+                re.DOTALL
+            )
+            if json_match:
+                json_text = json_match.group(1).strip()
+            else:
+                # Also try to find a plain JSON object in the response
+                # Look for {"sql": ... } pattern anywhere in the text
+                plain_json_match = re.search(
+                    r'\{["\']?sql["\']?\s*:\s*(?:null|"[^"]*"|\'[^\']*\').*?\}',
+                    json_text,
+                    re.DOTALL
+                )
+                if plain_json_match:
+                    json_text = plain_json_match.group(0)
+
+            try:
+                result = json.loads(json_text)
+                sql = result.get('sql')
+                explanation = result.get('explanation', '')
+            except (json.JSONDecodeError, TypeError):
+                # If not valid JSON, try to extract SQL from the response
+                # Look for SQL code blocks first
+                sql_match = re.search(
+                    r'```sql\s*\n?(.*?)\n?```',
+                    response_text,
+                    re.DOTALL
+                )
+                if sql_match:
+                    sql = sql_match.group(1).strip()
+                else:
+                    # Check for malformed tool call text patterns
+                    # Some models output tool calls as text instead of
+                    # proper tool use blocks
+                    tool_call_match = re.search(
+                        r'<function=execute_sql_query>\s*'
+                        r'<parameter=query>\s*(.*?)\s*</parameter>',
+                        response_text,
+                        re.DOTALL
+                    )
+                    if tool_call_match:
+                        sql = tool_call_match.group(1).strip()
+                        explanation = gettext(
+                            'Generated SQL query from your request.'
+                        )
+                    else:
+                        # No parseable JSON or SQL block found
+                        # Treat the response as an explanation/error message
+                        explanation = response_text.strip()
+                        # Don't set sql - leave it as None
+
+            # Generate a conversation ID if not provided
+            if not conversation_id:
+                new_conversation_id = py_secrets.token_hex(8)
+            else:
+                new_conversation_id = conversation_id
+
+            # Send the final result
+            yield _nlq_sse_event({
+                'type': 'complete',
+                'sql': sql,
+                'explanation': explanation,
+                'conversation_id': new_conversation_id
+            })
+
+        except Exception as e:
+            current_app.logger.error(f'NLQ chat error: {str(e)}')
+            yield _nlq_sse_event({
+                'type': 'error',
+                'message': str(e)
+            })
+
+    # Create SSE response
+    response = Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',
+        }
+    )
+    response.direct_passthrough = True
+    return response
+
+
+def _nlq_sse_event(data: dict) -> bytes:
+    """Format data as an SSE event with padding for buffer flushing.
+
+    Args:
+        data: Event data dictionary.
+
+    Returns:
+        SSE-formatted bytes.
+    """
+    json_data = json.dumps(data)
+    # Add padding to help flush buffers in WSGI servers
+    padding_needed = max(0, 2048 - len(json_data) - 20)
+    padding = f": {'.' * padding_needed}\n" if padding_needed > 0 else ""
+    return f"{padding}data: {json_data}\n\n".encode('utf-8')
+
