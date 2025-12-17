@@ -17,3 +17,4 @@ PL/SQL code.
    schema_diff
    erd_tool
    psql_tool
+   ai_tools

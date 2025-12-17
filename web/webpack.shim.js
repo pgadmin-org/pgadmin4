@@ -156,6 +156,7 @@ let webpackShimConfig = {
     'pgadmin.tools.sqleditor': path.join(__dirname, './pgadmin/tools/sqleditor/static/js/'),
     'pgadmin.tools.user_management': path.join(__dirname, './pgadmin/tools/user_management/static/js/'),
     'pgadmin.user_management.current_user': '/user_management/current_user',
+    'pgadmin.browser.ai_tools': path.join(__dirname, './pgadmin/llm/static/js/ai_tools'),
   },
   externals: [
     'pgadmin.user_management.current_user',
