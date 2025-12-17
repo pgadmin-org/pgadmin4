@@ -146,6 +146,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.connect_server',
             'sqleditor.server_cursor',
             'sqleditor.nlq_chat_stream',
+            'sqleditor.explain_analyze_stream',
         ]
 
     def on_logout(self):
@@ -2946,4 +2947,163 @@ def _nlq_sse_event(data: dict) -> bytes:
     padding_needed = max(0, 2048 - len(json_data) - 20)
     padding = f": {'.' * padding_needed}\n" if padding_needed > 0 else ""
     return f"{padding}data: {json_data}\n\n".encode('utf-8')
+
+
+@blueprint.route(
+    '/explain/analyze/<int:trans_id>/stream',
+    methods=["POST"],
+    endpoint='explain_analyze_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def explain_analyze_stream(trans_id):
+    """
+    Stream AI analysis of an EXPLAIN plan via Server-Sent Events (SSE).
+
+    This endpoint accepts an EXPLAIN plan JSON and the original SQL query,
+    then streams back AI-generated performance analysis and recommendations.
+
+    Args:
+        trans_id: Transaction ID for the current Query Tool session
+
+    Request Body (JSON):
+        plan: The EXPLAIN plan output (JSON format from PostgreSQL)
+        sql: The original SQL query that was explained
+
+    Returns:
+        SSE stream with events:
+        - {type: "thinking", message: "..."} - Progress updates
+        - {type: "analysis", bottlenecks: [...], recommendations: [...],
+           summary: "..."} - Analysis results
+        - {type: "complete", ...} - Final response with full analysis
+        - {type: "error", message: "..."} - Error message
+    """
+    from flask import stream_with_context
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.client import get_llm_client
+    from pgadmin.llm.models import Message
+    from pgadmin.llm.prompts.explain import EXPLAIN_ANALYSIS_PROMPT
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'AI features are not configured. Please configure an LLM '
+                'provider in Preferences > AI.'
+            )
+        )
+
+    # Verify transaction exists (for authentication context)
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if not status:
+        return make_json_response(
+            success=0,
+            errormsg=error_msg or ERROR_MSG_TRANS_ID_NOT_FOUND
+        )
+
+    # Parse request data
+    data = request.get_json(silent=True) or {}
+    plan_data = data.get('plan')
+    sql_query = data.get('sql', '')
+
+    if not plan_data:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Please provide an EXPLAIN plan to analyze.')
+        )
+
+    def generate():
+        """Generator for SSE events."""
+        try:
+            # Send thinking status
+            yield _nlq_sse_event({
+                'type': 'thinking',
+                'message': gettext('Analyzing query plan...')
+            })
+
+            # Format the plan for the LLM
+            plan_json = json.dumps(plan_data, indent=2) if isinstance(
+                plan_data, (dict, list)
+            ) else str(plan_data)
+
+            # Build the user message with plan and SQL
+            user_message = f"""Please analyze this PostgreSQL EXPLAIN plan:
+
+```json
+{plan_json}
+```
+
+Original SQL query:
+```sql
+{sql_query}
+```
+
+Provide your analysis identifying performance bottlenecks and optimization recommendations."""
+
+            # Call the LLM
+            client = get_llm_client()
+            response = client.chat(
+                messages=[Message.user(user_message)],
+                system_prompt=EXPLAIN_ANALYSIS_PROMPT
+            )
+            response_text = response.content
+
+            # Parse the response
+            bottlenecks = []
+            recommendations = []
+            summary = ''
+
+            # Try to extract JSON from the response
+            json_text = response_text.strip()
+
+            # Look for ```json ... ``` blocks
+            json_match = re.search(
+                r'```json\s*\n?(.*?)\n?```',
+                json_text,
+                re.DOTALL
+            )
+            if json_match:
+                json_text = json_match.group(1).strip()
+
+            try:
+                result = json.loads(json_text)
+                bottlenecks = result.get('bottlenecks', [])
+                recommendations = result.get('recommendations', [])
+                summary = result.get('summary', '')
+            except (json.JSONDecodeError, TypeError):
+                # If parsing fails, use the raw response as summary
+                summary = response_text.strip()
+
+            # Send the final result
+            yield _nlq_sse_event({
+                'type': 'complete',
+                'bottlenecks': bottlenecks,
+                'recommendations': recommendations,
+                'summary': summary
+            })
+
+        except Exception as e:
+            current_app.logger.error(f'Explain analysis error: {str(e)}')
+            yield _nlq_sse_event({
+                'type': 'error',
+                'message': str(e)
+            })
+
+    # Create SSE response
+    response = Response(
+        stream_with_context(generate()),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',
+        }
+    )
+    response.direct_passthrough = True
+    return response
 

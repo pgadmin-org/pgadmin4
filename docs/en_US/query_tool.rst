@@ -379,6 +379,44 @@ If planner mis-estimated number of rows (actual vs planned) by
     :alt: Query tool explain plan statistics
     :align: center
 
+* AI Insights
+
+The *AI Insights* tab provides AI-powered analysis of query execution plans,
+identifying performance bottlenecks and suggesting optimizations. This tab is
+only available when an AI provider is configured in *Preferences > AI*.
+
+.. image:: images/query_explain_ai_insights.png
+    :alt: Query tool explain plan AI insights
+    :align: center
+
+When you switch to the AI Insights tab, the AI analyzes the execution plan and
+provides:
+
+**Performance Bottlenecks** - Issues identified in the query plan, such as:
+
+* Sequential scans on large tables that could benefit from indexes
+* Significant differences between estimated and actual row counts
+* Expensive sort or hash operations
+* Nested loops with high iteration counts
+
+**Recommendations** - Concrete suggestions to improve query performance:
+
+* Index creation statements with appropriate columns
+* ANALYZE commands to update table statistics
+* Configuration parameter adjustments
+* Query restructuring suggestions
+
+Each recommendation that includes SQL (such as CREATE INDEX statements) has
+action buttons to *Copy* the SQL to the clipboard or *Insert* it into the
+Query Editor.
+
+Click the *Regenerate* button to request a fresh analysis of the current plan.
+
+**Note:** AI analysis is generated on-demand when you first click the AI Insights
+tab or when a new explain plan is generated while the tab is active. The analysis
+provides guidance but all suggested changes should be carefully evaluated before
+applying to production databases.
+
 Messages Panel
 **************
 

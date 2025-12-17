@@ -10,5 +10,6 @@
 """LLM prompt templates for various features."""
 
 from pgadmin.llm.prompts.nlq import NLQ_SYSTEM_PROMPT
+from pgadmin.llm.prompts.explain import EXPLAIN_ANALYSIS_PROMPT
 
-__all__ = ['NLQ_SYSTEM_PROMPT']
+__all__ = ['NLQ_SYSTEM_PROMPT', 'EXPLAIN_ANALYSIS_PROMPT']
