@@ -9,6 +9,7 @@
 
 """A blueprint module providing utility functions for the application."""
 
+import certifi
 from pgadmin.utils import driver
 from flask import request, current_app
 from flask_babel import gettext
@@ -371,18 +372,22 @@ def upgrade_check():
             # Do not wait for more than 5 seconds.
             # It stuck on rendering the browser.html, while working in the
             # broken network.
-            if os.path.exists(config.CA_FILE) and sys.version_info >= (
+            if sys.version_info >= (
                     3, 13):
                 # Use SSL context for Python 3.13+
-                context = ssl.create_default_context(cafile=config.CA_FILE)
+                if os.path.exists(config.CA_FILE):
+                    context = ssl.create_default_context(cafile=config.CA_FILE)
+                else:
+                    context = ssl.create_default_context(certifi.where())
+
                 response = urlopen(url, data=data, timeout=5,
-                                   context=context)
+                                       context=context)
             elif os.path.exists(config.CA_FILE):
                 # Use cafile parameter for older versions
                 response = urlopen(url, data=data, timeout=5,
                                    cafile=config.CA_FILE)
             else:
-                response = urlopen(url, data, 5)
+                response = urlopen(url, data, 5, cafile=certifi.where())
             current_app.logger.debug(
                 'Version check HTTP response code: %d' % response.getcode()
             )
