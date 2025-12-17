@@ -71,16 +71,16 @@ export function ApplicationStateProvider({children}){
         if(connectionInfo.is_editor_dirty){
           if(connectionInfo.external_file_changes){
             // file has external chages
-            return {loadFile: loadFile, fileName: fileName, data: toolContent, modifiedExternally: true};
+            return {loadFile: loadFile, fileName: fileName, data: toolContent, modifiedExternally: true, connectionInfo: connectionInfo};
           }
         }else if(connectionInfo.file_deleted){
-          return {loadFile: loadFile, fileName: null, data: toolContent};
+          return {loadFile: loadFile, fileName: null, data: toolContent, connectionInfo: connectionInfo};
         }else{
           loadFile = true;
-          return {loadFile: loadFile, fileName: fileName, data: null};
+          return {loadFile: loadFile, fileName: fileName, data: null, connectionInfo: connectionInfo};
         }
       }
-      return {loadFile: loadFile, fileName: fileName, data: toolContent};
+      return {loadFile: loadFile, fileName: fileName, data: toolContent, connectionInfo: connectionInfo};
 
     } catch (error) {
       let errorMsg = gettext(error?.response?.data?.errormsg || error);

@@ -305,6 +305,30 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const restoreToolContent = async () =>{
     let toolContent = await getToolContent(qtState.params.trans_id);
     if(toolContent){
+      const connList = toolContent.connectionInfo?.connection_list;
+      if (Array.isArray(connList) && connList.length > 0) {
+        // ensure exactly one is_selected
+        if (!connList.some(c => c.is_selected)) {
+          connList[0].is_selected = true;
+        }
+        // pick selected connection to update params (so UI shows correct selected conn)
+        const sel = connList.find(c => c.is_selected) || connList[0];
+
+        setQtStatePartial(prev => ({
+          ...prev,
+          connection_list: connList,
+          params: {
+            ...prev.params,
+            sid: sel.sid,
+            did: sel.did,
+            user: sel.user,
+            role: sel.role,
+            server_name: sel.server_name,
+            database_name: sel.database_name,
+            title: sel.title,
+          },
+        }));
+      }
       if (toolContent?.modifiedExternally) {
         toolContent = await fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent.data, '');
       }
