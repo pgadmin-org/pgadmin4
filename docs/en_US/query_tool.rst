@@ -32,8 +32,9 @@ The Query Tool features two panels:
 
 * The upper panel displays the *SQL Editor*. You can use the panel to enter,
   edit, or execute a query or a script. It also shows the *History* tab which can be used
-  to view the queries that have been executed in the session, and a *Scratch Pad*
-  which can be used to hold text snippets during editing. If the Scratch Pad is
+  to view the queries that have been executed in the session, a *Scratch Pad*
+  which can be used to hold text snippets during editing, and an *AI Assistant*
+  tab for generating SQL from natural language (when AI is configured). If the Scratch Pad is
   closed, it can be re-opened (or additional ones opened) by right-clicking in
   the SQL Editor and other panels and adding a new panel.
 * The lower panel displays the *Data Output* panel. The tabbed panel displays
@@ -200,6 +201,49 @@ can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
 :ref:`config.py <config_py>` documentation) by overriding the
 `MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
 for more information.
+
+AI Assistant Panel
+******************
+
+The *AI Assistant* tab provides a chat-style interface for generating SQL queries
+from natural language descriptions. This feature requires an AI provider to be
+configured in *Preferences > AI*. For configuration details, see the
+:ref:`preferences` documentation.
+
+.. image:: images/query_ai_assistant.png
+    :alt: Query tool AI Assistant panel
+    :align: center
+
+To use the AI Assistant:
+
+1. Click on the *AI Assistant* tab in the upper panel, or use the *AI Assistant*
+   toolbar button.
+2. Type a description of the SQL query you need in natural language.
+3. Press Enter or click the send button to submit your request.
+4. The AI will analyze your database schema and generate appropriate SQL.
+
+The AI Assistant displays conversations with your messages and AI responses. When
+the AI generates SQL, it appears in a syntax-highlighted code block with action
+buttons:
+
+* **Insert** - Insert the SQL at the current cursor position in the SQL Editor.
+* **Replace** - Replace all content in the SQL Editor with the generated SQL.
+* **Copy** - Copy the SQL to the clipboard.
+
+The AI Assistant maintains conversation context, allowing you to refine queries
+iteratively. For example, you can ask for a query and then follow up with
+"also add a filter for active users" to modify the previous result.
+
+**Tips for effective use:**
+
+* Be specific about table and column names if you know them.
+* Describe the desired output format (e.g., "show count by category").
+* For complex queries, break down requirements step by step.
+* Use the *Clear* button to start a fresh conversation.
+
+**Note:** The AI Assistant uses database schema inspection tools to understand
+your database structure. It supports SELECT, INSERT, UPDATE, DELETE, and DDL
+statements. All generated queries should be reviewed before execution.
 
 The Data Output Panel
 *********************
