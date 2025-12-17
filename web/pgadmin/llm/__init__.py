@@ -277,6 +277,26 @@ class LLMModule(PgAdminModule):
             'llm.refresh_models_ollama',
             'llm.refresh_models_docker',
             'llm.status',
+            # Security reports
+            'llm.security_report',
+            'llm.database_security_report',
+            'llm.schema_security_report',
+            # Security report streams
+            'llm.security_report_stream',
+            'llm.database_security_report_stream',
+            'llm.schema_security_report_stream',
+            # Performance reports
+            'llm.performance_report',
+            'llm.database_performance_report',
+            # Performance report streams
+            'llm.performance_report_stream',
+            'llm.database_performance_report_stream',
+            # Design reviews
+            'llm.database_design_report',
+            'llm.schema_design_report',
+            # Design report streams
+            'llm.database_design_report_stream',
+            'llm.schema_design_report_stream',
         ]
 
 
@@ -761,3 +781,1145 @@ def _fetch_docker_models(api_url):
     return models
 
 
+@blueprint.route(
+    "/security-report/<int:sid>",
+    methods=["GET"],
+    endpoint='security_report'
+)
+@pga_login_required
+def generate_security_report(sid):
+    """
+    Generate a security report for the specified server.
+    Uses the multi-stage pipeline to analyze server configuration.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Server is not connected.')
+            )
+
+        # Generate report using pipeline
+        context = {}
+        success, result = generate_report_sync(
+            report_type='security',
+            scope='server',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/security-report/<int:sid>/stream",
+    methods=["GET"],
+    endpoint='security_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_security_report_stream(sid):
+    """
+    Stream a security report for the specified server via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Server is not connected.')
+            )
+
+        context = {}
+        generator = generate_report_streaming(
+            report_type='security',
+            scope='server',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+def _gather_security_config(conn, manager):
+    """
+    Gather security-related configuration from the PostgreSQL server.
+    """
+    security_info = {
+        'server_version': manager.ver,
+        'server_version_num': manager.sversion,
+    }
+
+    # Get security-related settings from pg_settings
+    settings_query = """
+        SELECT name, setting, short_desc, context, source
+        FROM pg_settings
+        WHERE name IN (
+            -- Connection settings
+            'listen_addresses', 'port', 'max_connections',
+            'superuser_reserved_connections',
+            -- Authentication
+            'password_encryption', 'krb_server_keyfile',
+            'authentication_timeout', 'ssl', 'ssl_ciphers',
+            'ssl_prefer_server_ciphers', 'ssl_min_protocol_version',
+            'ssl_max_protocol_version', 'ssl_cert_file', 'ssl_key_file',
+            'ssl_ca_file', 'ssl_crl_file',
+            -- Security
+            'db_user_namespace', 'row_security', 'default_roles_initialized',
+            -- Logging (security-relevant)
+            'log_connections', 'log_disconnections',
+            'log_hostname', 'log_statement', 'log_line_prefix',
+            'log_duration', 'log_min_duration_statement',
+            'log_min_error_statement', 'log_replication_commands',
+            -- Client connection defaults
+            'client_min_messages', 'search_path',
+            -- Resource usage (DoS prevention)
+            'statement_timeout', 'idle_in_transaction_session_timeout',
+            'idle_session_timeout', 'lock_timeout',
+            -- Write ahead log
+            'wal_level', 'archive_mode',
+            -- Misc
+            'shared_preload_libraries', 'local_preload_libraries'
+        )
+        ORDER BY name
+    """
+
+    status, result = conn.execute_dict(settings_query)
+    if status and result:
+        security_info['settings'] = result.get('rows', [])
+    else:
+        security_info['settings'] = []
+
+    # Get pg_hba.conf rules (if available via pg_hba_file_rules)
+    hba_query = """
+        SELECT line_number, type, database, user_name, address,
+               netmask, auth_method, options, error
+        FROM pg_hba_file_rules
+        ORDER BY line_number
+    """
+
+    status, result = conn.execute_dict(hba_query)
+    if status and result:
+        security_info['hba_rules'] = result.get('rows', [])
+    else:
+        # View might not exist or user doesn't have permission
+        security_info['hba_rules'] = []
+        security_info['hba_note'] = 'Unable to read pg_hba.conf rules'
+
+    # Get superuser roles
+    superusers_query = """
+        SELECT rolname, rolcreaterole, rolcreatedb, rolbypassrls,
+               rolconnlimit, rolvaliduntil
+        FROM pg_roles
+        WHERE rolsuper = true
+        ORDER BY rolname
+    """
+
+    status, result = conn.execute_dict(superusers_query)
+    if status and result:
+        security_info['superusers'] = result.get('rows', [])
+    else:
+        security_info['superusers'] = []
+
+    # Get roles with special privileges
+    special_roles_query = """
+        SELECT rolname, rolsuper, rolcreaterole, rolcreatedb,
+               rolreplication, rolbypassrls, rolcanlogin, rolconnlimit
+        FROM pg_roles
+        WHERE (rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls)
+              AND NOT rolsuper
+        ORDER BY rolname
+    """
+
+    status, result = conn.execute_dict(special_roles_query)
+    if status and result:
+        security_info['privileged_roles'] = result.get('rows', [])
+    else:
+        security_info['privileged_roles'] = []
+
+    # Get roles with no password expiry that can login
+    no_expiry_query = """
+        SELECT rolname, rolvaliduntil
+        FROM pg_roles
+        WHERE rolcanlogin = true
+          AND (rolvaliduntil IS NULL OR rolvaliduntil = 'infinity')
+        ORDER BY rolname
+    """
+
+    status, result = conn.execute_dict(no_expiry_query)
+    if status and result:
+        security_info['roles_no_expiry'] = result.get('rows', [])
+    else:
+        security_info['roles_no_expiry'] = []
+
+    # Check for loaded extensions
+    extensions_query = """
+        SELECT extname, extversion
+        FROM pg_extension
+        ORDER BY extname
+    """
+
+    status, result = conn.execute_dict(extensions_query)
+    if status and result:
+        security_info['extensions'] = result.get('rows', [])
+    else:
+        security_info['extensions'] = []
+
+    return security_info
+
+
+def _generate_security_report_llm(client, security_info, manager):
+    """
+    Use the LLM to analyze the security configuration and generate a report.
+    """
+    from pgadmin.llm.models import Message
+
+    # Build the system prompt
+    system_prompt = """You are a PostgreSQL security expert. Your task is to analyze
+the security configuration of a PostgreSQL database server and generate a comprehensive
+security report in Markdown format.
+
+Focus ONLY on server-level security configuration, not database objects or data.
+
+IMPORTANT: Do NOT include a report title, header block, or generation date at the top
+of your response. The title and metadata are added separately by the application.
+Start directly with the Executive Summary section.
+
+The report should include:
+1. **Executive Summary** - Brief overview of the security posture
+2. **Critical Issues** - Security vulnerabilities that need immediate attention
+3. **Warnings** - Important security concerns that should be addressed
+4. **Recommendations** - Best practices that could improve security
+5. **Configuration Review** - Analysis of key security settings
+
+Use severity indicators:
+- 🔴 Critical - Immediate action required
+- 🟠 Warning - Should be addressed soon
+- 🟡 Advisory - Recommended improvement
+- 🟢 Good - Configuration is secure
+
+Be specific and actionable in your recommendations. Include the current setting values
+when discussing issues. Format the output as well-structured Markdown."""
+
+    # Build the user message with the security configuration
+    user_message = f"""Please analyze the following PostgreSQL server security configuration
+and generate a security report.
+
+## Server Information
+- Server Version: {security_info.get('server_version', 'Unknown')}
+
+## Security Settings
+```json
+{json.dumps(security_info.get('settings', []), indent=2, default=str)}
+```
+
+## pg_hba.conf Rules
+{security_info.get('hba_note', '')}
+```json
+{json.dumps(security_info.get('hba_rules', []), indent=2, default=str)}
+```
+
+## Superuser Roles
+```json
+{json.dumps(security_info.get('superusers', []), indent=2, default=str)}
+```
+
+## Roles with Special Privileges
+```json
+{json.dumps(security_info.get('privileged_roles', []), indent=2, default=str)}
+```
+
+## Login Roles Without Password Expiry
+```json
+{json.dumps(security_info.get('roles_no_expiry', []), indent=2, default=str)}
+```
+
+## Installed Extensions
+```json
+{json.dumps(security_info.get('extensions', []), indent=2, default=str)}
+```
+
+Please generate a comprehensive security report analyzing this configuration."""
+
+    # Call the LLM
+    messages = [Message.user(user_message)]
+    response = client.chat(
+        messages=messages,
+        system_prompt=system_prompt,
+        max_tokens=4096,
+        temperature=0.3  # Lower temperature for more consistent analysis
+    )
+
+    return response.content
+
+
+# =============================================================================
+# Database Security Report
+# =============================================================================
+
+@blueprint.route(
+    "/database-security-report/<int:sid>/<int:did>",
+    methods=["GET"],
+    endpoint='database_security_report'
+)
+@pga_login_required
+def generate_database_security_report(sid, did):
+    """
+    Generate a security report for the specified database.
+    Uses the multi-stage pipeline to analyze database security.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Generate report using pipeline
+        context = {
+            'database_name': conn.db
+        }
+        success, result = generate_report_sync(
+            report_type='security',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/database-security-report/<int:sid>/<int:did>/stream",
+    methods=["GET"],
+    endpoint='database_security_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_database_security_report_stream(sid, did):
+    """
+    Stream a database security report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        context = {
+            'database_name': conn.db
+        }
+        generator = generate_report_streaming(
+            report_type='security',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+# =============================================================================
+# Schema Security Report
+# =============================================================================
+
+@blueprint.route(
+    "/schema-security-report/<int:sid>/<int:did>/<int:scid>",
+    methods=["GET"],
+    endpoint='schema_security_report'
+)
+@pga_login_required
+def generate_schema_security_report(sid, did, scid):
+    """
+    Generate a security report for the specified schema.
+    Uses the multi-stage pipeline to analyze schema security.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Get schema name from scid
+        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        status, result = conn.execute_dict(schema_query, [scid])
+        if not status or not result.get('rows'):
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Schema not found.')
+            )
+        schema_name = result['rows'][0]['nspname']
+
+        # Generate report using pipeline
+        context = {
+            'database_name': conn.db,
+            'schema_name': schema_name,
+            'schema_oid': scid
+        }
+        success, result = generate_report_sync(
+            report_type='security',
+            scope='schema',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/schema-security-report/<int:sid>/<int:did>/<int:scid>/stream",
+    methods=["GET"],
+    endpoint='schema_security_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_schema_security_report_stream(sid, did, scid):
+    """
+    Stream a schema security report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Get schema name from scid
+        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        status, result = conn.execute_dict(schema_query, [scid])
+        if not status or not result.get('rows'):
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Schema not found.')
+            )
+        schema_name = result['rows'][0]['nspname']
+
+        context = {
+            'database_name': conn.db,
+            'schema_name': schema_name,
+            'schema_oid': scid
+        }
+        generator = generate_report_streaming(
+            report_type='security',
+            scope='schema',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+# =============================================================================
+# Server Performance Report
+# =============================================================================
+
+@blueprint.route(
+    "/performance-report/<int:sid>",
+    methods=["GET"],
+    endpoint='performance_report'
+)
+@pga_login_required
+def generate_performance_report(sid):
+    """
+    Generate a performance report for the specified server.
+    Uses the multi-stage pipeline to analyze server performance.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Server is not connected.')
+            )
+
+        # Generate report using pipeline
+        context = {}
+        success, result = generate_report_sync(
+            report_type='performance',
+            scope='server',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/performance-report/<int:sid>/stream",
+    methods=["GET"],
+    endpoint='performance_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_performance_report_stream(sid):
+    """
+    Stream a server performance report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection()
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Server is not connected.')
+            )
+
+        context = {}
+        generator = generate_report_streaming(
+            report_type='performance',
+            scope='server',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+# =============================================================================
+# Database Performance Report
+# =============================================================================
+
+@blueprint.route(
+    "/database-performance-report/<int:sid>/<int:did>",
+    methods=["GET"],
+    endpoint='database_performance_report'
+)
+@pga_login_required
+def generate_database_performance_report(sid, did):
+    """
+    Generate a performance report for the specified database.
+    Uses the multi-stage pipeline to analyze database performance.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Generate report using pipeline
+        context = {
+            'database_name': conn.db
+        }
+        success, result = generate_report_sync(
+            report_type='performance',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/database-performance-report/<int:sid>/<int:did>/stream",
+    methods=["GET"],
+    endpoint='database_performance_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_database_performance_report_stream(sid, did):
+    """
+    Stream a database performance report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        context = {
+            'database_name': conn.db
+        }
+        generator = generate_report_streaming(
+            report_type='performance',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+# =============================================================================
+# Database Design Review
+# =============================================================================
+
+@blueprint.route(
+    "/database-design-report/<int:sid>/<int:did>",
+    methods=["GET"],
+    endpoint='database_design_report'
+)
+@pga_login_required
+def generate_database_design_report(sid, did):
+    """
+    Generate a design review report for the specified database.
+    Uses the multi-stage pipeline to analyze database schema design.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Generate report using pipeline
+        context = {
+            'database_name': conn.db
+        }
+        success, result = generate_report_sync(
+            report_type='design',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/database-design-report/<int:sid>/<int:did>/stream",
+    methods=["GET"],
+    endpoint='database_design_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_database_design_report_stream(sid, did):
+    """
+    Stream a database design report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        context = {
+            'database_name': conn.db
+        }
+        generator = generate_report_streaming(
+            report_type='design',
+            scope='database',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
+
+
+# =============================================================================
+# Schema Design Review
+# =============================================================================
+
+@blueprint.route(
+    "/schema-design-report/<int:sid>/<int:did>/<int:scid>",
+    methods=["GET"],
+    endpoint='schema_design_report'
+)
+@pga_login_required
+def generate_schema_design_report(sid, did, scid):
+    """
+    Generate a design review report for the specified schema.
+    Uses the multi-stage pipeline to analyze schema design.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import generate_report_sync
+    from pgadmin.utils.driver import get_driver
+
+    # Check if LLM is configured
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    # Get database connection
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Get schema name from scid
+        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        status, result = conn.execute_dict(schema_query, [scid])
+        if not status or not result.get('rows'):
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Schema not found.')
+            )
+        schema_name = result['rows'][0]['nspname']
+
+        # Generate report using pipeline
+        context = {
+            'database_name': conn.db,
+            'schema_name': schema_name,
+            'schema_oid': scid
+        }
+        success, result = generate_report_sync(
+            report_type='design',
+            scope='schema',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        if success:
+            return make_json_response(
+                success=1,
+                data={'report': result}
+            )
+        else:
+            return make_json_response(
+                success=0,
+                errormsg=result
+            )
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=gettext('Failed to generate report: ') + str(e)
+        )
+
+
+@blueprint.route(
+    "/schema-design-report/<int:sid>/<int:did>/<int:scid>/stream",
+    methods=["GET"],
+    endpoint='schema_design_report_stream'
+)
+@pgCSRFProtect.exempt
+@pga_login_required
+def generate_schema_design_report_stream(sid, did, scid):
+    """
+    Stream a schema design report via SSE.
+    """
+    from pgadmin.llm.utils import is_llm_enabled
+    from pgadmin.llm.reports.generator import (
+        generate_report_streaming, create_sse_response
+    )
+    from pgadmin.utils.driver import get_driver
+
+    if not is_llm_enabled():
+        return make_json_response(
+            success=0,
+            errormsg=gettext(
+                'LLM is not configured. Please configure an LLM provider '
+                'in Preferences > AI.'
+            )
+        )
+
+    try:
+        driver = get_driver(config.PG_DEFAULT_DRIVER)
+        manager = driver.connection_manager(sid)
+        conn = manager.connection(did=did)
+
+        if not conn.connected():
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Database is not connected.')
+            )
+
+        # Get schema name from scid
+        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        status, result = conn.execute_dict(schema_query, [scid])
+        if not status or not result.get('rows'):
+            return make_json_response(
+                success=0,
+                errormsg=gettext('Schema not found.')
+            )
+        schema_name = result['rows'][0]['nspname']
+
+        context = {
+            'database_name': conn.db,
+            'schema_name': schema_name,
+            'schema_oid': scid
+        }
+        generator = generate_report_streaming(
+            report_type='design',
+            scope='schema',
+            conn=conn,
+            manager=manager,
+            context=context
+        )
+
+        return create_sse_response(generator)
+
+    except Exception as e:
+        return make_json_response(
+            success=0,
+            errormsg=str(e)
+        )
