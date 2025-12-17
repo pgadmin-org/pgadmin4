@@ -18,6 +18,7 @@ import { getBrowser } from '../../../../static/js/utils';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import HTMLReactParser from 'html-react-parser/lib/index';
+import getApiInstance from '../../../../static/js/api_instance';
 
 
 export async function reloadPgAdmin() {
@@ -95,11 +96,78 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
       fieldValues[element.id] = element.value;
 
       if (element.name === 'theme') {
+        // Theme has special handling - process before dynamic options
         element.type = 'theme';
         element.options.forEach((opt) => {
           opt.selected = opt.value === element.value;
           opt.preview_src = opt.preview_src && url_for('static', { filename: opt.preview_src });
         });
+      } else if (element.controlProps.optionsRefreshUrl) {
+        // Use select-refresh type when refresh URL is provided
+        element.type = 'select-refresh';
+
+        // Build refreshDeps by looking up IDs for the named dependencies
+        const refreshDepNames = element.controlProps.refreshDepNames || {};
+        const refreshDeps = {};
+        for (const [paramName, prefName] of Object.entries(refreshDepNames)) {
+          // Find the preference with this name in the same subNode
+          const depPref = subNode.preferences.find((p) => p.name === prefName);
+          if (depPref) {
+            refreshDeps[paramName] = depPref.id;
+          }
+        }
+        element.controlProps.refreshDeps = refreshDeps;
+
+        // Also set up initial options loading via optionsUrl
+        if (element.controlProps.optionsUrl) {
+          const optionsEndpoint = element.controlProps.optionsUrl;
+          const staticOptions = element.options || [];
+          element.options = () => {
+            return new Promise((resolve) => {
+              const api = getApiInstance();
+              const optionsUrl = url_for(optionsEndpoint);
+              api.get(optionsUrl)
+                .then((res) => {
+                  if (res.data?.data?.models) {
+                    const dynamicOptions = res.data.data.models;
+                    resolve([...dynamicOptions, ...staticOptions]);
+                  } else {
+                    resolve(staticOptions);
+                  }
+                })
+                .catch(() => {
+                  resolve(staticOptions);
+                });
+            });
+          };
+        }
+      } else if (element.controlProps.optionsUrl) {
+        // Support dynamic options loading via optionsUrl (endpoint name)
+        const optionsEndpoint = element.controlProps.optionsUrl;
+        const staticOptions = element.options || [];
+        // Replace options with a function that fetches from the URL
+        element.options = () => {
+          return new Promise((resolve) => {
+            const api = getApiInstance();
+            // Use url_for to resolve the endpoint to a proper URL
+            const optionsUrl = url_for(optionsEndpoint);
+            api.get(optionsUrl)
+              .then((res) => {
+                if (res.data?.data?.models) {
+                  // Dynamic models loaded successfully
+                  const dynamicOptions = res.data.data.models;
+                  resolve([...dynamicOptions, ...staticOptions]);
+                } else {
+                  // No models in response, use static options
+                  resolve(staticOptions);
+                }
+              })
+              .catch(() => {
+                // On error, fall back to static options
+                resolve(staticOptions);
+              });
+          });
+        };
       }
     } else if (type === 'keyboardShortcut') {
       element.type = 'keyboardShortcut';
