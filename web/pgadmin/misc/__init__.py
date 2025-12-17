@@ -381,7 +381,7 @@ def upgrade_check():
                     context = ssl.create_default_context(certifi.where())
 
                 response = urlopen(url, data=data, timeout=5,
-                                       context=context)
+                                   context=context)
             elif os.path.exists(config.CA_FILE):
                 # Use cafile parameter for older versions
                 response = urlopen(url, data=data, timeout=5,
