@@ -8,14 +8,17 @@
 //////////////////////////////////////////////////////////////
 import { Box, Tab, Tabs } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import Graphical from './Graphical';
 import TabPanel from '../components/TabPanel';
 import gettext  from 'sources/gettext';
+import url_for from 'sources/url_for';
+import getApiInstance from '../api_instance';
 import ImageMapper from './ImageMapper';
 import Analysis from './Analysis';
 import ExplainStatistics from './ExplainStatistics';
+import AIInsights from './AIInsights';
 import PropTypes from 'prop-types';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 
@@ -505,11 +508,31 @@ function parsePlanData(data, ctx) {
   return retPlan;
 }
 
-export default function Explain({plans=[],
-  emptyMessage=gettext('Use the Explain/Explain Analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".')
+export default function Explain({
+  plans=[],
+  emptyMessage=gettext('Use the Explain/Explain Analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".'),
+  llmEnabled: llmEnabledProp=false,
+  sql='',
+  transId=null,
+  onInsertSQL=null,
 }) {
 
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = useState(0);
+  const [llmEnabled, setLlmEnabled] = useState(llmEnabledProp);
+
+  // Fetch LLM status independently to handle timing issues
+  useEffect(() => {
+    const api = getApiInstance();
+    api.get(url_for('llm.status'))
+      .then((res) => {
+        if (res.data?.success && res.data?.data?.enabled) {
+          setLlmEnabled(true);
+        }
+      })
+      .catch(() => {
+        // LLM not available - this is fine
+      });
+  }, []);
 
   let ctx = React.useRef({});
   let planData = React.useMemo(()=>{
@@ -549,9 +572,10 @@ export default function Explain({plans=[],
           scrollButtons="auto"
           action={(ref)=>ref?.updateIndicator()}
         >
-          <Tab label="Graphical" />
-          <Tab label="Analysis" />
-          <Tab label="Statistics" />
+          <Tab label={gettext('Graphical')} />
+          <Tab label={gettext('Analysis')} />
+          <Tab label={gettext('Statistics')} />
+          {llmEnabled && <Tab label={gettext('AI Insights')} />}
         </Tabs>
       </Box>
       <TabPanel value={tabValue} index={0} classNameRoot='Explain-tabPanel'>
@@ -563,6 +587,17 @@ export default function Explain({plans=[],
       <TabPanel value={tabValue} index={2} classNameRoot='Explain-tabPanel'>
         <ExplainStatistics explainTable={ctx.current.explainTable} />
       </TabPanel>
+      {llmEnabled && (
+        <TabPanel value={tabValue} index={3} classNameRoot='Explain-tabPanel'>
+          <AIInsights
+            plans={plans}
+            sql={sql}
+            transId={transId}
+            isActive={tabValue === 3}
+            onInsertSQL={onInsertSQL}
+          />
+        </TabPanel>
+      )}
     </StyledBox>
   );
 }
@@ -570,4 +605,8 @@ export default function Explain({plans=[],
 Explain.propTypes = {
   plans: PropTypes.array.isRequired,
   emptyMessage: PropTypes.string,
+  llmEnabled: PropTypes.bool,
+  sql: PropTypes.string,
+  transId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onInsertSQL: PropTypes.func,
 };
