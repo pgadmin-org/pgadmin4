@@ -10277,6 +10277,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "marked@npm:17.0.1"
+  bin:
+    marked: bin/marked.js
+  checksum: 10c0/0197337aad33882308cea52d2c86d7b830a89be729a4010a26a488ae1c224cdc7520b8cce056832a81a127fc39a3827f45e3865c1ff257324cb553cb06ce0e57
+  languageName: node
+  linkType: hard
+
 "marked@npm:^5.1.2":
   version: 5.1.2
   resolution: "marked@npm:5.1.2"
@@ -12871,6 +12880,7 @@ __metadata:
     leaflet: "npm:^1.9.4"
     loader-utils: "npm:^3.2.1"
     lodash: "npm:4.*"
+    marked: "npm:^17.0.1"
     mini-css-extract-plugin: "npm:^2.9.2"
     moment: "npm:^2.29.4"
     moment-timezone: "npm:^0.6.0"
