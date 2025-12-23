@@ -6,6 +6,12 @@ Release date: 2026-02-05
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v9.11.
 
+.. warning:: Starting with this release, pgAdmin Windows installers are signed
+    with a new code signing certificate. When installing or running pgAdmin on
+    Windows, you should verify that the digital signature shows the certificate
+    name as **"Open Source Developer, David John Page"**. This certificate will
+    be used for this and future releases.
+
 Supported Database Servers
 **************************
 **PostgreSQL**: 13, 14, 15, 16, 17 and 18
