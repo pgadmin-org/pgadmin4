@@ -59,6 +59,7 @@ REM Main build sequence Ends
     IF "%PGADMIN_VCREDIST_DIR%" == "" SET "PGADMIN_VCREDIST_DIR=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.40.33807"
     IF "%PGADMIN_VCREDIST_FILE%" == "" SET "PGADMIN_VCREDIST_FILE=vc_redist.x64.exe"
     IF "%PGADMIN_SIGNTOOL_DIR%" == "" SET "PGADMIN_SIGNTOOL_DIR=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
+    IF "%PGADMIN_WINDOWS_CSC%" == "" SET "PGADMIN_WINDOWS_CSC="
 
     REM Set additional variables we need
     FOR /F "tokens=3" %%a IN ('findstr /C:"APP_RELEASE =" %WD%\web\version.py')  DO SET APP_MAJOR=%%a
@@ -99,6 +100,11 @@ REM Main build sequence Ends
     ECHO VC++ redist file:          %PGADMIN_VCREDIST_FILE%
     ECHO InnoTool directory:        %PGADMIN_INNOTOOL_DIR%
     ECHO signtool directory:        %PGADMIN_SIGNTOOL_DIR%
+    IF "%PGADMIN_WINDOWS_CSC%" == "" (
+        ECHO Code signing certificate:  [NONE - Signing disabled]
+    ) ELSE (
+        ECHO Code signing certificate:  %PGADMIN_WINDOWS_CSC%
+    )
     ECHO.
     ECHO App version:               %APP_VERSION%
     ECHO App version suffix:        %APP_VERSION_SUFFIX%
@@ -306,14 +312,18 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-version-string "ProductName" "%APP_NAME%"
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
 
-    ECHO Attempting to sign the pgAdmin4.exe...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 "%BUILDROOT%\runtime\pgAdmin4.exe"
-    IF %ERRORLEVEL% NEQ 0 (
-        ECHO.
-        ECHO ************************************************************
-        ECHO * Failed to sign the pgAdmin4.exe
-        ECHO ************************************************************
-        PAUSE
+    IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
+        ECHO Attempting to sign the pgAdmin4.exe...
+        CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "%PGADMIN_WINDOWS_CSC%" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
+        IF %ERRORLEVEL% NEQ 0 (
+            ECHO.
+            ECHO ************************************************************
+            ECHO * Failed to sign the pgAdmin4.exe
+            ECHO ************************************************************
+            PAUSE
+        )
+    ) ELSE (
+        ECHO Skipping code signing ^(PGADMIN_WINDOWS_CSC is not set^)...
     )
 
     ECHO Staging PostgreSQL components...
@@ -356,7 +366,11 @@ REM Main build sequence Ends
     DEL /s "%WD%\pkg\win32\installer.iss.in_stage*" > nul
 
     ECHO Creating windows installer using INNO tool...
-    CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /fd certHash /tr http://timestamp.digicert.com /td SHA256 $f" || EXIT /B 1
+    IF NOT "%PGADMIN_WINDOWS_CSC%" == "" (
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" "/SpgAdminSigntool=%PGADMIN_SIGNTOOL_DIR%\signtool.exe sign /sm /n $q%PGADMIN_WINDOWS_CSC%$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v $f" || EXIT /B 1
+    ) ELSE (
+        CALL "%PGADMIN_INNOTOOL_DIR%\ISCC.exe" "%WD%\pkg\win32\installer.iss" || EXIT /B 1
+    )
 
     ECHO Renaming installer...
     MOVE "%WD%\pkg\win32\Output\pgadmin4-setup.exe" "%DISTROOT%\%INSTALLERNAME%" > nul || EXIT /B 1
@@ -374,6 +388,11 @@ REM Main build sequence Ends
     EXIT /B 0
 
 :VERIFY_SIGNATURE
+    IF "%PGADMIN_WINDOWS_CSC%" == "" (
+        ECHO Skipping signature verification ^(PGADMIN_WINDOWS_CSC is not set^)...
+        EXIT /B 0
+    )
+
     ECHO Verifying the installer signature...
 
     CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" verify /pa /v "%DISTROOT%\%INSTALLERNAME%"
