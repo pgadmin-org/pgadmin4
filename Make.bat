@@ -307,7 +307,7 @@ REM Main build sequence Ends
     %TMPDIR%\rcedit-x64.exe "%BUILDROOT%\runtime\pgAdmin4.exe" --set-product-version "%APP_VERSION%""
 
     ECHO Attempting to sign the pgAdmin4.exe...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n "Open Source Developer, David John Page" /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /sm /n $qOpen Source Developer, David John Page$q /tr http://timestamp.digicert.com /td sha256 /fd sha1 /v "%BUILDROOT%\runtime\pgAdmin4.exe"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
@@ -398,4 +398,5 @@ REM Main build sequence Ends
 :CHECK_ROBOCOPY_ERROR
     IF %ERRORLEVEL% GEQ 8 EXIT /B %ERRORLEVEL%
     EXIT /B 0
+
 
