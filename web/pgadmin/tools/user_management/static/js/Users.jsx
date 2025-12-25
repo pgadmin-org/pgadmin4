@@ -208,7 +208,7 @@ export default function Users({roles}) {
     },
     {
       header: gettext('Email'),
-      accessorKey: 'email',
+      accessorFn: (row) => row.email ?? '',
       enableSorting: true,
       enableResizing: true,
       size: 200,
