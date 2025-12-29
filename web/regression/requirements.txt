@@ -22,7 +22,7 @@
 # relevant packages.
 ###########################################################
 extras==1.0.0
-fixtures==4.2.6
+fixtures==4.2.8
 linecache2==1.0.0
 pbr==7.0.3
 pycodestyle>=2.5.0
