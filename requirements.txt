@@ -41,7 +41,7 @@ ldap3==2.*
 libgravatar==1.0.*
 paramiko==3.5.1
 passlib==1.*
-psutil==7.1.*
+psutil==7.2.*
 psycopg[c]==3.2.13; python_version < '3.10'
 psycopg[c]==3.3.2; python_version >= '3.10'
 pyotp==2.*
