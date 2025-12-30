@@ -31,7 +31,6 @@ RUN apk add --no-cache \
     yarn \
     zlib-dev
 
-COPY .git /pgadmin4/.git
 # Create the /pgadmin4 directory and copy the source into it. Explicitly
 # remove the node_modules directory as we'll recreate a clean version, as well
 # as various other files we don't want
@@ -40,7 +39,8 @@ COPY web /pgadmin4/web
 WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
-RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
+RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
+    export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
     yarn set version berry && \
@@ -55,8 +55,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
            webpack.* \
            jest.config.js \
            babel.* \
-           ./pgadmin/static/js/generated/.cache \
-           /pgadmin4/.git
+           ./pgadmin/static/js/generated/.cache
 
 #########################################################################
 # Next, create the base environment for Python
