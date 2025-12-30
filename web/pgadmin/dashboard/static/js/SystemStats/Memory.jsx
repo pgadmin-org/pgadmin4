@@ -61,6 +61,7 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       enableSorting: true,
       enableResizing: true,
       enableFilters: true,
+      sortingFn: 'alphanumeric',
     },
     {
       header: gettext('Memory bytes'),
@@ -68,6 +69,7 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       enableSorting: true,
       enableResizing: true,
       enableFilters: true,
+      sortingFn: 'alphanumeric',
     },
   ];
 
