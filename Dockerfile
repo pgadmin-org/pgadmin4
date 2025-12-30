@@ -40,6 +40,8 @@ WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
 RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
+    --mount=type=tmpfs,target=node_modules \
+    --mount=type=tmpfs,target=pgadmin/static/js/generated/.cache \
     export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
@@ -47,15 +49,13 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
     yarn set version 4 && \
     yarn install && \
     yarn run bundle && \
-    rm -rf node_modules \
-           yarn.lock \
+    rm -rf yarn.lock \
            package.json \
            .[^.]* \
            babel.cfg \
            webpack.* \
            jest.config.js \
-           babel.* \
-           ./pgadmin/static/js/generated/.cache
+           babel.*
 
 #########################################################################
 # Next, create the base environment for Python
