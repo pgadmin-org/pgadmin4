@@ -64,7 +64,6 @@ RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
 FROM python:3-alpine AS env-builder
 
 # Install dependencies
-COPY requirements.txt /
 RUN apk add --no-cache \
         make && \
     apk add --no-cache --virtual build-deps \
@@ -77,8 +76,9 @@ RUN apk add --no-cache \
         cargo \
         zlib-dev \
         libjpeg-turbo-dev \
-        libpng-dev && \
-    python3 -m venv --system-site-packages --without-pip /venv && \
+        libpng-dev
+COPY requirements.txt /
+RUN python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
 
