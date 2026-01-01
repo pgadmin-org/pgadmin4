@@ -31,11 +31,8 @@ RUN apk add --no-cache \
     yarn \
     zlib-dev
 
-# Create the /pgadmin4 directory and copy the source into it. Explicitly
-# remove the node_modules directory as we'll recreate a clean version, as well
-# as various other files we don't want
+# Create the /pgadmin4 directory and copy the source into it
 COPY web /pgadmin4/web
-
 WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
