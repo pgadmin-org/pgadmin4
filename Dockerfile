@@ -31,7 +31,6 @@ RUN apk add --no-cache \
     yarn \
     zlib-dev
 
-COPY .git /pgadmin4/.git
 # Create the /pgadmin4 directory and copy the source into it. Explicitly
 # remove the node_modules directory as we'll recreate a clean version, as well
 # as various other files we don't want
@@ -40,23 +39,23 @@ COPY web /pgadmin4/web
 WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
-RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
+RUN --mount=type=bind,source=.git,target=/pgadmin4/.git \
+    --mount=type=tmpfs,target=node_modules \
+    --mount=type=tmpfs,target=pgadmin/static/js/generated/.cache \
+    export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
     npm install -g corepack && \
     corepack enable && \
     yarn set version berry && \
     yarn set version 4 && \
     yarn install && \
     yarn run bundle && \
-    rm -rf node_modules \
-           yarn.lock \
+    rm -rf yarn.lock \
            package.json \
            .[^.]* \
            babel.cfg \
            webpack.* \
            jest.config.js \
-           babel.* \
-           ./pgadmin/static/js/generated/.cache \
-           /pgadmin4/.git
+           babel.*
 
 #########################################################################
 # Next, create the base environment for Python
@@ -65,7 +64,6 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 FROM python:3-alpine AS env-builder
 
 # Install dependencies
-COPY requirements.txt /
 RUN apk add --no-cache \
         make && \
     apk add --no-cache --virtual build-deps \
@@ -78,8 +76,9 @@ RUN apk add --no-cache \
         cargo \
         zlib-dev \
         libjpeg-turbo-dev \
-        libpng-dev && \
-    python3 -m venv --system-site-packages --without-pip /venv && \
+        libpng-dev
+COPY requirements.txt /
+RUN python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
     apk del --no-cache build-deps
 
