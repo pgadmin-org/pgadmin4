@@ -27,6 +27,58 @@ The left pane of the *Preferences* tab displays a tree control; each node of
 the tree control provides access to options that are related to the node under
 which they are displayed.
 
+The AI Node
+***********
+
+Use preferences found in the *AI* node of the tree control to configure
+AI-powered features and LLM (Large Language Model) providers.
+
+.. image:: images/preferences_ai.png
+    :alt: Preferences AI section
+    :align: center
+
+**Note:** AI features must be enabled in the server configuration (``LLM_ENABLED = True``
+in ``config.py``) for these preferences to be available.
+
+Use the fields on the *AI* panel to configure your LLM provider:
+
+* Use the *Default Provider* drop-down to select your LLM provider. Options include:
+  *Anthropic*, *OpenAI*, *Ollama*, or *Docker Model Runner*.
+
+**Anthropic Settings:**
+
+* Use the *API Key File* field to specify the path to a file containing your
+  Anthropic API key.
+
+* Use the *Model* field to select from the available Claude models. Click the
+  refresh button to fetch the latest available models from Anthropic.
+
+**OpenAI Settings:**
+
+* Use the *API Key File* field to specify the path to a file containing your
+  OpenAI API key.
+
+* Use the *Model* field to select from the available GPT models. Click the
+  refresh button to fetch the latest available models from OpenAI.
+
+**Ollama Settings:**
+
+* Use the *API URL* field to specify the Ollama server URL
+  (default: ``http://localhost:11434``).
+
+* Use the *Model* field to select from the available models or enter a custom
+  model name (e.g., ``llama2``, ``mistral``). Click the refresh button to fetch
+  the latest available models from your Ollama server.
+
+**Docker Model Runner Settings:**
+
+* Use the *API URL* field to specify the Docker Model Runner API URL
+  (default: ``http://localhost:12434``). Available in Docker Desktop 4.40+.
+
+* Use the *Model* field to select from the available models or enter a custom
+  model name. Click the refresh button to fetch the latest available models
+  from your Docker Model Runner.
+
 The Browser Node
 ****************
 

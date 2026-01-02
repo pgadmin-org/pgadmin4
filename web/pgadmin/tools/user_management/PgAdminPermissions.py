@@ -24,6 +24,7 @@ class AllPermissionTypes:
     tools_maintenance = 'tools_maintenance'
     tools_schema_diff = 'tools_schema_diff'
     tools_grant_wizard = 'tools_grant_wizard'
+    tools_ai = 'tools_ai'
     storage_add_folder = 'storage_add_folder'
     storage_remove_folder = 'storage_remove_folder'
     change_password = 'change_password'
@@ -109,6 +110,11 @@ class PgAdminPermissions:
             AllPermissionCategories.tools,
             AllPermissionTypes.tools_erd_tool,
             gettext("ERD Tool")
+        )
+        self.add_permission(
+            AllPermissionCategories.tools,
+            AllPermissionTypes.tools_ai,
+            gettext("AI Reports")
         )
         self.add_permission(
             AllPermissionCategories.storage_manager,
