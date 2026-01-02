@@ -19,7 +19,7 @@ from pgadmin.utils.constants import (
     KEY_RING_DESKTOP_USER, SSL_MODES, RESTRICTION_TYPE_DATABASES,
     RESTRICTION_TYPE_SQL)
 from pgadmin.utils.crypto import encrypt, decrypt
-from pgadmin.model import db, Server
+from pgadmin.model import db, Server, SharedServer
 from flask import current_app
 from pgadmin.utils.master_password import set_masterpass_check_text
 from pgadmin.utils.driver import get_driver
@@ -449,6 +449,31 @@ def reencrpyt_server_passwords(user_id, old_key, new_key):
     driver = get_driver(config.PG_DEFAULT_DRIVER)
 
     for server in Server.query.filter_by(user_id=user_id).all():
+        manager = driver.connection_manager(server.id)
+        _password_check(server, manager, old_key, new_key)
+
+        if server.tunnel_password is not None:
+            tunnel_password = decrypt(server.tunnel_password, old_key)
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
+
+            tunnel_password = encrypt(tunnel_password, new_key)
+            setattr(server, 'tunnel_password', tunnel_password)
+            manager.tunnel_password = tunnel_password
+        elif manager.tunnel_password is not None:
+            tunnel_password = decrypt(manager.tunnel_password, old_key)
+
+            if isinstance(tunnel_password, bytes):
+                tunnel_password = tunnel_password.decode()
+
+            tunnel_password = encrypt(tunnel_password, new_key)
+            manager.tunnel_password = tunnel_password
+
+        db.session.commit()
+        manager.update_session()
+
+    # Ensure saved shared server passwords are re-encrypted.
+    for server in SharedServer.query.filter_by(user_id=user_id).all():
         manager = driver.connection_manager(server.id)
         _password_check(server, manager, old_key, new_key)
 
