@@ -29,6 +29,7 @@ export default class MembershipSchema extends BaseUISchema {
   }
 
   get baseFields() {
+    let obj = this;
     return [{
       id: 'role', label: gettext('User/Role'), type:'text',
       editable: true,
@@ -38,6 +39,9 @@ export default class MembershipSchema extends BaseUISchema {
           allowClear: false,
         }
       }),
+      disabled: function (state) {
+        return !obj.isNew(state);
+      },
       noEmpty: true,
       minWidth: 300
     },
