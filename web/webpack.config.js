@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-/* eslint-env node */
 // Import file, libraries and plugins
 const path = require('path');
 const webpack = require('webpack');
