@@ -146,13 +146,13 @@ if [[ ! -f /var/lib/pgadmin/pgadmin4.db && $external_config_db_exists == 'False'
     # Copy the pgpass file passed using secrets
     if [[ -f $PGPASS_FILE ]]; then
         if [[ $PGADMIN_CONFIG_SERVER_MODE == 'False' ]]; then
-            cp ${PGPASS_FILE} /var/lib/pgadmin/.pgpass
+            cp "${PGPASS_FILE}" /var/lib/pgadmin/.pgpass
             chmod 600 /var/lib/pgadmin/.pgpass
         else
             PGADMIN_USER_CONFIG_DIR=$(echo "${PGADMIN_DEFAULT_EMAIL}" | sed 's/@/_/g')
-            mkdir -p /var/lib/pgadmin/storage/${PGADMIN_USER_CONFIG_DIR}
-            cp ${PGPASS_FILE} /var/lib/pgadmin/storage/${PGADMIN_USER_CONFIG_DIR}/.pgpass
-            chmod 600 /var/lib/pgadmin/storage/${PGADMIN_USER_CONFIG_DIR}/.pgpass
+            mkdir -p /var/lib/pgadmin/storage/"${PGADMIN_USER_CONFIG_DIR}"
+            cp "${PGPASS_FILE}" /var/lib/pgadmin/storage/"${PGADMIN_USER_CONFIG_DIR}"/.pgpass
+            chmod 600 /var/lib/pgadmin/storage/"${PGADMIN_USER_CONFIG_DIR}"/.pgpass
         fi
     fi
 # If already initialised and PGADMIN_REPLACE_SERVERS_ON_STARTUP is set to true, then load the server json file.
