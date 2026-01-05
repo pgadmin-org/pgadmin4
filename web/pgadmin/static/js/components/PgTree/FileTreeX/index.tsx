@@ -24,7 +24,7 @@ import { Notificar, DisposablesComposite } from 'notificar';
 import { IFileTreeXHandle, IFileTreeXProps, FileTreeXEvent, IFileTreeXTriggerEvents } from '../types';
 import { KeyboardHotkeys } from '../services/keyboardHotkeys';
 import { TreeModelX } from '../TreeModelX';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import {AutoSizer} from 'react-virtualized-auto-sizer';
 
 export class FileTreeX extends React.Component<IFileTreeXProps> {
   private fileTreeHandle: IFileTreeXHandle;
@@ -66,8 +66,8 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
         flex: 1
       }}
       tabIndex={-1}>
-      <AutoSizer onResize={this.onResize}>
-        {({ width, height }) => (
+      <AutoSizer onResize={this.onResize}
+        renderProp={({ width = 100, height = 100 }) => (
           <FileTree
             height={height}
             width={width}
@@ -89,7 +89,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
               events={this.events}/>}
           </FileTree>
         )}
-      </AutoSizer>
+      />
     </div>;
   }
 
