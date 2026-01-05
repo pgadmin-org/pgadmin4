@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 
 # Fixup the passwd file, in case we're on OpenShift
-if ! whoami &>/dev/null; then
-  if [[ $(id -u) != 5050 ]]; then
-    if [[ -w /etc/passwd ]]; then
-      echo "${USER_NAME:-pgadminr}:x:$(id -u):0:${USER_NAME:-pgadminr} user:${HOME}:/sbin/nologin" >> /etc/passwd
-    fi
-  fi
+if ! whoami &>/dev/null && [[ $(id -u) != 5050 && -w /etc/passwd ]]; then
+  echo "${USER_NAME:-pgadminr}:x:$(id -u):0:${USER_NAME:-pgadminr} user:${HOME}:/sbin/nologin" >> /etc/passwd
 fi
 
 # usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -178,12 +174,10 @@ TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESS
 
 if [[ -n $PGADMIN_ENABLE_SOCK ]]; then
     BIND_ADDRESS="unix:/run/pgadmin/pgadmin.sock"
+elif [[ -n $PGADMIN_ENABLE_TLS ]]; then
+    BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-443}"
 else
-    if [[ -n $PGADMIN_ENABLE_TLS ]]; then
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-443}"
-    else
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-80}"
-    fi
+    BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-80}"
 fi
 
 if [[ -n $PGADMIN_ENABLE_TLS ]]; then
