@@ -31,6 +31,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   flexDirection: 'column',
   padding: '8px',
   userSelect: 'text',
+  overflow: 'auto',
   '& .ProcessDetails-cmd': {
     ...theme.mixins.panelBorder.all,
     borderRadius: theme.shape.borderRadius,
@@ -38,6 +39,8 @@ const StyledBox = styled(Box)(({theme}) => ({
     wordBreak: 'break-word',
     margin: '8px 0px',
     padding: '4px',
+    minHeight: '50px',
+    overflow: 'auto',
   },
   '& .ProcessDetails-terminateBtn': {
     backgroundColor: theme.palette.error.main,
@@ -56,6 +59,7 @@ const StyledBox = styled(Box)(({theme}) => ({
     flexGrow: 1,
     borderRadius: theme.shape.borderRadius,
     padding: '4px',
+    minHeight: '120px',
     overflow: 'auto',
     textOverflow: 'wrap-text',
     margin: '8px 0px',
@@ -147,7 +151,7 @@ export default function ProcessDetails({data}) {
 
   const errRe = new RegExp(': (' + gettext('error') + '|' + gettext('fatal') + '):', 'i');
   return (
-    <StyledBox display="flex" flexDirection="column" data-test="process-details">
+    <StyledBox data-test="process-details">
       <Box data-test="process-message">{data.details?.message}</Box>
       {data.details?.cmd && <>
         <Box>{gettext('Running command')}:</Box>

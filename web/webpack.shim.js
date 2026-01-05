@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-/* eslint-env node */
 //Configuration file contains requireJS like shim and paths used by webpack shim-loader
 const path = require('path');
 
