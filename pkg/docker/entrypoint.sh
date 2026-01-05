@@ -66,7 +66,7 @@ fi
 # Check whether the external configuration database exists if it is being used.
 external_config_db_exists="False"
 if [[ -n $PGADMIN_CONFIG_CONFIG_DATABASE_URI ]]; then
-    external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db("${PGADMIN_CONFIG_CONFIG_DATABASE_URI}"); print(val)")
+    external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(${PGADMIN_CONFIG_CONFIG_DATABASE_URI}); print(val)")
 fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE
