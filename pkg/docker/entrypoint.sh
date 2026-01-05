@@ -2,33 +2,33 @@
 
 # Fixup the passwd file, in case we're on OpenShift
 if ! whoami &>/dev/null && [[ $(id -u) != 5050 && -w /etc/passwd ]]; then
-  echo "${USER_NAME:-pgadminr}:x:$(id -u):0:${USER_NAME:-pgadminr} user:${HOME}:/sbin/nologin" >> /etc/passwd
+    echo "${USER_NAME:-pgadminr}:x:$(id -u):0:${USER_NAME:-pgadminr} user:${HOME}:/sbin/nologin" >> /etc/passwd
 fi
 
 # usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, for Docker's secrets feature)
 function file_env() {
-	local var="$1"
-	local fileVar="${var}_FILE"
-	local def="${2:-}"
-	if [[ -n ${!var:-} && -n ${!fileVar:-} ]]; then
-		printf >&2 'error: both %s and %s are set (but are exclusive)\n' "$var" "$fileVar"
-		exit 1
-	fi
-	local val="$def"
-	if [[ -n ${!var:-} ]]; then
-		val="${!var}"
-	elif [[ -n ${!fileVar:-} ]]; then
-		val="$(< "${!fileVar}")"
-	fi
-	export "$var"="$val"
-	unset "$fileVar"
+    local var="$1"
+    local fileVar="${var}_FILE"
+    local def="${2:-}"
+    if [[ -n ${!var:-} && -n ${!fileVar:-} ]]; then
+        printf >&2 'error: both %s and %s are set (but are exclusive)\n' "$var" "$fileVar"
+        exit 1
+    fi
+    local val="$def"
+    if [[ -n ${!var:-} ]]; then
+        val="${!var}"
+    elif [[ -n ${!fileVar:-} ]]; then
+        val="$(< "${!fileVar}")"
+    fi
+    export "$var"="$val"
+    unset "$fileVar"
 }
 
 # Set values for config variables that can be passed using secrets
 if [[ -n $PGADMIN_CONFIG_CONFIG_DATABASE_URI_FILE ]]; then
-  file_env PGADMIN_CONFIG_CONFIG_DATABASE_URI
+    file_env PGADMIN_CONFIG_CONFIG_DATABASE_URI
 fi
 file_env PGADMIN_DEFAULT_PASSWORD
 
@@ -66,7 +66,7 @@ fi
 # Check whether the external configuration database exists if it is being used.
 external_config_db_exists="False"
 if [[ -n $PGADMIN_CONFIG_CONFIG_DATABASE_URI ]]; then
-     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db("${PGADMIN_CONFIG_CONFIG_DATABASE_URI}"); print(val)")
+    external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db("${PGADMIN_CONFIG_CONFIG_DATABASE_URI}"); print(val)")
 fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE
@@ -109,14 +109,14 @@ if [[ ! -f /var/lib/pgadmin/pgadmin4.db && $external_config_db_exists == 'False'
     if [[ -n $PGADMIN_CONFIG_GLOBALLY_DELIVERABLE ]]; then
         GLOBALLY_DELIVERABLE=${PGADMIN_CONFIG_GLOBALLY_DELIVERABLE}
     fi
-     email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}, 'GLOBALLY_DELIVERABLE': ${GLOBALLY_DELIVERABLE}}"
-     echo "email config is ${email_config}"
-     is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${email_config}); print(val)")
-     if echo "${is_valid_email}" | grep "False" &>/dev/null; then
-         echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
-         echo "Validation output: ${is_valid_email}"
-         exit 1
-     fi
+    email_config="{'CHECK_EMAIL_DELIVERABILITY': ${CHECK_EMAIL_DELIVERABILITY}, 'ALLOW_SPECIAL_EMAIL_DOMAINS': ${ALLOW_SPECIAL_EMAIL_DOMAINS}, 'GLOBALLY_DELIVERABLE': ${GLOBALLY_DELIVERABLE}}"
+    echo "email config is ${email_config}"
+    is_valid_email=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from validation_utils import validate_email; val = validate_email('${PGADMIN_DEFAULT_EMAIL}', ${email_config}); print(val)")
+    if echo "${is_valid_email}" | grep "False" &>/dev/null; then
+        echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
+        echo "Validation output: ${is_valid_email}"
+        exit 1
+    fi
     # Switch back to root directory for further process
     cd /pgadmin4
 
