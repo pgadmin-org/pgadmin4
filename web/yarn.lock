@@ -12392,13 +12392,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtualized-auto-sizer@npm:^1.0.6":
-  version: 1.0.26
-  resolution: "react-virtualized-auto-sizer@npm:1.0.26"
+"react-virtualized-auto-sizer@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "react-virtualized-auto-sizer@npm:2.0.2"
   peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/788b438c9cb55f94a0561ef07e6bb6e5051ad3d5ececd9b2131014324ffe773b507ac7060f965e44c84bd8d6aa85c686754ac944384878c97f7304c0473a7754
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10c0/61c24a1cb17277b4fb571acb3be47f34d011968191680e75c4b7ff8c9b6c9ee5c60a939b8cc8559d3c7ae1ca1fd6c2aa6d7a0d9c134bfdff7e9efadaa2bdaefa
   languageName: node
   linkType: hard
 
@@ -12888,7 +12888,7 @@ __metadata:
     react-rnd: "npm:^10.5.1"
     react-select: "npm:^5.7.2"
     react-timer-hook: "npm:^4.0.1"
-    react-virtualized-auto-sizer: "npm:^1.0.6"
+    react-virtualized-auto-sizer: "npm:^2.0.2"
     resize-observer-polyfill: "npm:^1.5.1"
     sharp: "npm:^0.34.4"
     shim-loader: "npm:^1.0.1"

@@ -142,7 +142,7 @@
     "react-rnd": "^10.5.1",
     "react-select": "^5.7.2",
     "react-timer-hook": "^4.0.1",
-    "react-virtualized-auto-sizer": "^1.0.6",
+    "react-virtualized-auto-sizer": "^2.0.2",
     "snapsvg-cjs": "^0.0.6",
     "socket.io-client": "^4.5.0",
     "split.js": "^1.5.10",
