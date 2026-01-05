@@ -2744,11 +2744,11 @@ __metadata:
   linkType: hard
 
 "@lezer/lr@npm:^1.0.0":
-  version: 1.4.5
-  resolution: "@lezer/lr@npm:1.4.5"
+  version: 1.4.6
+  resolution: "@lezer/lr@npm:1.4.6"
   dependencies:
     "@lezer/common": "npm:^1.0.0"
-  checksum: 10c0/06a6fcba5093eb654303f0bcca5009c404fe865d19c5e302e095c3d317ca50ceafd5753bb05aa26403996fc039dffa12288154fb9e201f49a94dea798d0cb6bc
+  checksum: 10c0/03b73da81a3a3ebe02008f6a6ba6f0464076cb66ff9f857a45770b69753692c237693aacf174256d80094290d1a6bcc574eb13a4831a9ddbbe9060a09c80f9ac
   languageName: node
   linkType: hard
 
@@ -4466,30 +4466,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xterm/addon-fit@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@xterm/addon-fit@npm:0.10.0"
-  peerDependencies:
-    "@xterm/xterm": ^5.0.0
-  checksum: 10c0/76926120fc940376afef2cb68b15aec2a99fc628b6e3cc84f2bcb1682ca9b87f982b3c10ff206faf4ebc5b410467b81a7b5e83be37b4ac386586f472e4fa1c61
-  languageName: node
-  linkType: hard
-
-"@xterm/addon-search@npm:^0.15.0":
-  version: 0.15.0
-  resolution: "@xterm/addon-search@npm:0.15.0"
-  peerDependencies:
-    "@xterm/xterm": ^5.0.0
-  checksum: 10c0/2d68233d234eabc9ffe1bc9e4fcd28cd50c1f8c316b0e71a81ee2005b5e4da87c1c0361f2aa117ec566afbbbc35cd37456c7eb889ebc936416d14953c82e5a2a
-  languageName: node
-  linkType: hard
-
-"@xterm/addon-web-links@npm:^0.11.0":
+"@xterm/addon-fit@npm:^0.11.0":
   version: 0.11.0
-  resolution: "@xterm/addon-web-links@npm:0.11.0"
-  peerDependencies:
-    "@xterm/xterm": ^5.0.0
-  checksum: 10c0/9426bed80afa954b0ea97771d041eb44e77a64e560ce8b8ef507a5d3a763979af18ae9f74ed54007bb7e235d0daf035be2a33f90d8edfecb431caf8ba0b0664e
+  resolution: "@xterm/addon-fit@npm:0.11.0"
+  checksum: 10c0/c0ce94f7e877d07e7197d15d041cc629ce2e853016400aadddc9810838ea8a26e836f87f325eba36df88c03feb72d9f13cd8c3bb41ee31e701f1058edb8553c3
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-search@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "@xterm/addon-search@npm:0.16.0"
+  checksum: 10c0/bcd4c27852df1a9cfffb112174a510b0a410fc72f7f2ca431ae2ed3414c575cb1022795d491c7111382195b2d7f299b1f43d69674905c84cf31bafec7e48be9f
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-web-links@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@xterm/addon-web-links@npm:0.12.0"
+  checksum: 10c0/1c4847f43948483a6a0f59994090b8b9d9f6006a1e4a8deed7d9c28fcb47422d77eb418fb8fc63fbfb0c486c49e4646b73188ff2efac5290b680db34f298f334
   languageName: node
   linkType: hard
 
@@ -7999,10 +7993,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^16.5.0":
-  version: 16.5.0
-  resolution: "globals@npm:16.5.0"
-  checksum: 10c0/615241dae7851c8012f5aa0223005b1ed6607713d6813de0741768bd4ddc39353117648f1a7086b4b0fa45eae733f1c0a0fe369aa4e543bb63f8de8990178ea9
+"globals@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "globals@npm:17.0.0"
+  checksum: 10c0/e3c169fdcb0fc6755707b697afb367bea483eb29992cfc0de1637382eb893146e17f8f96db6d7453e3696b478a7863ae2000e6c71cd2f4061410285106d3847a
   languageName: node
   linkType: hard
 
@@ -12392,13 +12386,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtualized-auto-sizer@npm:^1.0.6":
-  version: 1.0.26
-  resolution: "react-virtualized-auto-sizer@npm:1.0.26"
+"react-virtualized-auto-sizer@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "react-virtualized-auto-sizer@npm:2.0.2"
   peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/788b438c9cb55f94a0561ef07e6bb6e5051ad3d5ececd9b2131014324ffe773b507ac7060f965e44c84bd8d6aa85c686754ac944384878c97f7304c0473a7754
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10c0/61c24a1cb17277b4fb571acb3be47f34d011968191680e75c4b7ff8c9b6c9ee5c60a939b8cc8559d3c7ae1ca1fd6c2aa6d7a0d9c134bfdff7e9efadaa2bdaefa
   languageName: node
   linkType: hard
 
@@ -12813,9 +12807,9 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/react": "npm:^19.2.7"
     "@types/react-dom": "npm:^19.0.0"
-    "@xterm/addon-fit": "npm:^0.10.0"
-    "@xterm/addon-search": "npm:^0.15.0"
-    "@xterm/addon-web-links": "npm:^0.11.0"
+    "@xterm/addon-fit": "npm:^0.11.0"
+    "@xterm/addon-search": "npm:^0.16.0"
+    "@xterm/addon-web-links": "npm:^0.12.0"
     "@xterm/xterm": "npm:^5.5.0"
     ajv: "npm:^8.8.2"
     anti-trojan-source: "npm:^1.4.0"
@@ -12844,7 +12838,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-unused-imports: "npm:^4.2.0"
     exports-loader: "npm:^5.0.0"
-    globals: "npm:^16.5.0"
+    globals: "npm:^17.0.0"
     hotkeys-js: "npm:^3.13.15"
     html-react-parser: "npm:^5.2.11"
     html-to-image: "npm:1.11.11"
@@ -12888,7 +12882,7 @@ __metadata:
     react-rnd: "npm:^10.5.1"
     react-select: "npm:^5.7.2"
     react-timer-hook: "npm:^4.0.1"
-    react-virtualized-auto-sizer: "npm:^1.0.6"
+    react-virtualized-auto-sizer: "npm:^2.0.2"
     resize-observer-polyfill: "npm:^1.5.1"
     sharp: "npm:^0.34.4"
     shim-loader: "npm:^1.0.1"
