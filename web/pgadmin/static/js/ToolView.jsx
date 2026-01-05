@@ -27,7 +27,7 @@ function ToolForm({actionUrl, params}) {
   return (
     <form ref={formRef} id="tool-form" action={actionUrl} method="post" hidden>
       {Object.keys(params).map((k)=>{
-        return k ? <input key={k} name={k} defaultValue={params[k]} /> : <></>;
+        return k ? <textarea key={k} name={k} defaultValue={params[k]} /> : <></>;
       })}
     </form>
   );
