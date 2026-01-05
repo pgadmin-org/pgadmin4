@@ -68,6 +68,7 @@ export default function Query({onTextSelect, setQtStatePartial}) {
   const preferencesStore = usePreferences();
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
   const fmUtilsObj = useMemo(()=>new FileManagerUtils(queryToolCtx.api, {}), []);
+  const initialTransIdRef = React.useRef(queryToolCtx.params.trans_id);
 
   const highlightError = (cmObj, {errormsg: result, data}, executeCursor)=>{
     let errorLineNo = 0,
@@ -363,8 +364,9 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, editor.current.isDirty());
-
-    if(isSaveToolDataEnabled('sqleditor') && editor.current.isDirty()){
+    const value = editor.current.getValue() || '';
+    const isDirty = editor.current.isDirty();
+    if(isSaveToolDataEnabled('sqleditor') && (isDirty || value.length === 0)){
       eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_QUERY_TOOL_DATA);
     }
 
@@ -379,10 +381,22 @@ export default function Query({onTextSelect, setQtStatePartial}) {
 
 
   const [saveQtData, setSaveQtData] = useState(false);
-  useDelayDebounce(()=>{
-    let connectionInfo = { ..._.find(queryToolCtx.connection_list, c => c.is_selected),
-      'open_file_name':queryToolCtx.current_file, 'is_editor_dirty': editor.current.isDirty() };
-    saveToolData('sqleditor', connectionInfo, queryToolCtx.params.trans_id, editor.current.getValue());
+  
+  useDelayDebounce(() => {
+    if (!editor.current) {
+      setSaveQtData(false);
+      return;
+    }
+    const currentTransId = initialTransIdRef.current || queryToolCtx.params.trans_id;
+    const currentConnList = queryToolCtx.connection_list;
+    const currentFile = queryToolCtx.current_file;
+
+    let connectionInfo = {
+      connection_list: currentConnList,
+      open_file_name: currentFile,
+      is_editor_dirty: editor.current.isDirty()
+    };
+    saveToolData('sqleditor', connectionInfo, currentTransId, editor.current.getValue());
     setSaveQtData(false);
   }, saveQtData, 500);
 
