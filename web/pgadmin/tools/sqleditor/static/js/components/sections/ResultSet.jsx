@@ -31,6 +31,7 @@ import { GraphVisualiser } from './GraphVisualiser';
 import { usePgAdmin } from '../../../../../../static/js/PgAdminProvider';
 import pgAdmin from 'sources/pgadmin';
 import { connectServer, connectServerModal } from '../connectServer';
+import { useLatestFunc } from '../../../../../../static/js/custom_hooks';
 
 const StyledBox = styled(Box)(({theme}) => ({
   display: 'flex',
@@ -846,7 +847,7 @@ export function ResultSet() {
   const modalId = MODAL_DIALOGS.QT_CONFIRMATIONS;
   // We'll use this track if any changes were saved.
   // It will help to decide whether results refresh is required or not on page change.
-  const pageDataDirty = useRef(false);
+  const pageDataOutOfSync = useRef(false);
 
   const selectedCell = useRef([]);
   const selectedRange = useRef(null);
@@ -873,9 +874,10 @@ export function ResultSet() {
   // To use setLoaderText to the ResultSetUtils.
   rsu.current.setLoaderText = setLoaderText;
 
-  const isDataChanged = ()=>{
-    return Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
-  };
+  const isDataChangedRef = useRef(false);
+  useEffect(()=>{
+    isDataChangedRef.current = Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
+  }, [dataChangeStore]);
 
   const fireRowsColsCellChanged = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
@@ -948,7 +950,7 @@ export function ResultSet() {
       });
     };
 
-    if(isDataChanged() && !refreshData) {
+    if(isDataChangedRef.current && !refreshData) {
       queryToolCtx.modal.confirm(
         gettext('Unsaved changes'),
         gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
@@ -1093,6 +1095,7 @@ export function ResultSet() {
     setLoaderText(gettext('Fetching rows...'));
     try {
       res = await rsu.current.getWindowRows(fromRownum, toRownum);
+      resetSelectionAndChanges();
       const newRows = rsu.current.processRows(res.data.data.result, columns);
       setRows([...newRows]);
       setQueryData((prev)=>({
@@ -1118,23 +1121,48 @@ export function ResultSet() {
 
   useEffect(()=>{
     let deregExecEnd;
+    let deregSaveDataDone;
     const deregFetch = eventBus.registerListener(QUERY_TOOL_EVENTS.FETCH_WINDOW, (...args)=>{
-      if(pageDataDirty.current) {
-        deregExecEnd = eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, (success)=>{
-          if(!success) return;
-          pageDataDirty.current = false;
+      const impl = ()=> {
+        if(pageDataOutOfSync.current) {
+          deregExecEnd = eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, (success)=>{
+            if(!success) return;
+            pageDataOutOfSync.current = false;
+            fetchWindow(...args);
+          }, true);
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, {refreshData: true});
+          // executionStartCallback(rsu.current.query, {refreshData: true});
+        } else {
+          pageDataOutOfSync.current = false;
           fetchWindow(...args);
-        }, true);
-        executionStartCallback(rsu.current.query, {refreshData: true});
-      } else {
-        pageDataDirty.current = false;
-        fetchWindow(...args);
+        }
+      };
+
+      if(!isDataChangedRef.current) {
+        impl();
+        return;
       }
-      resetSelectionAndChanges();
+      queryToolCtx.modal.showModal(gettext('Save data changes?'), (closeModal)=>(
+        <ConfirmSaveContent
+          closeModal={closeModal}
+          text={gettext('The data has changed. Do you want to save changes before moving to next page?')}
+          onDontSave={()=>{
+            impl();
+          }}
+          onSave={async ()=>{
+            deregSaveDataDone = eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_DATA_END, (success)=>{
+              if(!success) return;
+              impl();
+            }, true);
+            await triggerSaveData();
+          }}
+        />
+      ), {id: modalId});
     });
     return ()=>{
       deregFetch();
       deregExecEnd?.();
+      deregSaveDataDone?.();
     };
   }, [columns]);
 
@@ -1144,7 +1172,7 @@ export function ResultSet() {
 
   const warnSaveDataClose = ()=>{
     // No changes.
-    if(!isDataChanged() || !queryToolCtx.preferences?.sqleditor.prompt_save_data_changes) {
+    if(!isDataChangedRef.current || !queryToolCtx.preferences?.sqleditor.prompt_save_data_changes) {
       eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE);
       return;
     }
@@ -1172,8 +1200,9 @@ export function ResultSet() {
     };
   }, [dataChangeStore]);
 
-  const triggerSaveData = async ()=>{
+  const triggerSaveData = useLatestFunc(async ()=>{
     if(!_.size(dataChangeStore.updated) && !_.size(dataChangeStore.added) && !_.size(dataChangeStore.deleted)) {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_END, false);
       return;
     }
     rsu.current.historyQuerySource = QuerySources.SAVE_DATA;
@@ -1210,7 +1239,7 @@ export function ResultSet() {
       } catch {/* History errors should not bother others */}
 
       if(!respData.data.status) {
-        pageDataDirty.current = false;
+        pageDataOutOfSync.current = false;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, respData.data.result);
         pgAdmin.Browser.notifier.error(respData.data.result, 20000);
         // If the transaction is not idle, notify the user that previous queries are not rolled back,
@@ -1220,10 +1249,11 @@ export function ResultSet() {
                                 'still active; previous queries are unaffected.'));
         }
         setLoaderText(null);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_END, false);
         return;
       }
 
-      pageDataDirty.current = true;
+      pageDataOutOfSync.current = true;
       if(_.size(dataChangeStore.added)) {
         // Update the rows in a grid after addition
         respData.data.query_results.forEach((qr)=>{
@@ -1258,18 +1288,21 @@ export function ResultSet() {
       resetSelectionAndChanges();
       eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, respData.data.transaction_status);
       eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, '');
+      setLoaderText(null);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_END, true);
       pgAdmin.Browser.notifier.success(gettext('Data saved successfully.'));
       if(respData.data.transaction_status > CONNECTION_STATUS.TRANSACTION_STATUS_IDLE) {
         pgAdmin.Browser.notifier.info(gettext('Auto-commit is off. You still need to commit changes to the database.'));
       }
     } catch (error) {
-      pageDataDirty.current = false;
+      pageDataOutOfSync.current = false;
       eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
         checkTransaction: true,
       });
+      setLoaderText(null);
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_END, false);
     }
-    setLoaderText(null);
-  };
+  });
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_DATA, triggerSaveData);

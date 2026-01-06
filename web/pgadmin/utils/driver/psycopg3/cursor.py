@@ -277,10 +277,7 @@ class AsyncDictCursor(_async_cursor):
         """
         Execute function
         """
-        try:
-            return asyncio.run(self._execute(query, params))
-        except RuntimeError as e:
-            current_app.logger.exception(e)
+        return self._execute(query, params)
 
     async def _execute(self, query, params=None):
         """
