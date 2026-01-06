@@ -378,7 +378,9 @@ def upgrade_check():
                 if os.path.exists(config.CA_FILE):
                     context = ssl.create_default_context(cafile=config.CA_FILE)
                 else:
-                    context = ssl.create_default_context(certifi.where())
+                    context = ssl.create_default_context(
+                        cafile=certifi.where()
+                    )
 
                 response = urlopen(url, data=data, timeout=5,
                                    context=context)
