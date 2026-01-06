@@ -169,6 +169,9 @@ export default class VariableSchema extends BaseUISchema {
           options: obj.vnameOptions,
           controlProps: { allowClear: false },
         }),
+        disabled: function (state) {
+          return !obj.isNew(state);
+        },
       },
       {
         id: 'keyword', label: gettext('Keyword'), type: '', cell: '',
