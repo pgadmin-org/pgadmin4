@@ -44,7 +44,7 @@ export default function SectionContainer({title, titleExtras, children, style}) 
     <StyledBox className='SectionContainer-root' style={style}>
       <Resizable
         enable={{ bottom: true }}
-        defaultSize={{ height: 'auto', width: '100%' }}
+        defaultSize={{ height: 200, width: '100%' }}
         minHeight={25}
         style={{
           display: 'flex',
