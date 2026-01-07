@@ -104,7 +104,7 @@ export default class VariableSchema extends BaseUISchema {
       return {
         cell: 'select',
         options: (variable.enumvals || []).map((val)=>(typeof(val)=='string' ? {
-          label: val,
+          label: gettext(val),
           value: val
         }: val)),
         controlProps: {
