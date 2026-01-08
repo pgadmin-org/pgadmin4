@@ -54,7 +54,7 @@ export function getConnectionParameters() {
     'value': 'passfile', 'label': gettext('Password file'), 'vartype': 'file'
   }, {
     'value': 'channel_binding', 'label': gettext('Channel binding'), 'vartype': 'enum',
-    'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+    'enumvals': ['prefer', 'require', 'disable'],
     'min_server_version': '13'
   }, {
     'value': 'connect_timeout', 'label': gettext('Connection timeout (seconds)'), 'vartype': 'integer'
@@ -82,16 +82,15 @@ export function getConnectionParameters() {
     'max_server_version': '13'
   }, {
     'value': 'replication', 'label': gettext('Replication'), 'vartype': 'enum',
-    'enumvals': [gettext('on'), gettext('off'), gettext('database')],
+    'enumvals': ['on', 'off', 'database'],
     'min_server_version': '11'
   }, {
     'value': 'gssencmode', 'label': gettext('GSS encmode'), 'vartype': 'enum',
-    'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+    'enumvals': ['prefer', 'require', 'disable'],
     'min_server_version': '12'
   }, {
     'value': 'sslmode', 'label': gettext('SSL mode'), 'vartype': 'enum',
-    'enumvals': [gettext('allow'), gettext('prefer'), gettext('require'),
-      gettext('disable'), gettext('verify-ca'), gettext('verify-full')]
+    'enumvals': ['allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full']
   }, {
     'value': 'sslcompression', 'label': gettext('SSL compression?'), 'vartype': 'bool',
   }, {
@@ -116,13 +115,11 @@ export function getConnectionParameters() {
   }, {
     'value': 'ssl_min_protocol_version', 'label': gettext('SSL min protocol version'),
     'vartype': 'enum', 'min_server_version': '13',
-    'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
-      gettext('TLSv1.3')]
+    'enumvals': ['TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3']
   }, {
     'value': 'ssl_max_protocol_version', 'label': gettext('SSL max protocol version'),
     'vartype': 'enum', 'min_server_version': '13',
-    'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
-      gettext('TLSv1.3')]
+    'enumvals': ['TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3']
   }, {
     'value': 'krbsrvname', 'label': gettext('Kerberos service name'), 'vartype': 'string',
   }, {
@@ -130,12 +127,11 @@ export function getConnectionParameters() {
   }, {
     'value': 'target_session_attrs', 'label': gettext('Target session attribute'),
     'vartype': 'enum',
-    'enumvals': [gettext('any'), gettext('read-write'), gettext('read-only'),
-      gettext('primary'), gettext('standby'), gettext('prefer-standby')]
+    'enumvals': ['any', 'read-write', 'read-only', 'primary', 'standby', 'prefer-standby']
   }, {
     'value': 'load_balance_hosts', 'label': gettext('Load balance hosts'),
     'vartype': 'enum', 'min_server_version': '16',
-    'enumvals': [gettext('disable'), gettext('random')]
+    'enumvals': ['disable', 'random']
   }, {
     'value': 'gssdelegation', 'label': gettext('GSS delegation?'), 'vartype': 'bool',
     'min_server_version': '16'
@@ -144,7 +140,7 @@ export function getConnectionParameters() {
     'min_server_version': '16'
   }, {
     'value': 'sslnegotiation', 'label': gettext('SSL negotiation'),
-    'vartype': 'enum', 'enumvals': [gettext('postgres'), gettext('direct')],
+    'vartype': 'enum', 'enumvals': ['postgres', 'direct'],
     'min_server_version': '17'
   }, {
     'value': 'sslkeylogfile', 'label': gettext('SSL Key Logfile'), 'vartype': 'file',
@@ -152,11 +148,11 @@ export function getConnectionParameters() {
   }, {
     'value': 'min_protocol_version', 'label': gettext('Min protocol version'),
     'vartype': 'enum', 'min_server_version': '18',
-    'enumvals': [gettext('3.0'), gettext('3.2'), gettext('latest')]
+    'enumvals': ['3.0', '3.2', 'latest']
   }, {
     'value': 'max_protocol_version', 'label': gettext('Max protocol version'),
     'vartype': 'enum', 'min_server_version': '18',
-    'enumvals': [gettext('3.0'), gettext('3.2'), gettext('latest')]
+    'enumvals': ['3.0', '3.2', 'latest']
   }, {
     'value': 'oauth_issuer', 'label': gettext('OAuth issuer'), 'vartype': 'string',
     'min_server_version': '18'
