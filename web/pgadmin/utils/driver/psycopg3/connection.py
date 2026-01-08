@@ -19,6 +19,8 @@ import datetime
 import asyncio
 import copy
 from collections import deque
+from threading import Thread
+from asyncio import run_coroutine_threadsafe
 import psycopg
 from flask import g, current_app
 from flask_babel import gettext
@@ -32,7 +34,7 @@ from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
 from ..abstract import BaseConnection
 from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
-from .typecast import register_global_typecasters,\
+from .typecast import register_global_typecasters, \
     register_string_typecasters, register_binary_typecasters, \
     register_array_to_string_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
@@ -41,7 +43,6 @@ from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.driver import get_driver
-
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
 # So, setting to SelectorEventLoop.
@@ -189,7 +190,26 @@ class Connection(BaseConnection):
         self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
         self._autocommit = True
 
+        # Loop management for async connection
+        self._loop = None
+        self._thread = None
+
         super(Connection, self).__init__()
+
+    def _start_event_loop(self):
+        """
+        to support async in Flask, we create a dedicated event loop in a thread
+        """
+        if (self._loop is None or self._thread is None or
+                not self._thread.is_alive()):
+            self._loop = asyncio.new_event_loop()
+            self._thread = Thread(
+                target=lambda loop: loop.run_forever(),
+                args=(self._loop,),
+                name=f"pgAdmin_Loop_{self.conn_id}",
+                daemon=True
+            )
+            self._thread.start()
 
     def as_dict(self):
         """
@@ -263,6 +283,13 @@ class Connection(BaseConnection):
                         "Failed to decrypt the saved password.\nError: {0}"
                     ).format(str(e)), password
         return False, '', password
+
+    def is_busy(self):
+        """Returns True if the connection is currently executing a query."""
+        if self.async_ == 1 and self.conn:
+            # If the lock is 'locked', it means a query is running
+            return self.conn.lock.locked()
+        return False
 
     def connect(self, **kwargs):
         if self.conn:
@@ -348,6 +375,7 @@ class Connection(BaseConnection):
                     database, user, password)
 
                 if self.async_:
+                    self._start_event_loop()
                     autocommit = True
                     if 'auto_commit' in kwargs:
                         autocommit = kwargs['auto_commit']
@@ -359,7 +387,10 @@ class Connection(BaseConnection):
                             autocommit=autocommit,
                             prepare_threshold=manager.prepare_threshold
                         )
-                    pg_conn = asyncio.run(connectdbserver())
+
+                    future = run_coroutine_threadsafe(connectdbserver(),
+                                                      self._loop)
+                    pg_conn = future.result()
                     pg_conn.server_cursor_factory = AsyncDictServerCursor
                 else:
                     pg_conn = psycopg.Connection.connect(
@@ -589,7 +620,7 @@ WHERE db.datname = current_database()""")
         WHERE pid = pg_backend_pid()""")
                     if status is None and cur.get_rowcount() > 0:
                         res_enc = cur.fetchmany(1)[0]
-                        manager.db_info[res['did']]['gss_authenticated'] =\
+                        manager.db_info[res['did']]['gss_authenticated'] = \
                             res_enc['gss_authenticated']
                         manager.db_info[res['did']]['gss_encrypted'] = \
                             res_enc['encrypted']
@@ -821,7 +852,13 @@ WHERE db.datname = current_database()""")
         """
 
         query = query.encode(self.python_encoding)
-        cur.execute(query, params)
+        if self.async_ == 1:
+            async def _do_exec():
+                await cur.execute(query, params)
+
+            run_coroutine_threadsafe(_do_exec(), self._loop).result()
+        else:
+            cur.execute(query, params)
 
     def execute_on_server_as_csv(self, records=2000):
         """
@@ -1049,9 +1086,10 @@ WHERE db.datname = current_database()""")
     def release_async_cursor(self):
         if self.__async_cursor and not self.__async_cursor.closed:
             try:
-                self.__async_cursor.close_cursor()
+                run_coroutine_threadsafe(self.__async_cursor.close_cursor(),
+                                         self._loop).result()
             except Exception as e:
-                print("EXception==", str(e))
+                print("Exception==", str(e))
 
     def execute_async(self, query, params=None, formatted_exception_msg=True,
                       server_cursor=False):
@@ -1067,6 +1105,8 @@ WHERE db.datname = current_database()""")
         """
         self.__async_cursor = None
         self.__async_query_error = None
+
+        self._start_event_loop()
 
         status, cur = self.__cursor(scrollable=True,
                                     server_cursor=server_cursor)
@@ -1101,7 +1141,17 @@ WHERE db.datname = current_database()""")
             self.__notices = []
             self.__notifies = []
             self.execution_aborted = False
-            cur.execute(query, params)
+
+            if self.is_busy():
+                return False, gettext(
+                    "Resource busy: A query is already "
+                    "running on this connection.")
+
+            async def _do_exec():
+                await cur.execute(query, params)
+
+            run_coroutine_threadsafe(_do_exec(), self._loop).result()
+
         except psycopg.Error as pe:
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
             current_app.logger.error(
@@ -1499,7 +1549,15 @@ Failed to reset the connection to the server due to following error:
         async def _close_conn(conn):
             if conn:
                 await conn.close()
-        asyncio.run(_close_conn(self.conn))
+
+        if self.conn and self._loop:
+            run_coroutine_threadsafe(_close_conn(self.conn),
+                                     self._loop).result()
+            self._loop.call_soon_threadsafe(self._loop.stop)
+            if self._thread:
+                self._thread.join(timeout=1)
+                self._thread = None
+                self._loop = None
 
     def _wait(self, conn):
         pass  # This function is empty

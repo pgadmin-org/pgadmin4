@@ -54,7 +54,7 @@ class StartRunningQuery:
         can_edit = False
         can_filter = False
         notifies = None
-        status = -1
+        status = True
         result = None
         if transaction_object is not None and session_obj is not None:
             # set fetched row count to 0 as we are executing query again.
@@ -162,15 +162,15 @@ class StartRunningQuery:
                                                     sql == 'ROLLBACK;'):
                         conn.execute_void(sql)
                     else:
-                        _, _ = conn.execute_async(
+                        status, _ = conn.execute_async(
                             sql, server_cursor=trans_obj.server_cursor)
-                        # If the transaction aborted for some reason and
-                        # Auto RollBack is True then issue a rollback
-                        # to cleanup.
+                    # If the transaction aborted for some reason and
+                    # Auto RollBack is True then issue a rollback
+                    # to cleanup.
                     if is_rollback_req:
                         conn.execute_void("ROLLBACK;")
                 except Exception as e:
-                    self.logger.error(e)
+                    self.logger.error(f"Error in background execution: {e}")
                     return internal_server_error(errormsg=str(e))
 
         _thread = QueryThread(target=asyn_exec_query,
@@ -178,11 +178,8 @@ class StartRunningQuery:
                                     current_app._get_current_object())
                               )
         _thread.start()
-        _native_id = _thread.native_id if hasattr(_thread, 'native_id'
-                                                  ) else _thread.ident
-        trans_obj.set_thread_native_id(_native_id)
-        StartRunningQuery.save_transaction_in_session(session_obj,
-                                                      trans_id, trans_obj)
+        StartRunningQuery.save_transaction_in_session(session_obj, trans_id,
+                                                      trans_obj)
 
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
