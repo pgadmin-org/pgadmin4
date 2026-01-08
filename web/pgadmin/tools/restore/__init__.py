@@ -10,7 +10,6 @@
 """Implements Restore Utility"""
 
 import json
-import re
 import secrets
 
 from flask import render_template, request, current_app, Response
@@ -26,7 +25,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.utils.constants import MIMETYPE_APP_JS, SERVER_NOT_FOUND
+from pgadmin.utils.constants import SERVER_NOT_FOUND, RESTRICT_COMMAND
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 
 # set template path for sql scripts
@@ -75,7 +74,13 @@ class RestoreMessage(IProcessDesc):
             return ''
 
         for arg in _args:
-            if arg and len(arg) >= 2 and arg.startswith('--'):
+            if arg and RESTRICT_COMMAND in arg:
+                # Find the index where \restrict ends
+                idx = arg.find(RESTRICT_COMMAND) + len(RESTRICT_COMMAND)
+                # Keep the prefix and mask everything after it
+                masked_arg = arg[:idx + 1] + "x" * (len(arg) - idx - 1)
+                self.cmd += cmd_arg(masked_arg)
+            elif arg and len(arg) >= 2 and arg.startswith('--'):
                 self.cmd += ' ' + arg
             else:
                 self.cmd += cmd_arg(arg)
