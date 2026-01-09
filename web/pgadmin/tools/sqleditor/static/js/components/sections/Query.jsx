@@ -224,6 +224,13 @@ export default function Query({onTextSelect, setQtStatePartial}) {
       }, 250);
     });
 
+    eventBus.registerListener(QUERY_TOOL_EVENTS.NLQ_INSERT_SQL, (sql)=>{
+      // Insert SQL at current cursor position
+      const cursorPos = editor.current?.getCursor() || {line: 0, ch: 0};
+      editor.current?.replaceRange(sql, cursorPos);
+      editor.current?.focus();
+    });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value, !queryToolCtx.params.is_query_tool);

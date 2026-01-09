@@ -3,6 +3,7 @@ from .authenticate import blueprint as AuthenticateModule
 from .browser import blueprint as BrowserModule
 from .dashboard import blueprint as DashboardModule
 from .help import blueprint as HelpModule
+from .llm import blueprint as LLMModule
 from .misc import blueprint as MiscModule
 from .preferences import blueprint as PreferencesModule
 from .redirects import blueprint as RedirectModule
@@ -17,6 +18,7 @@ def get_submodules():
         BrowserModule,
         DashboardModule,
         HelpModule,
+        LLMModule,
         MiscModule,
         PreferencesModule,
         RedirectModule,

@@ -259,6 +259,7 @@ module.exports = [{
             'pure|pgadmin.tools.psql',
             'pure|pgadmin.tools.sqleditor',
             'pure|pgadmin.misc.cloud',
+            'pure|pgadmin.browser.ai_tools',
           ],
         },
       },
