@@ -286,6 +286,11 @@ class OAuth2Authentication(BaseAuthentication):
         return None, None
 
     def login(self, form):
+        if not self.oauth2_current_client:
+            error_msg = 'No OAuth2 provider available.'
+            current_app.logger.error(error_msg)
+            return False, gettext(error_msg)
+
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
 
@@ -449,6 +454,27 @@ class OAuth2Authentication(BaseAuthentication):
             ])
 
             if has_sufficient_claims:
+                provider = self.oauth2_config.get(
+                    self.oauth2_current_client, {}
+                )
+                username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
+                additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
+
+                # If custom username claim or additional authorization
+                #  claims are configured, they may exist only in userinfo;
+                # don't skip userinfo unless ID token has them.
+                needs_userinfo = False
+                if username_claim and username_claim not in id_token_claims:
+                    needs_userinfo = True
+                if isinstance(additional_claims, dict) and additional_claims:
+                    missing_authz_keys = [
+                        k for k in additional_claims.keys()
+                        if k not in id_token_claims
+                    ]
+                    if missing_authz_keys:
+                        needs_userinfo = True
+
+            if has_sufficient_claims and not needs_userinfo:
                 current_app.logger.debug(
                     'OIDC provider: using ID token claims, '
                     'skipping userinfo endpoint')
