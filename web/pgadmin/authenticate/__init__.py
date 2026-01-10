@@ -227,15 +227,27 @@ class AuthSourceManager:
         return res
 
     def update_auth_sources(self):
-        for auth_src in [KERBEROS, OAUTH2]:
-            if auth_src in self.auth_sources:
-                if 'internal_button' in request.form:
+        # Only mutate the ordered list of auth sources when a user explicitly
+        # selected an auth method on the login form.
+        #
+        # Without this guard, a plain internal login POST (email/password) can
+        # incorrectly drop INTERNAL/LDAP and try OAUTH2 first, which then fails
+        # because no oauth2 provider button was provided.
+        if request.method != 'POST':
+            return
+
+        if 'internal_button' in request.form:
+            for auth_src in [KERBEROS, OAUTH2]:
+                if auth_src in self.auth_sources:
                     self.auth_sources.remove(auth_src)
-                else:
-                    if INTERNAL in self.auth_sources:
-                        self.auth_sources.remove(INTERNAL)
-                    if LDAP in self.auth_sources:
-                        self.auth_sources.remove(LDAP)
+            return
+
+        if 'oauth2_button' in request.form:
+            if INTERNAL in self.auth_sources:
+                self.auth_sources.remove(INTERNAL)
+            if LDAP in self.auth_sources:
+                self.auth_sources.remove(LDAP)
+            return
 
     def set_current_source(self, source):
         self.current_source = source
