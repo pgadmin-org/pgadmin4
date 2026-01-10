@@ -229,14 +229,14 @@ class OAuth2Authentication(BaseAuthentication):
                 username = id_token_claims[username_claim]
                 current_app.logger.debug(
                     f'Found username claim "{username_claim}" '
-                    f'in ID token: {username}')
+                    'in ID token')
                 return username, email
             # Fall back to userinfo profile
             elif username_claim in profile_dict:
                 username = profile_dict[username_claim]
                 current_app.logger.debug(
                     f'Found username claim "{username_claim}" '
-                    f'in profile: {username}')
+                    'in profile')
                 return username, email
             else:
                 current_app.logger.error(
@@ -252,25 +252,25 @@ class OAuth2Authentication(BaseAuthentication):
                 # Use as email if not found elsewhere
                 email = email or username
                 current_app.logger.debug(
-                    f'Using email from ID token as username: {username}')
+                    'Using email from ID token as username')
                 return username, email
             elif email:
                 current_app.logger.debug(
-                    f'Using email from profile as username: {email}')
+                    'Using email from profile as username')
                 return email, email
 
             # Priority 2: preferred_username
             if 'preferred_username' in id_token_claims:
                 username = id_token_claims['preferred_username']
                 current_app.logger.debug(
-                    f'Using preferred_username from ID token: {username}')
+                    'Using preferred_username from ID token')
                 return username, email
 
             # Priority 3: sub (always present in OIDC)
             if 'sub' in id_token_claims:
                 username = id_token_claims['sub']
                 current_app.logger.debug(
-                    f'Using sub from ID token as last resort: {username}')
+                    'Using sub from ID token as last resort')
                 return username, email
 
             # Should not reach here for valid OIDC provider
@@ -280,7 +280,7 @@ class OAuth2Authentication(BaseAuthentication):
         # For non-OIDC OAuth2 providers, email is required
         if email:
             current_app.logger.debug(
-                f'Using email as username for OAuth2 provider: {email}')
+                'Using email as username for OAuth2 provider')
             return email, email
 
         return None, None
@@ -289,12 +289,23 @@ class OAuth2Authentication(BaseAuthentication):
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
 
-        current_app.logger.debug(f"profile: {profile}")
-        current_app.logger.debug(f"profile_dict: {profile_dict}")
+        profile_dict_keys = []
+        if isinstance(profile_dict, dict):
+            profile_dict_keys = sorted(profile_dict.keys())
+        current_app.logger.debug(
+            f'profile_dict keys: {profile_dict_keys}'
+            if profile_dict_keys else 'profile_dict empty'
+        )
 
         # Get ID token claims for OIDC providers
         id_token_claims = self._get_id_token_claims()
-        current_app.logger.debug(f"id_token_claims: {id_token_claims}")
+        id_token_claims_keys = []
+        if isinstance(id_token_claims, dict):
+            id_token_claims_keys = sorted(id_token_claims.keys())
+        current_app.logger.debug(
+            f'id_token_claims keys: {id_token_claims_keys}'
+            if id_token_claims_keys else 'id_token_claims empty'
+        )
 
         # For OIDC providers, we must have either ID token claims or profile
         if (
@@ -346,7 +357,7 @@ class OAuth2Authentication(BaseAuthentication):
             valid_idtoken, reason = self.__is_any_claim_valid(
                 id_token_claims, additional_claims)
             current_app.logger.debug(
-                f'ID token claims: {id_token_claims}'
+                f'ID token claim keys: {id_token_claims_keys}'
             )
             current_app.logger.debug(
                 f'ID token validation reason: {reason}'
@@ -358,9 +369,9 @@ class OAuth2Authentication(BaseAuthentication):
             else:
                 # Fall back to userinfo profile
                 valid_profile, reason = self.__is_any_claim_valid(
-                    profile, additional_claims)
+                    profile_dict, additional_claims)
                 current_app.logger.debug(
-                    f'Profile claims: {profile}'
+                    f'Profile claim keys: {profile_dict_keys}'
                 )
                 current_app.logger.debug(
                     f'Profile validation reason: {reason}'
@@ -369,9 +380,9 @@ class OAuth2Authentication(BaseAuthentication):
         else:
             # Non-OIDC: only check userinfo profile
             valid_combined, reason = self.__is_any_claim_valid(
-                profile, additional_claims)
+                profile_dict, additional_claims)
             current_app.logger.debug(
-                f'Profile claims: {profile}'
+                f'Profile claim keys: {profile_dict_keys}'
             )
             current_app.logger.debug(
                 f'Validation reason: {reason}'
@@ -382,11 +393,20 @@ class OAuth2Authentication(BaseAuthentication):
                 'The user is not authorized to login based on your identity '
                 'profile. Please contact your administrator.'
             )
+
+            additional_claim_names = []
+            if isinstance(additional_claims, dict):
+                additional_claim_names = sorted(additional_claims.keys())
+
             audit_msg = (
                 f'The authenticated user {username} is not authorized to '
                 'access pgAdmin based on OAUTH2 config. '
-                f'Reason: additional claim required {additional_claims}, '
-                f'profile claims {profile}, ID token claims {id_token_claims}.'
+                'Reason: additional claims required. '
+                f'additional_claim_names={additional_claim_names}, '
+                f'profile_len={len(profile_dict)}, '
+                f'profile_keys={profile_dict_keys}, '
+                f'id_token_len={len(id_token_claims)}, '
+                f'id_token_keys={id_token_claims_keys}.'
             )
             current_app.logger.warning(audit_msg)
             return False, return_msg
