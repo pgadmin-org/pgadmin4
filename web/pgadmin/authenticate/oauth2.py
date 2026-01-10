@@ -303,13 +303,13 @@ class OAuth2Authentication(BaseAuthentication):
             not profile_dict
         ):
             error_msg = "No profile data found from OIDC provider."
-            current_app.logger.exception(error_msg)
+            current_app.logger.error(error_msg)
             return False, gettext(error_msg)
 
         # For non-OIDC providers, profile is required
         if not self._is_oidc_provider() and not profile_dict:
             error_msg = "No profile data found."
-            current_app.logger.exception(error_msg)
+            current_app.logger.error(error_msg)
             return False, gettext(error_msg)
 
         # Resolve username using OIDC-aware logic
@@ -329,7 +329,7 @@ class OAuth2Authentication(BaseAuthentication):
                     'for email id or set OAUTH2_USERNAME_CLAIM config '
                     'parameter.'
                 )
-            current_app.logger.exception(error_msg)
+            current_app.logger.error(error_msg)
             return False, gettext(error_msg)
 
         additional_claims = None
