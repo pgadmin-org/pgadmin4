@@ -172,17 +172,36 @@ class OAuth2Authentication(BaseAuthentication):
 
     def _get_id_token_claims(self):
         """
-        Extract and return claims from the ID token.
-        When using OIDC with server_metadata_url, Authlib automatically
-        parses the ID token and stores the claims in the 'userinfo' key
-        of the token response.
+        Extract and return claims from the ID token JWT.
+
+        Uses Authlib's parse_id_token() method which handles JWT decoding
+        and validation according to the OIDC specification.
 
         Returns:
-            dict: ID token claims, or empty dict if not available
+            dict: ID token claims, or empty dict if not available or
+            parsing fails
         """
         if not self._is_oidc_provider():
             return {}
-        return session.get('oauth2_token', {}).get('userinfo', {})
+
+        token = session.get('oauth2_token')
+        if not token:
+            return {}
+
+        client = self.oauth2_clients.get(self.oauth2_current_client)
+        if not client:
+            return {}
+
+        try:
+            claims = client.parse_id_token(token)
+            if isinstance(claims, dict):
+                return claims
+        except Exception as e:
+            current_app.logger.warning(
+                f'Failed to parse ID token via authlib: {e}'
+            )
+
+        return {}
 
     def get_profile_dict(self, profile):
         """
@@ -438,14 +457,11 @@ class OAuth2Authentication(BaseAuthentication):
             session['oauth2_logout_url'] = self.oauth2_config[
                 self.oauth2_current_client]['OAUTH2_LOGOUT_URL']
 
-        # For OIDC providers with server_metadata_url, Authlib automatically
-        # parses the ID token and stores claims in the 'userinfo' key.
-        # We can skip the userinfo endpoint call if ID token has sufficient
-        # data.
+        # For OIDC providers, parse the ID token JWT to extract claims.
+        # We can skip the userinfo endpoint call if the ID token has
+        # sufficient claims for authentication and authorization.
         if self._is_oidc_provider():
-            id_token_claims = session.get('oauth2_token', {}).get(
-                'userinfo', {}
-            )
+            id_token_claims = self._get_id_token_claims()
             # Check if we have basic required claims in ID token
             has_sufficient_claims = any([
                 'email' in id_token_claims,
@@ -476,13 +492,13 @@ class OAuth2Authentication(BaseAuthentication):
 
             if has_sufficient_claims and not needs_userinfo:
                 current_app.logger.debug(
-                    'OIDC provider: using ID token claims, '
+                    'OIDC provider: using parsed ID token JWT claims, '
                     'skipping userinfo endpoint')
                 # Return ID token claims as profile
                 return id_token_claims
             else:
                 current_app.logger.debug(
-                    'OIDC provider: ID token lacks standard claims, '
+                    'OIDC provider: ID token JWT lacks standard claims, '
                     'falling back to userinfo endpoint')
 
         # For non-OIDC providers or when ID token is insufficient,
