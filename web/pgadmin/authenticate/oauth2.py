@@ -12,7 +12,7 @@
 import config
 
 from authlib.integrations.flask_client import OAuth
-from flask import current_app, url_for, session, request,\
+from flask import current_app, url_for, session, request, \
     redirect, Flask, flash
 from flask_babel import gettext
 from flask_security import login_user, current_user
@@ -104,6 +104,10 @@ class OAuth2Authentication(BaseAuthentication):
     email_keys = ['mail', 'email']
 
     def __init__(self):
+        # Selected provider name (set during authenticate()).
+        # Initializing avoids AttributeError in edge cases/tests.
+        self.oauth2_current_client = None
+
         for oauth2_config in config.OAUTH2_CONFIG:
 
             OAuth2Authentication.oauth2_config[
@@ -147,10 +151,57 @@ class OAuth2Authentication(BaseAuthentication):
         return OAUTH2
 
     def get_friendly_name(self):
-        return self.oauth2_config[self.oauth2_current_client]['OAUTH2_NAME']
+        provider = self.oauth2_config.get(self.oauth2_current_client)
+        if not provider:
+            return OAUTH2
+        return provider.get('OAUTH2_NAME', OAUTH2)
 
     def validate(self, form):
         return True, None
+
+    def _is_oidc_provider(self):
+        """
+        Determine if the current provider is configured as an OIDC provider.
+        Returns True if OAUTH2_SERVER_METADATA_URL is defined.
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client)
+        if not provider:
+            return False
+        return 'OAUTH2_SERVER_METADATA_URL' in provider and \
+            provider['OAUTH2_SERVER_METADATA_URL'] is not None
+
+    def _get_id_token_claims(self):
+        """
+        Extract and return claims from the ID token JWT.
+
+        Uses Authlib's parse_id_token() method which handles JWT decoding
+        and validation according to the OIDC specification.
+
+        Returns:
+            dict: ID token claims, or empty dict if not available or
+            parsing fails
+        """
+        if not self._is_oidc_provider():
+            return {}
+
+        token = session.get('oauth2_token')
+        if not token:
+            return {}
+
+        client = self.oauth2_clients.get(self.oauth2_current_client)
+        if not client:
+            return {}
+
+        try:
+            claims = client.parse_id_token(token)
+            if isinstance(claims, dict):
+                return claims
+        except Exception as e:
+            current_app.logger.warning(
+                f'Failed to parse ID token via authlib: {e}'
+            )
+
+        return {}
 
     def get_profile_dict(self, profile):
         """
@@ -165,53 +216,156 @@ class OAuth2Authentication(BaseAuthentication):
         else:
             return {}
 
+    def _resolve_username(self, id_token_claims, profile_dict):
+        """
+        Resolve username from available claims with OIDC-aware fallback.
+
+        Resolution order:
+        1. If OAUTH2_USERNAME_CLAIM is configured, use that claim from
+           ID token first, then userinfo profile
+        2. For OIDC providers, check in order: email, preferred_username, sub
+        3. For non-OIDC providers, use email only
+
+        Args:
+            id_token_claims (dict): Claims from ID token
+            profile_dict (dict): Claims from userinfo endpoint
+
+        Returns:
+            tuple: (username, email) or (None, None) if resolution fails
+        """
+        provider = self.oauth2_config.get(self.oauth2_current_client, {})
+        username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
+
+        # Extract email from profile (backward compatibility)
+        email_key = [value for value in self.email_keys
+                     if value in profile_dict.keys()]
+        email = profile_dict[email_key[0]] if email_key else None
+
+        # If specific username claim is configured, look for it
+        if username_claim:
+            # Check ID token claims first
+            if username_claim in id_token_claims:
+                username = id_token_claims[username_claim]
+                current_app.logger.debug(
+                    f'Found username claim "{username_claim}" '
+                    'in ID token')
+                return username, email
+            # Fall back to userinfo profile
+            elif username_claim in profile_dict:
+                username = profile_dict[username_claim]
+                current_app.logger.debug(
+                    f'Found username claim "{username_claim}" '
+                    'in profile')
+                return username, email
+            else:
+                current_app.logger.error(
+                    f'Required username claim "{username_claim}" '
+                    f'not found in ID token or profile')
+                return None, email
+
+        # For OIDC providers, use standard claim hierarchy
+        if self._is_oidc_provider():
+            # Priority 1: email (from ID token or profile)
+            if 'email' in id_token_claims:
+                username = id_token_claims['email']
+                # Use as email if not found elsewhere
+                email = email or username
+                current_app.logger.debug(
+                    'Using email from ID token as username')
+                return username, email
+            elif email:
+                current_app.logger.debug(
+                    'Using email from profile as username')
+                return email, email
+
+            # Priority 2: preferred_username
+            if 'preferred_username' in id_token_claims:
+                username = id_token_claims['preferred_username']
+                current_app.logger.debug(
+                    'Using preferred_username from ID token')
+                return username, email
+
+            # Priority 3: sub (always present in OIDC)
+            if 'sub' in id_token_claims:
+                username = id_token_claims['sub']
+                current_app.logger.debug(
+                    'Using sub from ID token as last resort')
+                return username, email
+
+            # Should not reach here for valid OIDC provider
+            current_app.logger.warning(
+                'OIDC provider but no standard claims found in ID token')
+
+        # For non-OIDC OAuth2 providers, email is required
+        if email:
+            current_app.logger.debug(
+                'Using email as username for OAuth2 provider')
+            return email, email
+
+        return None, None
+
     def login(self, form):
+        if not self.oauth2_current_client:
+            error_msg = 'No OAuth2 provider available.'
+            current_app.logger.error(error_msg)
+            return False, gettext(error_msg)
+
         profile = self.get_user_profile()
         profile_dict = self.get_profile_dict(profile)
 
-        current_app.logger.debug(f"profile: {profile}")
-        current_app.logger.debug(f"profile_dict: {profile_dict}")
+        profile_dict_keys = []
+        if isinstance(profile_dict, dict):
+            profile_dict_keys = sorted(profile_dict.keys())
+        current_app.logger.debug(
+            f'profile_dict keys: {profile_dict_keys}'
+            if profile_dict_keys else 'profile_dict empty'
+        )
 
-        if not profile_dict:
-            error_msg = "No profile data found."
-            current_app.logger.exception(error_msg)
+        # Get ID token claims for OIDC providers
+        id_token_claims = self._get_id_token_claims()
+        id_token_claims_keys = []
+        if isinstance(id_token_claims, dict):
+            id_token_claims_keys = sorted(id_token_claims.keys())
+        current_app.logger.debug(
+            f'id_token_claims keys: {id_token_claims_keys}'
+            if id_token_claims_keys else 'id_token_claims empty'
+        )
+
+        # For OIDC providers, we must have either ID token claims or profile
+        if (
+            self._is_oidc_provider() and
+            not id_token_claims and
+            not profile_dict
+        ):
+            error_msg = "No profile data found from OIDC provider."
+            current_app.logger.error(error_msg)
             return False, gettext(error_msg)
 
-        email_key = [
-            value for value in self.email_keys
-            if value in profile_dict.keys()
-        ]
-        email = profile_dict[email_key[0]] if (len(email_key) > 0) else None
+        # For non-OIDC providers, profile is required
+        if not self._is_oidc_provider() and not profile_dict:
+            error_msg = "No profile data found."
+            current_app.logger.error(error_msg)
+            return False, gettext(error_msg)
 
-        username = email
-        username_claim = None
-        if 'OAUTH2_USERNAME_CLAIM' in self.oauth2_config[
-                self.oauth2_current_client]:
-            username_claim = self.oauth2_config[
-                self.oauth2_current_client
-            ]['OAUTH2_USERNAME_CLAIM']
-        if username_claim is not None:
-            id_token = session['oauth2_token'].get('userinfo', {})
-            if username_claim in profile:
-                username = profile[username_claim]
-                current_app.logger.debug('Found username claim in profile')
-            elif username_claim in id_token:
-                username = id_token[username_claim]
-                current_app.logger.debug('Found username claim in id_token')
+        # Resolve username using OIDC-aware logic
+        username, email = self._resolve_username(id_token_claims, profile_dict)
+
+        if not username:
+            if self._is_oidc_provider():
+                error_msg = (
+                    'Could not extract username from OIDC claims. '
+                    'Please ensure your OIDC provider returns standard '
+                    'claims (email, preferred_username, or sub).'
+                )
             else:
-                error_msg = "The claim '%s' is required to login into " \
-                    "pgAdmin. Please update your OAuth2 profile." % (
-                        username_claim)
-                current_app.logger.exception(error_msg)
-                return False, gettext(error_msg)
-        else:
-            if not email or email == '':
-                error_msg = "An email id or OAUTH2_USERNAME_CLAIM is" \
-                    " required to login into pgAdmin. Please update your" \
-                    " OAuth2 profile for email id or set" \
-                    " OAUTH2_USERNAME_CLAIM config parameter."
-                current_app.logger.exception(error_msg)
-                return False, gettext(error_msg)
+                error_msg = (
+                    'An email id or OAUTH2_USERNAME_CLAIM is required to '
+                    'login into pgAdmin. Please update your OAuth2 profile '
+                    'for email id or set OAUTH2_USERNAME_CLAIM config '
+                    'parameter.'
+                )
+            current_app.logger.error(error_msg)
+            return False, gettext(error_msg)
 
         additional_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
@@ -221,27 +375,63 @@ class OAuth2Authentication(BaseAuthentication):
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
-        # checking oauth provider userinfo response
-        valid_profile, reason = self.__is_any_claim_valid(profile,
-                                                          additional_claims)
-        current_app.logger.debug(f"profile claims: {profile}")
-        current_app.logger.debug(f"reason: {reason}")
+        # For OIDC providers, check ID token claims first, then userinfo
+        # For non-OIDC providers, check userinfo only
+        if self._is_oidc_provider():
+            valid_idtoken, reason = self.__is_any_claim_valid(
+                id_token_claims, additional_claims)
+            current_app.logger.debug(
+                f'ID token claim keys: {id_token_claims_keys}'
+            )
+            current_app.logger.debug(
+                f'ID token validation reason: {reason}'
+            )
 
-        # checking oauth provider idtoken claims
-        id_token_claims = session.get('oauth2_token', {}).get('userinfo',{})
-        valid_idtoken, reason = self.__is_any_claim_valid(id_token_claims,
-                                                          additional_claims)
-        current_app.logger.debug(f"idtoken claims: {id_token_claims}")
-        current_app.logger.debug(f"reason: {reason}")
+            # If ID token validation succeeds, we're done
+            if valid_idtoken:
+                valid_combined = True
+            else:
+                # Fall back to userinfo profile
+                valid_profile, reason = self.__is_any_claim_valid(
+                    profile_dict, additional_claims)
+                current_app.logger.debug(
+                    f'Profile claim keys: {profile_dict_keys}'
+                )
+                current_app.logger.debug(
+                    f'Profile validation reason: {reason}'
+                )
+                valid_combined = valid_profile
+        else:
+            # Non-OIDC: only check userinfo profile
+            valid_combined, reason = self.__is_any_claim_valid(
+                profile_dict, additional_claims)
+            current_app.logger.debug(
+                f'Profile claim keys: {profile_dict_keys}'
+            )
+            current_app.logger.debug(
+                f'Validation reason: {reason}'
+            )
 
-        if not valid_profile and not valid_idtoken:
-            return_msg = "The user is not authorized to login" \
-                " based on your identity profile." \
-                " Please contact your administrator."
-            audit_msg = f"The authenticated user {username} is not" \
-                " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: additional claim required {additional_claims}, " \
-                f"profile claims {profile}, idtoken cliams {id_token_claims}."
+        if not valid_combined:
+            return_msg = (
+                'The user is not authorized to login based on your identity '
+                'profile. Please contact your administrator.'
+            )
+
+            additional_claim_names = []
+            if isinstance(additional_claims, dict):
+                additional_claim_names = sorted(additional_claims.keys())
+
+            audit_msg = (
+                f'The authenticated user {username} is not authorized to '
+                'access pgAdmin based on OAUTH2 config. '
+                'Reason: additional claims required. '
+                f'additional_claim_names={additional_claim_names}, '
+                f'profile_len={len(profile_dict)}, '
+                f'profile_keys={profile_dict_keys}, '
+                f'id_token_len={len(id_token_claims)}, '
+                f'id_token_keys={id_token_claims_keys}.'
+            )
             current_app.logger.warning(audit_msg)
             return False, return_msg
 
@@ -267,6 +457,65 @@ class OAuth2Authentication(BaseAuthentication):
             session['oauth2_logout_url'] = self.oauth2_config[
                 self.oauth2_current_client]['OAUTH2_LOGOUT_URL']
 
+        # For OIDC providers, parse the ID token JWT to extract claims.
+        # We can skip the userinfo endpoint call if the ID token has
+        # sufficient claims for authentication and authorization.
+        if self._is_oidc_provider():
+            id_token_claims = self._get_id_token_claims()
+            # Check if we have basic required claims in ID token
+            has_sufficient_claims = any([
+                'email' in id_token_claims,
+                'preferred_username' in id_token_claims,
+                'sub' in id_token_claims
+            ])
+
+            if has_sufficient_claims:
+                provider = self.oauth2_config.get(
+                    self.oauth2_current_client, {}
+                )
+                username_claim = provider.get('OAUTH2_USERNAME_CLAIM')
+                additional_claims = provider.get('OAUTH2_ADDITIONAL_CLAIMS')
+
+                # If custom username claim or additional authorization
+                #  claims are configured, they may exist only in userinfo;
+                # don't skip userinfo unless ID token has them.
+                needs_userinfo = False
+                if username_claim and username_claim not in id_token_claims:
+                    needs_userinfo = True
+                if isinstance(additional_claims, dict) and additional_claims:
+                    missing_authz_keys = [
+                        k for k in additional_claims.keys()
+                        if k not in id_token_claims
+                    ]
+                    if missing_authz_keys:
+                        needs_userinfo = True
+
+            if has_sufficient_claims and not needs_userinfo:
+                current_app.logger.debug(
+                    'OIDC provider: using parsed ID token JWT claims, '
+                    'skipping userinfo endpoint')
+                # Return ID token claims as profile
+                return id_token_claims
+            else:
+                current_app.logger.debug(
+                    'OIDC provider: ID token JWT lacks standard claims, '
+                    'falling back to userinfo endpoint')
+
+        # For non-OIDC providers or when ID token is insufficient,
+        # call the userinfo endpoint
+        if 'OAUTH2_USERINFO_ENDPOINT' not in self.oauth2_config[
+                self.oauth2_current_client]:
+            if self._is_oidc_provider():
+                # OIDC provider should have provided claims in ID token
+                current_app.logger.warning(
+                    'OIDC provider has no userinfo endpoint configured '
+                    'and ID token lacks standard claims')
+            else:
+                current_app.logger.error(
+                    'OAUTH2_USERINFO_ENDPOINT not configured for '
+                    'non-OIDC provider')
+            return {}
+
         resp = self.oauth2_clients[self.oauth2_current_client].get(
             self.oauth2_config[
                 self.oauth2_current_client]['OAUTH2_USERINFO_ENDPOINT'],
@@ -276,7 +525,11 @@ class OAuth2Authentication(BaseAuthentication):
         return resp.json()
 
     def authenticate(self, form):
-        self.oauth2_current_client = request.form['oauth2_button']
+        # Prefer the explicit oauth2 button value.
+        # Avoid raising BadRequestKeyError when oauth2 isn't selected.
+        self.oauth2_current_client = request.form.get('oauth2_button')
+        if not self.oauth2_current_client:
+            return False, gettext('No OAuth2 provider selected.')
         redirect_url = url_for(OAUTH2_AUTHORIZE, _external=True)
 
         if self.oauth2_current_client not in self.oauth2_clients:
