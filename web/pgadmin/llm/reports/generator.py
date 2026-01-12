@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -18,7 +18,7 @@ from flask_babel import gettext
 from pgadmin.llm.client import get_llm_client, LLMClient
 from pgadmin.llm.reports.pipeline import ReportPipeline
 from pgadmin.llm.reports.sections import get_sections_for_scope
-from pgadmin.llm.reports.queries import execute_query, QUERIES
+from pgadmin.llm.reports.queries import QUERIES
 
 
 def create_query_executor(conn) -> callable:
@@ -49,12 +49,12 @@ def create_query_executor(conn) -> callable:
         # Check if query requires an extension
         required_ext = query_def.get('requires_extension')
         if required_ext:
-            check_sql = f"""
+            check_sql = """
                 SELECT EXISTS (
-                    SELECT 1 FROM pg_extension WHERE extname = '{required_ext}'
+                    SELECT 1 FROM pg_extension WHERE extname = %s
                 ) as available
             """
-            status, result = conn.execute_dict(check_sql)
+            status, result = conn.execute_dict(check_sql, [required_ext])
             if not (status and result and
                     result.get('rows', [{}])[0].get('available', False)):
                 return {

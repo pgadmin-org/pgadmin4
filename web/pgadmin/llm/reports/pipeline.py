@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,12 +11,12 @@
 
 import json
 import time
-from typing import Generator, Optional, Callable, Any
+from typing import Generator, Callable, Any
 
 from pgadmin.llm.client import LLMClient, LLMClientError
 from pgadmin.llm.models import Message
 from pgadmin.llm.reports.models import (
-    Section, SectionResult, Severity, PipelineProgress
+    Section, SectionResult, Severity
 )
 from pgadmin.llm.reports.prompts import (
     PLANNING_SYSTEM_PROMPT, get_planning_user_prompt,
@@ -165,6 +165,7 @@ class ReportPipeline:
             yield {'type': 'stage', 'stage': 'synthesizing',
                    'message': 'Creating final report...'}
 
+            final_report = ''
             for retry_event in self._synthesize_with_retry(
                 section_results, context
             ):

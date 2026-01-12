@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -23,7 +23,8 @@ from pgadmin.llm.models import (
 )
 
 
-# Default model if none specified
+# Default configuration
+DEFAULT_API_URL = 'http://localhost:11434'
 DEFAULT_MODEL = 'llama3.2'
 
 

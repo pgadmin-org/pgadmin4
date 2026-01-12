@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -98,12 +98,16 @@ class ExplainAnalyzeAITestCase(BaseTestGenerator):
 
             mock_check_trans = patch(
                 'pgadmin.tools.sqleditor.check_transaction_status',
-                return_value=(True, None, mock_conn, mock_trans_obj, mock_session)
+                return_value=(
+                    True, None, mock_conn, mock_trans_obj, mock_session
+                )
             )
         else:
             mock_check_trans = patch(
                 'pgadmin.tools.sqleditor.check_transaction_status',
-                return_value=(False, 'Transaction ID not found', None, None, None)
+                return_value=(
+                    False, 'Transaction ID not found', None, None, None
+                )
             )
         patches.append(mock_check_trans)
 

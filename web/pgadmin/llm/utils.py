@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -231,7 +231,8 @@ def get_default_provider():
     Returns None if disabled at system level or user preference is empty.
 
     Returns:
-        The provider name ('anthropic', 'openai', 'ollama') or None if disabled.
+        The provider name ('anthropic', 'openai', 'ollama', 'docker')
+        or None if disabled.
     """
     # Check master switch first - cannot be overridden by user
     if not getattr(config, 'LLM_ENABLED', False):

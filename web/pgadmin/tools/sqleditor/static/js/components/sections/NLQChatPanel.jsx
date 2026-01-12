@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -500,6 +500,7 @@ export function NLQChatPanel() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            [window.pgAdmin.csrf_token_header]: window.pgAdmin.csrf_token,
           },
           body: JSON.stringify({
             message: userMessage,
