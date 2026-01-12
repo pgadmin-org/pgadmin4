@@ -304,14 +304,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 session['oauth2_token'] = {
                     'access_token': 'test-access-token',
                     'id_token': 'mock.jwt.token',
-                    'token_type': 'Bearer'
+                    'token_type': 'Bearer',
+                    'userinfo': id_token_claims
                 }
-                # Mock parse_id_token to return the claims
-                client = OAuth2Authentication.oauth2_clients.get(provider)
-                if client:
-                    client.parse_id_token = MagicMock(
-                        return_value=id_token_claims
-                    )
             return profile
 
         with patch.object(
@@ -344,14 +339,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 session['oauth2_token'] = {
                     'access_token': 'test-access-token',
                     'id_token': 'mock.jwt.token',
-                    'token_type': 'Bearer'
+                    'token_type': 'Bearer',
+                    'userinfo': id_token_claims
                 }
-                # Mock parse_id_token to return the claims
-                client = OAuth2Authentication.oauth2_clients.get(provider)
-                if client:
-                    client.parse_id_token = MagicMock(
-                        return_value=id_token_claims
-                    )
             return profile
 
         with patch.object(
@@ -416,9 +406,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             client.authorize_access_token = MagicMock(return_value={
                 'access_token': 't',
                 'id_token': 'mock.jwt.token',
-                'token_type': 'Bearer'
+                'token_type': 'Bearer',
+                'userinfo': claims
             })
-            client.parse_id_token = MagicMock(return_value=claims)
             client.get = MagicMock(side_effect=AssertionError(
                 'userinfo endpoint should not be called'))
 
@@ -437,10 +427,9 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             client = MagicMock()
             client.authorize_access_token = MagicMock(return_value={
                 'access_token': 't',
-                'token_type': 'Bearer'
+                'token_type': 'Bearer',
+                'userinfo': {}
             })
-            # parse_id_token returns empty dict when no id_token present
-            client.parse_id_token = MagicMock(return_value={})
 
             resp = MagicMock()
             resp.raise_for_status = MagicMock()

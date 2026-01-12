@@ -172,10 +172,14 @@ class OAuth2Authentication(BaseAuthentication):
 
     def _get_id_token_claims(self):
         """
-        Extract and return claims from the ID token JWT.
+        Extract and return ID token claims for OIDC providers.
 
-        Uses Authlib's parse_id_token() method which handles JWT decoding
-        and validation according to the OIDC specification.
+        In pgAdmin's Authlib integration, the token response returned by
+        authorize_access_token() may include a decoded claims dict under the
+        'userinfo' key (e.g. populated from the ID token).
+
+        If those claims are not present, this returns an empty dict and the
+        caller should fall back to the configured userinfo endpoint.
 
         Returns:
             dict: ID token claims, or empty dict if not available or
@@ -185,21 +189,12 @@ class OAuth2Authentication(BaseAuthentication):
             return {}
 
         token = session.get('oauth2_token')
-        if not token:
+        if not isinstance(token, dict):
             return {}
 
-        client = self.oauth2_clients.get(self.oauth2_current_client)
-        if not client:
-            return {}
-
-        try:
-            claims = client.parse_id_token(token)
-            if isinstance(claims, dict):
-                return claims
-        except Exception as e:
-            current_app.logger.warning(
-                f'Failed to parse ID token via authlib: {e}'
-            )
+        claims = token.get('userinfo')
+        if isinstance(claims, dict):
+            return claims
 
         return {}
 
@@ -468,6 +463,10 @@ class OAuth2Authentication(BaseAuthentication):
                 'preferred_username' in id_token_claims,
                 'sub' in id_token_claims
             ])
+
+            # Default to requiring the userinfo endpoint unless we can prove
+            # the ID token claims are sufficient for our configured needs.
+            needs_userinfo = True
 
             if has_sufficient_claims:
                 provider = self.oauth2_config.get(
