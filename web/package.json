@@ -80,7 +80,7 @@
     "@fluentui/keyboard-key": "^0.4.23",
     "@fortawesome/fontawesome-free": "latest",
     "@mui/icons-material": "^7.3.6",
-    "@mui/material": "^7.3.4",
+    "@mui/material": "^7.3.7",
     "@mui/x-date-pickers": "^8.22.1",
     "@nozbe/microfuzz": "^1.0.0",
     "@projectstorm/react-diagrams": "^7.0.4",
