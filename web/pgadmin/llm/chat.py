@@ -16,8 +16,8 @@ that can use database tools to query and inspect PostgreSQL databases.
 import json
 from typing import Optional
 
-from pgadmin.llm.client import get_llm_client, is_llm_available, LLMClientError
-from pgadmin.llm.models import Message, LLMResponse, StopReason
+from pgadmin.llm.client import get_llm_client, is_llm_available
+from pgadmin.llm.models import Message, StopReason
 from pgadmin.llm.tools import DATABASE_TOOLS, execute_tool, DatabaseToolError
 from pgadmin.llm.utils import get_max_tool_iterations
 

@@ -11,7 +11,7 @@
 
 import json
 import ssl
-from flask import Response, request
+from flask import request
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
