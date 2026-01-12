@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,6 +14,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PropTypes from 'prop-types';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -316,7 +317,9 @@ export default function SecurityReport({
     URL.revokeObjectURL(url);
   };
 
-  const reportHtml = report ? marked.parse(getReportHeader() + report) : '';
+  const reportHtml = report
+    ? DOMPurify.sanitize(marked.parse(getReportHeader() + report))
+    : '';
 
   return (
     <StyledBox>

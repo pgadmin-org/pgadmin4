@@ -2744,6 +2744,7 @@ def user_macros(json_resp=True):
 # Natural Language Query (NLQ) to SQL
 # =============================================================================
 
+
 @blueprint.route(
     '/nlq/chat/<int:trans_id>/stream',
     methods=["POST"],
@@ -2853,11 +2854,11 @@ def nlq_chat_stream(trans_id):
             else:
                 # Also try to find a plain JSON object in the response
                 # Look for {"sql": ... } pattern anywhere in the text
-                plain_json_match = re.search(
-                    r'\{["\']?sql["\']?\s*:\s*(?:null|"[^"]*"|\'[^\']*\').*?\}',
-                    json_text,
-                    re.DOTALL
+                sql_pattern = (
+                    r'\{["\']?sql["\']?\s*:\s*'
+                    r'(?:null|"[^"]*"|\'[^\']*\').*?\}'
                 )
+                plain_json_match = re.search(sql_pattern, json_text, re.DOTALL)
                 if plain_json_match:
                     json_text = plain_json_match.group(0)
 
@@ -3041,7 +3042,8 @@ Original SQL query:
 {sql_query}
 ```
 
-Provide your analysis identifying performance bottlenecks and optimization recommendations."""
+Provide your analysis identifying performance bottlenecks and \
+optimization recommendations."""
 
             # Call the LLM
             client = get_llm_client()
@@ -3106,4 +3108,3 @@ Provide your analysis identifying performance bottlenecks and optimization recom
     )
     response.direct_passthrough = True
     return response
-

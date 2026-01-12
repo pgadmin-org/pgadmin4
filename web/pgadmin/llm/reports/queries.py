@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -878,12 +878,12 @@ def execute_query(
     required_ext = query_def.get('requires_extension')
     if required_ext:
         # Check if extension is installed
-        check_sql = f"""
+        check_sql = """
             SELECT EXISTS (
-                SELECT 1 FROM pg_extension WHERE extname = '{required_ext}'
+                SELECT 1 FROM pg_extension WHERE extname = %s
             ) as available
         """
-        status, result = conn.execute_dict(check_sql)
+        status, result = conn.execute_dict(check_sql, [required_ext])
         if not (status and result and
                 result.get('rows', [{}])[0].get('available', False)):
             return {

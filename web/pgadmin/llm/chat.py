@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -23,20 +23,23 @@ from pgadmin.llm.utils import get_max_tool_iterations
 
 
 # Default system prompt for database assistant
-DEFAULT_SYSTEM_PROMPT = """You are a PostgreSQL database assistant integrated into pgAdmin 4.
-You have access to tools that allow you to query the database and inspect its schema.
-
-When helping users:
-1. First understand the database structure using get_database_schema or get_table_info
-2. Write efficient SQL queries to answer questions about the data
-3. Explain your findings clearly and concisely
-4. If a query might return many rows, consider using LIMIT or aggregations
-
-Important:
-- All queries run in READ ONLY mode - you cannot modify data
-- Results are limited to 1000 rows
-- Always validate your understanding of the schema before writing complex queries
-"""
+DEFAULT_SYSTEM_PROMPT = (
+    "You are a PostgreSQL database assistant integrated into pgAdmin 4. "
+    "You have access to tools that allow you to query the database and "
+    "inspect its schema.\n\n"
+    "When helping users:\n"
+    "1. First understand the database structure using get_database_schema "
+    "or get_table_info\n"
+    "2. Write efficient SQL queries to answer questions about the data\n"
+    "3. Explain your findings clearly and concisely\n"
+    "4. If a query might return many rows, consider using LIMIT or "
+    "aggregations\n\n"
+    "Important:\n"
+    "- All queries run in READ ONLY mode - you cannot modify data\n"
+    "- Results are limited to 1000 rows\n"
+    "- Always validate your understanding of the schema before writing "
+    "complex queries"
+)
 
 
 def chat_with_database(
@@ -144,7 +147,9 @@ def chat_with_database(
         # Add tool results to history
         messages.extend(tool_results)
 
-    raise RuntimeError(f"Exceeded maximum tool iterations ({max_tool_iterations})")
+    raise RuntimeError(
+        f"Exceeded maximum tool iterations ({max_tool_iterations})"
+    )
 
 
 def single_query(

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -204,7 +204,8 @@ class LLMModule(PgAdminModule):
             options=ollama_model_options,
             help_str=gettext(
                 'The Ollama model to use. Models are loaded dynamically '
-                'from your Ollama server. You can also type a custom model name.'
+                'from your Ollama server. You can also type a custom model '
+                'name. Leave empty to use the default (llama3.2).'
             ),
             control_props={
                 'allowClear': True,
@@ -248,7 +249,7 @@ class LLMModule(PgAdminModule):
             help_str=gettext(
                 'The Docker model to use. Models are loaded dynamically '
                 'from your Docker Model Runner. You can also type a custom '
-                'model name.'
+                'model name. Leave empty to use the default (ai/qwen3-coder).'
             ),
             control_props={
                 'allowClear': True,
@@ -340,7 +341,9 @@ def get_llm_status():
     )
 
 
-@blueprint.route("/models/anthropic", methods=["GET"], endpoint='models_anthropic')
+@blueprint.route(
+    "/models/anthropic", methods=["GET"], endpoint='models_anthropic'
+)
 @pga_login_required
 def get_anthropic_models():
     """
@@ -1035,71 +1038,89 @@ def _generate_security_report_llm(client, security_info, manager):
     from pgadmin.llm.models import Message
 
     # Build the system prompt
-    system_prompt = """You are a PostgreSQL security expert. Your task is to analyze
-the security configuration of a PostgreSQL database server and generate a comprehensive
-security report in Markdown format.
-
-Focus ONLY on server-level security configuration, not database objects or data.
-
-IMPORTANT: Do NOT include a report title, header block, or generation date at the top
-of your response. The title and metadata are added separately by the application.
-Start directly with the Executive Summary section.
-
-The report should include:
-1. **Executive Summary** - Brief overview of the security posture
-2. **Critical Issues** - Security vulnerabilities that need immediate attention
-3. **Warnings** - Important security concerns that should be addressed
-4. **Recommendations** - Best practices that could improve security
-5. **Configuration Review** - Analysis of key security settings
-
-Use severity indicators:
-- 🔴 Critical - Immediate action required
-- 🟠 Warning - Should be addressed soon
-- 🟡 Advisory - Recommended improvement
-- 🟢 Good - Configuration is secure
-
-Be specific and actionable in your recommendations. Include the current setting values
-when discussing issues. Format the output as well-structured Markdown."""
+    system_prompt = (
+        "You are a PostgreSQL security expert. Your task is to analyze "
+        "the security configuration of a PostgreSQL database server and "
+        "generate a comprehensive security report in Markdown format.\n\n"
+        "Focus ONLY on server-level security configuration, not database "
+        "objects or data.\n\n"
+        "IMPORTANT: Do NOT include a report title, header block, or "
+        "generation date at the top of your response. The title and "
+        "metadata are added separately by the application. "
+        "Start directly with the Executive Summary section.\n\n"
+        "The report should include:\n"
+        "1. **Executive Summary** - Brief overview of the security posture\n"
+        "2. **Critical Issues** - Vulnerabilities needing immediate attention\n"
+        "3. **Warnings** - Important security concerns to be addressed\n"
+        "4. **Recommendations** - Best practices to improve security\n"
+        "5. **Configuration Review** - Analysis of key security settings\n\n"
+        "Use severity indicators:\n"
+        "- 🔴 Critical - Immediate action required\n"
+        "- 🟠 Warning - Should be addressed soon\n"
+        "- 🟡 Advisory - Recommended improvement\n"
+        "- 🟢 Good - Configuration is secure\n\n"
+        "Be specific and actionable in your recommendations. Include the "
+        "current setting values when discussing issues. Format the output "
+        "as well-structured Markdown."
+    )
 
     # Build the user message with the security configuration
-    user_message = f"""Please analyze the following PostgreSQL server security configuration
-and generate a security report.
+    settings_json = json.dumps(
+        security_info.get('settings', []), indent=2, default=str
+    )
+    hba_json = json.dumps(
+        security_info.get('hba_rules', []), indent=2, default=str
+    )
+    superusers_json = json.dumps(
+        security_info.get('superusers', []), indent=2, default=str
+    )
+    privileged_json = json.dumps(
+        security_info.get('privileged_roles', []), indent=2, default=str
+    )
+    no_expiry_json = json.dumps(
+        security_info.get('roles_no_expiry', []), indent=2, default=str
+    )
+    extensions_json = json.dumps(
+        security_info.get('extensions', []), indent=2, default=str
+    )
+
+    user_message = f"""Please analyze this PostgreSQL server security config.
 
 ## Server Information
 - Server Version: {security_info.get('server_version', 'Unknown')}
 
 ## Security Settings
 ```json
-{json.dumps(security_info.get('settings', []), indent=2, default=str)}
+{settings_json}
 ```
 
 ## pg_hba.conf Rules
 {security_info.get('hba_note', '')}
 ```json
-{json.dumps(security_info.get('hba_rules', []), indent=2, default=str)}
+{hba_json}
 ```
 
 ## Superuser Roles
 ```json
-{json.dumps(security_info.get('superusers', []), indent=2, default=str)}
+{superusers_json}
 ```
 
 ## Roles with Special Privileges
 ```json
-{json.dumps(security_info.get('privileged_roles', []), indent=2, default=str)}
+{privileged_json}
 ```
 
 ## Login Roles Without Password Expiry
 ```json
-{json.dumps(security_info.get('roles_no_expiry', []), indent=2, default=str)}
+{no_expiry_json}
 ```
 
 ## Installed Extensions
 ```json
-{json.dumps(security_info.get('extensions', []), indent=2, default=str)}
+{extensions_json}
 ```
 
-Please generate a comprehensive security report analyzing this configuration."""
+Generate a comprehensive security report analyzing this configuration."""
 
     # Call the LLM
     messages = [Message.user(user_message)]
