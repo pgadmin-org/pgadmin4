@@ -43,6 +43,7 @@ class LLMStatusTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        # Required by BaseTestGenerator but no setup needed for these tests
         pass
 
     def runTest(self):

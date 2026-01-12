@@ -86,7 +86,7 @@ class LLMClient(ABC):
         """
         try:
             # Try a minimal request to validate the connection
-            response = self.chat(
+            self.chat(
                 messages=[Message.user("Hello")],
                 max_tokens=10
             )
