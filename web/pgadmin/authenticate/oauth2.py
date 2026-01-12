@@ -139,9 +139,9 @@ class OAuth2Authentication(BaseAuthentication):
                 name=oauth2_config['OAUTH2_NAME'],
                 client_id=oauth2_config['OAUTH2_CLIENT_ID'],
                 client_secret=oauth2_config['OAUTH2_CLIENT_SECRET'],
-                access_token_url=oauth2_config['OAUTH2_TOKEN_URL'],
-                authorize_url=oauth2_config['OAUTH2_AUTHORIZATION_URL'],
-                api_base_url=oauth2_config['OAUTH2_API_BASE_URL'],
+                access_token_url=oauth2_config.get('OAUTH2_TOKEN_URL'),
+                authorize_url=oauth2_config.get('OAUTH2_AUTHORIZATION_URL'),
+                api_base_url=oauth2_config.get('OAUTH2_API_BASE_URL'),
                 client_kwargs=client_kwargs,
                 server_metadata_url=oauth2_config.get(
                     'OAUTH2_SERVER_METADATA_URL', None)
