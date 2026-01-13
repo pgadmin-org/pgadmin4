@@ -48,7 +48,7 @@ and secure.
 
    "AUTHENTICATION_SOURCES", "The default value for this parameter is *internal*.
    To enable OAUTH2 authentication, you must include *oauth2* in the list of values
-   for this parameter. you can modify the value as follows:
+   for this parameter. You can modify the value as follows:
 
    * [‘oauth2’, ‘internal’]: pgAdmin will display an additional button for authenticating with oauth2"
     "OAUTH2_NAME", "The name of the Oauth2 provider, ex: Google, Github"
