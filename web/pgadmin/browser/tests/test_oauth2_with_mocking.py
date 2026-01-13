@@ -47,6 +47,24 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        ('Oauth2 Public Client PKCE Registration', dict(
+            oauth2_provider='public-pkce',
+            kind='public_pkce_registration',
+            profile={},
+            id_token_claims=None,
+        )),
+        ('Oauth2 Confidential Client Registration', dict(
+            oauth2_provider='github',
+            kind='confidential_registration',
+            profile={},
+            id_token_claims=None,
+        )),
+        ('Oauth2 Invalid Public Client Config', dict(
+            oauth2_provider='invalid-public',
+            kind='invalid_public_no_pkce',
+            profile={},
+            id_token_claims=None,
+        )),
         ('OIDC Uses ID Token Claims', dict(
             oauth2_provider='oidc-basic',
             kind='login_success',
@@ -95,6 +113,15 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
     def setUpClass(cls):
         """Logout the test client as we are testing OAuth2 login scenarios."""
         cls.tester.logout()
+
+    @staticmethod
+    def _get_register_kwargs(mock_register, provider_name):
+        for _args, _kwargs in mock_register.call_args_list:
+            if _kwargs.get('name') == provider_name:
+                return _kwargs
+        raise AssertionError(
+            f'OAuth.register was not called for provider: {provider_name}'
+        )
 
     def setUp(self):
         app_config.AUTHENTICATION_SOURCES = [OAUTH2]
@@ -158,6 +185,21 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 'OAUTH2_RESPONSE_TYPE': 'code',
             },
             {
+                'OAUTH2_NAME': 'public-pkce',
+                'OAUTH2_DISPLAY_NAME': 'Public Client (PKCE)',
+                'OAUTH2_CLIENT_ID': 'testclientid',
+                # No secret: public client
+                'OAUTH2_CLIENT_SECRET': '',
+                'OAUTH2_TOKEN_URL': 'https://public.example/token',
+                'OAUTH2_AUTHORIZATION_URL': 'https://public.example/auth',
+                'OAUTH2_API_BASE_URL': 'https://public.example/',
+                'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+                'OAUTH2_SCOPE': 'openid email profile',
+                'OAUTH2_SSL_CERT_VERIFICATION': True,
+                'OAUTH2_CHALLENGE_METHOD': 'S256',
+                'OAUTH2_RESPONSE_TYPE': 'code',
+            },
+            {
                 'OAUTH2_NAME': 'oidc-basic',
                 'OAUTH2_DISPLAY_NAME': 'OIDC Basic',
                 'OAUTH2_CLIENT_ID': 'testclientid',
@@ -214,7 +256,13 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         if self.kind == 'external_redirect':
             self._test_external_authentication(self.oauth2_provider)
         elif self.kind == 'pkce':
-            self.test_oauth2_authentication_with_pkce()
+            self._test_oauth2_authentication_with_pkce()
+        elif self.kind == 'public_pkce_registration':
+            self._test_public_client_pkce_registration()
+        elif self.kind == 'confidential_registration':
+            self._test_confidential_client_registration_unchanged()
+        elif self.kind == 'invalid_public_no_pkce':
+            self._test_public_client_missing_pkce_fails_fast()
         elif self.kind == 'login_success':
             self._test_oauth2_login_success(
                 self.oauth2_provider, self.profile, self.id_token_claims
@@ -359,7 +407,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
         self.assertEqual(res.status_code, 200)
         self._assert_oauth2_session_not_logged_in()
 
-    def test_oauth2_authentication_with_pkce(self):
+    def _test_oauth2_authentication_with_pkce(self):
         """
         Ensure that when PKCE parameters are configured, they are passed
         to the OAuth client registration as part of client_kwargs, and that
@@ -373,14 +421,7 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
 
             OAuth2Authentication()
 
-            pkce_call = None
-            for _args, _kwargs in mock_register.call_args_list:
-                if _kwargs.get('name') == 'keycloak-pkce':
-                    pkce_call = (_args, _kwargs)
-                    break
-
-            self.assertIsNotNone(pkce_call)
-            _, kwargs = pkce_call
+            kwargs = self._get_register_kwargs(mock_register, 'keycloak-pkce')
             client_kwargs = kwargs.get('client_kwargs', {})
 
             # Check that PKCE and default client_kwargs are included
@@ -392,6 +433,74 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
                 client_kwargs.get('scope'), 'openid email profile')
             self.assertEqual(
                 client_kwargs.get('verify'), True)
+
+    def _test_public_client_pkce_registration(self):
+        """Public clients without a secret must set token auth to none."""
+
+        with patch(
+            'pgadmin.authenticate.oauth2.OAuth.register'
+        ) as mock_register:
+            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+            OAuth2Authentication()
+
+            kwargs = self._get_register_kwargs(mock_register, 'public-pkce')
+
+            self.assertEqual(kwargs.get('token_endpoint_auth_method'), 'none')
+            self.assertIsNone(kwargs.get('client_secret'))
+
+            client_kwargs = kwargs.get('client_kwargs', {})
+            self.assertEqual(
+                client_kwargs.get('code_challenge_method'), 'S256')
+            self.assertEqual(
+                client_kwargs.get('response_type'), 'code')
+
+    def _test_confidential_client_registration_unchanged(self):
+        """
+        Confidential clients must preserve existing registration
+        behavior.
+        """
+
+        with patch(
+            'pgadmin.authenticate.oauth2.OAuth.register'
+        ) as mock_register:
+            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+            OAuth2Authentication()
+
+            kwargs = self._get_register_kwargs(mock_register, 'github')
+            self.assertNotIn('token_endpoint_auth_method', kwargs)
+            self.assertEqual(kwargs.get('client_secret'), 'testclientsec')
+
+    def _test_public_client_missing_pkce_fails_fast(self):
+        """Public client configuration without PKCE must raise an error."""
+
+        # Override config for this scenario only.
+        app_config.OAUTH2_CONFIG = [{
+            'OAUTH2_NAME': 'invalid-public',
+            'OAUTH2_DISPLAY_NAME': 'Invalid Public',
+            'OAUTH2_CLIENT_ID': 'testclientid',
+            'OAUTH2_CLIENT_SECRET': None,
+            'OAUTH2_TOKEN_URL': 'https://invalid.example/token',
+            'OAUTH2_AUTHORIZATION_URL': 'https://invalid.example/auth',
+            'OAUTH2_API_BASE_URL': 'https://invalid.example/',
+            'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
+            'OAUTH2_SCOPE': 'openid email profile',
+        }]
+
+        with patch(
+            'pgadmin.authenticate.oauth2.OAuth.register'
+        ) as mock_register:
+            from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+            with self.assertRaises(ValueError) as cm:
+                OAuth2Authentication()
+
+            self.assertIn('invalid-public', str(cm.exception))
+            self.assertIn('OAUTH2_CLIENT_SECRET', str(cm.exception))
+            self.assertIn('OAUTH2_CHALLENGE_METHOD', str(cm.exception))
+            self.assertIn('OAUTH2_RESPONSE_TYPE', str(cm.exception))
+            mock_register.assert_not_called()
 
     def _test_oidc_get_user_profile_skip_userinfo(self, provider):
         from pgadmin.authenticate.oauth2 import OAuth2Authentication

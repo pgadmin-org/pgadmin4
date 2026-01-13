@@ -54,7 +54,7 @@ and secure.
     "OAUTH2_NAME", "The name of the Oauth2 provider, ex: Google, Github"
     "OAUTH2_DISPLAY_NAME", "Oauth2 display name in pgAdmin"
     "OAUTH2_CLIENT_ID", "Oauth2 Client ID"
-    "OAUTH2_CLIENT_SECRET", "Oauth2 Client Secret"
+    "OAUTH2_CLIENT_SECRET", "Oauth2 Client Secret. **Optional for public clients using Authorization Code + PKCE**. For confidential clients (server-side apps), keep this set. For public clients (no secret), pgAdmin will enforce PKCE and perform an unauthenticated token exchange."
     "OAUTH2_TOKEN_URL", "Oauth2 Access Token endpoint"
     "OAUTH2_AUTHORIZATION_URL", "Endpoint for user authorization"
     "OAUTH2_SERVER_METADATA_URL", "**OIDC Discovery URL** (recommended for OIDC providers). When set, pgAdmin will use OIDC flow with automatic ID token validation and user claims from the ID token. Example: *https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration*. When using this parameter, OAUTH2_TOKEN_URL and OAUTH2_AUTHORIZATION_URL are optional as they will be discovered automatically."
@@ -106,6 +106,24 @@ Ref: https://oauth.net/2/pkce
 To enable PKCE workflow, set the configuration parameters OAUTH2_CHALLENGE_METHOD to *S256* and OAUTH2_RESPONSE_TYPE to *code*.
 Both parameters are mandatory to enable PKCE workflow.
 
+Public vs Confidential OAuth Clients
+====================================
+
+OAuth providers support two common client types:
+
+- **Confidential clients** have a client secret and can authenticate to the token endpoint.
+- **Public clients** do not have a client secret (or the secret cannot be safely stored).
+
+pgAdmin supports interactive user login for both client types:
+
+- If **OAUTH2_CLIENT_SECRET** is set, pgAdmin treats the provider as a confidential client.
+- If **OAUTH2_CLIENT_SECRET** is missing, empty, or set to *None*, pgAdmin treats the provider as a public client and **requires PKCE**.
+
+.. note::
+    For public clients, pgAdmin uses Authlib's native behavior to perform an **unauthenticated token exchange**
+    (token endpoint client authentication method: ``none``). This is required for Authorization Code + PKCE
+    flows where no client secret is available.
+
 OIDC Configuration Examples
 ============================
 
@@ -134,6 +152,32 @@ With this configuration:
 - User identity will be extracted from ID token claims (sub, email, preferred_username)
 - The userinfo endpoint will only be called as a fallback if ID token lacks required claims
 - ID token will be automatically validated using the provider's public keys
+
+Using OIDC as a Public Client (No Client Secret) with PKCE
+-----------------------------------------------------------
+
+If your OAuth/OIDC application is configured as a **public client** (no client secret), pgAdmin can still perform
+interactive user login using Authorization Code + PKCE.
+
+.. code-block:: python
+
+    OAUTH2_CONFIG = [{
+        'OAUTH2_NAME': 'my-oidc-public',
+        'OAUTH2_DISPLAY_NAME': 'My OIDC Provider (Public Client)',
+        'OAUTH2_CLIENT_ID': 'your-client-id',
+        # Public client: omit OAUTH2_CLIENT_SECRET or set it to None/empty.
+        'OAUTH2_CLIENT_SECRET': None,
+        'OAUTH2_SERVER_METADATA_URL': 'https://provider.example.com/.well-known/openid-configuration',
+        'OAUTH2_SCOPE': 'openid email profile',
+        # PKCE is mandatory for public clients
+        'OAUTH2_CHALLENGE_METHOD': 'S256',
+        'OAUTH2_RESPONSE_TYPE': 'code',
+    }]
+
+With this configuration:
+
+- pgAdmin enforces PKCE (challenge method + response type)
+- The token exchange is performed without a client secret
 
 Username Resolution for OIDC
 -----------------------------

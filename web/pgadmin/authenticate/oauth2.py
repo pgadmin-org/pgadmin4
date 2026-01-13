@@ -110,6 +110,8 @@ class OAuth2Authentication(BaseAuthentication):
 
         for oauth2_config in config.OAUTH2_CONFIG:
 
+            provider_name = oauth2_config.get('OAUTH2_NAME', '<unknown>')
+
             OAuth2Authentication.oauth2_config[
                 oauth2_config['OAUTH2_NAME']] = oauth2_config
 
@@ -121,31 +123,63 @@ class OAuth2Authentication(BaseAuthentication):
                     'OAUTH2_SSL_CERT_VERIFICATION', True)
             }
 
-            # Override with PKCE parameters if provided
-            if 'OAUTH2_CHALLENGE_METHOD' in oauth2_config and \
-                    'OAUTH2_RESPONSE_TYPE' in oauth2_config:
-                # Merge PKCE kwargs with defaults
-                pkce_kwargs = {
-                    'code_challenge_method': oauth2_config[
-                        'OAUTH2_CHALLENGE_METHOD'],
-                    'response_type': oauth2_config[
-                        'OAUTH2_RESPONSE_TYPE']
-                }
-                client_kwargs.update(pkce_kwargs)
+            pkce_method = oauth2_config.get('OAUTH2_CHALLENGE_METHOD')
+            pkce_response_type = oauth2_config.get('OAUTH2_RESPONSE_TYPE')
+            pkce_is_configured = any(
+                [
+                    pkce_method is not None,
+                    pkce_response_type is not None
+                ]
+            )
+
+            raw_client_secret = oauth2_config.get('OAUTH2_CLIENT_SECRET')
+            client_secret_is_empty = (
+                raw_client_secret is None or
+                (isinstance(raw_client_secret, str) and
+                 raw_client_secret.strip() == '')
+            )
+
+            if client_secret_is_empty and not (
+                pkce_is_configured and
+                pkce_method and
+                pkce_response_type == 'code'
+            ):
+                raise ValueError(
+                    f'OAuth2 provider "{provider_name}" is configured '
+                    'without OAUTH2_CLIENT_SECRET (public client). '
+                    'Public clients must use Authorization Code + PKCE; set '
+                    'OAUTH2_CHALLENGE_METHOD="S256" and '
+                    'OAUTH2_RESPONSE_TYPE="code".'
+                )
+
+            # Preserve existing behavior for confidential clients:
+            # only pass PKCE kwargs if both keys are present in config.
+            if pkce_is_configured:
+                client_kwargs.update({
+                    'code_challenge_method': pkce_method,
+                    'response_type': pkce_response_type
+                })
+
+            register_kwargs = {
+                'name': oauth2_config['OAUTH2_NAME'],
+                'client_id': oauth2_config['OAUTH2_CLIENT_ID'],
+                'client_secret': (
+                    None if client_secret_is_empty else raw_client_secret
+                ),
+                'access_token_url': oauth2_config.get('OAUTH2_TOKEN_URL'),
+                'authorize_url': oauth2_config.get('OAUTH2_AUTHORIZATION_URL'),
+                'api_base_url': oauth2_config.get('OAUTH2_API_BASE_URL'),
+                'client_kwargs': client_kwargs,
+                'server_metadata_url': oauth2_config.get(
+                    'OAUTH2_SERVER_METADATA_URL', None)
+            }
+
+            if client_secret_is_empty:
+                register_kwargs['token_endpoint_auth_method'] = 'none'
 
             OAuth2Authentication.oauth2_clients[
                 oauth2_config['OAUTH2_NAME']
-            ] = OAuth2Authentication.oauth_obj.register(
-                name=oauth2_config['OAUTH2_NAME'],
-                client_id=oauth2_config['OAUTH2_CLIENT_ID'],
-                client_secret=oauth2_config['OAUTH2_CLIENT_SECRET'],
-                access_token_url=oauth2_config.get('OAUTH2_TOKEN_URL'),
-                authorize_url=oauth2_config.get('OAUTH2_AUTHORIZATION_URL'),
-                api_base_url=oauth2_config.get('OAUTH2_API_BASE_URL'),
-                client_kwargs=client_kwargs,
-                server_metadata_url=oauth2_config.get(
-                    'OAUTH2_SERVER_METADATA_URL', None)
-            )
+            ] = OAuth2Authentication.oauth_obj.register(**register_kwargs)
 
     def get_source_name(self):
         return OAUTH2
