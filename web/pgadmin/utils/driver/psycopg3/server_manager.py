@@ -690,6 +690,10 @@ WHERE db.oid = {0}""".format(did))
                 if key == 'hostaddr' and self.use_ssh_tunnel:
                     continue
 
+                # Convert boolean connection parameters to integer for libpq compatibility
+                if key in ('sslcompression', 'sslsni'):
+                    value = 1 if value else 0
+
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \
                     value
