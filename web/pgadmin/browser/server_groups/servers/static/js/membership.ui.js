@@ -15,15 +15,18 @@ import { getNodeListByName } from '../../../../static/js/node_ajax';
 export function getMembershipSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new MembershipSchema(
     ()=>getNodeListByName('role', treeNodeInfo, itemNodeData, {}, ()=>true),
+    treeNodeInfo.server
   );
 }
 
 
 export default class MembershipSchema extends BaseUISchema {
-  constructor(roleMembersOptions) {
+  constructor(roleMembersOptions, node_info={}) {
     super({
       role: undefined,
-      admin: undefined
+      admin: (node_info) && node_info.version >= 160000 ? false : undefined,
+      inherit: undefined,
+      set: (node_info) && node_info.version >= 160000 ? true : undefined,
     });
     this.roleMembersOptions = roleMembersOptions;
   }
@@ -43,16 +46,36 @@ export default class MembershipSchema extends BaseUISchema {
         return !obj.isNew(state);
       },
       noEmpty: true,
-      minWidth: 300
+      width: 150
     },
     {
       id: 'admin', label: gettext('WITH ADMIN'),
       cell: 'checkbox', type: 'checkbox',
-      minWidth: 300,
+      minWidth: 100,
       deps: ['role'],
       depChange: (state) => {
         if(_.isUndefined(state.admin)) {
           state.admin = false;
+        }
+      }
+    },{
+      id: 'inherit', label: gettext('WITH INHERIT'),
+      cell: 'checkbox', type: 'checkbox',
+      minWidth: 100, min_version: 160000,
+      deps: ['role'],
+      depChange: (state) => {
+        if(_.isUndefined(state.inherit)) {
+          state.inherit = false;
+        }
+      }
+    },{
+      id: 'set', label: gettext('WITH SET'),
+      cell: 'checkbox', type: 'checkbox',
+      minWidth: 100, min_version: 160000,
+      deps: ['role'],
+      depChange: (state) => {
+        if(_.isUndefined(state.set)) {
+          state.set = false;
         }
       }
     },

@@ -65,15 +65,26 @@ Use the *Privileges* tab to grant privileges to the role.
 * Move the *Bypass RLS?* switch to the *Yes* position to control whether a
   role can bypasses every row-level security (RLS) policy. The default value is *No*.
 
+Click the *Membership* tab to continue.
+
 .. image:: images/role_membership.png
     :alt: Role dialog membership tab
     :align: center
 
-* Specify member of the role in the *Member of* field and specify the members in the *Member* field.
-  Confirm each selection by checking the checkbox to the right of the role name;
-  delete a selection by clicking the *x* to the left of the role name.
-  Membership conveys the privileges granted to the specified role to each of
-  its members.
+Use the *Membership* tab to define role memberships. A role can be a member of
+other roles and can have other roles as members.
+
+* Use *Member of* section to specify roles of which the current role
+  is a member. To assign *Admin Option* for a selected role, click on 
+  the appropriate checkbox.
+* Use *Members* section to specify roles that are members of the current
+  role. To assign *Admin Option* for a selected role, click on the appropriate checkbox.
+
+Click the *Add* icon (+) to add more roles; to discard a
+role, click the trash icon to the left of the row and confirm the deletion
+in the *Delete Row* popup.
+
+**Note:** Apart from *Admin Option*, *Inherit Option* and *Set Option* are available for both *Member of* section and *Members* section from PostgreSQL version >= 16.
 
 Click the *Parameters* tab to continue.
 

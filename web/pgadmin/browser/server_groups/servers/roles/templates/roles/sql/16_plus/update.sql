@@ -56,15 +56,7 @@ REVOKE {{ conn|qtIdent(item.role) }} FROM {{ conn|qtIdent(rolname) }};
 {% if data.rolmembership_list and data.rolmembership_list|length > 0 %}
 {% for item in data.rolmembership_list %}
 
-GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(rolname) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
-{% endfor %}
-{% endif %}
-{% if data.rolmembership_revoked_admins and data.rolmembership_revoked_admins|length > 0 %}
-{% for item in data.rolmembership_revoked_admins %}
-{% if 'admin' in item and not item.admin %}
-
-REVOKE ADMIN OPTION FOR {{ conn|qtIdent(item.role) }} FROM {{ conn|qtIdent(rolname) }};
-{% endif %}
+GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(rolname) }}{% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ item.admin }}, INHERIT {{ item.inherit }}, SET {{ item.set }}{% endif %};
 {% endfor %}
 {% endif %}
 {% if data.seclabels and
@@ -122,14 +114,6 @@ REVOKE {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(item.role) }};
 {% if data.rol_members_list and data.rol_members_list|length > 0 %}
 {% for item in data.rol_members_list %}
 
-GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(item.role) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
-{% endfor %}
-{% endif %}
-{% if data.rol_members_revoked_admins and data.rol_members_revoked_admins|length > 0 %}
-{% for item in data.rol_members_revoked_admins %}
-{% if 'admin' in item and not item.admin %}
-
-REVOKE ADMIN OPTION FOR {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(item.role) }};
-{% endif %}
+GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(item.role) }} {% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ item.admin }}, INHERIT {{ item.inherit }}, SET {{ item.set }}{% endif %};
 {% endfor %}
 {% endif %}
