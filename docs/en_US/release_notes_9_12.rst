@@ -36,6 +36,7 @@ Bug fixes
 *********
 
   | `Issue #8987 <https://github.com/pgadmin-org/pgadmin4/issues/8987>`_ - Fix Query Tool state restoration for new connections and queries.
+  | `Issue #9074 <https://github.com/pgadmin-org/pgadmin4/issues/9074>`_ - Fix pg_restore logs to distinguish UI sync issues from actual failures.
   | `Issue #9110 <https://github.com/pgadmin-org/pgadmin4/issues/9110>`_ - Optimize checkbox selection logic in backup dialog objects tree.
   | `Issue #9196 <https://github.com/pgadmin-org/pgadmin4/issues/9196>`_ - Fixed an issue where double click to open a file in the file manager is not working.
   | `Issue #9223 <https://github.com/pgadmin-org/pgadmin4/issues/9223>`_ - Upgrade ID column in the database table to BigInteger to support large OID values.
