@@ -86,19 +86,14 @@ function alert(title, text, onOkClick, okLabel = gettext('OK')) {
 function confirm(title, text, onOkClick, onCancelClick, okLabel = gettext('Yes'), cancelLabel = gettext('No'), okIcon = 'default', modalId=null) {
   // bind the modal provider before calling
   this.showModal(title, (closeModal) => {
-    const onCancelClickClose = () => {
-      onCancelClick?.();
-      closeModal();
-    };
-
     const onOkClickClose = () => {
       onOkClick?.();
       closeModal();
     };
     return (
-      <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel} okIcon={okIcon}/>
+      <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={closeModal} okLabel={okLabel} cancelLabel={cancelLabel} okIcon={okIcon}/>
     );
-  }, {id: modalId});
+  }, {id: modalId, onClose: onCancelClick});
 }
 
 function confirmDelete(title, text, onDeleteClick, onCancelClick, deleteLabel = gettext('Delete'), cancelLabel = gettext('Cancel')) {

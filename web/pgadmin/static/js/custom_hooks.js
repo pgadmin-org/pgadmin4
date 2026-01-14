@@ -286,3 +286,10 @@ export function useBeforeUnload({ enabled, isNewTab, beforeClose, closePanel }) 
 
   return {forceClose};
 }
+
+export function useLatestFunc(fn) {
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
+  return useCallback(((...args) => fnRef.current(...args)), []);
+}
