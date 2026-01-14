@@ -630,7 +630,7 @@ class BatchProcess:
             }
 
         # Get the error message based on exit code.
-        if err_completed and self.ecode != 0:
+        if err_completed and self.ecode != 0 and self.ecode is not None:
             err_msg = get_error_msg(self.cmd, self.ecode)
             # This should be the last line as added 'Z' for sorting.
             stderr.append(['Z', err_msg])
