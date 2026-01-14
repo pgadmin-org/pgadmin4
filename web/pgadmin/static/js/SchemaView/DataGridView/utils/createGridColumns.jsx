@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import { isModeSupportedByField, isVersionSupportedByField } from 'sources/SchemaView/common';
+import { isModeSupportedByField, isFieldSupportedByPgVersion } from 'sources/SchemaView/common';
 import { getMappedCell } from '../mappedCell';
 
 
@@ -49,7 +49,7 @@ export function createGridColumns({schema, field, viewHelperProps}) {
         );
       columnVisibility[field.id] = isModeSupportedByField(
         field, viewHelperProps
-      ) && isVersionSupportedByField(field, viewHelperProps);
+      ) && isFieldSupportedByPgVersion(field, viewHelperProps);
 
       return {
         header: field.label||<>&nbsp;</>,

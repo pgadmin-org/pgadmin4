@@ -16,12 +16,15 @@ export const isModeSupportedByField = (field, helperProps) => (
   !field.mode || field.mode.indexOf(helperProps.mode) > -1
 );
 
-export const isVersionSupportedByField = (field, helperProps) => {
+export const isFieldSupportedByPgVersion = (field, helperProps) => {
   return (
     // serverInfo not found
     _.isUndefined(helperProps.serverInfo) ||
       // serverInfo found and it's within range
       (
+        _.isUndefined(field.server_type) ? true :
+          (helperProps.serverInfo.type in field.server_type)
+      ) && (
         _.isUndefined(field.min_version) ? true :
           (helperProps.serverInfo.version >= field.min_version)
       ) && (

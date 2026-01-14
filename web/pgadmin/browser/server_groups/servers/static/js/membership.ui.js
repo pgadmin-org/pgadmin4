@@ -75,7 +75,7 @@ export default class MembershipSchema extends BaseUISchema {
       deps: ['role'],
       depChange: (state) => {
         if(_.isUndefined(state.set)) {
-          state.set = false;
+          state.set = true;
         }
       }
     },
