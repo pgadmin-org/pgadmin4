@@ -2,19 +2,16 @@
 -- DROP ROLE IF EXISTS "Role2_$%{}[]()&*^!@""'`\/#";
 
 CREATE ROLE "Role2_$%{}[]()&*^!@""'`\/#" WITH
-  NOLOGIN
-  SUPERUSER
+  LOGIN
+  NOSUPERUSER
   INHERIT
-  CREATEDB
-  NOCREATEROLE
+  NOCREATEDB
+  CREATEROLE
   NOREPLICATION
   NOBYPASSRLS
   CONNECTION LIMIT 100
   ENCRYPTED PASSWORD '<PASSWORD>'
-  VALID UNTIL '2050-01-01 00:00:00+05:30';
-
-GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#";
-GRANT test_rolemembership_1 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+  VALID UNTIL '<TIMESTAMPTZ_1>';
 
 ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres SET application_name TO 'pg4';
 

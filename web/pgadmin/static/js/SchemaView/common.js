@@ -16,6 +16,19 @@ export const isModeSupportedByField = (field, helperProps) => (
   !field.mode || field.mode.indexOf(helperProps.mode) > -1
 );
 
+export const isVersionSupportedByField = (field, helperProps) => {
+  return (
+    // serverInfo not found
+    _.isUndefined(helperProps.serverInfo) ||
+      // serverInfo found and it's within range
+      (
+        _.isUndefined(field.min_version) ? true :
+          (helperProps.serverInfo.version >= field.min_version)
+      ) && (
+        _.isUndefined(field.max_version) ? true :
+          (helperProps.serverInfo.version <= field.max_version)
+      ));
+};
 
 /*
  * Compare the sessData with schema.origData.
