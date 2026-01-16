@@ -1,0 +1,19 @@
+ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#"
+	SUPERUSER
+	CREATEDB
+	NOREPLICATION
+	CONNECTION LIMIT 100
+
+	VALID UNTIL '2050-01-01T00:00:00+05:30'
+	PASSWORD 'xxxxxx';
+
+GRANT test_rolemembership_1 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN True, INHERIT True, SET True;
+
+GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN False, INHERIT False, SET False;
+
+ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres
+    SET application_name TO 'pg4';
+
+GRANT "Role2_$%{}[]()&*^!@""'`\/#" TO test_rolemembership_3  WITH ADMIN True, INHERIT True, SET True;
+
+GRANT "Role2_$%{}[]()&*^!@""'`\/#" TO test_rolemembership_4  WITH ADMIN False, INHERIT False, SET False;

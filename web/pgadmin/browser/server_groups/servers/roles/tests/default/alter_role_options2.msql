@@ -1,2 +1,7 @@
-REVOKE ADMIN OPTION FOR test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";
 GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+
+REVOKE ADMIN OPTION FOR test_rolemembership_1 FROM "Role2_$%{}[]()&*^!@""'`\/#";
+
+GRANT "Role2_$%{}[]()&*^!@""'`\/#" TO test_rolemembership_4 WITH ADMIN OPTION;
+
+REVOKE ADMIN OPTION FOR "Role2_$%{}[]()&*^!@""'`\/#" FROM test_rolemembership_3;
