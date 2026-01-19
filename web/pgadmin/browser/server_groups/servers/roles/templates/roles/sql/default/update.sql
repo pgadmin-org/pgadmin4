@@ -42,7 +42,7 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 	CONNECTION LIMIT {{ data.rolconnlimit }}
 {% endif %}{% if 'rolvaliduntil' in data %}
 
-	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
+	VALID UNTIL {% if data.rolvaliduntil and data.rolvaliduntil is not none %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
 {% endif %}{% endif %}{% if 'rolpassword' in data %}
 
 	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% endif %}

@@ -58,9 +58,17 @@ export default class RoleSchema extends BaseUISchema {
   memberDataFormatter(rawData) {
     let members = '';
     if(_.isObject(rawData)) {
-      const serverVersion = this.nodeInfo && this.nodeInfo.server && this.nodeInfo.server.version || 0;
+      const serverVersion = this.nodeInfo?.server?.version || 0;
       rawData.forEach(member => {
-        let badges = serverVersion >= 160000 ? ` [WITH ADMIN ${member.admin.toString().toUpperCase()}, INHERIT ${member.inherit.toString().toUpperCase()}, SET ${member.set.toString().toUpperCase()}]` : member.admin ? ' [WITH ADMIN OPTION]' : '';
+        let badges = '';
+        if (serverVersion >= 160000) {
+          const admin = (member.admin ?? false).toString().toUpperCase();
+          const inherit = (member.inherit ?? false).toString().toUpperCase();
+          const set = (member.set ?? true).toString().toUpperCase();
+          badges = ` [WITH ADMIN ${admin}, INHERIT ${inherit}, SET ${set}]`;
+        } else {
+          badges = member.admin ? ' [WITH ADMIN OPTION]' : '';
+        }
 
         if (members.length > 0) { members += ', '; }
         members = members + (member.role + badges);

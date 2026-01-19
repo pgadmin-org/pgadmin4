@@ -15,7 +15,7 @@ FROM
 		-- PostgreSQL >=  9.1
 		CASE WHEN rolreplication THEN 'REPLICATION' ELSE 'NOREPLICATION' END || E'\n  ' ||
 		CASE WHEN rolbypassrls THEN 'BYPASSRLS' ELSE 'NOBYPASSRLS' END ||
-		CASE WHEN rolconnlimit > 0 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
+		CASE WHEN rolconnlimit != -1 THEN E'\n  CONNECTION LIMIT ' || rolconnlimit ELSE '' END ||
 {% if show_password %}
         (SELECT CASE
             WHEN (rolpassword LIKE 'md5%%' or rolpassword LIKE 'SCRAM%%') THEN E'\n  ENCRYPTED PASSWORD ''' || rolpassword || ''''

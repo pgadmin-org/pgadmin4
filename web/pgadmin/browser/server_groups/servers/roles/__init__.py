@@ -824,18 +824,22 @@ rolmembership:{
             rolmembers = []
             for role in row['rolmembers']:
                 if self.manager.version < 160000:
-                    role = re.search(r'([01])(.+)', role)
+                    m = re.match(r'^([01])(.+)$', role or '')
+                    if not m:
+                        continue
                     rolmembers.append({
-                        'role': role.group(2),
-                        'admin': True if role.group(1) == '1' else False
+                        'role': m.group(2),
+                        'admin': m.group(1) == '1'
                     })
                 else:
-                    role = re.search(r'([01])([01])([01])(.+)', role)
+                    m = re.match(r'^([01])([01])([01])(.+)$', role or '')
+                    if not m:
+                        continue
                     rolmembers.append({
-                        'role': role.group(4),
-                        'admin': True if role.group(1) == '1' else False,
-                        'inherit': True if role.group(2) == '1' else False,
-                        'set': True if role.group(3) == '1' else False
+                        'role': m.group(4),
+                        'admin': m.group(1) == '1',
+                        'inherit': m.group(2) == '1',
+                        'set': m.group(3) == '1'
                     })
             row['rolmembers'] = rolmembers
 
@@ -846,18 +850,22 @@ rolmembership:{
             row['rolpassword'] = ''
             for role in roles:
                 if self.manager.version < 160000:
-                    role = re.search(r'([01])(.+)', role)
+                    m = re.match(r'^([01])(.+)$', role or '')
+                    if not m:
+                        continue
                     res.append({
-                        'role': role.group(2),
-                        'admin': True if role.group(1) == '1' else False
+                        'role': m.group(2),
+                        'admin': m.group(1) == '1'
                     })
                 else:
-                    role = re.search(r'([01])([01])([01])(.+)', role)
+                    m = re.match(r'^([01])([01])([01])(.+)$', role or '')
+                    if not m:
+                        continue
                     res.append({
-                        'role': role.group(4),
-                        'admin': True if role.group(1) == '1' else False,
-                        'inherit': True if role.group(2) == '1' else False,
-                        'set': True if role.group(3) == '1' else False
+                        'role': m.group(4),
+                        'admin': m.group(1) == '1',
+                        'inherit': m.group(2) == '1',
+                        'set': m.group(3) == '1'
                     })
             row['rolmembership'] = res
             self._set_seclabels(row)

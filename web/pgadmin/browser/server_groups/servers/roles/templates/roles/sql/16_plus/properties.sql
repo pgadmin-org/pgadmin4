@@ -25,8 +25,11 @@ SELECT
                      pg_auth_members.admin_option AS admin_option,
                      pg_auth_members.inherit_option AS inherit_option,
                      pg_auth_members.set_option AS set_option
-                 FROM pg_roles
-                JOIN pg_auth_members ON pg_roles.oid=pg_auth_members.member AND pg_auth_members.roleid={{ rid|qtLiteral(conn) }}::oid) pg
+                 FROM pg_catalog.pg_roles
+                JOIN pg_catalog.pg_auth_members
+                  ON pg_roles.oid = pg_auth_members.member
+                  AND pg_auth_members.roleid = {{ rid|qtLiteral(conn) }}::oid) pg
+            ORDER BY pg.usename
         ) rolmembers
     {% endif %}
 FROM

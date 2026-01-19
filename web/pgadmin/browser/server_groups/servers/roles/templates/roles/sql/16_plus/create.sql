@@ -37,8 +37,11 @@ CREATE ROLE {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data
 	PASSWORD {% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};
 {% if data.rolmembership_list and data.rolmembership_list|length > 0 %}
 {% for item in data.rolmembership_list %}
+{% set admin_opt = item.admin|default(false) %}
+{% set inherit_opt = item.inherit|default(false) %}
+{% set set_opt = item.set|default(true) %}
 
-GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(data.rolname) }}{% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ item.admin }}, INHERIT {{ item.inherit }}, SET {{ item.set }}{% endif %};
+GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(data.rolname) }}{% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ admin_opt }}, INHERIT {{ inherit_opt }}, SET {{ set_opt }}{% endif %};
 {% endfor %}
 {% endif %}
 {% if data.seclabels and data.seclabels|length > 0 %}
@@ -56,7 +59,10 @@ COMMENT ON ROLE {{ conn|qtIdent(data.rolname) }} IS {{ data.description|qtLitera
 {% endif %}
 {% if data.rol_members_list and data.rol_members_list|length > 0 %}
 {% for item in data.rol_members_list %}
+{% set admin_opt = item.admin|default(false) %}
+{% set inherit_opt = item.inherit|default(false) %}
+{% set set_opt = item.set|default(true) %}
 
-GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(item.role) }}{% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ item.admin }}, INHERIT {{ item.inherit }}, SET {{ item.set }}{% endif %};
+GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(item.role) }}{% if 'admin' in item or 'inherit' in item or 'set' in item %} WITH ADMIN {{ admin_opt }}, INHERIT {{ inherit_opt }}, SET {{ set_opt }}{% endif %};
 {% endfor %}
 {% endif %}
