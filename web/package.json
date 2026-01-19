@@ -95,7 +95,7 @@
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/addon-search": "^0.16.0",
     "@xterm/addon-web-links": "^0.12.0",
-    "@xterm/xterm": "^5.5.0",
+    "@xterm/xterm": "^6.0.0",
     "ajv": "^8.8.2",
     "anti-trojan-source": "^1.4.0",
     "aspen-decorations": "^1.0.2",
