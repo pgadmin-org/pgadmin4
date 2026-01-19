@@ -202,20 +202,20 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 25.0.3
-  resolution: "@types/node@npm:25.0.3"
+  version: 25.0.9
+  resolution: "@types/node@npm:25.0.9"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10c0/b7568f0d765d9469621615e2bb257c7fd1953d95e9acbdb58dffb6627a2c4150d405a4600aa1ad8a40182a94fe5f903cafd3c0a2f5132814debd0e3bfd61f835
+  checksum: 10c0/a757efafe303d9c8833eb53c2e9a0981cd5ac725cdc04c5612a71db86468c938778d4fa328be4231b68fffc68258638764df7b9c69e86cf55f0bb67105eb056f
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.7.7":
-  version: 22.19.3
-  resolution: "@types/node@npm:22.19.3"
+"@types/node@npm:^24.9.0":
+  version: 24.10.9
+  resolution: "@types/node@npm:24.10.9"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10c0/a30a75d503da795ddbd5f8851014f3e91925c2a63fa3f14128d54c998f25d682dfba96dc9589c73cf478b87a16d88beb790b11697bb8cd5bee913079237a58f2
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/e9e436fcd2136bddb1bbe3271a89f4653910bcf6ee8047c4117f544c7905a106c039e2720ee48f28505ef2560e22fb9ead719f28bf5e075fdde0c1120e38e3b2
   languageName: node
   linkType: hard
 
@@ -663,16 +663,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:39.2.7":
-  version: 39.2.7
-  resolution: "electron@npm:39.2.7"
+"electron@npm:40.0.0":
+  version: 40.0.0
+  resolution: "electron@npm:40.0.0"
   dependencies:
     "@electron/get": "npm:^2.0.0"
-    "@types/node": "npm:^22.7.7"
+    "@types/node": "npm:^24.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/5923992063245f4b9593edd4186d9d7738f808120b60592bce16bd2e53815c551b2fc824a633597e7a542bd1b456760df0dbdf02d18dde5b1d77eb037979037c
+  checksum: 10c0/acd42835a64f007817ba43969d7bdd1281f109f26fbf4c6639208a8262b80ee1b89dfb844a30de694baa152ff4afc1be1d1e09b0a69629a57be03f9bbf3f9416
   languageName: node
   linkType: hard
 
@@ -1588,7 +1588,7 @@ __metadata:
   resolution: "pgadmin4@workspace:."
   dependencies:
     axios: "npm:^1.13.2"
-    electron: "npm:39.2.7"
+    electron: "npm:40.0.0"
     electron-context-menu: "npm:^4.1.0"
     electron-store: "npm:^11.0.2"
     eslint: "npm:^9.39.2"
@@ -1864,11 +1864,11 @@ __metadata:
   linkType: hard
 
 "type-fest@npm:^5.0.0, type-fest@npm:^5.0.1":
-  version: 5.3.1
-  resolution: "type-fest@npm:5.3.1"
+  version: 5.4.1
+  resolution: "type-fest@npm:5.4.1"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/3282cf11f5e8708321c109b5a72967702cf4c3b928b4d77f5819600b23915dc6a6b8f16cde4182cfbad308973ed3eeea544825cafe9657634ac1f331dc940315
+  checksum: 10c0/500386d690e634499e6fb765a1e33909a75fea0258acdd56a2d1c9565d6810e222f6d95bd80daa5498377c7ea976af46f518185b5dbd67ff8454562544808aa1
   languageName: node
   linkType: hard
 
@@ -1876,13 +1876,6 @@ __metadata:
   version: 1.5.0
   resolution: "uint8array-extras@npm:1.5.0"
   checksum: 10c0/0e74641ac7dadb02eadefc1ccdadba6010e007757bda824960de3c72bbe2b04e6d3af75648441f412148c4103261d54fcb60be45a2863beb76643a55fddba3bd
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
   languageName: node
   linkType: hard
 
