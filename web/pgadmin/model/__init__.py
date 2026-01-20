@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 48
+SCHEMA_VERSION = 49
 
 ##########################################################################
 #
@@ -412,7 +412,7 @@ class Database(db.Model):
     Define a Database.
     """
     __tablename__ = 'database'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     schema_res = db.Column(db.String(256), nullable=True)
     server = db.Column(
         db.Integer,

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -689,6 +689,11 @@ WHERE db.oid = {0}""".format(did))
                 # If key is hostaddr and ssh tunnel is in use don't overwrite.
                 if key == 'hostaddr' and self.use_ssh_tunnel:
                     continue
+
+                # Convert boolean connection parameters to integer for
+                # libpq compatibility
+                if key in ('sslcompression', 'sslsni'):
+                    value = 1 if value else 0
 
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \

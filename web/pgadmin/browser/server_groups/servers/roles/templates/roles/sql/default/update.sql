@@ -42,22 +42,32 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 	CONNECTION LIMIT {{ data.rolconnlimit }}
 {% endif %}{% if 'rolvaliduntil' in data %}
 
-	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
+	VALID UNTIL {% if data.rolvaliduntil and data.rolvaliduntil is not none %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
 {% endif %}{% endif %}{% if 'rolpassword' in data %}
 
 	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% endif %}
 
-{% if 'revoked_admins' in data and
-	data.revoked_admins|length > 0
-%}
+{% if data.rolmembership_revoked_list and data.rolmembership_revoked_list|length > 0 %}
+{% for item in data.rolmembership_revoked_list %}
 
-REVOKE ADMIN OPTION FOR {{ conn|qtIdent(data.revoked_admins)|join(', ') }} FROM {{ conn|qtIdent(rolname) }};{% endif %}{% if 'revoked' in data and data.revoked|length > 0 %}
+REVOKE {{ conn|qtIdent(item.role) }} FROM {{ conn|qtIdent(rolname) }};
+{% endfor %}
+{% endif %}
+{% if data.rolmembership_list and data.rolmembership_list|length > 0 %}
+{% for item in data.rolmembership_list %}
 
-REVOKE {{ conn|qtIdent(data.revoked)|join(', ') }} FROM {{ conn|qtIdent(rolname) }};{% endif %}{% if data.admins and data.admins|length > 0 %}
+GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(rolname) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
+{% endfor %}
+{% endif %}
+{% if data.rolmembership_revoked_admins and data.rolmembership_revoked_admins|length > 0 %}
+{% for item in data.rolmembership_revoked_admins %}
+{% if 'admin' in item and not item.admin %}
 
-GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(rolname) }} WITH ADMIN OPTION;{% endif %}{% if data.members and data.members|length > 0 %}
-
-GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }};{% endif %}{% if data.seclabels and
+REVOKE ADMIN OPTION FOR {{ conn|qtIdent(item.role) }} FROM {{ conn|qtIdent(rolname) }};
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if data.seclabels and
 	data.seclabels|length > 0
 %}{% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}
@@ -103,15 +113,23 @@ GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }}
 
 COMMENT ON ROLE {{ conn|qtIdent(rolname) }} IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
+{% if data.rol_members_revoked_list and data.rol_members_revoked_list|length > 0 %}
+{% for item in data.rol_members_revoked_list %}
 
-{% if 'rol_revoked_admins' in data and
-	data.rol_revoked_admins|length > 0
-%}
+REVOKE {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(item.role) }};
+{% endfor %}
+{% endif %}
+{% if data.rol_members_list and data.rol_members_list|length > 0 %}
+{% for item in data.rol_members_list %}
 
-REVOKE ADMIN OPTION FOR {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(data.rol_revoked_admins)|join(', ') }};{% endif %}{% if 'rol_revoked' in data and data.rol_revoked|length > 0 %}
+GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(item.role) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
+{% endfor %}
+{% endif %}
+{% if data.rol_members_revoked_admins and data.rol_members_revoked_admins|length > 0 %}
+{% for item in data.rol_members_revoked_admins %}
+{% if 'admin' in item and not item.admin %}
 
-REVOKE {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(data.rol_revoked)|join(', ') }};{% endif %}{% if data.rol_admins and data.rol_admins|length > 0 %}
-
-GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(data.rol_admins)|join(', ') }} WITH ADMIN OPTION;{% endif %}{% if data.rol_members and data.rol_members|length > 0 %}
-
-GRANT {{ conn|qtIdent(rolname) }} TO {{ conn|qtIdent(data.rol_members)|join(', ') }};{% endif %}
+REVOKE ADMIN OPTION FOR {{ conn|qtIdent(rolname) }} FROM {{ conn|qtIdent(item.role) }};
+{% endif %}
+{% endfor %}
+{% endif %}

@@ -44,6 +44,48 @@
     },
     {
       "type": "create",
+      "name": "Create Role 3 for testing rolemembership",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "test_rolemembership_3",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
+      "name": "Create Role 4 for testing rolemembership",
+      "endpoint": "NODE-role.obj",
+      "sql_endpoint": "NODE-role.sql_id",
+      "data": {
+        "rolname": "test_rolemembership_4",
+        "rolcanlogin": false,
+        "rolpassword": null,
+        "rolconnlimit": -1,
+        "rolsuper": false,
+        "rolcreaterole": false,
+        "rolcreatedb": false,
+        "rolinherit": true,
+        "rolreplication": false,
+        "rolmembership": [],
+        "seclabels": [],
+        "variables": []
+      },
+      "store_object_id": true
+    },
+    {
+      "type": "create",
       "name": "Create Role",
       "endpoint": "NODE-role.obj",
       "sql_endpoint": "NODE-role.sql_id",
@@ -103,7 +145,8 @@
         "rolconnlimit": 100,
         "rolvaliduntil": "2050-01-01 00:00:00 +05:30",
         "variables": { "added": [{"name":"application_name","value":"pg4","database":"postgres"}] },
-        "rolmembership": { "added": [{"role": "test_rolemembership_1", "admin": true}, {"role": "test_rolemembership_2", "admin": false}] }
+        "rolmembership": { "added": [{"role": "test_rolemembership_1", "admin": true}, {"role": "test_rolemembership_2", "admin": false}] },
+        "rolmembers": { "added": [{"role": "test_rolemembership_3", "admin": true}, {"role": "test_rolemembership_4", "admin": false}] }
       },
       "expected_sql_file": "alter_role_options1.sql",
       "expected_msql_file": "alter_role_options1.msql",
@@ -117,7 +160,8 @@
       "sql_endpoint": "NODE-role.sql_id",
       "msql_endpoint": "NODE-role.msql_id",
       "data": {
-        "rolmembership": { "changed": [{"role": "test_rolemembership_1", "admin": false}, {"role": "test_rolemembership_2", "admin": true}] }
+        "rolmembership": { "changed": [{"role": "test_rolemembership_1", "admin": false}, {"role": "test_rolemembership_2", "admin": true}] },
+        "rolmembers": { "changed": [{"role": "test_rolemembership_3", "admin": false}, {"role": "test_rolemembership_4", "admin": true}] }
       },
       "expected_sql_file": "alter_role_options2.sql",
       "expected_msql_file": "alter_role_options2.msql",
@@ -132,7 +176,8 @@
       "sql_endpoint": "NODE-role.sql_id",
       "msql_endpoint": "NODE-role.msql_id",
       "data": {
-        "rolmembership": { "deleted": [{"role": "test_rolemembership_1"}] }
+        "rolmembership": { "deleted": [{"role": "test_rolemembership_1"}] },
+        "rolmembers": { "deleted": [{"role": "test_rolemembership_3"}] }
       },
       "expected_sql_file": "alter_role_options3.sql",
       "expected_msql_file": "alter_role_options3.msql",
@@ -149,7 +194,11 @@
       "data": {
         "rolmembership": {
           "added": [{"role": "test_rolemembership_1", "admin": true}],
-          "changed": [{"role": "test_rolemembership_2", "admin": true}]
+          "changed": [{"role": "test_rolemembership_2", "admin": false}]
+        },
+        "rolmembers": {
+          "added": [{"role": "test_rolemembership_3", "admin": true}],
+          "changed": [{"role": "test_rolemembership_4", "admin": false}]
         }
       },
       "expected_sql_file": "alter_role_options4.sql",
@@ -168,7 +217,7 @@
       "type": "delete",
       "name": "Drop Role",
       "endpoint": "NODE-role.obj",
-      "data": {"ids": ["<test_rolemembership_1>", "<test_rolemembership_2>"]},
+      "data": {"ids": ["<test_rolemembership_1>", "<test_rolemembership_2>", "<test_rolemembership_3>", "<test_rolemembership_4>"]},
       "preprocess_data": true
     },
     {

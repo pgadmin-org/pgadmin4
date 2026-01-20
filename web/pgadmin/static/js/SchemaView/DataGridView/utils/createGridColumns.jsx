@@ -2,13 +2,13 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 
-import { isModeSupportedByField } from 'sources/SchemaView/common';
+import { isModeSupportedByField, isFieldSupportedByPgVersion } from 'sources/SchemaView/common';
 import { getMappedCell } from '../mappedCell';
 
 
@@ -49,7 +49,7 @@ export function createGridColumns({schema, field, viewHelperProps}) {
         );
       columnVisibility[field.id] = isModeSupportedByField(
         field, viewHelperProps
-      );
+      ) && isFieldSupportedByPgVersion(field, viewHelperProps);
 
       return {
         header: field.label||<>&nbsp;</>,

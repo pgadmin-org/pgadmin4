@@ -8,6 +8,12 @@ ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#"
 	PASSWORD 'xxxxxx';
 
 GRANT test_rolemembership_1 TO "Role2_$%{}[]()&*^!@""'`\/#" WITH ADMIN OPTION;
+
 GRANT test_rolemembership_2 TO "Role2_$%{}[]()&*^!@""'`\/#";
+
 ALTER ROLE "Role2_$%{}[]()&*^!@""'`\/#" IN DATABASE postgres
     SET application_name TO 'pg4';
+
+GRANT "Role2_$%{}[]()&*^!@""'`\/#" TO test_rolemembership_3 WITH ADMIN OPTION;
+
+GRANT "Role2_$%{}[]()&*^!@""'`\/#" TO test_rolemembership_4;

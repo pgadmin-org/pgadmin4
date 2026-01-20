@@ -87,7 +87,7 @@ _create_python_env() {
         --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit 1
-    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install -r "${SOURCE_DIR}/requirements.txt" || exit 1
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt" || exit 1
 
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
@@ -135,7 +135,7 @@ _build_docs() {
     # shellcheck disable=SC1091
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
-    pip3 install -r "${SOURCE_DIR}/requirements.txt"
+    pip3 install --no-cache-dir -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx==7.4.7
     pip3 install sphinxcontrib-youtube
 

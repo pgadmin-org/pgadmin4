@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -61,6 +61,7 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       enableSorting: true,
       enableResizing: true,
       enableFilters: true,
+      sortingFn: 'alphanumeric',
     },
     {
       header: gettext('Memory bytes'),
@@ -68,6 +69,7 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       enableSorting: true,
       enableResizing: true,
       enableFilters: true,
+      sortingFn: 'alphanumeric',
     },
   ];
 

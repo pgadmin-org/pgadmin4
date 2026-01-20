@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2025, The pgAdmin Development Team
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -15,6 +15,10 @@ import {
   evalInNonPropertyMode,
   FIELD_OPTIONS
 } from './common';
+import {
+  isFieldSupportedByPgVersion,
+  isModeSupportedByField
+} from '../common';
 import {
   evaluateFieldOptions,
   evaluateFieldsOption, 
@@ -45,23 +49,9 @@ registerOptionEvaluator(
   VISIBLE,
   // Evaluator
   ({schema, field, value, viewHelperProps}) => (
-    (
-      !field.mode || field.mode.indexOf(viewHelperProps.mode) > -1
-    ) && (
-    // serverInfo not found
-      _.isUndefined(viewHelperProps.serverInfo) ||
-        // serverInfo found and it's within range
-        ((
-          _.isUndefined(field.server_type) ? true :
-            (viewHelperProps.serverInfo.type in field.server_type)
-        ) && (
-          _.isUndefined(field.min_version) ? true :
-            (viewHelperProps.serverInfo.version >= field.min_version)
-        ) && (
-          _.isUndefined(field.max_version) ? true :
-            (viewHelperProps.serverInfo.version <= field.max_version)
-        ))
-    ) && (
+    isModeSupportedByField(field, viewHelperProps) 
+    && isFieldSupportedByPgVersion(field, viewHelperProps) 
+    && (
       _.isUndefined(field[VISIBLE]) ?  true :
         Boolean(evalFunc(schema, field[VISIBLE], value))
     )),

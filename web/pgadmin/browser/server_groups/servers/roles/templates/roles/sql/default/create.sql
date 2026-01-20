@@ -34,13 +34,14 @@ CREATE ROLE {{ conn|qtIdent(data.rolname) }} WITH{% if data.rolcanlogin and data
 
 	VALID UNTIL {{ data.rolvaliduntil|qtLiteral(conn) }} {% endif %}{% if data.rolpassword %}
 
-	PASSWORD {% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% if data.members and data.members|length > 0 %}
+	PASSWORD {% if data.rolpassword is none %}NULL{% else %}{% if dummy %}'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};
+{% if data.rolmembership_list and data.rolmembership_list|length > 0 %}
+{% for item in data.rolmembership_list %}
 
-
-GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(data.rolname) }};{% endif %}{% if data.admins and data.admins|length > 0 %}
-
-GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(data.rolname) }} WITH ADMIN OPTION;{% endif %}{% if data.seclabels and data.seclabels|length > 0 %}
-
+GRANT {{ conn|qtIdent(item.role) }} TO {{ conn|qtIdent(data.rolname) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
+{% endfor %}
+{% endif %}
+{% if data.seclabels and data.seclabels|length > 0 %}
 {% for r in data.seclabels %}
 
 {{ SECLABEL.APPLY(conn, 'ROLE', data.rolname, r.provider, r.label) }}
@@ -53,10 +54,9 @@ GRANT {{ conn|qtIdent(data.admins)|join(', ') }} TO {{ conn|qtIdent(data.rolname
 
 COMMENT ON ROLE {{ conn|qtIdent(data.rolname) }} IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
+{% if data.rol_members_list and data.rol_members_list|length > 0 %}
+{% for item in data.rol_members_list %}
 
-{% if data.rol_admins and data.rol_admins|length > 0 %}
-
-GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(data.rol_admins)|join(', ') }} WITH ADMIN OPTION;{% endif %}{% if data.rol_members and data.rol_members|length > 0 %}
-
-GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(data.rol_members)|join(', ') }};
+GRANT {{ conn|qtIdent(data.rolname) }} TO {{ conn|qtIdent(item.role) }}{% if 'admin' in item and item.admin %} WITH ADMIN OPTION{% endif %};
+{% endfor %}
 {% endif %}

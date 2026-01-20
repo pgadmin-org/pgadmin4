@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2025, The pgAdmin Development Team
+# Copyright (C) 2013 - 2026, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -178,3 +178,4 @@ DATA_TYPE_WITH_LENGTH = [1560, 'bit', 1561, 'bit[]',
 
 RESTRICTION_TYPE_DATABASES = 'databases'
 RESTRICTION_TYPE_SQL = 'sql'
+RESTRICT_COMMAND = '\\restrict'
