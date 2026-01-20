@@ -20,6 +20,7 @@ import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import { SchemaStateContext } from '../SchemaView/SchemaState';
 import { usePgAdmin } from '../PgAdminProvider';
+import { clearOptionsCache } from '../../../preferences/static/js/components/PreferencesHelper';
 
 const StyledBox = styled(Box)(() => ({
   display: 'flex',
@@ -69,6 +70,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
   const {
     getOptionsOnRefresh,
     optionsRefreshUrl,
+    optionsUrl,
     refreshDeps,
     ...selectControlProps
   } = controlProps;
@@ -101,6 +103,10 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
             pgAdmin.Browser.notifier.error(res.data.data.error);
           } else if (res.data?.data?.models) {
             const models = res.data.data.models;
+            // Clear the cache so next time preferences opens, it uses the refreshed data
+            if (optionsUrl) {
+              clearOptionsCache(optionsUrl);
+            }
             setOptionsState((prev) => ({ options: models, reloadBasis: prev.reloadBasis + 1 }));
           } else {
             // No models returned - clear the list
@@ -132,7 +138,7 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
           setIsRefreshing(false);
         });
     }
-  }, [optionsRefreshUrl, refreshDeps, schemaState, getOptionsOnRefresh, pgAdmin]);
+  }, [optionsRefreshUrl, optionsUrl, refreshDeps, schemaState, getOptionsOnRefresh, pgAdmin]);
 
   return (
     <FormInput required={required} label={label} className={className} helpMessage={helpMessage} testcid={testcid}>

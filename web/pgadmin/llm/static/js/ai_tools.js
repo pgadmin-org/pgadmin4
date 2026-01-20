@@ -404,6 +404,7 @@ define([
       handler.docker.openTab({
         id: panelId,
         title: panelTitle,
+        icon: 'fa fa-file-alt',
         content: (
           <AIReport
             sid={sid}

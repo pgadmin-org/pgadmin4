@@ -20,6 +20,15 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import HTMLReactParser from 'html-react-parser/lib/index';
 import getApiInstance from '../../../../static/js/api_instance';
 
+// Cache for dynamically loaded options to avoid repeated API calls
+const optionsCache = {};
+
+// Clear cache for a specific endpoint (used when refresh button updates options)
+export function clearOptionsCache(endpoint) {
+  if (endpoint) {
+    delete optionsCache[endpoint];
+  }
+}
 
 export async function reloadPgAdmin() {
   const { name: browser } = getBrowser();
@@ -123,6 +132,10 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
           const optionsEndpoint = element.controlProps.optionsUrl;
           const staticOptions = element.options || [];
           element.options = () => {
+            // Check cache first to avoid repeated API calls
+            if (optionsCache[optionsEndpoint]) {
+              return Promise.resolve([...optionsCache[optionsEndpoint], ...staticOptions]);
+            }
             return new Promise((resolve) => {
               const api = getApiInstance();
               const optionsUrl = url_for(optionsEndpoint);
@@ -130,6 +143,8 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
                 .then((res) => {
                   if (res.data?.data?.models) {
                     const dynamicOptions = res.data.data.models;
+                    // Cache the results
+                    optionsCache[optionsEndpoint] = dynamicOptions;
                     resolve([...dynamicOptions, ...staticOptions]);
                   } else {
                     resolve(staticOptions);
@@ -147,6 +162,10 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
         const staticOptions = element.options || [];
         // Replace options with a function that fetches from the URL
         element.options = () => {
+          // Check cache first to avoid repeated API calls
+          if (optionsCache[optionsEndpoint]) {
+            return Promise.resolve([...optionsCache[optionsEndpoint], ...staticOptions]);
+          }
           return new Promise((resolve) => {
             const api = getApiInstance();
             // Use url_for to resolve the endpoint to a proper URL
@@ -156,6 +175,8 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
                 if (res.data?.data?.models) {
                   // Dynamic models loaded successfully
                   const dynamicOptions = res.data.data.models;
+                  // Cache the results
+                  optionsCache[optionsEndpoint] = dynamicOptions;
                   resolve([...dynamicOptions, ...staticOptions]);
                 } else {
                   // No models in response, use static options
