@@ -58,12 +58,20 @@ export default class RoleSchema extends BaseUISchema {
   memberDataFormatter(rawData) {
     let members = '';
     if(_.isObject(rawData)) {
+      const serverVersion = this.nodeInfo?.server?.version || 0;
       rawData.forEach(member => {
-        let withAdmin = '';
-        if(member.admin) { withAdmin = ' [WITH ADMIN]';}
+        let badges = '';
+        if (serverVersion >= 160000) {
+          const admin = (member.admin ?? false).toString().toUpperCase();
+          const inherit = (member.inherit ?? false).toString().toUpperCase();
+          const set = (member.set ?? true).toString().toUpperCase();
+          badges = ` [WITH ADMIN ${admin}, INHERIT ${inherit}, SET ${set}]`;
+        } else {
+          badges = member.admin ? ' [WITH ADMIN OPTION]' : '';
+        }
 
         if (members.length > 0) { members += ', '; }
-        members = members + (member.role + withAdmin);
+        members = members + (member.role + badges);
       });
     }
     return members;
@@ -177,7 +185,7 @@ export default class RoleSchema extends BaseUISchema {
         type: 'text',
         controlProps: {
           formatter: {
-            fromRaw: obj.memberDataFormatter,
+            fromRaw: (raw) => obj.memberDataFormatter(raw),
           },
         }
       },
@@ -198,7 +206,7 @@ export default class RoleSchema extends BaseUISchema {
         type: 'text',
         controlProps: {
           formatter: {
-            fromRaw: obj.memberDataFormatter,
+            fromRaw: (raw)  => obj.memberDataFormatter(raw),
           },
         }
       },

@@ -29,23 +29,31 @@ WHERE
 	r.oid=%(rid)s::OID
 UNION ALL
 (SELECT
-	pg_catalog.array_to_string(array_agg(sql), E'\n') AS sql
+    pg_catalog.array_to_string(array_agg(sql), E'\n') AS sql
 FROM
 (SELECT
-	'GRANT ' || pg_catalog.array_to_string(pg_catalog.array_agg(rolname order by rolname), ', ') || ' TO ' || pg_catalog.quote_ident(pg_catalog.pg_get_userbyid(%(rid)s::OID)) ||
-	CASE WHEN admin_option THEN ' WITH ADMIN OPTION;' ELSE ';' END AS sql
+    'GRANT ' || pg_catalog.array_to_string(pg_catalog.array_agg(rolname ORDER BY rolname), ', ') || ' TO ' || pg_catalog.quote_ident(pg_catalog.pg_get_userbyid(%(rid)s::OID)) ||
+    CASE WHEN admin_option OR inherit_option OR set_option THEN
+        ' WITH ' ||
+        (CASE WHEN admin_option THEN 'ADMIN OPTION' ELSE '' END ||
+         CASE WHEN inherit_option THEN (CASE WHEN admin_option THEN ', ' ELSE '' END) || 'INHERIT OPTION' ELSE '' END ||
+         CASE WHEN set_option THEN (CASE WHEN admin_option OR inherit_option THEN ', ' ELSE '' END) || 'SET OPTION' ELSE '' END)
+    ELSE '' END || ';' AS sql
 FROM
-	(SELECT
-		pg_catalog.quote_ident(r.rolname) AS rolname, m.admin_option AS admin_option
-	FROM
-		pg_catalog.pg_auth_members m
-		LEFT JOIN pg_catalog.pg_roles r ON (m.roleid = r.oid)
-	WHERE
-		m.member=%(rid)s::OID
-	ORDER BY
-		r.rolname
-	) a
-GROUP BY admin_option) s)
+    (SELECT
+        pg_catalog.quote_ident(r.rolname) AS rolname,
+        m.admin_option   AS admin_option,
+        m.inherit_option AS inherit_option,
+        m.set_option     AS set_option
+    FROM
+        pg_catalog.pg_auth_members m
+        LEFT JOIN pg_catalog.pg_roles r ON (m.roleid = r.oid)
+    WHERE
+        m.member=%(rid)s::OID
+    ORDER BY
+        r.rolname
+    ) a
+GROUP BY admin_option, inherit_option, set_option) s)
 UNION ALL
 (SELECT
 	pg_catalog.array_to_string(array_agg(sql), E'\n') AS sql

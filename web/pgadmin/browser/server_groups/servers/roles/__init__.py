@@ -207,40 +207,32 @@ class RoleView(PGChildNodeView):
         :param id: id of role
         :param data: input role data
         """
-        def _part_dict_list(dict_list, condition, list_key=None):
+        def _part_dict_list(dict_list, condition):
             ret_val = []
             for d in dict_list:
                 if condition(d):
-                    ret_val.append(d[list_key])
+                    ret_val.append(d)
 
             return ret_val
 
         if id == -1:
-            data['members'] = []
-            data['admins'] = []
-
-            data['admins'] = _part_dict_list(
-                data['rolmembership'], lambda d: d['admin'], 'role')
-            data['members'] = _part_dict_list(
-                data['rolmembership'], lambda d: not d['admin'], 'role')
+            data['rolmembership_list'] = data['rolmembership']
         else:
-            data['admins'] = _part_dict_list(
-                data['rolmembership'].get('added', []),
-                lambda d: d['admin'], 'role')
-            data['members'] = _part_dict_list(
-                data['rolmembership'].get('added', []),
-                lambda d: not d['admin'], 'role')
+            data['rolmembership_list'] = data['rolmembership'].get('added', [])
 
-            data['admins'].extend(_part_dict_list(
-                data['rolmembership'].get('changed', []),
-                lambda d: d['admin'], 'role'))
-            data['revoked_admins'] = _part_dict_list(
-                data['rolmembership'].get('changed', []),
-                lambda d: not d['admin'], 'role')
+            if self.manager.version < 160000:
+                data['rolmembership_list'].extend(_part_dict_list(
+                    data['rolmembership'].get('changed', []),
+                    lambda d: d['admin']))
+                data['rolmembership_revoked_admins'] = _part_dict_list(
+                    data['rolmembership'].get('changed', []),
+                    lambda d: not d['admin'])
+            else:
+                data['rolmembership_list'].extend(
+                    data['rolmembership'].get('changed', []))
 
-            data['revoked'] = _part_dict_list(
-                data['rolmembership'].get('deleted', []),
-                lambda _: True, 'role')
+            data['rolmembership_revoked_list'] = (
+                data['rolmembership'].get('deleted', []))
 
     def _process_rolmembers(self, id, data):
         """
@@ -248,39 +240,32 @@ class RoleView(PGChildNodeView):
         :param id:
         :param data:
         """
-        def _part_dict_list(dict_list, condition, list_key=None):
+        def _part_dict_list(dict_list, condition):
             ret_val = []
             for d in dict_list:
                 if condition(d):
-                    ret_val.append(d[list_key])
+                    ret_val.append(d)
 
             return ret_val
         if id == -1:
-            data['rol_members'] = []
-            data['rol_admins'] = []
+            data['rol_members_list'] = data['rolmembers']
 
-            data['rol_admins'] = _part_dict_list(
-                data['rolmembers'], lambda d: d['admin'], 'role')
-            data['rol_members'] = _part_dict_list(
-                data['rolmembers'], lambda d: not d['admin'], 'role')
         else:
-            data['rol_admins'] = _part_dict_list(
-                data['rolmembers'].get('added', []),
-                lambda d: d['admin'], 'role')
-            data['rol_members'] = _part_dict_list(
-                data['rolmembers'].get('added', []),
-                lambda d: not d['admin'], 'role')
+            data['rol_members_list'] = data['rolmembers'].get('added', [])
 
-            data['rol_admins'].extend(_part_dict_list(
-                data['rolmembers'].get('changed', []),
-                lambda d: d['admin'], 'role'))
-            data['rol_revoked_admins'] = _part_dict_list(
-                data['rolmembers'].get('changed', []),
-                lambda d: not d['admin'], 'role')
+            if self.manager.version < 160000:
+                data['rol_members_list'].extend(_part_dict_list(
+                    data['rolmembers'].get('changed', []),
+                    lambda d: d['admin']))
+                data['rol_members_revoked_admins'] = _part_dict_list(
+                    data['rolmembers'].get('changed', []),
+                    lambda d: not d['admin'])
+            else:
+                data['rol_members_list'].extend(
+                    data['rolmembers'].get('changed', []))
 
-            data['rol_revoked'] = _part_dict_list(
-                data['rolmembers'].get('deleted', []),
-                lambda _: True, 'role')
+            data['rol_members_revoked_list'] = (
+                data['rolmembers'].get('deleted', []))
 
     def _validate_rolemembers(self, id, data):
         """
@@ -298,13 +283,21 @@ following format:
 
 rolmembers:[{
     role: [rolename],
-    admin: True/False
+    admin: True/False,
+    inherit: True/False,
+    set: True/False,
     },
     ...
 ]""")
 
-            if not self._validate_input_dict_for_new(data['rolmembers'],
-                                                     ['role', 'admin']):
+            if (self.manager.version < 160000 and
+                    not self._validate_input_dict_for_new(
+                        data['rolmembers'], ['role', 'admin'])):
+                return msg
+            elif (self.manager.version >= 160000 and
+                  not self._validate_input_dict_for_new(
+                      data['rolmembers'],
+                      ['role', 'admin', 'inherit', 'set'])):
                 return msg
 
             self._process_rolmembers(id, data)
@@ -316,26 +309,38 @@ JSON objects in the following format:
 rolmembers:{
     'added': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ],
     'deleted': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ],
     'updated': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ]
 """)
-        if not self._validate_input_dict_for_update(data['rolmembers'],
-                                                    ['role', 'admin'],
-                                                    ['role']):
+        if (self.manager.version < 160000 and
+            not self._validate_input_dict_for_update(
+                data['rolmembers'], ['role', 'admin'], ['role'])):
+            return msg
+        elif (self.manager.version >= 160000 and
+              not self._validate_input_dict_for_update(
+                  data['rolmembers'],
+                  ['role', 'admin', 'inherit', 'set'],
+                  ['role'])):
             return msg
 
         self._process_rolmembers(id, data)
@@ -357,13 +362,21 @@ following format:
 
 rolmembership:[{
     role: [rolename],
-    admin: True/False
+    admin: True/False,
+    inherit: True/False,
+    set: True/False,
     },
     ...
 ]""")
 
-            if not self._validate_input_dict_for_new(
-                    data['rolmembership'], ['role', 'admin']):
+            if (self.manager.version < 160000 and
+                    not self._validate_input_dict_for_new(
+                        data['rolmembership'], ['role', 'admin'])):
+                return msg
+            elif (self.manager.version >= 160000 and
+                  not self._validate_input_dict_for_new(
+                      data['rolmembership'],
+                      ['role', 'admin', 'inherit', 'set'])):
                 return msg
 
             self._process_rolemembership(id, data)
@@ -375,25 +388,38 @@ JSON objects in the following format:
 rolmembership:{
     'added': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ],
     'deleted': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ],
     'updated': [{
         role: [rolename],
-        admin: True/False
+        admin: True/False,
+        inherit: True/False,
+        set: True/False,
         },
         ...
         ]
 """)
-        if not self._validate_input_dict_for_update(
-                data['rolmembership'], ['role', 'admin'], ['role']):
+        if (self.manager.version < 160000 and
+                not self._validate_input_dict_for_update(
+                    data['rolmembership'], ['role', 'admin'], ['role'])):
+            return msg
+        elif (self.manager.version >= 160000 and
+              not self._validate_input_dict_for_update(
+                  data['rolmembership'],
+                  ['role', 'admin', 'inherit', 'set'],
+                  ['role'])):
             return msg
 
         self._process_rolemembership(id, data)
@@ -792,16 +818,29 @@ rolmembership:{
                 })
             row['seclabels'] = res
 
-    def _set_rolemembership(self, row):
+    def _set_rolemembers(self, row):
 
         if 'rolmembers' in row and row['rolmembers'] is not None:
             rolmembers = []
             for role in row['rolmembers']:
-                role = re.search(r'([01])(.+)', role)
-                rolmembers.append({
-                    'role': role.group(2),
-                    'admin': True if role.group(1) == '1' else False
-                })
+                if self.manager.version < 160000:
+                    m = re.match(r'^([01])(.+)$', role or '')
+                    if not m:
+                        continue
+                    rolmembers.append({
+                        'role': m.group(2),
+                        'admin': m.group(1) == '1'
+                    })
+                else:
+                    m = re.match(r'^([01])([01])([01])(.+)$', role or '')
+                    if not m:
+                        continue
+                    rolmembers.append({
+                        'role': m.group(4),
+                        'admin': m.group(1) == '1',
+                        'inherit': m.group(2) == '1',
+                        'set': m.group(3) == '1'
+                    })
             row['rolmembers'] = rolmembers
 
     def transform(self, rset):
@@ -810,14 +849,27 @@ rolmembership:{
             roles = row['rolmembership']
             row['rolpassword'] = ''
             for role in roles:
-                role = re.search(r'([01])(.+)', role)
-                res.append({
-                    'role': role.group(2),
-                    'admin': True if role.group(1) == '1' else False
-                })
+                if self.manager.version < 160000:
+                    m = re.match(r'^([01])(.+)$', role or '')
+                    if not m:
+                        continue
+                    res.append({
+                        'role': m.group(2),
+                        'admin': m.group(1) == '1'
+                    })
+                else:
+                    m = re.match(r'^([01])([01])([01])(.+)$', role or '')
+                    if not m:
+                        continue
+                    res.append({
+                        'role': m.group(4),
+                        'admin': m.group(1) == '1',
+                        'inherit': m.group(2) == '1',
+                        'set': m.group(3) == '1'
+                    })
             row['rolmembership'] = res
             self._set_seclabels(row)
-            self._set_rolemembership(row)
+            self._set_rolemembers(row)
 
     @check_precondition(action='properties')
     def properties(self, gid, sid, rid):
