@@ -40,3 +40,6 @@ The chart should dump its version and appVersion in the Chart.yaml file every re
 | `ingress.enabled` | Ingress resource creation | `false` |
 | `ingress.hostname` | Ingress resource hostname | `"pgadmin4.local"` |
 | `ingress.tlsSecret` | Ingress tls secret name | `""` |
+| `strategy.type` | Deployment strategy type (RollingUpdate or Recreate) | Kubernetes default (RollingUpdate) |
+| `strategy.rollingUpdate.maxSurge` | Maximum number of pods that can be created over the desired replicas | Kubernetes default (25%) |
+| `strategy.rollingUpdate.maxUnavailable` | Maximum number of pods that can be unavailable during the update | Kubernetes default (25%) |
