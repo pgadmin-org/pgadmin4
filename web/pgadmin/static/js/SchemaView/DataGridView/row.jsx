@@ -9,6 +9,7 @@
 
 import { useContext, useMemo, useRef } from 'react';
 import Draggable from 'react-draggable';
+import { evalFunc } from 'sources/utils';
 
 import { flexRender } from '@tanstack/react-table';
 
@@ -71,9 +72,10 @@ export function DataGridRow({row, isResizing}) {
                     getValue: cell.getValue,
                   }
                 );
-
+                let cellObj = evalFunc(null, columnDef?.field?.cell, row.original);
                 return (
-                  <PgReactTableCell cell={cell} row={row} key={cell.id}>
+                  <PgReactTableCell cell={cell} row={row} key={cell.id}
+                    disableTooltip={cellObj?.cell === 'password'}>
                     {content}
                   </PgReactTableCell>
                 );

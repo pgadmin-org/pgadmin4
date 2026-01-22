@@ -98,7 +98,7 @@ export function getConnectionParameters() {
   }, {
     'value': 'sslkey', 'label': gettext('Client certificate key'), 'vartype': 'file'
   }, {
-    'value': 'sslpassword', 'label': gettext('SSL password'), 'vartype': 'string',
+    'value': 'sslpassword', 'label': gettext('SSL password'), 'vartype': 'password',
     'min_server_version': '13'
   }, {
     'value': 'sslrootcert', 'label': gettext('Root certificate'), 'vartype': 'file'

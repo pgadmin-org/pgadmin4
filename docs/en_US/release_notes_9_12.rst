@@ -26,6 +26,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #6451 <https://github.com/pgadmin-org/pgadmin4/issues/6451>`_ - Add new options like INHERIT and SET to the Role's membership tab.
   | `Issue #8890 <https://github.com/pgadmin-org/pgadmin4/issues/8890>`_ - Add a new button in the query tool data output toolbar to get entire range of data.
   | `Issue #9292 <https://github.com/pgadmin-org/pgadmin4/issues/9292>`_ - Enhance OAUTH2 and OIDC authentication support with improved claims handling and configuration options.
 
@@ -52,3 +53,4 @@ Bug fixes
   | `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
   | `Issue #9500 <https://github.com/pgadmin-org/pgadmin4/issues/9500>`_ - Fixed an issue where connection parameters were using localized values instead of literal values, causing connection failures.
   | `Issue #9518 <https://github.com/pgadmin-org/pgadmin4/issues/9518>`_ - Mask the secret key for restrict option in the process watcher when restoring plain SQL file.
+  | `Issue #9552 <https://github.com/pgadmin-org/pgadmin4/issues/9552>`_ - Ensure that the tooltip for the password cell is not visible.
