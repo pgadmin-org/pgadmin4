@@ -5,8 +5,10 @@
 *****************
 
 The pgAdmin menu bar provides drop-down menus for access to options, commands,
-and utilities. The menu bar displays the following selections: *File*, *Object*,
-Tools*, and *Help*. Selections may be grayed out which indicates they are
+and utilities. Its layout adapts based on your deployment: in Web mode,
+you will see *File*, *Object*, *Tools*, and *Help* menus. In Desktop mode,
+the *pgAdmin4* application menu replaces the standard *File* menu.
+Selections may be grayed out which indicates they are
 disabled for the object currently selected in the *pgAdmin* tree control.
 
 The File Menu
@@ -16,7 +18,7 @@ The File Menu
     :alt: pgAdmin file menu bar
     :align: center
 
-Use the *File* menu to access the following options:
+Use the *File* menu available in web mode to access the following options:
 
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | Option                  | Action                                                                                                  |
@@ -25,8 +27,30 @@ Use the *File* menu to access the following options:
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Runtime*               | Click to open a submenu to Configure, View Log and Zoom settings. Only visible when pgAdmin4 runs in    |
-|                         | desktop mode. To know more about runtime menu :ref:`click here <desktop_deployment>`                    |
+
+
+The pgAdmin4 Menu
+*****************
+
+.. image:: /images/pgadmin4_menu.png
+    :alt: pgAdmin pgadmin4 menu bar
+    :align: center
+
+Use the *pgAdmin4* menu available in desktop mode to access the following options:
+
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| Option                  | Action                                                                                                  |
++=========================+=========================================================================================================+
+| *About pgAdmin 4*       | Provide pgadmin4 configuration information like version, mode etc.                                      |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Preferences/settings*  | Click to open the :ref:`Preferences <preferences>` dialog to customize your pgAdmin settings.           |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *View Logs*             | This will show current pgadmin4 logs.                                                                   |
++-------------------------+---------------------------------------------------------------------------------------------------------+
+| *Configure runtime*     | Click to open a  window that allows to configure application port, connection timeout to launch the     |
+|                         | application. To know more about runtime menu :ref:`click here <desktop_deployment>`                     |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 
 The Object Menu
