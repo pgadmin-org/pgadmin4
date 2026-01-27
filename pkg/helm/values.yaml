@@ -25,6 +25,12 @@ extraDeploy: []
 
 replicas: 1
 
+# strategy:
+#   type: RollingUpdate
+#   rollingUpdate:
+#     maxSurge: 25%
+#     maxUnavailable: 25%
+
 containerPort: 5050
 disablePostfix: true
 enableServiceLinks: false
