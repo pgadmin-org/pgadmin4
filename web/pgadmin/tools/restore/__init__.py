@@ -91,6 +91,9 @@ class RestoreMessage(IProcessDesc):
         if s is None:
             return _("Not available")
 
+        if s.service:
+            return "{0} (Service:{1})".format(s.name, s.service)
+
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
         manager = driver.connection_manager(self.sid)
@@ -274,14 +277,19 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
     if 'list' in data:
         args.append('--list')
     else:
-        args.extend([
-            '--host',
-            manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-            '--port',
-            str(manager.local_bind_port) if manager.use_ssh_tunnel
-            else str(server.port),
-            '--username', server.username, '--no-password'
-        ])
+        host = manager.local_bind_host if manager.use_ssh_tunnel \
+            else server.host
+        port = str(manager.local_bind_port) if manager.use_ssh_tunnel \
+            else (str(server.port) if server.port else None)
+
+        if host:
+            args.extend(['--host', host])
+        if port and port != 'None':
+            args.extend(['--port', port])
+        if server.username:
+            args.extend(['--username', server.username])
+
+        args.append('--no-password')
 
         set_value('role', '--role', data, args)
         set_value('database', '--dbname', data, args)
@@ -357,17 +365,23 @@ def get_sql_util_args(data, manager, server, filepath):
     :return: args list.
     """
     restrict_key = secrets.token_hex(32)
+    host = manager.local_bind_host if manager.use_ssh_tunnel \
+        else server.host
+    port = str(manager.local_bind_port) if manager.use_ssh_tunnel \
+        else (str(server.port) if server.port else None)
     args = [
-        '--host',
-        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-        '--port',
-        str(manager.local_bind_port) if manager.use_ssh_tunnel
-        else str(server.port),
-        '--username', server.username, '--dbname',
-        data['database'],
+        '--dbname', data['database'],
         '-c', f'\\restrict {restrict_key}',
         '--file', fs_short_path(filepath)
     ]
+    if host:
+        args.extend(['--host', host])
+
+    if port and port != 'None':
+        args.extend(['--port', port])
+
+    if server.username:
+        args.extend(['--username', server.username])
 
     return args
 
