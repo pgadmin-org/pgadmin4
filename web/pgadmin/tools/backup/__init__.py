@@ -201,17 +201,19 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
 
     host, port = (manager.local_bind_host, str(manager.local_bind_port)) \
         if manager.use_ssh_tunnel else (server.host, str(server.port))
-    args = [
-        '--file',
-        backup_file,
-        '--host',
-        host,
-        '--port',
-        port,
-        '--username',
-        manager.user,
-        '--no-password'
-    ]
+
+    args = ['--file', backup_file]
+
+    if host:
+        args.extend(['--host', host])
+
+    if port and port != 'None':
+        args.extend(['--port', port])
+
+    if manager.user:
+        args.extend(['--username', manager.user])
+
+    args.append('--no-password')
 
     def set_param(key, param, assertion=True):
         if not assertion:
