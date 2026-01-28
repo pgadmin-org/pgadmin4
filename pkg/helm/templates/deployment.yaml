@@ -10,6 +10,15 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ .Values.replicas }}
+  {{- if .Values.strategy }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+    {{- if and (eq .Values.strategy.type "RollingUpdate") .Values.strategy.rollingUpdate }}
+    rollingUpdate:
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ default "pgadmin4" .Values.commonLabels.app }}
