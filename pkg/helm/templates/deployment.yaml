@@ -131,7 +131,7 @@ spec:
               mountPath: /pgadmin4/config_distro.py
               subPath: config_distro.py
             - name: empty-dir
-              mountPath: /usr/bin/python3
+              mountPath: /usr/local/bin/python3
               subPath: python3
             - name: empty-dir
               mountPath: /tmp
@@ -205,7 +205,7 @@ spec:
           image: {{ template "pgadmin4.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["sh", "-x", "-c"]
-          args: ['ls /usr/bin/python3.* | sort -V -r | head -n 1 | xargs -i cp {} python3']
+          args: ['ls /venv/bin/python3.* | sort -V -r | head -n 1 | xargs -i cp {} python3']
           workingDir: /emptyDir
           volumeMounts:
             - name: empty-dir
