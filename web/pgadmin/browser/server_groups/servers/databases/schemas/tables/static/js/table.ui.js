@@ -275,7 +275,7 @@ export class LikeSchema extends BaseUISchema {
   }
 
   resetVals(state) {
-    if(this.isRelationDisable(state) && this.top.isNew()) {
+    if(this.isRelationDisable(state) && this.top && this.top.isNew()) {
       return {
         like_default_value: false,
         like_constraints: false,
