@@ -160,6 +160,10 @@ export default class ColumnSchema extends BaseUISchema {
     return { cell: this.attlenRange(state) ? 'int' : '' };
   }
 
+  isInheritedFromType(state) {
+    return !isEmptyString(state.inheritedfromtype);
+  }
+
   get baseFields() {
     let obj = this;
 
@@ -284,6 +288,30 @@ export default class ColumnSchema extends BaseUISchema {
         }
         return false;
       },
+    },{
+      /* This field is used to track inheritance from composite types */
+      id: 'inheritedfromtype',
+      label: gettext('Inherited from type'),
+      type: 'text',
+      visible: false,
+    },{
+      /* This field is used to track inheritance from parent tables */
+      id: 'inheritedfromtable',
+      label: gettext('Inherited from table'),
+      type: 'text',
+      visible: false,
+    },{
+      /* Store original DEFAULT from composite type to detect modifications */
+      id: 'original_defval',
+      label: gettext('Original Default'),
+      type: 'text',
+      visible: false,
+    },{
+      /* Store original NOT NULL from composite type to detect modifications */
+      id: 'original_attnotnull',
+      label: gettext('Original NOT NULL'),
+      type: 'boolean',
+      visible: false,
     },{
       id:'geometry', label: gettext('Geometry Type'), deps: ['cltype'],
       group: gettext('Definition'), type: 'select', options: this.geometryTypes,
@@ -465,6 +493,9 @@ export default class ColumnSchema extends BaseUISchema {
       disabled: function(state) {
         let isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         isDisabled = isDisabled || state.colconstype != 'n';
+        if(!isDisabled && this.isInheritedFromType(state)) {
+          return isDisabled = false;
+        }
         return isDisabled;
       }, depChange: (state)=>{
         let isDisabled = false;
@@ -472,12 +503,18 @@ export default class ColumnSchema extends BaseUISchema {
           isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         }
         isDisabled = isDisabled || state.colconstype != 'n';
-        if (isDisabled && obj.isNew(state)) {
+        // Allow editing for OF TYPE columns, but block for table inheritance
+        if (isDisabled && obj.isNew(state) && !this.isInheritedFromType(state)) {
           return {defval: undefined};
         }
       }, editable: function(state) {
+        // Allow editing for OF TYPE columns (inheritedfromtype)
+        // But block editing for parent table inheritance (inheritedfromtable or inheritedfrom without inheritedfromtype)
+        if (this.isInheritedFromType(state)) {
+          return true;
+        }
         // inheritedfrom has value then we should disable it
-        return !(!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state));
+        return this.editableCheckForTable(state);
       },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
