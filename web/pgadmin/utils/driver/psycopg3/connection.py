@@ -342,30 +342,58 @@ class Connection(BaseConnection):
                 if ssl_key_file_permission > 600:
                     os.chmod(ssl_key, 0o600)
 
-            with ConnectionLocker(manager.kerberos_conn):
-                # Create the connection string
-                connection_string = manager.create_connection_string(
-                    database, user, password)
+            # Retry logic for IAM token refresh
+            max_retries = 2 if (hasattr(manager, 'use_iam_auth') and
+                                manager.use_iam_auth) else 1
+            last_error = None
 
-                if self.async_:
-                    autocommit = True
-                    if 'auto_commit' in kwargs:
-                        autocommit = kwargs['auto_commit']
+            for attempt in range(max_retries):
+                try:
+                    with ConnectionLocker(manager.kerberos_conn):
+                        # Create/regenerate connection string (gets fresh IAM token)
+                        connection_string = manager.create_connection_string(
+                            database, user, password)
 
-                    async def connectdbserver():
-                        return await psycopg.AsyncConnection.connect(
-                            connection_string,
-                            cursor_factory=AsyncDictCursor,
-                            autocommit=autocommit,
-                            prepare_threshold=manager.prepare_threshold
+                        if self.async_:
+                            autocommit = True
+                            if 'auto_commit' in kwargs:
+                                autocommit = kwargs['auto_commit']
+
+                            async def connectdbserver():
+                                return await psycopg.AsyncConnection.connect(
+                                    connection_string,
+                                    cursor_factory=AsyncDictCursor,
+                                    autocommit=autocommit,
+                                    prepare_threshold=manager.prepare_threshold
+                                )
+                            pg_conn = asyncio.run(connectdbserver())
+                            pg_conn.server_cursor_factory = AsyncDictServerCursor
+                        else:
+                            pg_conn = psycopg.Connection.connect(
+                                connection_string,
+                                cursor_factory=DictCursor,
+                                prepare_threshold=manager.prepare_threshold)
+
+                    # Connection successful, break out of retry loop
+                    break
+
+                except psycopg.Error as e:
+                    last_error = e
+                    # Check if this is an authentication failure (SQLSTATE 28P01)
+                    # and we have retries remaining
+                    if (hasattr(e, 'pgcode') and e.pgcode == '28P01' and
+                        attempt < max_retries - 1 and
+                        hasattr(manager, 'use_iam_auth') and
+                        manager.use_iam_auth):
+                        # Retry with fresh token
+                        current_app.logger.info(
+                            f"IAM auth failed for connection ({conn_id}), "
+                            f"retrying with fresh token (attempt {attempt + 2}/{max_retries})"
                         )
-                    pg_conn = asyncio.run(connectdbserver())
-                    pg_conn.server_cursor_factory = AsyncDictServerCursor
-                else:
-                    pg_conn = psycopg.Connection.connect(
-                        connection_string,
-                        cursor_factory=DictCursor,
-                        prepare_threshold=manager.prepare_threshold)
+                        continue
+                    else:
+                        # No retry, re-raise
+                        raise
 
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()
