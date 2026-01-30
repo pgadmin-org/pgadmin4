@@ -70,6 +70,13 @@ Use the fields in the *Connection* tab to configure a connection:
   authenticating with the server.
 * When *Kerberos authentication?* is set to *True*, pgAdmin will try to connect
   the PostgreSQL server using Kerberos authentication.
+* When *AWS IAM authentication?* is set to *True*, pgAdmin will use AWS IAM
+  Database Authentication to connect to Amazon RDS or Aurora PostgreSQL.
+  For more information, see :ref:`AWS IAM Database Authentication <aws_iam_authentication>`.
+
+  * *AWS Profile*: (Optional) The AWS profile name from your credentials file.
+  * *AWS Region*: The AWS region where your RDS/Aurora instance is located.
+
 * Use the *Password* field to provide a password that will be supplied when
   authenticating with the server.
 * Check the box next to *Save password?* to instruct pgAdmin to save the

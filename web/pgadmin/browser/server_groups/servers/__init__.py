@@ -797,6 +797,10 @@ class ServerNode(PGChildNodeView):
             'shared': 'shared',
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
+            'use_iam_auth': 'use_iam_auth',
+            'aws_profile': 'aws_profile',
+            'aws_region': 'aws_region',
+            'aws_role_arn': 'aws_role_arn',
             'connection_params': 'connection_params',
             'prepare_threshold': 'prepare_threshold',
             'tags': 'tags',
@@ -1094,6 +1098,10 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': tunnel_authentication,
             'tunnel_keep_alive': tunnel_keep_alive,
             'kerberos_conn': bool(server.kerberos_conn),
+            'use_iam_auth': bool(server.use_iam_auth) if hasattr(server, 'use_iam_auth') else False,
+            'aws_profile': server.aws_profile if hasattr(server, 'aws_profile') and server.aws_profile else None,
+            'aws_region': server.aws_region if hasattr(server, 'aws_region') and server.aws_region else None,
+            'aws_role_arn': server.aws_role_arn if hasattr(server, 'aws_role_arn') and server.aws_role_arn else None,
             'gss_authenticated': manager.gss_authenticated,
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
@@ -1225,6 +1233,10 @@ class ServerNode(PGChildNodeView):
                 passexec_cmd=data.get('passexec_cmd', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
+                use_iam_auth=1 if data.get('use_iam_auth', False) else 0,
+                aws_profile=data.get('aws_profile', None),
+                aws_region=data.get('aws_region', None),
+                aws_role_arn=data.get('aws_role_arn', None),
                 connection_params=connection_params,
                 prepare_threshold=data.get('prepare_threshold', None),
                 tags=data.get('tags', None),
@@ -1455,7 +1467,7 @@ class ServerNode(PGChildNodeView):
             establish the connection OR just connect the server and do not
             store the password.
         """
-        current_app.logger.info(
+        current_app.logger.error(
             'Connection Request for server#{0}'.format(sid)
         )
 
@@ -1543,9 +1555,11 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
+        # Skip password prompt for Kerberos and IAM authentication
+        use_iam_auth = getattr(server, 'use_iam_auth', False)
         if 'password' not in data and (server.kerberos_conn is False or
-                                       server.kerberos_conn is None):
-
+                                       server.kerberos_conn is None) and \
+                not use_iam_auth:
             passfile_param = None
             if hasattr(server, 'connection_params') and \
                     'passfile' in server.connection_params:
@@ -1595,8 +1609,10 @@ class ServerNode(PGChildNodeView):
                 server_types=ServerType.types()
             )
         except Exception as e:
+            # Don't prompt for password on IAM auth failures - just show error
+            should_prompt_password = not server.save_password and not use_iam_auth
             return self.get_response_for_password(
-                server, 401, not server.save_password, prompt_tunnel_password,
+                server, 401, should_prompt_password, prompt_tunnel_password,
                 getattr(e, 'message', str(e)))
 
         if not status:
@@ -1607,8 +1623,10 @@ class ServerNode(PGChildNodeView):
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
 
+            # Don't prompt for password on IAM auth failures - just show error
+            should_prompt_password = not server.save_password and not use_iam_auth
             return self.get_response_for_password(
-                server, 401, not server.save_password,
+                server, 401, should_prompt_password,
                 prompt_tunnel_password, errmsg)
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
@@ -1652,7 +1670,7 @@ class ServerNode(PGChildNodeView):
 
                     return internal_server_error(errormsg=e.message)
 
-            current_app.logger.info('Connection Established for server: \
+            current_app.logger.error('Connection Established for server: \
                 %s - %s' % (server.id, server.name))
             # Update the recovery and wal pause option for the server
             # if connected successfully
