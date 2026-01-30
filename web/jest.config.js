@@ -52,7 +52,7 @@ module.exports = {
   ],
   'testEnvironment': 'jsdom',
   'transformIgnorePatterns': [
-    '[/\\\\]node_modules[/\\\\](?!react-dnd|dnd-core|@react-dnd|react-resize-detector|react-data-grid).+\\.(js|jsx|mjs|cjs|ts|tsx)$',
+    '[/\\\\]node_modules[/\\\\](?!react-dnd|dnd-core|@react-dnd|react-resize-detector|react-data-grid|marked).+\\.(js|jsx|mjs|cjs|ts|tsx)$',
     '^.+\\.module\\.(css|sass|scss)$'
   ]
 };

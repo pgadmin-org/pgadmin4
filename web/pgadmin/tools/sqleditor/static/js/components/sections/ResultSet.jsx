@@ -834,6 +834,7 @@ export function ResultSet() {
   const layoutDocker = useContext(LayoutDockerContext);
   const [loaderText, setLoaderText] = useState('');
   const [dataOutputQuery,setDataOutputQuery] = useState('');
+  const [llmEnabled, setLlmEnabled] = useState(false);
   const [queryData, setQueryData] = useState(null);
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -925,7 +926,15 @@ export function ResultSet() {
           layoutDocker.openTab({
             id: PANELS.EXPLAIN,
             title: gettext('Explain'),
-            content: <Explain plans={planJson} />,
+            content: <Explain
+              plans={planJson}
+              llmEnabled={llmEnabled}
+              sql={dataOutputQuery}
+              transId={queryToolCtx.params.trans_id}
+              onInsertSQL={(sql) => {
+                eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sql, true);
+              }}
+            />,
             closable: true,
           }, PANELS.MESSAGES, 'after-tab', true);
         },
@@ -987,6 +996,19 @@ export function ResultSet() {
       setLoaderText('');
     }
   };
+
+  // Fetch LLM status on mount
+  useEffect(()=>{
+    api.get(url_for('llm.status'))
+      .then((res)=>{
+        if(res.data?.success && res.data?.data?.enabled) {
+          setLlmEnabled(true);
+        }
+      })
+      .catch(()=>{
+        // LLM not available - this is fine
+      });
+  }, []);
 
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_STOP_EXECUTION, async ()=>{

@@ -44,7 +44,8 @@ export const BROWSER_PANELS = {
   USER_MANAGEMENT: 'id-user-management',
   IMPORT_EXPORT_SERVERS: 'id-import-export-servers',
   WELCOME_QUERY_TOOL: 'id-welcome-querytool',
-  WELCOME_PSQL_TOOL: 'id-welcome-psql'
+  WELCOME_PSQL_TOOL: 'id-welcome-psql',
+  AI_REPORT_PREFIX: 'id-ai-report'
 };
 
 
@@ -139,6 +140,7 @@ export const AllPermissionTypes = {
   TOOLS_MAINTENANCE: 'tools_maintenance',
   TOOLS_SCHEMA_DIFF: 'tools_schema_diff',
   TOOLS_GRANT_WIZARD: 'tools_grant_wizard',
+  TOOLS_AI: 'tools_ai',
   STORAGE_ADD_FOLDER: 'storage_add_folder',
   STORAGE_REMOVE_FOLDER: 'storage_remove_folder'
 };
