@@ -160,6 +160,10 @@ export default class ColumnSchema extends BaseUISchema {
     return { cell: this.attlenRange(state) ? 'int' : '' };
   }
 
+  isInheritedFromType(state) {
+    return !isEmptyString(state.inheritedfromtype);
+  }
+
   get baseFields() {
     let obj = this;
 
@@ -284,6 +288,30 @@ export default class ColumnSchema extends BaseUISchema {
         }
         return false;
       },
+    },{
+      /* This field is used to track inheritance from composite types */
+      id: 'inheritedfromtype',
+      label: gettext('Inherited from type'),
+      type: 'text',
+      visible: false,
+    },{
+      /* This field is used to track inheritance from parent tables */
+      id: 'inheritedfromtable',
+      label: gettext('Inherited from table'),
+      type: 'text',
+      visible: false,
+    },{
+      /* Store original DEFAULT from composite type to detect modifications */
+      id: 'original_defval',
+      label: gettext('Original Default'),
+      type: 'text',
+      visible: false,
+    },{
+      /* Store original NOT NULL from composite type to detect modifications */
+      id: 'original_attnotnull',
+      label: gettext('Original NOT NULL'),
+      type: 'boolean',
+      visible: false,
     },{
       id:'geometry', label: gettext('Geometry Type'), deps: ['cltype'],
       group: gettext('Definition'), type: 'select', options: this.geometryTypes,
