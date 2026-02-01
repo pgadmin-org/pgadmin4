@@ -159,7 +159,10 @@ export class TableNodeModel extends DefaultNodeModel {
   }
 
   serializeData() {
-    return this.getData();
+    const data = this.getData();
+    // Remove incomplete foreign keys
+    data.foreign_key = data.foreign_key?.filter((theFk) => theFk.columns?.[0].references);
+    return data;
   }
 
   serialize() {
