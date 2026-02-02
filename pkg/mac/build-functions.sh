@@ -125,6 +125,9 @@ _create_python_env() {
     rm -rf Versions/Current/lib/sqlite*
     rm -rf Versions/Current/lib/thread*
     rm -rf Versions/Current/share
+
+    # Force the current shell to not generate cache during build process
+    export PYTHONDONTWRITEBYTECODE=1
 }
 
 _build_docs() {
@@ -333,6 +336,10 @@ _codesign_binaries() {
     if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
+
+    echo "Purging build-machine pollution (pycache) before signing..."
+    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
+    find "${BUNDLE_DIR}" -name "*.pyc" -delete
 
     if [ -z "${DEVELOPER_ID}" ] ; then
         echo "Developer ID Application not found in codesign.conf" >&2
