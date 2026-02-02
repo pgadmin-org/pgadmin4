@@ -51,6 +51,7 @@ Bug fixes
   | `Issue #9332 <https://github.com/pgadmin-org/pgadmin4/issues/9332>`_ - Fixed a sorting issue in the system stats memory usage table.
   | `Issue #9350 <https://github.com/pgadmin-org/pgadmin4/issues/9350>`_ - Disable Parameters and Membership fields when object is not new for Login and group roles.
   | `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
+  | `Issue #9402 <https://github.com/pgadmin-org/pgadmin4/issues/9402>`_ - Fixed an issue where pgAdmin4 app on macOS cannot auto-update while running on a read-only volume even if present in the Applications folder.
   | `Issue #9500 <https://github.com/pgadmin-org/pgadmin4/issues/9500>`_ - Fixed an issue where connection parameters were using localized values instead of literal values, causing connection failures.
   | `Issue #9518 <https://github.com/pgadmin-org/pgadmin4/issues/9518>`_ - Mask the secret key for restrict option in the process watcher when restoring plain SQL file (CVE-2026-1707).
   | `Issue #9522 <https://github.com/pgadmin-org/pgadmin4/issues/9522>`_ - Ensure the container deployment supports boolean values in yaml format.
