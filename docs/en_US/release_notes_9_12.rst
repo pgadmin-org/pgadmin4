@@ -52,7 +52,7 @@ Bug fixes
   | `Issue #9350 <https://github.com/pgadmin-org/pgadmin4/issues/9350>`_ - Disable Parameters and Membership fields when object is not new for Login and group roles.
   | `Issue #9380 <https://github.com/pgadmin-org/pgadmin4/issues/9380>`_ - Fixed an issue where the Query History panel would auto-scroll to the top and did not preserve the scroll bar position for the selected entry.
   | `Issue #9500 <https://github.com/pgadmin-org/pgadmin4/issues/9500>`_ - Fixed an issue where connection parameters were using localized values instead of literal values, causing connection failures.
-  | `Issue #9518 <https://github.com/pgadmin-org/pgadmin4/issues/9518>`_ - Mask the secret key for restrict option in the process watcher when restoring plain SQL file.
+  | `Issue #9518 <https://github.com/pgadmin-org/pgadmin4/issues/9518>`_ - Mask the secret key for restrict option in the process watcher when restoring plain SQL file (CVE-2026-1707).
   | `Issue #9522 <https://github.com/pgadmin-org/pgadmin4/issues/9522>`_ - Ensure the container deployment supports boolean values in yaml format.
   | `Issue #9552 <https://github.com/pgadmin-org/pgadmin4/issues/9552>`_ - Ensure that the tooltip for the password cell is not visible.
   | `Issue #9553 <https://github.com/pgadmin-org/pgadmin4/issues/9553>`_ - Fix pgAdmin fails when performing Backup/Restore on a PostgreSQL connection defined exclusively via pg_service.conf.
