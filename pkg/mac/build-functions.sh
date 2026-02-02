@@ -67,6 +67,9 @@ _build_runtime() {
 }
 
 _create_python_env() {
+    # Force the current shell to not generate cache during build process
+    export PYTHONDONTWRITEBYTECODE=1
+
     echo "Creating the Python environment..."
     PATH=${PGADMIN_POSTGRES_DIR}/bin:${PATH}
     LD_LIBRARY_PATH=${PGADMIN_POSTGRES_DIR}/lib:${LD_LIBRARY_PATH}
@@ -125,9 +128,6 @@ _create_python_env() {
     rm -rf Versions/Current/lib/sqlite*
     rm -rf Versions/Current/lib/thread*
     rm -rf Versions/Current/share
-
-    # Force the current shell to not generate cache during build process
-    export PYTHONDONTWRITEBYTECODE=1
 }
 
 _build_docs() {
