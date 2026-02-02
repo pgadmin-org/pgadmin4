@@ -8260,9 +8260,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-react-parser@npm:^5.2.12":
-  version: 5.2.12
-  resolution: "html-react-parser@npm:5.2.12"
+"html-react-parser@npm:^5.2.15":
+  version: 5.2.15
+  resolution: "html-react-parser@npm:5.2.15"
   dependencies:
     domhandler: "npm:5.0.3"
     html-dom-parser: "npm:5.1.4"
@@ -8274,7 +8274,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/f45a5e02ebefe4235a681ba201e67a464cedef941aaed88c9d9b143f9319c407d3e0a3ba6752e5ece4215adcbaf3e6e903762b84baff161b841f1b21f31576d1
+  checksum: 10c0/11aa6c1dc603812645c403dd9bc6acfed9e1232fc87933e76f39e959e6d74a7bcfd592e5baa9e41d6cc932c8d348865fdced7e98ac4f0827bb08e8131abf016e
   languageName: node
   linkType: hard
 
@@ -12847,7 +12847,7 @@ __metadata:
     exports-loader: "npm:^5.0.0"
     globals: "npm:^17.0.0"
     hotkeys-js: "npm:^4.0.0"
-    html-react-parser: "npm:^5.2.12"
+    html-react-parser: "npm:^5.2.15"
     html-to-image: "npm:1.11.11"
     image-minimizer-webpack-plugin: "npm:^4.1.4"
     immutability-helper: "npm:^3.0.0"
