@@ -213,6 +213,7 @@ module.exports = [{
             'pure|pgadmin.node.trigger_function',
             'pure|pgadmin.node.package',
             'pure|pgadmin.node.sequence',
+            'pure|pgadmin.node.statistics',
             'pure|pgadmin.node.synonym',
             'pure|pgadmin.node.type',
             'pure|pgadmin.node.rule',
