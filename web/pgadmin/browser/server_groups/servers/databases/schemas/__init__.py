@@ -157,6 +157,9 @@ class SchemaModule(CollectionNodeModule):
         from .sequences import blueprint as module
         self.submodules.append(module)
 
+        from .statistics import blueprint as module
+        self.submodules.append(module)
+
         from .synonyms import blueprint as module
         self.submodules.append(module)
 
