@@ -1,0 +1,250 @@
+{
+  "statistics_create": [
+    {
+      "name": "Create statistics: With ndistinct only.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "Statistics not supported below PG 14"
+      },
+      "test_data": {
+        "name": "test_stats_ndistinct",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With dependencies only.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000
+      },
+      "test_data": {
+        "name": "test_stats_dependencies",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["dependencies"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With multiple types.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000
+      },
+      "test_data": {
+        "name": "test_stats_multi",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2", "col3"],
+        "stat_types": ["ndistinct", "dependencies"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With MCV",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "MCV statistics not supported below PG 14"
+      },
+      "test_data": {
+        "name": "test_stats_mcv",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": ["mcv"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With invalid data - Less than 2 columns.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_invalid",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1"],
+        "stat_types": ["ndistinct"]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "At least 2 columns must be specified for multi-column statistics.",
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create statistics: With invalid data - No statistics types.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_no_types",
+        "schema": "public",
+        "table": "test_table",
+        "columns": ["col1", "col2"],
+        "stat_types": []
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 400,
+        "error_msg": "At least 1 statistics type must be selected.",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "statistics_delete": [
+    {
+      "name": "Delete statistics: Single object.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "is_list": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete statistics: Multiple objects.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "is_list": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Delete statistics: Non-existing object.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "is_list": false,
+      "inventory_data": {},
+      "test_data": {
+        "statistics_id": 999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified statistics.",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "statistics_get": [
+    {
+      "name": "Get statistics: Single object properties.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "is_list": false,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get statistics: List all objects.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "is_list": true,
+      "inventory_data": {},
+      "test_data": {},
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Get statistics: Non-existing object.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": false,
+      "is_list": false,
+      "inventory_data": {},
+      "test_data": {
+        "statistics_id": 999999
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 410,
+        "error_msg": "could not find the specified statistics.",
+        "test_result_data": {}
+      }
+    }
+  ],
+  "statistics_put": [
+    {
+      "name": "Update statistics: Change name.",
+      "url": "/browser/statistics/obj/",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_stats_renamed"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    }
+  ]
+}
