@@ -483,8 +483,8 @@ def get_table_columns(
                 columns.append({
                     'name': row.get('name'),
                     'data_type': (
-                        row.get('displaytypname')
-                        or row.get('datatype')
+                        row.get('displaytypname') or
+                        row.get('datatype')
                     ),
                     'not_null': row.get('not_null', False),
                     'has_default': row.get('has_default_val', False),
@@ -591,8 +591,8 @@ def get_table_info(
                     columns.append({
                         'name': row.get('name'),
                         'data_type': (
-                            row.get('displaytypname')
-                            or row.get('datatype')
+                            row.get('displaytypname') or
+                            row.get('datatype')
                         ),
                         'not_null': row.get('not_null', False),
                         'has_default': row.get('has_default_val', False),
