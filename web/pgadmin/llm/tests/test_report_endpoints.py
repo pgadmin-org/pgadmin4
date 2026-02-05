@@ -31,7 +31,8 @@ class SecurityReportServerTestCase(BaseTestGenerator):
     def runTest(self):
         """Test security report endpoint at server level"""
         with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.reports.generator.generate_report_sync') as mock_generate, \
+             patch('pgadmin.llm.reports.generator.generate_report_sync'
+                   ) as mock_generate, \
              patch('pgadmin.utils.driver.get_driver') as mock_get_driver:
 
             # Mock database connection
@@ -48,7 +49,9 @@ class SecurityReportServerTestCase(BaseTestGenerator):
             mock_enabled.return_value = self.llm_enabled
 
             if self.llm_enabled:
-                mock_generate.return_value = (True, "# Security Report\n\nNo issues found.")
+                mock_generate.return_value = (
+                    True, "# Security Report\n\nNo issues found."
+                )
 
             url = '/llm/security-report/' + str(self.server_id)
             response = self.tester.get(url, content_type='application/json')
@@ -81,7 +84,8 @@ class PerformanceReportDatabaseTestCase(BaseTestGenerator):
     def runTest(self):
         """Test performance report endpoint at database level"""
         with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.reports.generator.generate_report_sync') as mock_generate, \
+             patch('pgadmin.llm.reports.generator.generate_report_sync'
+                   ) as mock_generate, \
              patch('pgadmin.utils.driver.get_driver') as mock_get_driver:
 
             # Mock database connection
@@ -97,9 +101,12 @@ class PerformanceReportDatabaseTestCase(BaseTestGenerator):
             mock_get_driver.return_value = mock_driver
 
             mock_enabled.return_value = self.llm_enabled
-            mock_generate.return_value = (True, "# Performance Report\n\nOptimization suggestions...")
+            mock_generate.return_value = (
+                True, "# Performance Report\n\nOptimization suggestions..."
+            )
 
-            url = '/llm/database-performance-report/' + str(self.server_id) + '/' + str(self.db_id)
+            url = ('/llm/database-performance-report/' +
+                   str(self.server_id) + '/' + str(self.db_id))
             response = self.tester.get(url, content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -124,14 +131,17 @@ class DesignReportSchemaTestCase(BaseTestGenerator):
     def runTest(self):
         """Test design review report endpoint at schema level"""
         with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.reports.generator.generate_report_sync') as mock_generate, \
+             patch('pgadmin.llm.reports.generator.generate_report_sync'
+                   ) as mock_generate, \
              patch('pgadmin.utils.driver.get_driver') as mock_get_driver:
 
             # Mock connection to return schema name
             mock_conn = MagicMock()
             mock_conn.connected.return_value = True
             mock_conn.db = 'testdb'
-            mock_conn.execute_dict.return_value = (True, {'rows': [{'nspname': 'public'}]})
+            mock_conn.execute_dict.return_value = (
+                True, {'rows': [{'nspname': 'public'}]}
+            )
 
             mock_manager = MagicMock()
             mock_manager.connection.return_value = mock_conn
@@ -141,9 +151,12 @@ class DesignReportSchemaTestCase(BaseTestGenerator):
             mock_get_driver.return_value = mock_driver
 
             mock_enabled.return_value = self.llm_enabled
-            mock_generate.return_value = (True, "# Design Review\n\nSchema structure looks good...")
+            mock_generate.return_value = (
+                True, "# Design Review\n\nSchema structure looks good..."
+            )
 
-            url = '/llm/schema-design-report/' + str(self.server_id) + '/' + str(self.db_id) + '/' + str(self.schema_id)
+            url = ('/llm/schema-design-report/' + str(self.server_id) +
+                   '/' + str(self.db_id) + '/' + str(self.schema_id))
             response = self.tester.get(url, content_type='application/json')
 
             self.assertEqual(response.status_code, 200)
@@ -164,7 +177,8 @@ class StreamingReportTestCase(BaseTestGenerator):
     def runTest(self):
         """Test streaming report endpoint uses SSE format"""
         with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.reports.generator.generate_report_streaming') as mock_streaming, \
+             patch('pgadmin.llm.reports.generator.generate_report_streaming'
+                   ) as mock_streaming, \
              patch('pgadmin.utils.driver.get_driver') as mock_get_driver:
 
             # Mock connection
@@ -184,7 +198,8 @@ class StreamingReportTestCase(BaseTestGenerator):
             url = '/llm/security-report/' + str(self.server_id) + '/stream'
             response = self.tester.get(url)
 
-            # SSE endpoints should return 200 and have text/event-stream content type
+            # SSE endpoints should return 200 and have text/event-stream
+            # content type
             self.assertEqual(response.status_code, 200)
             self.assertIn('text/event-stream', response.content_type)
 
@@ -204,7 +219,8 @@ class ReportErrorHandlingTestCase(BaseTestGenerator):
     def runTest(self):
         """Test report endpoint handles LLM API errors gracefully"""
         with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.reports.generator.generate_report_sync') as mock_generate, \
+             patch('pgadmin.llm.reports.generator.generate_report_sync'
+                   ) as mock_generate, \
              patch('pgadmin.utils.driver.get_driver') as mock_get_driver:
 
             # Mock database connection

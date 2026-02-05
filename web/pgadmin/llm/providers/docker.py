@@ -51,12 +51,15 @@ class DockerClient(LLMClient):
     which provides an OpenAI-compatible API.
     """
 
-    def __init__(self, api_url: Optional[str] = None, model: Optional[str] = None):
+    def __init__(
+        self, api_url: Optional[str] = None, model: Optional[str] = None
+    ):
         """
         Initialize the Docker Model Runner client.
 
         Args:
-            api_url: The Docker Model Runner API URL (default: http://localhost:12434).
+            api_url: The Docker Model Runner API URL
+                (default: http://localhost:12434).
             model: Optional model name. Defaults to ai/qwen3-coder.
         """
         self._api_url = (api_url or DEFAULT_API_URL).rstrip('/')
@@ -321,18 +324,26 @@ class DockerClient(LLMClient):
             if stop_reason == StopReason.MAX_TOKENS:
                 input_tokens = usage.input_tokens
                 raise LLMClientError(LLMError(
-                    message=f'Response truncated due to token limit '
-                            f'(input: {input_tokens} tokens). '
-                            f'The request is too large for model {self._model}. '
-                            f'Try using a model with a larger context window, '
-                            f'or analyze a smaller scope.',
+                    message=(
+                        f'Response truncated due to token limit '
+                        f'(input: {input_tokens} tokens). '
+                        f'The request is too large for model '
+                        f'{self._model}. '
+                        f'Try using a model with a larger context '
+                        f'window, or analyze a smaller scope.'
+                    ),
                     code='max_tokens',
                     provider=self.provider_name,
                     retryable=False
                 ))
-            elif finish_reason and finish_reason not in ('stop', 'tool_calls'):
+            elif finish_reason and finish_reason not in (
+                'stop', 'tool_calls'
+            ):
                 raise LLMClientError(LLMError(
-                    message=f'Empty response with finish reason: {finish_reason}',
+                    message=(
+                        f'Empty response with finish reason: '
+                        f'{finish_reason}'
+                    ),
                     code=finish_reason,
                     provider=self.provider_name,
                     retryable=False
