@@ -191,16 +191,31 @@ define([
 
     // Common LLM enablement check
     checkLLMEnabled: function(data) {
+      if (!this.llmStatusChecked) {
+        if (data) {
+          data.data_disabled = gettext(
+            'Checking AI configuration...'
+          );
+        }
+        return false;
+      }
+
       if (!this.llmSystemEnabled) {
         if (data) {
-          data.data_disabled = gettext('AI features are disabled in the server configuration.');
+          data.data_disabled = gettext(
+            'AI features are disabled in the '
+            + 'server configuration.'
+          );
         }
         return false;
       }
 
       if (!this.llmEnabled) {
         if (data) {
-          data.data_disabled = gettext('Please configure an LLM provider in Preferences > AI to enable this feature.');
+          data.data_disabled = gettext(
+            'Please configure an LLM provider in '
+            + 'Preferences > AI to enable this feature.'
+          );
         }
         return false;
       }
@@ -400,6 +415,13 @@ define([
         BROWSER_PANELS.AI_REPORT_PREFIX,
         pgBrowser.docker.default_workspace
       );
+      if (!handler) {
+        pgBrowser.report_error(
+          gettext('Report'),
+          gettext('Unable to open the report panel.')
+        );
+        return;
+      }
       handler.focus();
       handler.docker.openTab({
         id: panelId,
