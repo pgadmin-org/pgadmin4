@@ -28,6 +28,9 @@ try:
 except ImportError:
     SSL_CONTEXT = ssl.create_default_context()
 
+# Enforce minimum TLS 1.2 to satisfy security requirements
+SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
+
 from pgadmin.llm.client import LLMClient, LLMClientError
 from pgadmin.llm.models import (
     Message, Tool, ToolCall, LLMResponse, LLMError,

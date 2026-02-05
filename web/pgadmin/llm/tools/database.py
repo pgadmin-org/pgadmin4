@@ -142,16 +142,8 @@ def _execute_readonly_query(conn, query: str) -> dict:
     Raises:
         DatabaseToolError: If query execution fails
     """
-    # Wrap the query in a read-only transaction
-    # This ensures even if the query tries to modify data, it will fail
-    readonly_wrapper = """
-    BEGIN TRANSACTION READ ONLY;
-    {query}
-    ROLLBACK;
-    """
-
-    # For SELECT queries, we need to handle them differently
-    # We'll set the transaction to read-only, execute, then rollback
+    # Set the transaction to read-only, execute, then rollback.
+    # This ensures even if the query tries to modify data, it will fail.
     try:
         # First, set the transaction to read-only mode
         status, result = conn.execute_void(
@@ -237,7 +229,8 @@ def execute_readonly_query(
         - truncated: True if results were limited
 
     Raises:
-        DatabaseToolError: If the query fails or connection cannot be established
+        DatabaseToolError: If the query fails or connection
+            cannot be established
     """
     # Generate unique connection ID for this LLM query
     conn_id = f"llm_{secrets.choice(range(1, 9999999))}"
@@ -364,10 +357,13 @@ def get_database_schema(sid: int, did: int) -> dict:
                             'description': row.get('description')
                         })
 
-                # Get views for this schema (relkind v=view, m=materialized view)
+                # Get views (relkind v=view, m=materialized view)
                 views_sql = f"""
-                    SELECT c.oid, c.relname AS name,
-                           pg_catalog.obj_description(c.oid, 'pg_class') AS description
+                    SELECT c.oid,
+                           c.relname AS name,
+                           pg_catalog.obj_description(
+                               c.oid, 'pg_class'
+                           ) AS description
                     FROM pg_catalog.pg_class c
                     WHERE c.relkind IN ('v', 'm')
                       AND c.relnamespace = {schema_oid}::oid
@@ -486,7 +482,10 @@ def get_table_columns(
             for row in cols_res.get('rows', []):
                 columns.append({
                     'name': row.get('name'),
-                    'data_type': row.get('displaytypname') or row.get('datatype'),
+                    'data_type': (
+                        row.get('displaytypname')
+                        or row.get('datatype')
+                    ),
                     'not_null': row.get('not_null', False),
                     'has_default': row.get('has_default_val', False),
                     'description': row.get('description')
@@ -591,7 +590,10 @@ def get_table_info(
                 for row in cols_res.get('rows', []):
                     columns.append({
                         'name': row.get('name'),
-                        'data_type': row.get('displaytypname') or row.get('datatype'),
+                        'data_type': (
+                        row.get('displaytypname')
+                        or row.get('datatype')
+                    ),
                         'not_null': row.get('not_null', False),
                         'has_default': row.get('has_default_val', False),
                         'description': row.get('description')
@@ -608,7 +610,9 @@ def get_table_info(
                         WHEN 'c' THEN 'CHECK'
                         WHEN 'x' THEN 'EXCLUSION'
                     END AS type,
-                    pg_catalog.pg_get_constraintdef(con.oid, true) AS definition
+                    pg_catalog.pg_get_constraintdef(
+                        con.oid, true
+                    ) AS definition
                 FROM pg_catalog.pg_constraint con
                 WHERE con.conrelid = {table_oid}::oid
                 ORDER BY con.contype, con.conname
@@ -740,8 +744,10 @@ DATABASE_TOOLS = [
                 "query": {
                     "type": "string",
                     "description": (
-                        "The SQL query to execute. Should be a SELECT query "
-                        "or other read-only statement. DML statements will fail."
+                        "The SQL query to execute. Should "
+                        "be a SELECT query or other "
+                        "read-only statement. DML "
+                        "statements will fail."
                     )
                 }
             },
@@ -751,8 +757,9 @@ DATABASE_TOOLS = [
     Tool(
         name="get_database_schema",
         description=(
-            "Get a list of all schemas, tables, and views in the database. "
-            "Use this to understand the database structure before writing queries."
+            "Get a list of all schemas, tables, and views "
+            "in the database. Use this to understand the "
+            "database structure before writing queries."
         ),
         parameters={
             "type": "object",
