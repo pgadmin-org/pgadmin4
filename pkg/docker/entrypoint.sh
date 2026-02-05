@@ -61,9 +61,14 @@ EOF
     # This is a bit kludgy, but necessary as the container uses BusyBox/ash as
     # it's shell and not bash which would allow a much cleaner implementation
     for var in $(env | grep "^PGADMIN_CONFIG_" | cut -d "=" -f 1); do
-        # shellcheck disable=SC2086
-        # shellcheck disable=SC2046
-        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> "${CONFIG_DISTRO_FILE_PATH}"
+        # Get the raw value
+        val=$(eval "echo \"\$$var\"")
+        # This normalization step is what makes 'true', 'True'
+        case "$(echo "$val" | tr '[:upper:]' '[:lower:]')" in
+            true)  val="True" ;;
+            false) val="False" ;;
+        esac
+        echo "${var#PGADMIN_CONFIG_} = $val" >> "${CONFIG_DISTRO_FILE_PATH}"
     done
 fi
 

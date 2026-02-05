@@ -167,7 +167,8 @@ export function PgReactTableCell(
     row,
     cell,
     children,
-    className
+    className,
+    disableTooltip
   }
 ) {
   let classNames = ['pgrd-row-cell'];
@@ -199,7 +200,9 @@ export function PgReactTableCell(
       ...(cell.column.columnDef.maxSize ? { maxWidth: `${cell.column.columnDef.maxSize}px` } : {})
     }}
     className={classNames.join(' ')}
-    title={typeof(cell.getValue()) === 'object' ? '' : String(cell.getValue() ?? '')}>
+    title={
+      disableTooltip ? '' : typeof(cell.getValue()) === 'object' ? '' : String(cell.getValue() ?? '')
+    }>
       <div className='pgrd-row-cell-content'>{children}</div>
     </div>
   );
@@ -211,6 +214,7 @@ PgReactTableCell.propTypes = {
   cell: PropTypes.object,
   children: CustomPropTypes.children,
   className: PropTypes.any,
+  disableTooltip: PropTypes.bool,
 };
 
 export function PgReactTableRow (

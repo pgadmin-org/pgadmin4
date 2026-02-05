@@ -64,6 +64,7 @@ class RestoreMessage(IProcessDesc):
         self.bfile = _bfile
         self.database = _kwargs['database'] if 'database' in _kwargs else None
         self.cmd = ''
+        self.arg_list = None
 
         def cmd_arg(x):
             if x:
@@ -86,19 +87,39 @@ class RestoreMessage(IProcessDesc):
                 self.cmd += cmd_arg(arg)
 
     def get_server_name(self):
+        args = self.arg_list
         s = get_server(self.sid)
 
         if s is None:
             return _("Not available")
 
-        from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(self.sid)
+        host, port = None, None
 
-        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
-        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+        if args and isinstance(args, list):
+            def get_arg(val):
+                if val in args and args.index(val) + 1 < len(args):
+                    return args[args.index(val) + 1]
+                return None
+            host, port = get_arg('--host'), get_arg('--port')
+        else:
+            from pgadmin.utils.driver import get_driver
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            manager = driver.connection_manager(self.sid)
 
-        return "{0} ({1}:{2})".format(s.name, host, port)
+            host = manager.local_bind_host if manager.use_ssh_tunnel \
+                else s.host
+            port = manager.local_bind_port if manager.use_ssh_tunnel \
+                else s.port
+
+        return "{0} ({1})".format(
+            s.name,
+            ': '.join(map(str, filter(None, [
+                '{0}: {1}'.format(_('Service'), s.service)
+                if s.service else None,
+                host,
+                port
+            ])))
+        ) if (s.service or host or port) else s.name
 
     @property
     def message(self):
@@ -110,6 +131,7 @@ class RestoreMessage(IProcessDesc):
         return _("Restoring backup on the server")
 
     def details(self, cmd, args):
+        self.arg_list = args
         return {
             "message": self.message,
             "cmd": cmd + self.cmd,
@@ -274,14 +296,19 @@ def get_restore_util_args(data, manager, server, driver, conn, filepath):
     if 'list' in data:
         args.append('--list')
     else:
-        args.extend([
-            '--host',
-            manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-            '--port',
-            str(manager.local_bind_port) if manager.use_ssh_tunnel
-            else str(server.port),
-            '--username', server.username, '--no-password'
-        ])
+        host = manager.local_bind_host if manager.use_ssh_tunnel \
+            else server.host
+        port = manager.local_bind_port if manager.use_ssh_tunnel \
+            else server.port
+
+        if host:
+            args.extend(['--host', host])
+        if port:
+            args.extend(['--port', str(port)])
+        if server.username:
+            args.extend(['--username', server.username])
+
+        args.append('--no-password')
 
         set_value('role', '--role', data, args)
         set_value('database', '--dbname', data, args)
@@ -357,17 +384,23 @@ def get_sql_util_args(data, manager, server, filepath):
     :return: args list.
     """
     restrict_key = secrets.token_hex(32)
+    host = manager.local_bind_host if manager.use_ssh_tunnel \
+        else server.host
+    port = manager.local_bind_port if manager.use_ssh_tunnel \
+        else server.port
     args = [
-        '--host',
-        manager.local_bind_host if manager.use_ssh_tunnel else server.host,
-        '--port',
-        str(manager.local_bind_port) if manager.use_ssh_tunnel
-        else str(server.port),
-        '--username', server.username, '--dbname',
-        data['database'],
+        '--dbname', data['database'],
         '-c', f'\\restrict {restrict_key}',
         '--file', fs_short_path(filepath)
     ]
+    if host:
+        args.extend(['--host', host])
+
+    if port:
+        args.extend(['--port', str(port)])
+
+    if server.username:
+        args.extend(['--username', server.username])
 
     return args
 

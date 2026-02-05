@@ -94,6 +94,7 @@ class BackupMessage(IProcessDesc):
         self.database = _kwargs['database'] if 'database' in _kwargs else None
         self.cmd = ''
         self.args_str = "{0} ({1}:{2})"
+        self.arg_list = None
 
         def cmd_arg(x):
             if x:
@@ -110,19 +111,39 @@ class BackupMessage(IProcessDesc):
                 self.cmd += cmd_arg(arg)
 
     def get_server_name(self):
+        args = self.arg_list
         s = get_server(self.sid)
 
         if s is None:
             return gettext("Not available")
 
-        from pgadmin.utils.driver import get_driver
-        driver = get_driver(PG_DEFAULT_DRIVER)
-        manager = driver.connection_manager(self.sid)
+        host, port = None, None
 
-        host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
-        port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
+        if args and isinstance(args, list):
+            def get_arg(val):
+                if val in args and args.index(val) + 1 < len(args):
+                    return args[args.index(val) + 1]
+                return None
+            host, port = get_arg('--host'), get_arg('--port')
+        else:
+            from pgadmin.utils.driver import get_driver
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            manager = driver.connection_manager(self.sid)
 
-        return "{0} ({1}:{2})".format(s.name, host, port)
+            host = manager.local_bind_host if manager.use_ssh_tunnel \
+                else s.host
+            port = manager.local_bind_port if manager.use_ssh_tunnel \
+                else s.port
+
+        return "{0} ({1})".format(
+            s.name,
+            ': '.join(map(str, filter(None, [
+                '{0}: {1}'.format(gettext('Service'), s.service)
+                if s.service else None,
+                host,
+                port
+            ])))
+        ) if (s.service or host or port) else s.name
 
     @property
     def type_desc(self):
@@ -159,6 +180,7 @@ class BackupMessage(IProcessDesc):
             return "Unknown Backup"
 
     def details(self, cmd, args):
+        self.arg_list = args
         server_name = self.get_server_name()
         backup_type = gettext("Backup")
         if self.backup_type == BACKUP.OBJECT:
@@ -199,19 +221,21 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     from pgadmin.utils.driver import get_driver
     driver = get_driver(PG_DEFAULT_DRIVER)
 
-    host, port = (manager.local_bind_host, str(manager.local_bind_port)) \
-        if manager.use_ssh_tunnel else (server.host, str(server.port))
-    args = [
-        '--file',
-        backup_file,
-        '--host',
-        host,
-        '--port',
-        port,
-        '--username',
-        manager.user,
-        '--no-password'
-    ]
+    host, port = (manager.local_bind_host, manager.local_bind_port) \
+        if manager.use_ssh_tunnel else (server.host, server.port)
+
+    args = ['--file', backup_file]
+
+    if host:
+        args.extend(['--host', host])
+
+    if port:
+        args.extend(['--port', str(port)])
+
+    if manager.user:
+        args.extend(['--username', manager.user])
+
+    args.append('--no-password')
 
     def set_param(key, param, assertion=True):
         if not assertion:

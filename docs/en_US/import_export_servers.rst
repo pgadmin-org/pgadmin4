@@ -196,4 +196,4 @@ The following example shows both a minimally defined and a fully defined server:
         }
     }
 
-.. note:: If you're running pgAdmin in Server Mode, the values for parameters that require file paths should be specified relative to the user's home directory which is /<DATA_DIR>/storage/<user_id>/. If DATA_DIR is not specified, then it will /var/libe/pgadmin/storage/<user_id>/
+.. note:: If you're running pgAdmin in Server Mode, the values for parameters that require file paths should be specified relative to the user's home directory which is /<DATA_DIR>/storage/<user_id>/. If DATA_DIR is not specified, then it will be /var/lib/pgadmin/storage/<user_id>/
