@@ -10,7 +10,7 @@
 """Add tools_ai permission to existing roles
 
 Revision ID: add_tools_ai_perm
-Revises: efbbe5d5862f
+Revises: 018e16dad6aa
 Create Date: 2025-12-01
 
 """
@@ -19,7 +19,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'add_tools_ai_perm'
-down_revision = 'efbbe5d5862f'
+down_revision = '018e16dad6aa'
 branch_labels = None
 depends_on = None
 
