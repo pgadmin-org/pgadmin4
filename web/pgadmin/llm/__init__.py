@@ -28,6 +28,9 @@ try:
 except ImportError:
     SSL_CONTEXT = ssl.create_default_context()
 
+# Enforce minimum TLS 1.2 to satisfy security requirements
+SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
+
 
 MODULE_NAME = 'llm'
 
@@ -606,8 +609,8 @@ def _fetch_anthropic_models(api_key):
             data = json.loads(response.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            raise Exception('Invalid API key')
-        raise Exception(f'API error: {e.code}')
+            raise ValueError('Invalid API key')
+        raise ConnectionError(f'API error: {e.code}')
 
     models = []
     seen = set()
@@ -661,8 +664,8 @@ def _fetch_openai_models(api_key):
             data = json.loads(response.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
         if e.code == 401:
-            raise Exception('Invalid API key')
-        raise Exception(f'API error: {e.code}')
+            raise ValueError('Invalid API key')
+        raise ConnectionError(f'API error: {e.code}')
 
     models = []
     seen = set()
@@ -706,9 +709,13 @@ def _fetch_ollama_models(api_url):
         ) as response:
             data = json.loads(response.read().decode('utf-8'))
     except urllib.error.URLError as e:
-        raise Exception(f'Cannot connect to Ollama: {e.reason}')
-    except Exception as e:
-        raise Exception(f'Error fetching models: {str(e)}')
+        raise ConnectionError(
+            f'Cannot connect to Ollama: {e.reason}'
+        )
+    except OSError as e:
+        raise ConnectionError(
+            f'Error fetching models: {str(e)}'
+        )
 
     models = []
     for model in data.get('models', []):
@@ -755,12 +762,15 @@ def _fetch_docker_models(api_url):
         ) as response:
             data = json.loads(response.read().decode('utf-8'))
     except urllib.error.URLError as e:
-        raise Exception(
-            f'Cannot connect to Docker Model Runner: {e.reason}. '
-            f'Is Docker Desktop running with model runner enabled?'
+        raise ConnectionError(
+            f'Cannot connect to Docker Model Runner: '
+            f'{e.reason}. Is Docker Desktop running '
+            f'with model runner enabled?'
         )
-    except Exception as e:
-        raise Exception(f'Error fetching models: {str(e)}')
+    except OSError as e:
+        raise ConnectionError(
+            f'Error fetching models: {str(e)}'
+        )
 
     models = []
     seen = set()
@@ -1031,7 +1041,7 @@ def _gather_security_config(conn, manager):
     return security_info
 
 
-def _generate_security_report_llm(client, security_info, manager):
+def _generate_security_report_llm(client, security_info):
     """
     Use the LLM to analyze the security configuration and generate a report.
     """
@@ -1046,11 +1056,12 @@ def _generate_security_report_llm(client, security_info, manager):
         "objects or data.\n\n"
         "IMPORTANT: Do NOT include a report title, header block, or "
         "generation date at the top of your response. The title and "
-        "metadata are added separately by the application. "
-        "Start directly with the Executive Summary section.\n\n"
+        "metadata are added separately by the application. Start "
+        "directly with the Executive Summary section.\n\n"
         "The report should include:\n"
         "1. **Executive Summary** - Brief overview of the security posture\n"
-        "2. **Critical Issues** - Vulnerabilities needing immediate attention\n"
+        "2. **Critical Issues** - Vulnerabilities needing "
+        "immediate attention\n"
         "3. **Warnings** - Important security concerns to be addressed\n"
         "4. **Recommendations** - Best practices to improve security\n"
         "5. **Configuration Review** - Analysis of key security settings\n\n"

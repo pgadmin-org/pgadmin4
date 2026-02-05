@@ -1019,7 +1019,7 @@ OLLAMA_API_MODEL = ''
 # Docker Desktop 4.40+ includes a built-in model runner with an
 # OpenAI-compatible API. No API key is required.
 # URL for the Docker Model Runner API endpoint. Leave empty to disable.
-# Default value: http://localhost:12434
+# Typical value: http://localhost:12434
 DOCKER_API_URL = ''
 
 # The Docker Model Runner model to use for AI features.

@@ -65,7 +65,8 @@ def chat_with_database(
         did: Database ID for database connection
         conversation_history: Optional list of previous messages
         system_prompt: Optional custom system prompt (uses default if None)
-        max_tool_iterations: Maximum number of tool call rounds (uses preference)
+        max_tool_iterations: Maximum number of tool call
+            rounds. Uses preference setting if None.
         provider: Optional LLM provider override
         model: Optional model override
 

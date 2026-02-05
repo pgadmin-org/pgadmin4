@@ -167,7 +167,7 @@ define([
       const api = getApiInstance();
       api.get(url_for('llm.status'))
         .then((res) => {
-          if (res.data && res.data.success) {
+          if (res?.data?.success) {
             this.llmEnabled = res.data.data?.enabled || false;
             this.llmSystemEnabled = res.data.data?.system_enabled || false;
           }

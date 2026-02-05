@@ -52,10 +52,16 @@ class LLMStatusTestCase(BaseTestGenerator):
             self.provider_enabled and hasattr(self, 'provider_name')
         ) else None
 
-        with patch('pgadmin.llm.utils.is_llm_enabled') as mock_enabled, \
-             patch('pgadmin.llm.utils.is_llm_enabled_system') as mock_system, \
-             patch('pgadmin.llm.utils.get_default_provider') as mock_provider, \
-             patch('pgadmin.authenticate.mfa.utils.mfa_required', lambda f: f):
+        with patch(
+            'pgadmin.llm.utils.is_llm_enabled'
+        ) as mock_enabled, patch(
+            'pgadmin.llm.utils.is_llm_enabled_system'
+        ) as mock_system, patch(
+            'pgadmin.llm.utils.get_default_provider'
+        ) as mock_provider, patch(
+            'pgadmin.authenticate.mfa.utils.mfa_required',
+            lambda f: f
+        ):
 
             mock_enabled.return_value = self.expected_enabled
             mock_system.return_value = self.provider_enabled
