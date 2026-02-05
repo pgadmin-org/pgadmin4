@@ -316,17 +316,20 @@ class OpenAIClient(LLMClient):
                 raise LLMClientError(LLMError(
                     message=f'Response truncated due to token limit '
                             f'(input: {input_tokens} tokens). '
-                            f'The request is too large for model {self._model}. '
-                            f'Try using a model with a larger context window, '
-                            f'or analyze a smaller scope (e.g., a specific schema '
-                            f'instead of the entire database).',
+                            f'The request is too large for model '
+                            f'{self._model}. '
+                            f'Try using a model with a larger context '
+                            f'window, or analyze a smaller scope (e.g., a '
+                            f'specific schema instead of the entire '
+                            f'database).',
                     code='max_tokens',
                     provider=self.provider_name,
                     retryable=False
                 ))
             elif finish_reason and finish_reason not in ('stop', 'tool_calls'):
                 raise LLMClientError(LLMError(
-                    message=f'Empty response with finish reason: {finish_reason}',
+                    message=(f'Empty response with finish reason: '
+                             f'{finish_reason}'),
                     code=finish_reason,
                     provider=self.provider_name,
                     retryable=False

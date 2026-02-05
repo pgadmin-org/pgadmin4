@@ -58,7 +58,8 @@ class ReportPipeline:
             report_type: Type of report ('security', 'performance', 'design').
             sections: List of available Section definitions.
             client: LLM client for making API calls.
-            query_executor: Function to execute queries given query_id and context.
+            query_executor: Function to execute queries given query_id and
+                           context.
             max_retries: Maximum retry attempts for rate-limited calls.
             retry_base_delay: Base delay in seconds for exponential backoff.
         """
@@ -88,7 +89,9 @@ class ReportPipeline:
             if event.get('type') == 'complete':
                 result = event.get('report', '')
             elif event.get('type') == 'error':
-                raise ReportPipelineError(event.get('message', 'Unknown error'))
+                raise ReportPipelineError(
+                    event.get('message', 'Unknown error')
+                )
         return result or ''
 
     def execute_with_progress(
@@ -234,7 +237,8 @@ class ReportPipeline:
                 if sid in self.sections
             ]
 
-            return valid_ids if valid_ids else [s['id'] for s in available_sections]
+            return (valid_ids if valid_ids else
+                    [s['id'] for s in available_sections])
 
         except (json.JSONDecodeError, LLMClientError):
             # Fallback to all available sections
@@ -312,7 +316,8 @@ class ReportPipeline:
                     yield {
                         'type': 'retry',
                         'reason': 'rate_limit',
-                        'message': f'Rate limited, retrying in {wait_time}s...',
+                        'message': (f'Rate limited, retrying in '
+                                    f'{wait_time}s...'),
                         'wait_seconds': wait_time
                     }
                     time.sleep(wait_time)
@@ -382,15 +387,20 @@ class ReportPipeline:
                     yield {
                         'type': 'retry',
                         'reason': 'rate_limit',
-                        'message': f'Rate limited, retrying in {wait_time}s...',
+                        'message': (f'Rate limited, retrying in '
+                                    f'{wait_time}s...'),
                         'wait_seconds': wait_time
                     }
                     time.sleep(wait_time)
                 else:
                     # Return partial report with section summaries
-                    partial = "**Note**: Synthesis failed. Section summaries:\n\n"
+                    partial = (
+                        "**Note**: Synthesis failed. Section summaries:\n\n"
+                    )
                     for r in successful_results:
-                        partial += f"## {r['section_name']}\n\n{r['summary']}\n\n"
+                        partial += (
+                            f"## {r['section_name']}\n\n{r['summary']}\n\n"
+                        )
                     yield {'type': 'result', 'result': partial}
                     return
 

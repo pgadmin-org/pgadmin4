@@ -14,9 +14,11 @@
 # Planning Stage Prompts
 # =============================================================================
 
-PLANNING_SYSTEM_PROMPT = """You are a PostgreSQL expert helping to plan a database analysis report.
+PLANNING_SYSTEM_PROMPT = """You are a PostgreSQL expert helping to plan a
+database analysis report.
 
-Your task is to select which analysis sections are most relevant for the given report type and database context.
+Your task is to select which analysis sections are most relevant for the
+given report type and database context.
 
 Return ONLY a JSON array of section IDs to analyze, ordered by priority.
 Only include sections that are relevant given the database characteristics.
@@ -55,14 +57,16 @@ Database context:
 - Table count: {context.get('table_count', 'Unknown')}
 - Has pg_stat_statements: {context.get('has_stat_statements', False)}
 
-Return a JSON array of section IDs to analyze, e.g.: ["section1", "section2", "section3"]"""
+Return a JSON array of section IDs to analyze, e.g.:
+["section1", "section2", "section3"]"""
 
 
 # =============================================================================
 # Section Analysis Prompts
 # =============================================================================
 
-SECTION_ANALYSIS_SYSTEM_PROMPT = """You are a PostgreSQL expert analyzing database configuration.
+SECTION_ANALYSIS_SYSTEM_PROMPT = """You are a PostgreSQL expert analyzing
+database configuration.
 
 Analyze the provided data and generate a concise summary (max 300 words).
 
@@ -111,7 +115,8 @@ def get_section_analysis_prompt(
 
     data_json = json.dumps(data, indent=2, default=str)
 
-    return f"""Analyze the following {section_name} data for a PostgreSQL {context.get('server_version', '')} server.
+    return f"""Analyze the following {section_name} data for a PostgreSQL
+{context.get('server_version', '')} server.
 
 Section focus: {section_description}
 
@@ -130,19 +135,25 @@ Provide your analysis following the required format."""
 # Synthesis Prompts
 # =============================================================================
 
-SYNTHESIS_SYSTEM_PROMPT = """You are a PostgreSQL expert creating a comprehensive report.
+SYNTHESIS_SYSTEM_PROMPT = """You are a PostgreSQL expert creating a
+comprehensive report.
 
 Combine the section summaries into a cohesive, well-organized report.
 
 Your report MUST:
 1. Start with an **Executive Summary** (3-5 sentences overview)
-2. Include a **Critical Issues** section (aggregate all critical/warning findings)
-3. Include each section's detailed analysis (use the section content as-is, don't add duplicate headers)
-4. End with **Prioritized Recommendations** (numbered list, most important first)
+2. Include a **Critical Issues** section (aggregate all critical/warning
+findings)
+3. Include each section's detailed analysis (use the section content as-is,
+don't add duplicate headers)
+4. End with **Prioritized Recommendations** (numbered list, most important
+first)
 
 IMPORTANT:
-- Do NOT include a report title at the very beginning - start directly with Executive Summary
-- Each section already has its own ### header - do NOT add extra headers around them
+- Do NOT include a report title at the very beginning - start directly with
+Executive Summary
+- Each section already has its own ### header - do NOT add extra headers
+around them
 - Simply organize and flow the sections together naturally
 
 Use severity indicators consistently:
@@ -151,7 +162,8 @@ Use severity indicators consistently:
 - 🟡 Advisory - Consider improving
 - 🟢 Good - No issues found
 
-Be professional and actionable. Include SQL commands for recommendations where helpful."""
+Be professional and actionable. Include SQL commands for recommendations
+where helpful."""
 
 
 def get_synthesis_prompt(
@@ -186,7 +198,8 @@ def get_synthesis_prompt(
     if context.get('schema_name'):
         scope_info = f"{context['schema_name']} schema in {scope_info}"
 
-    return f"""Create a comprehensive {report_type_display} Report for {scope_info}.
+    return f"""Create a comprehensive {report_type_display} Report for
+{scope_info}.
 
 Server: PostgreSQL {context.get('server_version', 'Unknown')}
 
