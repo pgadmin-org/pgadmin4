@@ -51,7 +51,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   ...theme.mixins.panelBorder.bottom,
 }));
 
-export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange, connectionInfo}) {
+export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange, connectionInfo, toolbarPrefs}) {
   const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save': true,
@@ -72,6 +72,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   const notationMenuRef = React.useRef(null);
   const isDirtyRef = React.useRef(null);
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
+  const notationRef = React.useRef(notation);
   const modal = useModal();
 
   const setDisableButton = useCallback((name, disable=true)=>{
@@ -84,6 +85,15 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       return {
         ...prev,
         [e.value]: newVal,
+      };
+    });
+    setSaveERDData((prev)=>{
+      return {
+        ...prev,
+        toolbarPrefs: {
+          ...prev?.toolbarPrefs,
+          [e.value]: !prev?.toolbarPrefs?.[e.value],
+        },
       };
     });
   }, []);
@@ -111,15 +121,31 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   };
 
   useEffect(()=>{
-    if(preferences) {
+    if(!_.isUndefined(toolbarPrefs) && !_.isNull(toolbarPrefs) && Object.keys(toolbarPrefs).length > 0) {
+      /* Apply toolbar prefs */
+      if(!_.isUndefined(toolbarPrefs.sql_with_drop)) {
+        setCheckedMenuItems((prev)=>({
+          ...prev,
+          sql_with_drop: toolbarPrefs.sql_with_drop,
+        }));
+      }
+      if(!_.isUndefined(toolbarPrefs.cardinality)) {
+        notationRef.current = toolbarPrefs.cardinality;
+        onNotationChange({'value': toolbarPrefs.cardinality});
+      } else {
+        notationRef.current = notation;
+      }
+    }
+    else if(preferences) {
       /* Get the prefs first time */
       if(_.isUndefined(checkedMenuItems.sql_with_drop)) {
         setCheckedMenuItems({
           sql_with_drop: preferences.sql_with_drop,
         });
       }
+      notationRef.current = notation;
     }
-  }, [preferences]);
+  }, [preferences, toolbarPrefs]);
 
   useEffect(()=>{
     const events = [
@@ -134,11 +160,11 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       [ERD_EVENTS.ANY_ITEM_SELECTED, (selected)=>{
         setDisableButton('drop-table', !selected);
       }],
-      [ERD_EVENTS.DIRTY, (isDirty, data, fileName)=>{
+      [ERD_EVENTS.DIRTY, (isDirty, data, fileName, toolbarPrefs)=>{
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
         if((isDirty || fileName) && isSaveToolDataEnabled('ERD')){
-          setSaveERDData({data, fileName, isDirty});
+          setSaveERDData({data, fileName, isDirty, toolbarPrefs});
         }
       }],
     ];
@@ -153,8 +179,8 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   }, []);
 
   const [saveERDData, setSaveERDData] = useState(null);
-  useDelayDebounce(({data, fileName, isDirty})=>{
-    saveToolData('ERD', {...connectionInfo,'open_file_name':fileName, 'is_editor_dirty': isDirty}, connectionInfo.trans_id, data);
+  useDelayDebounce(({data, fileName, isDirty, toolbarPrefs})=>{
+    saveToolData('ERD', {...connectionInfo,'open_file_name':fileName, 'is_editor_dirty': isDirty, 'preferences': toolbarPrefs}, connectionInfo.trans_id, data);
   }, saveERDData, 500);
 
   useEffect(()=>{
@@ -166,6 +192,20 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       eventBus.deregisterListener(ERD_EVENTS.TRIGGER_SHOW_SQL, showSql);
     };
   }, [checkedMenuItems['sql_with_drop']]);
+
+  const onCardinalityNotationChange = useCallback((e)=>{
+    setSaveERDData((prev)=>{
+      return {
+        ...prev,
+        toolbarPrefs: {
+          ...prev?.toolbarPrefs,
+          cardinality: e.value,
+        },
+      };
+    });
+    notationRef.current = e.value;
+    onNotationChange(e);
+  }, [onNotationChange]);
 
   return (
     (<>
@@ -336,8 +376,8 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
         label={gettext('Cardinality Notation')}
 
       >
-        <PgMenuItem hasCheck closeOnCheck value="crows" checked={notation == 'crows'} onClick={onNotationChange}>{gettext('Crow\'s Foot Notation')}</PgMenuItem>
-        <PgMenuItem hasCheck closeOnCheck value="chen" checked={notation == 'chen'} onClick={onNotationChange}>{gettext('Chen Notation')}</PgMenuItem>
+        <PgMenuItem hasCheck closeOnCheck value="crows" checked={notationRef.current == 'crows'} onClick={onCardinalityNotationChange}>{gettext('Crow\'s Foot Notation')}</PgMenuItem>
+        <PgMenuItem hasCheck closeOnCheck value="chen" checked={notationRef.current == 'chen'} onClick={onCardinalityNotationChange}>{gettext('Chen Notation')}</PgMenuItem>
       </PgMenu>
     </>)
   );
@@ -351,6 +391,7 @@ MainToolBar.propTypes = {
   notation: PropTypes.string,
   onNotationChange: PropTypes.func,
   connectionInfo: PropTypes.object,
+  toolbarPrefs: PropTypes.object,
 };
 
 const ColorButton = withColorPicker(PgIconButton);
