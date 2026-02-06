@@ -146,7 +146,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
       }
       notationRef.current = notation;
     }
-  }, [preferences, toolbarPrefs]);
+  }, [preferences, toolbarPrefs, notation, onNotationChange]);
 
   useEffect(()=>{
     const events = [
