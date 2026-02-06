@@ -970,6 +970,68 @@ MAX_SERVER_TAGS_ALLOWED = 5
 
 ON_DEMAND_LOG_COUNT = 10000
 
+##########################################################################
+# AI/LLM Settings
+##########################################################################
+
+# Master switch to enable/disable LLM features entirely.
+# When False, all AI/LLM features are disabled and cannot be enabled
+# by users through preferences. When True, users can configure their
+# preferred LLM provider in preferences.
+LLM_ENABLED = True
+
+# Default LLM Provider
+# Specifies which LLM provider to use by default when LLM_ENABLED is True.
+# Users can override this in their preferences.
+# Valid values: 'anthropic', 'openai', 'ollama', 'docker', or '' (disabled)
+DEFAULT_LLM_PROVIDER = ''
+
+# Anthropic Configuration
+# Path to a file containing the Anthropic API key. The file should contain
+# only the API key with no additional whitespace or formatting.
+# Default: ~/.anthropic-api-key
+ANTHROPIC_API_KEY_FILE = '~/.anthropic-api-key'
+
+# The Anthropic model to use for AI features.
+# Examples: claude-sonnet-4-20250514, claude-3-5-haiku-20241022
+ANTHROPIC_API_MODEL = ''
+
+# OpenAI Configuration
+# Path to a file containing the OpenAI API key. The file should contain
+# only the API key with no additional whitespace or formatting.
+# Default: ~/.openai-api-key
+OPENAI_API_KEY_FILE = '~/.openai-api-key'
+
+# The OpenAI model to use for AI features.
+# Examples: gpt-4o, gpt-4o-mini, gpt-4-turbo
+OPENAI_API_MODEL = ''
+
+# Ollama Configuration
+# URL for the Ollama API endpoint. Leave empty to disable Ollama.
+# Typical value: http://localhost:11434
+OLLAMA_API_URL = ''
+
+# The Ollama model to use for AI features.
+# Examples: llama3.2, codellama, mistral
+OLLAMA_API_MODEL = ''
+
+# Docker Model Runner Configuration
+# Docker Desktop 4.40+ includes a built-in model runner with an
+# OpenAI-compatible API. No API key is required.
+# URL for the Docker Model Runner API endpoint. Leave empty to disable.
+# Typical value: http://localhost:12434
+DOCKER_API_URL = ''
+
+# The Docker Model Runner model to use for AI features.
+# Examples: ai/qwen3-coder, ai/llama3.2
+DOCKER_API_MODEL = ''
+
+# Maximum Tool Iterations
+# The maximum number of tool call iterations allowed during an AI conversation.
+# This prevents runaway conversations that could consume excessive resources.
+# Users can override this in their preferences.
+MAX_LLM_TOOL_ITERATIONS = 20
+
 #############################################################################
 # Patch the default config with custom config and other manipulations
 #############################################################################

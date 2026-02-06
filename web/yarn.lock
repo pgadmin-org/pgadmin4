@@ -3964,6 +3964,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/trusted-types@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/trusted-types@npm:2.0.7"
+  checksum: 10c0/4c4855f10de7c6c135e0d32ce462419d8abbbc33713b31d294596c0cc34ae1fa6112a2f9da729c8f7a20707782b0d69da3b1f8df6645b0366d08825ca1522e0c
+  languageName: node
+  linkType: hard
+
 "@types/yargs-parser@npm:*":
   version: 21.0.3
   resolution: "@types/yargs-parser@npm:21.0.3"
@@ -6812,6 +6819,18 @@ __metadata:
   dependencies:
     domelementtype: "npm:^2.3.0"
   checksum: 10c0/bba1e5932b3e196ad6862286d76adc89a0dbf0c773e5ced1eb01f9af930c50093a084eff14b8de5ea60b895c56a04d5de8bbc4930c5543d029091916770b2d2a
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.2.4":
+  version: 3.3.1
+  resolution: "dompurify@npm:3.3.1"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.7"
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 10c0/fa0a8c55a436ba0d54389195e3d2337e311f56de709a2fc9efc98dbbc7746fa53bb4b74b6ac043b77a279a8f2ebd8685f0ebaa6e58c9e32e92051d529bc0baf8
   languageName: node
   linkType: hard
 
@@ -10281,6 +10300,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "marked@npm:17.0.1"
+  bin:
+    marked: bin/marked.js
+  checksum: 10c0/0197337aad33882308cea52d2c86d7b830a89be729a4010a26a488ae1c224cdc7520b8cce056832a81a127fc39a3827f45e3865c1ff257324cb553cb06ce0e57
+  languageName: node
+  linkType: hard
+
 "marked@npm:^5.1.2":
   version: 5.1.2
   resolution: "marked@npm:5.1.2"
@@ -12864,6 +12892,7 @@ __metadata:
     css-minimizer-webpack-plugin: "npm:^7.0.3"
     date-fns: "npm:^4.1.0"
     diff-arrays-of-objects: "npm:^1.1.8"
+    dompurify: "npm:^3.2.4"
     eslint: "npm:^9.39.2"
     eslint-plugin-jest: "npm:^29.9.0"
     eslint-plugin-react: "npm:^7.37.5"
@@ -12884,6 +12913,7 @@ __metadata:
     leaflet: "npm:^1.9.4"
     loader-utils: "npm:^3.2.1"
     lodash: "npm:4.*"
+    marked: "npm:^17.0.1"
     mini-css-extract-plugin: "npm:^2.10.0"
     moment: "npm:^2.29.4"
     moment-timezone: "npm:^0.6.0"
