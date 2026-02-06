@@ -143,7 +143,11 @@ export function SchemaDiffCompare({ params }) {
     if(params.params?.restore == 'true'){
       async function fetchData() {
         const response = await getToolContent(params.transId);
-        oldSchemaDiffData.current = response?.data;
+        oldSchemaDiffData.current = response;
+        if(response?.connectionInfo?.preferences){
+          setCompareOptions(response?.connectionInfo?.preferences?.compareParams);
+          setFilterOptions(response?.connectionInfo?.preferences?.filterParams);
+        }
       }
       fetchData();
     }
@@ -152,7 +156,7 @@ export function SchemaDiffCompare({ params }) {
 
   useEffect(()=>{
     if(oldSchemaDiffData.current){
-      _.each(oldSchemaDiffData.current,(d)=>{
+      _.each(oldSchemaDiffData.current.data,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceSid(d.selectedSourceSid);
         }else{
@@ -294,7 +298,7 @@ export function SchemaDiffCompare({ params }) {
           { diff_type: TYPE.SOURCE, selectedSourceSid: sourceData.sid, selectedSourceDid:sourceData.did, selectedSourceScid: sourceData.scid},
           { diff_type: TYPE.TARGET, selectedTargetSid:targetData.sid, selectedTargetDid:targetData.did, selectedTargetScid:targetData.scid },
         ];
-        saveToolData('schema_diff', null, params.transId, toolData);
+        saveToolData('schema_diff', {preferences:{compareParams, filterParams}}, params.transId, toolData);
       }
 
       setLoaderText('Comparing objects... (this may take a few minutes)...');
@@ -678,7 +682,7 @@ export function SchemaDiffCompare({ params }) {
 
   useEffect(()=>{
     if(oldSchemaDiffData.current){
-      _.each(oldSchemaDiffData.current,(d)=>{
+      _.each(oldSchemaDiffData.current?.data,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceDid(d.selectedSourceDid);
         }else{
@@ -702,7 +706,7 @@ export function SchemaDiffCompare({ params }) {
 
   useEffect(()=>{
     if(oldSchemaDiffData.current){
-      _.each(oldSchemaDiffData.current,(d)=>{
+      _.each(oldSchemaDiffData.current?.data,(d)=>{
         if(d.diff_type == TYPE.SOURCE){
           setSelectedSourceScid(d.selectedSourceScid);
         }else{
@@ -802,6 +806,7 @@ export function SchemaDiffCompare({ params }) {
               }}
               filterParams={getFilterParams()}
               compareParams={compareOptions}
+              filters={filterOptions}
             ></SchemaDiffButtonComponent>
           </Grid>
         </Grid>

@@ -64,7 +64,7 @@ const Root = styled('div')(({theme}) => ({
   },
 }));
 
-export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowIds, onServerSchemaChange, rows, compareParams, filterParams = [FILTER_NAME.DIFFERENT, FILTER_NAME.SOURCE_ONLY, FILTER_NAME.TARGET_ONLY] }) {
+export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowIds, onServerSchemaChange, rows, compareParams, filterParams, filters }) {
   const filterRef = useRef(null);
   const compareRef = useRef(null);
 
@@ -103,8 +103,13 @@ export function SchemaDiffButtonComponent({ sourceData, targetData, selectedRowI
       schemaDiffCtx?.preferences_schema_diff?.ignore_grants && prefCompareOptions.push(MENUS_COMPARE_CONSTANT.COMPARE_IGNORE_GRANTS);
       setSelectedCompare(prefCompareOptions);
     }
-  }, [schemaDiffCtx.preferences_schema_diff]);
+  }, [schemaDiffCtx.preferences_schema_diff, compareParams]);
 
+  useEffect(() => {
+    if (!_.isUndefined(filters) && !_.isEmpty(filters)) {
+      setSelectedFilters(filters);
+    }
+  }, [filters]);
 
   const selectFilterOption = (option) => {
     let newOptions = [];
