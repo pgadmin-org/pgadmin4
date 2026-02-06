@@ -2124,6 +2124,7 @@ class MViewNode(ViewNode, VacuumSettings):
         sql_data += self.get_rule_sql(vid, display_comments)
         sql_data += self.get_trigger_sql(vid, display_comments)
         sql_data += self.get_index_sql(did, vid, display_comments)
+        sql_data += self.get_columns_sql(did, vid)
         sql_data = sql_data.strip('\n')
 
         if not json_resp:
@@ -2268,6 +2269,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
         # merging formated result with main result again
         result.update(frmtd_reslt)
+        self.view_schema = result.get('schema')
 
         result['vacuum_table'] = self.parse_vacuum_data(
             self.conn, result, 'table')
