@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 49
+SCHEMA_VERSION = 50
 
 ##########################################################################
 #
@@ -256,6 +256,11 @@ class Server(db.Model):
     shared = db.Column(db.Boolean(), nullable=False)
     shared_username = db.Column(db.String(64), nullable=True)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
+    # AWS IAM Authentication
+    use_iam_auth = db.Column(db.Boolean(), nullable=False, default=False)
+    aws_profile = db.Column(db.String(64), nullable=True)
+    aws_region = db.Column(db.String(32), nullable=True)
+    aws_role_arn = db.Column(db.String(256), nullable=True)
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
     prepare_threshold = db.Column(db.Integer(), nullable=True)
