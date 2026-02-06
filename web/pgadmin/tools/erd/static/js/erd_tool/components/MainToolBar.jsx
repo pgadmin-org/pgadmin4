@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useCallback, useEffect, useState} from 'react';
+import _ from 'lodash';
 import { styled } from '@mui/material/styles';
 import { Box, useTheme } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
@@ -164,7 +165,13 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
         isDirtyRef.current = isDirty;
         setDisableButton('save', !isDirty);
         if((isDirty || fileName) && isSaveToolDataEnabled('ERD')){
-          setSaveERDData({data, fileName, isDirty, toolbarPrefs});
+          setSaveERDData((prev) => ({
+            ...prev,
+            data,
+            fileName,
+            isDirty,
+            ...(toolbarPrefs !== undefined && { toolbarPrefs }),
+          }));
         }
       }],
     ];
@@ -179,8 +186,10 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor, notati
   }, []);
 
   const [saveERDData, setSaveERDData] = useState(null);
-  useDelayDebounce(({data, fileName, isDirty, toolbarPrefs})=>{
-    saveToolData('ERD', {...connectionInfo,'open_file_name':fileName, 'is_editor_dirty': isDirty, 'preferences': toolbarPrefs}, connectionInfo.trans_id, data);
+  useDelayDebounce((saveData)=>{
+    if(saveData?.data !== undefined){
+      saveToolData('ERD', {...connectionInfo, 'open_file_name': saveData.fileName, 'is_editor_dirty': saveData.isDirty, 'preferences': saveData.toolbarPrefs}, connectionInfo.trans_id, saveData.data);
+    }
   }, saveERDData, 500);
 
   useEffect(()=>{
