@@ -67,6 +67,9 @@ _build_runtime() {
 }
 
 _create_python_env() {
+    # Force the current shell to not generate cache during build process
+    export PYTHONDONTWRITEBYTECODE=1
+
     echo "Creating the Python environment..."
     PATH=${PGADMIN_POSTGRES_DIR}/bin:${PATH}
     LD_LIBRARY_PATH=${PGADMIN_POSTGRES_DIR}/lib:${LD_LIBRARY_PATH}
@@ -333,6 +336,10 @@ _codesign_binaries() {
     if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
+
+    echo "Purging build-machine pollution (pycache) before signing..."
+    find "${BUNDLE_DIR}" -name "__pycache__" -type d -exec rm -rf {} +
+    find "${BUNDLE_DIR}" -name "*.pyc" -delete
 
     if [ -z "${DEVELOPER_ID}" ] ; then
         echo "Developer ID Application not found in codesign.conf" >&2

@@ -229,6 +229,9 @@ function startDesktopMode() {
   process.env.PGADMIN_INT_KEY = UUID;
   process.env.PGADMIN_SERVER_MODE = 'OFF';
 
+  // Prevent Python from writing .pyc files to the signed bundle
+  process.env.PYTHONDONTWRITEBYTECODE = '1';
+
   // Start Page URL
   baseUrl = `http://127.0.0.1:${serverPort}`;
   startPageUrl = `${baseUrl}/?key=${UUID}`;

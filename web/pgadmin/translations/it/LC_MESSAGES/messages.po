@@ -782,9 +782,6 @@ msgid ""
 "can provide any string with or without placeholders of their choice. A blank "
 "title will revert to the default."
 msgstr ""
-"I segnaposto supportati sono %FUNCTION%, %ARGS%, %SCHEMA% e %DATABASE%. Gli "
-"utenti possono specificare qualsiasi stringa con o senza segnaposto a loro "
-"scelta. Un titolo vuoto tornerà al valore predefinito."
 
 #: pgadmin/browser/register_browser_preferences.py:456
 #: pgadmin/browser/static/js/collection.js:57 pgadmin/browser/static/js/node.js:215
