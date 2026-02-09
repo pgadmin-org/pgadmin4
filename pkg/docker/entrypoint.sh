@@ -13,7 +13,7 @@ fi
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, for Docker's secrets feature)
 function file_env() {
-	local var="$1"
+    local var="$1"
 	local fileVar="${var}_FILE"
 	local def="${2:-}"
 	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
@@ -23,6 +23,10 @@ function file_env() {
 	local val="$def"
 	if [ "${!var:-}" ]; then
 		val="${!var}"
+	elif [ "${!fileVar:-}" ] && [ ! -r "${!fileVar}" ]; then
+		printf >&2 'error: %s is set to "%s" but the file does not exist or is not readable\n' \
+			"$fileVar" "${!fileVar}"
+		exit 1
 	elif [ "${!fileVar:-}" ]; then
 		val="$(< "${!fileVar}")"
 	fi
