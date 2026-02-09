@@ -177,6 +177,7 @@ export default class ERDTool extends React.Component {
     this.fmUtilsObj = new FileManagerUtils(this.apiObj, {modal: this.context});
     this.restore = props.params.restore == 'true';
     this.eventBus = new EventBus();
+    this.toolbarPrefs = null;
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSQLClick',
       'onImageClick', 'onSearchNode', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
@@ -408,6 +409,7 @@ export default class ERDTool extends React.Component {
 
   restoreToolContent = async (toolContent) => {
     if(toolContent){
+      this.toolbarPrefs = toolContent.connectionInfo?.preferences || {};
       if(toolContent?.modifiedExternally){
         toolContent = await this.fmUtilsObj.warnFileReload(toolContent?.fileName, toolContent?.data, '');
       }
@@ -420,7 +422,7 @@ export default class ERDTool extends React.Component {
         this.registerModelEvents();
         if(toolContent.fileName)this.setState({current_file: toolContent.fileName});
         this.setState({dirty: true});
-        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, toolContent.data);
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true, toolContent.data, null, this.toolbarPrefs);
       }
     }
   };
@@ -1086,6 +1088,7 @@ export default class ERDTool extends React.Component {
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
           notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange} connectionInfo={this.props.params}
+          toolbarPrefs={this.toolbarPrefs}
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
