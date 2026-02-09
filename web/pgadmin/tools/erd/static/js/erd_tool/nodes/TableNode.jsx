@@ -261,7 +261,7 @@ const StyledDiv = styled('div')(({theme})=>({
       ...theme.mixins.panelBorder.bottom,
       padding: '0.125rem 0.25rem',
       display: 'flex',
-      '&.TableNode-tableNameText': {
+      '& .TableNode-tableNameText': {
         fontWeight: 'bold',
         wordBreak: 'break-all',
         margin: 'auto 0',
