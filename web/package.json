@@ -37,7 +37,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-jest": "^29.9.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-unused-imports": "^4.2.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "exports-loader": "^5.0.0",
     "globals": "^17.3.0",
     "html-react-parser": "^5.2.15",
