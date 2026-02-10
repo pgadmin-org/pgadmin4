@@ -116,6 +116,8 @@ class PreferencesLocaltors:
     show_system_objects_pref_label_xpath = \
         "//label[contains(text(), 'Show system objects?')]"
 
+    tree_container_xpath = "//*[@id='treeContainer']"
+
     specified_preference_tree_node_xpath = \
         ("//*[@id='treeContainer']//div[contains(@class,'PgTree-nodeLabel')]"
          "[text()='{0}']")
