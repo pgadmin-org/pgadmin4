@@ -11,7 +11,11 @@ if [ "$(id -u)" = "0" ]; then
     # Reassign the pgadmin user to the desired UID/GID
     usermod -o -u "$PUID" -g "$PGID" pgadmin 2>/dev/null || true
 
+    # Compose su-exec command
+    SU_EXEC="su-exec $PUID:$PGID"
     echo "pgAdmin will run as UID=$PUID, GID=$PGID"
+else
+    SU_EXEC=""
 fi
 
 # Fixup the passwd file, in case we're on OpenShift
@@ -210,7 +214,7 @@ else
 fi
 
 if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-    exec su-exec "$PUID:$PGID" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
 else
-    exec su-exec "$PUID:$PGID" /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
 fi
