@@ -173,7 +173,7 @@ def register_numeric_typecasters(_cursor):
     # These original loader registration works on cursor level
 
     _cursor.adapters.register_loader(1700,
-                                       NumericLoader)
+                                     NumericLoader)
     _cursor.adapters.register_loader(700,
                                      FloatLoader)
     _cursor.adapters.register_loader(701,

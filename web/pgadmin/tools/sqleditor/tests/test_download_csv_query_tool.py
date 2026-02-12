@@ -29,7 +29,8 @@ class TestDownloadCSV(BaseTestGenerator):
         (
             'Download csv URL with valid query',
             dict(
-                sql='SELECT 1 as "A",2 as "B",3 as "C",2300::numeric as "Price"',
+                sql='SELECT 1 as "A",2 as "B",3 as "C",2300::numeric'
+                    ' as "Price"',
                 init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C","Price"',
