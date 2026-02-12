@@ -34,7 +34,8 @@ from ..abstract import BaseConnection
 from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
 from .typecast import register_global_typecasters,\
     register_string_typecasters, register_binary_typecasters, \
-    register_array_to_string_typecasters, ALL_JSON_TYPES
+    register_array_to_string_typecasters, ALL_JSON_TYPES, \
+    register_numeric_typecasters
 from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
@@ -903,6 +904,8 @@ WHERE db.datname = current_database()""")
                 cur.scroll(0, mode='absolute')
             except Exception as e:
                 print(str(e))
+            # Make sure numeric values will be fetched without quoting
+            register_numeric_typecasters(cur)
             results = cur.fetchmany(records)
             if not results:
                 yield gettext('The query executed did not return any data.')

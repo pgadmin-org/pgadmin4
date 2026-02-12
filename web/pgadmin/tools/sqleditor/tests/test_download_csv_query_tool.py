@@ -29,11 +29,11 @@ class TestDownloadCSV(BaseTestGenerator):
         (
             'Download csv URL with valid query',
             dict(
-                sql='SELECT 1 as "A",2 as "B",3 as "C"',
+                sql='SELECT 1 as "A",2 as "B",3 as "C",2300::numeric as "Price"',
                 init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
-                output_columns='"A","B","C"',
-                output_values='1,2,3',
+                output_columns='"A","B","C","Price"',
+                output_values='1,2,3,2300',
                 is_valid_tx=True,
                 is_valid=True,
                 download_as_txt=False,
@@ -205,8 +205,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 # when valid query
                 self.assertEqual(response.status_code, 200)
                 csv_data = response.data.decode()
-                self.assertTrue(self.output_columns in csv_data)
-                self.assertTrue(self.output_values in csv_data)
+                self.assertIn(self.output_columns, csv_data)
+                self.assertIn(self.output_values, csv_data)
                 self.assertIn('text/csv', headers['Content-Type'])
                 self.assertIn(self.filename, headers['Content-Disposition'])
             elif not self.is_valid and self.is_valid_tx:
@@ -214,8 +214,8 @@ class TestDownloadCSV(BaseTestGenerator):
                 self.assertEqual(response.status_code, 200)
                 response_data = json.loads(response.data.decode('utf-8'))
                 self.assertFalse(response_data['data']['status'])
-                self.assertTrue(
-                    'relation "this_table_does_not_exist" does not exist' in
+                self.assertIn(
+                    'relation "this_table_does_not_exist" does not exist',
                     response_data['data']['result']
                 )
             else:
