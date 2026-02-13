@@ -197,7 +197,7 @@ fi
 TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESSION_EXPIRATION_TIME * 60 * 60 * 24)')
 
 if [ "$(id -u)" = "0" ]; then
-    chown -R "$PUID:$PGID" /run/pgadmin /var/lib/pgadmin /pgadmin4/config_distro.py
+    chown -R "$PUID:$PGID" /run/pgadmin /var/lib/pgadmin /pgadmin4/config_distro.py /certs
 fi
 
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
