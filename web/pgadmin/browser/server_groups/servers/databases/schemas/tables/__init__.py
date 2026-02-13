@@ -797,6 +797,20 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if not status:
                     return internal_server_error(errormsg=type_cols)
 
+                # Mark columns as inherited from type (not table)
+                # so the UI allows editing defaults/constraints
+                # Also store original values for comparison later
+                for col in type_cols['rows']:
+                    if 'inheritedfrom' in col:
+                        col['inheritedfromtype'] = col['inheritedfrom']
+                        # Keep inheritedfrom for backward compatibility
+                        # but UI will check inheritedfromtype first
+
+                    # Store original values from the composite type
+                    # This allows backend to detect actual modifications
+                    col['original_defval'] = col.get('defval')
+                    col['original_attnotnull'] = col.get('attnotnull', False)
+
                 res.append({
                     'label': row['typname'],
                     'value': row['typname'],

@@ -364,9 +364,59 @@ def parse_format_columns(data, mode=None):
         # tables 'CREATE' mode
         final_columns = []
 
+        # Get list of columns in primary key constraint
+        pk_columns = set()
+        if 'primary_key' in data and len(data['primary_key']) > 0:
+            for pk in data['primary_key']:
+                if 'columns' in pk:
+                    for col in pk['columns']:
+                        if 'column' in col:
+                            pk_columns.add(col['column'])
+
         for c in columns:
+            # Include non-inherited columns
             if c.get('inheritedfrom', None) is None:
                 final_columns.append(c)
+            # Also include columns inherited from composite types (OF TYPE)
+            # that have modifications (WITH OPTIONS clause)
+            elif c.get('inheritedfromtype', None) is not None:
+                # Check if column has been modified or is in a constraint
+                has_modifications = False
+
+                # Check if column is in PRIMARY KEY constraint
+                # Note: We don't include the column for PRIMARY KEY because
+                # it's added as a separate table-level constraint
+                # Uncomment this if you want column-level PRIMARY KEY:
+                # if c.get('name') in pk_columns:
+                #     has_modifications = True
+
+                # Check if DEFAULT value was actually modified
+                # (different from type)
+                original_defval = c.get('original_defval')
+                current_defval = c.get('defval')
+                # Compare as strings, treating None and empty string
+                # as equivalent
+                orig_val = str(original_defval) \
+                    if original_defval is not None else ''
+                curr_val = str(current_defval) \
+                    if current_defval is not None else ''
+                if orig_val != curr_val:
+                    has_modifications = True
+
+                # Check if NOT NULL was actually modified
+                # (different from type)
+                original_attnotnull = c.get('original_attnotnull', False)
+                current_attnotnull = c.get('attnotnull', False)
+                if original_attnotnull != current_attnotnull:
+                    has_modifications = True
+
+                if has_modifications:
+                    # Mark this column to use WITH OPTIONS syntax in template
+                    # Skip identity columns as WITH OPTIONS
+                    # cannot be combined with GENERATED ALWAYS AS IDENTITY
+                    if c.get('colconstype') != 'i':
+                        c['has_with_options'] = True
+                    final_columns.append(c)
 
         # Now we have all lis of columns which we need
         # to include in our create definition, Let's format them
