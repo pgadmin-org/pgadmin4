@@ -13,7 +13,7 @@
 ###############################################################################
 
 Authlib==1.6.6
-azure-identity==1.25.1
+azure-identity==1.25.2
 azure-mgmt-rdbms==10.1.1
 azure-mgmt-resource==24.0.0
 azure-mgmt-subscription==3.1.1
