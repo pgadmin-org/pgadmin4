@@ -17,6 +17,7 @@ from psycopg.types.json import JsonDumper, _JsonDumper, _JsonLoader
 from psycopg._encodings import py_codecs as encodings
 from .encoding import get_encoding, configure_driver_encodings
 from psycopg.types.net import InetLoader
+from psycopg.types.numeric import NumericLoader, IntLoader, FloatLoader
 from psycopg.adapt import Loader
 from ipaddress import ip_address, ip_interface
 from psycopg._encodings import py_codecs as encodings
@@ -166,6 +167,19 @@ def register_string_typecasters(connection):
     for typ in (19, 18, 25, 1042, 1043, 0):
         if connection:
             connection.adapters.register_loader(typ, TextLoaderpgAdmin)
+
+
+def register_numeric_typecasters(_cursor):
+    # These original loader registration works on cursor level
+
+    _cursor.adapters.register_loader(1700,
+                                     NumericLoader)
+    _cursor.adapters.register_loader(700,
+                                     FloatLoader)
+    _cursor.adapters.register_loader(701,
+                                     FloatLoader)
+    _cursor.adapters.register_loader(20,
+                                     IntLoader)
 
 
 def register_binary_typecasters(connection):
