@@ -222,10 +222,77 @@ export class LayoutDocker {
   loadLayout(savedLayout) {
     try {
       this.layoutObj.loadLayout(JSON.parse(savedLayout));
+      this.addMissingDefaultPanels();
     } catch {
       /* Fallback to default */
       this.layoutObj.loadLayout(this.defaultLayout);
     }
+  }
+
+  addMissingDefaultPanels() {
+    // Flatten both layouts to get all tabs
+    const flattenLayout = (box, arr) => {
+      box.children.forEach((child) => {
+        if (child.children) {
+          flattenLayout(child, arr);
+        } else {
+          arr.push(...(child.tabs ?? []));
+        }
+      });
+    };
+
+    const flatDefault = [];
+    const flatCurrent = [];
+    flattenLayout(this.defaultLayout.dockbox, flatDefault);
+    flattenLayout(this.layoutObj.getLayout().dockbox, flatCurrent);
+
+    // Find tabs in default but not in saved layout
+    const missingTabs = _.differenceBy(flatDefault, flatCurrent, 'id');
+
+    // Only add non-closable tabs (closable tabs may have been intentionally removed)
+    const missingNonClosableTabs = missingTabs.filter(tab => !tab.internal?.closable);
+
+    // Add each missing tab next to a sibling from its original panel group
+    missingNonClosableTabs.forEach((tab) => {
+      const siblingId = this.findSiblingTab(tab.id, flatDefault, flatCurrent);
+      if (siblingId) {
+        this.openTab({
+          id: tab.id,
+          content: tab.content,
+          ...tab.internal
+        }, siblingId, 'middle');
+      } else if (this.resetToTabPanel) {
+        // Fallback: add to the reset panel location
+        this.openTab({
+          id: tab.id,
+          content: tab.content,
+          ...tab.internal
+        }, this.resetToTabPanel, 'middle');
+      }
+    });
+  }
+
+  findSiblingTab(tabId, flatDefault, flatCurrent) {
+    // Find which panel group this tab belongs to in the default layout
+    const findPanelTabs = (box, targetId) => {
+      for (const child of box.children) {
+        if (child.children) {
+          const result = findPanelTabs(child, targetId);
+          if (result) return result;
+        } else if (child.tabs) {
+          const hasTarget = child.tabs.some(t => t.id === targetId);
+          if (hasTarget) return child.tabs.map(t => t.id);
+        }
+      }
+      return null;
+    };
+
+    const siblingIds = findPanelTabs(this.defaultLayout.dockbox, tabId);
+    if (!siblingIds) return null;
+
+    // Find a sibling that exists in current layout
+    const currentIds = flatCurrent.map(t => t.id);
+    return siblingIds.find(id => id !== tabId && currentIds.includes(id));
   }
 
   saveLayout(l) {

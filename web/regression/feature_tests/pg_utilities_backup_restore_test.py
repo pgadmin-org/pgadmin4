@@ -258,10 +258,10 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         self.page.click_tab("Preferences")
 
         # Wait till the preference dialogue box is displayed by checking the
-        # visibility of Show System Object label
+        # visibility of the preference tree
         wait.until(EC.presence_of_element_located(
-            (By.XPATH, PreferencesLocaltors.
-             show_system_objects_pref_label_xpath))
+            (By.XPATH,
+             PreferencesLocaltors.tree_container_xpath))
         )
 
         binary_path = self.page.find_by_xpath(

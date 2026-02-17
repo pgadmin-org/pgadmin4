@@ -156,6 +156,12 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Search Objects...*          | Click to open the :ref:`Search Objects... <search_objects>` and start searching any kind of objects in a database.                        |
 +------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *AI Reports*                 | Click to access a submenu with AI-powered analysis options (requires :ref:`AI configuration <ai_tools>`):                                 |
+|                              |                                                                                                                                           |
+|                              | - *Security Report* - Generate an AI-powered security analysis for the selected server, database, or schema.                              |
+|                              | - *Performance Report* - Generate an AI-powered performance analysis for the selected server or database.                                 |
+|                              | - *Design Report* - Generate an AI-powered design review for the selected database or schema.                                             |
++------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Add named restore point*    | Click to open the :ref:`Add named restore point... <add_restore_point_dialog>` dialog to take a point-in-time snapshot of the current     |
 |                              | server state.                                                                                                                             |
 +------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+

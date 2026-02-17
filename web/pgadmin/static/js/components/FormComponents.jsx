@@ -918,6 +918,8 @@ InputSelectNonSearch.propTypes = {
 
 export function InputSelect({ref, cid, helpid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, onError, ...props}) {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
+  // Force options to reload on component remount (each mount gets a new ID)
+  const [mountId] = useState(() => Math.random());
   const theme = useTheme();
 
   useWindowSize();
@@ -954,12 +956,12 @@ export function InputSelect({ref, cid, helpid, onChange, options, readonly = fal
         }
       })
       .catch((err)=>{
-        let error_msg = err.response.data.errormsg;
+        let error_msg = err?.response?.data?.errormsg || err?.message || 'Unknown error';
         onError?.(error_msg);
         setFinalOptions([[], false]);
       });
     return () => umounted = true;
-  }, [optionsReloadBasis]);
+  }, [optionsReloadBasis, mountId]);
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter?.(finalOptions)) || finalOptions;
