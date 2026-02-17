@@ -20,7 +20,8 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
-  | `Issue #229 <https://github.com/pgadmin-org/pgadmin4/issues/229>`_ - Allow users to customize "OF TYPE" columns during table creation.
+  | `Issue #229 <https://github.com/pgadmin-org/pgadmin4/issues/229>`_   - Allow users to customize "OF TYPE" columns during table creation.
+  | `Issue #9641 <https://github.com/pgadmin-org/pgadmin4/issues/9641>`_ - Core LLM integration infrastructure to allow pgAdmin to connect to AI providers.
 
 Housekeeping
 ************
@@ -28,6 +29,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7578 <https://github.com/pgadmin-org/pgadmin4/issues/7578>`_ - Fixed an issue where the 'Quote strings only' configuration was ignored when downloading the result set.
   | `Issue #8988 <https://github.com/pgadmin-org/pgadmin4/issues/8988>`_ - Fixed an issue where tools settings changed by the users were not restored on application relaunch.
   | `Issue #9484 <https://github.com/pgadmin-org/pgadmin4/issues/9484>`_ - Fixed an issue where a long name in ERD table node was not breaking into multiple lines.
   | `Issue #9486 <https://github.com/pgadmin-org/pgadmin4/issues/9486>`_ - Fixed an issue where column comments were not displayed in the SQL tab for materialised views.
