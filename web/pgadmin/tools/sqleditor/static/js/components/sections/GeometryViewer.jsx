@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useEffect, useRef }  from 'react';
+import React, { useEffect, useRef, useMemo }  from 'react';
 import { styled } from '@mui/material/styles';
 import ReactDOMServer from 'react-dom/server';
 import _ from 'lodash';
@@ -48,6 +48,8 @@ const StyledBox = styled(Box)(({theme}) => ({
     }
   },
 }));
+
+const PK_COLUMN_NAMES = ['id', 'oid', 'ctid'];
 
 function parseEwkbData(rows, column) {
   let key = column.key;
@@ -189,6 +191,33 @@ function parseData(rows, columns, column) {
     'getPopupContent': getPopupContent,
     'infoList': infoList,
   };
+}
+
+// Find primary key column from columns array
+function findPkColumn(columns) {
+  return columns.find(c => PK_COLUMN_NAMES.includes(c.name));
+}
+
+// Get unique row identifier using PK column or first column
+function getRowIdentifier(row, pkColumn, columns) {
+  if (pkColumn?.key && row[pkColumn.key] !== undefined) {
+    return row[pkColumn.key];
+  }
+  const firstKey = columns[0]?.key;
+  return firstKey && row[firstKey] !== undefined ? row[firstKey] : JSON.stringify(row);
+}
+
+// Create Set of row identifiers
+function createIdentifierSet(rowData, pkColumn, columns) {
+  return new Set(rowData.map(row => getRowIdentifier(row, pkColumn, columns)));
+}
+
+// Match rows from previous selection to current rows
+function matchRowSelection(prevRowData, currentRows, pkColumn, columns) {
+  if (prevRowData.length === 0) return [];
+  
+  const prevIdSet = createIdentifierSet(prevRowData, pkColumn, columns);
+  return currentRows.filter(row => prevIdSet.has(getRowIdentifier(row, pkColumn, columns)));
 }
 
 function PopupTable({data}) {
@@ -438,19 +467,21 @@ export function GeometryViewer({rows, columns, column}) {
   const contentRef = React.useRef();
   const queryToolCtx = React.useContext(QueryToolContext);
 
-  // Track previous state to detect changes
+  // Track previous column state AND selected row data
   const prevStateRef = React.useRef({
     columnKey: null,
     columnNames: null,
-    selectedRowPKs: [],
+    selectedRowData: [],
   });
 
   const [mapKey, setMapKey] = React.useState(0);
-  const currentColumnKey = column?.key;
+  const currentColumnKey = useMemo(() => column?.key, [column]);
   const currentColumnNames = React.useMemo(
     () => columns.map(c => c.key).sort().join(','),
     [columns]
   );
+
+  const pkColumn = useMemo(() => findPkColumn(columns), [columns]);
 
   // Detect when to clear, filter, or re-render the map based on changes in geometry column, columns list, or rows
   useEffect(() => {
@@ -461,7 +492,7 @@ export function GeometryViewer({rows, columns, column}) {
       prevStateRef.current = {
         columnKey: null,
         columnNames: null,
-        selectedRowPKs: [],
+        selectedRowData: [],
       };
       return;
     }
@@ -472,7 +503,7 @@ export function GeometryViewer({rows, columns, column}) {
       prevStateRef.current = {
         columnKey: currentColumnKey,
         columnNames: currentColumnNames,
-        selectedRowPKs: [],
+        selectedRowData: [],
       };
       return;
     }
@@ -480,30 +511,31 @@ export function GeometryViewer({rows, columns, column}) {
     if (currentColumnKey === prevState.columnKey && 
         currentColumnNames === prevState.columnNames &&
         rows.length > 0) {
-      
-      // If user previously selected specific rows, filter them from new data
-      if (prevState.selectedRowPKs.length > 0 && prevState.selectedRowPKs.length < rows.length) {
-        const newSelectedPKs = rows
-          .filter(row => prevState.selectedRowPKs.includes(row.__temp_PK))
-          .map(row => row.__temp_PK);
-
-        prevStateRef.current.selectedRowPKs = newSelectedPKs.length > 0 ? newSelectedPKs : rows.map(r => r.__temp_PK);
+      let newSelectedRowData;
+      if (prevState.selectedRowData.length === 0) {
+        // No previous selection, show all rows
+        newSelectedRowData = rows;
+      } else if (prevState.selectedRowData.length < rows.length) {
+        const matched = matchRowSelection(prevState.selectedRowData, rows, pkColumn, columns);
+        newSelectedRowData = matched.length > 0 ? matched : rows;
       } else {
-        // All rows are displayed
-        const allPKs = rows.map(r => r.__temp_PK);
-        prevStateRef.current.selectedRowPKs = allPKs;
+        newSelectedRowData = rows;
       }
+      prevStateRef.current.selectedRowData = newSelectedRowData;
     }
-  }, [currentColumnKey, currentColumnNames, rows]);
+  }, [currentColumnKey, currentColumnNames, rows, pkColumn, columns]);
 
+  // Get rows to display based on selection
   const displayRows = React.useMemo(() => {
     if (!currentColumnKey || rows.length === 0) return [];
+    const prevState = prevStateRef.current;
+    if (currentColumnKey !== prevState.columnKey || currentColumnNames !== prevState.columnNames) {
+      return rows;
+    }
     
-    const selectedPKs = prevStateRef.current.selectedRowPKs;
-    return selectedPKs.length > 0 && selectedPKs.length < rows.length
-      ? rows.filter(row => selectedPKs.includes(row.__temp_PK))
-      : rows;
-  }, [rows, currentColumnKey]);
+    const selected = prevState.selectedRowData;
+    return selected.length > 0 && selected.length < rows.length ? selected : rows;
+  }, [rows, currentColumnKey, currentColumnNames]);
 
   // Parse geometry data only when needed
   const data = React.useMemo(() => {
@@ -537,7 +569,7 @@ export function GeometryViewer({rows, columns, column}) {
     };
   }, [queryToolCtx]);
 
-  // Dyanmic CRS is not supported. Use srid and mapKey as key and recreate the map on change
+  // Dynamic CRS is not supported. Use srid and mapKey as key and recreate the map on change
   return (
     <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${mapKey}`}>
       <MapContainer
