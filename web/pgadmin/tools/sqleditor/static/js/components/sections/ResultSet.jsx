@@ -876,6 +876,9 @@ export function ResultSet() {
   rsu.current.setLoaderText = setLoaderText;
 
   const isDataChangedRef = useRef(false);
+  const prevRowsRef = React.useRef(null);
+  const prevColumnsRef = React.useRef(null);
+
   useEffect(()=>{
     isDataChangedRef.current = Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
   }, [dataChangeStore]);
@@ -1460,30 +1463,61 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const getFilteredRowsForGeometryViewer = React.useCallback(() => {
+    let selRowsData = rows;
+    if(selectedRows.size != 0) {
+      selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+    } else if(selectedColumns.size > 0) {
+      let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
+      selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+    } else if(selectedRange.current) {
+      let [,, startRowIdx, endRowIdx] = getRangeIndexes();
+      selRowsData = rows.slice(startRowIdx, endRowIdx+1);
+    } else if(selectedCell.current?.[0]) {
+      selRowsData = [selectedCell.current[0]];
+    }
+    return selRowsData;
+  }, [rows, columns, selectedRows, selectedColumns]);
+
+  const openGeometryViewerTab = React.useCallback((column, rowsData) => {
+    layoutDocker.openTab({
+      id: PANELS.GEOMETRY,
+      title: gettext('Geometry Viewer'),
+      content: <GeometryViewer rows={rowsData} columns={columns} column={column} />,
+      closable: true,
+    }, PANELS.MESSAGES, 'after-tab', true);
+  }, [layoutDocker, columns]);
+
+  // Handle manual Geometry Viewer opening
   useEffect(()=>{
     const renderGeometries = (column)=>{
-      let selRowsData = rows;
-      if(selectedRows.size != 0) {
-        selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
-      } else if(selectedColumns.size > 0) {
-        let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
-        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
-      } else if(selectedRange.current) {
-        let [,, startRowIdx, endRowIdx] = getRangeIndexes();
-        selRowsData = rows.slice(startRowIdx, endRowIdx+1);
-      } else if(selectedCell.current?.[0]) {
-        selRowsData = [selectedCell.current[0]];
-      }
-      layoutDocker.openTab({
-        id: PANELS.GEOMETRY,
-        title:gettext('Geometry Viewer'),
-        content: <GeometryViewer rows={selRowsData} columns={columns} column={column} />,
-        closable: true,
-      }, PANELS.MESSAGES, 'after-tab', true);
+      const selRowsData = getFilteredRowsForGeometryViewer();
+      openGeometryViewerTab(column, selRowsData);
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
-  }, [rows, columns, selectedRows.size, selectedColumns.size]);
+  }, [getFilteredRowsForGeometryViewer, openGeometryViewerTab, eventBus]);
+
+  // Auto-update Geometry Viewer when rows/columns change
+  useEffect(()=>{
+    const rowsChanged = prevRowsRef.current !== rows;
+    const columnsChanged = prevColumnsRef.current !== columns;
+    const currentGeometryColumn = columns.find(col => col.cell === 'geometry' || col.cell === 'geography');
+
+    if((rowsChanged || columnsChanged) && layoutDocker.isTabOpen(PANELS.GEOMETRY)) {
+      
+      if(currentGeometryColumn) {
+        const selRowsData = getFilteredRowsForGeometryViewer();
+        openGeometryViewerTab(currentGeometryColumn, selRowsData);
+      } else {
+        // No geometry column
+        openGeometryViewerTab(null, []);
+      }
+    }
+
+    prevRowsRef.current = rows;
+    prevColumnsRef.current = columns;
+  }, [rows, columns, getFilteredRowsForGeometryViewer, openGeometryViewerTab, layoutDocker]);
 
   const triggerResetScroll = () => {
     // Reset the scroll position to previously saved location.
