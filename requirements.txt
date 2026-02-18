@@ -55,7 +55,8 @@ setuptools==82.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
-typer[all]==0.24.*
+typer[all]==0.23.*; python_version <= '3.9'
+typer[all]==0.24.*; python_version > '3.9'
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.6.*;  python_version > '3.9'
 user-agents==2.2.0
