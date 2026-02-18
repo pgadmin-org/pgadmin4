@@ -12,10 +12,10 @@
 # relevant packages.
 ###############################################################################
 
-Authlib==1.6.6
-azure-identity==1.25.1
+Authlib==1.6.8
+azure-identity==1.25.2
 azure-mgmt-rdbms==10.1.1
-azure-mgmt-resource==24.0.0
+azure-mgmt-resource==25.0.0
 azure-mgmt-subscription==3.1.1
 bcrypt==5.0.*
 boto3==1.42.*
@@ -51,11 +51,11 @@ pytz==2025.*
 # pinned for https://github.com/andfoy/pywinpty/issues/545
 pywinpty==2.0.*; sys_platform=="win32"
 qrcode[pil]==8.*
-setuptools==80.*
+setuptools==82.*
 SQLAlchemy==2.*
 sqlparse==0.*
 sshtunnel==0.*
-typer[all]==0.21.*
+typer[all]==0.23.*
 urllib3==1.26.*; python_version <= '3.9'
 urllib3==2.6.*;  python_version > '3.9'
 user-agents==2.2.0
