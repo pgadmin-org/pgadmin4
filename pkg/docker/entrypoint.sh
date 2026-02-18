@@ -23,6 +23,10 @@ function file_env() {
 	local val="$def"
 	if [ "${!var:-}" ]; then
 		val="${!var}"
+	elif [ "${!fileVar:-}" ] && [ ! -r "${!fileVar}" ]; then
+		printf >&2 'error: %s is set to "%s" but the file does not exist or is not readable\n' \
+			"$fileVar" "${!fileVar}"
+		exit 1
 	elif [ "${!fileVar:-}" ]; then
 		val="$(< "${!fileVar}")"
 	fi
