@@ -436,25 +436,110 @@ export function GeometryViewer({rows, columns, column}) {
 
   const mapRef = React.useRef();
   const contentRef = React.useRef();
-  const data = parseData(rows, columns, column);
   const queryToolCtx = React.useContext(QueryToolContext);
+
+  // Track previous state to detect changes
+  const prevStateRef = React.useRef({
+    columnKey: null,
+    columnNames: null,
+    selectedRowPKs: [],
+  });
+
+  const [mapKey, setMapKey] = React.useState(0);
+  const currentColumnKey = column?.key;
+  const currentColumnNames = React.useMemo(
+    () => columns.map(c => c.key).sort().join(','),
+    [columns]
+  );
+
+  // Detect when to clear, filter, or re-render the map based on changes in geometry column, columns list, or rows
+  useEffect(() => {
+    const prevState = prevStateRef.current;
+
+    if (!currentColumnKey) {
+      setMapKey(prev => prev + 1);
+      prevStateRef.current = {
+        columnKey: null,
+        columnNames: null,
+        selectedRowPKs: [],
+      };
+      return;
+    }
+
+    if (currentColumnKey !== prevState.columnKey || 
+        currentColumnNames !== prevState.columnNames) {
+      setMapKey(prev => prev + 1);
+      prevStateRef.current = {
+        columnKey: currentColumnKey,
+        columnNames: currentColumnNames,
+        selectedRowPKs: [],
+      };
+      return;
+    }
+
+    if (currentColumnKey === prevState.columnKey && 
+        currentColumnNames === prevState.columnNames &&
+        rows.length > 0) {
+      
+      // If user previously selected specific rows, filter them from new data
+      if (prevState.selectedRowPKs.length > 0 && prevState.selectedRowPKs.length < rows.length) {
+        const newSelectedPKs = rows
+          .filter(row => prevState.selectedRowPKs.includes(row.__temp_PK))
+          .map(row => row.__temp_PK);
+
+        prevStateRef.current.selectedRowPKs = newSelectedPKs.length > 0 ? newSelectedPKs : rows.map(r => r.__temp_PK);
+      } else {
+        // All rows are displayed
+        const allPKs = rows.map(r => r.__temp_PK);
+        prevStateRef.current.selectedRowPKs = allPKs;
+      }
+    }
+  }, [currentColumnKey, currentColumnNames, rows]);
+
+  const displayRows = React.useMemo(() => {
+    if (!currentColumnKey || rows.length === 0) return [];
+    
+    const selectedPKs = prevStateRef.current.selectedRowPKs;
+    return selectedPKs.length > 0 && selectedPKs.length < rows.length
+      ? rows.filter(row => selectedPKs.includes(row.__temp_PK))
+      : rows;
+  }, [rows, currentColumnKey]);
+
+  // Parse geometry data only when needed
+  const data = React.useMemo(() => {
+    if (!currentColumnKey) {
+      return {
+        'geoJSONs': [],
+        'selectedSRID': 0,
+        'getPopupContent': undefined,
+        'infoList': [gettext('Select a geometry/geography column to visualize.')],
+      };
+    }
+    return parseData(displayRows, columns, column);
+  }, [displayRows, columns, column, currentColumnKey]);
 
   useEffect(()=>{
     let timeoutId;
     const contentResizeObserver = new ResizeObserver(()=>{
       clearTimeout(timeoutId);
-      if(queryToolCtx.docker.isTabVisible(PANELS.GEOMETRY)) {
+      if(queryToolCtx?.docker?.isTabVisible(PANELS.GEOMETRY)) {
         timeoutId = setTimeout(function () {
           mapRef.current?.invalidateSize();
         }, 100);
       }
     });
-    contentResizeObserver.observe(contentRef.current);
-  }, []);
+    if(contentRef.current) {
+      contentResizeObserver.observe(contentRef.current);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+      contentResizeObserver.disconnect();
+    };
+  }, [queryToolCtx]);
 
-  // Dyanmic CRS is not supported. Use srid as key and recreate the map on change
+  // Dyanmic CRS is not supported. Use srid and mapKey as key and recreate the map on change
   return (
-    <StyledBox ref={contentRef} width="100%" height="100%" key={data.selectedSRID}>
+    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${mapKey}`}>
       <MapContainer
         crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
