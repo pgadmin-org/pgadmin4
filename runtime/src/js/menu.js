@@ -135,11 +135,11 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, configStore, callbacks) {
       { type: 'separator' },
       ...(isMac
         ? [
-            { role: 'hide' },
-            { role: 'hideOthers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-          ]
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+        ]
         : []),
       { role: 'quit' },
     ],
@@ -172,7 +172,7 @@ function buildMenu(pgadminMenus, pgAdminMainScreen, configStore, callbacks) {
         { type: 'separator' },
       ].concat(isLinux ? [] : [{ role: 'togglefullscreen' }]),
     },
-    { role: 'windowMenu' }
+    { role: 'windowMenu' },
   );
 
   template.push(pgadminMenus[pgadminMenus.length - 1]);

@@ -372,7 +372,7 @@ function launchPgAdminWindow() {
 
   setupMenu(pgAdminMainScreen, configStore, menuCallbacks);
   
-  setupDownloader()
+  setupDownloader();
   
   pgAdminMainScreen.loadURL(startPageUrl);
 
@@ -452,7 +452,7 @@ function notifyUpdateInstalled() {
         }, 10000);
       } else {
         // If main screen not ready, wait and send after it's created
-        app.once('browser-window-created', (event, window) => {
+        app.once('browser-window-created', (_event, _window) => {
           misc.writeServerLog('[Auto-Updater]: Update installed successfully.');
           setTimeout(() => {
             pgAdminMainScreen.webContents.send('notifyAppAutoUpdate', {update_installed: true});

@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2026, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import { autoUpdater, ipcMain } from 'electron';
 import { refreshMenus } from './menu.js';
 import * as misc from './misc.js';
@@ -76,7 +85,7 @@ function handleSendDataForAppUpdate({
       data.product_name
     ) {
       const ftpUrl = encodeURIComponent(
-        `${data.auto_update_url}/pgadmin4-${data.upgrade_version}-${process.arch}.zip`
+        `${data.auto_update_url}/pgadmin4-${data.upgrade_version}-${process.arch}.zip`,
       );
       let serverUrl = `${baseUrl}/misc/auto_update/${data.current_version_int}/${data.upgrade_version}/${data.upgrade_version_int}/${data.product_name}/${ftpUrl}/?key=${UUID}`;
 
@@ -122,7 +131,7 @@ export function setupAutoUpdater({
         baseUrl,
         UUID,
         forceQuitAndInstallUpdate,
-      })
+      }),
     );
   }
 }
