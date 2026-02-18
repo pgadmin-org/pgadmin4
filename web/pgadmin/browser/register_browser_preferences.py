@@ -445,7 +445,7 @@ def register_browser_preferences(self):
         'text', '%FUNCTION%(%ARGS%)',
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and'
+            'Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA%, and'
             ' %DATABASE%. Users can provide any string with or '
             'without placeholders of their choice. A blank title will revert '
             'to the default.'
