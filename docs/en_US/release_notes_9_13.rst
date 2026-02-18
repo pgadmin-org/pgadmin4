@@ -21,7 +21,7 @@ New features
 ************
 
   | `Issue #229 <https://github.com/pgadmin-org/pgadmin4/issues/229>`_   - Allow users to customize "OF TYPE" columns during table creation.
-  | `Issue #9641 <https://github.com/pgadmin-org/pgadmin4/issues/9641>`_ - Core LLM integration infrastructure to allow pgAdmin to connect to AI providers.
+  | `Issue #9641 <https://github.com/pgadmin-org/pgadmin4/issues/9641>`_ - Core LLM integration infrastructure, AI reports for security, schema, and performance, AI chat for the Query Tool, and AI Insights for EXPLAIN.
 
 Housekeeping
 ************
