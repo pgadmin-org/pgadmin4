@@ -125,9 +125,10 @@ export default class PrimaryKeySchema extends BaseUISchema {
           multiple: true,
           formatter: {
             fromRaw: (backendVal, allOptions)=>{
-              /* remove the column key and pass as array */
-              let optValues = (backendVal||[]).map((singleVal)=>singleVal.column);
-              return _.filter(allOptions, (opt)=>optValues.indexOf(opt.value)>-1);
+              /* remove the column key and pass as array preserving constraint column order */
+              return (backendVal||[]).map((singleVal)=>
+                _.find(allOptions, (opt)=>opt.value === singleVal.column)
+              ).filter(Boolean);
             },
             toRaw: (value)=>{
               /* take the array and convert to column key collection */

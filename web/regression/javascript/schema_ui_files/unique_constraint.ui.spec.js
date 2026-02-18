@@ -137,6 +137,53 @@ describe('UniqueConstraintSchema', ()=>{
 
   });
 
+  it('columns cell formatter', ()=>{
+    let cellFormatter = _.find(schemaObj.fields, (f)=>f.id=='columns').cell().controlProps.formatter;
+    expect(cellFormatter.fromRaw([{
+      column: 'user_id',
+    },{
+      column: 'client_order_id',
+    }])).toBe('user_id,client_order_id');
+
+    expect(cellFormatter.fromRaw([])).toBe('');
+  });
+
+  it('columns type formatter preserves constraint column order', ()=>{
+    let typeFormatter = _.find(schemaObj.fields, (f)=>f.id=='columns').type().controlProps.formatter;
+
+    /* allOptions are in table column position order (alphabetical here) */
+    let allOptions = [
+      {value: 'alpha', label: 'alpha'},
+      {value: 'beta', label: 'beta'},
+      {value: 'gamma', label: 'gamma'},
+    ];
+
+    /* backendVal comes from the constraint definition in a different order */
+    let backendVal = [{column: 'gamma'}, {column: 'alpha'}];
+
+    let result = typeFormatter.fromRaw(backendVal, allOptions);
+
+    /* result must preserve backendVal order, not allOptions order */
+    expect(result).toEqual([
+      {value: 'gamma', label: 'gamma'},
+      {value: 'alpha', label: 'alpha'},
+    ]);
+
+    /* empty and null values should be handled gracefully */
+    expect(typeFormatter.fromRaw([], allOptions)).toEqual([]);
+    expect(typeFormatter.fromRaw(null, allOptions)).toEqual([]);
+  });
+
+  it('columns type formatter toRaw', ()=>{
+    let typeFormatter = _.find(schemaObj.fields, (f)=>f.id=='columns').type().controlProps.formatter;
+    expect(typeFormatter.toRaw([{value: 'user_id'}, {value: 'client_order_id'}])).toEqual([
+      {column: 'user_id'},
+      {column: 'client_order_id'},
+    ]);
+    expect(typeFormatter.toRaw([])).toEqual([]);
+    expect(typeFormatter.toRaw(null)).toEqual([]);
+  });
+
   it('validate', ()=>{
     let state = {};
     let setError = jest.fn();
