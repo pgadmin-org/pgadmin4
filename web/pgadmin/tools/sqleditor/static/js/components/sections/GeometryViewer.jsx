@@ -511,17 +511,7 @@ export function GeometryViewer({rows, columns, column}) {
     if (currentColumnKey === prevState.columnKey && 
         currentColumnNames === prevState.columnNames &&
         rows.length > 0) {
-      let newSelectedRowData;
-      if (prevState.selectedRowData.length === 0) {
-        // No previous selection, show all rows
-        newSelectedRowData = rows;
-      } else if (prevState.selectedRowData.length < rows.length) {
-        const matched = matchRowSelection(prevState.selectedRowData, rows, pkColumn, columns);
-        newSelectedRowData = matched.length > 0 ? matched : rows;
-      } else {
-        newSelectedRowData = rows;
-      }
-      prevStateRef.current.selectedRowData = newSelectedRowData;
+      prevStateRef.current.selectedRowData = displayRows;
     }
   }, [currentColumnKey, currentColumnNames, rows, pkColumn, columns]);
 
@@ -532,10 +522,15 @@ export function GeometryViewer({rows, columns, column}) {
     if (currentColumnKey !== prevState.columnKey || currentColumnNames !== prevState.columnNames) {
       return rows;
     }
-    
-    const selected = prevState.selectedRowData;
-    return selected.length > 0 && selected.length < rows.length ? selected : rows;
-  }, [rows, currentColumnKey, currentColumnNames]);
+
+    const prevSelected = prevState.selectedRowData;
+    if (prevSelected.length === 0) return rows;
+    if (prevSelected.length < rows.length) {
+      const matched = matchRowSelection(prevSelected, rows, pkColumn, columns);
+      return matched.length > 0 ? matched : rows;
+    }
+    return rows;
+  }, [rows, currentColumnKey, currentColumnNames, pkColumn, columns]);
 
   // Parse geometry data only when needed
   const data = React.useMemo(() => {
