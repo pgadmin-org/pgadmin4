@@ -49,7 +49,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
-const PK_COLUMN_NAMES = ['id', 'oid', 'ctid'];
+const PK_COLUMN_NAMES = ['id', 'oid'];
 
 function parseEwkbData(rows, column) {
   let key = column.key;
@@ -503,7 +503,7 @@ export function GeometryViewer({rows, columns, column}) {
       prevStateRef.current = {
         columnKey: currentColumnKey,
         columnNames: currentColumnNames,
-        selectedRowData: [],
+        selectedRowData: rows,
       };
       return;
     }
