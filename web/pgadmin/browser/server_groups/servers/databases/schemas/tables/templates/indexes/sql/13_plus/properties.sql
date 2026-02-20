@@ -50,7 +50,7 @@ SELECT DISTINCT ON (cls.relname)
         CASE am.amname
             WHEN 'btree' THEN 90
             WHEN 'gist' THEN 90
-            WHEN 'hash' THEN 90
+            WHEN 'hash' THEN 75
             WHEN 'spgist' THEN 90
             ELSE NULL
         END
