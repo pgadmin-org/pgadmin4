@@ -73,7 +73,7 @@ export function NumberFormatter({row, column}) {
 }
 NumberFormatter.propTypes = FormatterPropTypes;
 
-export function BinaryFormatter({row, column}) {
+export function BinaryFormatter({row, column, ...props}) {
   let value = row[column.key];
   const eventBus = useContext(QueryToolEventsContext);
   const downloadBinaryData = usePreferences().getPreferences('misc', 'enable_binary_data_download').value;
@@ -82,7 +82,7 @@ export function BinaryFormatter({row, column}) {
       <span className='Formatters-disabledCell'>[{value}]</span>&nbsp;&nbsp;
       {downloadBinaryData && 
         <PgIconButton size="xs" title={gettext('Download binary data')} icon={<GetAppRoundedIcon />}
-          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, row.__temp_PK, column.pos)}/>}
+          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, props.rowIdx, column.pos)}/>}
     </StyledNullAndDefaultFormatter>
   );
 }
