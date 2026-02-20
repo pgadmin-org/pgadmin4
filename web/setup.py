@@ -165,6 +165,156 @@ class ManageUsers:
 
     @app.command()
     @update_sqlite_path
+    def load_users(input_file: str,
+                   sqlite_path: Optional[str] = None,
+                   json: Optional[bool] = False):
+        """Load users from a JSON file.
+
+        Expected JSON format:
+        {
+            "users": [
+                {
+                    "username": "user@example.com",
+                    "email": "user@example.com",
+                    "password": "password123",
+                    "role": "User",
+                    "active": true,
+                    "auth_source": "internal"
+                },
+                {
+                    "username": "ldap_user",
+                    "email": "ldap@example.com",
+                    "role": "Administrator",
+                    "active": true,
+                    "auth_source": "ldap"
+                }
+            ]
+        }
+        """
+        from urllib.parse import unquote
+
+        print('----------')
+        print('Loading users from:', input_file)
+        print('SQLite pgAdmin config:', config.SQLITE_PATH)
+        print('----------')
+
+        # Parse the input file path
+        try:
+            file_path = unquote(input_file)
+        except Exception as e:
+            print(str(e))
+            return _handle_error(str(e), True)
+
+        # Read and parse JSON file
+        try:
+            with open(file_path) as f:
+                data = jsonlib.load(f)
+        except jsonlib.decoder.JSONDecodeError as e:
+            return _handle_error(
+                gettext("Error parsing input file %s: %s" % (file_path, e)),
+                True)
+        except Exception as e:
+            return _handle_error(
+                gettext("Error reading input file %s: [%d] %s" %
+                        (file_path, e.errno, e.strerror)), True)
+
+        # Validate JSON structure
+        if 'users' not in data:
+            return _handle_error(
+                gettext("Invalid JSON format: 'users' key not found"), True)
+
+        users_data = data['users']
+        if not isinstance(users_data, list):
+            return _handle_error(
+                gettext("Invalid JSON format: 'users' must be a list"), True)
+
+        created_count = 0
+        skipped_count = 0
+        error_count = 0
+
+        app = create_app(config.APP_NAME + '-cli')
+        with app.test_request_context():
+            for user_entry in users_data:
+                try:
+                    # Validate required fields
+                    if 'username' not in user_entry and 'email' not in user_entry:
+                        print(f"Skipping user: missing 'username' or 'email'")
+                        error_count += 1
+                        continue
+
+                    # Determine auth_source (default to internal)
+                    auth_source = user_entry.get('auth_source', INTERNAL)
+
+                    # Build user data dict
+                    user_data = {
+                        'username': user_entry.get('username',
+                                                   user_entry.get('email')),
+                        'email': user_entry.get('email'),
+                        'role': user_entry.get('role', 'User'),
+                        'active': user_entry.get('active', True),
+                        'auth_source': auth_source
+                    }
+
+                    # For internal auth, password is required
+                    if auth_source == INTERNAL:
+                        if 'password' not in user_entry:
+                            print(f"Skipping user '{user_data['username']}': "
+                                  f"password required for internal auth")
+                            error_count += 1
+                            continue
+                        user_data['newPassword'] = user_entry['password']
+                        user_data['confirmPassword'] = user_entry['password']
+
+                    # Check if user already exists
+                    uid = ManageUsers.get_user(
+                        username=user_data['username'],
+                        auth_source=auth_source)
+                    if uid:
+                        print(f"Skipping user '{user_data['username']}': "
+                              f"already exists")
+                        skipped_count += 1
+                        continue
+
+                    # Get role ID
+                    rid = ManageRoles.get_role(user_data['role'])
+                    if rid is None:
+                        print(f"Skipping user '{user_data['username']}': "
+                              f"role '{user_data['role']}' does not exist")
+                        error_count += 1
+                        continue
+
+                    user_data['role'] = rid
+
+                    # Validate password length for internal users
+                    if auth_source == INTERNAL:
+                        if len(user_data['newPassword']) < 6:
+                            print(f"Skipping user '{user_data['username']}': "
+                                  f"password must be at least 6 characters")
+                            error_count += 1
+                            continue
+
+                    # Create the user
+                    status, msg = create_user(user_data)
+                    if status:
+                        print(f"Created user: {user_data['username']}")
+                        created_count += 1
+                    else:
+                        print(f"Error creating user '{user_data['username']}'"
+                              f": {msg}")
+                        error_count += 1
+
+                except Exception as e:
+                    print(f"Error processing user entry: {str(e)}")
+                    error_count += 1
+
+        print('----------')
+        print(f"Users created: {created_count}")
+        print(f"Users skipped (already exist): {skipped_count}")
+        print(f"Errors: {error_count}")
+        print('----------')
+
+    @app.command()
+    @update_sqlite_path
     def add_user(email: str, password: str,
                  admin: Annotated[Optional[bool],
                                   typer.Option("--admin")] = False,
