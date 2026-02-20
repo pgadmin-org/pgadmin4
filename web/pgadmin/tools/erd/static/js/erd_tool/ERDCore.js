@@ -400,6 +400,7 @@ export default class ERDCore {
 
     const addLink = (theFk)=>{
       if(!theFk) return;
+
       let newData = {
         local_table_uid: tableNode.getID(),
         local_column_attnum: undefined,
@@ -590,7 +591,7 @@ export default class ERDCore {
   }
 
   cloneTableData(tableData, name) {
-    const SKIP_CLONE_KEYS = ['foreign_key'];
+    const SKIP_CLONE_KEYS = ['oid', 'foreign_key', 'original_foreign_keys'];
 
     if(!tableData) {
       return tableData;
@@ -635,43 +636,95 @@ export default class ERDCore {
 
   deserializeData(data){
     let oidUidMap = {};
+    let newNodes = [];
 
     /* Add the nodes */
     data.forEach((nodeData)=>{
-      let newNode = this.addNode(TableSchema.getErdSupportedData(nodeData));
+      const newNode = this.addNode(TableSchema.getErdSupportedData(nodeData));
       oidUidMap[nodeData.oid] = newNode.getID();
+      newNodes.push(newNode);
     });
 
-    /* Lets use the oidUidMap for creating the links */
-    let tableNodesDict = this.getModel().getNodesDict();
+    // When generating for schema, there may be a reference to another schema table
+    // We'll remove the FK completely in such cases
+    newNodes.forEach((node) => {
+      const nodeData = node.getData();
+      nodeData.original_foreign_keys = nodeData.original_foreign_keys?.filter(fk => 
+        fk.columns?.[0]?.references && oidUidMap[fk.columns[0].references]
+      );
+    });
+
+    this.addLinksBetweenNodes(oidUidMap);
+  }
+
+  addNodeWithLinks(nodeData, position=[50,50], metadata={}){
+    const tableNodesDict = this.getModel().getNodesDict();
+    const oidExists = Object.values(tableNodesDict).some(node => node.getData().oid === nodeData.oid);
+
+    if (oidExists) {
+      delete nodeData.oid;
+    }
+
+    let oidUidMap = {};
+    const newNode = this.addNode(nodeData, position, metadata);
+    
+    if (!oidExists) {
+      oidUidMap[nodeData.oid] = newNode.getID();
+    }
+
     _.forIn(tableNodesDict, (node, uid)=>{
-      let nodeData = node.getData();
-      if(nodeData.foreign_key) {
-        nodeData.foreign_key = nodeData.foreign_key.filter((theFk)=>{
-          delete theFk.oid;
-          theFk = theFk.columns[0];
-          theFk.references = oidUidMap[theFk.references];
-          let newData = {
-            local_table_uid: uid,
-            local_column_attnum: undefined,
-            referenced_table_uid: theFk.references,
-            referenced_column_attnum: undefined,
-          };
-          let sourceNode = tableNodesDict[newData.referenced_table_uid];
-          let targetNode = tableNodesDict[newData.local_table_uid];
-          // When generating for schema, there may be a reference to another schema table
-          // We'll remove the FK completely in such cases.
-          if(!sourceNode || !targetNode) {
-            return false;
-          }
+      const oid = node.getData().oid;
+      if (!oid) return;
 
-          newData.local_column_attnum = _.find(targetNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
-          newData.referenced_column_attnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
+      oidUidMap[oid] = uid;
+    });
 
-          this.addLink(newData, 'onetomany');
-          return true;
-        });
-      }
+    this.addLinksBetweenNodes(oidUidMap, [newNode.getID()]);
+    return newNode;
+  }
+
+  addLinksBetweenNodes(oidUidMap, newNodesUids = null) {
+    const tableNodesDict = this.getModel().getNodesDict();
+
+    _.forIn(tableNodesDict, (node, uid)=>{
+      const nodeData = node.getData();
+
+      nodeData.original_foreign_keys?.forEach((theFk)=>{
+        const theFkColumn = theFk.columns[0];
+        let referencesUid = oidUidMap[theFkColumn.references];
+
+        /* Incomplete reference to missing table */
+        if (!referencesUid) {
+          return;
+        }
+
+        /* Avoid creating duplicate links */
+        if (
+          newNodesUids 
+          && !newNodesUids.includes(uid) 
+          && !newNodesUids.includes(referencesUid)
+        ) {
+          return;
+        }
+
+        const newData = {
+          local_table_uid: uid,
+          local_column_attnum: _.find(
+            tableNodesDict[uid].getColumns(), 
+            (col) => col.name == theFkColumn.local_column
+          ).attnum,
+          referenced_table_uid: referencesUid,
+          referenced_column_attnum: _.find(
+            tableNodesDict[referencesUid].getColumns(), 
+            (col) => col.name == theFkColumn.referenced
+          ).attnum,
+        };
+
+        const newForeignKey = _.cloneDeep(theFk);
+        newForeignKey.columns[0].references = referencesUid;
+        nodeData.foreign_key.push(newForeignKey);
+        this.addLink(newData, 'onetomany');
+      });
     });
   }
 

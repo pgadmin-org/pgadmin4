@@ -10,6 +10,7 @@ import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import TEST_TABLES_DATA from './test_tables';
 import { FakeLink, FakeNode } from './fake_item';
 import { PortModelAlignment } from '@projectstorm/react-diagrams';
+import TableSchema from 'pgadmin.tables.js/table.ui';
 
 describe('ERDCore', ()=>{
   let eleFactory = {
@@ -247,7 +248,7 @@ describe('ERDCore', ()=>{
             /*This is intentional (SonarQube)*/
           },
           getData: function() {
-            return table;
+            return TableSchema.getErdSupportedData(table);
           }
         };
       });

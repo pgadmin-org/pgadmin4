@@ -416,7 +416,7 @@ export default class TableSchema extends BaseUISchema {
   static getErdSupportedData(data) {
     let newData = {...data};
     const SUPPORTED_KEYS = [
-      'name', 'schema', 'description', 'rlspolicy', 'forcerlspolicy', 'fillfactor',
+      'oid', 'name', 'schema', 'description', 'rlspolicy', 'forcerlspolicy', 'fillfactor',
       'toast_tuple_target', 'parallel_workers', 'relhasoids', 'relpersistence',
       'columns', 'primary_key', 'foreign_key', 'unique_constraint',
     ];
@@ -428,14 +428,18 @@ export default class TableSchema extends BaseUISchema {
       return c;
     });
 
-    /* Make autoindex as true if there is coveringindex since ERD works in create mode */
-    newData.foreign_key = (newData.foreign_key||[]).map((fk)=>{
+    newData.original_foreign_keys = (newData.foreign_key||[]).map((fk)=>{
+      /* Make autoindex as true if there is coveringindex since ERD works in create mode */
       fk.autoindex = false;
+
       if(fk.coveringindex) {
         fk.autoindex = true;
       }
+
       return fk;
     });
+
+    newData.foreign_key = [];
     return newData;
   }
 
