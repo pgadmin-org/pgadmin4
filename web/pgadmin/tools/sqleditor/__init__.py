@@ -2200,9 +2200,14 @@ def download_binary_data(trans_id):
     (status, error_msg, conn, trans_obj,
      session_obj) = check_transaction_status(trans_id)
 
-    if error_msg:
-        return internal_server_error(
-            errormsg=error_msg
+    if isinstance(error_msg, Response):
+        return error_msg
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(
+            success=0,
+            errormsg=error_msg,
+            info='DATAGRID_TRANSACTION_REQUIRED',
+            status=404
         )
 
     if not status or conn is None or trans_obj is None or \
@@ -2250,7 +2255,7 @@ def download_binary_data(trans_id):
             errormsg='Invalid row/column position.'
         )
 
-    return send_file( 
+    return send_file(
         BytesIO(binary_data),
         as_attachment=True,
         download_name='binary_data',

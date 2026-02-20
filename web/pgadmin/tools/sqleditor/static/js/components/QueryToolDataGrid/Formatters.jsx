@@ -17,6 +17,7 @@ import GetAppRoundedIcon from '@mui/icons-material/GetAppRounded';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import { QueryToolEventsContext } from '../QueryToolComponent';
+import { DataGridExtrasContext } from './index';
 
 const StyledNullAndDefaultFormatter = styled(NullAndDefaultFormatter)(({theme}) => ({
   '& .Formatters-disabledCell': {
@@ -73,16 +74,24 @@ export function NumberFormatter({row, column}) {
 }
 NumberFormatter.propTypes = FormatterPropTypes;
 
-export function BinaryFormatter({row, column, ...props}) {
+export function BinaryFormatter({row, column}) {
   let value = row[column.key];
   const eventBus = useContext(QueryToolEventsContext);
+  const dataGridExtras = useContext(DataGridExtrasContext);
   const downloadBinaryData = usePreferences().getPreferences('misc', 'enable_binary_data_download').value;
+
+  // Use clientPK as the absolute row position
+  // rowKeyGetter returns the clientPK value which is a sequential counter (0, 1, 2, ...)
+  // that persists across pagination and represents the 0-based absolute position in the result set
+  const absoluteRowPos = parseInt(dataGridExtras?.rowKeyGetter?.(row) ?? 0);
+  console.log(absoluteRowPos)
+
   return (
     <StyledNullAndDefaultFormatter value={value} column={column}>
       <span className='Formatters-disabledCell'>[{value}]</span>&nbsp;&nbsp;
-      {downloadBinaryData && 
+      {downloadBinaryData &&
         <PgIconButton size="xs" title={gettext('Download binary data')} icon={<GetAppRoundedIcon />}
-          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, props.rowIdx, column.pos)}/>}
+          onClick={()=>eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, absoluteRowPos, column.pos)}/>}
     </StyledNullAndDefaultFormatter>
   );
 }
