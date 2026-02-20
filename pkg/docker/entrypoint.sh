@@ -41,7 +41,7 @@ safe_chown() {
     current_gid=$(stat -c '%g' "$target")
 
     # Skip if already owned correctly
-    if [ "$current_uid" = "$1" ] && [ "$current_gid" = "$2" ]; then
+    if [ "$current_uid" = "$2" ] && [ "$current_gid" = "$3" ]; then
         return 0
     fi
 
