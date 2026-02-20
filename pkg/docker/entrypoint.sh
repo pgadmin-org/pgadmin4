@@ -27,6 +27,27 @@ if ! whoami > /dev/null 2>&1; then
   fi
 fi
 
+# Helper: chown a path only if it exists and isn't already owned correctly
+safe_chown() {
+    local target="$1"
+    local owner="$2:$3"  # UID:GID
+
+    # Skip if path doesn't exist
+    [ -e "$target" ] || return 0
+
+    # Get current ownership
+    local current_uid current_gid
+    current_uid=$(stat -c '%u' "$target")
+    current_gid=$(stat -c '%g' "$target")
+
+    # Skip if already owned correctly
+    if [ "$current_uid" = "$1" ] && [ "$current_gid" = "$2" ]; then
+        return 0
+    fi
+
+    chown -R "$owner" "$target"
+}
+
 # usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, for Docker's secrets feature)
@@ -197,7 +218,9 @@ fi
 TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESSION_EXPIRATION_TIME * 60 * 60 * 24)')
 
 if [ "$(id -u)" = "0" ]; then
-    chown -R "$PUID:$PGID" /run/pgadmin /var/lib/pgadmin /pgadmin4/config_distro.py /certs
+    for path in /run/pgadmin /var/lib/pgadmin "$CONFIG_DISTRO_FILE_PATH" /certs; do
+        safe_chown "$path" "$PUID" "$PGID"
+    done
 fi
 
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
