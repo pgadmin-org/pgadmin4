@@ -323,6 +323,27 @@ function TheMap({data}) {
     infoControl.current.onAdd = function () {
       let ele = Leaflet.DomUtil.create('div', 'geometry-viewer-info-control');
       ele.innerHTML = data.infoList.join('<br />');
+      // Style the parent control container after it's added to the map
+      setTimeout(() => {
+        let controlContainer = ele.closest('.leaflet-control');
+        if(controlContainer) {
+          controlContainer.style.cssText = `
+            position: fixed;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            max-width: 80%;
+            text-align: center;
+            white-space: normal;
+            word-wrap: break-word;
+            background: none;
+            box-shadow: none;
+            border: none;
+            font-size: 16px;
+          `;
+        }
+      }, 0);
       return ele;
     };
     if(data.infoList.length > 0) {
@@ -535,11 +556,14 @@ export function GeometryViewer({rows, columns, column}) {
   // Parse geometry data only when needed
   const data = React.useMemo(() => {
     if (!currentColumnKey) {
+      const hasGeometryColumn = columns.some(c => c.cell === 'geometry' || c.cell === 'geography');
       return {
         'geoJSONs': [],
         'selectedSRID': 0,
         'getPopupContent': undefined,
-        'infoList': [gettext('Select a geometry/geography column to visualize.')],
+        'infoList': hasGeometryColumn
+          ? [gettext('Query complete. Use the Geometry Viewer button in the Data Output tab to visualize results.')]
+          : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
       };
     }
     return parseData(displayRows, columns, column);

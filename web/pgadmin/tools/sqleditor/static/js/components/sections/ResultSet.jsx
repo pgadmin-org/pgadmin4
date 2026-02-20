@@ -878,6 +878,11 @@ export function ResultSet() {
   const isDataChangedRef = useRef(false);
   const prevRowsRef = React.useRef(null);
   const prevColumnsRef = React.useRef(null);
+  const gvClearedForColumnsRef = useRef(null);
+  const lastGvSelectionRef = useRef({
+    type: 'all', // 'all' | 'rows' | 'columns'
+    selectedColumns: new Set(),
+  });
 
   useEffect(()=>{
     isDataChangedRef.current = Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
@@ -1463,13 +1468,19 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
-  const getFilteredRowsForGeometryViewer = React.useCallback(() => {
+  const getFilteredRowsForGeometryViewer = React.useCallback((useLastGvSelection = false) => {
     let selRowsData = rows;
     if(selectedRows.size != 0) {
       selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
     } else if(selectedColumns.size > 0) {
       let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
       selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+    } else if(useLastGvSelection && lastGvSelectionRef.current.type === 'columns' 
+            && lastGvSelectionRef.current.selectedColumns.size > 0) {
+      let selectedCols = _.filter(columns, (_c, i)=>lastGvSelectionRef.current.selectedColumns.has(i+1));
+      if(selectedCols.length > 0) {
+        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+      }
     } else if(selectedRange.current) {
       let [,, startRowIdx, endRowIdx] = getRangeIndexes();
       selRowsData = rows.slice(startRowIdx, endRowIdx+1);
@@ -1491,12 +1502,20 @@ export function ResultSet() {
   // Handle manual Geometry Viewer opening
   useEffect(()=>{
     const renderGeometries = (column)=>{
+      gvClearedForColumnsRef.current = null;
+      if(selectedRows.size > 0) {
+        lastGvSelectionRef.current = { type: 'rows', selectedColumns: new Set() };
+      } else if(selectedColumns.size > 0) {
+        lastGvSelectionRef.current = { type: 'columns', selectedColumns: new Set(selectedColumns) };
+      } else {
+        lastGvSelectionRef.current = { type: 'all', selectedColumns: new Set() };
+      }
       const selRowsData = getFilteredRowsForGeometryViewer();
       openGeometryViewerTab(column, selRowsData);
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
-  }, [getFilteredRowsForGeometryViewer, openGeometryViewerTab, eventBus]);
+  }, [getFilteredRowsForGeometryViewer, openGeometryViewerTab, eventBus, selectedRows, selectedColumns]);
 
   // Auto-update Geometry Viewer when rows/columns change
   useEffect(()=>{
@@ -1506,8 +1525,19 @@ export function ResultSet() {
 
     if((rowsChanged || columnsChanged) && layoutDocker.isTabOpen(PANELS.GEOMETRY)) {
       
-      if(currentGeometryColumn) {
-        const selRowsData = getFilteredRowsForGeometryViewer();
+      const prevColumnNames = prevColumnsRef.current?.map(c => c.key).sort().join(',') ?? '';
+      const currColumnNames = columns.map(c => c.key).sort().join(',');
+      const columnsChanged = prevColumnNames !== currColumnNames;
+
+      if(columnsChanged && currentGeometryColumn) {
+        gvClearedForColumnsRef.current = currColumnNames;
+        lastGvSelectionRef.current = { type: 'all', selectedColumns: new Set() };
+        openGeometryViewerTab(null, []);
+      } else if(gvClearedForColumnsRef.current === currColumnNames) {
+        openGeometryViewerTab(null, []);
+      } else if(currentGeometryColumn && rowsChanged) {
+        const useColSelection = lastGvSelectionRef.current.type === 'columns';
+        const selRowsData = getFilteredRowsForGeometryViewer(useColSelection);
         openGeometryViewerTab(currentGeometryColumn, selRowsData);
       } else {
         // No geometry column
@@ -1517,7 +1547,7 @@ export function ResultSet() {
 
     prevRowsRef.current = rows;
     prevColumnsRef.current = columns;
-  }, [rows, columns, getFilteredRowsForGeometryViewer, openGeometryViewerTab, layoutDocker]);
+  }, [rows, columns, getFilteredRowsForGeometryViewer, layoutDocker]);
 
   const triggerResetScroll = () => {
     // Reset the scroll position to previously saved location.
