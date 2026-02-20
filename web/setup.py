@@ -233,11 +233,12 @@ class ManageUsers:
         error_count = 0
 
         app = create_app(config.APP_NAME + '-cli')
-        with app.test_request_context():
+        with (app.test_request_context()):
             for user_entry in users_data:
                 try:
                     # Validate required fields
-                    if 'username' not in user_entry and 'email' not in user_entry:
+                    if 'username' not in user_entry and\
+                            'email' not in user_entry:
                         print(f"Skipping user: missing 'username' or 'email'")
                         error_count += 1
                         continue
