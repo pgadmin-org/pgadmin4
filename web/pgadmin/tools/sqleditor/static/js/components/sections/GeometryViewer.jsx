@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useEffect, useRef }  from 'react';
+import React, { useEffect, useRef, useMemo }  from 'react';
 import { styled } from '@mui/material/styles';
 import ReactDOMServer from 'react-dom/server';
 import _ from 'lodash';
@@ -48,6 +48,8 @@ const StyledBox = styled(Box)(({theme}) => ({
     }
   },
 }));
+
+const PK_COLUMN_NAMES = ['id', 'oid'];
 
 function parseEwkbData(rows, column) {
   let key = column.key;
@@ -191,6 +193,33 @@ function parseData(rows, columns, column) {
   };
 }
 
+// Find primary key column from columns array
+function findPkColumn(columns) {
+  return columns.find(c => PK_COLUMN_NAMES.includes(c.name));
+}
+
+// Get unique row identifier using PK column or first column
+function getRowIdentifier(row, pkColumn, columns) {
+  if (pkColumn?.key && row[pkColumn.key] !== undefined) {
+    return row[pkColumn.key];
+  }
+  const firstKey = columns[0]?.key;
+  return firstKey && row[firstKey] !== undefined ? row[firstKey] : JSON.stringify(row);
+}
+
+// Create Set of row identifiers
+function createIdentifierSet(rowData, pkColumn, columns) {
+  return new Set(rowData.map(row => getRowIdentifier(row, pkColumn, columns)));
+}
+
+// Match rows from previous selection to current rows
+function matchRowSelection(prevRowData, currentRows, pkColumn, columns) {
+  if (prevRowData.length === 0) return [];
+  
+  const prevIdSet = createIdentifierSet(prevRowData, pkColumn, columns);
+  return currentRows.filter(row => prevIdSet.has(getRowIdentifier(row, pkColumn, columns)));
+}
+
 function PopupTable({data}) {
 
   return (
@@ -294,6 +323,27 @@ function TheMap({data}) {
     infoControl.current.onAdd = function () {
       let ele = Leaflet.DomUtil.create('div', 'geometry-viewer-info-control');
       ele.innerHTML = data.infoList.join('<br />');
+      // Style the parent control container after it's added to the map
+      setTimeout(() => {
+        let controlContainer = ele.closest('.leaflet-control');
+        if(controlContainer) {
+          controlContainer.style.cssText = `
+            position: fixed;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+            max-width: 80%;
+            text-align: center;
+            white-space: normal;
+            word-wrap: break-word;
+            background: none;
+            box-shadow: none;
+            border: none;
+            font-size: 16px;
+          `;
+        }
+      }, 0);
       return ele;
     };
     if(data.infoList.length > 0) {
@@ -436,25 +486,111 @@ export function GeometryViewer({rows, columns, column}) {
 
   const mapRef = React.useRef();
   const contentRef = React.useRef();
-  const data = parseData(rows, columns, column);
   const queryToolCtx = React.useContext(QueryToolContext);
+
+  // Track previous column state AND selected row data
+  const prevStateRef = React.useRef({
+    columnKey: null,
+    columnNames: null,
+    selectedRowData: [],
+  });
+
+  const [mapKey, setMapKey] = React.useState(0);
+  const currentColumnKey = useMemo(() => column?.key, [column]);
+  const currentColumnNames = React.useMemo(
+    () => columns.map(c => c.key).sort().join(','),
+    [columns]
+  );
+
+  const pkColumn = useMemo(() => findPkColumn(columns), [columns]);
+
+  // Detect when to clear, filter, or re-render the map based on changes in geometry column, columns list, or rows
+  useEffect(() => {
+    const prevState = prevStateRef.current;
+
+    if (!currentColumnKey) {
+      setMapKey(prev => prev + 1);
+      prevStateRef.current = {
+        columnKey: null,
+        columnNames: null,
+        selectedRowData: [],
+      };
+      return;
+    }
+
+    if (currentColumnKey !== prevState.columnKey || 
+        currentColumnNames !== prevState.columnNames) {
+      setMapKey(prev => prev + 1);
+      prevStateRef.current = {
+        columnKey: currentColumnKey,
+        columnNames: currentColumnNames,
+        selectedRowData: rows,
+      };
+      return;
+    }
+
+    if (currentColumnKey === prevState.columnKey && 
+        currentColumnNames === prevState.columnNames &&
+        rows.length > 0) {
+      prevStateRef.current.selectedRowData = displayRows;
+    }
+  }, [currentColumnKey, currentColumnNames, rows, pkColumn, columns]);
+
+  // Get rows to display based on selection
+  const displayRows = React.useMemo(() => {
+    if (!currentColumnKey || rows.length === 0) return [];
+    const prevState = prevStateRef.current;
+    if (currentColumnKey !== prevState.columnKey || currentColumnNames !== prevState.columnNames) {
+      return rows;
+    }
+
+    const prevSelected = prevState.selectedRowData;
+    if (prevSelected.length === 0) return rows;
+    if (prevSelected.length < rows.length) {
+      const matched = matchRowSelection(prevSelected, rows, pkColumn, columns);
+      return matched.length > 0 ? matched : rows;
+    }
+    return rows;
+  }, [rows, currentColumnKey, currentColumnNames, pkColumn, columns]);
+
+  // Parse geometry data only when needed
+  const data = React.useMemo(() => {
+    if (!currentColumnKey) {
+      const hasGeometryColumn = columns.some(c => c.cell === 'geometry' || c.cell === 'geography');
+      return {
+        'geoJSONs': [],
+        'selectedSRID': 0,
+        'getPopupContent': undefined,
+        'infoList': hasGeometryColumn
+          ? [gettext('Query complete. Use the Geometry Viewer button in the Data Output tab to visualize results.')]
+          : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
+      };
+    }
+    return parseData(displayRows, columns, column);
+  }, [displayRows, columns, column, currentColumnKey]);
 
   useEffect(()=>{
     let timeoutId;
     const contentResizeObserver = new ResizeObserver(()=>{
       clearTimeout(timeoutId);
-      if(queryToolCtx.docker.isTabVisible(PANELS.GEOMETRY)) {
+      if(queryToolCtx?.docker?.isTabVisible(PANELS.GEOMETRY)) {
         timeoutId = setTimeout(function () {
           mapRef.current?.invalidateSize();
         }, 100);
       }
     });
-    contentResizeObserver.observe(contentRef.current);
-  }, []);
+    if(contentRef.current) {
+      contentResizeObserver.observe(contentRef.current);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+      contentResizeObserver.disconnect();
+    };
+  }, [queryToolCtx]);
 
-  // Dyanmic CRS is not supported. Use srid as key and recreate the map on change
+  // Dynamic CRS is not supported. Use srid and mapKey as key and recreate the map on change
   return (
-    <StyledBox ref={contentRef} width="100%" height="100%" key={data.selectedSRID}>
+    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${mapKey}`}>
       <MapContainer
         crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
