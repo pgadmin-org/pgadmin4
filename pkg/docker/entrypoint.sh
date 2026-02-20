@@ -9,7 +9,8 @@ if [ "$(id -u)" = "0" ]; then
     fi
 
     # Reassign the pgadmin user to the desired UID/GID
-    usermod -o -u "$PUID" -g "$PGID" pgadmin 2>/dev/null || true
+    usermod -o -u "$PUID" -g "$PGID" pgadmin 2>&1 || \
+        echo "WARNING: usermod failed for UID=$PUID GID=$PGID"
 
     # Compose su-exec command
     SU_EXEC="su-exec $PUID:$PGID"
