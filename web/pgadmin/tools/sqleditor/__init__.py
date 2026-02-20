@@ -2200,13 +2200,23 @@ def download_binary_data(trans_id):
     (status, error_msg, conn, trans_obj,
      session_obj) = check_transaction_status(trans_id)
 
-    cur = conn._Connection__async_cursor
-    register_binary_data_typecasters(cur)
+    if error_msg:
+        return internal_server_error(
+            errormsg=error_msg
+        )
+
     if not status or conn is None or trans_obj is None or \
             session_obj is None:
         return internal_server_error(
             errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
+
+    cur = conn._Connection__async_cursor
+    if cur is None:
+        return internal_server_error(
+            errormsg=gettext('No active result cursor.')
+        )
+    register_binary_data_typecasters(cur)
 
     data = request.values if request.values else request.get_json(silent=True)
     if data is None:
@@ -2222,7 +2232,25 @@ def download_binary_data(trans_id):
     binary_data = cur.fetchone()
     binary_data = binary_data[col_pos]
 
-    return send_file(
+    try:
+        row_pos = int(data['rowpos'])
+        col_pos = int(data['colpos'])
+        if row_pos < 0 or col_pos < 0:
+            raise ValueError
+        cur.scroll(row_pos)
+        row = cur.fetchone()
+        if row is None or col_pos >= len(row):
+            return internal_server_error(
+                errormsg=gettext('Requested cell is out of range.')
+            )
+        binary_data = row[col_pos]
+    except (ValueError, IndexError, TypeError) as e:
+        current_app.logger.error(e)
+        return internal_server_error(
+            errormsg='Invalid row/column position.'
+        )
+
+    return send_file( 
         BytesIO(binary_data),
         as_attachment=True,
         download_name='binary_data',
