@@ -102,6 +102,7 @@ class SessionManager():
         'Store a managed session'
         raise NotImplementedError
 
+
 class CachingSessionManager(SessionManager):
     def __init__(self, parent, num_to_store, skip_paths=None):
         self.parent = parent
@@ -120,10 +121,10 @@ class CachingSessionManager(SessionManager):
         if not has_request_context():
             return False
 
-        # ._get_current_object() returns the actual dict-like object
+        # Session _id returns the str object
         # or None if it hasn't been set yet.
         try:
-            return _session._get_current_object() is not None
+            return _session['_id'] is not None
         except (AssertionError, RuntimeError):
             return False
 
@@ -155,10 +156,11 @@ class CachingSessionManager(SessionManager):
 
     def get(self, sid, digest):
         session = None
-        with sess_lock:
+        with (sess_lock):
             if sid in self._cache:
                 session = self._cache[sid]
-                if self.is_session_ready(session) and session.hmac_digest != digest:
+                if self.is_session_ready(session) and\
+                        session.hmac_digest != digest:
                     session = None
 
                 # reset order in Dict
