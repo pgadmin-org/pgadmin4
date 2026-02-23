@@ -52,7 +52,8 @@ Use the fields in the *Definition* tab to define the index:
   that this index depends on (for example, edbspl). If set, dropping the extension 
   will automatically drop the index as well.
 * Move the switch next to *Only Table?* to the *Yes* position to create the index
-  only on the parent table without recursing to its partitions. The default is *No*.
+  only on the parent table without recursing to its partitions. This button will be
+  enabled for partition tables only. The default is *No*.
 * Move the switch next to *Unique?* to the *Yes* position to check for duplicate values
   in the table when the index is created and when data is added. The default is *No*.
 * Move the switch next to *NULLs not distinct?* to the *Yes* position to treat null values as not distinct. 
