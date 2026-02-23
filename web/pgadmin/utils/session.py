@@ -38,6 +38,8 @@ from werkzeug.datastructures import CallbackDict
 from werkzeug.security import safe_join
 from werkzeug.exceptions import InternalServerError
 
+from flask import has_request_context
+
 from pgadmin.utils.ajax import make_json_response
 
 
@@ -100,7 +102,6 @@ class SessionManager():
         'Store a managed session'
         raise NotImplementedError
 
-
 class CachingSessionManager(SessionManager):
     def __init__(self, parent, num_to_store, skip_paths=None):
         self.parent = parent
@@ -114,6 +115,17 @@ class CachingSessionManager(SessionManager):
             with sess_lock:
                 while len(self._cache) > (self.num_to_store * 0.8):
                     self._cache.popitem(False)
+
+    def is_session_ready(self, _session):
+        if not has_request_context():
+            return False
+
+        # ._get_current_object() returns the actual dict-like object
+        # or None if it hasn't been set yet.
+        try:
+            return _session._get_current_object() is not None
+        except (AssertionError, RuntimeError):
+            return False
 
     def new_session(self):
         session = self.parent.new_session()
@@ -146,13 +158,13 @@ class CachingSessionManager(SessionManager):
         with sess_lock:
             if sid in self._cache:
                 session = self._cache[sid]
-                if session and session.hmac_digest != digest:
+                if self.is_session_ready(session) and session.hmac_digest != digest:
                     session = None
 
                 # reset order in Dict
                 del self._cache[sid]
 
-            if not session:
+            if not self.is_session_ready(session):
                 session = self.parent.get(sid, digest)
 
             # Do not store the session if skip paths
