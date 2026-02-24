@@ -22,6 +22,7 @@ import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 
 const StyledBox = styled(Box)(({theme}) => ({
+  position: 'relative',
   '& .GeometryViewer-mapContainer': {
     backgroundColor: theme.palette.background.default,
     height: '100%',
@@ -193,9 +194,21 @@ function parseData(rows, columns, column) {
   };
 }
 
-// Find primary key column from columns array
+// Find primary key column i.e a column with unique values from columns array in Data Output tab
 function findPkColumn(columns) {
   return columns.find(c => PK_COLUMN_NAMES.includes(c.name));
+}
+
+// Hash function for row objects
+function hashRow(row) {
+  const str = Object.keys(row).sort().map(k => `${k}:${row[k]}`).join('|');
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return `hash_${hash}`;
 }
 
 // Get unique row identifier using PK column or first column
@@ -204,20 +217,17 @@ function getRowIdentifier(row, pkColumn, columns) {
     return row[pkColumn.key];
   }
   const firstKey = columns[0]?.key;
-  return firstKey && row[firstKey] !== undefined ? row[firstKey] : JSON.stringify(row);
-}
-
-// Create Set of row identifiers
-function createIdentifierSet(rowData, pkColumn, columns) {
-  return new Set(rowData.map(row => getRowIdentifier(row, pkColumn, columns)));
+  if (firstKey && row[firstKey] !== undefined) {
+    return row[firstKey];
+  }
+  return hashRow(row);
 }
 
 // Match rows from previous selection to current rows
-function matchRowSelection(prevRowData, currentRows, pkColumn, columns) {
-  if (prevRowData.length === 0) return [];
+function matchRowSelection(prevIdentifiers, currentRows, pkColumn, columns) {
+  if (prevIdentifiers.size === 0) return [];
   
-  const prevIdSet = createIdentifierSet(prevRowData, pkColumn, columns);
-  return currentRows.filter(row => prevIdSet.has(getRowIdentifier(row, pkColumn, columns)));
+  return currentRows.filter(row => prevIdentifiers.has(getRowIdentifier(row, pkColumn, columns)));
 }
 
 function PopupTable({data}) {
@@ -314,41 +324,10 @@ GeoJsonLayer.propTypes = {
 
 function TheMap({data}) {
   const mapObj = useMap();
-  const infoControl = useRef(null);
   const resetLayersKey = useRef(0);
   const zoomControlWithHome = useRef(null);
   const homeCoordinates = useRef(null);
   useEffect(()=>{
-    infoControl.current = Leaflet.control({position: 'topright'});
-    infoControl.current.onAdd = function () {
-      let ele = Leaflet.DomUtil.create('div', 'geometry-viewer-info-control');
-      ele.innerHTML = data.infoList.join('<br />');
-      // Style the parent control container after it's added to the map
-      setTimeout(() => {
-        let controlContainer = ele.closest('.leaflet-control');
-        if(controlContainer) {
-          controlContainer.style.cssText = `
-            position: fixed;
-            top: 70%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            margin: 0;
-            max-width: 80%;
-            text-align: center;
-            white-space: normal;
-            word-wrap: break-word;
-            background: none;
-            box-shadow: none;
-            border: none;
-            font-size: 16px;
-          `;
-        }
-      }, 0);
-      return ele;
-    };
-    if(data.infoList.length > 0) {
-      infoControl.current.addTo(mapObj);
-    }
     resetLayersKey.current++;
 
     zoomControlWithHome.current = Leaflet.control.zoom({
@@ -398,7 +377,6 @@ function TheMap({data}) {
     zoomControlWithHome.current.addTo(mapObj);
 
     return ()=>{
-      infoControl.current?.remove();
       zoomControlWithHome.current?.remove();
     };
   }, [data]);
@@ -409,6 +387,25 @@ function TheMap({data}) {
 
   return (
     <>
+      {data.infoList.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000,
+          maxWidth: '80%',
+          textAlign: 'center',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          fontSize: '16px',
+          pointerEvents: 'none',
+        }}>
+          {data.infoList.map((info, idx) => (
+            <div key={idx}>{info}</div>
+          ))}
+        </div>
+      )}
       {data.selectedSRID === 4326 &&
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name={gettext('Empty')}>
@@ -492,7 +489,7 @@ export function GeometryViewer({rows, columns, column}) {
   const prevStateRef = React.useRef({
     columnKey: null,
     columnNames: null,
-    selectedRowData: [],
+    selectedRowIdentifiers: new Set(),
   });
 
   const [mapKey, setMapKey] = React.useState(0);
@@ -513,7 +510,7 @@ export function GeometryViewer({rows, columns, column}) {
       prevStateRef.current = {
         columnKey: null,
         columnNames: null,
-        selectedRowData: [],
+        selectedRowIdentifiers: new Set(),
       };
       return;
     }
@@ -524,7 +521,7 @@ export function GeometryViewer({rows, columns, column}) {
       prevStateRef.current = {
         columnKey: currentColumnKey,
         columnNames: currentColumnNames,
-        selectedRowData: rows,
+        selectedRowIdentifiers: new Set(rows.map(r => getRowIdentifier(r, pkColumn, columns))),
       };
       return;
     }
@@ -532,24 +529,38 @@ export function GeometryViewer({rows, columns, column}) {
     if (currentColumnKey === prevState.columnKey && 
         currentColumnNames === prevState.columnNames &&
         rows.length > 0) {
-      prevStateRef.current.selectedRowData = displayRows;
+      prevStateRef.current.selectedRowIdentifiers = new Set(
+        displayRows.map(r => getRowIdentifier(r, pkColumn, columns))
+      );
     }
   }, [currentColumnKey, currentColumnNames, rows, pkColumn, columns]);
 
   // Get rows to display based on selection
   const displayRows = React.useMemo(() => {
+    // No geometry column selected or no rows available - nothing to display
     if (!currentColumnKey || rows.length === 0) return [];
     const prevState = prevStateRef.current;
+
+    // Column context changed (different geometry column or different query schema)
+    // Show all new rows since previous selection is no longer valid
     if (currentColumnKey !== prevState.columnKey || currentColumnNames !== prevState.columnNames) {
       return rows;
     }
 
-    const prevSelected = prevState.selectedRowData;
-    if (prevSelected.length === 0) return rows;
-    if (prevSelected.length < rows.length) {
-      const matched = matchRowSelection(prevSelected, rows, pkColumn, columns);
+    const prevIdentifiers = prevState.selectedRowIdentifiers;
+    // No previous selection recorded - show all rows
+    if (prevIdentifiers.size === 0) return rows;
+
+    // Previous selection was a subset of total rows, meaning user had specific rows selected.
+    // Try to match those previously selected rows in the new result set using stable
+    // row identifiers (PK value, first column value, or hash fallback).
+    // This handles the case where same query reruns with more/fewer rows
+    if (prevIdentifiers.size < rows.length) {
+      const matched = matchRowSelection(prevIdentifiers, rows, pkColumn, columns);
+      // If matched rows found, show only those; otherwise fall back to all rows
       return matched.length > 0 ? matched : rows;
     }
+    // Previous selection covered all rows (or same count) - show all current rows
     return rows;
   }, [rows, currentColumnKey, currentColumnNames, pkColumn, columns]);
 
