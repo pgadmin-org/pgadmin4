@@ -166,8 +166,7 @@ class ManageUsers:
     @app.command()
     @update_sqlite_path
     def load_users(input_file: str,
-                   sqlite_path: Optional[str] = None,
-                   json: Optional[bool] = False):
+                   sqlite_path: Optional[str] = None):
         """Load users from a JSON file.
 
         Expected JSON format:
@@ -202,7 +201,6 @@ class ManageUsers:
         try:
             file_path = unquote(input_file)
         except Exception as e:
-            print(str(e))
             return _handle_error(str(e), True)
 
         # Read and parse JSON file
@@ -267,9 +265,11 @@ class ManageUsers:
                         user_data['confirmPassword'] = user_entry['password']
 
                     # Check if user already exists
-                    uid = ManageUsers.get_user(
-                        username=user_data['username'],
-                        auth_source=auth_source)
+                    usr = User.query.filter_by(username=user_data['username'],
+                                               auth_source=auth_source).first()
+
+                    uid = usr.id if usr else None
+
                     if uid:
                         print(f"Skipping user '{user_data['username']}': "
                               f"already exists")
@@ -277,7 +277,9 @@ class ManageUsers:
                         continue
 
                     # Get role ID
-                    rid = ManageRoles.get_role(user_data['role'])
+                    role = Role.query.filter_by(name=user_data['role']).first()
+                    rid = role.id if role else None
+
                     if rid is None:
                         print(f"Skipping user '{user_data['username']}': "
                               f"role '{user_data['role']}' does not exist")
