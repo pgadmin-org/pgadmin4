@@ -438,6 +438,20 @@ class ERDModule(PgAdminModule):
         )
 
         self.preference.register(
+            'options',
+            'insert_table_with_relations',
+            gettext('Insert Table With Relations'),
+            'boolean',
+            False,
+            category_label=PREF_LABEL_OPTIONS,
+            help_str=gettext(
+                'Whether inserting a table via drag and drop should '
+                'also insert its relations to the existing tables in '
+                'the diagram.'
+            )
+        )
+
+        self.preference.register(
             'options', 'cardinality_notation',
             gettext('Cardinality Notation'), 'radioModern', 'crows',
             category_label=PREF_LABEL_OPTIONS, options=[
