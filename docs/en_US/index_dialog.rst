@@ -51,6 +51,28 @@ Use the fields in the *Definition* tab to define the index:
 * Use the drop-down listbox next to *Depends on extensions* to select the extension 
   that this index depends on (for example, edbspl). If set, dropping the extension 
   will automatically drop the index as well.
+* Move the switch next to *Only Table?* to the *Yes* position to create the index
+  only on the parent table without recursing to its partitions. This button will be
+  enabled for partition tables only. The default is *No*.
+* Move the switch next to *Unique?* to the *Yes* position to check for duplicate values
+  in the table when the index is created and when data is added. The default is *No*.
+* Move the switch next to *NULLs not distinct?* to the *Yes* position to treat null values as not distinct. 
+  The default is *No*. This option is available only on PostgreSQL 15 and above.
+* Move the *Clustered?* switch to the *Yes* position to instruct the server to
+  cluster the table.
+* Move the *Concurrent build?* switch to the *Yes* position to build the index
+  without taking any locks that prevent concurrent inserts, updates, or deletes
+  on the table.
+* Use the *Constraint* field to provide a constraint expression; a constraint
+  expression limits the entries in the index to those rows that satisfy the
+  constraint.
+
+Click the *With* tab to continue.
+
+.. image:: images/index_with.png
+    :alt: Index dialog with tab
+    :align: center
+
 * Use the *Fill Factor* field to specify a fill factor for the index. The fill
   factor specifies how full the selected method will try to fill each index
   page.
@@ -66,18 +88,6 @@ Use the fields in the *Definition* tab to define the index:
   The default is *Yes*.
 * Move the switch next to *Autosummarize* to the *Yes* position to define whether a summarization run is 
   queued for the previous page range whenever an insertion is detected on the next one. The default is *No*
-* Move the switch next to *Unique?* to the *Yes* position to check for duplicate values
-  in the table when the index is created and when data is added. The default is *No*.
-* Move the switch next to *NULLs not distinct?* to the *Yes* position to treat null values as not distinct. 
-  The default is *No*. This option is available only on PostgreSQL 15 and above.
-* Move the *Clustered?* switch to the *Yes* position to instruct the server to
-  cluster the table.
-* Move the *Concurrent build?* switch to the *Yes* position to build the index
-  without taking any locks that prevent concurrent inserts, updates, or deletes
-  on the table.
-* Use the *Constraint* field to provide a constraint expression; a constraint
-  expression limits the entries in the index to those rows that satisfy the
-  constraint.
 
 Click the *Columns* tab to continue.
 

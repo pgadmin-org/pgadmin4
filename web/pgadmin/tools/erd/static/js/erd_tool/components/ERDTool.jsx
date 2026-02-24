@@ -598,21 +598,26 @@ export default class ERDTool extends React.Component {
       if(nodeDropData.objUrl.indexOf(matchUrl) == -1) {
         pgAdmin.Browser.notifier.error(gettext('Cannot drop table from outside of the current database.'));
       } else {
-        let dataPromise = new Promise((resolve, reject)=>{
-          this.apiObj.get(nodeDropData.objUrl)
-            .then((res)=>{
-              resolve(this.diagram.cloneTableData(TableSchema.getErdSupportedData(res.data)));
-            })
-            .catch((err)=>{
-              console.error(err);
-              reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-            });
-        });
-        const {x, y} = this.diagram.getEngine().getRelativeMousePoint(e);
-        this.diagram.addNode(dataPromise, [x, y], {
-          fillColor: this.state.fill_color,
-          textColor: this.state.text_color,
-        }).setSelected(true);
+        this.apiObj.get(nodeDropData.objUrl)
+          .then((res)=>{
+            const data = TableSchema.getErdSupportedData(res.data);
+            const {x, y} = this.diagram.getEngine().getRelativeMousePoint(e);
+            const position = [x,y];
+            const metadata = {
+              fillColor: this.state.fill_color,
+              textColor: this.state.text_color,
+            };
+
+            const newNode = this.state.preferences.insert_table_with_relations
+              ? this.diagram.addNodeWithLinks(data, position, metadata)
+              : this.diagram.addNode(this.diagram.cloneTableData(data), position, metadata);
+
+            newNode.setSelected(true);
+          })
+          .catch((err)=>{
+            console.error(err);
+            throw (err instanceof Error ? err : Error(gettext('Something went wrong')));
+          });
       }
     }
   }
