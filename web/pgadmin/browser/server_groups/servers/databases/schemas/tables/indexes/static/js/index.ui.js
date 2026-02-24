@@ -364,6 +364,7 @@ export default class IndexSchema extends BaseUISchema {
       amname: undefined,
       fastupdate: false,
       autosummarize: false,
+      indisonly: false,
       columns: [],
       ...initValues
     });
@@ -522,7 +523,20 @@ export default class IndexSchema extends BaseUISchema {
         mode: ['create', 'edit', 'properties']
       },
       {
-        type: 'nested-fieldset', label: gettext('With'), group: gettext('Definition'),
+        id: 'indisonly', label: gettext('Only Table?'), 
+        type: 'switch', group: gettext('Definition'), 
+        disabled: () => {
+          // ONLY is only applicable to partitioned tables
+          // Disable if not a partitioned table or if viewing in schema (view mode)
+          return inSchema(indexSchemaObj.node_info) || 
+                 !indexSchemaObj.node_info?.table?.is_partitioned;
+        },
+        mode: ['create'],
+        min_version: 110000,
+        helpMessage: gettext('When enabled, the index will only be created on this table, not on its partitions.'),
+      },
+      {
+        type: 'nested-fieldset', label: gettext('With'), group: gettext('With'),
         schema: this.withSchema,
       },{
         id: 'indisunique', label: gettext('Unique?'), cell: 'string',

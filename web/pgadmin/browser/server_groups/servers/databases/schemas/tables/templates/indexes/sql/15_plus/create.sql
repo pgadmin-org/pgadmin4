@@ -1,6 +1,6 @@
 CREATE{% if data.indisunique %} UNIQUE{% endif %} INDEX{% if add_not_exists_clause %} IF NOT EXISTS{% endif %}{% if data.isconcurrent %} CONCURRENTLY{% endif %}{% if data.name %} {{conn|qtIdent(data.name)}}{% endif %}
 
-    ON {{conn|qtIdent(data.schema, data.table)}} {% if data.amname %}USING {{conn|qtIdent(data.amname)}}{% endif %}
+    ON {% if data.indisonly %}ONLY {% endif %}{{conn|qtIdent(data.schema, data.table)}} {% if data.amname %}USING {{conn|qtIdent(data.amname)}}{% endif %}
 
 {% if mode == 'create' %}
     ({% for c in data.columns %}{% if loop.index != 1 %}, {% endif %}{% if c.is_exp %}({{c.colname}}){% else %}{{conn|qtIdent(c.colname)}}{% endif %}{% if c.collspcname %} COLLATE {{c.collspcname}}{% endif %}{% if c.op_class %}
