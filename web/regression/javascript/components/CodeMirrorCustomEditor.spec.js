@@ -115,4 +115,34 @@ describe('CodeMirrorCustomEditorView', ()=>{
     expect(editor.getQueryAt(29)).toEqual({'value': 'select * from public.actor;', 'from': 0, 'to': 27});
   });
 
+  it('cursor on WHERE clause with blank lines between SELECT and FROM and WHERE',()=>{
+    // Query with blank lines between clauses: SELECT *\n\nFROM pg_class\n\nWHERE id = 1;
+    cmRerender({value: 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;'});
+    // Cursor at WHERE clause (position 25), should return full query
+    expect(editor.getQueryAt(25)).toEqual({'value': 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;', 'from': 0, 'to': 38});
+  });
+
+  it('cursor on FROM clause with blank lines in query',()=>{
+    // Query with blank lines between clauses
+    cmRerender({value: 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;'});
+    // Cursor at FROM clause (position 10), should return full query
+    expect(editor.getQueryAt(10)).toEqual({'value': 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;', 'from': 0, 'to': 38});
+  });
+
+  it('cursor on condition line with WHERE on separate line',()=>{
+    // Query: select *\n\nfrom pg_attribute\n\nWHERE\n\nattrelid > 3000;
+    const query = 'select *\n\nfrom pg_attribute\n\nWHERE\n\nattrelid > 3000;';
+    cmRerender({value: query});
+    // Cursor at 'attrelid' condition (position 38), should return full query
+    expect(editor.getQueryAt(38)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('cursor on WHERE keyword with blank lines around it',()=>{
+    // Query: select *\n\nfrom pg_attribute\n\nWHERE\n\nattrelid > 3000;
+    const query = 'select *\n\nfrom pg_attribute\n\nWHERE\n\nattrelid > 3000;';
+    cmRerender({value: query});
+    // Cursor at WHERE keyword (position 30), should return full query
+    expect(editor.getQueryAt(30)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
 });
