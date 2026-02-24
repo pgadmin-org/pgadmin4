@@ -1468,6 +1468,7 @@ class ServerNode(PGChildNodeView):
         shared_server = None
         if server.shared and server.user_id != current_user.id:
             shared_server = ServerModule.get_shared_server(server, gid)
+            db.session.expunge(server)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
         if server is None:
