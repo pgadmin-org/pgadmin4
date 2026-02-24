@@ -26,7 +26,7 @@ import time
 import config
 from uuid import uuid4
 from threading import Lock
-from flask import current_app, request, flash, redirect
+from flask import current_app, request, flash, redirect, has_request_context
 from flask_login import login_url
 
 from pickle import dump, load
@@ -37,8 +37,6 @@ from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 from werkzeug.security import safe_join
 from werkzeug.exceptions import InternalServerError
-
-from flask import has_request_context
 
 from pgadmin.utils.ajax import make_json_response
 
@@ -118,7 +116,7 @@ class CachingSessionManager(SessionManager):
                     self._cache.popitem(False)
 
     def is_session_ready(self, _session):
-        if not has_request_context():
+        if not has_request_context() and _session is None:
             return False
 
         # Session _id returns the str object
