@@ -73,7 +73,7 @@ from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
 from pgadmin.utils.driver.psycopg3.typecast import \
-    register_binary_data_typecasters
+    register_binary_data_typecasters, register_binary_typecasters
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -2229,13 +2229,9 @@ def download_binary_data(trans_id):
             status=410,
             success=0,
             errormsg=gettext(
-                "Could not find the required parameter (query)."
+                "Could not find the required parameters (rowpos, colpos)."
             )
         )
-    col_pos = data['colpos']
-    cur.scroll(int(data['rowpos']))
-    binary_data = cur.fetchone()
-    binary_data = binary_data[col_pos]
 
     try:
         row_pos = int(data['rowpos'])
@@ -2253,6 +2249,15 @@ def download_binary_data(trans_id):
         current_app.logger.error(e)
         return internal_server_error(
             errormsg='Invalid row/column position.'
+        )
+    finally:
+        # Always restore the original typecasters
+        # (works on connection or cursor)
+        register_binary_typecasters(cur)
+
+    if binary_data is None:
+        return bad_request(
+            errormsg=gettext('The selected cell contains NULL.')
         )
 
     return send_file(
