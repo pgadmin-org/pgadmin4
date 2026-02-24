@@ -26,7 +26,7 @@ import time
 import config
 from uuid import uuid4
 from threading import Lock
-from flask import current_app, request, flash, redirect
+from flask import current_app, request, flash, redirect, has_request_context
 from flask_login import login_url
 
 from pickle import dump, load
@@ -115,6 +115,17 @@ class CachingSessionManager(SessionManager):
                 while len(self._cache) > (self.num_to_store * 0.8):
                     self._cache.popitem(False)
 
+    def is_session_ready(self, _session):
+        if not has_request_context() and _session is None:
+            return False
+
+        # Session _id returns the str object
+        # or None if it hasn't been set yet.
+        try:
+            return _session['_id'] is not None
+        except (AssertionError, RuntimeError, KeyError):
+            return False
+
     def new_session(self):
         session = self.parent.new_session()
 
@@ -143,16 +154,17 @@ class CachingSessionManager(SessionManager):
 
     def get(self, sid, digest):
         session = None
-        with sess_lock:
+        with (sess_lock):
             if sid in self._cache:
                 session = self._cache[sid]
-                if session and session.hmac_digest != digest:
+                if self.is_session_ready(session) and\
+                        session.hmac_digest != digest:
                     session = None
 
                 # reset order in Dict
                 del self._cache[sid]
 
-            if not session:
+            if not self.is_session_ready(session):
                 session = self.parent.get(sid, digest)
 
             # Do not store the session if skip paths

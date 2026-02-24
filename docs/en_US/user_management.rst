@@ -270,6 +270,50 @@ username/email address.
     /path/to/python /path/to/setup.py get-users --username user1@gmail.com
 
 
+Load Users
+**********
+
+To bulk import users from a JSON file, invoke ``setup.py`` with ``load-users`` command line option,
+followed by the path to the JSON file.
+
+.. code-block:: bash
+
+    /path/to/python /path/to/setup.py load-users /path/to/users.json
+
+**JSON File Format**
+
+The input JSON file must contain a ``users`` array with user objects:
+
+.. code-block:: json
+
+    {
+        "users": [
+            {
+                "username": "admin@example.com",
+                "email": "admin@example.com",
+                "password": "securepassword",
+                "role": "Administrator",
+                "active": true,
+                "auth_source": "internal"
+            },
+            {
+                "username": "ldap_user",
+                "email": "ldap_user@example.com",
+                "role": "User",
+                "active": true,
+                "auth_source": "ldap"
+            }
+        ]
+    }
+
+The command handles errors gracefully:
+
+* Users that already exist are skipped
+* Invalid roles are reported and skipped
+* Missing passwords for internal auth are reported and skipped
+* Passwords shorter than 6 characters are reported and skipped
+
+
 Output
 ******
 
