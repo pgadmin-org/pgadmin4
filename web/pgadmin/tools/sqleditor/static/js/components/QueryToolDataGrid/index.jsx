@@ -429,8 +429,8 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }, []);
 
   const dataGridExtras = useMemo(()=>({
-    onSelectedCellChange, handleShortcuts, startRowNum, rowKeyGetter: props.rowKeyGetter
-  }), [onSelectedCellChange, props.rowKeyGetter]);
+    onSelectedCellChange, handleShortcuts, startRowNum
+  }), [onSelectedCellChange]);
 
   // Save column width to window object on resize
   const handleColumnResize = (column, width) => {

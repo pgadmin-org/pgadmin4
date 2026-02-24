@@ -74,17 +74,13 @@ export function NumberFormatter({row, column}) {
 }
 NumberFormatter.propTypes = FormatterPropTypes;
 
-export function BinaryFormatter({row, column}) {
+export function BinaryFormatter({row, column, ...props}) {
   let value = row[column.key];
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
   const downloadBinaryData = usePreferences().getPreferences('misc', 'enable_binary_data_download').value;
 
-  // Use clientPK as the absolute row position
-  // rowKeyGetter returns the clientPK value which is a sequential counter (0, 1, 2, ...)
-  // that persists across pagination and represents the 0-based absolute position in the result set
-  const absoluteRowPos = parseInt(dataGridExtras?.rowKeyGetter?.(row) ?? 0);
-  console.log(absoluteRowPos)
+  const absoluteRowPos = (dataGridExtras?.startRowNum ?? 1) - 1 + props.rowIdx;
 
   return (
     <StyledNullAndDefaultFormatter value={value} column={column}>
