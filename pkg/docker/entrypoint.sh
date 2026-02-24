@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
+PUID=${PUID:-5050}
+PGID=${PGID:-0}
+
+if [ "$(id -u)" = "0" ]; then
+    # Ensure a group with the target GID exists
+    if ! getent group "$PGID" > /dev/null 2>&1; then
+        addgroup -g "$PGID" pggroup
+    fi
+
+    # Reassign the pgadmin user to the desired UID/GID
+    usermod -o -u "$PUID" -g "$PGID" pgadmin 2>&1 || \
+        echo "WARNING: usermod failed for UID=$PUID GID=$PGID"
+
+    # Compose su-exec command
+    SU_EXEC="su-exec $PUID:$PGID"
+    echo "pgAdmin will run as UID=$PUID, GID=$PGID"
+else
+    SU_EXEC=""
+fi
 
 # Fixup the passwd file, in case we're on OpenShift
 if ! whoami > /dev/null 2>&1; then
@@ -8,6 +27,27 @@ if ! whoami > /dev/null 2>&1; then
     fi
   fi
 fi
+
+# Helper: chown a path only if it exists and isn't already owned correctly
+safe_chown() {
+    local target="$1"
+    local owner="$2:$3"  # UID:GID
+
+    # Skip if path doesn't exist
+    [ -e "$target" ] || return 0
+
+    # Get current ownership
+    local current_uid current_gid
+    current_uid=$(stat -c '%u' "$target")
+    current_gid=$(stat -c '%g' "$target")
+
+    # Skip if already owned correctly
+    if [ "$current_uid" = "$2" ] && [ "$current_gid" = "$3" ]; then
+        return 0
+    fi
+
+    chown -R "$owner" "$target"
+}
 
 # usage: file_env VAR [DEFAULT] ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -182,6 +222,12 @@ fi
 # to define the Gunicorn worker timeout
 TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESSION_EXPIRATION_TIME * 60 * 60 * 24)')
 
+if [ "$(id -u)" = "0" ]; then
+    for path in /run/pgadmin /var/lib/pgadmin "$CONFIG_DISTRO_FILE_PATH" /certs; do
+        safe_chown "$path" "$PUID" "$PGID"
+    done
+fi
+
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
 # Using --threads to have multi-threaded single-process worker
 
@@ -196,7 +242,7 @@ else
 fi
 
 if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-    exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
 else
-    exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    exec $SU_EXEC /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
 fi
