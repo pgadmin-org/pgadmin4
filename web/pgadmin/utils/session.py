@@ -116,7 +116,7 @@ class CachingSessionManager(SessionManager):
                     self._cache.popitem(False)
 
     def is_session_ready(self, _session):
-        if not has_request_context() and _session is None:
+        if not has_request_context() or _session is None:
             return False
 
         # Session _id returns the str object
