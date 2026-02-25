@@ -39,6 +39,7 @@ from pgadmin.browser.server_groups.servers.utils import \
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, RESTRICTION_TYPE_SQL
 from sqlalchemy import or_
+from sqlalchemy.orm import object_session
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
@@ -1468,6 +1469,9 @@ class ServerNode(PGChildNodeView):
         shared_server = None
         if server.shared and server.user_id != current_user.id:
             shared_server = ServerModule.get_shared_server(server, gid)
+            sess = object_session(server)
+            if sess is not None:
+                sess.expunge(server)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
         if server is None:
