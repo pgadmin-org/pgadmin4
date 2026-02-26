@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  pgAdmin4\n"
 "Report-Msgid-Bugs-To: oon@oo.or.id\n"
-"POT-Creation-Date: 2026-02-18 11:06+0530\n"
+"POT-Creation-Date: 2026-02-26 18:55+0530\n"
 "PO-Revision-Date: 2024-06-08 07:54+0000\n"
 "Last-Translator: kiraware <kiraware@github.com>\n"
 "Language: id\n"
@@ -1184,24 +1184,24 @@ msgstr "Tidak ada nama grup server yang ditentukan"
 msgid "Could not find the server group."
 msgstr "Tidak dapat menemukan grup server."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:136
-#: pgadmin/browser/server_groups/servers/__init__.py:1070
+#: pgadmin/browser/server_groups/servers/__init__.py:137
+#: pgadmin/browser/server_groups/servers/__init__.py:1071
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/__init__.py:46
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_servers.js:22
 msgid "Servers"
 msgstr "Server"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:621
+#: pgadmin/browser/server_groups/servers/__init__.py:622
 #, python-brace-format
 msgid "The specified server group with id# {0} could not be found."
 msgstr "Grup server yang ditentukan dengan id# {0} tidak dapat ditemukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:642
+#: pgadmin/browser/server_groups/servers/__init__.py:643
 #, python-brace-format
 msgid "Could not find the server with id# {0}."
 msgstr "Tidak dapat menemukan server dengan id# {0}."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:728
+#: pgadmin/browser/server_groups/servers/__init__.py:729
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -1209,23 +1209,23 @@ msgstr ""
 "Server yang ditentukan tidak dapat ditemukan.\n"
 "Apakah pengguna memiliki izin untuk mengakses server?"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:750
+#: pgadmin/browser/server_groups/servers/__init__.py:751
 msgid "Server deleted"
 msgstr "Server dihapus"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:763
-#: pgadmin/browser/server_groups/servers/__init__.py:2123
+#: pgadmin/browser/server_groups/servers/__init__.py:764
+#: pgadmin/browser/server_groups/servers/__init__.py:2127
 msgid "Could not find the required server."
 msgstr "Tidak dapat menemukan server yang diperlukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:807
+#: pgadmin/browser/server_groups/servers/__init__.py:808
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:158
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:164
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:134
 msgid "name"
 msgstr "nama"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:808
+#: pgadmin/browser/server_groups/servers/__init__.py:809
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:130
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:348
 #: pgadmin/misc/cloud/static/js/aws.js:231
@@ -1234,12 +1234,12 @@ msgstr "nama"
 msgid "Port"
 msgstr "Port"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:809
+#: pgadmin/browser/server_groups/servers/__init__.py:810
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:360
 msgid "Maintenance database"
 msgstr "Database pemeliharaan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:810
+#: pgadmin/browser/server_groups/servers/__init__.py:811
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:149
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:24
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:364
@@ -1253,7 +1253,7 @@ msgstr "Database pemeliharaan"
 msgid "Username"
 msgstr "Nama pengguna"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:811
+#: pgadmin/browser/server_groups/servers/__init__.py:812
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:95
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:329
 #: pgadmin/tools/backup/static/js/backup.ui.js:239
@@ -1261,7 +1261,7 @@ msgstr "Nama pengguna"
 msgid "Comments"
 msgstr "Komentar"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:812
+#: pgadmin/browser/server_groups/servers/__init__.py:813
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:106
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:411
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:209
@@ -1273,22 +1273,22 @@ msgstr "Komentar"
 msgid "Role"
 msgstr "Aturan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:832
-#: pgadmin/browser/server_groups/servers/__init__.py:1178
+#: pgadmin/browser/server_groups/servers/__init__.py:833
+#: pgadmin/browser/server_groups/servers/__init__.py:1179
 #: pgadmin/misc/workspaces/__init__.py:104
 msgid "Not a valid Host address"
 msgstr "Bukan alamat host yang valid"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:852
+#: pgadmin/browser/server_groups/servers/__init__.py:853
 msgid "No parameters were changed."
 msgstr "Tidak ada parameter yang diubah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:948
+#: pgadmin/browser/server_groups/servers/__init__.py:949
 #, python-brace-format
 msgid "'{0}' cannot be modified when the server is connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1166
+#: pgadmin/browser/server_groups/servers/__init__.py:1167
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:721
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:395
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:414
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "Could not find the required parameter ({})."
 msgstr "Tidak dapat menemukan parameter yang diperlukan ({})."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1280
+#: pgadmin/browser/server_groups/servers/__init__.py:1281
 #, python-brace-format
 msgid ""
 "Unable to connect to server:\n"
@@ -1348,52 +1348,52 @@ msgstr ""
 "\n"
 "{}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1369
+#: pgadmin/browser/server_groups/servers/__init__.py:1370
 msgid "Server has no active connection for generating statistics."
 msgstr "Server tidak memiliki koneksi aktif untuk menghasilkan statistik."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1483
+#: pgadmin/browser/server_groups/servers/__init__.py:1487
 msgid "Please enter the server details to connect"
 msgstr "Harap masukkan detail server untuk terhubung"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1667
+#: pgadmin/browser/server_groups/servers/__init__.py:1671
 #: pgadmin/tools/schema_diff/__init__.py:374
 #: pgadmin/tools/sqleditor/__init__.py:2593
 msgid "Server connected."
 msgstr "Server terhubung."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1709
+#: pgadmin/browser/server_groups/servers/__init__.py:1713
 msgid "Server could not be disconnected."
 msgstr "Server tidak dapat diputus."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1713
+#: pgadmin/browser/server_groups/servers/__init__.py:1717
 msgid "Server disconnected."
 msgstr "Server terputus."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1733
+#: pgadmin/browser/server_groups/servers/__init__.py:1737
 msgid "Could not reload the server configuration."
 msgstr "Tidak dapat memuat kembali konfigurasi server."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1738
+#: pgadmin/browser/server_groups/servers/__init__.py:1742
 msgid "Server configuration reloaded."
 msgstr "Konfigurasi server dimuat ulang."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1784
+#: pgadmin/browser/server_groups/servers/__init__.py:1788
 #, python-brace-format
 msgid "Named restore point created: {0}"
 msgstr "Titik pemulihan bernama berhasil dibuat: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1790
+#: pgadmin/browser/server_groups/servers/__init__.py:1794
 #, python-brace-format
 msgid "Named restore point creation failed ({0})"
 msgstr "Titik pemulihan bernama gagal dibuat ({0})"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1847
-#: pgadmin/browser/server_groups/servers/__init__.py:1859
+#: pgadmin/browser/server_groups/servers/__init__.py:1851
+#: pgadmin/browser/server_groups/servers/__init__.py:1863
 msgid "Could not find the required parameter(s)."
 msgstr "Tidak dapat menemukan parameter yang diperlukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1868
+#: pgadmin/browser/server_groups/servers/__init__.py:1872
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:133
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:448
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:381
@@ -1403,29 +1403,29 @@ msgstr "Tidak dapat menemukan parameter yang diperlukan."
 msgid "Passwords do not match."
 msgstr "Sandi tidak cocok."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1881
+#: pgadmin/browser/server_groups/servers/__init__.py:1885
 msgid "Incorrect password."
 msgstr "Sandi salah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1917
+#: pgadmin/browser/server_groups/servers/__init__.py:1921
 msgid "Password changed successfully."
 msgstr "Sandi berhasil diubah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1954
+#: pgadmin/browser/server_groups/servers/__init__.py:1958
 msgid "WAL replay paused"
 msgstr "WAL Replay terhenti"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1965
+#: pgadmin/browser/server_groups/servers/__init__.py:1969
 msgid "WAL replay resumed"
 msgstr "Ulangan WAL dilanjutkan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1971
-#: pgadmin/browser/server_groups/servers/__init__.py:2029
+#: pgadmin/browser/server_groups/servers/__init__.py:1975
+#: pgadmin/browser/server_groups/servers/__init__.py:2033
 msgid "Please connect to the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2150
-#: pgadmin/browser/server_groups/servers/__init__.py:2182
+#: pgadmin/browser/server_groups/servers/__init__.py:2154
+#: pgadmin/browser/server_groups/servers/__init__.py:2186
 msgid "The saved password was cleared successfully."
 msgstr ""
 
@@ -1643,7 +1643,7 @@ msgstr "Cast..."
 #: pgadmin/static/js/socket_instance.js:33
 #: pgadmin/tools/backup/static/js/backup.js:264
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:446
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:608
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:619
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:392
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:396
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:748
@@ -1714,12 +1714,12 @@ msgstr "Ada yang salah"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:201
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:56
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:435
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:436
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:44
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:173
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:501
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:505
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:194
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1203
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:50
@@ -1787,12 +1787,12 @@ msgstr "Nama"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:204
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:60
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:60
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:439
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:440
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:165
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:63
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:158
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:504
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:508
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:197
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1208
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:53
@@ -1946,21 +1946,21 @@ msgstr "Jenis Sumber"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:246
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:264
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:302
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:138
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:149
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:171
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:189
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:236
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:138
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:149
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:171
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:189
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:236
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:256
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:139
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:150
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:172
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:220
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:237
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:139
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:150
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:172
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:190
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:220
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:237
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:257
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:265
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:275
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:285
@@ -1968,16 +1968,16 @@ msgstr "Jenis Sumber"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:338
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:343
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:456
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:512
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:525
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:540
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:555
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:558
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:570
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:574
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:457
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:513
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:527
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:554
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:569
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:572
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:584
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:593
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:588
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:598
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:607
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:69
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:85
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:96
@@ -2114,11 +2114,11 @@ msgstr "Sistem cast?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:210
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:66
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:635
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:649
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:127
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:111
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:561
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:565
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:455
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1446
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:76
@@ -2631,7 +2631,7 @@ msgstr "Status"
 #: pgadmin/browser/server_groups/servers/databases/dbms_job_scheduler/static/js/dbms_jobscheduler.ui.js:36
 #: pgadmin/misc/sql/static/js/SQL.jsx:77 pgadmin/static/js/UtilityView.jsx:52
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:339
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:908
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:913
 #: pgadmin/tools/import_export/static/js/import_export.js:100
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:344
 msgid "Error"
@@ -2710,7 +2710,7 @@ msgstr "Trigger Event..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:39
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:167
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:506
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:510
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1211
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:54
@@ -2805,7 +2805,7 @@ msgstr "Saat TAG di"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:81
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:660
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:436
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1064
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1068
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1468
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:147
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:114
@@ -2853,7 +2853,7 @@ msgstr "Label keamanan"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:428
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:432
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:439
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:547
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:551
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1437
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1452
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1471
@@ -2943,7 +2943,7 @@ msgstr "Kaskade?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:38
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:45
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:172
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:511
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:515
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1217
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:59
@@ -3110,8 +3110,8 @@ msgstr "Opsi"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:654
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:427
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:431
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1055
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1059
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1063
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1436
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1451
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:73
@@ -3307,7 +3307,7 @@ msgstr "INSERT"
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:34
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:38
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:306
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:525
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:539
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:300
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:308
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:316
@@ -3388,10 +3388,10 @@ msgstr "Nama Tabel"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:326
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:76
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:596
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:623
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:528
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:708
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:610
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:637
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:532
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:712
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:403
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:277
 msgid "Columns"
@@ -3576,7 +3576,7 @@ msgstr "Operator pengurutan"
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:180
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:203
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:207
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:530
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:534
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:303
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:527
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:540
@@ -3867,7 +3867,7 @@ msgstr "Tidak NULL?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:33
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:215
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:532
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:536
 msgid "Constraints"
 msgstr "Constraint"
 
@@ -4407,13 +4407,13 @@ msgid "Return type"
 msgstr "Tipe pengembalian"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:280
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:511
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:512
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:112
 msgid "Depends on extensions"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:288
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:519
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:520
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:120
 msgid "Select the Depends on extensions..."
 msgstr ""
@@ -4479,7 +4479,7 @@ msgstr "Fungsi dukungan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:415
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:228
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:544
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:548
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:285
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:215
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:419
@@ -4830,7 +4830,7 @@ msgstr "Cycled"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:160
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:261
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:877
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:881
 msgid "Unlogged?"
 msgstr "Tidak terikat?"
 
@@ -5107,8 +5107,8 @@ msgstr "Diwariskan?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:628
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:206
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:564
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:700
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:568
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:704
 msgid "Inherited from table(s)"
 msgstr "Diwarisi dari tabel"
 
@@ -5444,11 +5444,11 @@ msgid "System exclusion constraint?"
 msgstr "Sistem exclusion constraint?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:279
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:170
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:170
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:442
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:171
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:171
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:443
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:177
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:516
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:520
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:134
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:43
@@ -5468,45 +5468,45 @@ msgid "Changing access method will clear columns collection"
 msgstr "Mengubah metode akses akan menghapus koleksi kolom"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:326
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:204
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:204
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:205
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:205
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:260
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:852
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:856
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:106
 msgid "Fill factor"
 msgstr "Faktor pengisi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:329
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:220
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:218
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:218
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:219
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:270
 msgid "Deferrable?"
 msgstr "Dapat Ditunda?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:333
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:224
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:235
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:235
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:236
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:297
 msgid "Deferred?"
 msgstr "Ditunda?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:347
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:586
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:600
 msgid "Constraint"
 msgstr "Constraint"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:351
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:595
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:609
 msgid "Columns/Expressions"
 msgstr "Kolom/Ekspresi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:407
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:142
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:142
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:619
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:143
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:143
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:633
 msgid "Include columns"
 msgstr "Sertakan kolom"
 
@@ -5663,7 +5663,7 @@ msgstr "Kunci unik"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:266
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:882
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:886
 msgid "Primary key"
 msgstr "Primary key"
 
@@ -5682,25 +5682,25 @@ msgstr "Tidak dapat menemukan constraint dalam tabel."
 msgid "System primary key?"
 msgstr "Sistem primary key?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:187
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:188
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:188
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:45
 msgid "Index"
 msgstr "Indeks"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:259
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:654
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:260
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:668
 msgid "Name cannot be empty in edit mode."
 msgstr "Nama tidak boleh kosong dalam mode edit."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:267
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:267
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:268
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:268
 #, python-format
 msgid "Please specify columns for %s."
 msgstr "Harap tentukan kolom untuk %s."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:255
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:542
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:256
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:556
 msgid "NULLs not distinct?"
 msgstr "NULL tidak beda?"
 
@@ -5809,19 +5809,19 @@ msgstr "Pembaruan cepat?"
 msgid "Autosummarize?"
 msgstr "Ringkasan otomatis?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:409
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:410
 msgid "Select the column(s)"
 msgstr "Pilih kolom"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:450
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:451
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:234
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:207
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:829
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:833
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:91
 msgid "Access Method"
 msgstr "Metode akses"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:489
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:490
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:207
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:94
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:105
@@ -5830,7 +5830,7 @@ msgstr "Metode akses"
 msgid "Warning"
 msgstr "Peringatan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:490
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:491
 msgid ""
 "Changing access method will clear columns collection. Do you want to "
 "continue?"
@@ -5838,31 +5838,41 @@ msgstr ""
 "Mengubah metode akses akan menghapus koleksi kolom. Apakah Anda ingin "
 "melanjutkan?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:528
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:526
+msgid "Only Table?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:536
+msgid ""
+"When enabled, the index will only be created on this table, not on its "
+"partitions."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:542
 msgid "Unique?"
 msgstr "Unik?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:557
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:571
 msgid "Clustered?"
 msgstr "Berkelompok?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:568
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:582
 msgid "Valid?"
 msgstr "Valid?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:572
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:586
 msgid "Primary?"
 msgstr "Primary?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:576
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:590
 msgid "System index?"
 msgstr "Sistem indeks?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:579
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:593
 msgid "Concurrent build?"
 msgstr "Bangun bersamaan?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:664
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:678
 msgid "You must specify at least one column/expression."
 msgstr "Anda harus menentukan setidaknya satu kolom/ekspresi."
 
@@ -5871,9 +5881,9 @@ msgstr "Anda harus menentukan setidaknya satu kolom/ekspresi."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:182
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:378
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:398
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:534
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1000
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1020
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:538
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1004
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1024
 msgid "Partitions"
 msgstr "Partisi"
 
@@ -5978,7 +5988,7 @@ msgstr "Reset Statistik"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:113
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:270
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:389
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1011
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1015
 msgid "Detach Partition"
 msgstr "Lepaskan partisi"
 
@@ -6036,122 +6046,122 @@ msgstr "Anda yakin ingin melepaskan partisi %s?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:189
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:288
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:550
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:554
 msgid "Partitioned table?"
 msgstr "Tabel yang dipartisi?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:196
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:557
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:561
 msgid "System table?"
 msgstr "Sistem tabel?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:210
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:703
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:707
 msgid "Inherited tables count"
 msgstr "Hitung tabel yang diwariskan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:224
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:857
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:861
 msgid "Toast tuple target"
 msgstr "Target tuple toast"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:229
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:862
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:866
 msgid "Parallel workers"
 msgstr "Pekerja paralel"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:251
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:867
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:871
 msgid "Has OIDs?"
 msgstr "Punya OID?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:270
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:886
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:890
 msgid "Rows (estimated)"
 msgstr "Baris (diperkirakan)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:274
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:890
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:894
 msgid "Rows (counted)"
 msgstr "Baris (dihitung)"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:286
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:902
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:906
 msgid "Is inherited?"
 msgstr "Diwarisi?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:290
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:302
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:911
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:915
 msgid "Partition Type"
 msgstr "Jenis partisi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:295
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:307
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:916
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:920
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1259
 msgid "Range"
 msgstr "Jangkauan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:297
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:309
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:918
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:922
 #: pgadmin/misc/file_manager/__init__.py:215
 msgid "List"
 msgstr "Daftar"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:302
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:314
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:923
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:927
 msgid "Hash"
 msgstr "Hash"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:315
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:359
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:323
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:936
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:981
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:940
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:985
 msgid "Partition Keys"
 msgstr "Kunci partisi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:350
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:359
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:972
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:976
 msgid "Partition Scheme"
 msgstr "Skema partisi"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:363
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:985
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:989
 msgid "Partition table supports two types of keys:"
 msgstr "Tabel partisi mendukung dua jenis kunci:"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:365
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:987
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:991
 msgid "Column: "
 msgstr "Kolom: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:366
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:988
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:992
 msgid "User can select any column from the list of available columns."
 msgstr "Pengguna dapat memilih kolom apa pun dari daftar kolom yang tersedia."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:368
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:990
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:994
 msgid "Expression: "
 msgstr "Ekspresi: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:369
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:991
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:995
 msgid "User can specify expression to create partition key."
 msgstr "Pengguna dapat menentukan ekspresi untuk membuat kunci partisi."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:371
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:993
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:997
 msgid "Example: "
 msgstr "Contoh: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:372
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:994
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:998
 msgid ""
 "Let's say, we want to create a partition table based per year for the "
 "column 'saledate', having datatype 'date/timestamp', then we need to "
@@ -6163,17 +6173,17 @@ msgstr ""
 "partisi."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:390
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1012
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1016
 msgid "Are you sure you wish to detach this partition?"
 msgstr "Apakah Anda yakin ingin melepaskan partisi ini?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:402
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1024
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1028
 msgid "Create a table: "
 msgstr "Buat tabel: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:403
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1025
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1029
 msgid ""
 "User can create multiple partitions while creating new partitioned table."
 " Operation switch is disabled in this scenario."
@@ -6182,12 +6192,12 @@ msgstr ""
 "Operasi switch dinonaktifkan dalam skenario ini."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:405
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1027
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1031
 msgid "Edit existing table: "
 msgstr "Edit tabel yang ada: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:406
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1028
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1032
 msgid ""
 "User can create/attach/detach multiple partitions. In attach operation "
 "user can select table from the list of suitable tables to be attached."
@@ -6197,12 +6207,12 @@ msgstr ""
 "sesuai untuk dilampirkan."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:408
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1030
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1034
 msgid "Default: "
 msgstr "Bawaan: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:409
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1031
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1035
 msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
@@ -6211,12 +6221,12 @@ msgstr ""
 " atau daftar partisi yang ada."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:411
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1033
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1037
 msgid "From/To/In input: "
 msgstr "Input From/To/In: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:412
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1034
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1038
 msgid ""
 "From/To/In input: Values for these fields must be quoted with single "
 "quote. For more than one partition key values must be comma(,) separated."
@@ -6226,12 +6236,12 @@ msgstr ""
 "(,)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:414
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1036
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1040
 msgid "Example: From/To: "
 msgstr "Contoh: From/To: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:415
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1037
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1041
 msgid ""
 "Enabled for range partition. Consider partitioned table with multiple "
 "keys of type Integer, then values should be specified like '100','200'."
@@ -6241,12 +6251,12 @@ msgstr ""
 "'100','200'."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:417
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1039
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1043
 msgid "In: "
 msgstr "In: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:418
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1040
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1044
 msgid ""
 "Enabled for list partition. Values must be comma(,) separated and quoted "
 "with single quote."
@@ -6255,24 +6265,24 @@ msgstr ""
 "dikutip dengan kutip tunggal."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:420
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1042
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1046
 msgid "Modulus/Remainder: "
 msgstr "Modulus/Remainder: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:421
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1043
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1047
 msgid "Enabled for hash partition."
 msgstr "Diaktifkan untuk partisi hash."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:441
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1069
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1073
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:126
 msgid "Storage settings"
 msgstr "Pengaturan Penyimpanan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:449
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:375
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1077
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1081
 msgid "Please specify at least one key for partitioned table."
 msgstr "Harap tentukan setidaknya satu kunci untuk tabel yang dipartisi."
 
@@ -6518,19 +6528,19 @@ msgstr "Dengan identitas?"
 msgid "With statistics?"
 msgstr "Dengan statistik?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:569
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:573
 msgid "Select to inherit from..."
 msgstr "Pilih untuk mewarisi dari..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:671
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:675
 msgid "RLS Policy?"
 msgstr "Kebijakan RLS?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:677
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:681
 msgid "Check Policy?"
 msgstr "Periksa Kebijakan?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:678
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:682
 msgid ""
 "Please check if any policy exists. If no policy exists for the table, a "
 "default-deny policy is used, meaning that no rows are visible or can be "
@@ -6540,27 +6550,27 @@ msgstr ""
 "tabel, kebijakan bawaan-ditolak digunakan, artinya tidak ada baris yang "
 "dapat dilihat atau dapat dimodifikasi oleh pengguna lain"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:684
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:688
 msgid "Force RLS Policy?"
 msgstr "Memaksa kebijakan RLS?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:697
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:701
 msgid "Replica Identity"
 msgstr "Identitas replika"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:774
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:778
 msgid "Of type"
 msgstr "Of type"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:805
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:809
 msgid "Remove column definitions?"
 msgstr "Hapus definisi kolom?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:806
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:810
 msgid "Changing 'Of type' will remove column definitions."
 msgstr "Mengubah 'Of type' akan menghapus definisi kolom."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:906
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:910
 msgid "Like"
 msgstr "Menyukai"
 
@@ -7710,7 +7720,7 @@ msgstr ""
 #: pgadmin/static/js/helpers/Notifier.jsx:54
 #: pgadmin/static/js/helpers/Notifier.jsx:189
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:866
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:670
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:675
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:559
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:270
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:466
@@ -13840,7 +13850,7 @@ msgstr "Kembali"
 #: pgadmin/static/js/components/PgTable.jsx:331
 #: pgadmin/static/js/components/PgTable.jsx:332
 #: pgadmin/static/js/components/SearchInputText.jsx:30
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:628
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:633
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:410
 #: pgadmin/tools/user_management/static/js/Permissions.jsx:181
 #: pgadmin/tools/user_management/static/js/Permissions.jsx:182
@@ -13860,7 +13870,7 @@ msgstr "Ganti nama"
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:100
 #: pgadmin/static/js/helpers/ModalProvider.jsx:99
 #: pgadmin/static/js/helpers/Notifier.jsx:189
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:669
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:674
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:426
 msgid "Delete"
 msgstr "Hapus"
@@ -14783,7 +14793,7 @@ msgid "Changes will be lost. Are you sure you want to reset?"
 msgstr "Perubahan akan hilang. Apakah Anda yakin ingin mengatur ulang?"
 
 #: pgadmin/static/js/SchemaView/SchemaDialogView.jsx:130
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:749
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:754
 #: pgadmin/tools/user_management/static/js/Permissions.jsx:112
 msgid "Saving..."
 msgstr "Menyimpan..."
@@ -16003,11 +16013,11 @@ msgstr "Tampilkan lebih banyak/lebih sedikit detail"
 msgid "Zoom to fit"
 msgstr "Zoom agar pas"
 
-#: pgadmin/tools/erd/__init__.py:416 pgadmin/tools/erd/__init__.py:468
+#: pgadmin/tools/erd/__init__.py:416 pgadmin/tools/erd/__init__.py:482
 msgid "SQL With DROP Table"
 msgstr "SQL dengan DROP Tabel"
 
-#: pgadmin/tools/erd/__init__.py:421 pgadmin/tools/erd/__init__.py:473
+#: pgadmin/tools/erd/__init__.py:421 pgadmin/tools/erd/__init__.py:487
 msgid ""
 "If enabled, the SQL generated by the ERD Tool will add DROP table DDL "
 "before each CREATE table DDL."
@@ -16027,49 +16037,59 @@ msgstr ""
 "Kedalaman maksimum pgAdmin harus dilintasi untuk menemukan tabel terkait "
 "saat menghasilkan ERD untuk tabel. Gunakan -1 untuk tanpa batas."
 
-#: pgadmin/tools/erd/__init__.py:442
+#: pgadmin/tools/erd/__init__.py:443
+msgid "Insert Table With Relations"
+msgstr ""
+
+#: pgadmin/tools/erd/__init__.py:448
+msgid ""
+"Whether inserting a table via drag and drop should also insert its "
+"relations to the existing tables in the diagram."
+msgstr ""
+
+#: pgadmin/tools/erd/__init__.py:456
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:338
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:385
 msgid "Cardinality Notation"
 msgstr "Notasi Kardinalitas"
 
-#: pgadmin/tools/erd/__init__.py:444
+#: pgadmin/tools/erd/__init__.py:458
 msgid "Crow's foot"
 msgstr "Crow's foot"
 
-#: pgadmin/tools/erd/__init__.py:445
+#: pgadmin/tools/erd/__init__.py:459
 msgid "Chen"
 msgstr "Chen"
 
-#: pgadmin/tools/erd/__init__.py:448
+#: pgadmin/tools/erd/__init__.py:462
 msgid "Notation to be used to present cardinality."
 msgstr "Notasi untuk digunakan untuk menyajikan kardinalitas."
 
-#: pgadmin/tools/erd/__init__.py:454
+#: pgadmin/tools/erd/__init__.py:468
 msgid "Image Download Resolution"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:456
+#: pgadmin/tools/erd/__init__.py:470
 msgid "Good"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:457
+#: pgadmin/tools/erd/__init__.py:471
 msgid "High"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:458
+#: pgadmin/tools/erd/__init__.py:472
 msgid "Very High"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:461
+#: pgadmin/tools/erd/__init__.py:475
 msgid "Higher values will use higher memory and slower rendering."
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:481
+#: pgadmin/tools/erd/__init__.py:495
 msgid "Format ERD Project File?"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:486
+#: pgadmin/tools/erd/__init__.py:500
 msgid ""
 "If enabled, the .pgerd project file of the ERD tool will be formatted "
 "before saving."
@@ -16137,32 +16157,32 @@ msgstr "Nama tabel sudah ada"
 msgid "Cannot drop table from outside of the current database."
 msgstr "Tidak dapat menghapus tabel dari luar database saat ini."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:652
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:657
 msgid "Delete?"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:653
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:658
 #, python-format
 msgid "You have selected %s tables and %s links."
 msgstr "Anda telah memilih tabel %s dan tautan %s."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:654
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:659
 msgid "Are you sure you want to delete?"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:713
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:718
 msgid "Loading project..."
 msgstr "Memuat proyek..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:755
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:760
 msgid "Project saved successfully."
 msgstr "Proyek berhasil disimpan."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:794
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:799
 msgid "-- This script was generated by the ERD tool in pgAdmin 4.\n"
 msgstr "-- Skrip ini dihasilkan oleh alat ERD di pgAdmin 4.\n"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:795
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:800
 msgid ""
 "-- Please log an issue at https://github.com/pgadmin-"
 "org/pgadmin4/issues/new/choose if you find any bugs, including "
@@ -16172,23 +16192,23 @@ msgstr ""
 "org/pgadmin4/issues/new/choose jika Anda menemukan bug, termasuk langkah "
 "reproduksi.\n"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:808
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:813
 msgid "Preparing the SQL..."
 msgstr "Mempersiapkan SQL..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:835
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:840
 msgid "Preparing the image..."
 msgstr "Mempersiapkan gambar..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:904
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:909
 msgid "Unknown error. Check console logs"
 msgstr "Kesalahan yang tidak diketahui. Periksa log konsol"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:919
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:924
 msgid "Maximum image size limit"
 msgstr "Batas maksimum ukuran gambar"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:920
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:925
 msgid ""
 "The downloaded image has exceeded the maximum size of 32767 x 32767 "
 "pixels, and has been cropped to that size."
@@ -16196,27 +16216,27 @@ msgstr ""
 "Gambar yang diunduh telah melebihi ukuran maksimum 32767 x 32767 piksel, "
 "dan telah dipotong sesuai ukuran itu."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:929
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:934
 msgid "One to one relation"
 msgstr ""
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:937
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:942
 msgid "One to many relation"
 msgstr "Relasi satu ke banyak"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:945
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:950
 msgid "Many to many relation"
 msgstr "Relasi banyak ke banyak"
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:975
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:980
 msgid "Initializing connection..."
 msgstr "Menginisiasi koneksi..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:1019
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:1024
 msgid "Fetching required data..."
 msgstr "Mengambil data yang diperlukan..."
 
-#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:1043
+#: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:1048
 msgid "Fetching schema data..."
 msgstr "Mengambil data skema..."
 
