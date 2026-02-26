@@ -88,7 +88,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
     // Update the clicked node and all its descendants with the new checked value
     const updateDescendants = (n, val) => {
       newState[n.id] = val;
-      n.children?.forEach(child => updateDescendants(child, val));
+      n.children?.forEach(child => { updateDescendants(child, val); });
     };
     updateDescendants(node, isChecked);
 
@@ -118,19 +118,22 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
     setCheckedState(newState);
 
     // Collect all checked/indeterminate nodes from the entire tree
-    // to provide complete selection state to selectionChange callback. 
+    // to provide complete selection state to selectionChange callback.
+    // We use wrapper objects to avoid mutating the original node data.
     const allCheckedNodes = [];
     const collectAllCheckedNodes = (n) => {
       if (!n) return;
       const state = newState[n.id];
       if (state === true || state === 'indeterminate') {
-        // Set isIndeterminate flag to differentiate full schema selection                                                                                                                                                                   
-        // from partial selection (only specific tables) in backup dialog
-        n.data.isIndeterminate = (state === 'indeterminate');
-        allCheckedNodes.push(n);
+        // Pass wrapper object with isIndeterminate flag to differentiate
+        // full schema selection from partial selection in backup dialog
+        allCheckedNodes.push({
+          node: n,
+          isIndeterminate: state === 'indeterminate'
+        });
       }
       // Recursively check all children
-      n.children?.forEach(child => collectAllCheckedNodes(child));
+      n.children?.forEach(child => { collectAllCheckedNodes(child); });
     };
 
     // Navigate up to find the root level of the tree (parent of root nodes is '__root__')
@@ -143,7 +146,7 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
     const rootParent = rootNode.parent;
     if (rootParent && rootParent.children) {
       // Iterate through all sibling root nodes to collect all checked nodes
-      rootParent.children.forEach(root => collectAllCheckedNodes(root));
+      rootParent.children.forEach(root => { collectAllCheckedNodes(root); });
     } else {
       // Fallback: if we can't find siblings, just traverse from the found root
       collectAllCheckedNodes(rootNode);
