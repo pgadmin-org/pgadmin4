@@ -758,8 +758,8 @@ export default class BackupSchema extends BaseUISchema {
           'foreign table': [],
           'materialized view': [],
         };
-        state?.objects?.forEach((node)=> {
-          if(node.data.is_schema && !node.data?.isIndeterminate) {
+        state?.objects?.forEach(({ node, isIndeterminate })=> {
+          if(node.data.is_schema && !isIndeterminate) {
             selectedNodeCollection['schema'].push(node.data.name);
           } else if(['table', 'view', 'materialized view', 'foreign table', 'sequence'].includes(node.data.type) &&
               !node.data.is_collection && !selectedNodeCollection['schema'].includes(node.data.schema)) {

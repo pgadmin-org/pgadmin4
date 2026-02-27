@@ -80,39 +80,80 @@ export default function PgTreeView({ data = [], hasCheckbox = false,
   const [checkedState, setCheckedState] = React.useState({});
   const { ref: containerRef, width, height } = useResizeObserver();
 
+  // Handle checkbox toggle and collect all checked nodes
+  // to pass complete selection state to the backup dialog
   const toggleCheck = (node, isChecked) => {
     const newState = { ...checkedState };
-    const selectedChNodes = [];
 
-    // Update the node itself and all descendants
+    // Update the clicked node and all its descendants with the new checked value
     const updateDescendants = (n, val) => {
       newState[n.id] = val;
-      if (val) {
-        selectedChNodes.push(n);
-      }
-      n.children?.forEach(child => updateDescendants(child, val));
+      n.children?.forEach(child => { updateDescendants(child, val); });
     };
     updateDescendants(node, isChecked);
 
-    // Update ancestors (Indeterminate logic)
+    // Update ancestor nodes to reflect the correct state (checked/unchecked/indeterminate)
+    // This ensures parent nodes show proper visual feedback based on children's state
     let parent = node.parent;
     while (parent && parent.id !== '__root__') {
-      const allChecked = parent.children.every(c => newState[c.id]);
+      // Check if ALL children are fully checked (state must be exactly true,
+      // not 'indeterminate') to mark parent as fully checked
+      const allChecked = parent.children.every(c => newState[c.id] === true);
+      // Check if ALL children are unchecked (falsy value: false, undefined, or null)
       const noneChecked = parent.children.every(c => !newState[c.id]);
 
       if (allChecked) {
+        // All children checked -> parent is fully checked
         newState[parent.id] = true;
-        // logic for custom indeterminate property if needed
       } else if (noneChecked) {
+        // No children checked -> parent is unchecked
         newState[parent.id] = false;
       } else {
-        newState[parent.id] = 'indeterminate'; // Store string for 3rd state
+        // Some children checked, some not -> parent shows indeterminate state
+        newState[parent.id] = 'indeterminate';
       }
       parent = parent.parent;
     }
 
     setCheckedState(newState);
-    selectionChange?.(selectedChNodes);
+
+    // Collect all checked/indeterminate nodes from the entire tree
+    // to provide complete selection state to selectionChange callback.
+    // We use wrapper objects to avoid mutating the original node data.
+    const allCheckedNodes = [];
+    const collectAllCheckedNodes = (n) => {
+      if (!n) return;
+      const state = newState[n.id];
+      if (state === true || state === 'indeterminate') {
+        // Pass wrapper object with isIndeterminate flag to differentiate
+        // full schema selection from partial selection in backup dialog
+        allCheckedNodes.push({
+          node: n,
+          isIndeterminate: state === 'indeterminate'
+        });
+      }
+      // Recursively check all children
+      n.children?.forEach(child => { collectAllCheckedNodes(child); });
+    };
+
+    // Navigate up to find the root level of the tree (parent of root nodes is '__root__')
+    let rootNode = node;
+    while (rootNode.parent && rootNode.parent.id !== '__root__') {
+      rootNode = rootNode.parent;
+    }
+
+    // Traverse all root-level nodes to collect checked nodes from entire tree
+    const rootParent = rootNode.parent;
+    if (rootParent && rootParent.children) {
+      // Iterate through all sibling root nodes to collect all checked nodes
+      rootParent.children.forEach(root => { collectAllCheckedNodes(root); });
+    } else {
+      // Fallback: if we can't find siblings, just traverse from the found root
+      collectAllCheckedNodes(rootNode);
+    }
+
+    // Pass all checked nodes to callback with current selection state.
+    selectionChange?.(allCheckedNodes);
   };
 
   return (<Root ref={containerRef} className={'PgTree-tree'}>
