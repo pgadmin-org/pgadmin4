@@ -131,13 +131,15 @@ const columns = [
 ];
 
 
-export default function ListView({items, operation, ...props}) {
+export default function ListView({items, operation, onItemEnter, ...props}) {
   const gridRef = useRef();
 
   useEffect(()=>{
     if(operation.type) {
       operation.type == 'add' && gridRef.current.scrollToCell({rowIdx: operation.idx});
-      gridRef.current.selectCell({idx: 0, rowIdx: operation.idx}, true);
+      gridRef.current.selectCell({idx: 0, rowIdx: operation.idx}, {
+        enableEditor: true
+      });
     }
   }, [operation]);
 
@@ -171,6 +173,10 @@ export default function ListView({items, operation, ...props}) {
       noRowsText={gettext('No files/folders found')}
       onRowsChange={onRowsChange}
       onCellKeyDown={onCellKeyDown}
+      onItemEnter={(row, e)=>{
+        e.preventGridDefault();
+        onItemEnter(row);
+      }}
       {...props}
     />
   );
