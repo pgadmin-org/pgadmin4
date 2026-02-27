@@ -48,20 +48,28 @@ SELECT DISTINCT ON (cls.relname)
   -- Options (with defaults per index type)
     COALESCE(
         substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int,
-        CASE am.amname
-            WHEN 'btree' THEN 90
-            WHEN 'gist' THEN 90
-            WHEN 'hash' THEN 75
-            WHEN 'spgist' THEN 90
-            ELSE NULL
-        END
+        {% if show_defaults and show_defaults == True %}
+            CASE am.amname
+                WHEN 'btree' THEN 90
+                WHEN 'gist' THEN 90
+                WHEN 'hash' THEN 75
+                WHEN 'spgist' THEN 90
+                ELSE NULL
+            END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS fillfactor,
     COALESCE(
         CASE am.amname
             WHEN 'btree' THEN substring(array_to_string(cls.reloptions, ',') FROM 'deduplicate_items=([a-z]*)')::boolean
             ELSE NULL
         END,
-        CASE am.amname WHEN 'btree' THEN TRUE ELSE NULL END
+        {% if show_defaults and show_defaults == True %}
+            CASE am.amname WHEN 'btree' THEN TRUE ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS deduplicate_items,
     COALESCE(
         CASE am.amname

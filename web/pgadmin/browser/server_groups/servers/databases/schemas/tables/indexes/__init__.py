@@ -517,7 +517,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, tid=tid, idx=idx,
             datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
-            show_sys_objects=self.blueprint.show_system_objects
+            show_sys_objects=self.blueprint.show_system_objects,
+            show_defaults=True
         )
 
         status, res = self.conn.execute_dict(SQL)
