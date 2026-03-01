@@ -116,10 +116,30 @@ EOF
     done
 fi
 
+# Ensures the variable starts and ends in quotes after trimming
+ensure_quoted() {
+    local var="$1"
+
+    # Trim whitespaces
+    var="${var#"${var%%[![:space:]]*}"}"
+    var="${var%"${var##*[![:space:]]}"}"
+
+    # Check if the variable is already double or single quoted
+    if [[ ! $var =~ ^\"(.*)\"$ && ! $var =~ ^\'(.*)\'$ ]]; then
+        # Use docstrings in case the value contains quote characters inside
+        var="'''${var}'''"
+    fi
+
+    echo "${var}"
+}
+
 # Check whether the external configuration database exists if it is being used.
 external_config_db_exists="False"
 if [ -n "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}" ]; then
-     external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db("${PGADMIN_CONFIG_CONFIG_DATABASE_URI}"); print(val)")
+    # Support both quoted and unquoted URIs for backwards compatibility
+    PGADMIN_CONFIG_CONFIG_DATABASE_URI=$(ensure_quoted "${PGADMIN_CONFIG_CONFIG_DATABASE_URI}")
+
+    external_config_db_exists=$(cd /pgadmin4/pgadmin/utils && /venv/bin/python3 -c "from check_external_config_db import check_external_config_db; val = check_external_config_db(${PGADMIN_CONFIG_CONFIG_DATABASE_URI}); print(val)")
 fi
 
 # DRY of the code to load the PGADMIN_SERVER_JSON_FILE
