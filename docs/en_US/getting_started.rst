@@ -40,6 +40,7 @@ Mode is pre-configured for security.
    restore_locked_user
    ldap
    kerberos
+   aws_iam_authentication
    oauth2
    webserver
 

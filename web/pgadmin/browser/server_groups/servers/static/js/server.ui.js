@@ -382,10 +382,36 @@ export default class ServerSchema extends BaseUISchema {
         id: 'gss_encrypted', label: gettext('GSS encrypted?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
       },{
+        id: 'use_iam_auth', label: gettext('AWS IAM authentication?'), type: 'switch',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        disabled: obj.isShared,
+        helpMessage: gettext('Use AWS IAM authentication tokens for RDS/Aurora PostgreSQL databases')
+      },{
+        id: 'aws_profile', label: gettext('AWS Profile'), type: 'text',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        deps: ['use_iam_auth'],
+        disabled: function(state) { return !state.use_iam_auth; },
+        readonly: obj.isConnected,
+        helpMessage: gettext('AWS profile name for credentials (leave empty for default)')
+      },{
+        id: 'aws_region', label: gettext('AWS Region'), type: 'text',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        deps: ['use_iam_auth'],
+        disabled: function(state) { return !state.use_iam_auth; },
+        readonly: obj.isConnected,
+        helpMessage: gettext('AWS region where the database is located (e.g., us-east-1)')
+      },{
+        id: 'aws_role_arn', label: gettext('AWS Role ARN (Optional)'), type: 'text',
+        group: gettext('Connection'), mode: ['create', 'edit'],
+        deps: ['use_iam_auth'],
+        disabled: function(state) { return !state.use_iam_auth; },
+        readonly: obj.isConnected,
+        helpMessage: gettext('IAM role ARN for cross-account or assumed role access')
+      },{
         id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create', 'edit'],
-        deps: ['kerberos_conn', 'save_password'],
+        deps: ['kerberos_conn', 'use_iam_auth', 'save_password'],
         controlProps: {
           maxLength: null,
           autoComplete: 'new-password'
@@ -395,17 +421,17 @@ export default class ServerSchema extends BaseUISchema {
             return false;
           return state.connected || !state.save_password;
         },
-        disabled: function(state) {return state.kerberos_conn;},
-        helpMessage: gettext('In edit mode the password field is enabled only if Save Password is set to true.')
+        disabled: function(state) {return state.kerberos_conn || state.use_iam_auth;},
+        helpMessage: gettext('In edit mode the password field is enabled only if Save Password is set to true. Password is not required for Kerberos or IAM authentication.')
       },{
         id: 'save_password', label: gettext('Save password?'),
         type: 'switch', group: gettext('Connection'), mode: ['create', 'edit'],
-        deps: ['kerberos_conn'],
+        deps: ['kerberos_conn', 'use_iam_auth'],
         readonly: function(state) {
           return state.connected;
         },
         disabled: function(state) {
-          return !current_user.allow_save_password || state.kerberos_conn;
+          return !current_user.allow_save_password || state.kerberos_conn || state.use_iam_auth;
         },
       },{
         id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),

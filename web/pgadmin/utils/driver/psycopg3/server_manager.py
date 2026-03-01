@@ -114,6 +114,11 @@ class ServerManager(object):
             self.tunnel_keep_alive = 0
 
         self.kerberos_conn = server.kerberos_conn
+        # AWS IAM Authentication
+        self.use_iam_auth = server.use_iam_auth if hasattr(server, 'use_iam_auth') else False
+        self.aws_profile = server.aws_profile if hasattr(server, 'aws_profile') else None
+        self.aws_region = server.aws_region if hasattr(server, 'aws_region') else None
+        self.aws_role_arn = server.aws_role_arn if hasattr(server, 'aws_role_arn') else None
         self.gss_authenticated = False
         self.gss_encrypted = False
         self.connection_params = server.connection_params
@@ -665,6 +670,26 @@ WHERE db.oid = {0}""".format(did))
             dsn_args['service'] = self.service
         if self.use_ssh_tunnel:
             dsn_args['hostaddr'] = self.local_bind_host
+
+        # AWS IAM Authentication: Generate token and force SSL
+        if hasattr(self, 'use_iam_auth') and self.use_iam_auth:
+            from pgadmin.utils.aws_iam import generate_rds_auth_token
+            try:
+                password = generate_rds_auth_token(
+                    host=self.host,
+                    port=self.port,
+                    username=user,
+                    region=self.aws_region,
+                    profile=self.aws_profile if self.aws_profile else None,
+                    role_arn=self.aws_role_arn if self.aws_role_arn else None
+                )
+                # IAM authentication requires SSL
+                if not self.connection_params:
+                    self.connection_params = {}
+                if 'sslmode' not in self.connection_params:
+                    self.connection_params['sslmode'] = 'require'
+            except Exception as e:
+                raise Exception(f"IAM authentication failed: {str(e)}")
 
         # Make a copy to display the connection string on GUI.
         display_dsn_args = dsn_args.copy()
