@@ -876,6 +876,14 @@ export function ResultSet() {
   rsu.current.setLoaderText = setLoaderText;
 
   const isDataChangedRef = useRef(false);
+  const prevRowsRef = React.useRef(null);
+  const prevColumnsRef = React.useRef(null);
+  const gvClearedForColumnsRef = useRef(null);
+  const lastGvSelectionRef = useRef({
+    type: 'all', // 'all' | 'rows' | 'columns'
+    selectedColumns: new Set(),
+  });
+
   useEffect(()=>{
     isDataChangedRef.current = Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
   }, [dataChangeStore]);
@@ -1460,30 +1468,86 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const getFilteredRowsForGeometryViewer = React.useCallback((useLastGvSelection = false) => {
+    let selRowsData = rows;
+    if(selectedRows.size != 0) {
+      selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+    } else if(selectedColumns.size > 0) {
+      let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
+      selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+    } else if(useLastGvSelection && lastGvSelectionRef.current.type === 'columns' 
+            && lastGvSelectionRef.current.selectedColumns.size > 0) {
+      let selectedCols = _.filter(columns, (_c, i)=>lastGvSelectionRef.current.selectedColumns.has(i+1));
+      if(selectedCols.length > 0) {
+        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+      }
+    } else if(selectedRange.current) {
+      let [,, startRowIdx, endRowIdx] = getRangeIndexes();
+      selRowsData = rows.slice(startRowIdx, endRowIdx+1);
+    } else if(selectedCell.current?.[0]) {
+      selRowsData = [selectedCell.current[0]];
+    }
+    return selRowsData;
+  }, [rows, columns, selectedRows, selectedColumns]);
+
+  const openGeometryViewerTab = React.useCallback((column, rowsData) => {
+    layoutDocker.openTab({
+      id: PANELS.GEOMETRY,
+      title: gettext('Geometry Viewer'),
+      content: <GeometryViewer rows={rowsData} columns={columns} column={column} />,
+      closable: true,
+    }, PANELS.MESSAGES, 'after-tab', true);
+  }, [layoutDocker, columns]);
+
+  // Handle manual Geometry Viewer opening
   useEffect(()=>{
     const renderGeometries = (column)=>{
-      let selRowsData = rows;
-      if(selectedRows.size != 0) {
-        selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+      gvClearedForColumnsRef.current = null;
+      if(selectedRows.size > 0) {
+        lastGvSelectionRef.current = { type: 'rows', selectedColumns: new Set() };
       } else if(selectedColumns.size > 0) {
-        let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
-        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
-      } else if(selectedRange.current) {
-        let [,, startRowIdx, endRowIdx] = getRangeIndexes();
-        selRowsData = rows.slice(startRowIdx, endRowIdx+1);
-      } else if(selectedCell.current?.[0]) {
-        selRowsData = [selectedCell.current[0]];
+        lastGvSelectionRef.current = { type: 'columns', selectedColumns: new Set(selectedColumns) };
+      } else {
+        lastGvSelectionRef.current = { type: 'all', selectedColumns: new Set() };
       }
-      layoutDocker.openTab({
-        id: PANELS.GEOMETRY,
-        title:gettext('Geometry Viewer'),
-        content: <GeometryViewer rows={selRowsData} columns={columns} column={column} />,
-        closable: true,
-      }, PANELS.MESSAGES, 'after-tab', true);
+      const selRowsData = getFilteredRowsForGeometryViewer();
+      openGeometryViewerTab(column, selRowsData);
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
-  }, [rows, columns, selectedRows.size, selectedColumns.size]);
+  }, [getFilteredRowsForGeometryViewer, openGeometryViewerTab, eventBus, selectedRows, selectedColumns]);
+
+  // Auto-update Geometry Viewer when rows/columns change
+  useEffect(()=>{
+    const rowsChanged = prevRowsRef.current !== rows;
+    const columnsChanged = prevColumnsRef.current !== columns;
+    const currentGeometryColumn = columns.find(col => col.cell === 'geometry' || col.cell === 'geography');
+
+    if((rowsChanged || columnsChanged) && layoutDocker.isTabOpen(PANELS.GEOMETRY)) {
+      
+      const prevColumnNames = prevColumnsRef.current?.map(c => c.key).sort().join(',') ?? '';
+      const currColumnNames = columns.map(c => c.key).sort().join(',');
+      const columnsChanged = prevColumnNames !== currColumnNames;
+
+      if(columnsChanged && currentGeometryColumn) {
+        gvClearedForColumnsRef.current = currColumnNames;
+        lastGvSelectionRef.current = { type: 'all', selectedColumns: new Set() };
+        openGeometryViewerTab(null, []);
+      } else if(gvClearedForColumnsRef.current === currColumnNames) {
+        openGeometryViewerTab(null, []);
+      } else if(currentGeometryColumn && rowsChanged) {
+        const useColSelection = lastGvSelectionRef.current.type === 'columns';
+        const selRowsData = getFilteredRowsForGeometryViewer(useColSelection);
+        openGeometryViewerTab(currentGeometryColumn, selRowsData);
+      } else {
+        // No geometry column
+        openGeometryViewerTab(null, []);
+      }
+    }
+
+    prevRowsRef.current = rows;
+    prevColumnsRef.current = columns;
+  }, [rows, columns, getFilteredRowsForGeometryViewer, layoutDocker]);
 
   const triggerResetScroll = () => {
     // Reset the scroll position to previously saved location.
