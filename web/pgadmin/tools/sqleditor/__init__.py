@@ -14,6 +14,7 @@ import re
 import secrets
 from urllib.parse import unquote
 from threading import Lock
+from io import BytesIO
 import threading
 import math
 
@@ -23,7 +24,8 @@ from sqlalchemy import or_
 
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD
 from werkzeug.user_agent import UserAgent
-from flask import Response, url_for, render_template, session, current_app
+from flask import Response, url_for, render_template, session, current_app, \
+    send_file
 from flask import request
 from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
@@ -70,6 +72,8 @@ from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
+from pgadmin.utils.driver.psycopg3.typecast import \
+    register_binary_data_typecasters
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -147,6 +151,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.server_cursor',
             'sqleditor.nlq_chat_stream',
             'sqleditor.explain_analyze_stream',
+            'sqleditor.download_binary_data',
         ]
 
     def on_logout(self):
@@ -2180,6 +2185,82 @@ def start_query_download_tool(trans_id):
         err_msg = "Error: {0}".format(
             e.strerror if hasattr(e, 'strerror') else str(e))
         return internal_server_error(errormsg=err_msg)
+
+
+@blueprint.route(
+    '/download_binary_data/<int:trans_id>',
+    methods=["POST"], endpoint='download_binary_data'
+)
+@pga_login_required
+def download_binary_data(trans_id):
+    """
+    This method is used to download binary data.
+    """
+
+    (status, error_msg, conn, trans_obj,
+     session_obj) = check_transaction_status(trans_id)
+
+    if isinstance(error_msg, Response):
+        return error_msg
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(
+            success=0,
+            errormsg=error_msg,
+            info='DATAGRID_TRANSACTION_REQUIRED',
+            status=404
+        )
+
+    if not status or conn is None or trans_obj is None or \
+            session_obj is None:
+        return internal_server_error(
+            errormsg=TRANSACTION_STATUS_CHECK_FAILED
+        )
+
+    cur = conn._Connection__async_cursor
+    if cur is None:
+        return internal_server_error(
+            errormsg=gettext('No active result cursor.')
+        )
+    register_binary_data_typecasters(cur)
+
+    data = request.values if request.values else request.get_json(silent=True)
+    if data is None:
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=gettext(
+                "Could not find the required parameter (query)."
+            )
+        )
+    col_pos = data['colpos']
+    cur.scroll(int(data['rowpos']))
+    binary_data = cur.fetchone()
+    binary_data = binary_data[col_pos]
+
+    try:
+        row_pos = int(data['rowpos'])
+        col_pos = int(data['colpos'])
+        if row_pos < 0 or col_pos < 0:
+            raise ValueError
+        cur.scroll(row_pos)
+        row = cur.fetchone()
+        if row is None or col_pos >= len(row):
+            return internal_server_error(
+                errormsg=gettext('Requested cell is out of range.')
+            )
+        binary_data = row[col_pos]
+    except (ValueError, IndexError, TypeError) as e:
+        current_app.logger.error(e)
+        return internal_server_error(
+            errormsg='Invalid row/column position.'
+        )
+
+    return send_file(
+        BytesIO(binary_data),
+        as_attachment=True,
+        download_name='binary_data',
+        mimetype='application/octet-stream'
+    )
 
 
 @blueprint.route(
