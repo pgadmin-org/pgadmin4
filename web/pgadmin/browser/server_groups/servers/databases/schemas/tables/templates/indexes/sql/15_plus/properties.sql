@@ -49,8 +49,10 @@ SELECT DISTINCT ON (cls.relname)
     COALESCE(
         substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int,
         CASE am.amname
-            WHEN 'btree' THEN 100
+            WHEN 'btree' THEN 90
             WHEN 'gist' THEN 90
+            WHEN 'hash' THEN 75
+            WHEN 'spgist' THEN 90
             ELSE NULL
         END
     ) AS fillfactor,
