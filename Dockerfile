@@ -165,8 +165,7 @@ RUN apk update && apk upgrade && \
         tzdata \
         libedit \
         libldap \
-        libcap \
-        su-exec && \
+        libcap && \
     rm -rf /var/cache/apk/*
 
 # Copy in the Python packages
@@ -206,6 +205,8 @@ RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.[0-9][0-9] && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
+
+USER 5050
 
 # Finish up
 VOLUME /var/lib/pgadmin
