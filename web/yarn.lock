@@ -5257,7 +5257,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:^9.0.0, bignumber.js@npm:^9.2.0":
+"bignumber.js@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "bignumber.js@npm:10.0.2"
+  checksum: 10c0/471a17d851d275e458156d090c028b8851c84389dc41db79b08dd584b4df1e4d24f70b1684705a5974aec6c59dc8511337007e01bd78d8ed8d93e1a541356a7f
+  languageName: node
+  linkType: hard
+
+"bignumber.js@npm:^9.0.0":
   version: 9.3.1
   resolution: "bignumber.js@npm:9.3.1"
   checksum: 10c0/61342ba5fe1c10887f0ecf5be02ff6709271481aff48631f86b4d37d55a99b87ce441cfd54df3d16d10ee07ceab7e272fc0be430c657ffafbbbf7b7d631efb75
@@ -12935,7 +12942,7 @@ __metadata:
     axios-mock-adapter: "npm:^2.1.0"
     babel-loader: "npm:^10.0.0"
     babelify: "npm:~10.0.0"
-    bignumber.js: "npm:^9.2.0"
+    bignumber.js: "npm:^10.0.2"
     brace: "npm:^0.11.1"
     browserify: "npm:^17.0.0"
     buffer: "npm:^6.0.3"
