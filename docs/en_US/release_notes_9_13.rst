@@ -26,7 +26,6 @@ New features
   | `Issue #8198 <https://github.com/pgadmin-org/pgadmin4/issues/8198>`_ - Allow "drag-n-drop" for only user chosen tables, and show relations between them.
   | `Issue #9229 <https://github.com/pgadmin-org/pgadmin4/issues/9229>`_ - Load predefined users from a JSON file through command line.
   | `Issue #9641 <https://github.com/pgadmin-org/pgadmin4/issues/9641>`_ - Core LLM integration infrastructure, AI reports for security, schema, and performance, AI chat for the Query Tool, and AI Insights for EXPLAIN.
-  | `Issue #9657 <https://github.com/pgadmin-org/pgadmin4/issues/9657>`_ - Customize container user permissions using PUID and PGID.
 
 Housekeeping
 ************
