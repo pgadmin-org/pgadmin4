@@ -43,5 +43,3 @@ Bug fixes
   | `Issue #9583 <https://github.com/pgadmin-org/pgadmin4/issues/9583>`_ - Fix translation compilation.
   | `Issue #9649 <https://github.com/pgadmin-org/pgadmin4/issues/9649>`_ - Fix broken checkbox selection in backup dialog objects tree.
   | `Issue #9651 <https://github.com/pgadmin-org/pgadmin4/issues/9651>`_ - Fixed an issue in file dialog where rename was not working.
-
-
