@@ -707,7 +707,7 @@ class OAuth2Authentication(BaseAuthentication):
         if not isinstance(additional_claims, dict):
             reason = gettext("Additional claim check config is not a dict.")
             return (False, reason)
-        if additional_claims.keys() is None:
+        if len(additional_claims.keys()) == 0:
             reason = gettext("Additional claim check config dict is empty.")
             return (False, reason)
         for key in additional_claims.keys():
