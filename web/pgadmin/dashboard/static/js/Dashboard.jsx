@@ -1064,7 +1064,7 @@ function Dashboard({
                 {!_.isUndefined(preferences) && preferences.show_activity && (
                   <Fragment>
                     <CustomRefresh refresh={refresh} setRefresh={setRefresh}/>
-                    <SectionContainer title={gettext('Sessions')}>
+                    <SectionContainer title={gettext('Sessions')} resizable={true}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -1074,7 +1074,7 @@ function Dashboard({
                         schema={activeQSchemaObj}
                       ></PgTable>
                     </SectionContainer>
-                    <SectionContainer title={gettext('Locks')}>
+                    <SectionContainer title={gettext('Locks')} resizable={true}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
@@ -1082,7 +1082,7 @@ function Dashboard({
                         data={(dashData?.[0]?.['locks']) || []}
                       ></PgTable>
                     </SectionContainer>
-                    <SectionContainer title={gettext('Prepared Transactions')}>
+                    <SectionContainer title={gettext('Prepared Transactions')} resizable={true}>
                       <PgTable
                         caveTable={false}
                         tableNoBorder={false}
