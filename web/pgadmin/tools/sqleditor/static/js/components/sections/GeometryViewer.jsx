@@ -50,8 +50,6 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
-const PK_COLUMN_NAMES = ['id', 'oid'];
-
 function parseEwkbData(rows, column) {
   let key = column.key;
   const maxRenderByteLength = 20 * 1024 * 1024; //render geometry data up to 20MB
@@ -194,41 +192,6 @@ function parseData(rows, columns, column) {
   };
 }
 
-// Find primary key column i.e a column with unique values from columns array in Data Output tab
-function findPkColumn(columns) {
-  return columns.find(c => PK_COLUMN_NAMES.includes(c.name));
-}
-
-// Hash function for row objects
-function hashRow(row) {
-  const str = Object.keys(row).sort().map(k => `${k}:${row[k]}`).join('|');
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return `hash_${hash}`;
-}
-
-// Get unique row identifier using PK column or first column
-function getRowIdentifier(row, pkColumn, columns) {
-  if (pkColumn?.key && row[pkColumn.key] !== undefined) {
-    return row[pkColumn.key];
-  }
-  const firstKey = columns[0]?.key;
-  if (firstKey && row[firstKey] !== undefined) {
-    return row[firstKey];
-  }
-  return hashRow(row);
-}
-
-// Match rows from previous selection to current rows
-function matchRowSelection(prevIdentifiers, currentRows, pkColumn, columns) {
-  if (prevIdentifiers.size === 0) return [];
-  
-  return currentRows.filter(row => prevIdentifiers.has(getRowIdentifier(row, pkColumn, columns)));
-}
 
 function PopupTable({data}) {
 
@@ -485,86 +448,8 @@ export function GeometryViewer({rows, columns, column}) {
   const contentRef = React.useRef();
   const queryToolCtx = React.useContext(QueryToolContext);
 
-  // Track previous column state AND selected row data
-  const prevStateRef = React.useRef({
-    columnKey: null,
-    columnNames: null,
-    selectedRowIdentifiers: new Set(),
-  });
-
-  const [mapKey, setMapKey] = React.useState(0);
   const currentColumnKey = useMemo(() => column?.key, [column]);
-  const currentColumnNames = React.useMemo(
-    () => columns.map(c => c.key).sort().join(','),
-    [columns]
-  );
 
-  const pkColumn = useMemo(() => findPkColumn(columns), [columns]);
-
-  // Detect when to clear, filter, or re-render the map based on changes in geometry column, columns list, or rows
-  useEffect(() => {
-    const prevState = prevStateRef.current;
-
-    if (!currentColumnKey) {
-      setMapKey(prev => prev + 1);
-      prevStateRef.current = {
-        columnKey: null,
-        columnNames: null,
-        selectedRowIdentifiers: new Set(),
-      };
-      return;
-    }
-
-    if (currentColumnKey !== prevState.columnKey || 
-        currentColumnNames !== prevState.columnNames) {
-      setMapKey(prev => prev + 1);
-      prevStateRef.current = {
-        columnKey: currentColumnKey,
-        columnNames: currentColumnNames,
-        selectedRowIdentifiers: new Set(rows.map(r => getRowIdentifier(r, pkColumn, columns))),
-      };
-      return;
-    }
-
-    if (currentColumnKey === prevState.columnKey && 
-        currentColumnNames === prevState.columnNames &&
-        rows.length > 0) {
-      prevStateRef.current.selectedRowIdentifiers = new Set(
-        displayRows.map(r => getRowIdentifier(r, pkColumn, columns))
-      );
-    }
-  }, [currentColumnKey, currentColumnNames, rows, pkColumn, columns]);
-
-  // Get rows to display based on selection
-  const displayRows = React.useMemo(() => {
-    // No geometry column selected or no rows available - nothing to display
-    if (!currentColumnKey || rows.length === 0) return [];
-    const prevState = prevStateRef.current;
-
-    // Column context changed (different geometry column or different query schema)
-    // Show all new rows since previous selection is no longer valid
-    if (currentColumnKey !== prevState.columnKey || currentColumnNames !== prevState.columnNames) {
-      return rows;
-    }
-
-    const prevIdentifiers = prevState.selectedRowIdentifiers;
-    // No previous selection recorded - show all rows
-    if (prevIdentifiers.size === 0) return rows;
-
-    // Previous selection was a subset of total rows, meaning user had specific rows selected.
-    // Try to match those previously selected rows in the new result set using stable
-    // row identifiers (PK value, first column value, or hash fallback).
-    // This handles the case where same query reruns with more/fewer rows
-    if (prevIdentifiers.size < rows.length) {
-      const matched = matchRowSelection(prevIdentifiers, rows, pkColumn, columns);
-      // If matched rows found, show only those; otherwise fall back to all rows
-      return matched.length > 0 ? matched : rows;
-    }
-    // Previous selection covered all rows (or same count) - show all current rows
-    return rows;
-  }, [rows, currentColumnKey, currentColumnNames, pkColumn, columns]);
-
-  // Parse geometry data only when needed
   const data = React.useMemo(() => {
     if (!currentColumnKey) {
       const hasGeometryColumn = columns.some(c => c.cell === 'geometry' || c.cell === 'geography');
@@ -577,8 +462,8 @@ export function GeometryViewer({rows, columns, column}) {
           : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
       };
     }
-    return parseData(displayRows, columns, column);
-  }, [displayRows, columns, column, currentColumnKey]);
+    return parseData(rows, columns, column);
+  }, [rows, columns, column, currentColumnKey]);
 
   useEffect(()=>{
     let timeoutId;
@@ -599,9 +484,9 @@ export function GeometryViewer({rows, columns, column}) {
     };
   }, [queryToolCtx]);
 
-  // Dynamic CRS is not supported. Use srid and mapKey as key and recreate the map on change
+  // Dynamic CRS is not supported. Use srid and column key as key and recreate the map on change
   return (
-    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${mapKey}`}>
+    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${currentColumnKey || 'none'}`}>
       <MapContainer
         crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
