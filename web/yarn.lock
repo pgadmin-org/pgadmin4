@@ -13010,7 +13010,7 @@ __metadata:
     sql-formatter: "npm:^15.6.10"
     style-loader: "npm:^4.0.0"
     stylis: "npm:^4.3.4"
-    svgo: "npm:^4.0.0"
+    svgo: "npm:^4.0.1"
     svgo-loader: "npm:^4.0.0"
     terser-webpack-plugin: "npm:^5.3.12"
     typescript: "npm:^5.9.2"
@@ -13105,7 +13105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sax@npm:^1.2.4, sax@npm:^1.4.1":
+"sax@npm:^1.2.4, sax@npm:^1.4.1, sax@npm:^1.5.0":
   version: 1.5.0
   resolution: "sax@npm:1.5.0"
   checksum: 10c0/bc3b60a7bfecd40b18256596e96b32df2488339ae1e00a77f842b568f0831228a16c3bd357ec500241ec0b9dc7a475a1286427795c4a8c50bb8e8878f3435dd8
@@ -14139,6 +14139,23 @@ __metadata:
   bin:
     svgo: ./bin/svgo.js
   checksum: 10c0/2b01c910d59d10bb15e17714181a8fa96531b09a4e2cf2ca1abe24dbcb8400725b6d542d6e456c62222546e334d5b344799c170c5b6be0c48e31b02c23297275
+  languageName: node
+  linkType: hard
+
+"svgo@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "svgo@npm:4.0.1"
+  dependencies:
+    commander: "npm:^11.1.0"
+    css-select: "npm:^5.1.0"
+    css-tree: "npm:^3.0.1"
+    css-what: "npm:^6.1.0"
+    csso: "npm:^5.0.5"
+    picocolors: "npm:^1.1.1"
+    sax: "npm:^1.5.0"
+  bin:
+    svgo: ./bin/svgo.js
+  checksum: 10c0/f61f9957b42e0c97593b49a01f3b93cb239b2e818efccb056fcc866d622704d9021c4ef8bd0287264c3e4f33da60e4af14d841b4a624b87ff8888e3b896d13d5
   languageName: node
   linkType: hard
 
