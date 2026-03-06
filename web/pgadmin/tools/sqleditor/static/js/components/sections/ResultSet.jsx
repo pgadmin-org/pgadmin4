@@ -876,6 +876,16 @@ export function ResultSet() {
   rsu.current.setLoaderText = setLoaderText;
 
   const isDataChangedRef = useRef(false);
+  const lastGvSelectionRef = useRef({
+    type: 'all',       // 'all' | 'rows' | 'columns' | 'range' | 'cell'
+    geometryColumnKey: null,
+    rowIndices: [],
+    columnIndices: new Set(),
+    rangeStartIdx: null,
+    rangeEndIdx: null,
+    cellIdx: null,
+  });
+
   useEffect(()=>{
     isDataChangedRef.current = Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
   }, [dataChangeStore]);
@@ -1460,30 +1470,103 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const openGeometryViewerTab = React.useCallback((column, rowsData) => {
+    layoutDocker.openTab({
+      id: PANELS.GEOMETRY,
+      title: gettext('Geometry Viewer'),
+      content: <GeometryViewer rows={rowsData} columns={columns} column={column}/>,
+      closable: true,
+    }, PANELS.MESSAGES, 'after-tab', true);
+  }, [layoutDocker, columns]);
+
+  // Handle manual Geometry Viewer opening.
+  // Determines which rows to plot based on the current grid selection (rows, columns,
+  // range, or cell) and stores the selection indices in lastGvSelectionRef so the
+  // auto-update effect can re-apply the same selection on subsequent query re-runs.
   useEffect(()=>{
     const renderGeometries = (column)=>{
+      const defaultSel = { geometryColumnKey: column?.key, rowIndices: [], columnIndices: new Set(), rangeStartIdx: null, rangeEndIdx: null, cellIdx: null };
       let selRowsData = rows;
-      if(selectedRows.size != 0) {
-        selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+
+      if(selectedRows.size > 0) {
+        // Specific rows selected in the grid — plot only those rows
+        const rowIndices = [];
+        rows.forEach((r, i) => {
+          if(selectedRows.has(rowKeyGetter(r))) {
+            rowIndices.push(i);
+          }
+        });
+        selRowsData = rowIndices.map(i => rows[i]);
+        lastGvSelectionRef.current = { ...defaultSel, type: 'rows', rowIndices };
       } else if(selectedColumns.size > 0) {
-        let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
-        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
+        // Specific columns selected — plot all rows but only with selected column data
+        let selectedCols = _.filter(columns, (_c, i) => selectedColumns.has(i + 1));
+        selRowsData = _.map(rows, (r) => _.pick(r, _.map(selectedCols, (c) => c.key)));
+        lastGvSelectionRef.current = { ...defaultSel, type: 'columns', columnIndices: new Set(selectedColumns) };
       } else if(selectedRange.current) {
+        // Cell range selected — plot the rows within the range
         let [,, startRowIdx, endRowIdx] = getRangeIndexes();
-        selRowsData = rows.slice(startRowIdx, endRowIdx+1);
+        selRowsData = rows.slice(startRowIdx, endRowIdx + 1);
+        lastGvSelectionRef.current = { ...defaultSel, type: 'range', rangeStartIdx: startRowIdx, rangeEndIdx: endRowIdx };
       } else if(selectedCell.current?.[0]) {
+        // Single cell selected — plot only that row
+        const cellIdx = rows.indexOf(selectedCell.current[0]);
         selRowsData = [selectedCell.current[0]];
+        lastGvSelectionRef.current = { ...defaultSel, type: 'cell', cellIdx: cellIdx >= 0 ? cellIdx : null };
+      } else {
+        // No selection — plot all rows
+        lastGvSelectionRef.current = { ...defaultSel, type: 'all' };
       }
-      layoutDocker.openTab({
-        id: PANELS.GEOMETRY,
-        title:gettext('Geometry Viewer'),
-        content: <GeometryViewer rows={selRowsData} columns={columns} column={column} />,
-        closable: true,
-      }, PANELS.MESSAGES, 'after-tab', true);
+
+      openGeometryViewerTab(column, selRowsData);
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
-  }, [rows, columns, selectedRows.size, selectedColumns.size]);
+  }, [openGeometryViewerTab, eventBus, rows, columns, selectedRows, selectedColumns]);
+
+  // Auto-update Geometry Viewer when rows/columns change
+  useEffect(()=>{
+    if(layoutDocker.isTabOpen(PANELS.GEOMETRY)) {
+      const lastGeomKey = lastGvSelectionRef.current.geometryColumnKey;
+      const matchedGeomCol = lastGeomKey
+        ? columns.find(c => c.key === lastGeomKey && (c.cell === 'geometry' || c.cell === 'geography'))
+        : null;
+
+      if(matchedGeomCol) {
+        // Previously plotted geometry column still exists → re-apply selection and re-render
+        const lastSel = lastGvSelectionRef.current;
+        let selRowsData = rows;
+
+        // Re-apply row selection — plot only previously selected rows if indices are still valid
+        if(lastSel.type === 'rows' && lastSel.rowIndices.length > 0) {
+          if(lastSel.rowIndices.every(idx => idx < rows.length)) {
+            selRowsData = lastSel.rowIndices.map(idx => rows[idx]);
+          }
+        // Re-apply column selection — filter each row to only the previously selected columns
+        } else if(lastSel.type === 'columns' && lastSel.columnIndices.size > 0) {
+          let selectedCols = _.filter(columns, (_c, i) => lastSel.columnIndices.has(i + 1));
+          if(selectedCols.length > 0) {
+            selRowsData = _.map(rows, (r) => _.pick(r, _.map(selectedCols, (c) => c.key)));
+          }
+        // Re-apply range selection — plot the previously selected row range if bounds are still valid
+        } else if(lastSel.type === 'range' && lastSel.rangeStartIdx != null) {
+          if(lastSel.rangeStartIdx < rows.length && lastSel.rangeEndIdx < rows.length) {
+            selRowsData = rows.slice(lastSel.rangeStartIdx, lastSel.rangeEndIdx + 1);
+          }
+        // Re-apply single cell selection — plot the row of the previously selected cell if still valid
+        } else if(lastSel.type === 'cell' && lastSel.cellIdx != null) {
+          if(lastSel.cellIdx < rows.length) {
+            selRowsData = [rows[lastSel.cellIdx]];
+          }
+        }
+        // If any validation fails above, selRowsData remains as all rows (default)
+        openGeometryViewerTab(matchedGeomCol, selRowsData);
+      } else {
+        // Previously plotted geometry column not found - clear GV
+        openGeometryViewerTab(null, []);
+      }
+    }
+  }, [rows, columns, layoutDocker]);
 
   const triggerResetScroll = () => {
     // Reset the scroll position to previously saved location.
