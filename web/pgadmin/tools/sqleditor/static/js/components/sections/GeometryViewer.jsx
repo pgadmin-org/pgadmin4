@@ -18,6 +18,7 @@ import gettext from 'sources/gettext';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
+import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 
@@ -351,23 +352,15 @@ function TheMap({data}) {
   return (
     <>
       {data.infoList.length > 0 && (
-        <div style={{
+        <EmptyPanelMessage text={data.infoList.join(' ')} style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
           zIndex: 1000,
-          maxWidth: '80%',
-          textAlign: 'center',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          fontSize: '16px',
           pointerEvents: 'none',
-        }}>
-          {data.infoList.map((info, idx) => (
-            <div key={idx}>{info}</div>
-          ))}
-        </div>
+        }} />
       )}
       {data.selectedSRID === 4326 &&
       <LayersControl position="topright">

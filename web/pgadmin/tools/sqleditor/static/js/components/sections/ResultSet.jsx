@@ -1537,28 +1537,32 @@ export function ResultSet() {
         const lastSel = lastGvSelectionRef.current;
         let selRowsData = rows;
 
+        // Re-apply row selection — plot only previously selected rows if indices are still valid
         if(lastSel.type === 'rows' && lastSel.rowIndices.length > 0) {
           if(lastSel.rowIndices.every(idx => idx < rows.length)) {
             selRowsData = lastSel.rowIndices.map(idx => rows[idx]);
           }
+        // Re-apply column selection — filter each row to only the previously selected columns
         } else if(lastSel.type === 'columns' && lastSel.columnIndices.size > 0) {
           let selectedCols = _.filter(columns, (_c, i) => lastSel.columnIndices.has(i + 1));
           if(selectedCols.length > 0) {
             selRowsData = _.map(rows, (r) => _.pick(r, _.map(selectedCols, (c) => c.key)));
           }
+        // Re-apply range selection — plot the previously selected row range if bounds are still valid
         } else if(lastSel.type === 'range' && lastSel.rangeStartIdx != null) {
           if(lastSel.rangeStartIdx < rows.length && lastSel.rangeEndIdx < rows.length) {
             selRowsData = rows.slice(lastSel.rangeStartIdx, lastSel.rangeEndIdx + 1);
           }
+        // Re-apply single cell selection — plot the row of the previously selected cell if still valid
         } else if(lastSel.type === 'cell' && lastSel.cellIdx != null) {
           if(lastSel.cellIdx < rows.length) {
             selRowsData = [rows[lastSel.cellIdx]];
           }
         }
-
+        // If any validation fails above, selRowsData remains as all rows (default)
         openGeometryViewerTab(matchedGeomCol, selRowsData);
       } else {
-        // Previously plotted geometry column not found → clear GV
+        // Previously plotted geometry column not found - clear GV
         openGeometryViewerTab(null, []);
       }
     }
