@@ -444,11 +444,17 @@ Use the fields on the *File Downloads* panel to manage file downloads related pr
 
 * When the *Automatically open downloaded files?* switch is set to *True*
   the downloaded file will automatically open in the system's default
-  application associated with that file type.
+  application associated with that file type. **Note:** This option is applicable and
+  visible only in desktop mode.
+
+* When the *Enable binary data download?* switch is set to *True*,
+  binary data can be downloaded from the result grid. Default is set to *False*
+  to prevent excessive memory usage on the server.
 
 * When the *Prompt for the download location?* switch is set to *True*
   a prompt will appear after clicking the download button, allowing you
-  to choose the download location.
+  to choose the download location. **Note:** This option is applicable and
+  visible only in desktop mode.
 
 **Note:** File Downloads related settings are applicable and visible only in desktop mode.
 
