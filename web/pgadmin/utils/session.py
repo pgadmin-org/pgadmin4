@@ -123,7 +123,7 @@ class CachingSessionManager(SessionManager):
         # or None if it hasn't been set yet.
         try:
             return _session['_id'] is not None
-        except (AssertionError, RuntimeError, KeyError):
+        except (AssertionError, RuntimeError, KeyError, TypeError):
             return False
 
     def new_session(self):
