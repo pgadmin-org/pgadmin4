@@ -2221,7 +2221,6 @@ def download_binary_data(trans_id):
         return internal_server_error(
             errormsg=gettext('No active result cursor.')
         )
-    register_binary_data_typecasters(cur)
 
     data = request.values if request.values else request.get_json(silent=True)
     if data is None:
@@ -2234,12 +2233,23 @@ def download_binary_data(trans_id):
         )
 
     try:
+        register_binary_data_typecasters(cur)
         row_pos = int(data['rowpos'])
         col_pos = int(data['colpos'])
         if row_pos < 0 or col_pos < 0:
             raise ValueError
-        cur.scroll(row_pos)
-        row = cur.fetchone()
+
+        # Save the current cursor position
+        saved_pos = cur.rownumber if cur.rownumber is not None else 0
+
+        try:
+            # Scroll to the requested row and fetch it
+            cur.scroll(row_pos, mode='absolute')
+            row = cur.fetchone()
+        finally:
+            # Always restore the cursor position
+            cur.scroll(saved_pos, mode='absolute')
+
         if row is None or col_pos >= len(row):
             return internal_server_error(
                 errormsg=gettext('Requested cell is out of range.')

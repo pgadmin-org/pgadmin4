@@ -258,20 +258,12 @@ class ByteaBinaryLoader(Loader):
 class ByteaDataLoader(Loader):
     # Loads the actual binary data.
     def load(self, data):
-        if data:
-            if isinstance(data, memoryview):
-                data = bytes(data).decode()
-                if data.startswith('\\x'):
-                    data = data[2:]
-                try:
-                    return bytes.fromhex(data)
-                except ValueError:
-                    # In case of error while converting hex to bytes, return
-                    # original data.
-                    return data
-            else:
-                return data
-        return data if data is not None else None
+        if data is None:
+            return None
+        raw = bytes(data) if isinstance(data, memoryview) else data
+        if isinstance(raw, str) and raw.startswith('\\x'):
+            return bytes.fromhex(raw[2:])
+        return raw
 
 
 class ByteaBinaryDataLoader(Loader):
