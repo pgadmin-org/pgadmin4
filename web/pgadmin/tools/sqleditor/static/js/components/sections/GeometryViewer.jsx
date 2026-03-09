@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useEffect, useRef }  from 'react';
+import React, { useEffect, useRef, useMemo }  from 'react';
 import { styled } from '@mui/material/styles';
 import ReactDOMServer from 'react-dom/server';
 import _ from 'lodash';
@@ -18,10 +18,12 @@ import gettext from 'sources/gettext';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
+import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 
 const StyledBox = styled(Box)(({theme}) => ({
+  position: 'relative',
   '& .GeometryViewer-mapContainer': {
     backgroundColor: theme.palette.background.default,
     height: '100%',
@@ -191,6 +193,7 @@ function parseData(rows, columns, column) {
   };
 }
 
+
 function PopupTable({data}) {
 
   return (
@@ -285,20 +288,10 @@ GeoJsonLayer.propTypes = {
 
 function TheMap({data}) {
   const mapObj = useMap();
-  const infoControl = useRef(null);
   const resetLayersKey = useRef(0);
   const zoomControlWithHome = useRef(null);
   const homeCoordinates = useRef(null);
   useEffect(()=>{
-    infoControl.current = Leaflet.control({position: 'topright'});
-    infoControl.current.onAdd = function () {
-      let ele = Leaflet.DomUtil.create('div', 'geometry-viewer-info-control');
-      ele.innerHTML = data.infoList.join('<br />');
-      return ele;
-    };
-    if(data.infoList.length > 0) {
-      infoControl.current.addTo(mapObj);
-    }
     resetLayersKey.current++;
 
     zoomControlWithHome.current = Leaflet.control.zoom({
@@ -348,7 +341,6 @@ function TheMap({data}) {
     zoomControlWithHome.current.addTo(mapObj);
 
     return ()=>{
-      infoControl.current?.remove();
       zoomControlWithHome.current?.remove();
     };
   }, [data]);
@@ -359,6 +351,17 @@ function TheMap({data}) {
 
   return (
     <>
+      {data.infoList.length > 0 && (
+        <EmptyPanelMessage text={data.infoList.join(' ')} style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1000,
+          pointerEvents: 'none',
+        }} />
+      )}
       {data.selectedSRID === 4326 &&
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name={gettext('Empty')}>
@@ -436,25 +439,47 @@ export function GeometryViewer({rows, columns, column}) {
 
   const mapRef = React.useRef();
   const contentRef = React.useRef();
-  const data = parseData(rows, columns, column);
   const queryToolCtx = React.useContext(QueryToolContext);
+
+  const currentColumnKey = useMemo(() => column?.key, [column]);
+
+  const data = React.useMemo(() => {
+    if (!currentColumnKey) {
+      const hasGeometryColumn = columns.some(c => c.cell === 'geometry' || c.cell === 'geography');
+      return {
+        'geoJSONs': [],
+        'selectedSRID': 0,
+        'getPopupContent': undefined,
+        'infoList': hasGeometryColumn
+          ? [gettext('Query complete. Use the Geometry Viewer button in the Data Output tab to visualize results.')]
+          : [gettext('No spatial data found. At least one geometry or geography column is required for visualization.')],
+      };
+    }
+    return parseData(rows, columns, column);
+  }, [rows, columns, column, currentColumnKey]);
 
   useEffect(()=>{
     let timeoutId;
     const contentResizeObserver = new ResizeObserver(()=>{
       clearTimeout(timeoutId);
-      if(queryToolCtx.docker.isTabVisible(PANELS.GEOMETRY)) {
+      if(queryToolCtx?.docker?.isTabVisible(PANELS.GEOMETRY)) {
         timeoutId = setTimeout(function () {
           mapRef.current?.invalidateSize();
         }, 100);
       }
     });
-    contentResizeObserver.observe(contentRef.current);
-  }, []);
+    if(contentRef.current) {
+      contentResizeObserver.observe(contentRef.current);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+      contentResizeObserver.disconnect();
+    };
+  }, [queryToolCtx]);
 
-  // Dyanmic CRS is not supported. Use srid as key and recreate the map on change
+  // Dynamic CRS is not supported. Use srid and column key as key and recreate the map on change
   return (
-    <StyledBox ref={contentRef} width="100%" height="100%" key={data.selectedSRID}>
+    <StyledBox ref={contentRef} width="100%" height="100%" key={`${data.selectedSRID}-${currentColumnKey || 'none'}`}>
       <MapContainer
         crs={data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple}
         zoom={2} center={[20, 100]}
