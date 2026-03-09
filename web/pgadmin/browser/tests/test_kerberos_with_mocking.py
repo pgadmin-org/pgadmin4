@@ -57,7 +57,7 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         except ImportError as e:
             self.skipTest("Import Error: GSSAPI module couldn't be loaded. " +
                           str(e))
-        except OSError:
+        except OSError as e:
             self.skipTest("OS Error: GSSAPI module couldn't be loaded. " +
                           str(e))
 
