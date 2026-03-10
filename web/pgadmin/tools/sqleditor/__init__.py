@@ -2232,38 +2232,7 @@ def download_binary_data(trans_id):
             )
         )
 
-    try:
-        register_binary_data_typecasters(cur)
-        row_pos = int(data['rowpos'])
-        col_pos = int(data['colpos'])
-        if row_pos < 0 or col_pos < 0:
-            raise ValueError
-
-        # Save the current cursor position
-        saved_pos = cur.rownumber if cur.rownumber is not None else 0
-
-        try:
-            # Scroll to the requested row and fetch it
-            cur.scroll(row_pos, mode='absolute')
-            row = cur.fetchone()
-        finally:
-            # Always restore the cursor position
-            cur.scroll(saved_pos, mode='absolute')
-
-        if row is None or col_pos >= len(row):
-            return internal_server_error(
-                errormsg=gettext('Requested cell is out of range.')
-            )
-        binary_data = row[col_pos]
-    except (ValueError, IndexError, TypeError) as e:
-        current_app.logger.error(e)
-        return internal_server_error(
-            errormsg='Invalid row/column position.'
-        )
-    finally:
-        # Always restore the original typecasters
-        # (works on connection or cursor)
-        register_binary_typecasters(cur)
+    binary_data = conn.download_binary_data(cur, data)
 
     if binary_data is None:
         return bad_request(

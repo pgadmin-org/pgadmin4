@@ -261,8 +261,8 @@ class ByteaDataLoader(Loader):
         if data is None:
             return None
         raw = bytes(data) if isinstance(data, memoryview) else data
-        if isinstance(raw, str) and raw.startswith('\\x'):
-            return bytes.fromhex(raw[2:])
+        if isinstance(raw, bytes) and raw.startswith(b'\\x'):
+            return bytes.fromhex(raw[2:].decode())
         return raw
 
 
