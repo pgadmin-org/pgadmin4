@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  pgAdmin4\n"
 "Report-Msgid-Bugs-To: oon@oo.or.id\n"
-"POT-Creation-Date: 2026-02-26 18:55+0530\n"
+"POT-Creation-Date: 2026-03-10 11:16+0300\n"
 "PO-Revision-Date: 2024-06-08 07:54+0000\n"
 "Last-Translator: kiraware <kiraware@github.com>\n"
 "Language: id\n"
@@ -18,7 +18,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -881,6 +881,7 @@ msgid "Toggle comment"
 msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:109
+#: pgadmin/tools/ep/__init__.py:57
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Format SQL"
 msgstr "Format SQL"
@@ -11352,6 +11353,8 @@ msgid "Activity"
 msgstr "Aktivitas"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:319
+#: pgadmin/tools/ep/__init__.py:36 pgadmin/tools/ep/__init__.py:44
+#: pgadmin/tools/ep/__init__.py:51 pgadmin/tools/ep/__init__.py:58
 msgid "Configuration"
 msgstr "Konfigurasi"
 
@@ -13901,7 +13904,7 @@ msgid "All Files"
 msgstr "Semua data"
 
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:146
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:171
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:173
 msgid "No files/folders found"
 msgstr "Tidak ada file/folder yang ditemukan"
 
@@ -13926,7 +13929,7 @@ msgstr "Batas ukuran file (per file) adalah %s MB."
 msgid "The master password is not set."
 msgstr "Sandi utama tidak tersedia."
 
-#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:87
+#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:90
 #: pgadmin/tools/schema_diff/__init__.py:117
 #: pgadmin/tools/sqleditor/__init__.py:177
 msgid "This URL cannot be requested directly."
@@ -14746,6 +14749,7 @@ msgid "Heap Blocks"
 msgstr "Blok Heap"
 
 #: pgadmin/static/js/Explain/index.jsx:513
+#: pgadmin/tools/ep/static/js/ExplainPostgreSQL/index.jsx:28
 msgid ""
 "Use the Explain/Explain Analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
@@ -14759,7 +14763,7 @@ msgstr ""
 msgid "Analysis"
 msgstr ""
 
-#: pgadmin/static/js/PgTreeView/index.jsx:144
+#: pgadmin/static/js/PgTreeView/index.jsx:185
 msgid "No objects are found to display"
 msgstr "Tidak ada objek yang ditemukan untuk ditampilkan"
 
@@ -15015,12 +15019,12 @@ msgstr "Pratinjau tidak tersedia..."
 msgid "Accesskey"
 msgstr "Accesskey"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:316
 msgid "Copied!"
 msgstr "Disalin!"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:308
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:311
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:418
@@ -15939,6 +15943,43 @@ msgstr "Atur ulang tata letak"
 msgid "Debugger - "
 msgstr "Debugger - "
 
+#: pgadmin/tools/ep/__init__.py:26
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1030
+msgid "Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:35
+msgid "Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:37
+msgid "Explain PostgreSQL API endpoint (e.g. https://explain-postgresql.com)"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:43
+msgid "Private Plans"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:45
+msgid "Hide plans from public access on Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:50
+msgid "Explain Plan"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:52
+msgid "Analyze query plan via Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:59
+msgid "Format SQL using Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:92 pgadmin/tools/ep/__init__.py:117
+msgid "Failed to post data to the Explain Postgresql API"
+msgstr ""
+
 #: pgadmin/tools/erd/__init__.py:50
 msgid "ERD tool"
 msgstr "Alat ERD"
@@ -16242,8 +16283,8 @@ msgstr "Mengambil data skema..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:113
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:335
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:964
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1164
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:976
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
 msgid "Unsaved changes"
 msgstr "Perubahan belum disimpan"
 
@@ -17709,27 +17750,27 @@ msgstr "Kelola Makro"
 msgid "Sort/Filter options"
 msgstr "Opsi Sortir/Filter"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
 msgstr "Sesi ini tidak ada aktivitas dan tidak ada transaksi saat ini."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
 msgstr "Perintah saat ini sedang berlangsung."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
 msgstr "Sesi ini tidak ada aktivitas di blok transaksi yang valid."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
 msgstr "Sesi ini tidak ada aktivitas di blok transaksi yang gagal."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:104
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
 msgstr "Koneksi dengan server buruk."
@@ -17812,51 +17853,63 @@ msgstr "(Mendapatkan koneksi)"
 msgid "New query tool for current connection"
 msgstr "Alat kueri baru untuk koneksi saat ini"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:102
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr "%s geometri %s yang dibentuk (rendered)."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:105
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:107
 msgid "3D geometries not rendered."
 msgstr "Geometri 3D tidak diberikan."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:108
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:110
 msgid "Unsupported geometries not rendered."
 msgstr "Geometri yang tidak didukung tidak dibentuk (rendered)."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:124
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:126
 msgid "Empty row."
 msgstr "Baris kosong."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:183
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:185
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr "Geometri dengan %s non-SRID tidak dibentuk (rendered)."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
 msgid "Empty"
 msgstr "Kosong"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:369
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:372
 msgid "Street"
 msgstr "Jalan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:376
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:379
 msgid "Topography"
 msgstr "Topografi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:387
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:390
 msgid "Gray Style"
 msgstr "Gaya Gray"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:398
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:401
 msgid "Light Color"
 msgstr "Warna terang"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:409
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:412
 msgid "Dark Matter"
 msgstr "Materi Gelap"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:454
+msgid ""
+"Query complete. Use the Geometry Viewer button in the Data Output tab to "
+"visualize results."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:455
+msgid ""
+"No spatial data found. At least one geometry or geography column is "
+"required for visualization."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
@@ -17997,7 +18050,7 @@ msgid "Execute options"
 msgstr "Opsi eksekusi"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:567
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:928
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:940
 #: pgadmin/utils/constants.py:25
 msgid "Explain"
 msgstr "Jelaskan"
@@ -18288,70 +18341,70 @@ msgstr "Tampilkan pertanyaan yang dihasilkan secara internal oleh pgAdmin?"
 msgid "Remove All"
 msgstr "Hapus semua"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:144
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "hr"
 msgstr "jam"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
 msgid "min"
 msgstr "mnt"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
 msgid "secs"
 msgstr "dtk"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:148
 msgid "msec"
 msgstr "mdtk"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
 msgid "Refetching latest results..."
 msgstr "Mengambil hasil terbaru..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:901
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:913
 msgid "Waiting for the query to complete..."
 msgstr "Menunggu kueri selesai..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:365
 msgid "Connection Error"
 msgstr "Kesalahan Koneksi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:367
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:368
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:369
 msgid "Execution Cancelled!"
 msgstr "Eksekusi Dibatalkan!"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:370
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:371
 msgid "Execution Cancelled"
 msgstr "Eksekusi Dibatalkan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:441
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:442
 msgid "Server Connected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:725
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:726
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:66
 msgid "Query complete"
 msgstr "Kueri lengkap"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:728
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:729
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "Kueri berhasil kembali dalam %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:734
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "Berhasil dioperasikan. Total runtime kueri: %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:736
 #, python-format
 msgid "%s rows affected."
 msgstr "%s baris terpengaruh."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:965
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1165
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:977
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1192
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
@@ -18359,50 +18412,50 @@ msgstr ""
 "Data telah dimodifikasi, tetapi tidak disimpan. Apakah Anda yakin ingin "
 "mengabaikan perubahan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:980
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:992
 msgid "Applying the new filter..."
 msgstr "Menerapkan filter baru..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1034
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1061
 msgid "Downloading results..."
 msgstr "Mengunduh hasil..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1036
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1063
 #, python-format
 msgid "Downloading results(%s)..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1042
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1069
 msgid "Setting the limit on the result..."
 msgstr "Mengatur batas hasil..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1056
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1083
 msgid "Removing the filter..."
 msgstr "Menghapus filter..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1117
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1144
 msgid "Fetching rows..."
 msgstr "Mengambil baris..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1218
 msgid "Save data changes?"
 msgstr "Simpan perubahan data?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1194
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1221
 msgid "The data has changed. Do you want to save changes?"
 msgstr "Data telah berubah. Apakah Anda ingin menyimpan perubahan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1220
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
 msgid "Saving data..."
 msgstr "Menyimpan data..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1274
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 "Kueri ini dihasilkan oleh pgAdmin sebagai bagian dari operasi \"Simpan "
 "Data\""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1259
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1286
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
@@ -18410,27 +18463,27 @@ msgstr ""
 "Menyimpan perubahan data diulang kembali tetapi transaksi saat ini masih "
 "aktif; kueri sebelumnya tidak terpengaruh."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1302
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1329
 msgid "Data saved successfully."
 msgstr "Data disimpan dengan sukses."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1304
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1331
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 "Auto-Commit tidak aktif. Anda masih perlu melakukan perubahan pada "
 "database."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1479
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1493
 msgid "Geometry Viewer"
 msgstr "Penampil Geometri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1548
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1648
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr "Grafik Visualiser"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1565
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1665
 msgid "No data output. Execute a query to get output."
 msgstr "Tidak ada output data. Ekskusu kueri untuk mendapatkan output."
 

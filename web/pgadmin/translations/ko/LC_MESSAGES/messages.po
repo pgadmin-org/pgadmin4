@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-26 18:55+0530\n"
+"POT-Creation-Date: 2026-03-10 11:16+0300\n"
 "PO-Revision-Date: 2025-10-15 20:09+0900\n"
 "Last-Translator: \n"
 "Language: ko\n"
@@ -18,7 +18,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -852,6 +852,7 @@ msgid "Toggle comment"
 msgstr "주석 전환"
 
 #: pgadmin/browser/register_editor_preferences.py:109
+#: pgadmin/tools/ep/__init__.py:57
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Format SQL"
 msgstr "SQL 형식 지정"
@@ -11197,6 +11198,8 @@ msgid "Activity"
 msgstr "활동"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:319
+#: pgadmin/tools/ep/__init__.py:36 pgadmin/tools/ep/__init__.py:44
+#: pgadmin/tools/ep/__init__.py:51 pgadmin/tools/ep/__init__.py:58
 msgid "Configuration"
 msgstr "구성"
 
@@ -13714,7 +13717,7 @@ msgid "All Files"
 msgstr "모든 파일"
 
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:146
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:171
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:173
 msgid "No files/folders found"
 msgstr "파일/폴더를 찾을 수 없습니다"
 
@@ -13739,7 +13742,7 @@ msgstr "파일 크기 제한(파일당)은 %s MB입니다."
 msgid "The master password is not set."
 msgstr "마스터 비밀번호가 설정되지 않았습니다."
 
-#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:87
+#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:90
 #: pgadmin/tools/schema_diff/__init__.py:117
 #: pgadmin/tools/sqleditor/__init__.py:177
 msgid "This URL cannot be requested directly."
@@ -14527,6 +14530,7 @@ msgid "Heap Blocks"
 msgstr "힙 블록"
 
 #: pgadmin/static/js/Explain/index.jsx:513
+#: pgadmin/tools/ep/static/js/ExplainPostgreSQL/index.jsx:28
 msgid ""
 "Use the Explain/Explain Analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
@@ -14540,7 +14544,7 @@ msgstr ""
 msgid "Analysis"
 msgstr ""
 
-#: pgadmin/static/js/PgTreeView/index.jsx:144
+#: pgadmin/static/js/PgTreeView/index.jsx:185
 msgid "No objects are found to display"
 msgstr "표시할 객체를 찾을 수 없습니다"
 
@@ -14794,12 +14798,12 @@ msgstr "미리보기를 사용할 수 없습니다..."
 msgid "Accesskey"
 msgstr "액세스 키"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:316
 msgid "Copied!"
 msgstr "복사됨!"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:308
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:311
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:418
@@ -15701,6 +15705,43 @@ msgstr "레이아웃 재설정"
 msgid "Debugger - "
 msgstr "디버거 - "
 
+#: pgadmin/tools/ep/__init__.py:26
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1030
+msgid "Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:35
+msgid "Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:37
+msgid "Explain PostgreSQL API endpoint (e.g. https://explain-postgresql.com)"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:43
+msgid "Private Plans"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:45
+msgid "Hide plans from public access on Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:50
+msgid "Explain Plan"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:52
+msgid "Analyze query plan via Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:59
+msgid "Format SQL using Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:92 pgadmin/tools/ep/__init__.py:117
+msgid "Failed to post data to the Explain Postgresql API"
+msgstr ""
+
 #: pgadmin/tools/erd/__init__.py:50
 msgid "ERD tool"
 msgstr "ERD 도구"
@@ -15999,8 +16040,8 @@ msgstr "스키마 데이터 가져오는 중..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:113
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:335
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:964
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1164
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:976
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
 msgid "Unsaved changes"
 msgstr "저장되지 않은 변경 사항"
 
@@ -17426,27 +17467,27 @@ msgstr "매크로 관리"
 msgid "Sort/Filter options"
 msgstr "정렬/필터 옵션"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
 msgstr "세션이 유휴 상태이며 현재 트랜잭션이 없습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
 msgstr "명령이 현재 진행 중입니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
 msgstr "세션이 유효한 트랜잭션 블록에서 유휴 상태입니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
 msgstr "세션이 실패한 트랜잭션 블록에서 유휴 상태입니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:104
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
 msgstr "서버 연결이 좋지 않습니다."
@@ -17527,51 +17568,63 @@ msgstr "(연결 가져오는 중)"
 msgid "New query tool for current connection"
 msgstr "현재 연결의 새 쿼리 도구"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:102
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr "%s개 중 %s개의 지오메트리가 렌더링되었습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:105
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:107
 msgid "3D geometries not rendered."
 msgstr "3D 지오메트리는 렌더링되지 않았습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:108
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:110
 msgid "Unsupported geometries not rendered."
 msgstr "지원되지 않는 지오메트리는 렌더링되지 않았습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:124
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:126
 msgid "Empty row."
 msgstr "빈 행입니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:183
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:185
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr "SRID가 %s가 아닌 지오메트리는 렌더링되지 않았습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
 msgid "Empty"
 msgstr "빈 지도"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:369
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:372
 msgid "Street"
 msgstr "거리"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:376
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:379
 msgid "Topography"
 msgstr "지형"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:387
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:390
 msgid "Gray Style"
 msgstr "회색 스타일"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:398
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:401
 msgid "Light Color"
 msgstr "밝은 색상"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:409
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:412
 msgid "Dark Matter"
 msgstr "어두운 배경"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:454
+msgid ""
+"Query complete. Use the Geometry Viewer button in the Data Output tab to "
+"visualize results."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:455
+msgid ""
+"No spatial data found. At least one geometry or geography column is "
+"required for visualization."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
@@ -17710,7 +17763,7 @@ msgid "Execute options"
 msgstr "실행 옵션"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:567
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:928
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:940
 #: pgadmin/utils/constants.py:25
 msgid "Explain"
 msgstr "실행 계획"
@@ -17999,141 +18052,141 @@ msgstr "pgAdmin에서 내부적으로 생성된 쿼리를 표시하시겠습니�
 msgid "Remove All"
 msgstr "모두 제거"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:144
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "hr"
 msgstr "시간"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
 msgid "min"
 msgstr "분"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
 msgid "secs"
 msgstr "초"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:148
 msgid "msec"
 msgstr "밀리초"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
 msgid "Refetching latest results..."
 msgstr "최신 결과 다시 가져오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:901
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:913
 msgid "Waiting for the query to complete..."
 msgstr "쿼리 완료 대기 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:365
 msgid "Connection Error"
 msgstr "연결 오류"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:367
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:368
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:369
 msgid "Execution Cancelled!"
 msgstr "실행 취소됨!"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:370
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:371
 msgid "Execution Cancelled"
 msgstr "실행 취소됨"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:441
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:442
 msgid "Server Connected."
 msgstr "서버 연결됨."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:725
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:726
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:66
 msgid "Query complete"
 msgstr "쿼리 완료"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:728
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:729
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "쿼리가 %s 만에 성공적으로 반환되었습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:734
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "성공적으로 실행되었습니다. 총 쿼리 실행 시간: %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:736
 #, python-format
 msgid "%s rows affected."
 msgstr "%s행이 영향받았습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:965
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1165
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:977
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1192
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "데이터가 수정되었지만 저장되지 않았습니다. 변경 사항을 취소하시겠습니까?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:980
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:992
 msgid "Applying the new filter..."
 msgstr "새 필터 적용 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1034
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1061
 msgid "Downloading results..."
 msgstr "결과 다운로드 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1036
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1063
 #, python-format
 msgid "Downloading results(%s)..."
 msgstr "결과 다운로드 중(%s)..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1042
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1069
 msgid "Setting the limit on the result..."
 msgstr "결과 제한 설정 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1056
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1083
 msgid "Removing the filter..."
 msgstr "필터 제거 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1117
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1144
 msgid "Fetching rows..."
 msgstr "행 가져오는 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1218
 msgid "Save data changes?"
 msgstr "데이터 변경 사항을 저장하시겠습니까?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1194
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1221
 msgid "The data has changed. Do you want to save changes?"
 msgstr "데이터가 변경되었습니다. 변경 사항을 저장하시겠습니까?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1220
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
 msgid "Saving data..."
 msgstr "데이터 저장 중..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1274
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr "이 쿼리는 \"데이터 저장\" 작업의 일부로 pgAdmin이 생성했습니다"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1259
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1286
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr "데이터 변경 사항 저장이 롤백되었지만 현재 트랜잭션은 여전히 활성 상태입니다. 이전 쿼리는 영향을 받지 않습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1302
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1329
 msgid "Data saved successfully."
 msgstr "데이터가 성공적으로 저장되었습니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1304
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1331
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr "자동 커밋이 꺼져 있습니다. 데이터베이스에 변경 사항을 커밋해야 합니다."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1479
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1493
 msgid "Geometry Viewer"
 msgstr "지오메트리 뷰어"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1548
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1648
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr "그래프 시각화 도구"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1565
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1665
 msgid "No data output. Execute a query to get output."
 msgstr "데이터가 출력되지 않습니다. 쿼리를 실행하여 출력을 받으세요."
 

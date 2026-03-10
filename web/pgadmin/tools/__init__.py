@@ -34,6 +34,9 @@ class ToolsModule(PgAdminModule):
         from .debugger import blueprint as module
         app.register_blueprint(module)
 
+        from .ep import blueprint as module
+        app.register_blueprint(module)
+
         from .erd import blueprint as module
         app.register_blueprint(module)
 
