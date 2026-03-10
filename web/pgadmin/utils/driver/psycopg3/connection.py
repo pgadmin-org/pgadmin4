@@ -30,12 +30,13 @@ import config
 from pgadmin.model import User
 from pgadmin.utils.exception import ConnectionLost, CryptKeyMissing
 from pgadmin.utils import get_complete_file_path
+from pgadmin.utils.ajax import internal_server_error
 from ..abstract import BaseConnection
 from .cursor import DictCursor, AsyncDictCursor, AsyncDictServerCursor
-from .typecast import register_global_typecasters,\
-    register_string_typecasters, register_binary_typecasters, \
-    register_array_to_string_typecasters, ALL_JSON_TYPES, \
-    register_numeric_typecasters
+from .typecast import register_binary_data_typecasters,\
+    register_global_typecasters, register_string_typecasters,\
+    register_binary_typecasters, register_array_to_string_typecasters,\
+    register_numeric_typecasters, ALL_JSON_TYPES
 from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils import csv_lib as csv
 from pgadmin.utils.master_password import get_crypt_key
@@ -1913,3 +1914,43 @@ Failed to reset the connection to the server due to following error:
                     return _cur.mogrify(query, parameters)
             else:
                 return query
+
+    def download_binary_data(self, cur, params):
+        """
+        This function will return the binary data for the given query.
+        :param cur: cursor object
+        :param params: row/col params
+        :return:
+        """
+        try:
+            register_binary_data_typecasters(cur)
+            row_pos = int(params['rowpos'])
+            col_pos = int(params['colpos'])
+            if row_pos < 0 or col_pos < 0:
+                raise ValueError
+
+            # Save the current cursor position
+            saved_pos = cur.rownumber if cur.rownumber is not None else 0
+
+            try:
+                # Scroll to the requested row and fetch it
+                cur.scroll(row_pos, mode='absolute')
+                row = cur.fetchone()
+            finally:
+                # Always restore the cursor position
+                cur.scroll(saved_pos, mode='absolute')
+
+            if row is None or col_pos >= len(row):
+                return internal_server_error(
+                    errormsg=gettext('Requested cell is out of range.')
+                )
+            return row[col_pos]
+        except (ValueError, IndexError, TypeError) as e:
+            current_app.logger.error(e)
+            return internal_server_error(
+                errormsg='Invalid row/column position.'
+            )
+        finally:
+            # Always restore the original typecasters
+            # (works on connection or cursor)
+            register_binary_typecasters(cur)

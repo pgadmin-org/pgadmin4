@@ -166,6 +166,18 @@ class MiscModule(PgAdminModule):
                 )
             )
 
+        self.preference.register(
+            'file_downloads', 'enable_binary_data_download',
+            gettext("Enable binary data download?"),
+            'boolean', False,
+            category_label=PREF_LABEL_FILE_DOWNLOADS,
+            help_str=gettext(
+                'If set to True, binary data can be downloaded '
+                'from the result grid. The default is False to '
+                'prevent excessive memory usage on the server.'
+            )
+        )
+
     def get_exposed_url_endpoints(self):
         """
         Returns:

@@ -212,6 +212,21 @@ def register_array_to_string_typecasters(connection=None):
                                                 TextLoaderpgAdmin)
 
 
+def register_binary_data_typecasters(cur):
+    # Register type caster to fetch original binary data for bytea type.
+    cur.adapters.register_loader(17,
+                                 ByteaDataLoader)
+
+    cur.adapters.register_loader(1001,
+                                 ByteaDataLoader)
+
+    cur.adapters.register_loader(17,
+                                 ByteaBinaryDataLoader)
+
+    cur.adapters.register_loader(1001,
+                                 ByteaBinaryDataLoader)
+
+
 class InetLoader(InetLoader):
     def load(self, data):
         if isinstance(data, memoryview):
@@ -238,6 +253,24 @@ class ByteaBinaryLoader(Loader):
 
     def load(self, data):
         return 'binary data' if data is not None else None
+
+
+class ByteaDataLoader(Loader):
+    # Loads the actual binary data.
+    def load(self, data):
+        if data is None:
+            return None
+        raw = bytes(data) if isinstance(data, memoryview) else data
+        if isinstance(raw, bytes) and raw.startswith(b'\\x'):
+            return bytes.fromhex(raw[2:].decode())
+        return raw
+
+
+class ByteaBinaryDataLoader(Loader):
+    format = _pq_Format.BINARY
+
+    def load(self, data):
+        return data if data is not None else None
 
 
 class TextLoaderpgAdmin(TextLoader):
