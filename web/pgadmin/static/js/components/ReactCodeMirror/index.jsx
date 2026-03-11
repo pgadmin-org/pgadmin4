@@ -19,6 +19,7 @@ import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
 import { copyToClipboard } from '../../clipboard';
 import { useDelayedCaller } from '../../custom_hooks';
+import epFormatSQL from '../../../../tools/ep/static/js/ExplainPostgreSQL/formatSQL';
 
 import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
@@ -70,8 +71,9 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [showCopy, setShowCopy] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
+  const epPrefs = usePreferences().getPreferencesForModule('ep');
 
-  const formatSQL = (view)=>{
+  const formatSQL = async (view)=>{
     let selection = true, sql = view.getSelection();
     /* New library does not support capitalize casing
       so if a user has set capitalize casing we will
@@ -95,7 +97,17 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
       sql = view.getValue();
       selection = false;
     }
-    let formattedSql = format(sql,formatPrefs);
+    let formattedSql;
+    if (epPrefs.explain_postgresql_format) {
+      try {
+        formattedSql = await epFormatSQL(sql);
+      } catch (e) {
+        console.error('Error formatting SQL using Explain PostgreSQL API:', e);
+        formattedSql = format(sql,formatPrefs);
+      }
+    } else {
+      formattedSql = format(sql,formatPrefs);
+    }
     if(selection) {
       view.replaceSelection(formattedSql);
     } else {

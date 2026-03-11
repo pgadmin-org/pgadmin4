@@ -21,6 +21,7 @@ import { ResultSetToolbar } from './ResultSetToolbar';
 import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout';
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
+import ExplainPostgreSQL from '../../../../../ep/static/js/ExplainPostgreSQL';
 import { QuerySources } from './QueryHistory';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import CopyData from '../QueryToolDataGrid/CopyData';
@@ -769,6 +770,7 @@ export class ResultSetUtils {
       this.setStartData(null);
       let planJson = this.getPlanJson(result, data);
       if(planJson) {
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_PLAN, planJson, this.query);
         onExplain(planJson);
       } else {
         onExplain(null);
@@ -1035,6 +1037,21 @@ export function ResultSet() {
       .catch(()=>{
         // LLM not available - this is fine
       });
+  }, []);
+
+  useEffect(() => {
+    eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, (planJson, sql) => {
+      if (!planJson) return;
+      layoutDocker.openTab({
+        id: PANELS.EXPLAIN_POSTGRESQL,
+        title: gettext('Explain PostgreSQL'),
+        content: <ExplainPostgreSQL
+          plans={planJson}
+          sql={sql}
+        />,
+        closable: true,
+      }, PANELS.MESSAGES, 'after-tab', true);
+    });
   }, []);
 
   useEffect(()=>{

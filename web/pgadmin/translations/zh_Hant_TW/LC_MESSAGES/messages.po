@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-26 18:55+0530\n"
+"POT-Creation-Date: 2026-03-10 11:16+0300\n"
 "PO-Revision-Date: 2024-11-12 07:15+0800\n"
 "Last-Translator: Kuo, Chao-Yi <Kuo.ChaoYi@gmail.com>\n"
 "Language: zh_Hant_TW\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -848,6 +848,7 @@ msgid "Toggle comment"
 msgstr ""
 
 #: pgadmin/browser/register_editor_preferences.py:109
+#: pgadmin/tools/ep/__init__.py:57
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Format SQL"
 msgstr "格式化 SQL"
@@ -11142,6 +11143,8 @@ msgid "Activity"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:319
+#: pgadmin/tools/ep/__init__.py:36 pgadmin/tools/ep/__init__.py:44
+#: pgadmin/tools/ep/__init__.py:51 pgadmin/tools/ep/__init__.py:58
 msgid "Configuration"
 msgstr "組態"
 
@@ -13631,7 +13634,7 @@ msgid "All Files"
 msgstr "所有檔案"
 
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:146
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:171
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:173
 msgid "No files/folders found"
 msgstr "沒有找到檔案或目錄"
 
@@ -13656,7 +13659,7 @@ msgstr "每個檔案的體積限制是 %s MB。"
 msgid "The master password is not set."
 msgstr "主密碼未設定。"
 
-#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:87
+#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:90
 #: pgadmin/tools/schema_diff/__init__.py:117
 #: pgadmin/tools/sqleditor/__init__.py:177
 msgid "This URL cannot be requested directly."
@@ -14434,6 +14437,7 @@ msgid "Heap Blocks"
 msgstr "堆塊集"
 
 #: pgadmin/static/js/Explain/index.jsx:513
+#: pgadmin/tools/ep/static/js/ExplainPostgreSQL/index.jsx:28
 msgid ""
 "Use the Explain/Explain Analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
@@ -14447,7 +14451,7 @@ msgstr ""
 msgid "Analysis"
 msgstr ""
 
-#: pgadmin/static/js/PgTreeView/index.jsx:144
+#: pgadmin/static/js/PgTreeView/index.jsx:185
 msgid "No objects are found to display"
 msgstr ""
 
@@ -14701,12 +14705,12 @@ msgstr "預覽不可用..."
 msgid "Accesskey"
 msgstr "訪問鍵"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:316
 msgid "Copied!"
 msgstr "複製！"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:51
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:52
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:308
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:311
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:418
@@ -15606,6 +15610,43 @@ msgstr "重設佈局"
 msgid "Debugger - "
 msgstr "偵錯程式- "
 
+#: pgadmin/tools/ep/__init__.py:26
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1030
+msgid "Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:35
+msgid "Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:37
+msgid "Explain PostgreSQL API endpoint (e.g. https://explain-postgresql.com)"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:43
+msgid "Private Plans"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:45
+msgid "Hide plans from public access on Explain PostgreSQL"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:50
+msgid "Explain Plan"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:52
+msgid "Analyze query plan via Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:59
+msgid "Format SQL using Explain PostgreSQL API"
+msgstr ""
+
+#: pgadmin/tools/ep/__init__.py:92 pgadmin/tools/ep/__init__.py:117
+msgid "Failed to post data to the Explain Postgresql API"
+msgstr ""
+
 #: pgadmin/tools/erd/__init__.py:50
 msgid "ERD tool"
 msgstr "ERD工具"
@@ -15900,8 +15941,8 @@ msgstr "獲取模式資料……"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:113
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:335
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:964
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1164
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:976
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
 msgid "Unsaved changes"
 msgstr "未保存的更改"
 
@@ -17307,27 +17348,27 @@ msgstr "管理宏"
 msgid "Sort/Filter options"
 msgstr "\"篩選器\" 選項"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
 msgstr "工作階段已空閒且沒有當前交易。"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
 msgstr "一條命令正在執行中."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
 msgstr "工作階段在交易塊中已空閒."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
 msgstr "工作階段在已失敗的工作階段塊中已空閒."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:104
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
 msgstr "此伺服器的連結故障."
@@ -17408,51 +17449,63 @@ msgstr "（獲取連接）"
 msgid "New query tool for current connection"
 msgstr "打開此連接的新查詢窗口"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:102
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr "%s 的 %s 幾何對像已渲染."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:105
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:107
 msgid "3D geometries not rendered."
 msgstr "未渲染3D幾何圖形。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:108
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:110
 msgid "Unsupported geometries not rendered."
 msgstr "未渲染不受支援的幾何圖形。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:124
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:126
 msgid "Empty row."
 msgstr "空行。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:183
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:185
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr "未渲染具有非 SRID %s幾何。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
 msgid "Empty"
 msgstr "空"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:369
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:372
 msgid "Street"
 msgstr "街"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:376
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:379
 msgid "Topography"
 msgstr "地勢"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:387
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:390
 msgid "Gray Style"
 msgstr "灰度樣式"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:398
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:401
 msgid "Light Color"
 msgstr "淺色"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:409
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:412
 msgid "Dark Matter"
 msgstr "深度關係"
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:454
+msgid ""
+"Query complete. Use the Geometry Viewer button in the Data Output tab to "
+"visualize results."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:455
+msgid ""
+"No spatial data found. At least one geometry or geography column is "
+"required for visualization."
+msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
 msgid "<Row Number>"
@@ -17591,7 +17644,7 @@ msgid "Execute options"
 msgstr "執行選項"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:567
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:928
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:940
 #: pgadmin/utils/constants.py:25
 msgid "Explain"
 msgstr "解釋"
@@ -17880,141 +17933,141 @@ msgstr "顯示 pgAdmin 在內部生成的查詢？"
 msgid "Remove All"
 msgstr "移除全部"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:144
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "hr"
 msgstr "時"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
 msgid "min"
 msgstr "分"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
 msgid "secs"
 msgstr "秒"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:148
 msgid "msec"
 msgstr "毫秒"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
 msgid "Refetching latest results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:901
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:202
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:913
 msgid "Waiting for the query to complete..."
 msgstr "正在等待查詢完成..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:365
 msgid "Connection Error"
 msgstr "連接出錯"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:367
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:368
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:369
 msgid "Execution Cancelled!"
 msgstr "執行已取消！"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:370
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:371
 msgid "Execution Cancelled"
 msgstr "執行已取消"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:441
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:442
 msgid "Server Connected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:725
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:726
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:66
 msgid "Query complete"
 msgstr "查詢完成"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:728
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:729
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "耗時%s 成功返回查詢。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:734
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "已成功運行。查詢執行階段間總數: %s。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:736
 #, python-format
 msgid "%s rows affected."
 msgstr "%s 行受影響。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:965
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1165
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:977
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1192
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr "資料已修改，但未保存。 確定要放棄更改嗎?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:980
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:992
 msgid "Applying the new filter..."
 msgstr "應用新的篩選器..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1034
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1061
 msgid "Downloading results..."
 msgstr "下載結果中……"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1036
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1063
 #, python-format
 msgid "Downloading results(%s)..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1042
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1069
 msgid "Setting the limit on the result..."
 msgstr "設定限制的結果..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1056
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1083
 msgid "Removing the filter..."
 msgstr "移除篩選器..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1117
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1144
 msgid "Fetching rows..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1218
 msgid "Save data changes?"
 msgstr "保存變動嗎？"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1194
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1221
 msgid "The data has changed. Do you want to save changes?"
 msgstr "資料已更改。是否要保存更改？"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1220
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
 msgid "Saving data..."
 msgstr "保存資料中……"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1274
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr "此查詢由 pgAdmin 生成，作為\"保存資料\"操作的一部分"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1259
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1286
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr "正在保存的資料更改已經回滾但是當前交易依然處於活動狀態；之前的請求不受影響。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1302
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1329
 msgid "Data saved successfully."
 msgstr "資料保存成功."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1304
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1331
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr "自動提交已關閉。每次更改都需要提交至資料庫。"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1479
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1493
 msgid "Geometry Viewer"
 msgstr "幾何查看器"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1548
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1648
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr "圖形可視化"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1565
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1665
 msgid "No data output. Execute a query to get output."
 msgstr "無資料輸出。執行查詢以獲得輸出。"
 
