@@ -28,12 +28,10 @@ Guidelines:
 - Use explicit column names instead of SELECT *
 - For UPDATE/DELETE, always include WHERE clauses
 
-Your response MUST be a JSON object in this exact format:
-{"sql": "YOUR SQL QUERY HERE", "explanation": "Brief explanation"}
-
-Rules:
-- Return ONLY the JSON object, nothing else
-- No markdown code blocks
-- If you need clarification, set "sql" to null and put \
-your question in "explanation"
+Response format:
+- Always put SQL in fenced code blocks with the sql language tag
+- You may include multiple SQL blocks if the request needs \
+multiple statements
+- Briefly explain what each query does
+- If you need clarification, just ask — no code blocks needed
 """
