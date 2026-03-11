@@ -81,7 +81,6 @@ class OllamaClient(LLMClient):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -92,7 +91,6 @@ class OllamaClient(LLMClient):
             tools: Optional list of tools the model can use.
             system_prompt: Optional system prompt.
             max_tokens: Maximum tokens in response (num_predict in Ollama).
-            temperature: Sampling temperature.
             **kwargs: Additional parameters.
 
         Returns:
@@ -117,7 +115,6 @@ class OllamaClient(LLMClient):
             'stream': False,
             'options': {
                 'num_predict': max_tokens,
-                'temperature': temperature
             }
         }
 
