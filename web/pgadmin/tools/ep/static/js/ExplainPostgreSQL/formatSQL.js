@@ -19,6 +19,8 @@ export default async function formatSQL(sql) {
           if (btf_query !== btf_query_text) {
             resolve(btf_query_text);
           } else {
+            // Server returns identical text in both fields in case of an error
+            // In this scenario, we use the local formatter as a fallback
             reject(btf_query_text);
           }
         } catch (err) {

@@ -154,13 +154,13 @@ def explain_postgresql():
 
 def is_valid_url(url):
     """
-    Validate that a URL is safe to use (HTTP/HTTPS only).
+    Validate that a URL is safe to use (HTTP/HTTPS only, localhost and private IP ranges are allowed).
     
     Args:
         url: The URL to validate
         
     Returns:
-        bool: True if URL is valid and safe, False otherwise
+        bool: True if URL is valid, False otherwise
     """
     if not url:
         return False
@@ -172,7 +172,6 @@ def is_valid_url(url):
         if parsed.scheme not in ('http', 'https'):
             return False
 
-        # Check for localhost/private IP ranges that could lead to SSRF
         hostname = parsed.hostname
         if not hostname:
             return False
