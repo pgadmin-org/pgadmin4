@@ -84,7 +84,7 @@ def explain_postgresql_format():
 
     """
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return make_json_response(
             success=0,
@@ -122,7 +122,7 @@ def explain_postgresql():
 
     """
 
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return make_json_response(
             success=0,
