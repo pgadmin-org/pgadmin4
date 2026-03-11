@@ -2842,7 +2842,7 @@ def nlq_chat_stream(trans_id):
     """
     from flask import stream_with_context
     from pgadmin.llm.utils import is_llm_enabled
-    from pgadmin.llm.chat import chat_with_database
+    from pgadmin.llm.chat import chat_with_database_stream
     from pgadmin.llm.prompts.nlq import NLQ_SYSTEM_PROMPT
 
     # Check if LLM is configured
@@ -2908,75 +2908,56 @@ def nlq_chat_stream(trans_id):
                     provider=provider
                 )
 
-            # Call the LLM with database tools and history
-            response_text, updated_history = chat_with_database(
+            # Stream the LLM response with database tools
+            response_text = ''
+            updated_history = []
+            for item in chat_with_database_stream(
                 user_message=user_message,
                 sid=trans_obj.sid,
                 did=trans_obj.did,
                 system_prompt=NLQ_SYSTEM_PROMPT,
                 conversation_history=conversation_history
-            )
+            ):
+                if isinstance(item, str):
+                    # Text chunk from streaming LLM response
+                    yield _nlq_sse_event({
+                        'type': 'text_delta',
+                        'content': item
+                    })
+                elif isinstance(item, tuple) and \
+                        item[0] == 'tool_use':
+                    # Tool execution in progress - reset streaming
+                    yield _nlq_sse_event({
+                        'type': 'thinking',
+                        'message': gettext(
+                            'Querying the database...'
+                        )
+                    })
+                elif isinstance(item, tuple):
+                    # Final result: (response_text, messages)
+                    response_text = item[0]
+                    if len(item) > 1:
+                        updated_history = item[1]
 
-            # Try to parse the response as JSON
-            sql = None
-            explanation = ''
-
-            # First, try to extract JSON from markdown code blocks
-            json_text = response_text.strip()
-
-            # Look for ```json ... ``` blocks
-            json_match = re.search(
-                r'```json\s*\n?(.*?)\n?```',
-                json_text,
+            # Extract SQL from markdown code fences
+            sql_blocks = re.findall(
+                r'```(?:sql|pgsql|postgresql)\s*\n(.*?)```',
+                response_text,
                 re.DOTALL
             )
-            if json_match:
-                json_text = json_match.group(1).strip()
-            else:
-                # Also try to find a plain JSON object in the response
-                # Look for {"sql": ... } pattern anywhere in the text
-                sql_pattern = (
-                    r'\{["\']?sql["\']?\s*:\s*'
-                    r'(?:null|"[^"]*"|\'[^\']*\').*?\}'
-                )
-                plain_json_match = re.search(sql_pattern, json_text, re.DOTALL)
-                if plain_json_match:
-                    json_text = plain_json_match.group(0)
+            sql = ';\n\n'.join(
+                block.strip() for block in sql_blocks
+            ) if sql_blocks else None
 
-            try:
-                result = json.loads(json_text)
-                sql = result.get('sql')
-                explanation = result.get('explanation', '')
-            except (json.JSONDecodeError, TypeError):
-                # If not valid JSON, try to extract SQL from the response
-                # Look for SQL code blocks first
-                sql_match = re.search(
-                    r'```sql\s*\n?(.*?)\n?```',
-                    response_text,
-                    re.DOTALL
-                )
-                if sql_match:
-                    sql = sql_match.group(1).strip()
-                else:
-                    # Check for malformed tool call text patterns
-                    # Some models output tool calls as text instead of
-                    # proper tool use blocks
-                    tool_call_match = re.search(
-                        r'<function=execute_sql_query>\s*'
-                        r'<parameter=query>\s*(.*?)\s*</parameter>',
-                        response_text,
-                        re.DOTALL
-                    )
-                    if tool_call_match:
-                        sql = tool_call_match.group(1).strip()
-                        explanation = gettext(
-                            'Generated SQL query from your request.'
-                        )
-                    else:
-                        # No parseable JSON or SQL block found
-                        # Treat the response as an explanation/error message
-                        explanation = response_text.strip()
-                        # Don't set sql - leave it as None
+            # Fallback: try JSON format in case LLM ignored
+            # the markdown instruction
+            if sql is None:
+                try:
+                    result = json.loads(response_text.strip())
+                    if isinstance(result, dict):
+                        sql = result.get('sql')
+                except (json.JSONDecodeError, TypeError):
+                    pass
 
             # Generate a conversation ID if not provided
             if not conversation_id:
@@ -2995,11 +2976,11 @@ def nlq_chat_stream(trans_id):
                 filter_conversational(updated_history)
             ] if updated_history else []
 
-            # Send the final result
+            # Send the final result with full response content
             yield _nlq_sse_event({
                 'type': 'complete',
                 'sql': sql,
-                'explanation': explanation,
+                'content': response_text,
                 'conversation_id': new_conversation_id,
                 'history': serialized_history
             })

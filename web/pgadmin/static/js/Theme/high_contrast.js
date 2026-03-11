@@ -87,6 +87,7 @@ export default function(basicSettings) {
     },
     otherVars: {
       colorBrand: '#84D6FF',
+      hyperlinkColor: '#84D6FF',
       borderColor: '#A6B7C8',
       inputBorderColor: '#8B9CAD',
       inputDisabledBg: '#1F2932',
