@@ -10,18 +10,20 @@ export default async function formatSQL(sql) {
         query_src: sql,
       }))
       .then((res) => {
-        if (res.data?.data) {
-          try {
-            const {btf_query, btf_query_text} = JSON.parse(res.data.data);
-            if (btf_query !== btf_query_text) {
-              resolve(btf_query_text);
-            } else {
-              reject(btf_query_text);
-            }
-          } catch (err) {
-            console.error(err);
-            reject(err.message);
+        if (!res.data?.data) {
+          reject('No data returned from formatting API');
+          return;
+        }
+        try {
+          const {btf_query, btf_query_text} = JSON.parse(res.data.data);
+          if (btf_query !== btf_query_text) {
+            resolve(btf_query_text);
+          } else {
+            reject(btf_query_text);
           }
+        } catch (err) {
+          console.error(err);
+          reject(err.message);
         }
       })
       .catch((err) => {

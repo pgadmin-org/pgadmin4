@@ -11,6 +11,7 @@
 
 import json
 import urllib.request
+from urllib.parse import urlparse
 from flask import request
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
@@ -84,7 +85,22 @@ def explain_postgresql_format():
     """
 
     data = request.get_json()
+    if not isinstance(data, dict):
+        return make_json_response(
+            success=0,
+            errormsg="Invalid JSON payload. Expected an object/dictionary.",
+            info=gettext('JSON payload must be an object, not null, array, or scalar value'),
+        )
+    
     explain_postgresql_api = get_preference_value('explain_postgresql_api')
+    
+    # Validate the API URL to prevent SSRF
+    if not is_valid_url(explain_postgresql_api):
+        return make_json_response(
+            success=0,
+            errormsg="Invalid API endpoint URL. Only HTTP/HTTPS URLs are allowed.",
+            info=gettext('The provided API endpoint is not valid. Only HTTP/HTTPS URLs are permitted.')
+        )
 
     is_error, data = send_post_request(explain_postgresql_api + '/beautifier-api', data)
     if is_error:
@@ -107,7 +123,23 @@ def explain_postgresql():
     """
 
     data = request.get_json()
+    if not isinstance(data, dict):
+        return make_json_response(
+            success=0,
+            errormsg="Invalid JSON payload. Expected an object/dictionary.",
+            info=gettext('JSON payload must be an object, not null, array, or scalar value'),
+        )
+    
     explain_postgresql_api = get_preference_value('explain_postgresql_api')
+    
+    # Validate the API URL to prevent SSRF
+    if not is_valid_url(explain_postgresql_api):
+        return make_json_response(
+            success=0,
+            errormsg="Invalid API endpoint URL. Only HTTP/HTTPS URLs are allowed.",
+            info=gettext('The provided API endpoint is not valid. Only HTTP/HTTPS URLs are permitted.')
+        )
+    
     explain_postgresql_private = get_preference_value('explain_postgresql_private')
     data['private'] = explain_postgresql_private
 
@@ -120,6 +152,36 @@ def explain_postgresql():
     return make_json_response(success=1, data=explain_postgresql_api + data)
 
 
+def is_valid_url(url):
+    """
+    Validate that a URL is safe to use (HTTP/HTTPS only).
+    
+    Args:
+        url: The URL to validate
+        
+    Returns:
+        bool: True if URL is valid and safe, False otherwise
+    """
+    if not url:
+        return False
+    
+    try:
+        parsed = urlparse(url)
+
+        # Only allow http and https schemes
+        if parsed.scheme not in ('http', 'https'):
+            return False
+
+        # Check for localhost/private IP ranges that could lead to SSRF
+        hostname = parsed.hostname
+        if not hostname:
+            return False
+
+        return True
+    except Exception:
+        return False
+
+
 def send_post_request(url_api, data, parse=False):
   data = json.dumps(data).encode('utf-8')
   headers = {
@@ -129,7 +191,7 @@ def send_post_request(url_api, data, parse=False):
   }
   try:
     req = urllib.request.Request(url_api, data, headers)
-    with no302opener.open(req) as response:
+    with no302opener.open(req, timeout=10) as response:
       if (response.code == 302):
         return False, response.headers["Location"]
       response_data = response.read().decode('utf-8')
@@ -158,9 +220,12 @@ class No302HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
 
 	https_response = http_response
 
-# opener = urllib.request.build_opener(No302HTTPErrorProcessor)
-# urllib.request.install_opener(opener)
-no302opener = urllib.request.build_opener(No302HTTPErrorProcessor)
+# Build opener without HTTPRedirectHandler so No302HTTPErrorProcessor can handle 302 responses
+no302opener = urllib.request.build_opener(
+    No302HTTPErrorProcessor(),
+    urllib.request.HTTPHandler(),
+    urllib.request.HTTPSHandler()
+)
 
 def get_preference_value(name):
     """
@@ -178,8 +243,10 @@ def get_preference_value(name):
             pref = pref_module.preference(name)
             if pref:
                 value = pref.get()
-                if value and str(value).strip():
-                    return str(value).strip()
+                if isinstance(value, str):
+                    value = value.strip()
+                    return value or None
+                return value
     except Exception:
         pass
     return None
