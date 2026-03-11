@@ -143,13 +143,16 @@ def explain_postgresql():
     explain_postgresql_private = get_preference_value('explain_postgresql_private')
     data['private'] = explain_postgresql_private
 
-    is_error, data = send_post_request(explain_postgresql_api + '/explain', data)
+    is_error, response_data = send_post_request(explain_postgresql_api + '/explain', data)
     if is_error:
-        return make_json_response(success=0, errormsg=data,
+        return make_json_response(success=0, errormsg=response_data,
                                   info=gettext('Failed to post data to the Explain Postgresql API'),
                                   )
 
-    return make_json_response(success=1, data=explain_postgresql_api + data)
+    # response_data should be a relative path from 302 Location header
+    if not response_data.startswith('/'):
+        return make_json_response(success=0, errormsg="Unexpected response format from API")
+    return make_json_response(success=1, data=explain_postgresql_api + response_data)
 
 
 def is_valid_url(url):
@@ -203,21 +206,21 @@ def send_post_request(url_api, data, parse=False):
 
 class No302HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
 
-	def http_response(self, request, response):
-		code, msg, hdrs = response.code, response.msg, response.info()
+  def http_response(self, request, response):
+    code, msg, hdrs = response.code, response.msg, response.info()
 
-		if (code == 302):
-			return response
+    if (code == 302):
+      return response
 
-		# According to RFC 2616, "2xx" code indicates that the client's
-		# request was successfully received, understood, and accepted.
-		if not (200 <= code < 300):
-			response = self.parent.error(
-				'http', request, response, code, msg, hdrs)
+    # According to RFC 2616, "2xx" code indicates that the client's
+    # request was successfully received, understood, and accepted.
+    if not (200 <= code < 300):
+      response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
 
-		return response
+    return response
 
-	https_response = http_response
+  https_response = http_response
 
 # Build opener without HTTPRedirectHandler so No302HTTPErrorProcessor can handle 302 responses
 no302opener = urllib.request.build_opener(
