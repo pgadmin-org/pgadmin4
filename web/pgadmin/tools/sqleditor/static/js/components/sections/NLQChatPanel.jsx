@@ -26,6 +26,7 @@ import { format as formatSQL } from 'sql-formatter';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import getApiInstance from '../../../../../../static/js/api_instance';
+import { getRandomThinkingMessage } from '../../../../../../static/js/ai_thinking_messages';
 import usePreferences from '../../../../../../preferences/static/js/store';
 import {
   QueryToolContext,
@@ -138,30 +139,6 @@ const MESSAGE_TYPES = {
   THINKING: 'thinking',
   ERROR: 'error',
 };
-
-// Elephant/PostgreSQL-themed processing messages
-const THINKING_MESSAGES = [
-  'Consulting the elephant...',
-  'Traversing the B-tree...',
-  'Vacuuming the catalog...',
-  'Analyzing table statistics...',
-  'Joining the herds...',
-  'Indexing the savanna...',
-  'Querying the watering hole...',
-  'Optimizing the plan...',
-  'Warming up the cache...',
-  'Gathering the tuples...',
-  'Scanning the relations...',
-  'Checking constraints...',
-  'Rolling back the peanuts...',
-  'Committing to memory...',
-  'Trumpeting the results...',
-];
-
-// Helper function to get a random thinking message
-function getRandomThinkingMessage() {
-  return THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)];
-}
 
 // Single chat message component
 function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey }) {
