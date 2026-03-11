@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #4011 <https://github.com/pgadmin-org/pgadmin4/issues/4011>`_ -  Added support to download binary data from result grid.
+  | `Issue #9703 <https://github.com/pgadmin-org/pgadmin4/issues/9703>`_ -  Added support for custom LLM provider URLs for OpenAI and Anthropic, allowing use of OpenAI-compatible providers such as LM Studio, EXO, and LiteLLM.
 
 Housekeeping
 ************

@@ -987,9 +987,16 @@ LLM_ENABLED = True
 DEFAULT_LLM_PROVIDER = ''
 
 # Anthropic Configuration
+# URL for the Anthropic API endpoint. Leave empty to use the default
+# (https://api.anthropic.com/v1). Set a custom URL to use an
+# Anthropic-compatible API provider.
+ANTHROPIC_API_URL = ''
+
 # Path to a file containing the Anthropic API key. The file should contain
 # only the API key with no additional whitespace or formatting.
 # Default: ~/.anthropic-api-key
+# Note: The API key may be optional when using a custom API URL with a
+# provider that does not require authentication.
 ANTHROPIC_API_KEY_FILE = '~/.anthropic-api-key'
 
 # The Anthropic model to use for AI features.
@@ -997,9 +1004,18 @@ ANTHROPIC_API_KEY_FILE = '~/.anthropic-api-key'
 ANTHROPIC_API_MODEL = ''
 
 # OpenAI Configuration
+# URL for the OpenAI API endpoint. Leave empty to use the default
+# (https://api.openai.com/v1). Set a custom URL to use any
+# OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO).
+# Include the /v1 path prefix if required by your provider
+# (e.g., http://localhost:1234/v1).
+OPENAI_API_URL = ''
+
 # Path to a file containing the OpenAI API key. The file should contain
 # only the API key with no additional whitespace or formatting.
 # Default: ~/.openai-api-key
+# Note: The API key may be optional when using a custom API URL with a
+# provider that does not require authentication.
 OPENAI_API_KEY_FILE = '~/.openai-api-key'
 
 # The OpenAI model to use for AI features.
@@ -1020,6 +1036,8 @@ OLLAMA_API_MODEL = ''
 # OpenAI-compatible API. No API key is required.
 # URL for the Docker Model Runner API endpoint. Leave empty to disable.
 # Typical value: http://localhost:12434
+# Tip: You can also use the OpenAI provider with a custom API URL for any
+# OpenAI-compatible endpoint, including Docker Model Runner.
 DOCKER_API_URL = ''
 
 # The Docker Model Runner model to use for AI features.

@@ -47,19 +47,33 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 **Anthropic Settings:**
 
+* Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
+  the default Anthropic API (``https://api.anthropic.com/v1``). Set a custom URL
+  to use an Anthropic-compatible API provider.
+
 * Use the *API Key File* field to specify the path to a file containing your
-  Anthropic API key.
+  Anthropic API key. The API key may be optional when using a custom API URL
+  with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available Claude models. Click the
-  refresh button to fetch the latest available models from Anthropic.
+  refresh button to fetch the latest available models from your configured
+  endpoint.
 
 **OpenAI Settings:**
 
+* Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
+  the default OpenAI API (``https://api.openai.com/v1``). Set a custom URL to
+  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO).
+  Include the ``/v1`` path prefix if required by your provider
+  (e.g., ``http://localhost:1234/v1``).
+
 * Use the *API Key File* field to specify the path to a file containing your
-  OpenAI API key.
+  OpenAI API key. The API key may be optional when using a custom API URL
+  with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available GPT models. Click the
-  refresh button to fetch the latest available models from OpenAI.
+  refresh button to fetch the latest available models from your configured
+  endpoint.
 
 **Ollama Settings:**
 
@@ -78,6 +92,11 @@ Use the fields on the *AI* panel to configure your LLM provider:
 * Use the *Model* field to select from the available models or enter a custom
   model name. Click the refresh button to fetch the latest available models
   from your Docker Model Runner.
+
+.. note:: You can also use the *OpenAI* provider with a custom API URL for any
+   OpenAI-compatible endpoint, including Docker Model Runner, LM Studio, EXO,
+   and other local inference servers. This can be useful when you want to use
+   a provider that isn't explicitly listed but supports the OpenAI API format.
 
 The Browser Node
 ****************
