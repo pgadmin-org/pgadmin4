@@ -273,6 +273,7 @@ export function NLQChatPanel() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
   const [thinkingMessageId, setThinkingMessageId] = useState(null);
   const [llmInfo, setLlmInfo] = useState({ provider: null, model: null });
 
@@ -419,6 +420,7 @@ export function NLQChatPanel() {
   const handleClearConversation = () => {
     setMessages([]);
     setConversationId(null);
+    setConversationHistory([]);
   };
 
   // Stop the current request
@@ -517,6 +519,7 @@ export function NLQChatPanel() {
           body: JSON.stringify({
             message: userMessage,
             conversation_id: conversationId,
+            history: conversationHistory,
           }),
           signal: controller.signal,
         }
@@ -641,6 +644,9 @@ export function NLQChatPanel() {
       }
       if (event.conversation_id) {
         setConversationId(event.conversation_id);
+      }
+      if (event.history) {
+        setConversationHistory(event.history);
       }
       break;
 

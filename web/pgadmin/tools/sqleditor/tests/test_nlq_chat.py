@@ -47,6 +47,22 @@ class NLQChatTestCase(BaseTestGenerator):
                 '"explanation": "Gets all users"}'
             )
         )),
+        ('NLQ Chat - With History', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            message='Now filter by active users',
+            history=[
+                {'role': 'user', 'content': 'Find all users'},
+                {'role': 'assistant',
+                 'content': '{"sql": "SELECT * FROM users;", '
+                            '"explanation": "Gets all users"}'},
+            ],
+            expected_error=False,
+            mock_response=(
+                '{"sql": "SELECT * FROM users WHERE active = true;", '
+                '"explanation": "Gets active users"}'
+            )
+        )),
     ]
 
     def setUp(self):
@@ -114,9 +130,12 @@ class NLQChatTestCase(BaseTestGenerator):
         try:
             # Make request
             message = getattr(self, 'message', 'test query')
+            request_data = {'message': message}
+            if hasattr(self, 'history'):
+                request_data['history'] = self.history
             response = self.tester.post(
                 f'/sqleditor/nlq/chat/{trans_id}/stream',
-                data=json.dumps({'message': message}),
+                data=json.dumps(request_data),
                 content_type='application/json',
                 follow_redirects=True
             )
