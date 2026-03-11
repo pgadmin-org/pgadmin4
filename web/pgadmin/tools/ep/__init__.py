@@ -12,7 +12,7 @@
 import json
 import urllib.request
 from urllib.parse import urlparse
-from flask import request
+from flask import request, current_app
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
@@ -185,46 +185,58 @@ def is_valid_url(url):
 
 
 def send_post_request(url_api, data, parse=False):
-  data = json.dumps(data).encode('utf-8')
-  headers = {
-    "Content-Type": "application/json; charset=utf-8",
-    "User-Agent": "pgAdmin4/ExplainModule",
-    "Method": "POST"
-  }
-  try:
-    req = urllib.request.Request(url_api, data, headers)
-    with no302opener.open(req, timeout=10) as response:
-      if (response.code == 302):
-        return False, response.headers["Location"]
-      response_data = response.read().decode('utf-8')
-      if (parse):
-        return False, json.loads(response_data)
-      else:
-        return False, response_data
-  except Exception as e:
-    return True, str(e)
+    data = json.dumps(data).encode('utf-8')
+    headers = {
+        "Content-Type": "application/json; charset=utf-8",
+        "User-Agent": "pgAdmin4/ExplainModule",
+        "Method": "POST"
+    }
+    try:
+        req = urllib.request.Request(url_api, data, headers)
+        with no302opener.open(req, timeout=10) as response:
+            if (response.code == 302):
+                return False, response.headers["Location"]
+            response_data = response.read().decode('utf-8')
+            if (parse):
+                return False, json.loads(response_data)
+            else:
+                return False, response_data
+    except Exception as e:
+        return True, str(e)
 
 class No302HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
 
-  def http_response(self, request, response):
-    code, msg, hdrs = response.code, response.msg, response.info()
+    def http_response(self, request, response):
+        code, msg, hdrs = response.code, response.msg, response.info()
 
-    if (code == 302):
-      return response
+        if (code == 302):
+            return response
 
-    # According to RFC 2616, "2xx" code indicates that the client's
-    # request was successfully received, understood, and accepted.
-    if not (200 <= code < 300):
-      response = self.parent.error(
-        'http', request, response, code, msg, hdrs)
+        # According to RFC 2616, "2xx" code indicates that the client's
+        # request was successfully received, understood, and accepted.
+        if not (200 <= code < 300):
+            response = self.parent.error(
+                'http', request, response, code, msg, hdrs)
 
-    return response
+        return response
 
-  https_response = http_response
+    https_response = http_response
+
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """
+    A redirect handler that prevents automatic redirects by returning None
+    from redirect_request, allowing 302 responses to be handled properly.
+    """
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        """
+        Return None to disable automatic redirects.
+        """
+        return None
 
 # Build opener without HTTPRedirectHandler so No302HTTPErrorProcessor can handle 302 responses
 no302opener = urllib.request.build_opener(
     No302HTTPErrorProcessor(),
+    NoRedirectHandler(),  # Explicitly add NoRedirectHandler to prevent automatic redirects
     urllib.request.HTTPHandler(),
     urllib.request.HTTPSHandler()
 )
@@ -249,6 +261,8 @@ def get_preference_value(name):
                     value = value.strip()
                     return value or None
                 return value
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.debug(
+            f"Failed to retrieve preference '{name}': {e}"
+        )
     return None
