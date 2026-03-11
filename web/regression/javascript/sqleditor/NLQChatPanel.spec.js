@@ -116,13 +116,15 @@ describe('NLQChatPanel Component', () => {
   it('should show empty state message when no messages', () => {
     renderWithContexts(<ThemedNLQChatPanel />);
     expect(
-      screen.getByText(/Describe what SQL you need/i)
+      screen.getByText(/Describe the SQL you need/i)
     ).toBeInTheDocument();
   });
 
   it('should have input field for typing queries', () => {
     renderWithContexts(<ThemedNLQChatPanel />);
-    const input = screen.getByPlaceholderText(/Describe the SQL you need/i);
+    const input = screen.getByPlaceholderText(
+      /Ask a question or describe the SQL you need/i,
+    );
     expect(input).toBeInTheDocument();
   });
 
@@ -146,7 +148,9 @@ describe('NLQChatPanel Component', () => {
 
   it('should enable send button when input has text', () => {
     const { container } = renderWithContexts(<ThemedNLQChatPanel />);
-    const input = screen.getByPlaceholderText(/Describe the SQL you need/i);
+    const input = screen.getByPlaceholderText(
+      /Ask a question or describe the SQL you need/i,
+    );
 
     fireEvent.change(input, { target: { value: 'Find all users' } });
 
@@ -167,7 +171,9 @@ describe('NLQChatPanel Component', () => {
 
   it('should clear input after typing and clicking clear', () => {
     renderWithContexts(<ThemedNLQChatPanel />);
-    const input = screen.getByPlaceholderText(/Describe the SQL you need/i);
+    const input = screen.getByPlaceholderText(
+      /Ask a question or describe the SQL you need/i,
+    );
 
     fireEvent.change(input, { target: { value: 'Find all users' } });
     expect(input.value).toBe('Find all users');
