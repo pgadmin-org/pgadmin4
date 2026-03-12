@@ -382,6 +382,7 @@ class AnthropicClient(LLMClient):
         stop_reason_str = None
         model_name = self._model
         usage = Usage()
+        in_text_block = False
 
         while True:
             line_bytes = response.readline()
@@ -427,6 +428,13 @@ class AnthropicClient(LLMClient):
                         'name': block.get('name', '')
                     }
                     tool_input_json = ''
+                elif block.get('type') == 'text':
+                    # Emit a separator between text blocks to
+                    # match _parse_response() which joins with '\n'
+                    if in_text_block:
+                        content_parts.append('\n')
+                        yield '\n'
+                    in_text_block = True
 
             elif event_type == 'content_block_delta':
                 delta = data.get('delta', {})
