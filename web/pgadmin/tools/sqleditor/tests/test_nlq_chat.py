@@ -109,12 +109,14 @@ class NLQChatTestCase(BaseTestGenerator):
         patches.append(mock_check_trans)
 
         # Mock chat_with_database
+        mock_chat_patcher = None
+        mock_chat_obj = None
         if hasattr(self, 'mock_response'):
-            mock_chat = patch(
+            mock_chat_patcher = patch(
                 'pgadmin.llm.chat.chat_with_database',
                 return_value=(self.mock_response, [])
             )
-            patches.append(mock_chat)
+            patches.append(mock_chat_patcher)
 
         # Mock CSRF protection
         mock_csrf = patch(
@@ -124,8 +126,12 @@ class NLQChatTestCase(BaseTestGenerator):
         patches.append(mock_csrf)
 
         # Start all patches
+        started_mocks = []
         for p in patches:
-            p.start()
+            m = p.start()
+            started_mocks.append(m)
+            if p is mock_chat_patcher:
+                mock_chat_obj = m
 
         try:
             # Make request
@@ -155,6 +161,19 @@ class NLQChatTestCase(BaseTestGenerator):
                 # For success, we expect SSE stream
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('text/event-stream', response.content_type)
+
+                # Verify history was passed to chat_with_database
+                if hasattr(self, 'history') and mock_chat_obj:
+                    mock_chat_obj.assert_called_once()
+                    call_kwargs = mock_chat_obj.call_args.kwargs
+                    conv_hist = call_kwargs.get(
+                        'conversation_history', []
+                    )
+                    self.assertTrue(
+                        len(conv_hist) > 0,
+                        'conversation_history should be non-empty '
+                        'when history is provided'
+                    )
 
         finally:
             # Stop all patches

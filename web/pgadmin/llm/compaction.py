@@ -182,34 +182,41 @@ def _classify_message(message: Message) -> float:
     return CLASS_CONTEXTUAL
 
 
-def _find_tool_pair_indices(messages: list[Message]) -> dict[int, int]:
-    """Find indices of tool_call/tool_result pairs that must stay together.
+def _find_tool_pair_indices(
+    messages: list[Message]
+) -> dict[int, frozenset[int]]:
+    """Find indices of tool_call/tool_result groups that must stay together.
 
-    Returns a mapping where both the assistant message index and the
-    tool result message index map to each other, so removing one
-    implies removing both.
+    An assistant message may contain multiple tool_calls, each with a
+    corresponding tool result message. All messages in such a group
+    must be dropped or kept together.
+
+    Returns a mapping where every index in a group maps to the full
+    set of indices in that group.
 
     Args:
         messages: The message list.
 
     Returns:
-        Dict mapping index -> paired index.
+        Dict mapping index -> frozenset of all indices in the group.
     """
-    pairs = {}
+    groups: dict[int, frozenset[int]] = {}
 
     for i, msg in enumerate(messages):
         if msg.role == Role.ASSISTANT and msg.tool_calls:
-            # Find the corresponding tool result(s)
             tool_call_ids = {tc.id for tc in msg.tool_calls}
+            group_indices = {i}
             for j in range(i + 1, len(messages)):
                 if messages[j].role == Role.TOOL:
                     for tr in messages[j].tool_results:
                         if tr.tool_call_id in tool_call_ids:
-                            pairs[i] = j
-                            pairs[j] = i
+                            group_indices.add(j)
                             break
+            group = frozenset(group_indices)
+            for idx in group:
+                groups[idx] = group
 
-    return pairs
+    return groups
 
 
 def compact_history(
@@ -257,8 +264,21 @@ def compact_history(
     for i in range(recent_start, total):
         protected.add(i)
 
-    # Find tool pairs
-    tool_pairs = _find_tool_pair_indices(messages)
+    # If protected messages alone exceed the budget, shrink the
+    # recent window until we have room for compaction candidates.
+    while recent_window > 0:
+        protected_tokens = sum(
+            estimate_message_tokens(messages[i], provider)
+            for i in protected
+        )
+        if protected_tokens <= max_tokens:
+            break
+        recent_window -= 1
+        recent_start = max(1, total - recent_window)
+        protected = {0} | set(range(recent_start, total))
+
+    # Find tool groups
+    tool_groups = _find_tool_pair_indices(messages)
 
     # Classify and score all non-protected messages
     candidates = []
@@ -276,7 +296,7 @@ def compact_history(
         if current_tokens <= max_tokens:
             break
 
-        # Skip if already dropped (as part of a pair)
+        # Skip if already dropped (as part of a group)
         if idx in dropped:
             continue
 
@@ -288,12 +308,14 @@ def compact_history(
         saved = estimate_message_tokens(messages[idx], provider)
         dropped.add(idx)
 
-        # If this is part of a tool pair, drop the partner too
-        if idx in tool_pairs:
-            partner = tool_pairs[idx]
-            if partner not in protected:
-                saved += estimate_message_tokens(messages[partner], provider)
-                dropped.add(partner)
+        # If this is part of a tool group, drop all partners too
+        if idx in tool_groups:
+            for partner in tool_groups[idx]:
+                if partner != idx and partner not in protected:
+                    saved += estimate_message_tokens(
+                        messages[partner], provider
+                    )
+                    dropped.add(partner)
 
         current_tokens -= saved
 
@@ -308,13 +330,13 @@ def compact_history(
             saved = estimate_message_tokens(messages[idx], provider)
             dropped.add(idx)
 
-            if idx in tool_pairs:
-                partner = tool_pairs[idx]
-                if partner not in protected:
-                    saved += estimate_message_tokens(
-                        messages[partner], provider
-                    )
-                    dropped.add(partner)
+            if idx in tool_groups:
+                for partner in tool_groups[idx]:
+                    if partner != idx and partner not in protected:
+                        saved += estimate_message_tokens(
+                            messages[partner], provider
+                        )
+                        dropped.add(partner)
 
             current_tokens -= saved
 

@@ -137,15 +137,16 @@ class CompactHistoryTestCase(BaseTestGenerator):
 
     def test_drops_low_value(self):
         """Low-value messages should be dropped first."""
-        # Use longer messages to ensure we exceed the token budget
+        # Filler only on important messages to inflate token count;
+        # keep transient messages short so they classify as low-value.
         filler = ' This is extra text to increase token count.' * 5
         messages = [
             Message.user('First important query' + filler),
-            # Short transient messages (low value)
-            Message.user('ok' + filler),
-            Message.assistant('ok' + filler),
-            Message.user('thanks' + filler),
-            Message.assistant('sure' + filler),
+            # Short transient messages (low value) - no filler
+            Message.user('ok'),
+            Message.assistant('ok'),
+            Message.user('thanks'),
+            Message.assistant('sure'),
             # More substantial messages
             Message.user('Show me the schema with CREATE TABLE' + filler),
             Message.assistant(
@@ -166,6 +167,10 @@ class CompactHistoryTestCase(BaseTestGenerator):
         self.assertIn('First important query', result[0].content)
         # Last 2 preserved
         self.assertIn('Final answer with details', result[-1].content)
+        # Transient messages should be dropped
+        contents = [m.content for m in result]
+        for short_msg in ['ok', 'thanks', 'sure']:
+            self.assertNotIn(short_msg, contents)
 
     def test_tool_pairs(self):
         """Tool call/result pairs should be dropped together."""
