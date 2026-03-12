@@ -229,6 +229,18 @@ def save():
     """
     pref_data = get_data()
 
+    # Check once whether the user is explicitly setting default_provider
+    # in this save, so auto-selection doesn't override their choice.
+    _provider_map = {
+        'anthropic_api_key_file': 'anthropic',
+        'openai_api_key_file': 'openai',
+        'ollama_api_url': 'ollama',
+        'docker_api_url': 'docker',
+    }
+    explicit_provider_choice = any(
+        item.get('name') == 'default_provider' for item in pref_data
+    )
+
     for data in pref_data:
         if data['name'] in ['vw_edt_tab_title_placeholder',
                             'qt_tab_title_placeholder',
@@ -245,13 +257,8 @@ def save():
 
         # Auto-select the default LLM provider when an API key/URL is
         # configured and no provider has been selected yet.
-        _provider_map = {
-            'anthropic_api_key_file': 'anthropic',
-            'openai_api_key_file': 'openai',
-            'ollama_api_url': 'ollama',
-            'docker_api_url': 'docker',
-        }
-        if res and data['name'] in _provider_map and data['value']:
+        if res and not explicit_provider_choice and \
+                data['name'] in _provider_map and data['value']:
             ai_module = Preferences.module('ai')
             if ai_module:
                 dp_pref = ai_module.preference('default_provider')
@@ -324,6 +331,18 @@ def update():
     pref_data = get_data()
     pref_data = json.loads(pref_data['pref_data'])
 
+    # Check once whether the user is explicitly setting default_provider
+    # in this save, so auto-selection doesn't override their choice.
+    _provider_map = {
+        'anthropic_api_key_file': 'anthropic',
+        'openai_api_key_file': 'openai',
+        'ollama_api_url': 'ollama',
+        'docker_api_url': 'docker',
+    }
+    explicit_provider_choice = any(
+        item.get('name') == 'default_provider' for item in pref_data
+    )
+
     for data in pref_data:
         if data['name'] in ['vw_edt_tab_title_placeholder',
                             'qt_tab_title_placeholder',
@@ -338,13 +357,8 @@ def update():
 
         # Auto-select the default LLM provider when an API key/URL is
         # configured and no provider has been selected yet.
-        _provider_map = {
-            'anthropic_api_key_file': 'anthropic',
-            'openai_api_key_file': 'openai',
-            'ollama_api_url': 'ollama',
-            'docker_api_url': 'docker',
-        }
-        if data['name'] in _provider_map and data['value']:
+        if not explicit_provider_choice and \
+                data['name'] in _provider_map and data['value']:
             ai_module = Preferences.module('ai')
             if ai_module:
                 dp_pref = ai_module.preference('default_provider')
