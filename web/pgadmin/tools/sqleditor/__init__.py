@@ -2946,7 +2946,7 @@ def nlq_chat_stream(trans_id):
                 re.DOTALL
             )
             sql = ';\n\n'.join(
-                block.strip() for block in sql_blocks
+                block.strip().rstrip(';') for block in sql_blocks
             ) if sql_blocks else None
 
             # Fallback: try JSON format in case LLM ignored

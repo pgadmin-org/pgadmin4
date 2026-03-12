@@ -223,7 +223,7 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
                 'Then get orders:\n\n'
                 '```sql\nSELECT * FROM orders;\n```'
             ),
-            expected_sql='SELECT * FROM users;;\n\nSELECT * FROM orders;'
+            expected_sql='SELECT * FROM users;\n\nSELECT * FROM orders'
         )),
         ('SQL Extraction - pgsql language tag', dict(
             response_text='```pgsql\nSELECT 1;\n```',

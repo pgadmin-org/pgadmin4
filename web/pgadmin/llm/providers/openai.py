@@ -559,6 +559,13 @@ class OpenAIClient(LLMClient):
             finish_reason or '', StopReason.UNKNOWN
         )
 
+        if not content and not tool_calls:
+            raise LLMClientError(LLMError(
+                message='No response content returned from API',
+                provider=self.provider_name,
+                retryable=False
+            ))
+
         yield LLMResponse(
             content=content,
             tool_calls=tool_calls,

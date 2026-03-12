@@ -16,6 +16,7 @@ OpenAI-compatible API at http://localhost:12434. No API key is required.
 import json
 import socket
 import ssl
+import urllib.parse
 import urllib.request
 import urllib.error
 from collections.abc import Generator
@@ -43,6 +44,25 @@ from pgadmin.llm.models import (
 DEFAULT_API_URL = 'http://localhost:12434'
 DEFAULT_MODEL = 'ai/qwen3-coder'
 
+# Allowed loopback hostnames for the Docker endpoint
+_LOOPBACK_HOSTS = {'localhost', '127.0.0.1', '::1', '[::1]'}
+
+
+def _validate_loopback_url(url: str) -> None:
+    """Ensure the URL uses HTTP(S) and points to a loopback address."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in ('http', 'https'):
+        raise ValueError(
+            f"Docker Model Runner URL must use http or https, "
+            f"got: {parsed.scheme}"
+        )
+    hostname = (parsed.hostname or '').lower()
+    if hostname not in _LOOPBACK_HOSTS:
+        raise ValueError(
+            f"Docker Model Runner URL must point to a loopback address "
+            f"(localhost/127.0.0.1/::1), got: {hostname}"
+        )
+
 
 class DockerClient(LLMClient):
     """
@@ -64,6 +84,7 @@ class DockerClient(LLMClient):
             model: Optional model name. Defaults to ai/qwen3-coder.
         """
         self._api_url = (api_url or DEFAULT_API_URL).rstrip('/')
+        _validate_loopback_url(self._api_url)
         self._model = model or DEFAULT_MODEL
 
     @property
@@ -553,6 +574,13 @@ class DockerClient(LLMClient):
         stop_reason = stop_reason_map.get(
             finish_reason or '', StopReason.UNKNOWN
         )
+
+        if not content and not tool_calls:
+            raise LLMClientError(LLMError(
+                message='No response content returned from API',
+                provider=self.provider_name,
+                retryable=False
+            ))
 
         yield LLMResponse(
             content=content,
