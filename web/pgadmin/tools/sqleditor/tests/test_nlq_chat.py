@@ -162,6 +162,10 @@ class NLQChatTestCase(BaseTestGenerator):
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('text/event-stream', response.content_type)
 
+                # Consume the SSE stream so the generator executes
+                # fully (including the chat_with_database call)
+                _ = response.data
+
                 # Verify history was passed to chat_with_database
                 if hasattr(self, 'history') and mock_chat_obj:
                     mock_chat_obj.assert_called_once()

@@ -159,7 +159,7 @@ class CompactHistoryTestCase(BaseTestGenerator):
         ]
 
         result = compact_history(
-            messages, max_tokens=500, recent_window=2
+            messages, max_tokens=200, recent_window=2
         )
 
         # Should have fewer messages than original
