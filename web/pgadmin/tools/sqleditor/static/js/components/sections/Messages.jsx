@@ -11,16 +11,19 @@ import React from 'react';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 
-const StyledDiv = styled('div')(({theme}) => ({
+const StyledTextarea = styled('textarea')(({theme}) => ({
   whiteSpace: 'pre-wrap',
   fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
   padding: '5px 10px',
   overflow: 'auto',
   height: '100%',
+  width: '100%',
   fontSize: '12px',
-  userSelect: 'text',
   backgroundColor: theme.palette.background.default,
   color: theme.palette.text.primary,
+  border: 'none',
+  outline: 'none',
+  resize: 'none',
   ...theme.mixins.fontSourceCode,
 }));
 
@@ -38,5 +41,5 @@ export function Messages() {
       });
     });
   }, []);
-  return <StyledDiv tabIndex="0">{messageText}</StyledDiv>;
+  return <StyledTextarea value={messageText} readOnly/>;
 }
