@@ -123,6 +123,8 @@ class LLMModule(PgAdminModule):
             category_label=gettext('Anthropic'),
             help_str=gettext(
                 'Path to a file containing your Anthropic API key. '
+                'This path must be on the server hosting pgAdmin, '
+                'e.g. inside the container when using Docker. '
                 'The file should contain only the API key. The API key '
                 'may be optional when using a custom API URL with a '
                 'provider that does not require authentication.'
@@ -185,6 +187,8 @@ class LLMModule(PgAdminModule):
             category_label=gettext('OpenAI'),
             help_str=gettext(
                 'Path to a file containing your OpenAI API key. '
+                'This path must be on the server hosting pgAdmin, '
+                'e.g. inside the container when using Docker. '
                 'The file should contain only the API key. The API key '
                 'may be optional when using a custom API URL with a '
                 'provider that does not require authentication.'
