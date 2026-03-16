@@ -130,10 +130,11 @@ class CompactHistoryTestCase(BaseTestGenerator):
         # First message should be preserved
         self.assertEqual(result[0].content, 'First message')
         # Last 4 messages should be preserved
-        last_4_original = messages[-4:]
-        last_4_result = result[-4:]
-        for orig, res in zip(last_4_original, last_4_result):
-            self.assertEqual(orig.content, res.content)
+        self.assertGreaterEqual(len(result), 5)
+        self.assertEqual(
+            [m.content for m in result[-4:]],
+            [m.content for m in messages[-4:]],
+        )
 
     def test_drops_low_value(self):
         """Low-value messages should be dropped first."""

@@ -280,6 +280,12 @@ def compact_history(
     # Find tool groups
     tool_groups = _find_tool_pair_indices(messages)
 
+    # Expand protected set to include entire tool groups so we never
+    # split a tool-use turn (leaving orphaned call or result messages).
+    for i in list(protected):
+        if i in tool_groups:
+            protected |= set(tool_groups[i])
+
     # Classify and score all non-protected messages
     candidates = []
     for i in range(len(messages)):
@@ -361,8 +367,14 @@ def deserialize_history(
     Returns:
         List of Message objects.
     """
+    if not isinstance(history_data, list):
+        return []
+
     messages = []
     for item in history_data:
+        if not isinstance(item, dict):
+            continue
+
         role_str = item.get('role', '')
         content = item.get('content', '')
 
@@ -373,7 +385,9 @@ def deserialize_history(
 
         # Reconstruct tool calls if present
         tool_calls = []
-        for tc_data in item.get('tool_calls', []):
+        for tc_data in item.get('tool_calls') or []:
+            if not isinstance(tc_data, dict):
+                continue
             tool_calls.append(ToolCall(
                 id=tc_data.get('id', ''),
                 name=tc_data.get('name', ''),
@@ -383,7 +397,9 @@ def deserialize_history(
         # Reconstruct tool results if present
         from pgadmin.llm.models import ToolResult
         tool_results = []
-        for tr_data in item.get('tool_results', []):
+        for tr_data in item.get('tool_results') or []:
+            if not isinstance(tr_data, dict):
+                continue
             tool_results.append(ToolResult(
                 tool_call_id=tr_data.get('tool_call_id', ''),
                 content=tr_data.get('content', ''),
