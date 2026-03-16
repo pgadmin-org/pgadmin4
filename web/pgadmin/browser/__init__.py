@@ -538,6 +538,7 @@ def utils():
                 "Administrator") else restricted_shared_storage_list,
             enable_server_passexec_cmd=config.ENABLE_SERVER_PASS_EXEC_CMD,
             max_server_tags_allowed=config.MAX_SERVER_TAGS_ALLOWED,
+            llm_enabled=config.LLM_ENABLED,
         ), 200)
     response.headers['Content-Type'] = MIMETYPE_APP_JS
     response.headers['Cache-Control'] = NO_CACHE_CONTROL

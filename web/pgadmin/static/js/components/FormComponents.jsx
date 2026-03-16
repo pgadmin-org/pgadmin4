@@ -389,7 +389,6 @@ export function InputText({ref, cid, helpid, readonly, disabled, value, onChange
     onChange?.(changeVal);
   };
 
-
   const filteredProps = _.pickBy(props, (_v, key)=>(
     /* When used in ButtonGroup, following props should be skipped */
     (!['color', 'disableElevation', 'disableFocusRipple', 'disableRipple'].includes(key))
@@ -420,6 +419,12 @@ export function InputText({ref, cid, helpid, readonly, disabled, value, onChange
       onChange={onChangeFinal}
       {
         ...(controlProps?.onKeyDown && { onKeyDown: controlProps.onKeyDown })
+      }
+      {
+        ...(controlProps?.onFocus && { onFocus: controlProps.onFocus })
+      }
+      {
+        ...(controlProps?.onBlur && { onBlur: controlProps.onBlur })
       }
       {...controlProps}
       {...filteredProps}

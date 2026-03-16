@@ -10,6 +10,7 @@
 import AIReport from './AIReport';
 import { AllPermissionTypes, BROWSER_PANELS } from '../../../browser/static/js/constants';
 import getApiInstance from '../../../static/js/api_instance';
+import MainMenuFactory from '../../../browser/static/js/MainMenuFactory';
 import url_for from 'sources/url_for';
 
 // AI Reports Module
@@ -36,9 +37,14 @@ define([
 
       this.initialized = true;
 
-      // Check LLM status
+      // Check LLM status and only register menus if enabled
       this.checkLLMStatus();
 
+      return this;
+    },
+
+    // Register AI Reports menus
+    registerMenus: function() {
       // Register AI Reports menu category
       pgBrowser.add_menu_category({
         name: 'ai_tools',
@@ -158,11 +164,9 @@ define([
       }
 
       pgBrowser.add_menus(menus);
-
-      return this;
     },
 
-    // Check if LLM is configured
+    // Check if LLM is configured, register menus only if system-enabled
     checkLLMStatus: function() {
       const api = getApiInstance();
       api.get(url_for('llm.status'))
@@ -172,6 +176,12 @@ define([
             this.llmSystemEnabled = res.data.data?.system_enabled || false;
           }
           this.llmStatusChecked = true;
+
+          // Only register menus if LLM is enabled at system level
+          if (this.llmSystemEnabled) {
+            this.registerMenus();
+            MainMenuFactory.createMainMenus();
+          }
         })
         .catch(() => {
           this.llmEnabled = false;
