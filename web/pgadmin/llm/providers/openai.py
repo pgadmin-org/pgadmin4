@@ -37,27 +37,36 @@ from pgadmin.llm.models import (
 # Default model if none specified
 DEFAULT_MODEL = 'gpt-4o'
 
-# API configuration
-API_URL = 'https://api.openai.com/v1/chat/completions'
+# Default API base URL
+DEFAULT_API_BASE_URL = 'https://api.openai.com/v1'
 
 
 class OpenAIClient(LLMClient):
     """
     OpenAI GPT API client.
 
-    Implements the LLMClient interface for OpenAI's GPT models.
+    Implements the LLMClient interface for OpenAI's GPT models
+    and any OpenAI-compatible API endpoint.
     """
 
-    def __init__(self, api_key: str, model: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None,
+                 model: Optional[str] = None,
+                 api_url: Optional[str] = None):
         """
         Initialize the OpenAI client.
 
         Args:
-            api_key: The OpenAI API key.
+            api_key: The OpenAI API key. Optional when using a custom
+                     API URL with a provider that does not require
+                     authentication.
             model: Optional model name. Defaults to gpt-4o.
+            api_url: Optional custom API base URL. Defaults to
+                     https://api.openai.com/v1.
         """
-        self._api_key = api_key
+        self._api_key = api_key or ''
         self._model = model or DEFAULT_MODEL
+        base_url = (api_url or DEFAULT_API_BASE_URL).rstrip('/')
+        self._api_url = f'{base_url}/chat/completions'
 
     @property
     def provider_name(self) -> str:
@@ -69,7 +78,11 @@ class OpenAIClient(LLMClient):
 
     def is_available(self) -> bool:
         """Check if the client is properly configured."""
-        return bool(self._api_key)
+        # API key is required for the default OpenAI endpoint, but optional
+        # for custom endpoints (e.g., local LLM servers).
+        if self._api_url.startswith(DEFAULT_API_BASE_URL):
+            return bool(self._api_key)
+        return True
 
     def chat(
         self,
@@ -77,7 +90,6 @@ class OpenAIClient(LLMClient):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -88,7 +100,6 @@ class OpenAIClient(LLMClient):
             tools: Optional list of tools the model can use.
             system_prompt: Optional system prompt.
             max_tokens: Maximum tokens in response.
-            temperature: Sampling temperature.
             **kwargs: Additional parameters.
 
         Returns:
@@ -111,7 +122,6 @@ class OpenAIClient(LLMClient):
             'model': self._model,
             'messages': converted_messages,
             'max_completion_tokens': max_tokens,
-            'temperature': temperature
         }
 
         if tools:
@@ -198,11 +208,13 @@ class OpenAIClient(LLMClient):
         """Make an HTTP request to the OpenAI API."""
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self._api_key}'
         }
 
+        if self._api_key:
+            headers['Authorization'] = f'Bearer {self._api_key}'
+
         request = urllib.request.Request(
-            API_URL,
+            self._api_url,
             data=json.dumps(payload).encode('utf-8'),
             headers=headers,
             method='POST'

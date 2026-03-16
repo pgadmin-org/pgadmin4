@@ -127,6 +127,35 @@ export function prepareSubnodeData(node, subNode, nodeData, preferencesStore) {
         }
         element.controlProps.refreshDeps = refreshDeps;
 
+        // Register schema-level deps so the SchemaView subscriber
+        // mechanism triggers a re-render of this field when any
+        // dependency field changes (e.g., API URL or API key file).
+        const depIds = Object.values(refreshDeps);
+        if (depIds.length > 0) {
+          element.deps = depIds;
+        }
+
+        // Set up blur-based clearing: when a dep field loses focus
+        // with a changed value, fire an event that SelectRefresh
+        // listens for to clear the model list.
+        const depChangeEmitter = new EventTarget();
+        element.controlProps.depChangeEmitter = depChangeEmitter;
+        for (const prefName of Object.values(refreshDepNames)) {
+          const depPref = subNode.preferences.find((p) => p.name === prefName);
+          if (depPref) {
+            depPref.controlProps = depPref.controlProps || {};
+            let focusValue = '';
+            depPref.controlProps.onFocus = (e) => {
+              focusValue = e.target.value;
+            };
+            depPref.controlProps.onBlur = (e) => {
+              if (e.target.value !== focusValue) {
+                depChangeEmitter.dispatchEvent(new Event('depchange'));
+              }
+            };
+          }
+        }
+
         // Also set up initial options loading via optionsUrl
         if (element.controlProps.optionsUrl) {
           const optionsEndpoint = element.controlProps.optionsUrl;
