@@ -65,6 +65,7 @@ const MessagesArea = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
+  userSelect: 'text',
 }));
 
 const MessageBubble = styled(Paper)(({ theme, isuser }) => ({
