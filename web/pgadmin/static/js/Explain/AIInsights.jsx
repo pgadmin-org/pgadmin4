@@ -30,6 +30,7 @@ import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import getApiInstance from '../api_instance';
+import { getRandomThinkingMessage } from '../ai_thinking_messages';
 import Loader from '../components/Loader';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
@@ -130,22 +131,6 @@ const LoadingContainer = styled(Box)({
   height: '100%',
   gap: '16px',
 });
-
-// PostgreSQL/Elephant themed thinking messages
-const THINKING_MESSAGES = [
-  gettext('Analyzing query plan...'),
-  gettext('Examining node costs...'),
-  gettext('Looking for sequential scans...'),
-  gettext('Checking index usage...'),
-  gettext('Evaluating join strategies...'),
-  gettext('Identifying bottlenecks...'),
-  gettext('Calculating row estimates...'),
-  gettext('Reviewing execution times...'),
-];
-
-function getRandomThinkingMessage() {
-  return THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)];
-}
 
 function getSeverityIcon(severity) {
   switch (severity) {
