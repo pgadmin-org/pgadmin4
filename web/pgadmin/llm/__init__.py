@@ -45,6 +45,10 @@ class LLMModule(PgAdminModule):
         """
         Register preferences for LLM providers.
         """
+        # Don't register AI preferences if LLM is disabled at system level
+        if not getattr(config, 'LLM_ENABLED', False):
+            return
+
         self.preference = Preferences('ai', gettext('AI'))
 
         # Default Provider Setting
