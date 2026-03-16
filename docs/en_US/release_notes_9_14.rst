@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #4011 <https://github.com/pgadmin-org/pgadmin4/issues/4011>`_ -  Added support to download binary data from result grid.
+  | `Issue #9703 <https://github.com/pgadmin-org/pgadmin4/issues/9703>`_ -  Added support for custom LLM provider URLs for OpenAI and Anthropic, allowing use of OpenAI-compatible providers such as LM Studio, EXO, and LiteLLM.
 
 Housekeeping
 ************
@@ -28,8 +29,11 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9729 <https://github.com/pgadmin-org/pgadmin4/issues/9729>`_ -  Fixed an issue where some LLM models would not use database tools in the AI assistant, instead returning text descriptions of tool calls.
   | `Issue #9279 <https://github.com/pgadmin-org/pgadmin4/issues/9279>`_ -  Fixed an issue where OAuth2 authentication fails with 'object has no attribute' if OAUTH2_AUTO_CREATE_USER is False.
   | `Issue #9392 <https://github.com/pgadmin-org/pgadmin4/issues/9392>`_ -  Ensure that the Geometry Viewer refreshes when re-running queries or switching geometry columns, preventing stale data from being displayed.
+  | `Issue #9719 <https://github.com/pgadmin-org/pgadmin4/issues/9719>`_ -  Fixed an issue where AI Reports fail with OpenAI models that do not support the temperature parameter.
   | `Issue #9721 <https://github.com/pgadmin-org/pgadmin4/issues/9721>`_ -  Fixed an issue where permissions page is not completely accessible on full scroll.
   | `Issue #9732 <https://github.com/pgadmin-org/pgadmin4/issues/9732>`_ -  Improve the AI Assistant user prompt to be more descriptive of the actual functionality.
-  
+  | `Issue #9738 <https://github.com/pgadmin-org/pgadmin4/issues/9738>`_ -  Allow copying of text from the AI Assistant chat panel.
+  | `Issue #9740 <https://github.com/pgadmin-org/pgadmin4/issues/9740>`_ -  Fixed an issue where the AI Assistant input textbox sometimes swallows the first character of input.
