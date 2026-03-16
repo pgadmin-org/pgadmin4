@@ -47,6 +47,22 @@ class NLQChatTestCase(BaseTestGenerator):
                 '"explanation": "Gets all users"}'
             )
         )),
+        ('NLQ Chat - With History', dict(
+            llm_enabled=True,
+            valid_transaction=True,
+            message='Now filter by active users',
+            history=[
+                {'role': 'user', 'content': 'Find all users'},
+                {'role': 'assistant',
+                 'content': '{"sql": "SELECT * FROM users;", '
+                            '"explanation": "Gets all users"}'},
+            ],
+            expected_error=False,
+            mock_response=(
+                '{"sql": "SELECT * FROM users WHERE active = true;", '
+                '"explanation": "Gets active users"}'
+            )
+        )),
     ]
 
     def setUp(self):
@@ -92,13 +108,18 @@ class NLQChatTestCase(BaseTestGenerator):
             )
         patches.append(mock_check_trans)
 
-        # Mock chat_with_database
+        # Mock chat_with_database — patch the source module because the
+        # endpoint uses a local import (from pgadmin.llm.chat import ...)
+        # inside the function body, so there is no module-level binding
+        # to patch at the use site.
+        mock_chat_patcher = None
+        mock_chat_obj = None
         if hasattr(self, 'mock_response'):
-            mock_chat = patch(
+            mock_chat_patcher = patch(
                 'pgadmin.llm.chat.chat_with_database',
                 return_value=(self.mock_response, [])
             )
-            patches.append(mock_chat)
+            patches.append(mock_chat_patcher)
 
         # Mock CSRF protection
         mock_csrf = patch(
@@ -108,15 +129,22 @@ class NLQChatTestCase(BaseTestGenerator):
         patches.append(mock_csrf)
 
         # Start all patches
+        started_mocks = []
         for p in patches:
-            p.start()
+            m = p.start()
+            started_mocks.append(m)
+            if p is mock_chat_patcher:
+                mock_chat_obj = m
 
         try:
             # Make request
             message = getattr(self, 'message', 'test query')
+            request_data = {'message': message}
+            if hasattr(self, 'history'):
+                request_data['history'] = self.history
             response = self.tester.post(
                 f'/sqleditor/nlq/chat/{trans_id}/stream',
-                data=json.dumps({'message': message}),
+                data=json.dumps(request_data),
                 content_type='application/json',
                 follow_redirects=True
             )
@@ -136,6 +164,23 @@ class NLQChatTestCase(BaseTestGenerator):
                 # For success, we expect SSE stream
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('text/event-stream', response.content_type)
+
+                # Consume the SSE stream so the generator executes
+                # fully (including the chat_with_database call)
+                _ = response.data
+
+                # Verify history was passed to chat_with_database
+                if hasattr(self, 'history') and mock_chat_obj:
+                    mock_chat_obj.assert_called_once()
+                    call_kwargs = mock_chat_obj.call_args.kwargs
+                    conv_hist = call_kwargs.get(
+                        'conversation_history', []
+                    )
+                    self.assertTrue(
+                        len(conv_hist) > 0,
+                        'conversation_history should be non-empty '
+                        'when history is provided'
+                    )
 
         finally:
             # Stop all patches

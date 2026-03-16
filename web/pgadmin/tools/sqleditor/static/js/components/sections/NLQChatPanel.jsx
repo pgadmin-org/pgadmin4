@@ -250,6 +250,7 @@ export function NLQChatPanel() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);
+  const [conversationHistory, setConversationHistory] = useState([]);
   const [thinkingMessageId, setThinkingMessageId] = useState(null);
   const [llmInfo, setLlmInfo] = useState({ provider: null, model: null });
 
@@ -270,6 +271,7 @@ export function NLQChatPanel() {
   const abortControllerRef = useRef(null);
   const readerRef = useRef(null);
   const stoppedRef = useRef(false);
+  const clearedRef = useRef(false);
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
@@ -394,8 +396,21 @@ export function NLQChatPanel() {
   };
 
   const handleClearConversation = () => {
+    // Mark as cleared so in-flight stream handlers ignore late events
+    clearedRef.current = true;
+    // Cancel any active stream
+    if (readerRef.current) {
+      readerRef.current.cancel();
+      readerRef.current = null;
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
     setMessages([]);
     setConversationId(null);
+    setConversationHistory([]);
+    setIsLoading(false);
   };
 
   // Stop the current request
@@ -433,8 +448,9 @@ export function NLQChatPanel() {
   const handleSubmit = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    // Reset stopped flag
+    // Reset stopped and cleared flags
     stoppedRef.current = false;
+    clearedRef.current = false;
 
     // Fetch latest LLM provider/model info before submitting
     fetchLlmInfo();
@@ -494,6 +510,7 @@ export function NLQChatPanel() {
           body: JSON.stringify({
             message: userMessage,
             conversation_id: conversationId,
+            history: conversationHistory,
           }),
           signal: controller.signal,
         }
@@ -534,8 +551,8 @@ export function NLQChatPanel() {
 
       readerRef.current = null;
 
-      // Check if user manually stopped
-      if (stoppedRef.current) {
+      // Check if user manually stopped (but not cleared)
+      if (stoppedRef.current && !clearedRef.current) {
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== thinkingId),
           {
@@ -548,8 +565,10 @@ export function NLQChatPanel() {
       clearTimeout(timeoutId);
       abortControllerRef.current = null;
       readerRef.current = null;
-      // Show appropriate message based on error type
-      if (error.name === 'AbortError') {
+      // If conversation was cleared, ignore all late errors
+      if (clearedRef.current) {
+        // Do nothing - conversation was wiped
+      } else if (error.name === 'AbortError') {
         // Check if this was a user-initiated stop or a timeout
         if (stoppedRef.current) {
           // User manually stopped
@@ -618,6 +637,9 @@ export function NLQChatPanel() {
       }
       if (event.conversation_id) {
         setConversationId(event.conversation_id);
+      }
+      if (event.history) {
+        setConversationHistory(event.history);
       }
       break;
 

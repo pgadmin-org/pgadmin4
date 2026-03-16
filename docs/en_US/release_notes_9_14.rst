@@ -32,6 +32,7 @@ Bug fixes
 *********
 
   | `Issue #9279 <https://github.com/pgadmin-org/pgadmin4/issues/9279>`_ -  Fixed an issue where OAuth2 authentication fails with 'object has no attribute' if OAUTH2_AUTO_CREATE_USER is False.
+  | `Issue #9736 <https://github.com/pgadmin-org/pgadmin4/issues/9736>`_ -  Fixed an issue where the AI Assistant was not retaining conversation context between messages, with chat history compaction to manage token budgets.
   | `Issue #9392 <https://github.com/pgadmin-org/pgadmin4/issues/9392>`_ -  Ensure that the Geometry Viewer refreshes when re-running queries or switching geometry columns, preventing stale data from being displayed.
   | `Issue #9694 <https://github.com/pgadmin-org/pgadmin4/issues/9694>`_ -  Fixed an issue where AI Reports are grayed out after setting an API key by auto-selecting the default provider.
   | `Issue #9702 <https://github.com/pgadmin-org/pgadmin4/issues/9702>`_ -  Fixed misleading AI activity messages that could be mistaken for actual database operations.

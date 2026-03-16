@@ -2875,6 +2875,7 @@ def nlq_chat_stream(trans_id):
     data = request.get_json(silent=True) or {}
     user_message = data.get('message', '').strip()
     conversation_id = data.get('conversation_id')
+    history_data = data.get('history', [])
 
     if not user_message:
         return make_json_response(
@@ -2885,6 +2886,10 @@ def nlq_chat_stream(trans_id):
     def generate():
         """Generator for SSE events."""
         import secrets as py_secrets
+        from pgadmin.llm.compaction import (
+            deserialize_history, compact_history
+        )
+        from pgadmin.llm.utils import get_default_provider
 
         try:
             # Send thinking status
@@ -2893,12 +2898,23 @@ def nlq_chat_stream(trans_id):
                 'message': gettext('Analyzing your request...')
             })
 
-            # Call the LLM with database tools
-            response_text, _ = chat_with_database(
+            # Deserialize and compact conversation history
+            conversation_history = None
+            if history_data:
+                conversation_history = deserialize_history(history_data)
+                provider = get_default_provider() or 'openai'
+                conversation_history = compact_history(
+                    conversation_history,
+                    provider=provider
+                )
+
+            # Call the LLM with database tools and history
+            response_text, updated_history = chat_with_database(
                 user_message=user_message,
                 sid=trans_obj.sid,
                 did=trans_obj.did,
-                system_prompt=NLQ_SYSTEM_PROMPT
+                system_prompt=NLQ_SYSTEM_PROMPT,
+                conversation_history=conversation_history
             )
 
             # Try to parse the response as JSON
@@ -2968,12 +2984,24 @@ def nlq_chat_stream(trans_id):
             else:
                 new_conversation_id = conversation_id
 
+            # Serialize updated history for the frontend.
+            # Only include conversational messages (user + final
+            # assistant responses) to keep history size manageable.
+            # Internal tool call/result messages are ephemeral to
+            # each turn and don't need to round-trip.
+            from pgadmin.llm.compaction import filter_conversational
+            serialized_history = [
+                m.to_dict() for m in
+                filter_conversational(updated_history)
+            ] if updated_history else []
+
             # Send the final result
             yield _nlq_sse_event({
                 'type': 'complete',
                 'sql': sql,
                 'explanation': explanation,
-                'conversation_id': new_conversation_id
+                'conversation_id': new_conversation_id,
+                'history': serialized_history
             })
 
         except Exception as e:

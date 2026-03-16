@@ -49,6 +49,23 @@ Tests interactive chat functionality including:
 - Validates context integration
 - Tests memory management
 
+#### `test_compaction.py` - Conversation Compaction Tests
+Tests the conversation history compaction module including:
+- Token estimation with provider-specific ratios
+- SQL content token multiplier
+- History compaction with token budget enforcement
+- First message and recent window preservation
+- Low-value message dropping by importance classification
+- Tool call/result pair integrity during compaction
+- History deserialization from frontend JSON format
+- Conversational message filtering (stripping tool internals)
+
+**Key Features:**
+- Tests all five importance classification tiers
+- Validates tool pair preservation (no orphaned tool results)
+- Tests round-trip serialization/deserialization
+- Tests edge cases (empty history, within-budget, unknown roles)
+
 #### `test_views.py` - API Endpoint Tests
 Tests Flask endpoints including:
 - `/llm/status` - LLM availability check
@@ -125,6 +142,9 @@ yarn run test:karma -- --file regression/javascript/llm/AIReport.spec.js
 ✅ Report generation for all categories (security, performance, design)
 ✅ Report generation for all levels (server, database, schema)
 ✅ Chat session management and history
+✅ Conversation history compaction and token budgets
+✅ Conversational message filtering
+✅ History serialization/deserialization round-trip
 ✅ Streaming progress updates via SSE
 ✅ API endpoint authentication and authorization
 ✅ React component rendering in both themes
