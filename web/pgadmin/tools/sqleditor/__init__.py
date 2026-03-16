@@ -2933,17 +2933,18 @@ def nlq_chat_stream(trans_id):
                             'Querying the database...'
                         )
                     })
-                elif isinstance(item, tuple):
-                    # Final result: (response_text, messages)
-                    response_text = item[0]
-                    if len(item) > 1:
-                        updated_history = item[1]
+                elif isinstance(item, tuple) and \
+                        item[0] == 'complete':
+                    # Final result: ('complete', response_text, messages)
+                    response_text = item[1]
+                    if len(item) > 2:
+                        updated_history = item[2]
 
             # Extract SQL from markdown code fences
             sql_blocks = re.findall(
                 r'```(?:sql|pgsql|postgresql)\s*\n(.*?)```',
                 response_text,
-                re.DOTALL
+                re.DOTALL | re.IGNORECASE
             )
             sql = ';\n\n'.join(
                 block.strip().rstrip(';') for block in sql_blocks

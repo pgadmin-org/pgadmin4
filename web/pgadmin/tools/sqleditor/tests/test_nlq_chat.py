@@ -115,7 +115,7 @@ class NLQChatTestCase(BaseTestGenerator):
         if hasattr(self, 'mock_response'):
             def mock_stream_gen(*args, **kwargs):
                 yield self.mock_response
-                yield (self.mock_response, [])
+                yield ('complete', self.mock_response, [])
             mock_chat_patcher = patch(
                 'pgadmin.llm.chat.chat_with_database_stream',
                 side_effect=mock_stream_gen
@@ -280,7 +280,7 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
         sql_blocks = re.findall(
             r'```(?:sql|pgsql|postgresql)\s*\n(.*?)```',
             response_text,
-            re.DOTALL
+            re.DOTALL | re.IGNORECASE
         )
         sql = ';\n\n'.join(
             block.strip() for block in sql_blocks
@@ -354,8 +354,8 @@ class NLQStreamingSSETestCase(BaseTestGenerator):
             for chunk in [self.mock_response[i:i + 10]
                           for i in range(0, len(self.mock_response), 10)]:
                 yield chunk
-            # Yield final tuple
-            yield (self.mock_response, [])
+            # Yield final 3-tuple
+            yield ('complete', self.mock_response, [])
 
         mock_chat = patch(
             'pgadmin.llm.chat.chat_with_database_stream',

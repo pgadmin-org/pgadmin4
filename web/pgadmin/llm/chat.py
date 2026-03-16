@@ -174,8 +174,8 @@ def chat_with_database_stream(
     Yields:
         str: Text content chunks from the final LLM response.
 
-    The last item yielded is a tuple of
-    (final_response_text, updated_conversation_history).
+    The last item yielded is a 3-tuple of
+    ('complete', final_response_text, updated_conversation_history).
 
     Raises:
         LLMClientError: If the LLM request fails.
@@ -220,8 +220,9 @@ def chat_with_database_stream(
         messages.append(response.to_message())
 
         if response.stop_reason != StopReason.TOOL_USE:
-            # Final response - yield the completion tuple
-            yield (response.content, messages)
+            # Final response - yield a 3-tuple to distinguish from
+            # the 2-tuple tool_use event
+            yield ('complete', response.content, messages)
             return
 
         # Signal that tools are being executed so the caller can

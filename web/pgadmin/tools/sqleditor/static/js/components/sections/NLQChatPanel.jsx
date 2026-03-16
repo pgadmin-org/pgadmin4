@@ -527,9 +527,8 @@ function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey, fo
           const content = seg.content?.trim();
           if (!content && !cursor) return null;
           return (
-            <Box key={idx} sx={{ marginTop: idx > 0 ? 1 : 0, display: 'inline' }}>
+            <Box key={idx} sx={{ marginTop: idx > 0 ? 1 : 0 }}>
               <MarkdownContent
-                component="span"
                 dangerouslySetInnerHTML={{ __html: renderMarkdownText(content || '') }}
               />
               {cursor}
@@ -876,13 +875,18 @@ export function NLQChatPanel() {
       // Check if user manually stopped (but not cleared)
       if (stoppedRef.current && !clearedRef.current) {
         const streamId = streamingIdRef.current;
-        // If we have partial streaming content, show it as-is
+        // If we have partial streaming content, show it separately
+        // from the stop notice to avoid breaking open markdown fences
         if (streamingTextRef.current) {
           setMessages((prev) => [
             ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
             {
               type: MESSAGE_TYPES.ASSISTANT,
-              content: streamingTextRef.current + '\n\n' + gettext('(Generation stopped)'),
+              content: streamingTextRef.current,
+            },
+            {
+              type: MESSAGE_TYPES.ASSISTANT,
+              content: gettext('Generation stopped.'),
             },
           ]);
         } else {
@@ -908,13 +912,17 @@ export function NLQChatPanel() {
       } else if (error.name === 'AbortError') {
         // Check if this was a user-initiated stop or a timeout
         if (stoppedRef.current) {
-          // User manually stopped - show partial content if any
+          // User manually stopped - show partial content separately
           if (streamingTextRef.current) {
             setMessages((prev) => [
               ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
               {
                 type: MESSAGE_TYPES.ASSISTANT,
-                content: streamingTextRef.current + '\n\n' + gettext('(Generation stopped)'),
+                content: streamingTextRef.current,
+              },
+              {
+                type: MESSAGE_TYPES.ASSISTANT,
+                content: gettext('Generation stopped.'),
               },
             ]);
           } else {
@@ -1042,9 +1050,10 @@ export function NLQChatPanel() {
       break;
     }
 
-    case 'error':
+    case 'error': {
+      const streamId = streamingIdRef.current;
       setMessages((prev) => [
-        ...prev.filter((m) => m.id !== thinkingId && m.id !== streamingIdRef.current),
+        ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
         {
           type: MESSAGE_TYPES.ERROR,
           content: event.message,
