@@ -434,14 +434,16 @@ class OllamaClient(LLMClient):
                 input_tokens = data.get('prompt_eval_count', 0)
                 output_tokens = data.get('eval_count', 0)
 
-        # Build final response — only if the stream completed normally
-        content = ''.join(content_parts)
-        if final_data is None and not content and not tool_calls:
+        # Ensure the stream completed with a terminal done frame;
+        # truncated content from a dropped connection is unreliable.
+        if final_data is None:
             raise LLMClientError(LLMError(
-                message="Stream ended without a complete response",
+                message="Ollama stream ended before terminal done frame",
                 provider=self.provider_name,
                 retryable=True
             ))
+
+        content = ''.join(content_parts)
 
         if tool_calls:
             stop_reason = StopReason.TOOL_USE
