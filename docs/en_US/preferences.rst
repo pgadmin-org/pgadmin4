@@ -52,7 +52,10 @@ Use the fields on the *AI* panel to configure your LLM provider:
   to use an Anthropic-compatible API provider.
 
 * Use the *API Key File* field to specify the path to a file containing your
-  Anthropic API key. The API key may be optional when using a custom API URL
+  Anthropic API key. This path refers to the filesystem where the pgAdmin
+  server is running (e.g., inside the container if using Docker). The ``~``
+  prefix is expanded to the home directory of the user running the pgAdmin
+  server process. The API key may be optional when using a custom API URL
   with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available Claude models. Click the
@@ -68,7 +71,10 @@ Use the fields on the *AI* panel to configure your LLM provider:
   (e.g., ``http://localhost:1234/v1``).
 
 * Use the *API Key File* field to specify the path to a file containing your
-  OpenAI API key. The API key may be optional when using a custom API URL
+  OpenAI API key. This path refers to the filesystem where the pgAdmin
+  server is running (e.g., inside the container if using Docker). The ``~``
+  prefix is expanded to the home directory of the user running the pgAdmin
+  server process. The API key may be optional when using a custom API URL
   with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available GPT models. Click the
