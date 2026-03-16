@@ -214,7 +214,7 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
                 '```sql\nSELECT * FROM users;\n```\n\n'
                 'This returns all users.'
             ),
-            expected_sql='SELECT * FROM users;'
+            expected_sql='SELECT * FROM users'
         )),
         ('SQL Extraction - Multiple SQL blocks', dict(
             response_text=(
@@ -227,11 +227,11 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
         )),
         ('SQL Extraction - pgsql language tag', dict(
             response_text='```pgsql\nSELECT 1;\n```',
-            expected_sql='SELECT 1;'
+            expected_sql='SELECT 1'
         )),
         ('SQL Extraction - postgresql language tag', dict(
             response_text='```postgresql\nSELECT 1;\n```',
-            expected_sql='SELECT 1;'
+            expected_sql='SELECT 1'
         )),
         ('SQL Extraction - No SQL blocks', dict(
             response_text=(
@@ -264,7 +264,7 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
                 'SELECT u.name, o.total\n'
                 'FROM users u\n'
                 'JOIN orders o ON u.id = o.user_id\n'
-                'WHERE o.total > 100;'
+                'WHERE o.total > 100'
             )
         )),
     ]
