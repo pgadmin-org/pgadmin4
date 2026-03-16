@@ -283,7 +283,7 @@ class NLQSqlExtractionTestCase(BaseTestGenerator):
             re.DOTALL | re.IGNORECASE
         )
         sql = ';\n\n'.join(
-            block.strip() for block in sql_blocks
+            block.strip().rstrip(';') for block in sql_blocks
         ) if sql_blocks else None
 
         # JSON fallback

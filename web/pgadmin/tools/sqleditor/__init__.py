@@ -2886,10 +2886,7 @@ def nlq_chat_stream(trans_id):
     def generate():
         """Generator for SSE events."""
         import secrets as py_secrets
-        from pgadmin.llm.compaction import (
-            deserialize_history, compact_history
-        )
-        from pgadmin.llm.utils import get_default_provider
+        from pgadmin.llm.models import Message, Role
 
         try:
             # Send thinking status
@@ -2898,15 +2895,22 @@ def nlq_chat_stream(trans_id):
                 'message': gettext('Analyzing your request...')
             })
 
-            # Deserialize and compact conversation history
+            # Deserialize conversation history if provided
             conversation_history = None
             if history_data:
-                conversation_history = deserialize_history(history_data)
-                provider = get_default_provider() or 'openai'
-                conversation_history = compact_history(
-                    conversation_history,
-                    provider=provider
-                )
+                conversation_history = []
+                for item in (history_data or []):
+                    if not isinstance(item, dict):
+                        continue
+                    role_str = item.get('role', '')
+                    content = item.get('content', '')
+                    try:
+                        role = Role(role_str)
+                    except ValueError:
+                        continue
+                    conversation_history.append(
+                        Message(role=role, content=content)
+                    )
 
             # Stream the LLM response with database tools
             response_text = ''
@@ -2965,17 +2969,21 @@ def nlq_chat_stream(trans_id):
             else:
                 new_conversation_id = conversation_id
 
-            # Filter and serialize the conversation history so the
-            # client can round-trip it on follow-up turns
-            from pgadmin.llm.compaction import filter_conversational
-            filtered = filter_conversational(updated_messages)
-            history = [
-                {
-                    'role': m.role.value,
-                    'content': m.content,
-                }
-                for m in filtered
-            ]
+            # Serialize the conversation history so the client can
+            # round-trip it on follow-up turns. Only keep user
+            # messages and final assistant responses (no tool calls).
+            history = []
+            for m in updated_messages:
+                if m.role == Role.USER:
+                    history.append({
+                        'role': m.role.value,
+                        'content': m.content,
+                    })
+                elif m.role == Role.ASSISTANT and not m.tool_calls:
+                    history.append({
+                        'role': m.role.value,
+                        'content': m.content,
+                    })
 
             # Send the final result with full response content
             yield _nlq_sse_event({
