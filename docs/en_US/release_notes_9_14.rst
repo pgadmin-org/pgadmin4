@@ -29,6 +29,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #9729 <https://github.com/pgadmin-org/pgadmin4/issues/9729>`_ -  Fixed an issue where some LLM models would not use database tools in the AI assistant, instead returning text descriptions of tool calls.
   | `Issue #9279 <https://github.com/pgadmin-org/pgadmin4/issues/9279>`_ -  Fixed an issue where OAuth2 authentication fails with 'object has no attribute' if OAUTH2_AUTO_CREATE_USER is False.
   | `Issue #9392 <https://github.com/pgadmin-org/pgadmin4/issues/9392>`_ -  Ensure that the Geometry Viewer refreshes when re-running queries or switching geometry columns, preventing stale data from being displayed.
   | `Issue #9721 <https://github.com/pgadmin-org/pgadmin4/issues/9721>`_ -  Fixed an issue where permissions page is not completely accessible on full scroll.
