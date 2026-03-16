@@ -86,7 +86,11 @@ EOF
 #!/bin/sh
 
 echo "Load apparmor pgAdmin profile..."
-apparmor_parser -r /etc/apparmor.d/pgadmin4
+if command -v apparmor_parser >/dev/null 2>&1; then
+  apparmor_parser -r /etc/apparmor.d/pgadmin4
+else
+  echo "Warning: apparmor_parser not found, skipping profile load. pgAdmin desktop may not work on Ubuntu 24+ with userns restrictions."
+fi
 EOF
   chmod 755 "${DESKTOPROOT}/DEBIAN/postinst"
 fi

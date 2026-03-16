@@ -45,6 +45,10 @@ class LLMModule(PgAdminModule):
         """
         Register preferences for LLM providers.
         """
+        # Don't register AI preferences if LLM is disabled at system level
+        if not getattr(config, 'LLM_ENABLED', False):
+            return
+
         self.preference = Preferences('ai', gettext('AI'))
 
         # Default Provider Setting
@@ -94,10 +98,23 @@ class LLMModule(PgAdminModule):
 
         # Anthropic Settings
         # Get defaults from config
+        anthropic_url_default = getattr(config, 'ANTHROPIC_API_URL', '')
         anthropic_key_file_default = getattr(
             config, 'ANTHROPIC_API_KEY_FILE', ''
         )
         anthropic_model_default = getattr(config, 'ANTHROPIC_API_MODEL', '')
+
+        self.anthropic_api_url = self.preference.register(
+            'anthropic', 'anthropic_api_url',
+            gettext("API URL"), 'text',
+            anthropic_url_default,
+            category_label=gettext('Anthropic'),
+            help_str=gettext(
+                'URL for the Anthropic API endpoint. Leave empty to use '
+                'the default (https://api.anthropic.com/v1). Set a custom '
+                'URL to use an Anthropic-compatible API provider.'
+            )
+        )
 
         self.anthropic_api_key_file = self.preference.register(
             'anthropic', 'anthropic_api_key_file',
@@ -106,7 +123,9 @@ class LLMModule(PgAdminModule):
             category_label=gettext('Anthropic'),
             help_str=gettext(
                 'Path to a file containing your Anthropic API key. '
-                'The file should contain only the API key.'
+                'The file should contain only the API key. The API key '
+                'may be optional when using a custom API URL with a '
+                'provider that does not require authentication.'
             )
         )
 
@@ -132,6 +151,7 @@ class LLMModule(PgAdminModule):
                 'optionsUrl': 'llm.models_anthropic',
                 'optionsRefreshUrl': 'llm.refresh_models_anthropic',
                 'refreshDepNames': {
+                    'api_url': 'anthropic_api_url',
                     'api_key_file': 'anthropic_api_key_file'
                 }
             }
@@ -139,8 +159,24 @@ class LLMModule(PgAdminModule):
 
         # OpenAI Settings
         # Get defaults from config
+        openai_url_default = getattr(config, 'OPENAI_API_URL', '')
         openai_key_file_default = getattr(config, 'OPENAI_API_KEY_FILE', '')
         openai_model_default = getattr(config, 'OPENAI_API_MODEL', '')
+
+        self.openai_api_url = self.preference.register(
+            'openai', 'openai_api_url',
+            gettext("API URL"), 'text',
+            openai_url_default,
+            category_label=gettext('OpenAI'),
+            help_str=gettext(
+                'URL for the OpenAI API endpoint. Leave empty to use '
+                'the default (https://api.openai.com/v1). Set a custom '
+                'URL to use any OpenAI-compatible API provider such as '
+                'LiteLLM, LM Studio, or EXO. The URL should include the '
+                '/v1 path prefix if required by your provider '
+                '(e.g., http://localhost:1234/v1).'
+            )
+        )
 
         self.openai_api_key_file = self.preference.register(
             'openai', 'openai_api_key_file',
@@ -149,7 +185,9 @@ class LLMModule(PgAdminModule):
             category_label=gettext('OpenAI'),
             help_str=gettext(
                 'Path to a file containing your OpenAI API key. '
-                'The file should contain only the API key.'
+                'The file should contain only the API key. The API key '
+                'may be optional when using a custom API URL with a '
+                'provider that does not require authentication.'
             )
         )
 
@@ -175,6 +213,7 @@ class LLMModule(PgAdminModule):
                 'optionsUrl': 'llm.models_openai',
                 'optionsRefreshUrl': 'llm.refresh_models_openai',
                 'refreshDepNames': {
+                    'api_url': 'openai_api_url',
                     'api_key_file': 'openai_api_key_file'
                 }
             }
@@ -236,7 +275,9 @@ class LLMModule(PgAdminModule):
             help_str=gettext(
                 'URL for the Docker Model Runner API endpoint '
                 '(e.g., http://localhost:12434). Available in Docker Desktop '
-                '4.40 and later.'
+                '4.40 and later. Tip: You can also use the OpenAI provider '
+                'with a custom API URL for any OpenAI-compatible endpoint, '
+                'including Docker Model Runner.'
             )
         )
 
@@ -353,17 +394,18 @@ def get_anthropic_models():
     Fetch available Anthropic models.
     Returns models that support tool use.
     """
-    from pgadmin.llm.utils import get_anthropic_api_key
+    from pgadmin.llm.utils import get_anthropic_api_key, get_anthropic_api_url
 
     api_key = get_anthropic_api_key()
-    if not api_key:
+    api_url = get_anthropic_api_url()
+    if not api_key and not api_url:
         return make_json_response(
             data={'models': [], 'error': 'No API key configured'},
             status=200
         )
 
     try:
-        models = _fetch_anthropic_models(api_key)
+        models = _fetch_anthropic_models(api_key, api_url)
         return make_json_response(data={'models': models}, status=200)
     except Exception as e:
         return make_json_response(
@@ -380,29 +422,29 @@ def get_anthropic_models():
 @pga_login_required
 def refresh_anthropic_models():
     """
-    Fetch available Anthropic models using a provided API key file path.
+    Fetch available Anthropic models using a provided API key file path
+    and/or custom API URL.
     Used by the preferences refresh button to load models before saving.
     """
     from pgadmin.llm.utils import read_api_key_file
 
     data = request.get_json(force=True, silent=True) or {}
     api_key_file = data.get('api_key_file', '')
+    api_url = data.get('api_url', '')
 
-    if not api_key_file:
-        return make_json_response(
-            data={'models': [], 'error': 'No API key file provided'},
-            status=200
-        )
+    api_key = None
+    if api_key_file:
+        api_key = read_api_key_file(api_key_file)
 
-    api_key = read_api_key_file(api_key_file)
-    if not api_key:
+    if not api_key and not api_url:
         return make_json_response(
-            data={'models': [], 'error': 'Could not read API key from file'},
+            data={'models': [],
+                  'error': 'No API key or custom URL provided'},
             status=200
         )
 
     try:
-        models = _fetch_anthropic_models(api_key)
+        models = _fetch_anthropic_models(api_key, api_url)
         return make_json_response(data={'models': models}, status=200)
     except Exception as e:
         return make_json_response(
@@ -418,17 +460,18 @@ def get_openai_models():
     Fetch available OpenAI models.
     Returns models that support function calling.
     """
-    from pgadmin.llm.utils import get_openai_api_key
+    from pgadmin.llm.utils import get_openai_api_key, get_openai_api_url
 
     api_key = get_openai_api_key()
-    if not api_key:
+    api_url = get_openai_api_url()
+    if not api_key and not api_url:
         return make_json_response(
             data={'models': [], 'error': 'No API key configured'},
             status=200
         )
 
     try:
-        models = _fetch_openai_models(api_key)
+        models = _fetch_openai_models(api_key, api_url)
         return make_json_response(data={'models': models}, status=200)
     except Exception as e:
         return make_json_response(
@@ -445,29 +488,28 @@ def get_openai_models():
 @pga_login_required
 def refresh_openai_models():
     """
-    Fetch available OpenAI models using a provided API key file path.
+    Fetch available OpenAI models using a provided API key file path
+    and/or custom API URL.
     Used by the preferences refresh button to load models before saving.
     """
     from pgadmin.llm.utils import read_api_key_file
 
     data = request.get_json(force=True, silent=True) or {}
     api_key_file = data.get('api_key_file', '')
+    api_url = data.get('api_url', '')
 
-    if not api_key_file:
-        return make_json_response(
-            data={'models': [], 'error': 'No API key file provided'},
-            status=200
-        )
+    api_key = None
+    if api_key_file:
+        api_key = read_api_key_file(api_key_file)
 
-    api_key = read_api_key_file(api_key_file)
-    if not api_key:
+    if not api_key and not api_url:
         return make_json_response(
-            data={'models': [], 'error': 'Could not read API key from file'},
+            data={'models': [], 'error': 'No API key or custom URL provided'},
             status=200
         )
 
     try:
-        models = _fetch_openai_models(api_key)
+        models = _fetch_openai_models(api_key, api_url)
         return make_json_response(data={'models': models}, status=200)
     except Exception as e:
         return make_json_response(
@@ -586,7 +628,7 @@ def refresh_docker_models():
         )
 
 
-def _fetch_anthropic_models(api_key):
+def _fetch_anthropic_models(api_key, api_url=''):
     """
     Fetch models from Anthropic API.
     Returns a list of model options with label and value.
@@ -594,13 +636,16 @@ def _fetch_anthropic_models(api_key):
     import urllib.request
     import urllib.error
 
-    req = urllib.request.Request(
-        'https://api.anthropic.com/v1/models',
-        headers={
-            'x-api-key': api_key,
-            'anthropic-version': '2023-06-01'
-        }
-    )
+    base_url = (api_url or 'https://api.anthropic.com/v1').rstrip('/')
+    url = f'{base_url}/models'
+
+    headers = {
+        'anthropic-version': '2023-06-01'
+    }
+    if api_key:
+        headers['x-api-key'] = api_key
+
+    req = urllib.request.Request(url, headers=headers)
 
     try:
         with urllib.request.urlopen(
@@ -611,6 +656,10 @@ def _fetch_anthropic_models(api_key):
         if e.code == 401:
             raise ValueError('Invalid API key')
         raise ConnectionError(f'API error: {e.code}')
+    except urllib.error.URLError as e:
+        raise ConnectionError(
+            f'Cannot connect to Anthropic API: {e.reason}'
+        )
 
     models = []
     seen = set()
@@ -635,27 +684,35 @@ def _fetch_anthropic_models(api_key):
             'value': model_id
         })
 
+    if not models and api_url:
+        raise ConnectionError(
+            'No models returned. Check that the API URL is correct.'
+        )
+
     # Sort alphabetically by model ID
     models.sort(key=lambda x: x['value'])
 
     return models
 
 
-def _fetch_openai_models(api_key):
+def _fetch_openai_models(api_key, api_url=''):
     """
-    Fetch models from OpenAI API.
+    Fetch models from OpenAI API or any OpenAI-compatible endpoint.
     Returns a list of model options with label and value.
     """
     import urllib.request
     import urllib.error
 
-    req = urllib.request.Request(
-        'https://api.openai.com/v1/models',
-        headers={
-            'Authorization': f'Bearer {api_key}',
-            'Content-Type': 'application/json'
-        }
-    )
+    base_url = (api_url or 'https://api.openai.com/v1').rstrip('/')
+    url = f'{base_url}/models'
+
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    if api_key:
+        headers['Authorization'] = f'Bearer {api_key}'
+
+    req = urllib.request.Request(url, headers=headers)
 
     try:
         with urllib.request.urlopen(
@@ -666,6 +723,10 @@ def _fetch_openai_models(api_key):
         if e.code == 401:
             raise ValueError('Invalid API key')
         raise ConnectionError(f'API error: {e.code}')
+    except urllib.error.URLError as e:
+        raise ConnectionError(
+            f'Cannot connect to OpenAI API: {e.reason}'
+        )
 
     models = []
     seen = set()
@@ -682,6 +743,13 @@ def _fetch_openai_models(api_key):
             'label': model_id,
             'value': model_id
         })
+
+    if not models and api_url:
+        raise ConnectionError(
+            'No models returned. Check that the API URL is correct '
+            'and includes the /v1 path prefix if required by your '
+            'provider (e.g., http://localhost:1234/v1).'
+        )
 
     # Sort alphabetically
     models.sort(key=lambda x: x['value'])

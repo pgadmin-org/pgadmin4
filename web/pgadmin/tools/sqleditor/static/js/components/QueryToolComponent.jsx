@@ -233,7 +233,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               tabs: [
                 LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} setQtStatePartial={setQtStatePartial}/>}),
                 LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />}),
-                LayoutDocker.getPanel({id: PANELS.AI_ASSISTANT, title: gettext('AI Assistant'), content: <NLQChatPanel />}),
+                ...(pgAdmin.llm_enabled ? [LayoutDocker.getPanel({id: PANELS.AI_ASSISTANT, title: gettext('AI Assistant'), content: <NLQChatPanel />})] : []),
               ],
             },
             {
@@ -442,7 +442,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.REINIT_QT_CONNECTION, initializeQueryTool);
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FOCUS_PANEL, (qtPanelId)=>{
-      docker.current.focus(qtPanelId);
+      docker.current?.focus(qtPanelId);
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, (status)=>{
@@ -464,9 +464,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       if(qtPanelId == currentTabId) {
         setQtStatePartial({is_visible: true});
 
-        if(docker.current.isTabVisible(PANELS.QUERY)) {
+        if(docker.current?.isTabVisible(PANELS.QUERY)) {
           docker.current.focus(PANELS.QUERY);
-        } else if(docker.current.isTabVisible(PANELS.HISTORY)) {
+        } else if(docker.current?.isTabVisible(PANELS.HISTORY)) {
           docker.current.focus(PANELS.HISTORY);
         }
 

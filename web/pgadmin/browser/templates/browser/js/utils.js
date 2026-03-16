@@ -72,6 +72,9 @@ define('pgadmin.browser.utils',
   /* Enable server password exec command */
   pgAdmin['enable_server_passexec_cmd'] = '{{enable_server_passexec_cmd}}';
 
+  /* LLM/AI features enabled */
+  pgAdmin['llm_enabled'] = '{{llm_enabled}}' == 'True';
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',

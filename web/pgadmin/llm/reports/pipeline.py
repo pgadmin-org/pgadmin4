@@ -218,8 +218,7 @@ class ReportPipeline:
             response = self._call_llm_with_retry(
                 messages=[Message.user(user_prompt)],
                 system_prompt=PLANNING_SYSTEM_PROMPT,
-                max_tokens=500,
-                temperature=0.0
+                max_tokens=500
             )
 
             # Parse JSON response
@@ -292,8 +291,7 @@ class ReportPipeline:
                 response = self.client.chat(
                     messages=[Message.user(user_prompt)],
                     system_prompt=SECTION_ANALYSIS_SYSTEM_PROMPT,
-                    max_tokens=1500,
-                    temperature=0.3
+                    max_tokens=1500
                 )
 
                 # Determine severity from content
@@ -374,8 +372,7 @@ class ReportPipeline:
                 response = self.client.chat(
                     messages=[Message.user(user_prompt)],
                     system_prompt=SYNTHESIS_SYSTEM_PROMPT,
-                    max_tokens=4096,
-                    temperature=0.3
+                    max_tokens=4096
                 )
 
                 yield {'type': 'result', 'result': response.content}
@@ -408,8 +405,7 @@ class ReportPipeline:
         self,
         messages: list[Message],
         system_prompt: str,
-        max_tokens: int = 4096,
-        temperature: float = 0.3
+        max_tokens: int = 4096
     ):
         """Call LLM with exponential backoff retry.
 
@@ -417,7 +413,6 @@ class ReportPipeline:
             messages: Messages to send.
             system_prompt: System prompt.
             max_tokens: Maximum response tokens.
-            temperature: Sampling temperature.
 
         Returns:
             LLMResponse from the client.
@@ -430,8 +425,7 @@ class ReportPipeline:
                 return self.client.chat(
                     messages=messages,
                     system_prompt=system_prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature
+                    max_tokens=max_tokens
                 )
             except LLMClientError as e:
                 if e.error.retryable and attempt < self.max_retries - 1:

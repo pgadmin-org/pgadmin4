@@ -74,6 +74,24 @@ def _get_preference_value(name):
     return None
 
 
+def get_anthropic_api_url():
+    """
+    Get the Anthropic API URL.
+
+    Checks user preferences first, then falls back to system configuration.
+
+    Returns:
+        The URL string, or empty string if not configured.
+    """
+    # Check user preference first
+    pref_url = _get_preference_value('anthropic_api_url')
+    if pref_url:
+        return pref_url
+
+    # Fall back to system configuration
+    return config.ANTHROPIC_API_URL or ''
+
+
 def get_anthropic_api_key():
     """
     Get the Anthropic API key.
@@ -110,6 +128,24 @@ def get_anthropic_model():
 
     # Fall back to system configuration
     return config.ANTHROPIC_API_MODEL or ''
+
+
+def get_openai_api_url():
+    """
+    Get the OpenAI API URL.
+
+    Checks user preferences first, then falls back to system configuration.
+
+    Returns:
+        The URL string, or empty string if not configured.
+    """
+    # Check user preference first
+    pref_url = _get_preference_value('openai_api_url')
+    if pref_url:
+        return pref_url
+
+    # Fall back to system configuration
+    return config.OPENAI_API_URL or ''
 
 
 def get_openai_api_key():
@@ -339,10 +375,12 @@ def get_llm_config():
         'default_provider': get_default_provider(),
         'enabled': is_llm_enabled(),
         'anthropic': {
+            'api_url': get_anthropic_api_url(),
             'api_key': get_anthropic_api_key(),
             'model': get_anthropic_model()
         },
         'openai': {
+            'api_url': get_openai_api_url(),
             'api_key': get_openai_api_key(),
             'model': get_openai_model()
         },
