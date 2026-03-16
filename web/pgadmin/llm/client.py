@@ -54,7 +54,6 @@ class LLMClient(ABC):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -65,7 +64,6 @@ class LLMClient(ABC):
             tools: Optional list of tools the LLM can use.
             system_prompt: Optional system prompt to set context.
             max_tokens: Maximum tokens in the response.
-            temperature: Sampling temperature (0.0 = deterministic).
             **kwargs: Additional provider-specific parameters.
 
         Returns:

@@ -90,7 +90,6 @@ class AnthropicClient(LLMClient):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -101,7 +100,6 @@ class AnthropicClient(LLMClient):
             tools: Optional list of tools Claude can use.
             system_prompt: Optional system prompt.
             max_tokens: Maximum tokens in response.
-            temperature: Sampling temperature.
             **kwargs: Additional parameters.
 
         Returns:
@@ -119,9 +117,6 @@ class AnthropicClient(LLMClient):
 
         if system_prompt:
             payload['system'] = system_prompt
-
-        if temperature > 0:
-            payload['temperature'] = temperature
 
         if tools:
             payload['tools'] = self._convert_tools(tools)

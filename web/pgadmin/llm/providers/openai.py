@@ -90,7 +90,6 @@ class OpenAIClient(LLMClient):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -101,7 +100,6 @@ class OpenAIClient(LLMClient):
             tools: Optional list of tools the model can use.
             system_prompt: Optional system prompt.
             max_tokens: Maximum tokens in response.
-            temperature: Sampling temperature.
             **kwargs: Additional parameters.
 
         Returns:
@@ -124,7 +122,6 @@ class OpenAIClient(LLMClient):
             'model': self._model,
             'messages': converted_messages,
             'max_completion_tokens': max_tokens,
-            'temperature': temperature
         }
 
         if tools:
