@@ -384,6 +384,22 @@ export const MappedFormControl = ({
     hasError,
   };
 
+  // Pass current dependency values into controlProps so that
+  // child components (e.g., SelectRefresh) can read the live
+  // unsaved form values for dependent fields.
+  if (depVals && field.controlProps?.refreshDeps) {
+    const refreshDeps = field.controlProps.refreshDeps;
+    const depKeys = Object.keys(refreshDeps);
+    const currentDepValues = {};
+    depKeys.forEach((paramName, idx) => {
+      currentDepValues[paramName] = depVals[idx];
+    });
+    newProps.controlProps = {
+      ...newProps.controlProps,
+      currentDepValues,
+    };
+  }
+
   if (typeof (field.type) === 'function') {
     const typeProps = evalFunc(null, field.type, state);
     newProps = {
