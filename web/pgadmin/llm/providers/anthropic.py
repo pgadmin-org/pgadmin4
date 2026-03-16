@@ -329,12 +329,14 @@ class AnthropicClient(LLMClient):
         """Make a streaming request and yield chunks."""
         headers = {
             'Content-Type': 'application/json',
-            'x-api-key': self._api_key,
             'anthropic-version': API_VERSION
         }
 
+        if self._api_key:
+            headers['x-api-key'] = self._api_key
+
         request = urllib.request.Request(
-            API_URL,
+            self._api_url,
             data=json.dumps(payload).encode('utf-8'),
             headers=headers,
             method='POST'

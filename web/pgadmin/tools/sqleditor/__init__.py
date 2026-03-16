@@ -2910,7 +2910,7 @@ def nlq_chat_stream(trans_id):
 
             # Stream the LLM response with database tools
             response_text = ''
-            updated_history = []
+            updated_messages = []
             for item in chat_with_database_stream(
                 user_message=user_message,
                 sid=trans_obj.sid,
@@ -2937,8 +2937,7 @@ def nlq_chat_stream(trans_id):
                         item[0] == 'complete':
                     # Final result: ('complete', response_text, messages)
                     response_text = item[1]
-                    if len(item) > 2:
-                        updated_history = item[2]
+                    updated_messages = item[2]
 
             # Extract SQL from markdown code fences
             sql_blocks = re.findall(
@@ -2966,16 +2965,17 @@ def nlq_chat_stream(trans_id):
             else:
                 new_conversation_id = conversation_id
 
-            # Serialize updated history for the frontend.
-            # Only include conversational messages (user + final
-            # assistant responses) to keep history size manageable.
-            # Internal tool call/result messages are ephemeral to
-            # each turn and don't need to round-trip.
+            # Filter and serialize the conversation history so the
+            # client can round-trip it on follow-up turns
             from pgadmin.llm.compaction import filter_conversational
-            serialized_history = [
-                m.to_dict() for m in
-                filter_conversational(updated_history)
-            ] if updated_history else []
+            filtered = filter_conversational(updated_messages)
+            history = [
+                {
+                    'role': m.role.value,
+                    'content': m.content,
+                }
+                for m in filtered
+            ]
 
             # Send the final result with full response content
             yield _nlq_sse_event({
@@ -2983,7 +2983,7 @@ def nlq_chat_stream(trans_id):
                 'sql': sql,
                 'content': response_text,
                 'conversation_id': new_conversation_id,
-                'history': serialized_history
+                'history': history
             })
 
         except Exception as e:

@@ -729,7 +729,6 @@ export function NLQChatPanel() {
     setMessages([]);
     setConversationId(null);
     setConversationHistory([]);
-    setIsLoading(false);
   };
 
   // Stop the current request
@@ -1021,11 +1020,15 @@ export function NLQChatPanel() {
       // Use SQL type if there's SQL or any code fences in the response
       const hasCodeBlocks = event.sql || (content && content.includes('```'));
       if (hasCodeBlocks) {
+        // When SQL was extracted via JSON fallback (no fenced blocks),
+        // clear content so ChatMessage uses the sql-only render path
+        const msgContent = (content && content.includes('```'))
+          ? content : null;
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
           {
             type: MESSAGE_TYPES.SQL,
-            content,
+            content: msgContent,
             sql: event.sql,
           },
         ]);

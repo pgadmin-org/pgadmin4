@@ -379,7 +379,6 @@ class OpenAIClient(LLMClient):
             'model': self._model,
             'messages': converted_messages,
             'max_completion_tokens': max_tokens,
-            'temperature': temperature,
             'stream': True,
             'stream_options': {'include_usage': True}
         }
@@ -404,11 +403,13 @@ class OpenAIClient(LLMClient):
         """Make a streaming request and yield chunks."""
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self._api_key}'
         }
 
+        if self._api_key:
+            headers['Authorization'] = f'Bearer {self._api_key}'
+
         request = urllib.request.Request(
-            API_URL,
+            self._api_url,
             data=json.dumps(payload).encode('utf-8'),
             headers=headers,
             method='POST'

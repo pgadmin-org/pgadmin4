@@ -10,6 +10,7 @@
 """Ollama LLM client implementation."""
 
 import json
+import urllib.parse
 import urllib.request
 import urllib.error
 from collections.abc import Generator
@@ -46,6 +47,14 @@ class OllamaClient(LLMClient):
         """
         self._api_url = api_url.rstrip('/')
         self._model = model or DEFAULT_MODEL
+
+        # Validate URL scheme to prevent unsafe access
+        parsed = urllib.parse.urlparse(self._api_url)
+        if parsed.scheme not in ('http', 'https'):
+            raise ValueError(
+                f"Ollama URL must use http or https scheme, "
+                f"got: {parsed.scheme}"
+            )
 
     @property
     def provider_name(self) -> str:
@@ -425,7 +434,15 @@ class OllamaClient(LLMClient):
                 input_tokens = data.get('prompt_eval_count', 0)
                 output_tokens = data.get('eval_count', 0)
 
-        # Build final response
+        # Build final response — only if the stream completed normally
+        content = ''.join(content_parts)
+        if final_data is None and not content and not tool_calls:
+            raise LLMClientError(LLMError(
+                message="Stream ended without a complete response",
+                provider=self.provider_name,
+                retryable=True
+            ))
+
         if tool_calls:
             stop_reason = StopReason.TOOL_USE
         elif done_reason == 'stop':
@@ -436,7 +453,7 @@ class OllamaClient(LLMClient):
             stop_reason = StopReason.UNKNOWN
 
         yield LLMResponse(
-            content=''.join(content_parts),
+            content=content,
             tool_calls=tool_calls,
             stop_reason=stop_reason,
             model=model_name,

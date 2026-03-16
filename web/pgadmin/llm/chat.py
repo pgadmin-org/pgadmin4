@@ -163,7 +163,7 @@ def chat_with_database_stream(
     max_tool_iterations: Optional[int] = None,
     provider: Optional[str] = None,
     model: Optional[str] = None
-) -> Generator[Union[str, tuple[str, list[Message]]], None, None]:
+) -> Generator[Union[str, tuple], None, None]:
     """
     Stream an LLM chat conversation with database tool access.
 
