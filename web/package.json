@@ -141,7 +141,7 @@
     "react-leaflet": "^4.2.1",
     "react-new-window": "^1.0.1",
     "react-resize-detector": "^12.3.0",
-    "react-rnd": "^10.5.1",
+    "react-rnd": "^10.5.3",
     "react-select": "^5.7.2",
     "react-timer-hook": "^4.0.1",
     "react-virtualized-auto-sizer": "^2.0.2",
