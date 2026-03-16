@@ -108,7 +108,10 @@ class NLQChatTestCase(BaseTestGenerator):
             )
         patches.append(mock_check_trans)
 
-        # Mock chat_with_database
+        # Mock chat_with_database — patch the source module because the
+        # endpoint uses a local import (from pgadmin.llm.chat import ...)
+        # inside the function body, so there is no module-level binding
+        # to patch at the use site.
         mock_chat_patcher = None
         mock_chat_obj = None
         if hasattr(self, 'mock_response'):
