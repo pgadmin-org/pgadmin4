@@ -1066,6 +1066,7 @@ export function NLQChatPanel() {
       streamingIdRef.current = null;
       break;
     }
+    }
   };
 
   const handleKeyDown = (e) => {
