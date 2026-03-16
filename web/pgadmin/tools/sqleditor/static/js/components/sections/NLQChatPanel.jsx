@@ -731,8 +731,9 @@ export function NLQChatPanel() {
           >
             <Typography variant="body2" style={{ color: textColors.secondary }}>
               {gettext(
-                'Describe what SQL you need and I\'ll generate it for you. ' +
-                  'I can help with SELECT, INSERT, UPDATE, DELETE, and DDL statements.'
+                'Ask a question about your database or describe the SQL you need ' +
+                'and I\'ll generate it for you. ' +
+                'I can help with SELECT, INSERT, UPDATE, DELETE, and DDL statements.'
               )}
             </Typography>
           </Box>
@@ -758,7 +759,7 @@ export function NLQChatPanel() {
           multiline
           minRows={1}
           maxRows={4}
-          placeholder={gettext('Describe the SQL you need...')}
+          placeholder={gettext('Ask a question or describe the SQL you need...')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
