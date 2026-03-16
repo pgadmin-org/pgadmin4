@@ -36,8 +36,8 @@ from pgadmin.llm.models import (
 # Default model if none specified
 DEFAULT_MODEL = 'claude-sonnet-4-20250514'
 
-# API configuration
-API_URL = 'https://api.anthropic.com/v1/messages'
+# Default API base URL
+DEFAULT_API_BASE_URL = 'https://api.anthropic.com/v1'
 API_VERSION = '2023-06-01'
 
 
@@ -45,19 +45,28 @@ class AnthropicClient(LLMClient):
     """
     Anthropic Claude API client.
 
-    Implements the LLMClient interface for Anthropic's Claude models.
+    Implements the LLMClient interface for Anthropic's Claude models
+    and any Anthropic-compatible API endpoint.
     """
 
-    def __init__(self, api_key: str, model: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None,
+                 model: Optional[str] = None,
+                 api_url: Optional[str] = None):
         """
         Initialize the Anthropic client.
 
         Args:
-            api_key: The Anthropic API key.
+            api_key: The Anthropic API key. Optional when using a custom
+                     API URL with a provider that does not require
+                     authentication.
             model: Optional model name. Defaults to claude-sonnet-4-20250514.
+            api_url: Optional custom API base URL. Defaults to
+                     https://api.anthropic.com/v1.
         """
-        self._api_key = api_key
+        self._api_key = api_key or ''
         self._model = model or DEFAULT_MODEL
+        base_url = (api_url or DEFAULT_API_BASE_URL).rstrip('/')
+        self._api_url = f'{base_url}/messages'
 
     @property
     def provider_name(self) -> str:
@@ -69,7 +78,11 @@ class AnthropicClient(LLMClient):
 
     def is_available(self) -> bool:
         """Check if the client is properly configured."""
-        return bool(self._api_key)
+        # API key is required for the default Anthropic endpoint, but optional
+        # for custom endpoints (e.g., local proxy servers).
+        if self._api_url.startswith(DEFAULT_API_BASE_URL):
+            return bool(self._api_key)
+        return True
 
     def chat(
         self,
@@ -77,7 +90,6 @@ class AnthropicClient(LLMClient):
         tools: Optional[list[Tool]] = None,
         system_prompt: Optional[str] = None,
         max_tokens: int = 4096,
-        temperature: float = 0.0,
         **kwargs
     ) -> LLMResponse:
         """
@@ -88,7 +100,6 @@ class AnthropicClient(LLMClient):
             tools: Optional list of tools Claude can use.
             system_prompt: Optional system prompt.
             max_tokens: Maximum tokens in response.
-            temperature: Sampling temperature.
             **kwargs: Additional parameters.
 
         Returns:
@@ -106,9 +117,6 @@ class AnthropicClient(LLMClient):
 
         if system_prompt:
             payload['system'] = system_prompt
-
-        if temperature > 0:
-            payload['temperature'] = temperature
 
         if tools:
             payload['tools'] = self._convert_tools(tools)
@@ -191,12 +199,14 @@ class AnthropicClient(LLMClient):
         """Make an HTTP request to the Anthropic API."""
         headers = {
             'Content-Type': 'application/json',
-            'x-api-key': self._api_key,
             'anthropic-version': API_VERSION
         }
 
+        if self._api_key:
+            headers['x-api-key'] = self._api_key
+
         request = urllib.request.Request(
-            API_URL,
+            self._api_url,
             data=json.dumps(payload).encode('utf-8'),
             headers=headers,
             method='POST'
