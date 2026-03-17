@@ -23,6 +23,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import { format as formatSQL } from 'sql-formatter';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import getApiInstance from '../../../../../../static/js/api_instance';
@@ -106,7 +108,6 @@ const SQLPreviewBox = styled(Box)(({ theme }) => ({
     borderRadius: theme.spacing(0.5),
     overflow: 'auto',
     '& .cm-editor': {
-      minHeight: '60px',
       maxHeight: '250px',
     },
     '& .cm-scroller': {
@@ -132,17 +133,173 @@ const ThinkingIndicator = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const MarkdownContent = styled(Box)(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  lineHeight: theme.typography.body2.lineHeight,
+  '& p': { margin: `${theme.spacing(0.5)} 0` },
+  '& p:first-of-type': { marginTop: 0 },
+  '& p:last-of-type': { marginBottom: 0 },
+  '& code': {
+    backgroundColor: theme.palette.action.hover,
+    padding: '1px 4px',
+    borderRadius: 3,
+    fontSize: '0.85em',
+    fontFamily: 'monospace',
+  },
+  '& pre': {
+    backgroundColor: theme.palette.action.hover,
+    padding: theme.spacing(1),
+    borderRadius: 4,
+    overflow: 'auto',
+    '& code': {
+      backgroundColor: 'transparent',
+      padding: 0,
+    },
+  },
+  '& h1, & h2, & h3, & h4, & h5, & h6': {
+    margin: `${theme.spacing(1)} 0 ${theme.spacing(0.5)} 0`,
+    lineHeight: 1.3,
+  },
+  '& h1': { fontSize: '1.3em' },
+  '& h2': { fontSize: '1.2em' },
+  '& h3': { fontSize: '1.1em' },
+  '& ul': {
+    margin: `${theme.spacing(0.5)} 0`,
+    paddingLeft: theme.spacing(2.5),
+    listStyleType: 'disc !important',
+  },
+  '& ol': {
+    margin: `${theme.spacing(0.5)} 0`,
+    paddingLeft: theme.spacing(2.5),
+    listStyleType: 'decimal !important',
+  },
+  '& li': {
+    margin: `${theme.spacing(0.25)} 0`,
+    display: 'list-item !important',
+    listStyle: 'inherit !important',
+  },
+  '& ul ul': { listStyleType: 'circle !important' },
+  '& ul ul ul': { listStyleType: 'square !important' },
+  '& table': {
+    borderCollapse: 'collapse',
+    margin: `${theme.spacing(0.5)} 0`,
+    width: '100%',
+  },
+  '& th, & td': {
+    border: `1px solid ${theme.otherVars.borderColor}`,
+    padding: `${theme.spacing(0.25)} ${theme.spacing(0.75)}`,
+    textAlign: 'left',
+  },
+  '& th': {
+    backgroundColor: theme.palette.action.hover,
+    fontWeight: 600,
+  },
+  '& blockquote': {
+    borderLeft: `3px solid ${theme.otherVars.borderColor}`,
+    margin: `${theme.spacing(0.5)} 0`,
+    paddingLeft: theme.spacing(1),
+    opacity: 0.85,
+  },
+  '& strong': { fontWeight: 600 },
+  '& a': {
+    color: theme.otherVars.hyperlinkColor,
+    textDecoration: 'underline',
+  },
+}));
+
 // Message types
 const MESSAGE_TYPES = {
   USER: 'user',
   ASSISTANT: 'assistant',
   SQL: 'sql',
   THINKING: 'thinking',
+  STREAMING: 'streaming',
   ERROR: 'error',
 };
 
+/**
+ * Incrementally parse streaming markdown text into an ordered list of
+ * segments.  Each segment is:
+ *   { type: 'text', content: string }
+ *   { type: 'code', language: string, content: string, complete: boolean }
+ *
+ * Handles ```language fenced code blocks.  Segments appear in the order
+ * the LLM streams them so the renderer can map straight over the array.
+ */
+function parseMarkdownSegments(text) {
+  const segments = [];
+  let pos = 0;
+
+  while (pos < text.length) {
+    const fenceIdx = text.indexOf('```', pos);
+
+    if (fenceIdx === -1) {
+      // No more fences — rest is text
+      const content = text.substring(pos);
+      if (content) segments.push({ type: 'text', content });
+      break;
+    }
+
+    // Text before the fence
+    if (fenceIdx > pos) {
+      segments.push({ type: 'text', content: text.substring(pos, fenceIdx) });
+    }
+
+    // Parse opening fence line: ```language\n
+    const afterFence = text.substring(fenceIdx + 3);
+    const langMatch = /^([a-zA-Z]*)\n/.exec(afterFence);
+    if (!langMatch) {
+      // Language line not complete yet — wait for more tokens
+      break;
+    }
+
+    const language = langMatch[1].toLowerCase();
+    const codeStart = fenceIdx + 3 + langMatch[0].length;
+
+    // Find closing fence
+    const closeIdx = text.indexOf('```', codeStart);
+    if (closeIdx === -1) {
+      // Still streaming code block content
+      segments.push({
+        type: 'code', language,
+        content: text.substring(codeStart),
+        complete: false,
+      });
+      break;
+    }
+
+    // Complete code block — trim trailing newline before closing fence
+    let codeContent = text.substring(codeStart, closeIdx);
+    if (codeContent.endsWith('\n')) {
+      codeContent = codeContent.slice(0, -1);
+    }
+    segments.push({
+      type: 'code', language,
+      content: codeContent,
+      complete: true,
+    });
+
+    // Move past closing ``` and optional trailing newline
+    pos = closeIdx + 3;
+    if (pos < text.length && text[pos] === '\n') pos++;
+  }
+
+  return segments;
+}
+
+/**
+ * Render a markdown text fragment to sanitized HTML.
+ * Uses marked for inline formatting (bold, italic, code, lists, tables, etc.)
+ * and DOMPurify to prevent XSS.
+ */
+function renderMarkdownText(text) {
+  if (!text) return '';
+  const html = marked.parse(text, { gfm: true, breaks: true });
+  return DOMPurify.sanitize(html);
+}
+
 // Single chat message component
-function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey }) {
+function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey, formatSqlWithPrefs }) {
   if (message.type === MESSAGE_TYPES.USER) {
     return (
       <MessageBubble isuser="true">
@@ -152,58 +309,117 @@ function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey }) 
   }
 
   if (message.type === MESSAGE_TYPES.SQL) {
+    const segments = message.content
+      ? parseMarkdownSegments(message.content) : [];
+
+    // Fallback for messages without markdown content (old format)
+    if (segments.length === 0 && message.sql) {
+      return (
+        <MessageBubble isuser="false">
+          <SQLPreviewBox>
+            <Box className="sql-preview-header">
+              <Typography variant="caption" style={{ color: textColors.secondary }}>
+                {gettext('Generated SQL')}
+              </Typography>
+              <Box className="sql-preview-actions">
+                <Tooltip title={gettext('Insert at cursor')}>
+                  <IconButton size="small" onClick={() => onInsertSQL(message.sql)}>
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={gettext('Replace query')}>
+                  <IconButton size="small" onClick={() => onReplaceSQL(message.sql)}>
+                    <AutoFixHighIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={gettext('Copy to clipboard')}>
+                  <IconButton size="small" onClick={() => navigator.clipboard.writeText(message.sql)}>
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+            <Box className="sql-preview-editor">
+              <CodeMirror
+                key={`sql-preview-${cmKey}`}
+                value={message.sql}
+                readonly={true}
+                options={{ lineNumbers: true, foldGutter: false, mode: 'text/x-pgsql' }}
+              />
+            </Box>
+          </SQLPreviewBox>
+          {message.explanation && (
+            <Typography variant="body2" sx={{ marginTop: 1 }}>{message.explanation}</Typography>
+          )}
+        </MessageBubble>
+      );
+    }
+
+    // Render markdown segments with action buttons on code blocks
     return (
       <MessageBubble isuser="false">
-        {message.explanation && (
-          <Typography variant="body2" gutterBottom>
-            {message.explanation}
-          </Typography>
-        )}
-        <SQLPreviewBox>
-          <Box className="sql-preview-header">
-            <Typography variant="caption" style={{ color: textColors.secondary }}>
-              {gettext('Generated SQL')}
-            </Typography>
-            <Box className="sql-preview-actions">
-              <Tooltip title={gettext('Insert at cursor')}>
-                <IconButton
-                  size="small"
-                  onClick={() => onInsertSQL(message.sql)}
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={gettext('Replace query')}>
-                <IconButton
-                  size="small"
-                  onClick={() => onReplaceSQL(message.sql)}
-                >
-                  <AutoFixHighIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={gettext('Copy to clipboard')}>
-                <IconButton
-                  size="small"
-                  onClick={() => navigator.clipboard.writeText(message.sql)}
-                >
-                  <ContentCopyIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
-          <Box className="sql-preview-editor">
-            <CodeMirror
-              key={`sql-preview-${cmKey}`}
-              value={message.sql}
-              readonly={true}
-              options={{
-                lineNumbers: true,
-                foldGutter: false,
-                mode: 'text/x-pgsql',
-              }}
-            />
-          </Box>
-        </SQLPreviewBox>
+        {segments.map((seg, idx) => {
+          if (seg.type === 'text') {
+            const content = seg.content?.trim();
+            if (!content) return null;
+            return (
+              <MarkdownContent key={idx}
+                sx={{ marginTop: idx > 0 ? 1 : 0 }}
+                dangerouslySetInnerHTML={{ __html: renderMarkdownText(content) }}
+              />
+            );
+          }
+
+          if (seg.type === 'code') {
+            const isSql = ['sql', 'pgsql', 'postgresql'].includes(seg.language);
+            const formattedCode = isSql ? formatSqlWithPrefs(seg.content) : seg.content;
+
+            return (
+              <SQLPreviewBox key={idx}>
+                <Box className="sql-preview-header">
+                  <Typography variant="caption" style={{ color: textColors.secondary }}>
+                    {seg.language || gettext('Code')}
+                  </Typography>
+                  <Box className="sql-preview-actions">
+                    {isSql && (
+                      <>
+                        <Tooltip title={gettext('Insert at cursor')}>
+                          <IconButton size="small" onClick={() => onInsertSQL(formattedCode)}>
+                            <AddIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={gettext('Replace query')}>
+                          <IconButton size="small" onClick={() => onReplaceSQL(formattedCode)}>
+                            <AutoFixHighIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    )}
+                    <Tooltip title={gettext('Copy to clipboard')}>
+                      <IconButton size="small"
+                        onClick={() => navigator.clipboard.writeText(formattedCode)}>
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+                <Box className="sql-preview-editor">
+                  <CodeMirror
+                    key={`sql-preview-${cmKey}-${idx}`}
+                    value={formattedCode}
+                    readonly={true}
+                    options={{
+                      lineNumbers: true, foldGutter: false,
+                      mode: isSql ? 'text/x-pgsql' : '',
+                    }}
+                  />
+                </Box>
+              </SQLPreviewBox>
+            );
+          }
+
+          return null;
+        })}
       </MessageBubble>
     );
   }
@@ -224,6 +440,105 @@ function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey }) 
     );
   }
 
+  if (message.type === MESSAGE_TYPES.STREAMING) {
+    const segments = parseMarkdownSegments(message.content);
+    const BlinkingCursor = (
+      <Box
+        component="span"
+        sx={{
+          display: 'inline-block',
+          width: '6px',
+          height: '1em',
+          backgroundColor: 'text.secondary',
+          marginLeft: '2px',
+          verticalAlign: 'text-bottom',
+          animation: 'blink 1s step-end infinite',
+          '@keyframes blink': {
+            '50%': { opacity: 0 },
+          },
+        }}
+      />
+    );
+
+    // No segments parsed yet — show raw text or spinner
+    if (segments.length === 0) {
+      return (
+        <MessageBubble isuser="false">
+          {message.content ? (
+            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+              {message.content}
+              {BlinkingCursor}
+            </Typography>
+          ) : (
+            <ThinkingIndicator>
+              <Loader
+                message=""
+                style={{ position: 'relative', height: 20, width: 20 }}
+              />
+              <Typography variant="body2" style={{ color: textColors.secondary }}>
+                {gettext('Generating response...')}
+              </Typography>
+            </ThinkingIndicator>
+          )}
+        </MessageBubble>
+      );
+    }
+
+    // Render markdown segments in order
+    const lastIdx = segments.length - 1;
+    return (
+      <MessageBubble isuser="false">
+        {segments.map((seg, idx) => {
+          const isLast = idx === lastIdx;
+          const cursor = isLast && !seg.complete ? BlinkingCursor : null;
+
+          if (seg.type === 'code') {
+            return (
+              <SQLPreviewBox key={idx}>
+                <Box className="sql-preview-header">
+                  <Typography variant="caption" style={{ color: textColors.secondary }}>
+                    {seg.complete
+                      ? (seg.language || gettext('Code'))
+                      : gettext('Generating...')}
+                  </Typography>
+                </Box>
+                <Box className="sql-preview-editor">
+                  <Box
+                    component="pre"
+                    sx={{
+                      margin: 0,
+                      padding: 1,
+                      fontSize: '0.85rem',
+                      fontFamily: 'monospace',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      maxHeight: '250px',
+                      overflow: 'auto',
+                    }}
+                  >
+                    {seg.content}
+                    {cursor}
+                  </Box>
+                </Box>
+              </SQLPreviewBox>
+            );
+          }
+
+          const content = seg.content?.trim();
+          if (!content && !cursor) return null;
+          return (
+            <Box key={idx} sx={{ marginTop: idx > 0 ? 1 : 0 }}>
+              <MarkdownContent
+                dangerouslySetInnerHTML={{ __html: renderMarkdownText(content || '') }}
+              />
+              {cursor}
+            </Box>
+          );
+        })}
+      </MessageBubble>
+    );
+  }
+
   if (message.type === MESSAGE_TYPES.ERROR) {
     return (
       <MessageBubble
@@ -239,7 +554,9 @@ function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey }) 
 
   return (
     <MessageBubble isuser="false">
-      <Typography variant="body2">{message.content}</Typography>
+      <MarkdownContent
+        dangerouslySetInnerHTML={{ __html: renderMarkdownText(message.content || '') }}
+      />
     </MessageBubble>
   );
 }
@@ -272,6 +589,8 @@ export function NLQChatPanel() {
   const readerRef = useRef(null);
   const stoppedRef = useRef(false);
   const clearedRef = useRef(false);
+  const streamingTextRef = useRef('');
+  const streamingIdRef = useRef(null);
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
@@ -410,7 +729,6 @@ export function NLQChatPanel() {
     setMessages([]);
     setConversationId(null);
     setConversationHistory([]);
-    setIsLoading(false);
   };
 
   // Stop the current request
@@ -448,9 +766,11 @@ export function NLQChatPanel() {
   const handleSubmit = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    // Reset stopped and cleared flags
+    // Reset stopped, cleared flags and streaming state
     stoppedRef.current = false;
     clearedRef.current = false;
+    streamingTextRef.current = '';
+    streamingIdRef.current = null;
 
     // Fetch latest LLM provider/model info before submitting
     fetchLlmInfo();
@@ -553,25 +873,22 @@ export function NLQChatPanel() {
 
       // Check if user manually stopped (but not cleared)
       if (stoppedRef.current && !clearedRef.current) {
-        setMessages((prev) => [
-          ...prev.filter((m) => m.id !== thinkingId),
-          {
-            type: MESSAGE_TYPES.ASSISTANT,
-            content: gettext('Generation stopped.'),
-          },
-        ]);
-      }
-    } catch (error) {
-      clearTimeout(timeoutId);
-      abortControllerRef.current = null;
-      readerRef.current = null;
-      // If conversation was cleared, ignore all late errors
-      if (clearedRef.current) {
-        // Do nothing - conversation was wiped
-      } else if (error.name === 'AbortError') {
-        // Check if this was a user-initiated stop or a timeout
-        if (stoppedRef.current) {
-          // User manually stopped
+        const streamId = streamingIdRef.current;
+        // If we have partial streaming content, show it separately
+        // from the stop notice to avoid breaking open markdown fences
+        if (streamingTextRef.current) {
+          setMessages((prev) => [
+            ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
+            {
+              type: MESSAGE_TYPES.ASSISTANT,
+              content: streamingTextRef.current,
+            },
+            {
+              type: MESSAGE_TYPES.ASSISTANT,
+              content: gettext('Generation stopped.'),
+            },
+          ]);
+        } else {
           setMessages((prev) => [
             ...prev.filter((m) => m.id !== thinkingId),
             {
@@ -579,10 +896,47 @@ export function NLQChatPanel() {
               content: gettext('Generation stopped.'),
             },
           ]);
+        }
+        streamingTextRef.current = '';
+        streamingIdRef.current = null;
+      }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      abortControllerRef.current = null;
+      readerRef.current = null;
+      const streamId = streamingIdRef.current;
+      // If conversation was cleared, ignore all late errors
+      if (clearedRef.current) {
+        // Do nothing - conversation was wiped
+      } else if (error.name === 'AbortError') {
+        // Check if this was a user-initiated stop or a timeout
+        if (stoppedRef.current) {
+          // User manually stopped - show partial content separately
+          if (streamingTextRef.current) {
+            setMessages((prev) => [
+              ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
+              {
+                type: MESSAGE_TYPES.ASSISTANT,
+                content: streamingTextRef.current,
+              },
+              {
+                type: MESSAGE_TYPES.ASSISTANT,
+                content: gettext('Generation stopped.'),
+              },
+            ]);
+          } else {
+            setMessages((prev) => [
+              ...prev.filter((m) => m.id !== thinkingId),
+              {
+                type: MESSAGE_TYPES.ASSISTANT,
+                content: gettext('Generation stopped.'),
+              },
+            ]);
+          }
         } else {
           // Timeout occurred
           setMessages((prev) => [
-            ...prev.filter((m) => m.id !== thinkingId),
+            ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
             {
               type: MESSAGE_TYPES.ERROR,
               content: gettext('Request timed out. The query may be too complex. Please try a simpler request.'),
@@ -591,13 +945,15 @@ export function NLQChatPanel() {
         }
       } else {
         setMessages((prev) => [
-          ...prev.filter((m) => m.id !== thinkingId),
+          ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
           {
             type: MESSAGE_TYPES.ERROR,
             content: gettext('Failed to generate SQL: ') + error.message,
           },
         ]);
       }
+      streamingTextRef.current = '';
+      streamingIdRef.current = null;
     } finally {
       setIsLoading(false);
       setThinkingMessageId(null);
@@ -606,32 +962,82 @@ export function NLQChatPanel() {
 
   const handleSSEEvent = (event, thinkingId) => {
     switch (event.type) {
-    case 'thinking':
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === thinkingId ? { ...m, content: event.message } : m
-        )
-      );
+    case 'thinking': {
+      const streamId = streamingIdRef.current;
+      if (streamId) {
+        // Transition from streaming back to thinking (tool use)
+        // Remove streaming message and re-add thinking indicator
+        streamingTextRef.current = '';
+        streamingIdRef.current = null;
+        setMessages((prev) => [
+          ...prev.filter((m) => m.id !== streamId),
+          {
+            type: MESSAGE_TYPES.THINKING,
+            content: event.message,
+            id: thinkingId,
+          },
+        ]);
+        setThinkingMessageId(thinkingId);
+      } else {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === thinkingId ? { ...m, content: event.message } : m
+          )
+        );
+      }
       break;
+    }
 
-    case 'sql':
-    case 'complete':
-      // If sql is null/empty, show as regular assistant message (e.g., clarification questions)
-      if (!event.sql) {
+    case 'text_delta':
+      streamingTextRef.current += event.content;
+      if (!streamingIdRef.current) {
+        // First text chunk: replace thinking with streaming message
+        streamingIdRef.current = Date.now();
         setMessages((prev) => [
           ...prev.filter((m) => m.id !== thinkingId),
           {
-            type: MESSAGE_TYPES.ASSISTANT,
-            content: event.explanation || gettext('I need more information to generate the SQL.'),
+            type: MESSAGE_TYPES.STREAMING,
+            content: streamingTextRef.current,
+            id: streamingIdRef.current,
+          },
+        ]);
+      } else {
+        // Update existing streaming message
+        const sid = streamingIdRef.current;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === sid ? { ...m, content: streamingTextRef.current } : m
+          )
+        );
+      }
+      break;
+
+    case 'sql':
+    case 'complete': {
+      const streamId = streamingIdRef.current;
+      const content = event.content || event.explanation
+        || gettext('I need more information to generate the SQL.');
+      // Use SQL type if there's SQL or any code fences in the response
+      const hasCodeBlocks = event.sql || (content && content.includes('```'));
+      if (hasCodeBlocks) {
+        // When SQL was extracted via JSON fallback (no fenced blocks),
+        // clear content so ChatMessage uses the sql-only render path
+        const msgContent = (content && content.includes('```'))
+          ? content : null;
+        setMessages((prev) => [
+          ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
+          {
+            type: MESSAGE_TYPES.SQL,
+            content: msgContent,
+            sql: event.sql,
           },
         ]);
       } else {
         setMessages((prev) => [
-          ...prev.filter((m) => m.id !== thinkingId),
+          ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
           {
-            type: MESSAGE_TYPES.SQL,
-            sql: formatSqlWithPrefs(event.sql),
-            explanation: event.explanation,
+            type: MESSAGE_TYPES.ASSISTANT,
+            content,
           },
         ]);
       }
@@ -641,17 +1047,25 @@ export function NLQChatPanel() {
       if (event.history) {
         setConversationHistory(event.history);
       }
+      // Reset streaming state
+      streamingTextRef.current = '';
+      streamingIdRef.current = null;
       break;
+    }
 
-    case 'error':
+    case 'error': {
+      const streamId = streamingIdRef.current;
       setMessages((prev) => [
-        ...prev.filter((m) => m.id !== thinkingId),
+        ...prev.filter((m) => m.id !== thinkingId && m.id !== streamId),
         {
           type: MESSAGE_TYPES.ERROR,
           content: event.message,
         },
       ]);
+      streamingTextRef.current = '';
+      streamingIdRef.current = null;
       break;
+    }
     }
   };
 
@@ -745,6 +1159,7 @@ export function NLQChatPanel() {
               onReplaceSQL={handleReplaceSQL}
               textColors={textColors}
               cmKey={cmKey}
+              formatSqlWithPrefs={formatSqlWithPrefs}
             />
           ))
         )}

@@ -14,7 +14,8 @@ import socket
 import ssl
 import urllib.request
 import urllib.error
-from typing import Optional
+from collections.abc import Generator
+from typing import Optional, Union
 import uuid
 
 # Try to use certifi for proper SSL certificate handling
@@ -354,4 +355,222 @@ class OpenAIClient(LLMClient):
             model=data.get('model', self._model),
             usage=usage,
             raw_response=data
+        )
+
+    def chat_stream(
+        self,
+        messages: list[Message],
+        tools: Optional[list[Tool]] = None,
+        system_prompt: Optional[str] = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.0,
+        **kwargs
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Stream a chat response from OpenAI."""
+        converted_messages = self._convert_messages(messages)
+
+        if system_prompt:
+            converted_messages.insert(0, {
+                'role': 'system',
+                'content': system_prompt
+            })
+
+        payload = {
+            'model': self._model,
+            'messages': converted_messages,
+            'max_completion_tokens': max_tokens,
+            'stream': True,
+            'stream_options': {'include_usage': True}
+        }
+
+        if tools:
+            payload['tools'] = self._convert_tools(tools)
+            payload['tool_choice'] = 'auto'
+
+        try:
+            yield from self._process_stream(payload)
+        except LLMClientError:
+            raise
+        except Exception as e:
+            raise LLMClientError(LLMError(
+                message=f"Streaming request failed: {str(e)}",
+                provider=self.provider_name
+            ))
+
+    def _process_stream(
+        self, payload: dict
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Make a streaming request and yield chunks."""
+        headers = {
+            'Content-Type': 'application/json',
+        }
+
+        if self._api_key:
+            headers['Authorization'] = f'Bearer {self._api_key}'
+
+        request = urllib.request.Request(
+            self._api_url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers=headers,
+            method='POST'
+        )
+
+        try:
+            response = urllib.request.urlopen(
+                request, timeout=120, context=SSL_CONTEXT
+            )
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode('utf-8')
+            try:
+                error_data = json.loads(error_body)
+                error_msg = error_data.get(
+                    'error', {}
+                ).get('message', str(e))
+            except json.JSONDecodeError:
+                error_msg = error_body or str(e)
+            raise LLMClientError(LLMError(
+                message=error_msg,
+                code=str(e.code),
+                provider=self.provider_name,
+                retryable=e.code in (429, 500, 502, 503, 504)
+            ))
+        except urllib.error.URLError as e:
+            raise LLMClientError(LLMError(
+                message=f"Connection error: {e.reason}",
+                provider=self.provider_name,
+                retryable=True
+            ))
+        except socket.timeout:
+            raise LLMClientError(LLMError(
+                message="Request timed out.",
+                code='timeout',
+                provider=self.provider_name,
+                retryable=True
+            ))
+
+        try:
+            yield from self._read_openai_stream(response)
+        finally:
+            response.close()
+
+    def _read_openai_stream(
+        self, response
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Read and parse an OpenAI-format SSE stream.
+
+        Uses readline() for incremental reading — it returns as soon
+        as a complete line arrives from the server, unlike read()
+        which blocks until a buffer fills up.
+        """
+        content_parts = []
+        # tool_calls_data: {index: {id, name, arguments_str}}
+        tool_calls_data = {}
+        finish_reason = None
+        model_name = self._model
+        usage = Usage()
+
+        while True:
+            line_bytes = response.readline()
+            if not line_bytes:
+                break
+
+            line = line_bytes.decode('utf-8', errors='replace').strip()
+
+            if not line or line.startswith(':'):
+                continue
+
+            if line == 'data: [DONE]':
+                continue
+
+            if not line.startswith('data: '):
+                continue
+
+            try:
+                data = json.loads(line[6:])
+            except json.JSONDecodeError:
+                continue
+
+            # Extract usage from the final chunk
+            if 'usage' in data and data['usage']:
+                u = data['usage']
+                usage = Usage(
+                    input_tokens=u.get('prompt_tokens', 0),
+                    output_tokens=u.get('completion_tokens', 0),
+                    total_tokens=u.get('total_tokens', 0)
+                )
+
+            if 'model' in data:
+                model_name = data['model']
+
+            choices = data.get('choices', [])
+            if not choices:
+                continue
+
+            choice = choices[0]
+            delta = choice.get('delta', {})
+
+            if choice.get('finish_reason'):
+                finish_reason = choice['finish_reason']
+
+            # Text content
+            text_chunk = delta.get('content')
+            if text_chunk:
+                content_parts.append(text_chunk)
+                yield text_chunk
+
+            # Tool calls (accumulate)
+            for tc_delta in delta.get('tool_calls', []):
+                idx = tc_delta.get('index', 0)
+                if idx not in tool_calls_data:
+                    tool_calls_data[idx] = {
+                        'id': '', 'name': '', 'arguments': ''
+                    }
+                tc = tool_calls_data[idx]
+                if 'id' in tc_delta:
+                    tc['id'] = tc_delta['id']
+                func = tc_delta.get('function', {})
+                if 'name' in func:
+                    tc['name'] = func['name']
+                if 'arguments' in func:
+                    tc['arguments'] += func['arguments']
+
+        # Build final response
+        content = ''.join(content_parts)
+        tool_calls = []
+        for idx in sorted(tool_calls_data.keys()):
+            tc = tool_calls_data[idx]
+            try:
+                arguments = json.loads(tc['arguments']) \
+                    if tc['arguments'] else {}
+            except json.JSONDecodeError:
+                arguments = {}
+            tool_calls.append(ToolCall(
+                id=tc['id'] or str(uuid.uuid4()),
+                name=tc['name'],
+                arguments=arguments
+            ))
+
+        stop_reason_map = {
+            'stop': StopReason.END_TURN,
+            'tool_calls': StopReason.TOOL_USE,
+            'length': StopReason.MAX_TOKENS,
+            'content_filter': StopReason.STOP_SEQUENCE
+        }
+        stop_reason = stop_reason_map.get(
+            finish_reason or '', StopReason.UNKNOWN
+        )
+
+        if not content and not tool_calls:
+            raise LLMClientError(LLMError(
+                message='No response content returned from API',
+                provider=self.provider_name,
+                retryable=False
+            ))
+
+        yield LLMResponse(
+            content=content,
+            tool_calls=tool_calls,
+            stop_reason=stop_reason,
+            model=model_name,
+            usage=usage
         )

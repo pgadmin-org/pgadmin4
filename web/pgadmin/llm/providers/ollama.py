@@ -10,10 +10,11 @@
 """Ollama LLM client implementation."""
 
 import json
-import re
+import urllib.parse
 import urllib.request
 import urllib.error
-from typing import Optional
+from collections.abc import Generator
+from typing import Optional, Union
 import uuid
 
 from pgadmin.llm.client import LLMClient, LLMClientError
@@ -46,6 +47,14 @@ class OllamaClient(LLMClient):
         """
         self._api_url = api_url.rstrip('/')
         self._model = model or DEFAULT_MODEL
+
+        # Validate URL scheme to prevent unsafe access
+        parsed = urllib.parse.urlparse(self._api_url)
+        if parsed.scheme not in ('http', 'https'):
+            raise ValueError(
+                f"Ollama URL must use http or https scheme, "
+                f"got: {parsed.scheme}"
+            )
 
     @property
     def provider_name(self) -> str:
@@ -220,7 +229,7 @@ class OllamaClient(LLMClient):
                 message=error_msg,
                 code=str(e.code),
                 provider=self.provider_name,
-                retryable=e.code in (500, 502, 503, 504)
+                retryable=e.code in (429, 500, 502, 503, 504)
             ))
         except urllib.error.URLError as e:
             raise LLMClientError(LLMError(
@@ -231,8 +240,6 @@ class OllamaClient(LLMClient):
 
     def _parse_response(self, data: dict) -> LLMResponse:
         """Parse the Ollama API response into an LLMResponse."""
-        import re
-
         message = data.get('message', {})
         content = message.get('content', '')
         tool_calls = []
@@ -284,4 +291,178 @@ class OllamaClient(LLMClient):
             model=data.get('model', self._model),
             usage=usage,
             raw_response=data
+        )
+
+    def chat_stream(
+        self,
+        messages: list[Message],
+        tools: Optional[list[Tool]] = None,
+        system_prompt: Optional[str] = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.0,
+        **kwargs
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Stream a chat response from Ollama."""
+        converted_messages = self._convert_messages(messages)
+
+        if system_prompt:
+            converted_messages.insert(0, {
+                'role': 'system',
+                'content': system_prompt
+            })
+
+        payload = {
+            'model': self._model,
+            'messages': converted_messages,
+            'stream': True,
+            'options': {
+                'num_predict': max_tokens,
+                'temperature': temperature
+            }
+        }
+
+        if tools:
+            payload['tools'] = self._convert_tools(tools)
+
+        try:
+            yield from self._process_stream(payload)
+        except LLMClientError:
+            raise
+        except Exception as e:
+            raise LLMClientError(LLMError(
+                message=f"Streaming request failed: {str(e)}",
+                provider=self.provider_name
+            ))
+
+    def _process_stream(
+        self, payload: dict
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Make a streaming request and yield chunks."""
+        url = f'{self._api_url}/api/chat'
+
+        request = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
+
+        try:
+            response = urllib.request.urlopen(request, timeout=300)
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode('utf-8')
+            try:
+                error_data = json.loads(error_body)
+                error_msg = error_data.get('error', str(e))
+            except json.JSONDecodeError:
+                error_msg = error_body or str(e)
+            raise LLMClientError(LLMError(
+                message=error_msg,
+                code=str(e.code),
+                provider=self.provider_name,
+                retryable=e.code in (429, 500, 502, 503, 504)
+            ))
+        except urllib.error.URLError as e:
+            raise LLMClientError(LLMError(
+                message=f"Cannot connect to Ollama: {e.reason}",
+                provider=self.provider_name,
+                retryable=True
+            ))
+
+        try:
+            yield from self._read_ollama_stream(response)
+        finally:
+            response.close()
+
+    def _read_ollama_stream(
+        self, response
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """Read and parse an Ollama NDJSON stream.
+
+        Uses readline() for incremental reading.
+        """
+        content_parts = []
+        tool_calls = []
+        done_reason = None
+        model_name = self._model
+        input_tokens = 0
+        output_tokens = 0
+        final_data = None
+
+        while True:
+            line_bytes = response.readline()
+            if not line_bytes:
+                break
+
+            line = line_bytes.decode('utf-8', errors='replace').strip()
+
+            if not line:
+                continue
+
+            try:
+                data = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            msg = data.get('message', {})
+
+            # Text content
+            text = msg.get('content', '')
+            if text:
+                content_parts.append(text)
+                yield text
+
+            # Tool calls (in final message)
+            for tc in msg.get('tool_calls', []):
+                func = tc.get('function', {})
+                arguments = func.get('arguments', {})
+                if isinstance(arguments, str):
+                    try:
+                        arguments = json.loads(arguments)
+                    except json.JSONDecodeError:
+                        arguments = {}
+                tool_calls.append(ToolCall(
+                    id=str(uuid.uuid4()),
+                    name=func.get('name', ''),
+                    arguments=arguments
+                ))
+
+            if data.get('done'):
+                final_data = data
+                done_reason = data.get('done_reason', '')
+                model_name = data.get('model', self._model)
+                input_tokens = data.get('prompt_eval_count', 0)
+                output_tokens = data.get('eval_count', 0)
+
+        # Ensure the stream completed with a terminal done frame;
+        # truncated content from a dropped connection is unreliable.
+        if final_data is None:
+            raise LLMClientError(LLMError(
+                message="Ollama stream ended before terminal done frame",
+                provider=self.provider_name,
+                retryable=True
+            ))
+
+        content = ''.join(content_parts)
+
+        if tool_calls:
+            stop_reason = StopReason.TOOL_USE
+        elif done_reason == 'stop':
+            stop_reason = StopReason.END_TURN
+        elif done_reason == 'length':
+            stop_reason = StopReason.MAX_TOKENS
+        else:
+            stop_reason = StopReason.UNKNOWN
+
+        yield LLMResponse(
+            content=content,
+            tool_calls=tool_calls,
+            stop_reason=stop_reason,
+            model=model_name,
+            usage=Usage(
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                total_tokens=input_tokens + output_tokens
+            ),
+            raw_response=final_data
         )

@@ -10,7 +10,8 @@
 """Base LLM client interface and factory."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from collections.abc import Generator
+from typing import Optional, Union
 
 from pgadmin.llm.models import (
     Message, Tool, LLMResponse, LLMError
@@ -73,6 +74,48 @@ class LLMClient(ABC):
             LLMError: If the request fails.
         """
         pass
+
+    def chat_stream(
+        self,
+        messages: list[Message],
+        tools: Optional[list[Tool]] = None,
+        system_prompt: Optional[str] = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.0,
+        **kwargs
+    ) -> Generator[Union[str, LLMResponse], None, None]:
+        """
+        Stream a chat response from the LLM.
+
+        Yields text chunks (str) as they arrive, then yields
+        a final LLMResponse with the complete response metadata.
+
+        The default implementation falls back to non-streaming chat().
+
+        Args:
+            messages: List of conversation messages.
+            tools: Optional list of tools the LLM can use.
+            system_prompt: Optional system prompt to set context.
+            max_tokens: Maximum tokens in the response.
+            temperature: Sampling temperature (0.0 = deterministic).
+            **kwargs: Additional provider-specific parameters.
+
+        Yields:
+            str: Text content chunks as they arrive.
+            LLMResponse: Final response with complete metadata (last item).
+        """
+        # Default: fall back to non-streaming
+        response = self.chat(
+            messages=messages,
+            tools=tools,
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            **kwargs
+        )
+        if response.content:
+            yield response.content
+        yield response
 
     def validate_connection(self) -> tuple[bool, Optional[str]]:
         """
