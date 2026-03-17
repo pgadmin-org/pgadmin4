@@ -44,3 +44,4 @@ Bug fixes
   | `Issue #9734 <https://github.com/pgadmin-org/pgadmin4/issues/9734>`_ -  Fixed an issue where LLM responses are not streamed or rendered properly in the AI Assistant.
   | `Issue #9736 <https://github.com/pgadmin-org/pgadmin4/issues/9736>`_ -  Fix an issue where the AI Assistant was not retaining conversation context between messages, with chat history compaction to manage token budgets.
   | `Issue #9740 <https://github.com/pgadmin-org/pgadmin4/issues/9740>`_ -  Fixed an issue where the AI Assistant input textbox sometimes swallows the first character of input.
+  | `Issue #9758 <https://github.com/pgadmin-org/pgadmin4/issues/9758>`_ -  Clarify where the LLM API key files should be.
