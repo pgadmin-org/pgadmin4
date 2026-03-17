@@ -64,6 +64,11 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
                 col_type['seqtypid'] = col['seqtypid'] = \
                     rset['rows'][key]['seqtypid']
 
+                # Check if column is a generated column (PostgreSQL 12+).
+                # Generated columns must be excluded from INSERT/UPDATE.
+                col_type['is_generated'] = col['is_generated'] = \
+                    rset['rows'][key].get('is_generated', False)
+
             else:
                 for row in rset['rows']:
                     if row['oid'] == col['table_column']:
@@ -76,6 +81,10 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
 
                         col_type['seqtypid'] = col['seqtypid'] = \
                             row['seqtypid']
+
+                        # Check if column is a generated column (PG 12+).
+                        col_type['is_generated'] = col['is_generated'] = \
+                            row.get('is_generated', False)
                         break
 
                     else:
@@ -83,5 +92,6 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids,
                         col_type['has_default_val'] = \
                             col['has_default_val'] = None
                         col_type['seqtypid'] = col['seqtypid'] = None
+                        col_type['is_generated'] = col['is_generated'] = False
 
     return column_types
