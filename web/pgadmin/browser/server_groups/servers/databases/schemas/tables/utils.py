@@ -899,7 +899,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             main_sql.append(rules_sql)
 
     def _get_resql_for_partitions(self, data, rset, json_resp,
-                                  diff_partition_sql, main_sql, did):
+                                  diff_partition_sql, main_sql, did,
+                                  show_default_values):
         """
         ##########################################
         # Reverse engineered sql for PARTITIONS
@@ -1005,7 +1006,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
                 # Get Reverse engineered sql for index
                 self._get_resql_for_index(did, row['oid'], partition_sql_arr,
-                                          json_resp, schema, table)
+                                          json_resp, schema, table,
+                                          show_default_values=show_default_values)
 
                 # Get Reverse engineered sql for ROW SECURITY POLICY
                 self._get_resql_for_row_security_policy(scid, row['oid'],
@@ -1086,7 +1088,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return internal_server_error(errormsg=rset)
 
             self._get_resql_for_partitions(data, rset, json_resp,
-                                           diff_partition_sql, main_sql, did)
+                                           diff_partition_sql, main_sql, did,
+                                           show_default_values)
 
         sql = '\n'.join(main_sql)
 
