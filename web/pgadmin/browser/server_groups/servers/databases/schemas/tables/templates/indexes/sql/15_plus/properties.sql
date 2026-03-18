@@ -48,12 +48,12 @@ SELECT DISTINCT ON (cls.relname)
   -- Options (with defaults per index type)
     COALESCE(
         substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int,
-        {% if show_defaults and show_defaults == True %}
+        {% if show_default_values %}
             CASE am.amname
                 WHEN 'btree' THEN 90
                 WHEN 'gist' THEN 90
-                WHEN 'hash' THEN 75
-                WHEN 'spgist' THEN 90
+                WHEN 'hash' THEN 90
+                WHEN 'spgist' THEN 80
                 ELSE NULL
             END
         {% else %}
@@ -65,7 +65,7 @@ SELECT DISTINCT ON (cls.relname)
             WHEN 'btree' THEN substring(array_to_string(cls.reloptions, ',') FROM 'deduplicate_items=([a-z]*)')::boolean
             ELSE NULL
         END,
-        {% if show_defaults and show_defaults == True %}
+        {% if show_default_values %}
             CASE am.amname WHEN 'btree' THEN TRUE ELSE NULL END
         {% else %}
             NULL
@@ -76,35 +76,55 @@ SELECT DISTINCT ON (cls.relname)
             WHEN 'gin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'gin_pending_list_limit=([0-9]*)')::int
             ELSE NULL
         END,
-        CASE am.amname WHEN 'gin' THEN 4096 * 1024 ELSE NULL END
+        {% if show_default_values %}
+            CASE am.amname WHEN 'gin' THEN 4096 * 1024 ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS gin_pending_list_limit,
     COALESCE(
         CASE am.amname
             WHEN 'brin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'pages_per_range=([0-9]*)')::int
             ELSE NULL
         END,
-        CASE am.amname WHEN 'brin' THEN 128 ELSE NULL END
+        {% if show_default_values %}
+            CASE am.amname WHEN 'brin' THEN 128 ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS pages_per_range,
     COALESCE(
         CASE am.amname
             WHEN 'gist' THEN substring(array_to_string(cls.reloptions, ',') FROM 'buffering=([a-z]*)')
             ELSE NULL
         END,
-        CASE am.amname WHEN 'gist' THEN 'auto' ELSE NULL END
+        {% if show_default_values %}
+            CASE am.amname WHEN 'gist' THEN 'auto' ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS buffering,
     COALESCE(
         CASE am.amname
             WHEN 'gin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'fastupdate=([a-z]*)')::boolean
             ELSE NULL
         END,
-        CASE am.amname WHEN 'gin' THEN TRUE ELSE NULL END
+        {% if show_default_values %}
+            CASE am.amname WHEN 'gin' THEN TRUE ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS fastupdate,
     COALESCE(
         CASE am.amname
             WHEN 'brin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'autosummarize=([a-z]*)')::boolean
             ELSE NULL
         END,
-        CASE am.amname WHEN 'brin' THEN FALSE ELSE NULL END
+        {% if show_default_values %}
+            CASE am.amname WHEN 'brin' THEN FALSE ELSE NULL END
+        {% else %}
+            NULL
+        {% endif %}
     ) AS autosummarize,
     COALESCE(
         substring(array_to_string(cls.reloptions, ',') FROM 'lists=([0-9]*)')::int,

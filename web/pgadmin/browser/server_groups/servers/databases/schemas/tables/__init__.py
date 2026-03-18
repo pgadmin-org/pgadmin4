@@ -1440,7 +1440,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
         return BaseTableView.get_reverse_engineered_sql(
             self, did=did, scid=scid, tid=tid, main_sql=main_sql, data=data,
-            add_not_exists_clause=True)
+            add_not_exists_clause=True, show_default_values_for_indexes=False)
 
     @BaseTableView.check_precondition
     def select_sql(self, gid, sid, did, scid, tid):
