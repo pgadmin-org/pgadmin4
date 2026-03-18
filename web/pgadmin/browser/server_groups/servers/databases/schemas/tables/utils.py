@@ -1005,9 +1005,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 partition_sql_arr.append(partition_main_sql)
 
                 # Get Reverse engineered sql for index
-                self._get_resql_for_index(did, row['oid'], partition_sql_arr,
-                                          json_resp, schema, table,
-                                          show_default_values=show_default_values)
+                self._get_resql_for_index(
+                    did, row['oid'], partition_sql_arr,
+                    json_resp, schema, table,
+                    show_default_values=show_default_values)
 
                 # Get Reverse engineered sql for ROW SECURITY POLICY
                 self._get_resql_for_row_security_policy(scid, row['oid'],
