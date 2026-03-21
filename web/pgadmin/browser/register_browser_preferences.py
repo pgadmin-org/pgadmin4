@@ -101,6 +101,18 @@ def register_browser_preferences(self):
         )
     )
 
+    self.preference.register(
+        'display', 'show_server_color_indicator',
+        gettext("Show server color indicator in panel tabs?"), 'boolean',
+        False,
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'If enabled, a colored circle indicator will be shown in panel '
+            'tabs (Query Tool, ERD Tool, etc.) matching the server\'s custom '
+            'background color.'
+        )
+    )
+
     self.table_row_count_threshold = self.preference.register(
         'properties', 'table_row_count_threshold',
         gettext("Count rows if estimated less than"), 'integer', 2000,

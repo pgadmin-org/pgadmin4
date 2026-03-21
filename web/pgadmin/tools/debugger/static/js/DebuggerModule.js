@@ -11,7 +11,7 @@ import _ from 'lodash';
 import ReactDOM from 'react-dom/client';
 
 import gettext from 'sources/gettext';
-import { sprintf } from 'sources/utils';
+import { sprintf, getServerColors } from 'sources/utils';
 import url_for from 'sources/url_for';
 import pgWindow from 'sources/window';
 import Kerberos from 'pgadmin.authenticate.kerberos';
@@ -378,13 +378,17 @@ export default class DebuggerModule {
             let open_new_tab = browser_preferences.new_browser_tab_open;
             const db_label = self.checkDbNameChange(data, dbNode, newTreeInfo);
             let label = getAppropriateLabel(newTreeInfo);
+
+            // Extract bgcolor and fgcolor from server icon
+            const { bgcolor, fgcolor } = getServerColors(newTreeInfo?.server?.icon);
+
             pgAdmin.Browser.Events.trigger(
               'pgadmin:tool:show',
               `${BROWSER_PANELS.DEBUGGER_TOOL}_${trans_id}`,
               url,
               null,
               {title: getDebuggerTitle(browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser),
-                icon: 'fa fa-bug', manualClose: false, renamable: true},
+                icon: 'fa fa-bug', manualClose: false, renamable: true, bgcolor: bgcolor, fgcolor: fgcolor, server_id: newTreeInfo?.server?._id},
               Boolean(open_new_tab?.includes('debugger'))
             );
           })
@@ -527,13 +531,16 @@ export default class DebuggerModule {
 
         let label = getAppropriateLabel(treeInfo);
 
+        // Extract bgcolor and fgcolor from server icon
+        const { bgcolor, fgcolor } = getServerColors(treeInfo?.server?.icon);
+
         pgAdmin.Browser.Events.trigger(
           'pgadmin:tool:show',
           `${BROWSER_PANELS.DEBUGGER_TOOL}_${res.data.data.debuggerTransId}`,
           url,
           null,
           {title: getDebuggerTitle(browser_preferences, label, db_label, db_label, null, self.pgBrowser),
-            icon: 'fa fa-bug', manualClose: false, renamable: true},
+            icon: 'fa fa-bug', manualClose: false, renamable: true, bgcolor: bgcolor, fgcolor: fgcolor, server_id: treeInfo?.server?._id},
           Boolean(open_new_tab?.includes('debugger'))
         );
       })

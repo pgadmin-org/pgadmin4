@@ -28,6 +28,7 @@ import usePreferences, { listenPreferenceBroadcast } from '../../../../preferenc
 import { PgAdminProvider } from '../../../../static/js/PgAdminProvider';
 import { ApplicationStateProvider } from '../../../../settings/static/ApplicationStateProvider';
 import ToolErrorView from '../../../../static/js/ToolErrorView';
+import { getServerColors } from '../../../../static/js/utils';
 
 export default class SQLEditor {
   static instance;
@@ -223,12 +224,15 @@ export default class SQLEditor {
     const [icon, tooltip] = panelTitleFunc.getQueryToolIcon(panel_title, is_query_tool);
     let selectedNodeInfo = pgAdmin.Browser.tree?.selected() ? pgAdmin.Browser.tree?.getTreeNodeHierarchy(pgAdmin.Browser.tree.selected()) : null;
 
+    // Extract bgcolor and fgcolor from server icon
+    const { bgcolor, fgcolor } = getServerColors(selectedNodeInfo?.server?.icon);
+
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.QUERY_TOOL}_${trans_id}`,
       panel_url,
       {...params, title: panel_title, selectedNodeInfo: JSON.stringify(selectedNodeInfo)},
-      {title: panel_title, icon: icon, tooltip: tooltip, renamable: true},
+      {title: panel_title, icon: icon, tooltip: tooltip, renamable: true, bgcolor: bgcolor, fgcolor: fgcolor, server_id: selectedNodeInfo?.server?._id},
       Boolean(open_new_tab?.includes('qt'))
     );
     return true;
