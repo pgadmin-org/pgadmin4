@@ -75,12 +75,23 @@ export default class SchemaDiff {
     let browserPreferences = usePreferences.getState().getPreferencesForModule('browser');
     let openInNewTab = browserPreferences.new_browser_tab_open;
 
+    // Extract bgcolor and fgcolor from server icon
+    let bgcolor = null;
+    let fgcolor = null;
+    let serverId = null;
+    const selectedItem = pgAdmin.Browser.tree?.selected();
+    if (selectedItem) {
+      const selectedNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(selectedItem);
+      ({ bgcolor, fgcolor } = commonUtils.getServerColors(selectedNodeInfo?.server?.icon));
+      serverId = selectedNodeInfo?.server?._id;
+    }
+
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.SCHEMA_DIFF_TOOL}_${trans_id}`,
       baseUrl,
       {...params},
-      {title: panelTitle, icon: 'pg-font-icon icon-compare', manualClose: false, renamable: true},
+      {title: panelTitle, icon: 'pg-font-icon icon-compare', manualClose: false, renamable: true, bgcolor: bgcolor, fgcolor: fgcolor, server_id: serverId},
       Boolean(openInNewTab?.includes('schema_diff'))
     );
     return true;

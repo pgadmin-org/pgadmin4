@@ -233,6 +233,27 @@ export function getRandomInt(min, max) {
   return min + (intArray[0] % range);
 }
 
+/*
+ * Extracts the background and foreground colors from a server icon string.
+ *
+ * This is a workaround for a historical design decision where the backend encodes
+ * structured data (icon CSS class, bgcolor, fgcolor) into a single space-separated
+ * string via `server_icon_and_background()`.
+ * The format is: "icon-class bgcolor fgcolor"
+ * Ref: web/pgadmin/browser/server_groups/servers/__init__.py:server_icon_and_background()
+ */
+export function getServerColors(serverIcon) {
+  if (!serverIcon) {
+    return { bgcolor: null, fgcolor: null };
+  }
+
+  const parts = serverIcon.split(' ');
+  return {
+    bgcolor: parts[1] || null,
+    fgcolor: parts[2] || null,
+  };
+}
+
 export function titleize(i_str) {
   if(i_str === '' || i_str === null) return i_str;
   return i_str.split(' ')
