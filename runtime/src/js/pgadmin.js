@@ -299,14 +299,18 @@ function startDesktopMode() {
   let midTime1 = currentTime + (connectionTimeout / 2);
   let midTime2 = currentTime + (connectionTimeout * 2 / 3);
   let pingInProgress = false;
+  let currentPingInterval = 100;
 
-  // ping pgAdmin server every 1 second.
+  // ping pgAdmin server with adaptive polling.
   let pingStartTime = (new Date).getTime();
-  pingIntervalID = setInterval(function () {
+  
+  function performPing() {
     // If ping request is already send and response is not
     // received no need to send another request.
-    if (pingInProgress)
+    if (pingInProgress) {
+      pingIntervalID = setTimeout(performPing, currentPingInterval);
       return;
+    }
 
     pingServer().then(() => {
       pingInProgress = false;
@@ -314,7 +318,7 @@ function startDesktopMode() {
       // Set the pgAdmin process object to misc
       misc.setProcessObject(pgadminServerProcess);
 
-      clearInterval(pingIntervalID);
+      clearTimeout(pingIntervalID);
       let appEndTime = (new Date).getTime();
       misc.writeServerLog('------------------------------------------');
       misc.writeServerLog('Total time taken to ping pgAdmin4 server: ' + (appEndTime - pingStartTime) / 1000 + ' Sec');
@@ -329,6 +333,7 @@ function startDesktopMode() {
       // and stop pinging the server.
       if (curTime >= endTime) {
         showErrorDialog(pingIntervalID);
+        return;
       }
 
       if (curTime > midTime1) {
@@ -338,10 +343,22 @@ function startDesktopMode() {
           splashWindow.webContents.executeJavaScript('document.getElementById(\'loader-text-status\').innerHTML = \'Almost there...\';', true);
         }
       }
+
+      pingIntervalID = setTimeout(performPing, currentPingInterval);
+      if (currentPingInterval === 1000) {
+        currentPingInterval = 100;
+      } else {
+        currentPingInterval = currentPingInterval * 2;
+        if (currentPingInterval > 1000) {
+          currentPingInterval = 1000;
+        }
+      }
     });
 
     pingInProgress = true;
-  }, 1000);
+  }
+  
+  performPing();
 }
 
 // This function is used to hide the splash screen and create/launch
