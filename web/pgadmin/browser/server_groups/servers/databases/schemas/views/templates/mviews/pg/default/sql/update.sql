@@ -80,6 +80,20 @@ RESET(
 );
 
 {% endif %}
+{# ======= SET/RESET Toast Tuple Target ========= #}
+{% if data.toast_tuple_target and o_data.toast_tuple_target != data.toast_tuple_target %}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
+SET(
+  TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}
+);
+
+{% elif data.toast_tuple_target == '' and o_data.toast_tuple_target|default('', 'true') != data.toast_tuple_target %}
+ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
+RESET(
+  TOAST_TUPLE_TARGET
+);
+
+{% endif %}
 {# ===== Check for with_data property ===== #}
 {% if data.with_data is defined and o_data.with_data|lower != data.with_data|lower  %}
 REFRESH MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }} WITH{{ ' NO' if data.with_data|lower == 'false' else '' }} DATA;
