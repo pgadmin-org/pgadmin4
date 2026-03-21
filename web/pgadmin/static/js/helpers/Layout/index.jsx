@@ -67,6 +67,8 @@ export function TabTitle({id, closable, defaultInternal}) {
       <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);
+      }} onMouseDown={(e)=>{
+        if(e.button === 1) { e.preventDefault(); layoutDocker.close(id); }
       }} style={{margin: '-1px -10px -1px 0'}} />}
     </Box>
   );
