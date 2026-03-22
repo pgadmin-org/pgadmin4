@@ -45,6 +45,13 @@ export function TabTitle({id, closable, defaultInternal}) {
     layoutDocker.eventBus.fireEvent(LAYOUT_EVENTS.CONTEXT, e, id);
   }, []);
 
+  const onMouseDown = useCallback((e)=>{
+    if(closable && e.button === 1) {
+      e.preventDefault();
+      layoutDocker.close(id);
+    }
+  }, [closable, id, layoutDocker]);
+
   useEffect(()=>{
     const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, (panelId)=>{
       if(panelId == id) {
@@ -62,13 +69,11 @@ export function TabTitle({id, closable, defaultInternal}) {
   }, []);
 
   return (
-    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
+    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} onMouseDown={onMouseDown} width="100%">
       {attrs.icon && <span className={`dock-tab-icon ${attrs.icon}`}></span>}
       <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);
-      }} onMouseDown={(e)=>{
-        if(e.button === 1) { e.preventDefault(); layoutDocker.close(id); }
       }} style={{margin: '-1px -10px -1px 0'}} />}
     </Box>
   );
