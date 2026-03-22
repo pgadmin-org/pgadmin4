@@ -27,16 +27,25 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 DROP MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }};
 CREATE MATERIALIZED VIEW IF NOT EXISTS {{ conn|qtIdent(view_schema, view_name) }}
-{% if data.fillfactor or o_data.fillfactor %}
+{% if data.fillfactor or o_data.fillfactor or data.toast_tuple_target or o_data.toast_tuple_target %}
+{% set ns = namespace(add_comma=false) %}
 WITH(
 {% if data.fillfactor %}
-    FILLFACTOR = {{ data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
+    FILLFACTOR = {{ data.fillfactor }}{% set ns.add_comma = true %}
 {% elif o_data.fillfactor %}
-    FILLFACTOR = {{ o_data.fillfactor }}{% if (data['vacuum_data'] is defined and data['vacuum_data']['changed']|length > 0) %},{% endif %}
+    FILLFACTOR = {{ o_data.fillfactor }}{% set ns.add_comma = true %}
+{% endif %}
+{% if data.toast_tuple_target %}
+{% if ns.add_comma %},
+{% endif %}    TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}{% set ns.add_comma = true %}
+{% elif o_data.toast_tuple_target %}
+{% if ns.add_comma %},
+{% endif %}    TOAST_TUPLE_TARGET = {{ o_data.toast_tuple_target }}{% set ns.add_comma = true %}
 {% endif %}
 
 {% if data['vacuum_data']['changed']|length > 0 %}
-{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
+{% if ns.add_comma %},
+{% endif %}{% for field in data['vacuum_data']['changed'] %} {{ field.name }} = {{ field.value|lower }}{% if not loop.last  %},
 {% endif %}
 {% endfor %}
 {% endif %}
