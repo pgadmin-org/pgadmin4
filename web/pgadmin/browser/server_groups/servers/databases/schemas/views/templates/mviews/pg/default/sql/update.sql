@@ -96,7 +96,7 @@ SET(
   TOAST_TUPLE_TARGET = {{ data.toast_tuple_target }}
 );
 
-{% elif data.toast_tuple_target == '' and o_data.toast_tuple_target|default('', 'true') != data.toast_tuple_target %}
+{% elif (data.toast_tuple_target == '' or data.toast_tuple_target == None) and data.toast_tuple_target != o_data.toast_tuple_target %}
 ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 RESET(
   TOAST_TUPLE_TARGET
