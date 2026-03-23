@@ -12337,14 +12337,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-frame-component@npm:^5.2.6":
-  version: 5.2.7
-  resolution: "react-frame-component@npm:5.2.7"
+"react-frame-component@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "react-frame-component@npm:5.3.0"
   peerDependencies:
-    prop-types: ^15.5.9
-    react: ">= 16.3"
-    react-dom: ">= 16.3"
-  checksum: 10c0/e138602aa98557c021ae825f51468026c53b9939140c5961d5371b65ad07ff9a5adaf2cd4e4a8a77414a05ae0f95a842939c8e102aa576ef21ff096368b905a3
+    prop-types: ^15.8.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react: ">= 16.8 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+    react-dom: ">= 16.8 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+  checksum: 10c0/d3a03db151058fafb48df52c2bd1419b042ec475e3ce29f700fa11b9bca257759a4b6db626849dedd0afbbd75ff058853a4510a73ff8abf916d53109e72b1056
   languageName: node
   linkType: hard
 
@@ -12991,7 +12991,7 @@ __metadata:
     react-dom: "npm:^19.2.3"
     react-draggable: "npm:^4.4.6"
     react-dropzone: "npm:^15.0.0"
-    react-frame-component: "npm:^5.2.6"
+    react-frame-component: "npm:^5.3.0"
     react-leaflet: "npm:^4.2.1"
     react-new-window: "npm:^1.0.1"
     react-resize-detector: "npm:^12.3.0"
