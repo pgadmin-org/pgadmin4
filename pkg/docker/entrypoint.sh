@@ -178,25 +178,28 @@ if [ -z "${PGADMIN_DISABLE_POSTFIX}" ]; then
     sudo /usr/sbin/postfix start
 fi
 
-# Get the session timeout from the pgAdmin config. We'll use this (in seconds)
-# to define the Gunicorn worker timeout
-TIMEOUT=$(cd /pgadmin4 && /venv/bin/python3 -c 'import config; print(config.SESSION_EXPIRATION_TIME * 60 * 60 * 24)')
-
 # NOTE: currently pgadmin can run only with 1 worker due to sessions implementation
-# Using --threads to have multi-threaded single-process worker
 
 if [ -n "${PGADMIN_ENABLE_SOCK}" ]; then
-    BIND_ADDRESS="unix:/run/pgadmin/pgadmin.sock"
+    BIND_ARGS="--uds /run/pgadmin/pgadmin.sock"
 else
+    BIND_ARGS="--host ${PGADMIN_LISTEN_ADDRESS:-[::]} --port ${PGADMIN_LISTEN_PORT:-80}"
     if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-443}"
-    else
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-80}"
+        BIND_ARGS="--host ${PGADMIN_LISTEN_ADDRESS:-[::]} --port ${PGADMIN_LISTEN_PORT:-443}"
     fi
 fi
 
-if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-    exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" --keyfile /certs/server.key --certfile /certs/server.cert -c gunicorn_config.py run_pgadmin:app
+if [ "${GUNICORN_ACCESS_LOGFILE:--}" = "-" ]; then
+    ACCESS_LOG_ARGS="--access-log"
 else
-    exec /venv/bin/gunicorn --limit-request-line "${GUNICORN_LIMIT_REQUEST_LINE:-8190}" --limit-request-fields "${GUNICORN_LIMIT_REQUEST_FIELDS:-100}" --limit-request-field_size "${GUNICORN_LIMIT_REQUEST_FIELD_SIZE:-8190}" --timeout "${TIMEOUT}" --bind "${BIND_ADDRESS}" -w 1 --threads "${GUNICORN_THREADS:-25}" --access-logfile "${GUNICORN_ACCESS_LOGFILE:--}" -c gunicorn_config.py run_pgadmin:app
+    ACCESS_LOG_ARGS="--no-access-log"
 fi
+
+TLS_ARGS=""
+if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
+    TLS_ARGS="--ssl-keyfile /certs/server.key --ssl-certificate /certs/server.cert"
+fi
+
+# Keep the existing environment variables for backward compatibility.
+exec /venv/bin/granian --interface wsgi --workers 1 --blocking-threads "${GUNICORN_THREADS:-25}" ${ACCESS_LOG_ARGS} ${TLS_ARGS} ${BIND_ARGS} run_pgadmin:app
+

@@ -185,14 +185,14 @@ ENV PYTHONPATH=/pgadmin4
 # Copy in the code and docs
 COPY --from=app-builder /pgadmin4/web /pgadmin4
 COPY --from=docs-builder /pgadmin4/docs/en_US/_build/html/ /pgadmin4/docs
-COPY pkg/docker/run_pgadmin.py pkg/docker/gunicorn_config.py /pgadmin4/
+COPY pkg/docker/run_pgadmin.py /pgadmin4/
 COPY pkg/docker/entrypoint.sh /entrypoint.sh
 
 # License files
 COPY LICENSE /pgadmin4/LICENSE
 
 # Configure everything in one RUN step
-RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
+RUN /venv/bin/python3 -m pip install --no-cache-dir granian==2.2.5 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
