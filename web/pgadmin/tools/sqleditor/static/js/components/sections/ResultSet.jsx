@@ -1496,11 +1496,13 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const gvRenderKeyRef = useRef(0);
   const openGeometryViewerTab = React.useCallback((column, rowsData) => {
+    gvRenderKeyRef.current++;
     layoutDocker.openTab({
       id: PANELS.GEOMETRY,
       title: gettext('Geometry Viewer'),
-      content: <GeometryViewer rows={rowsData} columns={columns} column={column}/>,
+      content: <GeometryViewer key={gvRenderKeyRef.current} rows={rowsData} columns={columns} column={column}/>,
       closable: true,
     }, PANELS.MESSAGES, 'after-tab', true);
   }, [layoutDocker, columns]);
