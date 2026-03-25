@@ -192,7 +192,7 @@ COPY pkg/docker/entrypoint.sh /entrypoint.sh
 COPY LICENSE /pgadmin4/LICENSE
 
 # Configure everything in one RUN step
-RUN /venv/bin/python3 -m pip install --no-cache-dir granian==2.2.5 && \
+RUN /venv/bin/python3 -m pip install --no-cache-dir granian==2.7.2 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
