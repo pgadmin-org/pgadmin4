@@ -163,7 +163,7 @@ function showErrorDialog(intervalID) {
   if(!splashWindow.isVisible()) {
     return;
   }
-  clearInterval(intervalID);
+  clearTimeout(intervalID);
   splashWindow.close();
 
   new BrowserWindow({
@@ -312,6 +312,7 @@ function startDesktopMode() {
       return;
     }
 
+    pingInProgress = true;
     pingServer().then(() => {
       pingInProgress = false;
       splashWindow.webContents.executeJavaScript('document.getElementById(\'loader-text-status\').innerHTML = \'pgAdmin 4 started\';', true);
@@ -345,17 +346,10 @@ function startDesktopMode() {
       }
 
       pingIntervalID = setTimeout(performPing, currentPingInterval);
-      if (currentPingInterval === 1000) {
-        currentPingInterval = 100;
-      } else {
-        currentPingInterval = currentPingInterval * 2;
-        if (currentPingInterval > 1000) {
-          currentPingInterval = 1000;
-        }
+      if (currentPingInterval < 1000) {
+        currentPingInterval = Math.min(currentPingInterval * 2, 1000);
       }
     });
-
-    pingInProgress = true;
   }
   
   performPing();
