@@ -517,8 +517,9 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         # Import here to avoid circular dependency
         from pgadmin.browser.server_groups.servers import ServerModule
         shared_server = ServerModule.get_shared_server(server, sgid)
-        server = ServerModule.get_shared_server_properties(server,
-                                                        shared_server)
+        if shared_server is not None:
+            server = ServerModule.get_shared_server_properties(server,
+                                                               shared_server)
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
     if kwargs.get('password', None) is None:
