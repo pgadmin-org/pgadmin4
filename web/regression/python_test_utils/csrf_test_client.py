@@ -95,7 +95,7 @@ class TestClient(testing.FlaskClient):
         # and make a test request context that has those cookies in it.
         environ_overrides = {
             'wsgi.url_scheme': 'http',
-            'HTTP_HOST':  current_app.config["SERVER_NAME"] or "localhost"
+            'HTTP_HOST': current_app.config["SERVER_NAME"] or "localhost"
         }
         self._add_cookies_to_wsgi(environ_overrides)
 
