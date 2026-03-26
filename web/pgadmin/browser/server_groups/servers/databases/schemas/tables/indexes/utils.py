@@ -314,13 +314,11 @@ def get_reverse_engineered_sql(conn, **kwargs):
     with_header = kwargs.get('with_header', True)
     if_exists_flag = kwargs.get('add_not_exists_clause', False)
     show_sys_obj = kwargs.get('show_sys_objects', False)
-    show_default_values = kwargs.get('show_default_values', True)
 
     SQL = render_template("/".join([template_path, 'properties.sql']),
                           did=did, tid=tid, idx=idx,
                           datlastsysoid=datlastsysoid,
-                          show_sys_objects=show_sys_obj,
-                          show_default_values=show_default_values)
+                          show_sys_objects=show_sys_obj)
 
     status, res = conn.execute_dict(SQL)
     if not status:
