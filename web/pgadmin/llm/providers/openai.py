@@ -142,9 +142,9 @@ class OpenAIClient(LLMClient):
             raise
         except Exception as e:
             raise LLMClientError(LLMError(
-                message=f"Request failed: {str(e)}",
+                message=f"Request failed: {e!s}",
                 provider=self.provider_name
-            ))
+            )) from e
 
     def _chat_responses(
         self,
@@ -165,9 +165,9 @@ class OpenAIClient(LLMClient):
             raise
         except Exception as e:
             raise LLMClientError(LLMError(
-                message=f"Request failed: {str(e)}",
+                message=f"Request failed: {e!s}",
                 provider=self.provider_name
-            ))
+            )) from e
 
     def _should_use_responses_api(self, error: LLMClientError) -> bool:
         """Check if the error indicates we should use the Responses API."""
@@ -400,6 +400,22 @@ class OpenAIClient(LLMClient):
                 retryable=True
             ))
 
+    def _raise_max_tokens_error(self, input_tokens: int):
+        """Raise an error when a response is truncated due to token limit."""
+        raise LLMClientError(LLMError(
+            message=f'Response truncated due to token limit '
+                    f'(input: {input_tokens} tokens). '
+                    f'The request is too large for model '
+                    f'{self._model}. '
+                    f'Try using a model with a larger context '
+                    f'window, or analyze a smaller scope (e.g., a '
+                    f'specific schema instead of the entire '
+                    f'database).',
+            code='max_tokens',
+            provider=self.provider_name,
+            retryable=False
+        ))
+
     def _parse_response(self, data: dict) -> LLMResponse:
         """Parse the Chat Completions API response into an LLMResponse."""
         # Check for API-level errors in the response
@@ -470,20 +486,7 @@ class OpenAIClient(LLMClient):
         # Check for problematic responses
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
-                input_tokens = usage.input_tokens
-                raise LLMClientError(LLMError(
-                    message=f'Response truncated due to token limit '
-                            f'(input: {input_tokens} tokens). '
-                            f'The request is too large for model '
-                            f'{self._model}. '
-                            f'Try using a model with a larger context '
-                            f'window, or analyze a smaller scope (e.g., a '
-                            f'specific schema instead of the entire '
-                            f'database).',
-                    code='max_tokens',
-                    provider=self.provider_name,
-                    retryable=False
-                ))
+                self._raise_max_tokens_error(usage.input_tokens)
             elif finish_reason and finish_reason not in ('stop', 'tool_calls'):
                 raise LLMClientError(LLMError(
                     message=(f'Empty response with finish reason: '
@@ -562,20 +565,7 @@ class OpenAIClient(LLMClient):
         # Check for problematic responses
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
-                input_tokens = usage.input_tokens
-                raise LLMClientError(LLMError(
-                    message=f'Response truncated due to token limit '
-                            f'(input: {input_tokens} tokens). '
-                            f'The request is too large for model '
-                            f'{self._model}. '
-                            f'Try using a model with a larger context '
-                            f'window, or analyze a smaller scope (e.g., a '
-                            f'specific schema instead of the entire '
-                            f'database).',
-                    code='max_tokens',
-                    provider=self.provider_name,
-                    retryable=False
-                ))
+                self._raise_max_tokens_error(usage.input_tokens)
 
         return LLMResponse(
             content=content,
@@ -607,9 +597,9 @@ class OpenAIClient(LLMClient):
                 raise
             except Exception as e:
                 raise LLMClientError(LLMError(
-                    message=f"Streaming request failed: {str(e)}",
+                    message=f"Streaming request failed: {e!s}",
                     provider=self.provider_name
-                ))
+                )) from e
             return
 
         # Try Chat Completions API first
@@ -633,9 +623,9 @@ class OpenAIClient(LLMClient):
                 raise
         except Exception as e:
             raise LLMClientError(LLMError(
-                message=f"Streaming request failed: {str(e)}",
+                message=f"Streaming request failed: {e!s}",
                 provider=self.provider_name
-            ))
+            )) from e
 
     def _process_stream(
         self, payload: dict
