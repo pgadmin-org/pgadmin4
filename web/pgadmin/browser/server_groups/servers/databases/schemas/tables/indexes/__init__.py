@@ -517,8 +517,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, tid=tid, idx=idx,
             datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
-            show_sys_objects=self.blueprint.show_system_objects
-        )
+            show_sys_objects=self.blueprint.show_system_objects)
 
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -724,8 +723,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
                     datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
-                    show_sys_objects=self.blueprint.show_system_objects
-                )
+                    show_sys_objects=self.blueprint.show_system_objects)
 
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -879,8 +877,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn, schema=self.schema, table=self.table, did=did,
             tid=tid, idx=idx, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             add_not_exists_clause=True,
-            show_sys_objects=self.blueprint.show_system_objects
-        )
+            show_sys_objects=self.blueprint.show_system_objects)
 
         return ajax_response(response=SQL)
 
@@ -1010,8 +1007,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
                     datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
-                    show_sys_objects=self.blueprint.show_system_objects
-                )
+                    show_sys_objects=self.blueprint.show_system_objects)
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
                     return internal_server_error(errormsg=res)
