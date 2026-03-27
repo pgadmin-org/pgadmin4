@@ -68,7 +68,13 @@ class OpenAIClient(LLMClient):
         """
         self._api_key = api_key or ''
         self._model = model or DEFAULT_MODEL
-        self._base_url = (api_url or DEFAULT_API_BASE_URL).rstrip('/')
+        base_url = (api_url or DEFAULT_API_BASE_URL).rstrip('/')
+        # Strip known endpoint suffixes in case the user provided a full URL
+        for suffix in ('/chat/completions', '/responses'):
+            if base_url.endswith(suffix):
+                base_url = base_url[:-len(suffix)].rstrip('/')
+                break
+        self._base_url = base_url
         self._use_responses_api = False
 
     @property
@@ -543,14 +549,22 @@ class OpenAIClient(LLMClient):
                     arguments=arguments
                 ))
 
-        # Determine stop reason
+        # Determine stop reason from status and incomplete_details
         status = data.get('status', '')
         if tool_calls:
             stop_reason = StopReason.TOOL_USE
         elif status == 'completed':
             stop_reason = StopReason.END_TURN
         elif status == 'incomplete':
-            stop_reason = StopReason.MAX_TOKENS
+            reason = data.get(
+                'incomplete_details', {}
+            ).get('reason', '')
+            if reason == 'content_filter':
+                stop_reason = StopReason.STOP_SEQUENCE
+            elif reason == 'max_output_tokens':
+                stop_reason = StopReason.MAX_TOKENS
+            else:
+                stop_reason = StopReason.MAX_TOKENS
         else:
             stop_reason = StopReason.UNKNOWN
 
@@ -566,6 +580,13 @@ class OpenAIClient(LLMClient):
         if not content and not tool_calls:
             if stop_reason == StopReason.MAX_TOKENS:
                 self._raise_max_tokens_error(usage.input_tokens)
+            elif stop_reason == StopReason.STOP_SEQUENCE:
+                raise LLMClientError(LLMError(
+                    message='Response blocked by content filter.',
+                    code='content_filter',
+                    provider=self.provider_name,
+                    retryable=False
+                ))
 
         return LLMResponse(
             content=content,
@@ -822,6 +843,8 @@ class OpenAIClient(LLMClient):
         tool_calls_data = {}
         model_name = self._model
         usage = Usage()
+        resp_status = ''
+        resp_incomplete = {}
 
         while True:
             line_bytes = response.readline()
@@ -881,6 +904,8 @@ class OpenAIClient(LLMClient):
                     total_tokens=u.get('total_tokens', 0)
                 )
                 model_name = resp.get('model', model_name)
+                resp_status = resp.get('status', '')
+                resp_incomplete = resp.get('incomplete_details', {})
 
         # Build final response
         content = ''.join(content_parts)
@@ -897,8 +922,16 @@ class OpenAIClient(LLMClient):
                 arguments=arguments
             ))
 
+        # Determine stop reason from final response status
         if tool_calls:
             stop_reason = StopReason.TOOL_USE
+        elif resp_status == 'incomplete':
+            reason = resp_incomplete.get('reason', '') \
+                if resp_incomplete else ''
+            if reason == 'content_filter':
+                stop_reason = StopReason.STOP_SEQUENCE
+            else:
+                stop_reason = StopReason.MAX_TOKENS
         elif content:
             stop_reason = StopReason.END_TURN
         else:
