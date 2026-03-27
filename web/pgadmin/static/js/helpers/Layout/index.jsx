@@ -220,6 +220,10 @@ export class LayoutDocker {
   }
 
   loadLayout(savedLayout) {
+    if (!savedLayout) {
+      // No saved layout - DockLayout already initialized with defaultLayout
+      return;
+    }
     try {
       this.layoutObj.loadLayout(JSON.parse(savedLayout));
       this.addMissingDefaultPanels();
@@ -252,6 +256,22 @@ export class LayoutDocker {
     // Only add non-closable tabs (closable tabs may have been intentionally removed)
     const missingNonClosableTabs = missingTabs.filter(tab => !tab.internal?.closable);
 
+    if (missingNonClosableTabs.length === 0) return;
+
+    // Save the active tab IDs for each panel group before adding missing tabs,
+    // so that newly added tabs don't steal focus from the user's current tab.
+    const savedActiveIds = [];
+    const collectActiveIds = (box) => {
+      box.children.forEach((child) => {
+        if (child.children) {
+          collectActiveIds(child);
+        } else if (child.activeId) {
+          savedActiveIds.push(child.activeId);
+        }
+      });
+    };
+    collectActiveIds(this.layoutObj.getLayout().dockbox);
+
     // Add each missing tab next to a sibling from its original panel group
     missingNonClosableTabs.forEach((tab) => {
       const siblingId = this.findSiblingTab(tab.id, flatDefault, flatCurrent);
@@ -269,6 +289,11 @@ export class LayoutDocker {
           ...tab.internal
         }, this.resetToTabPanel, 'middle');
       }
+    });
+
+    // Restore the original active tabs so newly added tabs don't steal focus
+    savedActiveIds.forEach((activeId) => {
+      this.focus(activeId);
     });
   }
 
