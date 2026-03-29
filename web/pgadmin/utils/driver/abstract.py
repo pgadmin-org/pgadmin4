@@ -114,7 +114,16 @@ class BaseConnection(metaclass=ABCMeta):
 
     * connected()
       - Implement this method to get the status of the connection. It should
-        return True for connected, otherwise False
+        return True for connected, otherwise False.  This is a local check
+        only (e.g. inspecting driver-level state) and may not detect
+        server-side disconnects.  Use connection_ping() when a network-level
+        check is required.
+
+    * connection_ping()
+      - Implement this method to verify the connection is alive by sending a
+        lightweight query (e.g. SELECT 1) to the server.  Returns True if the
+        server responds, False otherwise.  Unlike connected(), this detects
+        stale or half-open TCP connections that were silently dropped.
 
     * reset()
       - Implement this method to reconnect the database server (if possible)
