@@ -484,10 +484,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onLayoutActive);
 
     /* If the tab or window is not visible, applicable for open in new tab */
+    // Track whether this panel was active before the window was hidden,
+    // so only the active instance refreshes on return.
+    let wasActiveBeforeHide = false;
     const onVisibilityChange = function() {
       if(document.hidden) {
+        wasActiveBeforeHide = qtStateRef.current.is_visible;
         setQtStatePartial({is_visible: false});
       } else {
+        if(!wasActiveBeforeHide) return;
         setQtStatePartial({is_visible: true});
         // When the tab becomes visible again after being hidden (e.g. user
         // switched away on Linux Desktop), immediately check the connection
@@ -503,6 +508,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     document.addEventListener('visibilitychange', onVisibilityChange);
     return ()=>{
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      onLayoutActive.cancel();
       if(qtPanelDocker?.eventBus) {
         qtPanelDocker.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onLayoutClosing);
         qtPanelDocker.eventBus.deregisterListener(LAYOUT_EVENTS.ACTIVE, onLayoutActive);
