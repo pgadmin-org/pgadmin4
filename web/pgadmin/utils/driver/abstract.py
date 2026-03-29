@@ -208,6 +208,14 @@ class BaseConnection(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def connection_ping(self):
+        """
+        Check if the connection is actually alive by sending a lightweight
+        query to the server.  Returns True if alive, False otherwise.
+        """
+        pass
+
+    @abstractmethod
     def reset(self):
         pass
 

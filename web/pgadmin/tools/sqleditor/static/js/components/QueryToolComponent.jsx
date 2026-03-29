@@ -168,6 +168,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
   };
   const isDirtyRef = useRef(false); // usefull when conn change.
+  const qtStateRef = useRef(qtState);
   const eventBus = useRef(eventBusObj || (new EventBus()));
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
@@ -477,7 +478,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }, 100));
 
     /* If the tab or window is not visible, applicable for open in new tab */
-    document.addEventListener('visibilitychange', function() {
+    const onVisibilityChange = function() {
       if(document.hidden) {
         setQtStatePartial({is_visible: false});
       } else {
@@ -487,14 +488,18 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         // status.  This ensures a dead connection is detected right away
         // instead of waiting for the next poll interval, which was disabled
         // while the tab was hidden.
-        if(qtState.params?.trans_id && qtState.connected_once) {
-          fetchConnectionStatus(api, qtState.params.trans_id)
+        const {params, connected_once} = qtStateRef.current;
+        if(params?.trans_id && connected_once) {
+          fetchConnectionStatus(api, params.trans_id)
             .then(({data: respData}) => {
               if(respData.data) {
                 setQtStatePartial({
                   connected: true,
                   connection_status: respData.data.status,
                 });
+                if(respData.data.notifies) {
+                  eventBus.current.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, respData.data.notifies);
+                }
               } else {
                 setQtStatePartial({
                   connected: false,
@@ -513,8 +518,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             });
         }
       }
-    });
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return ()=>document.removeEventListener('visibilitychange', onVisibilityChange);
   }, []);
+
+  useEffect(() => { qtStateRef.current = qtState; }, [qtState]);
 
   useEffect(() => usePreferences.subscribe(
     state => {
