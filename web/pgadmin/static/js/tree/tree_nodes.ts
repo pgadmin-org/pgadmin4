@@ -121,12 +121,45 @@ export class ManageTreeNodes {
     let treeData = [];
     if (url) {
       try {
-        const res = await api.get(url);
+        const res = await api.get(url, {timeout: 30000});
         treeData = res.data.data;
       } catch (error) {
         /* react-aspen does not handle reject case */
         console.error(error);
-        pgAdmin.Browser.notifier.error(parseApiError(error)||'Node Load Error...');
+        if (error.response?.status === 503 &&
+            error.response?.data?.info === 'CONNECTION_LOST') {
+          // Connection dropped while idle.  Walk up to the server node
+          // and mark it disconnected, then show a reconnect prompt so
+          // the user can re-establish instead of seeing a silent
+          // spinner.
+          let serverNode = node;
+          while (serverNode) {
+            const d = serverNode.metadata?.data ?? serverNode.data;
+            if (d?._type === 'server') break;
+            serverNode = serverNode.parentNode ?? null;
+          }
+          if (serverNode) {
+            const sData = serverNode.metadata?.data ?? serverNode.data;
+            if (sData) sData.connected = false;
+            pgAdmin.Browser.tree?.addIcon(serverNode, {icon: 'icon-server-not-connected'});
+            pgAdmin.Browser.tree?.close(serverNode);
+          }
+          pgAdmin.Browser.notifier.confirm(
+            gettext('Connection lost'),
+            gettext('The connection to the server has been lost. Would you like to reconnect?'),
+            function() {
+              // Re-open (connect) the server node in the tree which
+              // will trigger the standard connect-to-server flow
+              // including any password prompts.
+              if (serverNode && pgAdmin.Browser.tree) {
+                pgAdmin.Browser.tree.toggle(serverNode);
+              }
+            },
+            function() { /* cancelled */ }
+          );
+        } else {
+          pgAdmin.Browser.notifier.error(parseApiError(error)||'Node Load Error...');
+        }
         return [];
       }
     }

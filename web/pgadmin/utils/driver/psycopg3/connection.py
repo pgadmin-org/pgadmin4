@@ -1413,6 +1413,31 @@ WHERE db.datname = current_database()""")
             self.conn = None
         return False
 
+    def connection_ping(self):
+        """
+        Check if the connection is actually alive by executing a lightweight
+        query.  Unlike connected(), which only inspects local state, this
+        sends traffic to the server and will detect stale / half-open TCP
+        connections that were silently dropped by firewalls or the OS while
+        pgAdmin was idle.
+
+        Returns True if alive, False otherwise.
+        """
+        if not self.connected():
+            return False
+        try:
+            cur = self.conn.cursor()
+            cur.execute("SELECT 1")
+            cur.close()
+            return True
+        except Exception:
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            self.conn = None
+            return False
+
     def _decrypt_password(self, manager):
         """
         Decrypt password

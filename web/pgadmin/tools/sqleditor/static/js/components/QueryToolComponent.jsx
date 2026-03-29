@@ -482,6 +482,36 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         setQtStatePartial({is_visible: false});
       } else {
         setQtStatePartial({is_visible: true});
+        // When the tab becomes visible again after being hidden (e.g. user
+        // switched away on Linux Desktop), immediately check the connection
+        // status.  This ensures a dead connection is detected right away
+        // instead of waiting for the next poll interval, which was disabled
+        // while the tab was hidden.
+        if(qtState.params?.trans_id && qtState.connected_once) {
+          fetchConnectionStatus(api, qtState.params.trans_id)
+            .then(({data: respData}) => {
+              if(respData.data) {
+                setQtStatePartial({
+                  connected: true,
+                  connection_status: respData.data.status,
+                });
+              } else {
+                setQtStatePartial({
+                  connected: false,
+                  connection_status: null,
+                  connection_status_msg: gettext('An unexpected error occurred - ensure you are logged into the application.')
+                });
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              setQtStatePartial({
+                connected: false,
+                connection_status: null,
+                connection_status_msg: parseApiError(error),
+              });
+            });
+        }
       }
     });
   }, []);

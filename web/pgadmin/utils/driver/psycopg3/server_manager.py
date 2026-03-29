@@ -699,6 +699,22 @@ WHERE db.oid = {0}""".format(did))
                 display_dsn_args[key] = orig_value if with_complete_path else \
                     value
 
+        # Enable TCP keepalive so that stale/half-open connections are
+        # detected by the OS within a reasonable time instead of hanging
+        # for the full TCP retransmission timeout (which can be many
+        # minutes).  These are libpq parameters passed through to
+        # setsockopt and only take effect if not already set by the user
+        # in connection_params.
+        keepalive_defaults = {
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 3,
+        }
+        for k, v in keepalive_defaults.items():
+            if k not in dsn_args:
+                dsn_args[k] = v
+
         self.display_connection_string = make_conninfo(**display_dsn_args)
 
         return make_conninfo(**dsn_args)
