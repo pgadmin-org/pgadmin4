@@ -193,23 +193,23 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.CHANGE_EOL, lineSep);
   }, []);
 
-  useInterval(async ()=>{
+  const refreshConnectionStatus = useCallback(async (transId) => {
     try {
-      let {data: respData} = await fetchConnectionStatus(api, qtState.params.trans_id);
+      let {data: respData} = await fetchConnectionStatus(api, transId);
       if(respData.data) {
         setQtStatePartial({
           connected: true,
           connection_status: respData.data.status,
         });
+        if(respData.data.notifies) {
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, respData.data.notifies);
+        }
       } else {
         setQtStatePartial({
           connected: false,
           connection_status: null,
           connection_status_msg: gettext('An unexpected error occurred - ensure you are logged into the application.')
         });
-      }
-      if(respData.data.notifies) {
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, respData.data.notifies);
       }
     } catch (error) {
       console.error(error);
@@ -219,6 +219,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         connection_status_msg: parseApiError(error),
       });
     }
+  }, [api]);
+
+  useInterval(()=>{
+    refreshConnectionStatus(qtState.params.trans_id);
   }, pollTime);
 
 
@@ -454,13 +458,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       forceClose();
     });
 
-    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
+    const onLayoutClosing = (id)=>{
       if(qtPanelId == id) {
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
       }
-    });
+    };
+    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onLayoutClosing);
 
-    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, _.debounce((currentTabId)=>{
+    const onLayoutActive = _.debounce((currentTabId)=>{
       /* Focus the appropriate panel on visible */
       if(qtPanelId == currentTabId) {
         setQtStatePartial({is_visible: true});
@@ -475,7 +480,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       } else {
         setQtStatePartial({is_visible: false});
       }
-    }, 100));
+    }, 100);
+    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onLayoutActive);
 
     /* If the tab or window is not visible, applicable for open in new tab */
     const onVisibilityChange = function() {
@@ -490,37 +496,18 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         // while the tab was hidden.
         const {params, connected_once} = qtStateRef.current;
         if(params?.trans_id && connected_once) {
-          fetchConnectionStatus(api, params.trans_id)
-            .then(({data: respData}) => {
-              if(respData.data) {
-                setQtStatePartial({
-                  connected: true,
-                  connection_status: respData.data.status,
-                });
-                if(respData.data.notifies) {
-                  eventBus.current.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, respData.data.notifies);
-                }
-              } else {
-                setQtStatePartial({
-                  connected: false,
-                  connection_status: null,
-                  connection_status_msg: gettext('An unexpected error occurred - ensure you are logged into the application.')
-                });
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-              setQtStatePartial({
-                connected: false,
-                connection_status: null,
-                connection_status_msg: parseApiError(error),
-              });
-            });
+          refreshConnectionStatus(params.trans_id);
         }
       }
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
-    return ()=>document.removeEventListener('visibilitychange', onVisibilityChange);
+    return ()=>{
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      if(qtPanelDocker?.eventBus) {
+        qtPanelDocker.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onLayoutClosing);
+        qtPanelDocker.eventBus.deregisterListener(LAYOUT_EVENTS.ACTIVE, onLayoutActive);
+      }
+    };
   }, []);
 
   useEffect(() => { qtStateRef.current = qtState; }, [qtState]);
