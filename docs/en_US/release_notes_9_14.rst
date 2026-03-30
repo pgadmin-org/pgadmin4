@@ -35,7 +35,10 @@ Bug fixes
   | `Issue #9279 <https://github.com/pgadmin-org/pgadmin4/issues/9279>`_ -  Fixed an issue where OAuth2 authentication fails with 'object has no attribute' if OAUTH2_AUTO_CREATE_USER is False.
   | `Issue #9392 <https://github.com/pgadmin-org/pgadmin4/issues/9392>`_ -  Ensure that the Geometry Viewer refreshes when re-running queries or switching geometry columns, preventing stale data from being displayed.
   | `Issue #9457 <https://github.com/pgadmin-org/pgadmin4/issues/9457>`_ -  Fixed Process Watcher garbled text on Windows with non-UTF-8 locales.
+  | `Issue #9570 <https://github.com/pgadmin-org/pgadmin4/issues/9570>`_ -  Fixed an issue where ALT+F5 for executing a query in the Query Tool shows a crosshair cursor icon for rectangular selection.
+  | `Issue #9648 <https://github.com/pgadmin-org/pgadmin4/issues/9648>`_ -  Fixed an issue where the default fillfactor value for B-tree indexes was incorrect.
   | `Issue #9694 <https://github.com/pgadmin-org/pgadmin4/issues/9694>`_ -  Fixed an issue where AI Reports are grayed out after setting an API key by auto-selecting the default provider.
+  | `Issue #9696 <https://github.com/pgadmin-org/pgadmin4/issues/9696>`_ -  Fixed an issue where AI Assistant does not notify that No API Key or Provider is Set.
   | `Issue #9702 <https://github.com/pgadmin-org/pgadmin4/issues/9702>`_ -  Fixed misleading AI activity messages that could be mistaken for actual database operations.
   | `Issue #9719 <https://github.com/pgadmin-org/pgadmin4/issues/9719>`_ -  Fixed an issue where AI Reports fail with OpenAI models that do not support the temperature parameter.
   | `Issue #9721 <https://github.com/pgadmin-org/pgadmin4/issues/9721>`_ -  Fixed an issue where permissions page is not completely accessible on full scroll.
@@ -45,3 +48,4 @@ Bug fixes
   | `Issue #9736 <https://github.com/pgadmin-org/pgadmin4/issues/9736>`_ -  Fix an issue where the AI Assistant was not retaining conversation context between messages, with chat history compaction to manage token budgets.
   | `Issue #9740 <https://github.com/pgadmin-org/pgadmin4/issues/9740>`_ -  Fixed an issue where the AI Assistant input textbox sometimes swallows the first character of input.
   | `Issue #9758 <https://github.com/pgadmin-org/pgadmin4/issues/9758>`_ -  Clarify where the LLM API key files should be.
+  | `Issue #9789 <https://github.com/pgadmin-org/pgadmin4/issues/9789>`_ -  Fixed an issue where the Query tool kept prompting for a password when using a shared server.
