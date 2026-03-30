@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 18.0
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 18.2
 
 
 New features
@@ -49,3 +49,4 @@ Bug fixes
   | `Issue #9740 <https://github.com/pgadmin-org/pgadmin4/issues/9740>`_ -  Fixed an issue where the AI Assistant input textbox sometimes swallows the first character of input.
   | `Issue #9758 <https://github.com/pgadmin-org/pgadmin4/issues/9758>`_ -  Clarify where the LLM API key files should be.
   | `Issue #9789 <https://github.com/pgadmin-org/pgadmin4/issues/9789>`_ -  Fixed an issue where the Query tool kept prompting for a password when using a shared server.
+  | `Issue #9795 <https://github.com/pgadmin-org/pgadmin4/issues/9795>`_ -  Support /v1/responses for OpenAI models.
