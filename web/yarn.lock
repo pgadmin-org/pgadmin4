@@ -9962,7 +9962,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.21":
+"lodash-es@npm:^4.17.23":
   version: 4.17.23
   resolution: "lodash-es@npm:4.17.23"
   checksum: 10c0/3150fb6660c14c7a6b5f23bd11597d884b140c0e862a17fdb415aaa5ef7741523182904a6b7929f04e5f60a11edb5a79499eb448734381c99ffb3c4734beeddd
@@ -13018,7 +13018,7 @@ __metadata:
     url-loader: "npm:^4.1.1"
     use-resize-observer: "npm:^9.1.0"
     valid-filename: "npm:^4.0.0"
-    vanilla-jsoneditor: "npm:^3.3.1"
+    vanilla-jsoneditor: "npm:^3.12.0"
     webfonts-loader: "npm:^8.0.1"
     webpack: "npm:^5.103.0"
     webpack-bundle-analyzer: "npm:^5.2.0"
@@ -14930,9 +14930,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vanilla-jsoneditor@npm:^3.3.1":
-  version: 3.11.0
-  resolution: "vanilla-jsoneditor@npm:3.11.0"
+"vanilla-jsoneditor@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "vanilla-jsoneditor@npm:3.12.0"
   dependencies:
     "@codemirror/autocomplete": "npm:^6.18.1"
     "@codemirror/commands": "npm:^6.7.1"
@@ -14955,12 +14955,12 @@ __metadata:
     json-source-map: "npm:^0.6.1"
     jsonpath-plus: "npm:^10.3.0"
     jsonrepair: "npm:^3.0.0"
-    lodash-es: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.23"
     memoize-one: "npm:^6.0.0"
     natural-compare-lite: "npm:^1.4.0"
     svelte: "npm:^5.0.0"
     vanilla-picker: "npm:^2.12.3"
-  checksum: 10c0/3de0110fae4169c6c75e18e97efa4f0e3d0ce4eefab743326b853b14a1e53e62dcd2a7afe622f7fa88682c1fb13b5109455b76da1a337a5dae6b26f7da5d2f12
+  checksum: 10c0/ce1b30bf43e5ea0bfd73aeb565977a4b10f3be1450d63e3aec55fc0dcf235f025ef94ce13fea6c8d679a3c2e101ebc77def52f1ffd31436c350e94c7fbfcecc1
   languageName: node
   linkType: hard
 
