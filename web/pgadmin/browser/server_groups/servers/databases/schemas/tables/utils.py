@@ -757,8 +757,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 self.conn, schema=schema, table=table, did=did, tid=tid,
                 idx=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=json_resp,
-                add_not_exists_clause=add_not_exists_clause
-            )
+                add_not_exists_clause=add_not_exists_clause)
             index_sql = "\n" + index_sql
 
             # Add into main sql
@@ -1002,8 +1001,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 partition_sql_arr.append(partition_main_sql)
 
                 # Get Reverse engineered sql for index
-                self._get_resql_for_index(did, row['oid'], partition_sql_arr,
-                                          json_resp, schema, table)
+                self._get_resql_for_index(
+                    did, row['oid'], partition_sql_arr,
+                    json_resp, schema, table)
 
                 # Get Reverse engineered sql for ROW SECURITY POLICY
                 self._get_resql_for_row_security_policy(scid, row['oid'],

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: pgadmin4-helm
-version: 9.13.0
-appVersion: 9.13.0
+version: 9.14.0
+appVersion: 9.14.0
 description: pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 home: https://pgadmin.org
 sources: ["https://github.com/pgadmin-org/pgadmin4/tree/master/helm"]

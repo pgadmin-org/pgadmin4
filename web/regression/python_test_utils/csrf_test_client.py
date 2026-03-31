@@ -93,8 +93,10 @@ class TestClient(testing.FlaskClient):
         # this test client, such as the secure cookie that
         # powers `flask.session`,
         # and make a test request context that has those cookies in it.
+        server_name = self.app.config.get("SERVER_NAME") or "localhost"
         environ_overrides = {
-            'wsgi.url_scheme': ''
+            'wsgi.url_scheme': 'http',
+            'HTTP_HOST': server_name
         }
         self._add_cookies_to_wsgi(environ_overrides)
 

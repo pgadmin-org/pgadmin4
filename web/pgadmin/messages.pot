@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-26 18:55+0530\n"
+"POT-Creation-Date: 2026-03-26 17:05+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,12 +219,61 @@ msgstr ""
 msgid "Could not find the specified user."
 msgstr ""
 
+#: pgadmin/authenticate/oauth2.py:440
+msgid "No OAuth2 provider available."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:471
+msgid "No profile data found from OIDC provider."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:477
+msgid "No profile data found."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:487
+msgid ""
+"Could not extract username from OIDC claims. Please ensure your OIDC "
+"provider returns standard claims (email, preferred_username, or sub)."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:493
+msgid ""
+"An email id or OAUTH2_USERNAME_CLAIM is required to login into pgAdmin. "
+"Please update your OAuth2 profile for email id or set "
+"OAUTH2_USERNAME_CLAIM config parameter."
+msgstr ""
+
 #: pgadmin/authenticate/oauth2.py:671
 msgid "No OAuth2 provider selected."
 msgstr ""
 
 #: pgadmin/authenticate/oauth2.py:676
 msgid "Please set the configuration parameters properly."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:699
+msgid "No Email/Username found. Please contact your administrator."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:704
+msgid "Additional claim config is None, no check to do."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:708
+msgid "Additional claim check config is not a dict."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:711
+msgid "Additional claim check config dict is empty."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:723
+msgid "Claim match found. Authorized access."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:725
+msgid "No match was found."
 msgstr ""
 
 #: pgadmin/authenticate/webserver.py:74
@@ -433,7 +482,7 @@ msgstr ""
 msgid "Nodes"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:765
+#: pgadmin/browser/__init__.py:766
 #, python-brace-format
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
@@ -441,26 +490,26 @@ msgid ""
 "correctly."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:791
+#: pgadmin/browser/__init__.py:792
 msgid "Incorrect master password"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:837
+#: pgadmin/browser/__init__.py:838
 msgid "Master password cannot be empty"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:921
+#: pgadmin/browser/__init__.py:922
 msgid "pgAdmin user password changed successfully"
 msgstr ""
 
-#: pgadmin/browser/__init__.py:968
+#: pgadmin/browser/__init__.py:969
 #, python-brace-format
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:1080
+#: pgadmin/browser/__init__.py:1081
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -730,8 +779,8 @@ msgstr ""
 #: pgadmin/browser/register_browser_preferences.py:456
 #: pgadmin/browser/static/js/collection.js:57
 #: pgadmin/browser/static/js/node.js:215
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:206
-#: pgadmin/tools/sqleditor/__init__.py:88
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:235
+#: pgadmin/tools/sqleditor/__init__.py:92
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:103
 #: pgadmin/tools/user_management/PgAdminPermissions.py:57
 msgid "Query Tool"
@@ -1098,9 +1147,9 @@ msgstr ""
 #: pgadmin/browser/utils.py:445 pgadmin/static/js/utils.js:434
 #: pgadmin/tools/backup/__init__.py:587
 #: pgadmin/tools/grant_wizard/__init__.py:101
-#: pgadmin/tools/sqleditor/__init__.py:924
-#: pgadmin/tools/sqleditor/__init__.py:1098
-#: pgadmin/tools/sqleditor/__init__.py:1544 pgadmin/utils/exception.py:37
+#: pgadmin/tools/sqleditor/__init__.py:929
+#: pgadmin/tools/sqleditor/__init__.py:1103
+#: pgadmin/tools/sqleditor/__init__.py:1549 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr ""
 
@@ -1296,7 +1345,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1671
 #: pgadmin/tools/schema_diff/__init__.py:374
-#: pgadmin/tools/sqleditor/__init__.py:2593
+#: pgadmin/tools/sqleditor/__init__.py:2658
 msgid "Server connected."
 msgstr ""
 
@@ -2492,6 +2541,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:98
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:99
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:151
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:381
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:501
 msgid "Code"
 msgstr ""
 
@@ -2807,7 +2858,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:67
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:76
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:82
-#: pgadmin/llm/static/js/ai_tools.js:62 pgadmin/llm/static/js/ai_tools.js:81
+#: pgadmin/llm/static/js/ai_tools.js:68 pgadmin/llm/static/js/ai_tools.js:87
 msgid "Security"
 msgstr ""
 
@@ -7294,8 +7345,8 @@ msgid "Could not find the given server"
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2338
-#: pgadmin/llm/static/js/ai_tools.js:247 pgadmin/llm/static/js/ai_tools.js:297
-#: pgadmin/llm/static/js/ai_tools.js:347 pgadmin/tools/backup/__init__.py:450
+#: pgadmin/llm/static/js/ai_tools.js:257 pgadmin/llm/static/js/ai_tools.js:307
+#: pgadmin/llm/static/js/ai_tools.js:357 pgadmin/tools/backup/__init__.py:450
 #: pgadmin/tools/maintenance/__init__.py:193
 #: pgadmin/tools/restore/__init__.py:200
 msgid "Please connect to the server first."
@@ -7527,7 +7578,7 @@ msgstr ""
 #: pgadmin/browser/static/js/node.js:621
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:918
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:329
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:327
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:356
 #: pgadmin/static/js/Dialogs/ConfirmSaveContent.jsx:18
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:111
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:117
@@ -10996,7 +11047,7 @@ msgid "System"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:323
-#: pgadmin/static/js/Explain/AIInsights.jsx:980
+#: pgadmin/static/js/Explain/AIInsights.jsx:965
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:56
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:679
 msgid "Summary"
@@ -11785,163 +11836,188 @@ msgid ""
 " major.minor version number."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:48 pgadmin/utils/constants.py:35
+#: pgadmin/llm/__init__.py:52 pgadmin/utils/constants.py:35
 msgid "AI"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:52
+#: pgadmin/llm/__init__.py:56
 msgid "None (Disabled)"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:53 pgadmin/llm/__init__.py:106
-#: pgadmin/llm/__init__.py:120
+#: pgadmin/llm/__init__.py:57 pgadmin/llm/__init__.py:111
+#: pgadmin/llm/__init__.py:123 pgadmin/llm/__init__.py:141
 msgid "Anthropic"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:54 pgadmin/llm/__init__.py:149
-#: pgadmin/llm/__init__.py:163
+#: pgadmin/llm/__init__.py:58 pgadmin/llm/__init__.py:172
+#: pgadmin/llm/__init__.py:187 pgadmin/llm/__init__.py:205
 msgid "OpenAI"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:55 pgadmin/llm/__init__.py:192
-#: pgadmin/llm/__init__.py:206
+#: pgadmin/llm/__init__.py:59 pgadmin/llm/__init__.py:235
+#: pgadmin/llm/__init__.py:249
 msgid "Ollama"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:56 pgadmin/llm/__init__.py:235
-#: pgadmin/llm/__init__.py:250
+#: pgadmin/llm/__init__.py:60 pgadmin/llm/__init__.py:278
+#: pgadmin/llm/__init__.py:295
 msgid "Docker Model Runner"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:64
+#: pgadmin/llm/__init__.py:68
 msgid "Default Provider"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:66 pgadmin/llm/__init__.py:85
+#: pgadmin/llm/__init__.py:70 pgadmin/llm/__init__.py:89
 msgid "AI Configuration"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:69
+#: pgadmin/llm/__init__.py:73
 msgid ""
 "The LLM provider to use for AI features. Select \"None (Disabled)\" to "
 "disable AI features. Note: AI features must also be enabled in the server"
 " configuration (LLM_ENABLED) for this setting to take effect."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:83
+#: pgadmin/llm/__init__.py:87
 msgid "Max Tool Iterations"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:89
+#: pgadmin/llm/__init__.py:93
 msgid ""
 "Maximum number of tool call iterations allowed during an AI conversation."
 " Higher values allow more complex queries but may consume more resources."
 " Default is 20."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:104 pgadmin/llm/__init__.py:147
+#: pgadmin/llm/__init__.py:109 pgadmin/llm/__init__.py:170
+#: pgadmin/llm/__init__.py:233 pgadmin/llm/__init__.py:276
+msgid "API URL"
+msgstr ""
+
+#: pgadmin/llm/__init__.py:113
+msgid ""
+"URL for the Anthropic API endpoint. Leave empty to use the default "
+"(https://api.anthropic.com/v1). Set a custom URL to use an Anthropic-"
+"compatible API provider."
+msgstr ""
+
+#: pgadmin/llm/__init__.py:121 pgadmin/llm/__init__.py:185
 msgid "API Key File"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:108
+#: pgadmin/llm/__init__.py:125
 msgid ""
-"Path to a file containing your Anthropic API key. The file should contain"
-" only the API key."
+"Path to a file containing your Anthropic API key. This path must be on "
+"the server hosting pgAdmin, e.g. inside the container when using Docker. "
+"The file should contain only the API key. The API key may be optional "
+"when using a custom API URL with a provider that does not require "
+"authentication."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:118 pgadmin/llm/__init__.py:161
-#: pgadmin/llm/__init__.py:204 pgadmin/llm/__init__.py:248
+#: pgadmin/llm/__init__.py:139 pgadmin/llm/__init__.py:203
+#: pgadmin/llm/__init__.py:247 pgadmin/llm/__init__.py:293
 msgid "Model"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:123
+#: pgadmin/llm/__init__.py:144
 msgid ""
 "The Anthropic model to use. Models are loaded dynamically from your API "
 "key. You can also type a custom model name. Leave empty to use the "
 "default (Claude Sonnet 4)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:131 pgadmin/llm/__init__.py:174
-#: pgadmin/llm/__init__.py:217 pgadmin/llm/__init__.py:261
+#: pgadmin/llm/__init__.py:152 pgadmin/llm/__init__.py:216
+#: pgadmin/llm/__init__.py:260 pgadmin/llm/__init__.py:306
 msgid "Select or type a model name..."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:151
+#: pgadmin/llm/__init__.py:174
 msgid ""
-"Path to a file containing your OpenAI API key. The file should contain "
-"only the API key."
+"URL for the OpenAI API endpoint. Leave empty to use the default "
+"(https://api.openai.com/v1). Set a custom URL to use any OpenAI-"
+"compatible API provider such as LiteLLM, LM Studio, or EXO. The URL "
+"should include the /v1 path prefix if required by your provider (e.g., "
+"http://localhost:1234/v1)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:166
+#: pgadmin/llm/__init__.py:189
+msgid ""
+"Path to a file containing your OpenAI API key. This path must be on the "
+"server hosting pgAdmin, e.g. inside the container when using Docker. The "
+"file should contain only the API key. The API key may be optional when "
+"using a custom API URL with a provider that does not require "
+"authentication."
+msgstr ""
+
+#: pgadmin/llm/__init__.py:208
 msgid ""
 "The OpenAI model to use. Models are loaded dynamically from your API key."
 " You can also type a custom model name. Leave empty to use the default "
 "(GPT-4o)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:190 pgadmin/llm/__init__.py:233
-msgid "API URL"
-msgstr ""
-
-#: pgadmin/llm/__init__.py:194
+#: pgadmin/llm/__init__.py:237
 msgid "URL for the Ollama API endpoint (e.g., http://localhost:11434)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:209
+#: pgadmin/llm/__init__.py:252
 msgid ""
 "The Ollama model to use. Models are loaded dynamically from your Ollama "
 "server. You can also type a custom model name. Leave empty to use the "
 "default (llama3.2)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:237
+#: pgadmin/llm/__init__.py:280
 msgid ""
 "URL for the Docker Model Runner API endpoint (e.g., "
-"http://localhost:12434). Available in Docker Desktop 4.40 and later."
+"http://localhost:12434). Available in Docker Desktop 4.40 and later. Tip:"
+" You can also use the OpenAI provider with a custom API URL for any "
+"OpenAI-compatible endpoint, including Docker Model Runner."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:253
+#: pgadmin/llm/__init__.py:298
 msgid ""
 "The Docker model to use. Models are loaded dynamically from your Docker "
 "Model Runner. You can also type a custom model name. Leave empty to use "
 "the default (ai/qwen3-coder)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:817 pgadmin/llm/__init__.py:883
-#: pgadmin/llm/__init__.py:1068 pgadmin/llm/__init__.py:1136
-#: pgadmin/llm/__init__.py:1196 pgadmin/llm/__init__.py:1276
-#: pgadmin/llm/__init__.py:1348 pgadmin/llm/__init__.py:1414
-#: pgadmin/llm/__init__.py:1472 pgadmin/llm/__init__.py:1540
-#: pgadmin/llm/__init__.py:1600 pgadmin/llm/__init__.py:1668
-#: pgadmin/llm/__init__.py:1728 pgadmin/llm/__init__.py:1808
+#: pgadmin/llm/__init__.py:889 pgadmin/llm/__init__.py:955
+#: pgadmin/llm/__init__.py:1140 pgadmin/llm/__init__.py:1208
+#: pgadmin/llm/__init__.py:1268 pgadmin/llm/__init__.py:1348
+#: pgadmin/llm/__init__.py:1420 pgadmin/llm/__init__.py:1486
+#: pgadmin/llm/__init__.py:1544 pgadmin/llm/__init__.py:1612
+#: pgadmin/llm/__init__.py:1672 pgadmin/llm/__init__.py:1740
+#: pgadmin/llm/__init__.py:1800 pgadmin/llm/__init__.py:1880
 msgid ""
 "LLM is not configured. Please configure an LLM provider in Preferences > "
 "AI."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:831 pgadmin/llm/__init__.py:896
-#: pgadmin/llm/__init__.py:1362 pgadmin/llm/__init__.py:1427
+#: pgadmin/llm/__init__.py:903 pgadmin/llm/__init__.py:968
+#: pgadmin/llm/__init__.py:1434 pgadmin/llm/__init__.py:1499
 msgid "Server is not connected."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:858 pgadmin/llm/__init__.py:1111
-#: pgadmin/llm/__init__.py:1251 pgadmin/llm/__init__.py:1389
-#: pgadmin/llm/__init__.py:1515 pgadmin/llm/__init__.py:1643
-#: pgadmin/llm/__init__.py:1783 pgadmin/llm/reports/generator.py:160
+#: pgadmin/llm/__init__.py:930 pgadmin/llm/__init__.py:1183
+#: pgadmin/llm/__init__.py:1323 pgadmin/llm/__init__.py:1461
+#: pgadmin/llm/__init__.py:1587 pgadmin/llm/__init__.py:1715
+#: pgadmin/llm/__init__.py:1855 pgadmin/llm/reports/generator.py:160
 #: pgadmin/llm/reports/generator.py:225
 msgid "Failed to generate report: "
 msgstr ""
 
-#: pgadmin/llm/__init__.py:1082 pgadmin/llm/__init__.py:1149
-#: pgadmin/llm/__init__.py:1210 pgadmin/llm/__init__.py:1289
-#: pgadmin/llm/__init__.py:1486 pgadmin/llm/__init__.py:1553
-#: pgadmin/llm/__init__.py:1614 pgadmin/llm/__init__.py:1681
-#: pgadmin/llm/__init__.py:1742 pgadmin/llm/__init__.py:1821
+#: pgadmin/llm/__init__.py:1154 pgadmin/llm/__init__.py:1221
+#: pgadmin/llm/__init__.py:1282 pgadmin/llm/__init__.py:1361
+#: pgadmin/llm/__init__.py:1558 pgadmin/llm/__init__.py:1625
+#: pgadmin/llm/__init__.py:1686 pgadmin/llm/__init__.py:1753
+#: pgadmin/llm/__init__.py:1814 pgadmin/llm/__init__.py:1893
 msgid "Database is not connected."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:1219 pgadmin/llm/__init__.py:1298
-#: pgadmin/llm/__init__.py:1751 pgadmin/llm/__init__.py:1830
+#: pgadmin/llm/__init__.py:1291 pgadmin/llm/__init__.py:1370
+#: pgadmin/llm/__init__.py:1823 pgadmin/llm/__init__.py:1902
 msgid "Schema not found."
 msgstr ""
 
@@ -12037,38 +12113,38 @@ msgstr ""
 msgid "Starting..."
 msgstr ""
 
-#: pgadmin/llm/static/js/AIReport.jsx:569 pgadmin/llm/static/js/ai_tools.js:385
-#: pgadmin/llm/static/js/ai_tools.js:394 pgadmin/llm/static/js/ai_tools.js:420
-#: pgadmin/llm/static/js/ai_tools.js:462
+#: pgadmin/llm/static/js/AIReport.jsx:569 pgadmin/llm/static/js/ai_tools.js:395
+#: pgadmin/llm/static/js/ai_tools.js:404 pgadmin/llm/static/js/ai_tools.js:430
+#: pgadmin/llm/static/js/ai_tools.js:472
 msgid "Report"
 msgstr ""
 
 #: pgadmin/llm/static/js/AIReport.jsx:634
-#: pgadmin/static/js/Explain/AIInsights.jsx:765
-#: pgadmin/static/js/Explain/AIInsights.jsx:906
+#: pgadmin/static/js/Explain/AIInsights.jsx:750
+#: pgadmin/static/js/Explain/AIInsights.jsx:891
 #: pgadmin/tools/debugger/__init__.py:80
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:183
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:778
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1206
 msgid "Stop"
 msgstr ""
 
 #: pgadmin/llm/static/js/AIReport.jsx:641
 #: pgadmin/llm/static/js/SecurityReport.jsx:333
-#: pgadmin/static/js/Explain/AIInsights.jsx:772
-#: pgadmin/static/js/Explain/AIInsights.jsx:812
-#: pgadmin/static/js/Explain/AIInsights.jsx:912
-#: pgadmin/static/js/Explain/AIInsights.jsx:963
+#: pgadmin/static/js/Explain/AIInsights.jsx:757
+#: pgadmin/static/js/Explain/AIInsights.jsx:797
+#: pgadmin/static/js/Explain/AIInsights.jsx:897
+#: pgadmin/static/js/Explain/AIInsights.jsx:948
 msgid "Regenerate"
 msgstr ""
 
 #: pgadmin/llm/static/js/AIReport.jsx:648
 #: pgadmin/llm/static/js/SecurityReport.jsx:340
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:806
-#: pgadmin/static/js/Explain/AIInsights.jsx:779
-#: pgadmin/static/js/Explain/AIInsights.jsx:819
-#: pgadmin/static/js/Explain/AIInsights.jsx:861
-#: pgadmin/static/js/Explain/AIInsights.jsx:919
-#: pgadmin/static/js/Explain/AIInsights.jsx:969
+#: pgadmin/static/js/Explain/AIInsights.jsx:764
+#: pgadmin/static/js/Explain/AIInsights.jsx:804
+#: pgadmin/static/js/Explain/AIInsights.jsx:846
+#: pgadmin/static/js/Explain/AIInsights.jsx:904
+#: pgadmin/static/js/Explain/AIInsights.jsx:954
 #: pgadmin/static/js/Explain/Graphical.jsx:429
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:440
 msgid "Download"
@@ -12100,87 +12176,87 @@ msgstr ""
 msgid "Click \"Generate\" to create a security report for this server."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:45
+#: pgadmin/llm/static/js/ai_tools.js:51
 #: pgadmin/tools/user_management/PgAdminPermissions.py:117
 msgid "AI Reports"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:66 pgadmin/llm/static/js/ai_tools.js:240
-#: pgadmin/llm/static/js/ai_tools.js:255
+#: pgadmin/llm/static/js/ai_tools.js:72 pgadmin/llm/static/js/ai_tools.js:250
+#: pgadmin/llm/static/js/ai_tools.js:265
 msgid "Please select a server, database, or schema."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:98 pgadmin/llm/static/js/ai_tools.js:117
+#: pgadmin/llm/static/js/ai_tools.js:104 pgadmin/llm/static/js/ai_tools.js:123
 msgid "Performance"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:102 pgadmin/llm/static/js/ai_tools.js:290
-#: pgadmin/llm/static/js/ai_tools.js:305
+#: pgadmin/llm/static/js/ai_tools.js:108 pgadmin/llm/static/js/ai_tools.js:300
+#: pgadmin/llm/static/js/ai_tools.js:315
 msgid "Please select a server or database."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:134 pgadmin/llm/static/js/ai_tools.js:153
+#: pgadmin/llm/static/js/ai_tools.js:140 pgadmin/llm/static/js/ai_tools.js:159
 msgid "Design"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:138 pgadmin/llm/static/js/ai_tools.js:340
-#: pgadmin/llm/static/js/ai_tools.js:355
+#: pgadmin/llm/static/js/ai_tools.js:144 pgadmin/llm/static/js/ai_tools.js:350
+#: pgadmin/llm/static/js/ai_tools.js:365
 msgid "Please select a database or schema."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:196
+#: pgadmin/llm/static/js/ai_tools.js:206
 msgid "Checking AI configuration..."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:205
+#: pgadmin/llm/static/js/ai_tools.js:215
 msgid "AI features are disabled in the server configuration."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:215
+#: pgadmin/llm/static/js/ai_tools.js:225
 msgid ""
 "Please configure an LLM provider in Preferences > AI to enable this "
 "feature."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:263 pgadmin/llm/static/js/ai_tools.js:313
-#: pgadmin/llm/static/js/ai_tools.js:362
+#: pgadmin/llm/static/js/ai_tools.js:273 pgadmin/llm/static/js/ai_tools.js:323
+#: pgadmin/llm/static/js/ai_tools.js:372
 msgid "Please connect to the database first."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:386
+#: pgadmin/llm/static/js/ai_tools.js:396
 msgid "Please select a valid node."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:395
+#: pgadmin/llm/static/js/ai_tools.js:405
 msgid "Please select a valid node for this report type."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:421
+#: pgadmin/llm/static/js/ai_tools.js:431
 msgid "Unable to open the report panel."
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:453
+#: pgadmin/llm/static/js/ai_tools.js:463
 msgid "Security Report"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:456
+#: pgadmin/llm/static/js/ai_tools.js:466
 msgid "Performance Report"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:459
+#: pgadmin/llm/static/js/ai_tools.js:469
 msgid "Design Review"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:468 pgadmin/llm/static/js/ai_tools.js:472
+#: pgadmin/llm/static/js/ai_tools.js:478 pgadmin/llm/static/js/ai_tools.js:482
 msgid "on"
 msgstr ""
 
-#: pgadmin/llm/static/js/ai_tools.js:471
+#: pgadmin/llm/static/js/ai_tools.js:481
 msgid "in"
 msgstr ""
 
 #: pgadmin/misc/__init__.py:44
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:215
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:244
 #: pgadmin/tools/backup/static/js/backup.ui.js:371
 #: pgadmin/tools/backup/static/js/backup.ui.js:378
 #: pgadmin/tools/backup/static/js/backup.ui.js:385
@@ -12274,7 +12350,17 @@ msgid ""
 "you to choose the download location"
 msgstr ""
 
-#: pgadmin/misc/__init__.py:340
+#: pgadmin/misc/__init__.py:171
+msgid "Enable binary data download?"
+msgstr ""
+
+#: pgadmin/misc/__init__.py:175
+msgid ""
+"If set to True, binary data can be downloaded from the result grid. The "
+"default is False to prevent excessive memory usage on the server."
+msgstr ""
+
+#: pgadmin/misc/__init__.py:352
 msgid "Invalid binary path."
 msgstr ""
 
@@ -13461,7 +13547,7 @@ msgid "All Files"
 msgstr ""
 
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:146
-#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:171
+#: pgadmin/misc/file_manager/static/js/components/ListView.jsx:173
 msgid "No files/folders found"
 msgstr ""
 
@@ -13488,7 +13574,7 @@ msgstr ""
 
 #: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:87
 #: pgadmin/tools/schema_diff/__init__.py:117
-#: pgadmin/tools/sqleditor/__init__.py:177
+#: pgadmin/tools/sqleditor/__init__.py:182
 msgid "This URL cannot be requested directly."
 msgstr ""
 
@@ -13663,7 +13749,7 @@ msgid "Save"
 msgstr ""
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:370
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:292
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:321
 msgid "Reset all preferences"
 msgstr ""
 
@@ -13679,25 +13765,25 @@ msgid ""
 "have a path specified."
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:206
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:235
 #: pgadmin/utils/constants.py:28
 msgid "Results grid"
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:215
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:244
 #: pgadmin/utils/constants.py:33
 msgid "User Interface"
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:311
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:340
 msgid "Failed to reset preferences."
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:330
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:359
 msgid "Save & Reload"
 msgstr ""
 
-#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:333
+#: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:362
 msgid "Save & Reload Later"
 msgstr ""
 
@@ -13794,6 +13880,134 @@ msgstr ""
 #: pgadmin/static/js/ToolErrorView.jsx:27
 #, python-brace-format
 msgid "An error occurred while opening the tool: ${error}"
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:15
+msgid "Consulting the elephant..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:16
+msgid "Joining the herds..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:17
+msgid "Querying the watering hole..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:18
+msgid "Rolling back the peanuts..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:19
+msgid "Trumpeting for answers..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:20
+msgid "Herding the elephants..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:21
+msgid "Foraging for ideas..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:22
+msgid "Pondering pachyderm thoughts..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:23
+msgid "Charging through the tall grass..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:24
+msgid "Flapping those big ears..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:25
+msgid "Stomping through the jungle..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:26
+msgid "Swishing the trunk..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:27
+msgid "Calling the herd..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:28
+msgid "Splashing in the watering hole..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:29
+msgid "Following the elephant trail..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:30
+msgid "Munching on some peanuts..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:31
+msgid "Doing a trunk stand..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:32
+msgid "Remembering everything..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:33
+msgid "Migrating across the plains..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:34
+msgid "Shaking off the dust..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:35
+msgid "Tiptoeing through the tulips..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:36
+msgid "Taking a mud bath..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:37
+msgid "Polishing the tusks..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:38
+msgid "Stretching the trunk..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:39
+msgid "Packing the trunk..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:40
+msgid "Wading through the river..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:41
+msgid "Gathering the herd..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:42
+msgid "Tromping through the underbrush..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:43
+msgid "Listening with big ears..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:44
+msgid "Raising the trunk in triumph..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:45
+msgid "Thundering across the savanna..."
+msgstr ""
+
+#: pgadmin/static/js/ai_thinking_messages.js:46
+msgid "Napping under the baobab tree..."
 msgstr ""
 
 #: pgadmin/static/js/api_instance.js:48 pgadmin/static/js/socket_instance.js:50
@@ -14041,90 +14255,58 @@ msgstr ""
 msgid "Rename Tab"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:136
-#: pgadmin/tools/sqleditor/__init__.py:3025
-msgid "Analyzing query plan..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:137
-msgid "Examining node costs..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:138
-msgid "Looking for sequential scans..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:139
-msgid "Checking index usage..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:140
-msgid "Evaluating join strategies..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:141
-msgid "Identifying bottlenecks..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:142
-msgid "Calculating row estimates..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:143
-msgid "Reviewing execution times..."
-msgstr ""
-
-#: pgadmin/static/js/Explain/AIInsights.jsx:246
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:206
+#: pgadmin/static/js/Explain/AIInsights.jsx:231
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:335
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:398
 msgid "Copy to clipboard"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:254
+#: pgadmin/static/js/Explain/AIInsights.jsx:239
 msgid "Insert into editor"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:741
+#: pgadmin/static/js/Explain/AIInsights.jsx:726
 msgid "Run EXPLAIN to see AI-powered analysis."
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:752
-#: pgadmin/static/js/Explain/AIInsights.jsx:799
-#: pgadmin/static/js/Explain/AIInsights.jsx:841
-#: pgadmin/static/js/Explain/AIInsights.jsx:892
-#: pgadmin/static/js/Explain/AIInsights.jsx:950
+#: pgadmin/static/js/Explain/AIInsights.jsx:737
+#: pgadmin/static/js/Explain/AIInsights.jsx:784
+#: pgadmin/static/js/Explain/AIInsights.jsx:826
+#: pgadmin/static/js/Explain/AIInsights.jsx:877
+#: pgadmin/static/js/Explain/AIInsights.jsx:935
 #: pgadmin/static/js/Explain/index.jsx:578
 msgid "AI Insights"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:854
+#: pgadmin/static/js/Explain/AIInsights.jsx:839
 msgid "Analyze"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:878
+#: pgadmin/static/js/Explain/AIInsights.jsx:863
 msgid "Click Analyze to get AI-powered insights on your query plan"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:936
+#: pgadmin/static/js/Explain/AIInsights.jsx:921
 msgid "Analysis stopped. Click Regenerate or re-run EXPLAIN to try again."
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:993
+#: pgadmin/static/js/Explain/AIInsights.jsx:978
 msgid "Performance Bottlenecks"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:1013
+#: pgadmin/static/js/Explain/AIInsights.jsx:998
 msgid "Recommendations"
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:1044
+#: pgadmin/static/js/Explain/AIInsights.jsx:1029
 msgid "No significant performance issues detected."
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:1050
+#: pgadmin/static/js/Explain/AIInsights.jsx:1035
 msgid "The query plan appears to be well-optimized."
 msgstr ""
 
-#: pgadmin/static/js/Explain/AIInsights.jsx:1058
+#: pgadmin/static/js/Explain/AIInsights.jsx:1043
 msgid ""
 "AI analysis is advisory. Always verify recommendations before applying "
 "them to production."
@@ -14277,7 +14459,7 @@ msgstr ""
 msgid "Analysis"
 msgstr ""
 
-#: pgadmin/static/js/PgTreeView/index.jsx:144
+#: pgadmin/static/js/PgTreeView/index.jsx:185
 msgid "No objects are found to display"
 msgstr ""
 
@@ -14437,7 +14619,7 @@ msgstr ""
 
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:68
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:93
-#: pgadmin/static/js/components/FormComponents.jsx:494
+#: pgadmin/static/js/components/FormComponents.jsx:499
 msgid "Validate"
 msgstr ""
 
@@ -14458,28 +14640,28 @@ msgstr ""
 msgid "No options"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:491
+#: pgadmin/static/js/components/FormComponents.jsx:496
 msgid "Select a file"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:984
-#: pgadmin/static/js/components/FormComponents.jsx:1011
+#: pgadmin/static/js/components/FormComponents.jsx:989
+#: pgadmin/static/js/components/FormComponents.jsx:1016
 msgid "<Select All>"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1016
+#: pgadmin/static/js/components/FormComponents.jsx:1021
 msgid "Select an item..."
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1094
+#: pgadmin/static/js/components/FormComponents.jsx:1099
 msgid "Select the color"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1314
+#: pgadmin/static/js/components/FormComponents.jsx:1319
 msgid "Close Message"
 msgstr ""
 
-#: pgadmin/static/js/components/FormComponents.jsx:1368
+#: pgadmin/static/js/components/FormComponents.jsx:1373
 msgid "Loading"
 msgstr ""
 
@@ -14511,15 +14693,15 @@ msgstr ""
 msgid "(in minutes)"
 msgstr ""
 
-#: pgadmin/static/js/components/SelectRefresh.jsx:50
+#: pgadmin/static/js/components/SelectRefresh.jsx:49
 msgid "Refresh models"
 msgstr ""
 
-#: pgadmin/static/js/components/SelectRefresh.jsx:119
+#: pgadmin/static/js/components/SelectRefresh.jsx:136
 msgid "Failed to refresh models"
 msgstr ""
 
-#: pgadmin/static/js/components/SelectRefresh.jsx:134
+#: pgadmin/static/js/components/SelectRefresh.jsx:151
 msgid "Failed to refresh options"
 msgstr ""
 
@@ -14581,7 +14763,7 @@ msgid "Connection Lost"
 msgstr ""
 
 #: pgadmin/static/js/helpers/withColorPicker.js:27
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:706
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1131
 msgid "Clear"
 msgstr ""
 
@@ -15728,8 +15910,8 @@ msgstr ""
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:113
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:335
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:964
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1164
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:991
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1200
 msgid "Unsaved changes"
 msgstr ""
 
@@ -16917,57 +17099,73 @@ msgstr ""
 msgid "Search Objects - "
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:75
+#: pgadmin/tools/sqleditor/__init__.py:79
 msgid "Transaction status check failed."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:93
+#: pgadmin/tools/sqleditor/__init__.py:97
 msgid "Query tool"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:1107
+#: pgadmin/tools/sqleditor/__init__.py:1112
 msgid "******* Error *******"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:1526
+#: pgadmin/tools/sqleditor/__init__.py:1531
 msgid "No primary key found for this object, so unable to save records."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:1865
+#: pgadmin/tools/sqleditor/__init__.py:1870
 #: pgadmin/tools/sqleditor/utils/query_tool_connection_check.py:67
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:115
 msgid "Either transaction object or session object not found."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2107
+#: pgadmin/tools/sqleditor/__init__.py:2112
 msgid "Could not find the required parameter (query)."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2788
-#: pgadmin/tools/sqleditor/__init__.py:2993
+#: pgadmin/tools/sqleditor/__init__.py:2222
+msgid "No active result cursor."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:2231
+msgid "Could not find the required parameters (rowpos, colpos)."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:2239
+msgid "The selected cell contains NULL."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:2853
+#: pgadmin/tools/sqleditor/__init__.py:3076
 msgid ""
 "AI features are not configured. Please configure an LLM provider in "
 "Preferences > AI."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2806
+#: pgadmin/tools/sqleditor/__init__.py:2871
 msgid "Database connection not available."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2817
+#: pgadmin/tools/sqleditor/__init__.py:2883
 msgid "Please provide a message."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2828
+#: pgadmin/tools/sqleditor/__init__.py:2895
 msgid "Analyzing your request..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2892
-msgid "Generated SQL query from your request."
+#: pgadmin/tools/sqleditor/__init__.py:2937
+msgid "Querying the database..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3016
+#: pgadmin/tools/sqleditor/__init__.py:3099
 msgid "Please provide an EXPLAIN plan to analyze."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/__init__.py:3108
+msgid "Analyzing query plan..."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/command.py:73
@@ -17060,7 +17258,7 @@ msgid "Query History"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:236
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:694
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1119
 msgid "AI Assistant"
 msgstr ""
 
@@ -17129,27 +17327,27 @@ msgstr ""
 msgid "Sort/Filter options"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:99
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:28
 msgid "The session is idle and there is no current transaction."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:100
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:29
 msgid "A command is currently in progress."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:101
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:30
 msgid "The session is idle in a valid transaction block."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:102
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:31
 msgid "The session is idle in a failed transaction block."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:103
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolConstants.js:104
 #: pgadmin/tools/sqleditor/utils/constant_definition.py:32
 msgid "The connection with the server is bad."
 msgstr ""
@@ -17167,6 +17365,10 @@ msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:428
 msgid "Invalid JSON input"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Formatters.jsx:89
+msgid "Download binary data"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:191
@@ -17230,50 +17432,62 @@ msgstr ""
 msgid "New query tool for current connection"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:102
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:104
 #, python-format
 msgid "%s of %s geometries rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:105
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:107
 msgid "3D geometries not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:108
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:110
 msgid "Unsupported geometries not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:124
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:126
 msgid "Empty row."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:183
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:185
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:364
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:367
 msgid "Empty"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:369
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:372
 msgid "Street"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:376
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:379
 msgid "Topography"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:387
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:390
 msgid "Gray Style"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:398
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:401
 msgid "Light Color"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:409
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:412
 msgid "Dark Matter"
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:454
+msgid ""
+"Query complete. Use the Geometry Viewer button in the Data Output tab to "
+"visualize results."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:455
+msgid ""
+"No spatial data found. At least one geometry or geography column is "
+"required for visualization."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:259
@@ -17413,7 +17627,7 @@ msgid "Execute options"
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:567
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:928
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:955
 #: pgadmin/utils/constants.py:25
 msgid "Explain"
 msgstr ""
@@ -17558,52 +17772,65 @@ msgstr ""
 msgid "Add to macros"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:187
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:322
 msgid "Generated SQL"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:190
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:325
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:386
 msgid "Insert at cursor"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:198
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:330
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:391
 msgid "Replace query"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:554
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:571
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:479
+msgid "Generating response..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:502
+msgid "Generating..."
+msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:888
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:896
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:924
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:932
 msgid "Generation stopped."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:580
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:942
 msgid ""
 "Request timed out. The query may be too complex. Please try a simpler "
 "request."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:589
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:951
 msgid "Failed to generate SQL: "
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:617
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1019
 msgid "I need more information to generate the SQL."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:684
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1109
 msgid "AI Assistant is only available in Query Tool mode."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:721
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1146
 msgid ""
-"Describe what SQL you need and I'll generate it for you. I can help with "
-"SELECT, INSERT, UPDATE, DELETE, and DDL statements."
+"Ask a question about your database or describe the SQL you need and I'll "
+"generate it for you. I can help with SELECT, INSERT, UPDATE, DELETE, and "
+"DDL statements."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:748
-msgid "Describe the SQL you need..."
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1176
+msgid "Ask a question or describe the SQL you need..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:778
+#: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1206
 msgid "Send"
 msgstr ""
 
@@ -17723,7 +17950,7 @@ msgid "Refetching latest results..."
 msgstr ""
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:201
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:901
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:928
 msgid "Waiting for the query to complete..."
 msgstr ""
 
@@ -17744,99 +17971,101 @@ msgstr ""
 msgid "Server Connected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:725
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:742
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:66
 msgid "Query complete"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:728
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:745
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:734
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:751
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:735
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:752
 #, python-format
 msgid "%s rows affected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:965
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1165
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:992
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1201
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:980
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1007
 msgid "Applying the new filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1034
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1061
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1070
 msgid "Downloading results..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1036
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1063
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1072
 #, python-format
 msgid "Downloading results(%s)..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1042
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1078
 msgid "Setting the limit on the result..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1056
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1092
 msgid "Removing the filter..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1117
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1153
 msgid "Fetching rows..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1227
 msgid "Save data changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1194
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1230
 msgid "The data has changed. Do you want to save changes?"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1220
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1256
 msgid "Saving data..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1247
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1283
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1259
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1295
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1302
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1338
 msgid "Data saved successfully."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1304
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1340
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1479
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1502
 msgid "Geometry Viewer"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1548
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1657
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1565
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1674
 msgid "No data output. Execute a query to get output."
 msgstr ""
 
@@ -18872,30 +19101,30 @@ msgstr ""
 msgid "Could not find the specified preference."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:155
+#: pgadmin/utils/driver/psycopg3/connection.py:156
 #: pgadmin/utils/driver/psycopg3/server_manager.py:564
 msgid "Unauthorized request."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:157
+#: pgadmin/utils/driver/psycopg3/connection.py:158
 msgid "Cursor could not be found for the async connection."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:264
+#: pgadmin/utils/driver/psycopg3/connection.py:265
 #, python-brace-format
 msgid ""
 "Failed to decrypt the saved password.\n"
 "Error: {0}"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:475
+#: pgadmin/utils/driver/psycopg3/connection.py:476
 #, python-brace-format
 msgid ""
 "Failed to setup the role \n"
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:750
+#: pgadmin/utils/driver/psycopg3/connection.py:751
 #, python-brace-format
 msgid ""
 "Failed to create cursor for psycopg3 connection with error message for "
@@ -18903,24 +19132,24 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:762
+#: pgadmin/utils/driver/psycopg3/connection.py:763
 #, python-brace-format
 msgid ""
 "Attempting to reconnect to the database server (#{server_id}) for the "
 "connection - '{conn_id}'."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:843
-#: pgadmin/utils/driver/psycopg3/connection.py:1379
+#: pgadmin/utils/driver/psycopg3/connection.py:844
+#: pgadmin/utils/driver/psycopg3/connection.py:1380
 msgid "Asynchronous query execution/operation underway."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:875
-#: pgadmin/utils/driver/psycopg3/connection.py:911
+#: pgadmin/utils/driver/psycopg3/connection.py:876
+#: pgadmin/utils/driver/psycopg3/connection.py:912
 msgid "The query executed did not return any data."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1466
+#: pgadmin/utils/driver/psycopg3/connection.py:1467
 #, python-brace-format
 msgid ""
 "\n"
@@ -18928,46 +19157,50 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1669
+#: pgadmin/utils/driver/psycopg3/connection.py:1670
 msgid "Not connected to the database server."
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1689
+#: pgadmin/utils/driver/psycopg3/connection.py:1690
 #, python-brace-format
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1695
+#: pgadmin/utils/driver/psycopg3/connection.py:1696
 #, python-brace-format
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1732
+#: pgadmin/utils/driver/psycopg3/connection.py:1733
 msgid "ERROR:  "
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1753
+#: pgadmin/utils/driver/psycopg3/connection.py:1754
 msgid "SQL state: "
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1760
+#: pgadmin/utils/driver/psycopg3/connection.py:1761
 msgid "Detail: "
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1767
+#: pgadmin/utils/driver/psycopg3/connection.py:1768
 msgid "Hint: "
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1774
+#: pgadmin/utils/driver/psycopg3/connection.py:1775
 msgid "Character: "
 msgstr ""
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1781
+#: pgadmin/utils/driver/psycopg3/connection.py:1782
 msgid "Context: "
+msgstr ""
+
+#: pgadmin/utils/driver/psycopg3/connection.py:1945
+msgid "Requested cell is out of range."
 msgstr ""
 
 #: pgadmin/utils/driver/psycopg3/server_manager.py:48
