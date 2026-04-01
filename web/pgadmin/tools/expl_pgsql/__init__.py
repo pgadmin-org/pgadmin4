@@ -141,7 +141,7 @@ def formatSQL():
         return make_json_response(
             success=0,
             errormsg=data,
-            info=gettext('Failed to post data to the Explain Postgresql API'),
+            info=gettext('Failed to post data to the Explain PostgreSQL API'),
         )
 
     return make_json_response(success=1, data=data)
@@ -193,7 +193,7 @@ def explain():
         return make_json_response(
             success=0,
             errormsg=response_data,
-            info=gettext('Failed to post data to the Explain Postgresql API'),
+            info=gettext('Failed to post data to the Explain PostgreSQL API'),
         )
 
     # response_data should be a relative path from 302 Location header
@@ -208,8 +208,7 @@ def explain():
 
 def is_valid_url(url):
     """
-    Validate that a URL is safe to use
-    (HTTP/HTTPS only, localhost and private IP ranges are allowed).
+    Validate that a URL is safe to use (HTTP/HTTPS only).
 
     Args:
         url: The URL to validate

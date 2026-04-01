@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-01 12:20+0300\n"
+"POT-Creation-Date: 2026-04-01 16:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12635,7 +12635,7 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/azure.js:34
 #: pgadmin/misc/cloud/static/js/google.js:35
 #: pgadmin/static/js/SchemaView/SchemaState/SchemaState.js:158
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:222
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:218
 #: pgadmin/static/js/tree/ObjectExplorer/ObjectExplorerFilter.jsx:58
 #: pgadmin/tools/expl_pgsql/static/js/ExplainPostgreSQL/index.jsx:68
 #: pgadmin/tools/user_management/static/js/Users.jsx:261
@@ -16120,7 +16120,7 @@ msgstr ""
 
 #: pgadmin/tools/expl_pgsql/__init__.py:144
 #: pgadmin/tools/expl_pgsql/__init__.py:196
-msgid "Failed to post data to the Explain Postgresql API"
+msgid "Failed to post data to the Explain PostgreSQL API"
 msgstr ""
 
 #: pgadmin/tools/grant_wizard/__init__.py:383

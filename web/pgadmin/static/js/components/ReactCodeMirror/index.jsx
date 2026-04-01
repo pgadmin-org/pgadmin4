@@ -101,21 +101,17 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     }
     let formattedSql;
     if (explPgsqlPrefs.explain_postgresql_format) {
-      let loadingTimeout;
+      let loadingTimeout = setTimeout(() => {
+        setLoading(true);
+      }, 500);
       try {
-        loadingTimeout = setTimeout(() => {
-          setLoading(true);
-        }, 500);
         formattedSql = await explPgsqlFormatSQL(sql);
       } catch (e) {
         console.error('Error formatting SQL using Explain PostgreSQL API:', e);
         formattedSql = format(sql,formatPrefs);
       } finally {
-        if (loading) {
-          setLoading(false);
-        } else {
-          clearTimeout(loadingTimeout);
-        }
+        clearTimeout(loadingTimeout);
+        setLoading(false);
       }
     } else {
       formattedSql = format(sql,formatPrefs);

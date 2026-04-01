@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: degit22@gmail.com\n"
-"POT-Creation-Date: 2026-04-01 12:20+0300\n"
+"POT-Creation-Date: 2026-04-01 16:57+0300\n"
 "PO-Revision-Date: 2026-01-02 00:05+0700\n"
 "Last-Translator: Degit22 <degit22@gmail.com>\n"
 "Language: ru\n"
@@ -12903,7 +12903,7 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/azure.js:34
 #: pgadmin/misc/cloud/static/js/google.js:35
 #: pgadmin/static/js/SchemaView/SchemaState/SchemaState.js:158
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:222
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:218
 #: pgadmin/static/js/tree/ObjectExplorer/ObjectExplorerFilter.jsx:58
 #: pgadmin/tools/expl_pgsql/static/js/ExplainPostgreSQL/index.jsx:68
 #: pgadmin/tools/user_management/static/js/Users.jsx:261
@@ -16386,7 +16386,9 @@ msgstr "Адрес API Explain PostgreSQL"
 
 #: pgadmin/tools/expl_pgsql/__init__.py:48
 msgid "Explain PostgreSQL API endpoint (e.g. https://explain.tensor.ru)"
-msgstr "Точка доступа к API Explain PostgreSQL (например, https://explain.tensor.ru)"
+msgstr ""
+"Точка доступа к API Explain PostgreSQL (например, "
+"https://explain.tensor.ru)"
 
 #: pgadmin/tools/expl_pgsql/__init__.py:56
 msgid "Private Plans"
@@ -16403,23 +16405,23 @@ msgstr "Форматирование SQL с использованием API Exp
 #: pgadmin/tools/expl_pgsql/__init__.py:118
 #: pgadmin/tools/expl_pgsql/__init__.py:166
 msgid "JSON payload must be an object, not null, array, or scalar value"
-msgstr ""
+msgstr "Некорректные данные в JSON, должен быть объект"
 
 #: pgadmin/tools/expl_pgsql/__init__.py:130
 #: pgadmin/tools/expl_pgsql/__init__.py:178
 msgid "Invalid API endpoint URL. Only HTTP/HTTPS URLs are allowed."
-msgstr "Некорретный адрес для точки доступа к API. Используйте HTTP/HTTPS."
+msgstr "Некорректный адрес для точки доступа к API. Используйте HTTP/HTTPS."
 
 #: pgadmin/tools/expl_pgsql/__init__.py:133
 #: pgadmin/tools/expl_pgsql/__init__.py:181
 msgid ""
 "The provided API endpoint is not valid. Only HTTP/HTTPS URLs are "
 "permitted."
-msgstr "Некорретный адрес для точки доступа к API. Используйте HTTP/HTTPS."
+msgstr "Некорректный адрес для точки доступа к API. Используйте HTTP/HTTPS."
 
 #: pgadmin/tools/expl_pgsql/__init__.py:144
 #: pgadmin/tools/expl_pgsql/__init__.py:196
-msgid "Failed to post data to the Explain Postgresql API"
+msgid "Failed to post data to the Explain PostgreSQL API"
 msgstr "Не удалось отправить данные в API Explain PostgreSQL"
 
 #: pgadmin/tools/grant_wizard/__init__.py:383
@@ -20032,4 +20034,7 @@ msgstr ""
 
 #~ msgid "Describe the SQL you need..."
 #~ msgstr ""
+
+#~ msgid "Failed to post data to the Explain Postgresql API"
+#~ msgstr "Не удалось отправить данные в API Explain PostgreSQL"
 

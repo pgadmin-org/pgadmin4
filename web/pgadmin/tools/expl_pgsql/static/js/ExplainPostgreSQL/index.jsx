@@ -39,10 +39,10 @@ export default function ExplainPostgreSQL({
     const api = getApiInstance();
     api.post(
       url_for('expl_pgsql.explain'),
-      JSON.stringify({
+      {
         plan: JSON.stringify(plans),
         query: sql,
-      }))
+      })
       .then((res) => {
         if (res.data?.success) {
           setData(res.data?.data);
@@ -86,7 +86,7 @@ export default function ExplainPostgreSQL({
 }
 
 ExplainPostgreSQL.propTypes = {
-  plans: PropTypes.array.isRequired,
+  plans: PropTypes.array,
   emptyMessage: PropTypes.string,
   sql: PropTypes.string,
 };
