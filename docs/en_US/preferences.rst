@@ -47,19 +47,39 @@ Use the fields on the *AI* panel to configure your LLM provider:
 
 **Anthropic Settings:**
 
+* Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
+  the default Anthropic API (``https://api.anthropic.com/v1``). Set a custom URL
+  to use an Anthropic-compatible API provider.
+
 * Use the *API Key File* field to specify the path to a file containing your
-  Anthropic API key.
+  Anthropic API key. This path refers to the filesystem where the pgAdmin
+  server is running (e.g., inside the container if using Docker). The ``~``
+  prefix is expanded to the home directory of the user running the pgAdmin
+  server process. The API key may be optional when using a custom API URL
+  with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available Claude models. Click the
-  refresh button to fetch the latest available models from Anthropic.
+  refresh button to fetch the latest available models from your configured
+  endpoint.
 
 **OpenAI Settings:**
 
+* Use the *API URL* field to set a custom API endpoint URL. Leave empty to use
+  the default OpenAI API (``https://api.openai.com/v1``). Set a custom URL to
+  use any OpenAI-compatible API provider (e.g., LiteLLM, LM Studio, EXO).
+  Include the ``/v1`` path prefix if required by your provider
+  (e.g., ``http://localhost:1234/v1``).
+
 * Use the *API Key File* field to specify the path to a file containing your
-  OpenAI API key.
+  OpenAI API key. This path refers to the filesystem where the pgAdmin
+  server is running (e.g., inside the container if using Docker). The ``~``
+  prefix is expanded to the home directory of the user running the pgAdmin
+  server process. The API key may be optional when using a custom API URL
+  with a provider that does not require authentication.
 
 * Use the *Model* field to select from the available GPT models. Click the
-  refresh button to fetch the latest available models from OpenAI.
+  refresh button to fetch the latest available models from your configured
+  endpoint.
 
 **Ollama Settings:**
 
@@ -78,6 +98,11 @@ Use the fields on the *AI* panel to configure your LLM provider:
 * Use the *Model* field to select from the available models or enter a custom
   model name. Click the refresh button to fetch the latest available models
   from your Docker Model Runner.
+
+.. note:: You can also use the *OpenAI* provider with a custom API URL for any
+   OpenAI-compatible endpoint, including Docker Model Runner, LM Studio, EXO,
+   and other local inference servers. This can be useful when you want to use
+   a provider that isn't explicitly listed but supports the OpenAI API format.
 
 The Browser Node
 ****************
@@ -444,11 +469,17 @@ Use the fields on the *File Downloads* panel to manage file downloads related pr
 
 * When the *Automatically open downloaded files?* switch is set to *True*
   the downloaded file will automatically open in the system's default
-  application associated with that file type.
+  application associated with that file type. **Note:** This option is applicable and
+  visible only in desktop mode.
+
+* When the *Enable binary data download?* switch is set to *True*,
+  binary data can be downloaded from the result grid. Default is set to *False*
+  to prevent excessive memory usage on the server.
 
 * When the *Prompt for the download location?* switch is set to *True*
   a prompt will appear after clicking the download button, allowing you
-  to choose the download location.
+  to choose the download location. **Note:** This option is applicable and
+  visible only in desktop mode.
 
 **Note:** File Downloads related settings are applicable and visible only in desktop mode.
 

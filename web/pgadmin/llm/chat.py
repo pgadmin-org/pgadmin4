@@ -14,10 +14,11 @@ that can use database tools to query and inspect PostgreSQL databases.
 """
 
 import json
-from typing import Optional
+from collections.abc import Generator
+from typing import Optional, Union
 
 from pgadmin.llm.client import get_llm_client, is_llm_available
-from pgadmin.llm.models import Message, StopReason
+from pgadmin.llm.models import Message, LLMResponse, StopReason
 from pgadmin.llm.tools import DATABASE_TOOLS, execute_tool, DatabaseToolError
 from pgadmin.llm.utils import get_max_tool_iterations
 
@@ -146,6 +147,118 @@ def chat_with_database(
                 ))
 
         # Add tool results to history
+        messages.extend(tool_results)
+
+    raise RuntimeError(
+        f"Exceeded maximum tool iterations ({max_tool_iterations})"
+    )
+
+
+def chat_with_database_stream(
+    user_message: str,
+    sid: int,
+    did: int,
+    conversation_history: Optional[list[Message]] = None,
+    system_prompt: Optional[str] = None,
+    max_tool_iterations: Optional[int] = None,
+    provider: Optional[str] = None,
+    model: Optional[str] = None
+) -> Generator[Union[str, tuple], None, None]:
+    """
+    Stream an LLM chat conversation with database tool access.
+
+    Like chat_with_database, but yields text chunks as the final
+    response streams in. During tool-use iterations, no text is
+    yielded (tools are executed silently).
+
+    Yields:
+        str: Text content chunks from the final LLM response.
+
+    The last item yielded is a 3-tuple of
+    ('complete', final_response_text, updated_conversation_history).
+
+    Raises:
+        LLMClientError: If the LLM request fails.
+        RuntimeError: If LLM is not available or max iterations exceeded.
+    """
+    if not is_llm_available():
+        raise RuntimeError("LLM is not configured. Please configure an LLM "
+                           "provider in Preferences > AI.")
+
+    client = get_llm_client(provider=provider, model=model)
+    if not client:
+        raise RuntimeError("Failed to create LLM client")
+
+    messages = list(conversation_history) if conversation_history else []
+    messages.append(Message.user(user_message))
+
+    if system_prompt is None:
+        system_prompt = DEFAULT_SYSTEM_PROMPT
+
+    if max_tool_iterations is None:
+        max_tool_iterations = get_max_tool_iterations()
+
+    iteration = 0
+    while iteration < max_tool_iterations:
+        iteration += 1
+
+        # Stream the LLM response, yielding text chunks as they arrive
+        response = None
+        for item in client.chat_stream(
+            messages=messages,
+            tools=DATABASE_TOOLS,
+            system_prompt=system_prompt
+        ):
+            if isinstance(item, LLMResponse):
+                response = item
+            elif isinstance(item, str):
+                yield item
+
+        if response is None:
+            raise RuntimeError("No response received from LLM")
+
+        messages.append(response.to_message())
+
+        if response.stop_reason != StopReason.TOOL_USE:
+            # Final response - yield a 3-tuple to distinguish from
+            # the 2-tuple tool_use event
+            yield ('complete', response.content, messages)
+            return
+
+        # Signal that tools are being executed so the caller can
+        # reset streaming state and show a thinking indicator
+        yield ('tool_use', [tc.name for tc in response.tool_calls])
+
+        # Execute tool calls
+        tool_results = []
+        for tool_call in response.tool_calls:
+            try:
+                result = execute_tool(
+                    tool_name=tool_call.name,
+                    arguments=tool_call.arguments,
+                    sid=sid,
+                    did=did
+                )
+                tool_results.append(Message.tool_result(
+                    tool_call_id=tool_call.id,
+                    content=json.dumps(result, default=str),
+                    is_error=False
+                ))
+            except (DatabaseToolError, ValueError) as e:
+                tool_results.append(Message.tool_result(
+                    tool_call_id=tool_call.id,
+                    content=json.dumps({"error": str(e)}),
+                    is_error=True
+                ))
+            except Exception as e:
+                tool_results.append(Message.tool_result(
+                    tool_call_id=tool_call.id,
+                    content=json.dumps({
+                        "error": f"Unexpected error: {str(e)}"
+                    }),
+                    is_error=True
+                ))
+
         messages.extend(tool_results)
 
     raise RuntimeError(

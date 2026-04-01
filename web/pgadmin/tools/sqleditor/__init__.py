@@ -14,6 +14,7 @@ import re
 import secrets
 from urllib.parse import unquote
 from threading import Lock
+from io import BytesIO
 import threading
 import math
 
@@ -23,7 +24,8 @@ from sqlalchemy import or_
 
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD
 from werkzeug.user_agent import UserAgent
-from flask import Response, url_for, render_template, session, current_app
+from flask import Response, url_for, render_template, session, current_app, \
+    send_file
 from flask import request
 from flask_babel import gettext
 from pgadmin.tools.sqleditor.utils.query_tool_connection_check \
@@ -70,6 +72,8 @@ from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
 from pgadmin.browser.server_groups.servers.utils import \
     convert_connection_parameter, get_db_disp_restriction
 from pgadmin.misc.workspaces import check_and_delete_adhoc_server
+from pgadmin.utils.driver.psycopg3.typecast import \
+    register_binary_data_typecasters, register_binary_typecasters
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
@@ -147,6 +151,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.server_cursor',
             'sqleditor.nlq_chat_stream',
             'sqleditor.explain_analyze_stream',
+            'sqleditor.download_binary_data',
         ]
 
     def on_logout(self):
@@ -508,6 +513,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
 
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
     server = Server.query.filter_by(id=sid).first()
+    if server.shared and server.user_id != current_user.id:
+        # Import here to avoid circular dependency
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(server, sgid)
+        if shared_server is not None:
+            server = ServerModule.get_shared_server_properties(server,
+                                                               shared_server)
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
     if kwargs.get('password', None) is None:
@@ -2183,6 +2195,66 @@ def start_query_download_tool(trans_id):
 
 
 @blueprint.route(
+    '/download_binary_data/<int:trans_id>',
+    methods=["POST"], endpoint='download_binary_data'
+)
+@pga_login_required
+def download_binary_data(trans_id):
+    """
+    This method is used to download binary data.
+    """
+
+    (status, error_msg, conn, trans_obj,
+     session_obj) = check_transaction_status(trans_id)
+
+    if isinstance(error_msg, Response):
+        return error_msg
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(
+            success=0,
+            errormsg=error_msg,
+            info='DATAGRID_TRANSACTION_REQUIRED',
+            status=404
+        )
+
+    if not status or conn is None or trans_obj is None or \
+            session_obj is None:
+        return internal_server_error(
+            errormsg=TRANSACTION_STATUS_CHECK_FAILED
+        )
+
+    cur = conn._Connection__async_cursor
+    if cur is None:
+        return internal_server_error(
+            errormsg=gettext('No active result cursor.')
+        )
+
+    data = request.values if request.values else request.get_json(silent=True)
+    if data is None:
+        return make_json_response(
+            status=410,
+            success=0,
+            errormsg=gettext(
+                "Could not find the required parameters (rowpos, colpos)."
+            )
+        )
+
+    binary_data = conn.download_binary_data(cur, data)
+
+    if binary_data is None:
+        return bad_request(
+            errormsg=gettext('The selected cell contains NULL.')
+        )
+
+    return send_file(
+        BytesIO(binary_data),
+        as_attachment=True,
+        download_name='binary_data',
+        mimetype='application/octet-stream'
+    )
+
+
+@blueprint.route(
     '/status/<int:trans_id>',
     methods=["GET"],
     endpoint='connection_status'
@@ -2777,7 +2849,7 @@ def nlq_chat_stream(trans_id):
     """
     from flask import stream_with_context
     from pgadmin.llm.utils import is_llm_enabled
-    from pgadmin.llm.chat import chat_with_database
+    from pgadmin.llm.chat import chat_with_database_stream
     from pgadmin.llm.prompts.nlq import NLQ_SYSTEM_PROMPT
 
     # Check if LLM is configured
@@ -2810,6 +2882,7 @@ def nlq_chat_stream(trans_id):
     data = request.get_json(silent=True) or {}
     user_message = data.get('message', '').strip()
     conversation_id = data.get('conversation_id')
+    history_data = data.get('history', [])
 
     if not user_message:
         return make_json_response(
@@ -2820,6 +2893,7 @@ def nlq_chat_stream(trans_id):
     def generate():
         """Generator for SSE events."""
         import secrets as py_secrets
+        from pgadmin.llm.models import Message, Role
 
         try:
             # Send thinking status
@@ -2828,74 +2902,73 @@ def nlq_chat_stream(trans_id):
                 'message': gettext('Analyzing your request...')
             })
 
-            # Call the LLM with database tools
-            response_text, _ = chat_with_database(
+            # Deserialize conversation history if provided
+            conversation_history = None
+            if history_data:
+                conversation_history = []
+                for item in (history_data or []):
+                    if not isinstance(item, dict):
+                        continue
+                    role_str = item.get('role', '')
+                    content = item.get('content', '')
+                    try:
+                        role = Role(role_str)
+                    except ValueError:
+                        continue
+                    conversation_history.append(
+                        Message(role=role, content=content)
+                    )
+
+            # Stream the LLM response with database tools
+            response_text = ''
+            updated_messages = []
+            for item in chat_with_database_stream(
                 user_message=user_message,
                 sid=trans_obj.sid,
                 did=trans_obj.did,
-                system_prompt=NLQ_SYSTEM_PROMPT
-            )
-
-            # Try to parse the response as JSON
-            sql = None
-            explanation = ''
-
-            # First, try to extract JSON from markdown code blocks
-            json_text = response_text.strip()
-
-            # Look for ```json ... ``` blocks
-            json_match = re.search(
-                r'```json\s*\n?(.*?)\n?```',
-                json_text,
-                re.DOTALL
-            )
-            if json_match:
-                json_text = json_match.group(1).strip()
-            else:
-                # Also try to find a plain JSON object in the response
-                # Look for {"sql": ... } pattern anywhere in the text
-                sql_pattern = (
-                    r'\{["\']?sql["\']?\s*:\s*'
-                    r'(?:null|"[^"]*"|\'[^\']*\').*?\}'
-                )
-                plain_json_match = re.search(sql_pattern, json_text, re.DOTALL)
-                if plain_json_match:
-                    json_text = plain_json_match.group(0)
-
-            try:
-                result = json.loads(json_text)
-                sql = result.get('sql')
-                explanation = result.get('explanation', '')
-            except (json.JSONDecodeError, TypeError):
-                # If not valid JSON, try to extract SQL from the response
-                # Look for SQL code blocks first
-                sql_match = re.search(
-                    r'```sql\s*\n?(.*?)\n?```',
-                    response_text,
-                    re.DOTALL
-                )
-                if sql_match:
-                    sql = sql_match.group(1).strip()
-                else:
-                    # Check for malformed tool call text patterns
-                    # Some models output tool calls as text instead of
-                    # proper tool use blocks
-                    tool_call_match = re.search(
-                        r'<function=execute_sql_query>\s*'
-                        r'<parameter=query>\s*(.*?)\s*</parameter>',
-                        response_text,
-                        re.DOTALL
-                    )
-                    if tool_call_match:
-                        sql = tool_call_match.group(1).strip()
-                        explanation = gettext(
-                            'Generated SQL query from your request.'
+                system_prompt=NLQ_SYSTEM_PROMPT,
+                conversation_history=conversation_history
+            ):
+                if isinstance(item, str):
+                    # Text chunk from streaming LLM response
+                    yield _nlq_sse_event({
+                        'type': 'text_delta',
+                        'content': item
+                    })
+                elif isinstance(item, tuple) and \
+                        item[0] == 'tool_use':
+                    # Tool execution in progress - reset streaming
+                    yield _nlq_sse_event({
+                        'type': 'thinking',
+                        'message': gettext(
+                            'Querying the database...'
                         )
-                    else:
-                        # No parseable JSON or SQL block found
-                        # Treat the response as an explanation/error message
-                        explanation = response_text.strip()
-                        # Don't set sql - leave it as None
+                    })
+                elif isinstance(item, tuple) and \
+                        item[0] == 'complete':
+                    # Final result: ('complete', response_text, messages)
+                    response_text = item[1]
+                    updated_messages = item[2]
+
+            # Extract SQL from markdown code fences
+            sql_blocks = re.findall(
+                r'```(?:sql|pgsql|postgresql)\s*\n(.*?)```',
+                response_text,
+                re.DOTALL | re.IGNORECASE
+            )
+            sql = ';\n\n'.join(
+                block.strip().rstrip(';') for block in sql_blocks
+            ) if sql_blocks else None
+
+            # Fallback: try JSON format in case LLM ignored
+            # the markdown instruction
+            if sql is None:
+                try:
+                    result = json.loads(response_text.strip())
+                    if isinstance(result, dict):
+                        sql = result.get('sql')
+                except (json.JSONDecodeError, TypeError):
+                    pass
 
             # Generate a conversation ID if not provided
             if not conversation_id:
@@ -2903,12 +2976,29 @@ def nlq_chat_stream(trans_id):
             else:
                 new_conversation_id = conversation_id
 
-            # Send the final result
+            # Serialize the conversation history so the client can
+            # round-trip it on follow-up turns. Only keep user
+            # messages and final assistant responses (no tool calls).
+            history = []
+            for m in updated_messages:
+                if m.role == Role.USER:
+                    history.append({
+                        'role': m.role.value,
+                        'content': m.content,
+                    })
+                elif m.role == Role.ASSISTANT and not m.tool_calls:
+                    history.append({
+                        'role': m.role.value,
+                        'content': m.content,
+                    })
+
+            # Send the final result with full response content
             yield _nlq_sse_event({
                 'type': 'complete',
                 'sql': sql,
-                'explanation': explanation,
-                'conversation_id': new_conversation_id
+                'content': response_text,
+                'conversation_id': new_conversation_id,
+                'history': history
             })
 
         except Exception as e:

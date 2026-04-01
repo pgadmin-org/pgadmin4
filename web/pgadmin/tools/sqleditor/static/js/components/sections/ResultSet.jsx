@@ -494,6 +494,23 @@ export class ResultSetUtils {
     }
   }
 
+  async saveBinaryResultsToFile(fileName, rowPos, colPos, onProgress) {
+    try {
+      await DownloadUtils.downloadFileStream({
+        url: url_for('sqleditor.download_binary_data', {
+          'trans_id': this.transId,
+        }),
+        options: {
+          method: 'POST',
+          body: JSON.stringify({filename: fileName, rowpos: rowPos, colpos: colPos})
+        }}, fileName, 'application/octet-stream', onProgress);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
+    } catch (error) {
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS_END);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
+    }
+  }
+
   includeFilter(reqData) {
     return this.api.post(
       url_for('sqleditor.inclusive_filter', {
@@ -1078,6 +1095,15 @@ export function ResultSet() {
       setLoaderText('');
     });
 
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_BINARY_DATA, async (rowPos, colPos)=>{
+      let fileName = 'data-' + new Date().getTime();
+      setLoaderText(gettext('Downloading results...'));
+      await rsu.current.saveBinaryResultsToFile(fileName, rowPos, colPos, (p)=>{
+        setLoaderText(gettext('Downloading results(%s)...', p));
+      });
+      setLoaderText('');
+    });
+
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SET_LIMIT, async (limit)=>{
       setLoaderText(gettext('Setting the limit on the result...'));
       try {
@@ -1500,11 +1526,13 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const gvColumnsSignature = React.useMemo(() => columns.map(c => c.key).join(','), [columns]);
+
   const openGeometryViewerTab = React.useCallback((column, rowsData) => {
     layoutDocker.openTab({
       id: PANELS.GEOMETRY,
       title: gettext('Geometry Viewer'),
-      content: <GeometryViewer rows={rowsData} columns={columns} column={column}/>,
+      content: <GeometryViewer key={gvColumnsSignature} rows={rowsData} columns={columns} column={column}/>,
       closable: true,
     }, PANELS.MESSAGES, 'after-tab', true);
   }, [layoutDocker, columns]);

@@ -101,6 +101,10 @@ describe('SchemaView', ()=>{
       });
 
       it('change text', async ()=>{
+        // Wait for autofocus timer (200ms in FormView) to complete
+        await act(async ()=>{
+          await new Promise(resolve => setTimeout(resolve, 500));
+        });
         await user.type(ctrl.container.querySelector('[name="field2"]'), '2');
         /* Error should come for field1 as it is empty and noEmpty true */
         expect(ctrl.container.querySelector('[data-test="notifier-message"]')).toHaveTextContent('\'Field1\' cannot be empty.');

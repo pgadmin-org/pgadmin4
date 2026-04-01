@@ -89,6 +89,7 @@ export default function(basicSettings) {
     },
     otherVars: {
       colorBrand: '#1b71b5',
+      hyperlinkColor: '#6CB4EE',
       borderColor: '#4a4a4a',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: 'inherit',

@@ -34,6 +34,7 @@ OUTDIR - Output directory
 import sys
 import os
 import subprocess
+import locale
 from datetime import datetime, timedelta, tzinfo, timezone
 from subprocess import Popen, PIPE
 from threading import Thread
@@ -45,6 +46,7 @@ _sys_encoding = None
 _fs_encoding = None
 _out_dir = None
 _log_file = None
+_subprocess_encoding = None
 
 
 def _log(msg):
@@ -191,7 +193,7 @@ class ProcessLogger(Thread):
         This function will update log file
 
         Args:
-            msg: message
+            msg: message (bytes from subprocess)
 
         Returns:
             None
@@ -205,9 +207,22 @@ class ProcessLogger(Thread):
                     ).encode('utf-8')
                 )
                 self.logger.write(b',')
-                self.logger.write(
-                    msg.lstrip(b'\r\n' if _IS_WIN else b'\n')
-                )
+
+                # Convert subprocess output from system encoding to UTF-8
+                # This fixes garbled text on Windows with non-UTF-8 locales
+                # (e.g., Japanese CP932, Chinese GBK)
+                msg = msg.lstrip(b'\r\n' if _IS_WIN else b'\n')
+                if _subprocess_encoding and \
+                        _subprocess_encoding.lower() not in ('utf-8', 'utf8'):
+                    try:
+                        msg = msg.decode(
+                            _subprocess_encoding, 'replace'
+                        ).encode('utf-8')
+                    except (UnicodeDecodeError, LookupError):
+                        # If decoding fails, write as-is
+                        pass
+
+                self.logger.write(msg)
                 self.logger.write(os.linesep.encode('utf-8'))
 
             return True
@@ -426,6 +441,12 @@ if __name__ == '__main__':
         # Fall back to 'utf-8', if we couldn't determine the file-system
         # encoding or 'ascii'.
         _fs_encoding = 'utf-8'
+
+    # Detect subprocess output encoding (important for Windows with non-UTF-8
+    # locales like Japanese CP932, Chinese GBK, etc.)
+    _subprocess_encoding = locale.getpreferredencoding(False)
+    if not _subprocess_encoding or _subprocess_encoding == 'ascii':
+        _subprocess_encoding = 'utf-8'
 
     _out_dir = os.environ['OUTDIR']
     _log_file = os.path.join(_out_dir, ('log_%s' % os.getpid()))

@@ -39,28 +39,38 @@ const StyledBox = styled(Box)(({theme}) => ({
   },
 }));
 
-export default function SectionContainer({title, titleExtras, children, style}) {
+export default function SectionContainer({title, titleExtras, children, style, resizable = false, defaultHeight = 200}) {
+  const content = (
+    <>
+      <Box className='SectionContainer-cardHeader' title={title}>
+        <div className='SectionContainer-cardTitle'>{title}</div>
+        <div style={{marginLeft: 'auto'}}>
+          {titleExtras}
+        </div>
+      </Box>
+      <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
+        {children}
+      </Box>
+    </>
+  );
+
   return (
     <StyledBox className='SectionContainer-root' style={style}>
-      <Resizable
-        enable={{ bottom: true }}
-        defaultSize={{ height: 200, width: '100%' }}
-        minHeight={25}
-        style={{
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-        <Box className='SectionContainer-cardHeader' title={title}>
-          <div className='SectionContainer-cardTitle'>{title}</div>
-          <div style={{marginLeft: 'auto'}}>
-            {titleExtras}
-          </div>
-        </Box>
-        <Box height="100%" display="flex" flexDirection="column" minHeight={0}>
-          {children}
-        </Box>
-      </Resizable>
+      {resizable ? (
+        <Resizable
+          enable={{ bottom: true }}
+          defaultSize={{ height: defaultHeight, width: '100%' }}
+          minHeight={25}
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {content}
+        </Resizable>
+      ) : (
+        content
+      )}
     </StyledBox>
   );
 }
@@ -70,4 +80,6 @@ SectionContainer.propTypes = {
   titleExtras: PropTypes.node,
   children: PropTypes.node.isRequired,
   style: PropTypes.object,
+  resizable: PropTypes.bool,
+  defaultHeight: PropTypes.number,
 };
