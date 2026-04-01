@@ -15,6 +15,7 @@ import url_for from 'sources/url_for';
 import getApiInstance from '../../../../../static/js/api_instance';
 import PropTypes from 'prop-types';
 import EmptyPanelMessage from '../../../../../static/js/components/EmptyPanelMessage';
+import Loader from '../../../../../static/js/components/Loader';
 
 const StyledBox = styled(Box)(({theme}) => ({
   '& .Explain-tabPanel': {
@@ -37,7 +38,7 @@ export default function ExplainPostgreSQL({
     if (_.isEmpty(plans)) return;
     const api = getApiInstance();
     api.post(
-      url_for('ep.explain_postgresql'),
+      url_for('expl_pgsql.explain'),
       JSON.stringify({
         plan: JSON.stringify(plans),
         query: sql,
@@ -55,7 +56,7 @@ export default function ExplainPostgreSQL({
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [plans]);
 
   if(_.isEmpty(plans)) {
     return (
@@ -64,7 +65,7 @@ export default function ExplainPostgreSQL({
       </StyledBox>
     );
   }
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader message={gettext('Loading...')} autoEllipsis />;
   if (error) return (
     <StyledBox height="100%" display="flex" flexDirection="column">
       {<EmptyPanelMessage text={error} />}
@@ -77,7 +78,7 @@ export default function ExplainPostgreSQL({
         title="Explain PostgreSQL"
         width="100%"
         height="100%"
-        sandbox="allow-scripts allow-forms allow-same-origin allow-downloads allow-popups"
+        sandbox="allow-scripts"
         allowFullScreen
       />
     </div>

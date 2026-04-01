@@ -19,7 +19,8 @@ import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
 import { copyToClipboard } from '../../clipboard';
 import { useDelayedCaller } from '../../custom_hooks';
-import epFormatSQL from '../../../../tools/ep/static/js/ExplainPostgreSQL/formatSQL';
+import explPgsqlFormatSQL from '../../../../tools/expl_pgsql/static/js/ExplainPostgreSQL/formatSQL';
+import Loader from '../Loader';
 
 import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
@@ -69,9 +70,10 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
+  const [loading, setLoading] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
-  const epPrefs = usePreferences().getPreferencesForModule('ep');
+  const explPgsqlPrefs = usePreferences().getPreferencesForModule('expl_pgsql');
 
   const formatSQL = async (view)=>{
     let selection = true, sql = view.getSelection();
@@ -98,12 +100,22 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
       selection = false;
     }
     let formattedSql;
-    if (epPrefs.explain_postgresql_format) {
+    if (explPgsqlPrefs.explain_postgresql_format) {
+      let loadingTimeout;
       try {
-        formattedSql = await epFormatSQL(sql);
+        loadingTimeout = setTimeout(() => {
+          setLoading(true);
+        }, 500);
+        formattedSql = await explPgsqlFormatSQL(sql);
       } catch (e) {
         console.error('Error formatting SQL using Explain PostgreSQL API:', e);
         formattedSql = format(sql,formatPrefs);
+      } finally {
+        if (loading) {
+          setLoading(false);
+        } else {
+          clearTimeout(loadingTimeout);
+        }
       }
     } else {
       formattedSql = format(sql,formatPrefs);
@@ -207,6 +219,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     <Root className={[className].join(' ')} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
       <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
+      {loading && <Loader message={gettext('Loading...')} autoEllipsis />}
       <FindDialog key={findKey} editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
       <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
     </Root>

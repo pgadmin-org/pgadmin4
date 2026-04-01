@@ -5,7 +5,7 @@ export default async function formatSQL(sql) {
   return new Promise((resolve, reject) => {
     const api = getApiInstance();
     api.post(
-      url_for('ep.explain_postgresql_format'),
+      url_for('expl_pgsql.formatSQL'),
       JSON.stringify({
         query_src: sql,
       }))

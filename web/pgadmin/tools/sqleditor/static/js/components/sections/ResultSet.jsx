@@ -21,7 +21,7 @@ import { ResultSetToolbar } from './ResultSetToolbar';
 import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout';
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
-import ExplainPostgreSQL from '../../../../../ep/static/js/ExplainPostgreSQL';
+import ExplainPostgreSQL from '../../../../../expl_pgsql/static/js/ExplainPostgreSQL';
 import { QuerySources } from './QueryHistory';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import CopyData from '../QueryToolDataGrid/CopyData';
@@ -1023,18 +1023,31 @@ export function ResultSet() {
   }, []);
 
   useEffect(() => {
-    eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, (planJson, sql) => {
+    const showExplPgsql = (planJson, sql) => {
       if (!planJson) return;
-      layoutDocker.openTab({
-        id: PANELS.EXPLAIN_POSTGRESQL,
-        title: gettext('Explain PostgreSQL'),
-        content: <ExplainPostgreSQL
-          plans={planJson}
-          sql={sql}
-        />,
-        closable: true,
-      }, PANELS.MESSAGES, 'after-tab', true);
-    });
+      api.get(url_for('expl_pgsql.status'))
+        .then((res)=>{
+          if(res.data?.success && res.data?.data?.enabled) {
+            layoutDocker.openTab({
+              id: PANELS.EXPLAIN_POSTGRESQL,
+              title: gettext('Explain PostgreSQL'),
+              content: <ExplainPostgreSQL
+                plans={planJson}
+                sql={sql}
+              />,
+              closable: true,
+            }, PANELS.MESSAGES, 'after-tab', true);
+          }
+        })
+        .catch((e)=>{
+          console.error(`Error getting Explain PostgreSQL status: ${e}`);
+        });
+    };
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplPgsql);
+    return () => {
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplPgsql);
+    };
   }, []);
 
   useEffect(()=>{
