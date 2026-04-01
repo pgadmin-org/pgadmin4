@@ -744,6 +744,25 @@ Use the fields on the *Options* panel to specify storage preferences.
 * When the *Show hidden files and folders?* switch is set to *True*, the file
   manager will display hidden files and folders.
 
+.. _the-explain-postgresql-node:
+
+The Explain PostgreSQL Node
+***************************
+
+Use the preferences found in the *Explain PostgreSQL* node of the tree control to configure the custom Explain Analyze module.
+
+.. image:: images/preferences_expl_pgsql.png
+    :alt: Explain PostgreSQL preferences
+    :align: center
+
+* When the **Explain Plan** switch is set to *True*, the **Explain Analyze** command will use a third-party service to analyze the execution plan.
+
+* Use the **Explain PostgreSQL API** field to specify the API URL.
+
+* When the **Format SQL** switch is set to *True*, the **Format SQL** command will use a third-party service to format the SQL code.
+
+* When the **Private Plans** switch is set to *True*, all analyzed plans will be stored in your personal archive on the third-party service.
+
 
 Using 'setup.py' command line script
 ####################################
