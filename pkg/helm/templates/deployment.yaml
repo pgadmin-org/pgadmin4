@@ -192,24 +192,9 @@ spec:
             limits:
               cpu: 50m
               memory: 64Mi
-          securityContext:
-            seLinuxOptions: {}
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
-            privileged: false
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-            seccompProfile:
-              type: RuntimeDefault
-            {{- if .Values.global.compatibility.appArmor.enabled }}
-            appArmorProfile:
-              type: RuntimeDefault
-            {{- end }}
-            windowsOptions:
-              hostProcess: false
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- include "renderSecurityContext" (dict "securityContext" .Values.containerSecurityContext "context" .) | nindent 12 }}
+          {{- end }}
         - name: unset-python3-cli-net-cap
           image: {{ template "pgadmin4.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -226,21 +211,6 @@ spec:
             limits:
               cpu: 50m
               memory: 64Mi
-          securityContext:
-            seLinuxOptions: {}
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
-            privileged: false
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-            seccompProfile:
-              type: RuntimeDefault
-            {{- if .Values.global.compatibility.appArmor.enabled }}
-            appArmorProfile:
-              type: RuntimeDefault
-            {{- end }}
-            windowsOptions:
-              hostProcess: false
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- include "renderSecurityContext" (dict "securityContext" .Values.containerSecurityContext "context" .) | nindent 12 }}
+          {{- end }}
