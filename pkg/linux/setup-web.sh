@@ -112,8 +112,8 @@ if [ ${IS_DEBIAN} == 1 ]; then
 
     case ${RESPONSE} in
         y|Y )
-            a2enmod wsgi 1> /dev/null
-            a2enconf pgadmin4 1> /dev/null
+            /usr/sbin/a2enmod wsgi 1> /dev/null
+            /usr/sbin/a2enconf pgadmin4 1> /dev/null
             ;;
         * )
             exit 1;;
