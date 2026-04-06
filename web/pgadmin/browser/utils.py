@@ -18,7 +18,7 @@ from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import make_json_response, precondition_required,\
-    internal_server_error
+    internal_server_error, service_unavailable
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
@@ -441,7 +441,9 @@ class PGChildNodeView(NodeView):
             if not conn.connection_ping():
                 status, msg = conn.connect()
                 if not status:
-                    return internal_server_error(errormsg=msg)
+                    return service_unavailable(
+                        msg, info="CONNECTION_LOST"
+                    )
         except (ConnectionLost, SSHTunnelConnectionLost, CryptKeyMissing):
             raise
         except Exception:

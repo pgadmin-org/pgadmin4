@@ -1425,7 +1425,22 @@ WHERE db.datname = current_database()""")
         """
         if not self.connected():
             return False
+
         try:
+            # Check the transaction status before executing the ping
+            # query.  If a query is already in progress (ACTIVE) or we
+            # are inside a transaction block (INTRANS / INERROR), running
+            # SELECT 1 would fail or disrupt the ongoing operation.  In
+            # those states the connection is evidently alive, so just
+            # return True.
+            txn_status = self.conn.info.transaction_status
+            if txn_status != 0:
+                # 0 = IDLE — safe to send a query
+                # 1 = ACTIVE — command in progress, connection is alive
+                # 2 = INTRANS — in transaction block, connection is alive
+                # 3 = INERROR — in failed transaction, connection is alive
+                return True
+
             cur = self.conn.cursor()
             cur.execute("SELECT 1")
             cur.close()
