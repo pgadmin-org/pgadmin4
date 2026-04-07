@@ -191,6 +191,9 @@ fi
 
 if [ "${GUNICORN_ACCESS_LOGFILE:--}" = "-" ]; then
     ACCESS_LOG_ARGS="--access-log"
+elif [ -n "${GUNICORN_ACCESS_LOGFILE}" ]; then
+    echo "Warning: GUNICORN_ACCESS_LOGFILE file paths are not supported with Granian. Access logging disabled." >&2
+    ACCESS_LOG_ARGS="--no-access-log"
 else
     ACCESS_LOG_ARGS="--no-access-log"
 fi
