@@ -40,10 +40,10 @@ jobs:
         include:
           - os: ubuntu-22.04
             pgver: 18
-            postgisver: 35
+            postgisver: 36
           - os: windows-latest
             pgver: 18
-            postgisver: 35
+            postgisver: 36
 
     runs-on: ${{ matrix.os }}
 
