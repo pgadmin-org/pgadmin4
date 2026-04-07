@@ -136,7 +136,7 @@
     "react-dom": "^19.2.3",
     "react-draggable": "^4.4.6",
     "react-dropzone": "^15.0.0",
-    "react-frame-component": "^5.2.6",
+    "react-frame-component": "~5.2.6",
     "react-leaflet": "^4.2.1",
     "react-new-window": "^1.0.1",
     "react-resize-detector": "^12.3.0",
