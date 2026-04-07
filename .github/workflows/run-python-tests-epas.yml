@@ -34,8 +34,15 @@ jobs:
         os: [ubuntu-22.04, windows-latest]
         pgver: [14, 15, 16, 17, 18]
         postgisver: [34]
-        include:
+        exclude:
           - pgver: 18
+            postgisver: 34
+        include:
+          - os: ubuntu-22.04
+            pgver: 18
+            postgisver: 35
+          - os: windows-latest
+            pgver: 18
             postgisver: 35
 
     runs-on: ${{ matrix.os }}
