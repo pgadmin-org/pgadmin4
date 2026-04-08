@@ -10973,7 +10973,7 @@ msgstr "Vytvořit - %s"
 
 #: pgadmin/browser/static/js/node.js:131
 msgid "Refresh..."
-msgstr "Občerstvit..."
+msgstr "Obnovit..."
 
 #: pgadmin/browser/static/js/node.js:144
 msgid "Properties..."
