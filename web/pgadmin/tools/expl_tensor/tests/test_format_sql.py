@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""Test the SQL formatting functionality in Explain PostgreSQL module."""
+"""Test the SQL formatting functionality in Explain Tensor module."""
 import json
 import unittest
 from unittest.mock import patch
@@ -19,13 +19,13 @@ class TestFormatSQLFunctionality(BaseTestGenerator):
 
     scenarios = [
         ('Test format SQL endpoint', dict(
-            url='/expl_pgsql/formatSQL',
+            url='/expl_tensor/formatSQL',
             method='POST',
             data={'query_src': 'SELECT * FROM test_table WHERE id = 1;'},
             expected_success=True
         )),
         ('Test format SQL with invalid data', dict(
-            url='/expl_pgsql/formatSQL',
+            url='/expl_tensor/formatSQL',
             method='POST',
             data='invalid_json',
             expected_success=False
@@ -34,9 +34,9 @@ class TestFormatSQLFunctionality(BaseTestGenerator):
 
     def runTest(self):
         """Run test case."""
-        with patch('pgadmin.tools.expl_pgsql.get_preference_value') as mock_pref, \
-              patch('pgadmin.tools.expl_pgsql.is_valid_url') as mock_valid, \
-              patch('pgadmin.tools.expl_pgsql.send_post_request') as mock_send:
+        with patch('pgadmin.tools.expl_tensor.get_preference_value') as mock_pref, \
+              patch('pgadmin.tools.expl_tensor.is_valid_url') as mock_valid, \
+              patch('pgadmin.tools.expl_tensor.send_post_request') as mock_send:
 
             mock_pref.return_value = 'https://explain.tensor.ru'
             mock_valid.return_value = True

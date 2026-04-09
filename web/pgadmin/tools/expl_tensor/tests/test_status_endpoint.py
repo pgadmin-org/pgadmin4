@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""Test the status endpoint in Explain PostgreSQL module."""
+"""Test the status endpoint in Explain Tensor module."""
 import json
 import unittest
 from unittest.mock import patch
@@ -30,10 +30,10 @@ class TestStatusEndpoint(BaseTestGenerator):
 
     def runTest(self):
         """Run test case."""
-        with patch('pgadmin.tools.expl_pgsql.get_preference_value') as mock_pref:
+        with patch('pgadmin.tools.expl_tensor.get_preference_value') as mock_pref:
             mock_pref.return_value = self.preference_value
 
-            response = self.tester.get('/expl_pgsql/status')
+            response = self.tester.get('/expl_tensor/status')
             self.assertEqual(response.status_code, 200)
             response_data = json.loads(response.data.decode('utf-8'))
             self.assertTrue(response_data['success'])

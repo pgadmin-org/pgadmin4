@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-"""A blueprint module implementing Explain PostgreSQL configuration."""
+"""A blueprint module implementing Explain Tensor configuration."""
 
 import json
 import urllib.request
@@ -18,53 +18,58 @@ from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.user_login_check import pga_login_required
+import config
 
-MODULE_NAME = 'expl_pgsql'
+MODULE_NAME = 'expl_tensor'
 
 
-class ExplPgsqlModule(PgAdminModule):
-    """Explain PostgreSQL configuration module for pgAdmin."""
+class ExplTensorModule(PgAdminModule):
+    """Explain Tensor configuration module for pgAdmin."""
 
-    LABEL = gettext('Explain PostgreSQL')
+    LABEL = gettext('Explain Tensor')
 
     def register_preferences(self):
         """
-        Register preferences for Explain PostgreSQL.
+        Register preferences for Explain Tensor.
         """
 
+        # Don't register Explain Tensor preferences if EXPLAIN_TENSOR is disabled at system level
+        if not getattr(config, 'EXPLAIN_TENSOR_ENABLED', False):
+            return
+
         self.explain_module = self.preference.register(
-            'Explain PostgreSQL', 'explain_postgresql',
+            'Explain Tensor', 'explain_tensor',
             gettext("Explain Plan"), 'boolean', False,
             category_label=gettext('Configuration'),
-            help_str=gettext('Analyze query plan via Explain PostgreSQL API')
+            help_str=gettext('Analyze query plan via Explain Tensor API')
         )
 
-        self.explain_postgresql_api = self.preference.register(
-            'Explain PostgreSQL', 'explain_postgresql_api',
-            gettext("Explain PostgreSQL API"), 'text',
+        self.explain_tensor_api = self.preference.register(
+            'Explain Tensor', 'explain_tensor_api',
+            gettext("Explain Tensor API"), 'text',
             'https://explain.tensor.ru',
             category_label=gettext('Configuration'),
             help_str=gettext(
-                'Explain PostgreSQL API endpoint '
+                'Explain Tensor API endpoint '
                 '(e.g. https://explain.tensor.ru)'
             ),
             allow_blanks=False
         )
 
-        self.explain_postgresql_private = self.preference.register(
-            'Explain PostgreSQL', 'explain_postgresql_private',
+        self.explain_tensor_private = self.preference.register(
+            'Explain Tensor', 'explain_tensor_private',
             gettext("Private Plans"), 'boolean', False,
             category_label=gettext('Configuration'),
             help_str=gettext(
-                'Hide plans from public access on Explain PostgreSQL'
+                'Hide plans from public access on Explain Tensor'
             )
         )
 
-        self.explain_postgresql_format = self.preference.register(
-            'Explain PostgreSQL', 'explain_postgresql_format',
+        self.explain_tensor_format = self.preference.register(
+            'Explain Tensor', 'explain_tensor_format',
             gettext("Format SQL"), 'boolean', False,
             category_label=gettext('Configuration'),
-            help_str=gettext('Format SQL using Explain PostgreSQL API')
+            help_str=gettext('Format SQL using Explain Tensor API')
         )
 
     def get_exposed_url_endpoints(self):
@@ -72,29 +77,30 @@ class ExplPgsqlModule(PgAdminModule):
         Returns the list of URLs exposed to the client.
         """
         return [
-            'expl_pgsql.status',
-            'expl_pgsql.explain',
-            'expl_pgsql.formatSQL',
+            'expl_tensor.status',
+            'expl_tensor.explain',
+            'expl_tensor.formatSQL',
         ]
 
 
 # Initialise the module
-blueprint = ExplPgsqlModule(MODULE_NAME, __name__, static_url_path='/static')
+blueprint = ExplTensorModule(MODULE_NAME, __name__, static_url_path='/static')
 
 
 @blueprint.route("/status", methods=["GET"], endpoint='status')
 @pga_login_required
 def get_status():
     """
-    Get the status of the Explain PostgreSQL configuration.
+    Get the status of the Explain Tensor configuration.
     Indicates whether the analysis of query plans
-    via the Explain PostgreSQL API is currently enabled
+    via the Explain Tensor API is currently enabled
     """
 
     return make_json_response(
         success=1,
         data={
-            'enabled': get_preference_value('explain_postgresql'),
+            'enabled': get_preference_value(MODULE_NAME, 'explain_tensor'),
+            'system_enabled': getattr(config, 'EXPLAIN_TENSOR_ENABLED', False),
         }
     )
 
@@ -106,7 +112,7 @@ def get_status():
 @pga_login_required
 def formatSQL():
     """
-    This method is used to send sql to explain postgresql beatifier api.
+    This method is used to send sql to explain tensor beatifier api.
     """
 
     data = request.get_json(silent=True)
@@ -120,10 +126,10 @@ def formatSQL():
             ),
         )
 
-    explain_postgresql_api = get_preference_value('explain_postgresql_api')
+    explain_tensor_api = get_preference_value(MODULE_NAME, 'explain_tensor_api')
 
     # Validate the API URL to prevent SSRF
-    if not is_valid_url(explain_postgresql_api):
+    if not is_valid_url(explain_tensor_api):
         return make_json_response(
             success=0,
             errormsg=gettext(
@@ -135,13 +141,17 @@ def formatSQL():
             )
         )
 
-    api_url = explain_postgresql_api + '/beautifier-api'
+    api_url = explain_tensor_api + '/beautifier-api'
     is_error, data = send_post_request(api_url, data)
     if is_error:
         return make_json_response(
             success=0,
-            errormsg=data,
-            info=gettext('Failed to post data to the Explain PostgreSQL API'),
+            errormsg=str(data),
+            info=gettext('Failed to post data to the Explain Tensor API'),
+            data={
+                'code': data.code,
+                'url': api_url,
+            }
         )
 
     return make_json_response(success=1, data=data)
@@ -154,7 +164,7 @@ def formatSQL():
 @pga_login_required
 def explain():
     """
-    This method is used to send plan to explain postgresql api.
+    This method is used to send plan to explain tensor api.
     """
 
     data = request.get_json(silent=True)
@@ -168,10 +178,10 @@ def explain():
             ),
         )
 
-    explain_postgresql_api = get_preference_value('explain_postgresql_api')
+    explain_tensor_api = get_preference_value(MODULE_NAME, 'explain_tensor_api')
 
     # Validate the API URL to prevent SSRF
-    if not is_valid_url(explain_postgresql_api):
+    if not is_valid_url(explain_tensor_api):
         return make_json_response(
             success=0,
             errormsg=gettext(
@@ -183,17 +193,21 @@ def explain():
             )
         )
 
-    pref_name = 'explain_postgresql_private'
-    explain_postgresql_private = get_preference_value(pref_name)
-    data['private'] = explain_postgresql_private
+    pref_name = 'explain_tensor_private'
+    explain_tensor_private = get_preference_value(MODULE_NAME, pref_name)
+    data['private'] = explain_tensor_private
 
-    api_url = explain_postgresql_api + '/explain'
+    api_url = explain_tensor_api + '/explain'
     is_error, response_data = send_post_request(api_url, data)
     if is_error:
         return make_json_response(
             success=0,
-            errormsg=response_data,
-            info=gettext('Failed to post data to the Explain PostgreSQL API'),
+            errormsg=str(response_data),
+            info=gettext('Failed to post data to the Explain Tensor API'),
+            data={
+                'code': response_data.code,
+                'url': api_url,
+            }
         )
 
     # response_data should be a relative path from 302 Location header
@@ -202,7 +216,10 @@ def explain():
             success=0,
             errormsg='Unexpected response format from API'
         )
-    res_data = explain_postgresql_api + response_data
+    lang = get_preference_value('misc', 'user_language')
+    res_data = explain_tensor_api + response_data
+    if lang in ('ru', 'en'):
+        res_data += '?lang=' + lang
     return make_json_response(success=1, data=res_data)
 
 
@@ -239,7 +256,7 @@ def send_post_request(url_api, data):
     data = json.dumps(data).encode('utf-8')
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "User-Agent": "pgAdmin4/ExplainModule",
+        "User-Agent": "pgAdmin4/ExplainTensor",
         "Method": "POST"
     }
     try:
@@ -250,7 +267,7 @@ def send_post_request(url_api, data):
             response_data = response.read().decode('utf-8')
             return False, response_data
     except Exception as e:
-        return True, str(e)
+        return True, e
 
 
 class No302HTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
@@ -295,18 +312,19 @@ no302opener = urllib.request.build_opener(
 )
 
 
-def get_preference_value(name):
+def get_preference_value(module, name):
     """
     Get a preference value, returning None if empty or not set.
 
     Args:
-        name: The preference name (e.g., 'explain_postgresql_api')
+        module: The preference module (e.g., 'expl_tensor')
+        name: The preference name (e.g., 'explain_tensor_api')
 
     Returns:
         The preference value or None if empty/not set.
     """
     try:
-        pref_module = Preferences.module(MODULE_NAME)
+        pref_module = Preferences.module(module)
         if pref_module:
             pref = pref_module.preference(name)
             if pref:

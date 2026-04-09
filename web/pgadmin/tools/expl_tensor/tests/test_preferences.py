@@ -7,11 +7,11 @@
 #
 ##########################################################################
 
-"""Test the preferences functionality in Explain PostgreSQL module."""
+"""Test the preferences functionality in Explain Tensor module."""
 import unittest
 from unittest.mock import patch, MagicMock
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.tools.expl_pgsql import MODULE_NAME
+from pgadmin.tools.expl_tensor import MODULE_NAME
 
 
 class TestPreferencesFunctionality(BaseTestGenerator):
@@ -39,8 +39,8 @@ class TestPreferencesFunctionality(BaseTestGenerator):
         """Run test case"""
         mock_app = MagicMock()
         mock_app.logger = MagicMock()
-        with patch('pgadmin.tools.expl_pgsql.Preferences') as mock_prefs, \
-              patch('pgadmin.tools.expl_pgsql.current_app', mock_app):
+        with patch('pgadmin.tools.expl_tensor.Preferences') as mock_prefs, \
+              patch('pgadmin.tools.expl_tensor.current_app', mock_app):
 
             if self.exception:
                 mock_prefs.module.side_effect = self.exception
@@ -51,6 +51,6 @@ class TestPreferencesFunctionality(BaseTestGenerator):
                 mock_module.preference.return_value = mock_pref
                 mock_prefs.module.return_value = mock_module
 
-            from pgadmin.tools.expl_pgsql import get_preference_value
-            result = get_preference_value('explain_postgresql_api')
+            from pgadmin.tools.expl_tensor import get_preference_value
+            result = get_preference_value('explain_tensor_api')
             self.assertEqual(result, self.expected_result)

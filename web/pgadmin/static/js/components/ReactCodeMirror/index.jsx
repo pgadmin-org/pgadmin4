@@ -19,7 +19,9 @@ import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
 import { copyToClipboard } from '../../clipboard';
 import { useDelayedCaller } from '../../custom_hooks';
-import explPgsqlFormatSQL from '../../../../tools/expl_pgsql/static/js/ExplainPostgreSQL/formatSQL';
+import explTensorFormatSQL from '../../../../tools/expl_tensor/static/js/formatSQL';
+import getApiInstance from '../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
 import Loader from '../Loader';
 
 import Editor from './components/Editor';
@@ -73,7 +75,21 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [loading, setLoading] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
-  const explPgsqlPrefs = usePreferences().getPreferencesForModule('expl_pgsql');
+  const explTensorPrefs = usePreferences().getPreferencesForModule('expl_tensor');
+  
+  const api = getApiInstance();
+
+  let explTensorEnabled = false;
+  api.get(url_for('expl_tensor.status'))
+    .then((res)=>{
+      if(res.data?.success && res.data?.data?.system_enabled) {
+        explTensorEnabled = true;
+      }
+    })
+    .catch((e)=>{
+      console.error(`Error getting Explain Tensor status: ${e}`);
+    });
+
 
   const formatSQL = async (view)=>{
     let selection = true, sql = view.getSelection();
@@ -100,14 +116,14 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
       selection = false;
     }
     let formattedSql;
-    if (explPgsqlPrefs.explain_postgresql_format) {
+    if (explTensorEnabled && explTensorPrefs.explain_tensor_format) {
       let loadingTimeout = setTimeout(() => {
         setLoading(true);
       }, 500);
       try {
-        formattedSql = await explPgsqlFormatSQL(sql);
+        formattedSql = await explTensorFormatSQL(sql);
       } catch (e) {
-        console.error('Error formatting SQL using Explain PostgreSQL API:', e);
+        console.error('Error formatting SQL using Explain Tensor API:', e);
         formattedSql = format(sql,formatPrefs);
       } finally {
         clearTimeout(loadingTimeout);

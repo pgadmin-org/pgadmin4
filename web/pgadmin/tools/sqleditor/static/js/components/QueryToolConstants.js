@@ -115,7 +115,7 @@ export const PANELS = {
   SCRATCH: 'id-scratch',
   DATA_OUTPUT: 'id-dataoutput',
   EXPLAIN: 'id-explain',
-  EXPLAIN_POSTGRESQL: 'id-explain-postgresql',
+  EXPLAIN_TENSOR: 'id-explain-tensor',
   GEOMETRY: 'id-geometry',
   NOTIFICATIONS: 'id-notifications',
   HISTORY: 'id-history',

@@ -12,10 +12,10 @@ import { useState, useEffect } from 'react';
 import _ from 'lodash';
 import gettext  from 'sources/gettext';
 import url_for from 'sources/url_for';
-import getApiInstance from '../../../../../static/js/api_instance';
+import getApiInstance from '../../../../static/js/api_instance';
 import PropTypes from 'prop-types';
-import EmptyPanelMessage from '../../../../../static/js/components/EmptyPanelMessage';
-import Loader from '../../../../../static/js/components/Loader';
+import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
+import Loader from '../../../../static/js/components/Loader';
 
 const StyledBox = styled(Box)(({theme}) => ({
   '& .Explain-tabPanel': {
@@ -24,7 +24,7 @@ const StyledBox = styled(Box)(({theme}) => ({
   }
 }));
 
-export default function ExplainPostgreSQL({
+export default function ExplainTensor({
   plans=[],
   emptyMessage=gettext('Use the Explain/Explain Analyze button to generate the plan for a query. Alternatively, you can also execute "EXPLAIN (FORMAT JSON) [QUERY]".'),
   sql='',
@@ -37,15 +37,36 @@ export default function ExplainPostgreSQL({
   useEffect(() => {
     if (_.isEmpty(plans)) return;
     const api = getApiInstance();
+    const postData = {
+      plan: JSON.stringify(plans),
+      query: sql,
+    };
     api.post(
-      url_for('expl_pgsql.explain'),
-      {
-        plan: JSON.stringify(plans),
-        query: sql,
-      })
+      url_for('expl_tensor.explain'),
+      postData,
+    )
       .then((res) => {
         if (res.data?.success) {
           setData(res.data?.data);
+        } else if (res.data?.data?.code == 401) {
+          fetch(res.data?.data?.url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(postData),
+          })
+            .then((res) => {
+              if (res.ok) {
+                setData(res.url);
+              } else {
+                setError(`HTTP error ${res.status}`);
+              }
+            })
+            .catch((err) => {
+              setError(err?.message);
+            });
         } else {
           setError(`${res.data?.info} : ${res.data?.errormsg}`);
         }
@@ -75,7 +96,7 @@ export default function ExplainPostgreSQL({
     <div style={{ width: '100%', height: '100%' }}>
       <iframe
         src={ data }
-        title="Explain PostgreSQL"
+        title="Explain Tensor"
         width="100%"
         height="100%"
         sandbox="allow-scripts"
@@ -85,7 +106,7 @@ export default function ExplainPostgreSQL({
   );
 }
 
-ExplainPostgreSQL.propTypes = {
+ExplainTensor.propTypes = {
   plans: PropTypes.array,
   emptyMessage: PropTypes.string,
   sql: PropTypes.string,

@@ -18,4 +18,4 @@ PL/SQL code.
    erd_tool
    psql_tool
    ai_tools
-   expl_pgsql
+   expl_tensor

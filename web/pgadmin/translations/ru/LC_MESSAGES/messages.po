@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: degit22@gmail.com\n"
-"POT-Creation-Date: 2026-04-01 16:57+0300\n"
+"POT-Creation-Date: 2026-04-09 14:13+0300\n"
 "PO-Revision-Date: 2026-01-02 00:05+0700\n"
 "Last-Translator: Degit22 <degit22@gmail.com>\n"
 "Language: ru\n"
@@ -959,7 +959,7 @@ msgid "Toggle comment"
 msgstr "Переключить комментарий"
 
 #: pgadmin/browser/register_editor_preferences.py:109
-#: pgadmin/tools/expl_pgsql/__init__.py:65
+#: pgadmin/tools/expl_tensor/__init__.py:70
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Format SQL"
 msgstr "Формат SQL"
@@ -11294,10 +11294,10 @@ msgid "Activity"
 msgstr ""
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:319
-#: pgadmin/tools/expl_pgsql/__init__.py:38
-#: pgadmin/tools/expl_pgsql/__init__.py:46
-#: pgadmin/tools/expl_pgsql/__init__.py:57
-#: pgadmin/tools/expl_pgsql/__init__.py:66
+#: pgadmin/tools/expl_tensor/__init__.py:43
+#: pgadmin/tools/expl_tensor/__init__.py:51
+#: pgadmin/tools/expl_tensor/__init__.py:62
+#: pgadmin/tools/expl_tensor/__init__.py:71
 msgid "Configuration"
 msgstr "Конфигурация"
 
@@ -12903,9 +12903,9 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/azure.js:34
 #: pgadmin/misc/cloud/static/js/google.js:35
 #: pgadmin/static/js/SchemaView/SchemaState/SchemaState.js:158
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:218
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:234
 #: pgadmin/static/js/tree/ObjectExplorer/ObjectExplorerFilter.jsx:58
-#: pgadmin/tools/expl_pgsql/static/js/ExplainPostgreSQL/index.jsx:68
+#: pgadmin/tools/expl_tensor/static/js/index.jsx:89
 #: pgadmin/tools/user_management/static/js/Users.jsx:261
 msgid "Loading..."
 msgstr "Загружается..."
@@ -14733,7 +14733,7 @@ msgid "Heap Blocks"
 msgstr "Блоки кучи"
 
 #: pgadmin/static/js/Explain/index.jsx:513
-#: pgadmin/tools/expl_pgsql/static/js/ExplainPostgreSQL/index.jsx:29
+#: pgadmin/tools/expl_tensor/static/js/index.jsx:29
 msgid ""
 "Use the Explain/Explain Analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
@@ -15003,12 +15003,12 @@ msgstr ""
 msgid "Accesskey"
 msgstr ""
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:53
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:55
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:316
 msgid "Copied!"
 msgstr "Скопировано!"
 
-#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:53
+#: pgadmin/static/js/components/ReactCodeMirror/index.jsx:55
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:308
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:311
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:418
@@ -16218,7 +16218,7 @@ msgstr ""
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:113
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:335
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:993
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1230
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1238
 msgid "Unsaved changes"
 msgstr "Несохранённые изменения"
 
@@ -16367,62 +16367,62 @@ msgstr ""
 msgid "Failed to get data. Please delete this table."
 msgstr ""
 
-#: pgadmin/tools/expl_pgsql/__init__.py:28
+#: pgadmin/tools/expl_tensor/__init__.py:29
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1050
-msgid "Explain PostgreSQL"
+msgid "Explain Tensor"
 msgstr "Анализ плана выполнения"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:37
+#: pgadmin/tools/expl_tensor/__init__.py:42
 msgid "Explain Plan"
 msgstr "Анализ планов"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:39
-msgid "Analyze query plan via Explain PostgreSQL API"
-msgstr "Анализ планов запроса с помощью API Explain PostgreSQL"
+#: pgadmin/tools/expl_tensor/__init__.py:44
+msgid "Analyze query plan via Explain Tensor API"
+msgstr "Анализ планов запроса с помощью API Explain expl_tensor"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:44
-msgid "Explain PostgreSQL API"
-msgstr "Адрес API Explain PostgreSQL"
+#: pgadmin/tools/expl_tensor/__init__.py:49
+msgid "Explain Tensor API"
+msgstr "Адрес API Explain Tensor"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:48
-msgid "Explain PostgreSQL API endpoint (e.g. https://explain.tensor.ru)"
+#: pgadmin/tools/expl_tensor/__init__.py:53
+msgid "Explain Tensor API endpoint (e.g. https://explain.tensor.ru)"
 msgstr ""
-"Точка доступа к API Explain PostgreSQL (например, "
+"Точка доступа к API Explain Tensor (например, "
 "https://explain.tensor.ru)"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:56
+#: pgadmin/tools/expl_tensor/__init__.py:61
 msgid "Private Plans"
 msgstr "Скрыть планы"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:59
-msgid "Hide plans from public access on Explain PostgreSQL"
+#: pgadmin/tools/expl_tensor/__init__.py:64
+msgid "Hide plans from public access on Explain Tensor"
 msgstr "Скрыть планы из публичного доступа"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:67
-msgid "Format SQL using Explain PostgreSQL API"
-msgstr "Форматирование SQL с использованием API Explain PostgreSQL"
+#: pgadmin/tools/expl_tensor/__init__.py:72
+msgid "Format SQL using Explain Tensor API"
+msgstr "Форматирование SQL с использованием API Explain Tensor"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:118
-#: pgadmin/tools/expl_pgsql/__init__.py:166
+#: pgadmin/tools/expl_tensor/__init__.py:124
+#: pgadmin/tools/expl_tensor/__init__.py:176
 msgid "JSON payload must be an object, not null, array, or scalar value"
 msgstr "Некорректные данные в JSON, должен быть объект"
 
-#: pgadmin/tools/expl_pgsql/__init__.py:130
-#: pgadmin/tools/expl_pgsql/__init__.py:178
+#: pgadmin/tools/expl_tensor/__init__.py:136
+#: pgadmin/tools/expl_tensor/__init__.py:188
 msgid "Invalid API endpoint URL. Only HTTP/HTTPS URLs are allowed."
 msgstr "Некорректный адрес для точки доступа к API. Используйте HTTP/HTTPS."
 
-#: pgadmin/tools/expl_pgsql/__init__.py:133
-#: pgadmin/tools/expl_pgsql/__init__.py:181
+#: pgadmin/tools/expl_tensor/__init__.py:139
+#: pgadmin/tools/expl_tensor/__init__.py:191
 msgid ""
 "The provided API endpoint is not valid. Only HTTP/HTTPS URLs are "
 "permitted."
 msgstr "Некорректный адрес для точки доступа к API. Используйте HTTP/HTTPS."
 
-#: pgadmin/tools/expl_pgsql/__init__.py:144
-#: pgadmin/tools/expl_pgsql/__init__.py:196
-msgid "Failed to post data to the Explain PostgreSQL API"
-msgstr "Не удалось отправить данные в API Explain PostgreSQL"
+#: pgadmin/tools/expl_tensor/__init__.py:150
+#: pgadmin/tools/expl_tensor/__init__.py:206
+msgid "Failed to post data to the Explain Tensor API"
+msgstr "Не удалось отправить данные в API Explain Tensor"
 
 #: pgadmin/tools/grant_wizard/__init__.py:383
 #, python-brace-format
@@ -18396,7 +18396,7 @@ msgid "%s rows affected."
 msgstr "обработано строк: %s."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:994
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1231
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1239
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
@@ -18408,72 +18408,72 @@ msgstr ""
 msgid "Applying the new filter..."
 msgstr "Применение нового фильтра..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1091
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1100
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1099
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1108
 msgid "Downloading results..."
 msgstr "Загрузка результатов..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1093
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1102
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1101
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1110
 #, python-format
 msgid "Downloading results(%s)..."
 msgstr "Загрузка результатов (%s)..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1108
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1116
 msgid "Setting the limit on the result..."
 msgstr "Установка ограничения набора результатов..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1122
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1130
 msgid "Removing the filter..."
 msgstr "Удаление фильтра..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1183
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1191
 msgid "Fetching rows..."
 msgstr "Извлечение строк..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1257
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1265
 msgid "Save data changes?"
 msgstr "Сохранить изменения данных?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1260
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1268
 msgid "The data has changed. Do you want to save changes?"
 msgstr "Данные были изменены. Желаете сохранить изменения?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1286
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1294
 msgid "Saving data..."
 msgstr "Сохранение данных..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1313
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1321
 msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1325
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1333
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1368
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1376
 msgid "Data saved successfully."
 msgstr "Данные сохранены успешно."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1370
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1378
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 "Автоматическая фиксация отключена. Вам по-прежнему необходимо фиксировать"
 " изменения в базе данных."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1534
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1542
 msgid "Geometry Viewer"
 msgstr "Просмотрщик геометрии"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1689
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1697
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr "Визуализатор графов"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1706
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1714
 msgid "No data output. Execute a query to get output."
 msgstr "Нет вывода данных. Выполните запрос, чтобы получить вывод."
 

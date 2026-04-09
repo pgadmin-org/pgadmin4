@@ -34,7 +34,7 @@ class ToolsModule(PgAdminModule):
         from .debugger import blueprint as module
         app.register_blueprint(module)
 
-        from .expl_pgsql import blueprint as module
+        from .expl_tensor import blueprint as module
         app.register_blueprint(module)
 
         from .erd import blueprint as module

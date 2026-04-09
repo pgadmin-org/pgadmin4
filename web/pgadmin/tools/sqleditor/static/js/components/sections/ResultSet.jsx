@@ -21,7 +21,7 @@ import { ResultSetToolbar } from './ResultSetToolbar';
 import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout';
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
-import ExplainPostgreSQL from '../../../../../expl_pgsql/static/js/ExplainPostgreSQL';
+import ExplainTensor from '../../../../../expl_tensor/static/js';
 import { QuerySources } from './QueryHistory';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import CopyData from '../QueryToolDataGrid/CopyData';
@@ -1040,15 +1040,15 @@ export function ResultSet() {
   }, []);
 
   useEffect(() => {
-    const showExplPgsql = (planJson, sql) => {
+    const showExplTensor = (planJson, sql) => {
       if (!planJson) return;
-      api.get(url_for('expl_pgsql.status'))
+      api.get(url_for('expl_tensor.status'))
         .then((res)=>{
           if(res.data?.success && res.data?.data?.enabled) {
             layoutDocker.openTab({
-              id: PANELS.EXPLAIN_POSTGRESQL,
-              title: gettext('Explain PostgreSQL'),
-              content: <ExplainPostgreSQL
+              id: PANELS.EXPLAIN_TENSOR,
+              title: gettext('Explain Tensor'),
+              content: <ExplainTensor
                 plans={planJson}
                 sql={sql}
               />,
@@ -1057,13 +1057,21 @@ export function ResultSet() {
           }
         })
         .catch((e)=>{
-          console.error(`Error getting Explain PostgreSQL status: ${e}`);
+          console.error(`Error getting Explain Tensor status: ${e}`);
         });
     };
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplPgsql);
+    api.get(url_for('expl_tensor.status'))
+      .then((res)=>{
+        if(res.data?.success && res.data?.data?.system_enabled) {
+          eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplTensor);
+        }
+      })
+      .catch((e)=>{
+        console.error(`Error getting Explain Tensor status: ${e}`);
+      });
     return () => {
-      eventBus.deregisterListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplPgsql);
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplTensor);
     };
   }, []);
 

@@ -7,10 +7,10 @@
 #
 ##########################################################################
 
-"""Test the URL validation functionality in Explain PostgreSQL module."""
+"""Test the URL validation functionality in Explain Tensor module."""
 import unittest
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.tools.expl_pgsql import is_valid_url
+from pgadmin.tools.expl_tensor import is_valid_url
 
 
 class TestURLValidation(BaseTestGenerator):
