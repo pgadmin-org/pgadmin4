@@ -23,6 +23,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
+from pgadmin.utils.server_access import get_server
 from pgadmin.utils.constants import SERVER_NOT_FOUND
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
@@ -97,9 +98,7 @@ class IEMessage(IProcessDesc):
 
     def get_server_name(self):
         # Fetch the server details like hostname, port, roles etc
-        s = Server.query.filter_by(
-            id=self.sid, user_id=current_user.id
-        ).first()
+        s = get_server(self.sid)
 
         if s is None:
             return _("Not available")
@@ -293,8 +292,7 @@ def create_import_export_job(sid):
         data = json.loads(request.data)
 
     # Fetch the server details like hostname, port, roles etc
-    server = Server.query.filter_by(
-        id=sid).first()
+    server = get_server(sid)
 
     if server is None:
         return bad_request(errormsg=_("Could not find the specified server."))

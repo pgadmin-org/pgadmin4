@@ -212,8 +212,9 @@ def clear_cloud_session(pid=None):
 @pga_login_required
 def update_cloud_process(sid):
     """Update Cloud Server Process"""
-    _process = Process.query.filter_by(user_id=current_user.id,
-                                       server_id=sid).first()
+    _process = Process.for_user(server_id=sid).first()
+    if _process is None:
+        return success_return()
     _process.acknowledge = None
     db.session.commit()
     return success_return()

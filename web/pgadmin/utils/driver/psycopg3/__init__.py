@@ -16,6 +16,7 @@ object.
 import datetime
 import re
 from flask import session
+from flask_babel import gettext
 from flask_login import current_user
 from werkzeug.exceptions import InternalServerError
 import psycopg
@@ -23,6 +24,9 @@ from threading import Lock
 
 import config
 from pgadmin.model import Server
+from pgadmin.utils.server_access import get_server, \
+    get_user_server_query
+from pgadmin.utils.exception import ObjectGone
 from .keywords import scan_keyword
 from ..abstract import BaseDriver
 from .connection import Connection
@@ -67,20 +71,29 @@ class Driver(BaseDriver):
     def _restore_connections_from_session(self):
         """
         Used internally by connection_manager to restore connections
-        from sessions.
+        from sessions.  Includes both owned and shared servers so
+        non-owner connections survive session restore.
         """
         if session.sid not in self.managers:
             self.managers[session.sid] = managers = dict()
             if '__pgsql_server_managers' in session:
                 session_managers = \
                     session['__pgsql_server_managers'].copy()
-                for server in \
-                    Server.query.filter_by(
-                        user_id=current_user.id, is_adhoc=0):
+                servers = get_user_server_query().filter(
+                    Server.is_adhoc == 0)
+                for server in servers:
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
+                    # Suppress owner-only fields for non-owners
+                    # of shared servers so passexec_cmd and
+                    # post_connection_sql don't leak.
+                    if server.shared and \
+                            server.user_id != current_user.id:
+                        manager.passexec = None
+                        manager.post_connection_sql = None
                     if server.id in session_managers:
-                        manager._restore(session_managers[server.id])
+                        manager._restore(
+                            session_managers[server.id])
                         manager.update_session()
             return managers
 
@@ -100,9 +113,27 @@ class Driver(BaseDriver):
         assert (sid is not None and isinstance(sid, int))
         managers = None
 
-        server_data = Server.query.filter_by(id=sid).first()
-        if server_data is None:
-            return None
+        # In server mode, verify the current user has access to this
+        # server. This is the primary security boundary — all
+        # check_precondition decorators and tool endpoints flow
+        # through connection_manager().
+        if config.SERVER_MODE:
+            if current_user and current_user.is_authenticated:
+                server_data = get_server(sid)
+            else:
+                raise ObjectGone(
+                    gettext("Server not found."))
+            if server_data is None:
+                raise ObjectGone(
+                    gettext("Server not found."))
+        else:
+            # Desktop mode — single user, no isolation needed.
+            # Return None instead of raising so callers that
+            # handle None gracefully (e.g., test teardown,
+            # cleanup paths) are not disrupted.
+            server_data = Server.query.filter_by(id=sid).first()
+            if server_data is None:
+                return None
 
         if session.sid not in self.managers:
             with connection_restore_lock:
@@ -119,14 +150,18 @@ class Driver(BaseDriver):
 
         managers['pinged'] = datetime.datetime.now()
         if str(sid) not in managers:
-            s = Server.query.filter_by(id=sid).first()
+            # server_data was already access-checked above;
+            # it cannot be None at this point.
+            manager = ServerManager(server_data)
+            # Suppress owner-only fields for non-owners of
+            # shared servers.
+            if config.SERVER_MODE and server_data.shared and \
+                    server_data.user_id != current_user.id:
+                manager.passexec = None
+                manager.post_connection_sql = None
+            managers[str(sid)] = manager
 
-            if not s:
-                return None
-
-            managers[str(sid)] = ServerManager(s)
-
-            return managers[str(sid)]
+            return manager
 
         return managers[str(sid)]
 

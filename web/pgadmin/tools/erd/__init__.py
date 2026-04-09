@@ -20,6 +20,7 @@ from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.model import Server
+from pgadmin.utils.server_access import get_server
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD
 from pgadmin.utils.driver import get_driver
 from pgadmin.browser.utils import underscore_unescape
@@ -556,7 +557,7 @@ def panel(trans_id):
     if "linux" in _platform:
         is_linux_platform = True
 
-    s = Server.query.filter_by(id=int(params['sid'])).first()
+    s = get_server(int(params['sid']))
 
     if s:
         params.update({
