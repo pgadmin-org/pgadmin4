@@ -165,7 +165,8 @@ RUN apk update && apk upgrade && \
         tzdata \
         libedit \
         libldap \
-        libcap && \
+        libcap \
+        su-exec && \
     rm -rf /var/cache/apk/*
 
 # Copy in the Python packages
@@ -197,7 +198,7 @@ RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
     chown pgadmin:root /run/pgadmin /var/lib/pgadmin && \
-    chmod g=u /var/lib/pgadmin && \
+    chmod g=u /run/pgadmin /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
