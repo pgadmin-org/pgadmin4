@@ -29,8 +29,9 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from .schema_diff_view_utils import SchemaDiffViewCompare
-from pgadmin.utils import does_utility_exist, get_server
+from pgadmin.utils import does_utility_exist
 from pgadmin.model import Server
+from pgadmin.utils.server_access import get_server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils.constants import SERVER_NOT_FOUND
 
@@ -2317,8 +2318,7 @@ class MViewNode(ViewNode, VacuumSettings):
                                               res['rows'][0]['name'])
 
             # Fetch the server details like hostname, port, roles etc
-            server = Server.query.filter_by(
-                id=sid).first()
+            server = get_server(sid)
 
             if server is None:
                 return make_json_response(
@@ -2436,9 +2436,7 @@ class MViewNode(ViewNode, VacuumSettings):
         Returns:
             None
         """
-        server = Server.query.filter_by(
-            id=sid, user_id=current_user.id
-        ).first()
+        server = get_server(sid)
 
         if server is None:
             return make_json_response(

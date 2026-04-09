@@ -195,6 +195,7 @@ class BatchProcessTest(BaseTestGenerator):
                 self.utility_pid = 123
                 self.server_id = None
 
+        process_mock.for_user = process_mock.query.filter_by
         mock_result = process_mock.query.filter_by.return_value
         mock_result.first.return_value = TestMockProcess(
             backup_obj, self.class_params['args'], self.class_params['cmd'])
@@ -239,6 +240,7 @@ class BatchProcessTest(BaseTestGenerator):
                 self.utility_pid = 123
                 self.server_id = None
 
+        process_mock.for_user = process_mock.query.filter_by
         process_mock.query.filter_by.return_value = [
             TestMockProcess(backup_obj,
                             self.class_params['args'],

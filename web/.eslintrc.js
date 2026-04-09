@@ -42,7 +42,7 @@ module.exports = [
         'babelOptions': {
           'plugins': [
             '@babel/plugin-syntax-jsx',
-            '@babel/plugin-proposal-class-properties',
+            '@babel/plugin-transform-class-properties',
           ],
         },
         ...reactjs.configs.recommended.parserOptions,

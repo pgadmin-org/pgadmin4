@@ -153,7 +153,7 @@ class BatchProcess:
             self.manager_obj = kwargs['manager_obj']
 
     def _retrieve_process(self, _id):
-        p = Process.query.filter_by(pid=_id, user_id=current_user.id).first()
+        p = Process.for_user(pid=_id).first()
 
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
@@ -372,9 +372,7 @@ class BatchProcess:
             # There is no way to find out the error message from this process
             # as standard output, and standard error were redirected to
             # devnull.
-            p = Process.query.filter_by(
-                pid=self.id, user_id=current_user.id
-            ).first()
+            p = Process.for_user(pid=self.id).first()
             p.start_time = p.end_time = get_current_time()
             if not p.exit_code:
                 p.exit_code = self.ecode
@@ -382,9 +380,7 @@ class BatchProcess:
             db.session.commit()
         else:
             # Update the process state to "Started"
-            p = Process.query.filter_by(
-                pid=self.id, user_id=current_user.id
-            ).first()
+            p = Process.for_user(pid=self.id).first()
             p.process_state = PROCESS_STARTED
             db.session.commit()
 
@@ -530,9 +526,7 @@ class BatchProcess:
         """
         _pid = self.id
 
-        _process = Process.query.filter_by(
-            user_id=current_user.id, pid=_pid
-        ).first()
+        _process = Process.for_user(pid=_pid).first()
 
         if _process is None:
             raise LookupError(PROCESS_NOT_FOUND)
@@ -588,9 +582,7 @@ class BatchProcess:
         out_completed = err_completed = False
         process_output = (out != -1 and err != -1)
 
-        j = Process.query.filter_by(
-            pid=self.id, user_id=current_user.id
-        ).first()
+        j = Process.for_user(pid=self.id).first()
         enc = sys.getdefaultencoding()
         if enc == 'ascii':
             enc = 'utf-8'
@@ -739,7 +731,7 @@ class BatchProcess:
 
     @staticmethod
     def list():
-        processes = Process.query.filter_by(user_id=current_user.id)
+        processes = Process.for_user()
         changed = False
 
         browser_preference = Preferences.module('browser')
@@ -812,9 +804,7 @@ class BatchProcess:
         And, delete the process information from the configuration, and the log
         files related to the process, if it has already been completed.
         """
-        p = Process.query.filter_by(
-            user_id=current_user.id, pid=_pid
-        ).first()
+        p = Process.for_user(pid=_pid).first()
 
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
@@ -886,9 +876,7 @@ class BatchProcess:
     def stop_process(_pid):
         """
         """
-        p = Process.query.filter_by(
-            user_id=current_user.id, pid=_pid
-        ).first()
+        p = Process.for_user(pid=_pid).first()
 
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
@@ -910,9 +898,7 @@ class BatchProcess:
 
     @staticmethod
     def update_server_id(_pid, _sid):
-        p = Process.query.filter_by(
-            user_id=current_user.id, pid=_pid
-        ).first()
+        p = Process.for_user(pid=_pid).first()
 
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
