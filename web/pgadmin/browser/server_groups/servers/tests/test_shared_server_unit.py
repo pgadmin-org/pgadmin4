@@ -43,6 +43,8 @@ def _make_server(**overrides):
             'sslcert': '/home/owner/.ssl/cert.pem',
             'sslkey': '/home/owner/.ssl/key.pem',
             'sslrootcert': '/home/owner/.ssl/ca.pem',
+            'sslcrl': '/home/owner/.ssl/crl.pem',
+            'sslcrldir': '/home/owner/.ssl/crl.d',
             'passfile': '/home/owner/.pgpass',
             'connect_timeout': '10',
         },
@@ -138,9 +140,11 @@ class TestGetSharedServerProperties(BaseTestGenerator):
     def test_strips_owner_ssl_paths(self):
         result = self._merge()
         cp = result.connection_params
-        # Owner had sslkey, sslrootcert, passfile
-        # SharedServer did not -- should be removed.
+        # Owner had sslkey, sslrootcert, sslcrl, sslcrldir,
+        # passfile — SharedServer did not — should be removed.
         self.assertNotIn('sslkey', cp)
+        self.assertNotIn('sslcrl', cp)
+        self.assertNotIn('sslcrldir', cp)
         self.assertNotIn('sslrootcert', cp)
         self.assertNotIn('passfile', cp)
 
@@ -223,7 +227,7 @@ class TestCreateSharedServerSanitization(BaseTestGenerator):
         cp = self.captured_kwargs.get('connection_params', {})
         # Sensitive keys must be stripped
         for key in ('sslcert', 'sslkey', 'sslrootcert',
-                    'passfile'):
+                    'sslcrl', 'sslcrldir', 'passfile'):
             self.assertNotIn(
                 key, cp,
                 'Sensitive key "{0}" should be stripped '
