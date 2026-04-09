@@ -36,6 +36,7 @@ export default function ExplainTensor({
 
   useEffect(() => {
     if (_.isEmpty(plans)) return;
+    setIsLoading(true);
     const api = getApiInstance();
     const postData = {
       plan: JSON.stringify(plans),
@@ -48,6 +49,7 @@ export default function ExplainTensor({
       .then((res) => {
         if (res.data?.success) {
           setData(res.data?.data);
+          setIsLoading(false);
         } else if (res.data?.data?.code == 401) {
           fetch(res.data?.data?.url, {
             method: 'POST',
@@ -66,15 +68,17 @@ export default function ExplainTensor({
             })
             .catch((err) => {
               setError(err?.message);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         } else {
           setError(`${res.data?.info} : ${res.data?.errormsg}`);
+          setIsLoading(false);
         }
       })
       .catch((err) => {
         setError(err?.message);
-      })
-      .finally(() => {
         setIsLoading(false);
       });
   }, [plans]);

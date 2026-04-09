@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-09 14:13+0300\n"
+"POT-Creation-Date: 2026-04-09 15:08+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12637,7 +12637,7 @@ msgstr ""
 #: pgadmin/static/js/SchemaView/SchemaState/SchemaState.js:158
 #: pgadmin/static/js/components/ReactCodeMirror/index.jsx:234
 #: pgadmin/static/js/tree/ObjectExplorer/ObjectExplorerFilter.jsx:58
-#: pgadmin/tools/expl_tensor/static/js/index.jsx:89
+#: pgadmin/tools/expl_tensor/static/js/index.jsx:93
 #: pgadmin/tools/user_management/static/js/Users.jsx:261
 msgid "Loading..."
 msgstr ""

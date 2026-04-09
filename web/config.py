@@ -1058,7 +1058,7 @@ MAX_LLM_TOOL_ITERATIONS = 20
 # When False, all Explain Tensor features are disabled and cannot be enabled
 # by users through preferences. When True, users can configure Explain Tensor
 # settings in preferences.
-EXPLAIN_TENSOR_ENABLED = True
+EXPLAIN_TENSOR_ENABLED = False
 
 #############################################################################
 # Patch the default config with custom config and other manipulations

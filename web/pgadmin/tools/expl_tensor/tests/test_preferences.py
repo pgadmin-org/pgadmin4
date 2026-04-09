@@ -52,5 +52,5 @@ class TestPreferencesFunctionality(BaseTestGenerator):
                 mock_prefs.module.return_value = mock_module
 
             from pgadmin.tools.expl_tensor import get_preference_value
-            result = get_preference_value('explain_tensor_api')
+            result = get_preference_value('expl_tensor', 'explain_tensor_api')
             self.assertEqual(result, self.expected_result)

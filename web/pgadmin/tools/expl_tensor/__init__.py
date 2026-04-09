@@ -149,7 +149,7 @@ def formatSQL():
             errormsg=str(data),
             info=gettext('Failed to post data to the Explain Tensor API'),
             data={
-                'code': data.code,
+                'code': getattr(data, 'code', None),
                 'url': api_url,
             }
         )
@@ -205,7 +205,7 @@ def explain():
             errormsg=str(response_data),
             info=gettext('Failed to post data to the Explain Tensor API'),
             data={
-                'code': response_data.code,
+                'code': getattr(response_data, 'code', None),
                 'url': api_url,
             }
         )

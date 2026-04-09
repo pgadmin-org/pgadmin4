@@ -45,21 +45,21 @@ class TestFormatSQLFunctionality(BaseTestGenerator):
                 'btf_query_text': 'SELECT\\n\\t*\\nFROM\\n\\ttest_table\\nWHERE\\n\\tid = 1;'
             }))
 
-        if self.expected_success:
-            response = self.tester.post(
-                self.url,
-                data=json.dumps(self.data),
-                content_type='application/json'
-            )
-            self.assertEqual(response.status_code, 200)
-            response_data = json.loads(response.data.decode('utf-8'))
-            self.assertTrue(response_data['success'])
-        else:
-            response = self.tester.post(
-                self.url,
-                data=self.data,
-                content_type='application/json'
-            )
-            self.assertEqual(response.status_code, 200)
-            response_data = json.loads(response.data.decode('utf-8'))
-            self.assertFalse(response_data['success'])
+            if self.expected_success:
+                response = self.tester.post(
+                    self.url,
+                    data=json.dumps(self.data),
+                    content_type='application/json'
+                )
+                self.assertEqual(response.status_code, 200)
+                response_data = json.loads(response.data.decode('utf-8'))
+                self.assertTrue(response_data['success'])
+            else:
+                response = self.tester.post(
+                    self.url,
+                    data=self.data,
+                    content_type='application/json'
+                )
+                self.assertEqual(response.status_code, 200)
+                response_data = json.loads(response.data.decode('utf-8'))
+                self.assertFalse(response_data['success'])
