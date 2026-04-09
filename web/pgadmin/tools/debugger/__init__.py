@@ -16,7 +16,7 @@ import copy
 
 from flask import render_template, request, current_app
 from flask_babel import gettext
-from flask_security import permissions_required
+from flask_security import permissions_required, current_user
 from pgadmin.user_login_check import pga_login_required
 from werkzeug.user_agent import UserAgent
 
@@ -35,7 +35,9 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     SERVER_CONNECTION_CLOSED
-from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
+from pgadmin.tools.user_management.PgAdminPermissions \
+    import AllPermissionTypes
+from pgadmin.utils.server_access import get_server
 from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'
@@ -1803,12 +1805,19 @@ def get_arguments_sqlite(sid, did, scid, func_id):
         - Function Id
     """
 
+    if get_server(sid) is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
+
     """Get the count of the existing data available in sqlite database"""
     dbg_func_args_count = int(DebuggerFunctionArguments.query.filter_by(
         server_id=sid,
         database_id=did,
         schema_id=scid,
-        function_id=func_id
+        function_id=func_id,
+        user_id=current_user.id
     ).count())
 
     args_data = []
@@ -1819,7 +1828,8 @@ def get_arguments_sqlite(sid, did, scid, func_id):
             server_id=sid,
             database_id=did,
             schema_id=scid,
-            function_id=func_id
+            function_id=func_id,
+            user_id=current_user.id
         )
 
         args_list = dbg_func_args.all()
@@ -1888,6 +1898,12 @@ def set_arguments_sqlite(sid, did, scid, func_id):
         - Function Id
     """
 
+    if get_server(sid) is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
+
     if request.data:
         data = json.loads(request.data)
 
@@ -1899,7 +1915,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
-                    arg_id=data[i]['arg_id']).count())
+                    arg_id=data[i]['arg_id'],
+                    user_id=current_user.id).count())
 
             # handle the Array list sent from the client
             array_string = ''
@@ -1918,7 +1935,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     database_id=data[i]['database_id'],
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
-                    arg_id=data[i]['arg_id']
+                    arg_id=data[i]['arg_id'],
+                    user_id=current_user.id
                 ).first()
 
                 dbg_func_args.is_null = data[i]['is_null']
@@ -1932,6 +1950,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
                     schema_id=data[i]['schema_id'],
                     function_id=data[i]['function_id'],
                     arg_id=data[i]['arg_id'],
+                    user_id=current_user.id,
                     is_null=data[i]['is_null'],
                     is_expression=data[i]['is_expression'],
                     use_default=data[i]['use_default'],
@@ -1977,12 +1996,20 @@ def clear_arguments_sqlite(sid, did, scid, func_id):
         - Function Id
     """
 
+    if get_server(sid) is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
+
     try:
         db.session.query(DebuggerFunctionArguments) \
             .filter(DebuggerFunctionArguments.server_id == sid,
                     DebuggerFunctionArguments.database_id == did,
                     DebuggerFunctionArguments.schema_id == scid,
-                    DebuggerFunctionArguments.function_id == func_id) \
+                    DebuggerFunctionArguments.function_id == func_id,
+                    DebuggerFunctionArguments.user_id ==
+                    current_user.id) \
             .delete()
 
         db.session.commit()

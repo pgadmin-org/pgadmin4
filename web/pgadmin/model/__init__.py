@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 49
+SCHEMA_VERSION = 50
 
 ##########################################################################
 #
@@ -50,6 +50,60 @@ db = SQLAlchemy(
 USER_ID = 'user.id'
 SERVER_ID = 'server.id'
 CASCADE_STR = "all, delete-orphan"
+
+
+class UserScopedMixin:
+    """Mixin for models that store per-user data.
+
+    Provides for_user() as the default scoped query entry point.
+    Models with a 'user_id' column or a 'uid' column are supported
+    automatically — the mixin detects which column name is used.
+
+    Usage:
+        # Instead of:
+        Process.query.filter_by(user_id=current_user.id, pid=pid)
+        # Use:
+        Process.for_user(pid=pid)
+    """
+
+    @classmethod
+    def _user_column(cls):
+        """Return the user-scoping column for this model."""
+        if hasattr(cls, 'user_id'):
+            return cls.user_id
+        if hasattr(cls, 'uid'):
+            return cls.uid
+        raise AttributeError(
+            f"{cls.__name__} has no user_id or uid column"
+        )
+
+    @classmethod
+    def _user_column_name(cls):
+        """Return the column name string ('user_id' or 'uid')."""
+        if hasattr(cls, 'user_id'):
+            return 'user_id'
+        if hasattr(cls, 'uid'):
+            return 'uid'
+        raise AttributeError(
+            f"{cls.__name__} has no user_id or uid column"
+        )
+
+    @classmethod
+    def for_user(cls, user_id=None, **kwargs):
+        """Query scoped to a specific user (defaults to current_user).
+
+        Args:
+            user_id: Explicit user ID. If None, uses current_user.id.
+            **kwargs: Additional filter_by arguments.
+
+        Returns:
+            A SQLAlchemy query filtered by the user's ID.
+        """
+        from flask_security import current_user as cu
+        uid = user_id if user_id is not None else cu.id
+        kwargs[cls._user_column_name()] = uid
+        return cls.query.filter_by(**kwargs)
+
 
 # Define models
 roles_users = db.Table(
@@ -158,7 +212,7 @@ class User(db.Model, UserMixin):
     locked = db.Column(db.Boolean(), default=False)
 
 
-class Setting(db.Model):
+class Setting(db.Model, UserScopedMixin):
     """Define a setting object"""
     __tablename__ = 'setting'
     user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
@@ -166,7 +220,7 @@ class Setting(db.Model):
     value = db.Column(db.Text())
 
 
-class ServerGroup(db.Model):
+class ServerGroup(db.Model, UserScopedMixin):
     """Define a server group for the treeview"""
     __tablename__ = 'servergroup'
     id = db.Column(db.Integer, primary_key=True)
@@ -185,7 +239,7 @@ class ServerGroup(db.Model):
         }
 
 
-class Server(db.Model):
+class Server(db.Model, UserScopedMixin):
     """Define a registered Postgres server"""
     __tablename__ = 'server'
     id = db.Column(db.Integer, primary_key=True)
@@ -306,7 +360,7 @@ class Preferences(db.Model):
     name = db.Column(db.String(1024), nullable=False)
 
 
-class UserPreference(db.Model):
+class UserPreference(db.Model, UserScopedMixin):
     """Define the preference for a particular user."""
     __tablename__ = 'user_preferences'
     pid = db.Column(
@@ -318,9 +372,13 @@ class UserPreference(db.Model):
     value = db.Column(db.String(1024), nullable=False)
 
 
-class DebuggerFunctionArguments(db.Model):
+class DebuggerFunctionArguments(db.Model, UserScopedMixin):
     """Define the debugger input function arguments."""
     __tablename__ = 'debugger_function_arguments'
+    user_id = db.Column(
+        db.Integer, db.ForeignKey(USER_ID),
+        nullable=False, primary_key=True
+    )
     server_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     database_id = db.Column(db.Integer(), nullable=False, primary_key=True)
     schema_id = db.Column(db.Integer(), nullable=False, primary_key=True)
@@ -349,7 +407,7 @@ class DebuggerFunctionArguments(db.Model):
     value = db.Column(db.String(), nullable=True)
 
 
-class Process(db.Model):
+class Process(db.Model, UserScopedMixin):
     """Define the Process table."""
     __tablename__ = 'process'
     pid = db.Column(db.String(), nullable=False, primary_key=True)
@@ -382,7 +440,7 @@ class Keys(db.Model):
     value = db.Column(db.String(), nullable=False)
 
 
-class QueryHistoryModel(db.Model):
+class QueryHistoryModel(db.Model, UserScopedMixin):
     """Define the history SQL table."""
     __tablename__ = 'query_history'
     srno = db.Column(db.Integer(), nullable=False, primary_key=True)
@@ -397,7 +455,7 @@ class QueryHistoryModel(db.Model):
     last_updated_flag = db.Column(db.String(), nullable=False)
 
 
-class ApplicationState(db.Model):
+class ApplicationState(db.Model, UserScopedMixin):
     """Define the application state SQL table."""
     __tablename__ = 'application_state'
     uid = db.Column(db.Integer(), db.ForeignKey(USER_ID), nullable=False,
@@ -422,10 +480,14 @@ class Database(db.Model):
     )
 
 
-class SharedServer(db.Model):
+class SharedServer(db.Model, UserScopedMixin):
     """Define a shared Postgres server"""
 
     __tablename__ = 'sharedserver'
+    __table_args__ = (
+        db.UniqueConstraint('osid', 'user_id',
+                            name='uq_sharedserver_osid_user'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     osid = db.Column(
         db.Integer,
@@ -510,7 +572,7 @@ class Macros(db.Model):
     key_code = db.Column(db.Integer, nullable=False)
 
 
-class UserMacros(db.Model):
+class UserMacros(db.Model, UserScopedMixin):
     """Define the macro for a particular user."""
     __tablename__ = 'user_macros'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -524,7 +586,7 @@ class UserMacros(db.Model):
     sql = db.Column(db.Text(), nullable=False)
 
 
-class UserMFA(db.Model):
+class UserMFA(db.Model, UserScopedMixin):
     """Stores the options for the MFA for a particular user."""
     __tablename__ = 'user_mfa'
     user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)

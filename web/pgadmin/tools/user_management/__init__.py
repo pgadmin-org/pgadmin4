@@ -759,7 +759,7 @@ def delete_user(uid):
 
         ServerGroup.query.filter_by(user_id=uid).delete()
 
-        Process.query.filter_by(user_id=uid).delete()
+        Process.for_user(user_id=uid).delete()
         # Delete Shared servers for current user.
         SharedServer.query.filter_by(user_id=uid).delete()
 

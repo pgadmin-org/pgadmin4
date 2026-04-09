@@ -31,6 +31,8 @@ from sqlalchemy import or_
 from pgadmin.authenticate import socket_login_required
 from pgadmin import socketio
 from pgadmin.tools.user_management.PgAdminPermissions import AllPermissionTypes
+from pgadmin.utils.server_access import \
+    get_server as get_server_access, get_user_server_query
 
 MODULE_NAME = 'schema_diff'
 COMPARE_MSG = gettext("Comparing objects...")
@@ -283,18 +285,14 @@ def servers():
         from pgadmin.browser.server_groups.servers import\
             server_icon_and_background
 
-        for server in Server.query.filter(
-                or_(Server.user_id == current_user.id, Server.shared),
+        for server in get_user_server_query().filter(
                 Server.is_adhoc == 0):
 
             shared_server = SharedServer.query.filter_by(
-                name=server.name, user_id=current_user.id,
-                servergroup_id=server.servergroup_id).first()
+                user_id=current_user.id,
+                osid=server.id).first()
 
-            if server.discovery_id:
-                auto_detected_server = server.name
-
-            if shared_server and shared_server.name == auto_detected_server:
+            if server.discovery_id and shared_server:
                 continue
 
             manager = driver.connection_manager(server.id)
@@ -336,7 +334,13 @@ def get_server(sid, did):
         """Return a JSON document listing the server groups for the user"""
         driver = get_driver(PG_DEFAULT_DRIVER)
 
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server_access(sid)
+        if server is None:
+            return make_json_response(
+                status=410, success=0,
+                errormsg=gettext(
+                    "Could not find the required server.")
+            )
         manager = driver.connection_manager(sid)
         conn = manager.connection(did=did)
         connected = conn.connected()
@@ -375,7 +379,12 @@ def connect_server(sid):
             data={}
         )
 
-    server = Server.query.filter_by(id=sid).first()
+    server = get_server_access(sid)
+    if server is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
     view = SchemaDiffRegistry.get_node_view('server')
     return view.connect(server.servergroup_id, sid)
 
@@ -387,7 +396,12 @@ def connect_server(sid):
 )
 @pga_login_required
 def connect_database(sid, did):
-    server = Server.query.filter_by(id=sid).first()
+    server = get_server_access(sid)
+    if server is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
     view = SchemaDiffRegistry.get_node_view('database')
     return view.connect(server.servergroup_id, sid, did)
 
@@ -407,7 +421,13 @@ def databases(sid):
     try:
         view = SchemaDiffRegistry.get_node_view('database')
 
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server_access(sid)
+        if server is None:
+            return make_json_response(
+                status=410, success=0,
+                errormsg=gettext(
+                    "Could not find the required server.")
+            )
         response = view.nodes(gid=server.servergroup_id, sid=sid,
                               is_schema_diff=True)
         databases = json.loads(response.data)['data']
@@ -494,6 +514,15 @@ def compare_database(params):
         schema_result = \
             fetch_compare_schemas(params['source_sid'], params['source_did'],
                                   params['target_sid'], params['target_did'])
+
+        if schema_result is None:
+            socketio.emit(
+                'compare_database_failed',
+                gettext(
+                    "Failed to fetch schemas from the"
+                    " server."),
+                namespace=SOCKETIO_NAMESPACE, to=request.sid)
+            return
 
         total_schema = len(schema_result['source_only']) + len(
             schema_result['target_only']) + len(
@@ -722,11 +751,15 @@ def check_version_compatibility(sid, tid):
     """Check the version compatibility of source and target servers."""
 
     driver = get_driver(PG_DEFAULT_DRIVER)
-    src_server = Server.query.filter_by(id=sid).first()
+    src_server = get_server_access(sid)
+    if src_server is None:
+        return False, gettext("Could not find the source server.")
     src_manager = driver.connection_manager(src_server.id)
     src_conn = src_manager.connection()
 
-    tar_server = Server.query.filter_by(id=tid).first()
+    tar_server = get_server_access(tid)
+    if tar_server is None:
+        return False, gettext("Could not find the target server.")
     tar_manager = driver.connection_manager(tar_server.id)
     target_conn = tar_manager.connection()
 
@@ -759,7 +792,9 @@ def get_schemas(sid, did):
     """
     try:
         view = SchemaDiffRegistry.get_node_view('schema')
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server_access(sid)
+        if server is None:
+            return None
         response = view.nodes(gid=server.servergroup_id, sid=sid, did=did,
                               is_schema_diff=True)
         schemas = json.loads(response.data)['data']
@@ -911,6 +946,9 @@ def fetch_compare_schemas(source_sid, source_did, target_sid, target_did):
     """
     source_schemas = get_schemas(source_sid, source_did)
     target_schemas = get_schemas(target_sid, target_did)
+
+    if source_schemas is None or target_schemas is None:
+        return None
 
     src_schema_dict = {item['label']: item['_id'] for item in source_schemas}
     tar_schema_dict = {item['label']: item['_id'] for item in target_schemas}

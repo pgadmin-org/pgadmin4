@@ -34,6 +34,7 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.model import db, Server, Database
+from pgadmin.utils.server_access import get_server
 from pgadmin.browser.utils import underscore_escape
 from pgadmin.utils.constants import TWO_PARAM_STRING
 
@@ -579,7 +580,9 @@ class DatabaseView(PGChildNodeView):
                 'already_connected': already_connected,
                 'connected': True,
                 'info_prefix': TWO_PARAM_STRING.
-                format(Server.query.filter_by(id=sid)[0].name, conn.db)
+                format(getattr(
+                    get_server(sid), 'name', None) or
+                    _('Unknown'), conn.db)
             }
         )
 
@@ -602,7 +605,9 @@ class DatabaseView(PGChildNodeView):
                     'icon': 'icon-database-not-connected',
                     'connected': False,
                     'info_prefix': TWO_PARAM_STRING.
-                    format(Server.query.filter_by(id=sid)[0].name, conn.db)
+                    format(getattr(
+                        get_server(sid), 'name', None) or
+                        _('Unknown'), conn.db)
                 }
             )
 

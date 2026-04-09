@@ -25,6 +25,8 @@ from sqlalchemy import exc
 from pgadmin.model import db, ServerGroup, Server
 import config
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.server_access import get_server_group, \
+    get_server_groups_for_user
 
 
 def get_icon_css_class(group_id, group_user_id,
@@ -286,7 +288,7 @@ class ServerGroupView(NodeView):
     def properties(self, gid):
         """Update the server-group properties"""
 
-        sg = ServerGroup.query.filter(ServerGroup.id == gid).first()
+        sg = get_server_group(gid)
 
         if sg is None:
             return make_json_response(
@@ -296,7 +298,8 @@ class ServerGroupView(NodeView):
             )
         else:
             return ajax_response(
-                response={'id': sg.id, 'name': sg.name, 'user_id': sg.user_id},
+                response={'id': sg.id, 'name': sg.name,
+                          'user_id': sg.user_id},
                 status=200
             )
 
@@ -373,8 +376,9 @@ class ServerGroupView(NodeView):
     @staticmethod
     def get_all_server_groups():
         """
-        Returns the list of server groups to show in server mode and
-        if there is any shared server in the group.
+        Returns the list of server groups to show in server mode.
+        Includes groups owned by the user and groups containing
+        shared servers accessible to this user.
         :return: server groups
         """
 
@@ -383,17 +387,18 @@ class ServerGroupView(NodeView):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        server_groups = ServerGroup.query.all()
-        groups = []
-        for group in server_groups:
-            if hide_shared_server and \
-                ServerGroupModule.has_shared_server(group.id) and \
-                    group.user_id != current_user.id:
-                continue
-            if group.user_id == current_user.id or \
-                    ServerGroupModule.has_shared_server(group.id):
+        server_groups = get_server_groups_for_user()
+
+        if hide_shared_server:
+            groups = []
+            for group in server_groups:
+                if group.user_id != current_user.id and \
+                        ServerGroupModule.has_shared_server(group.id):
+                    continue
                 groups.append(group)
-        return groups
+            return groups
+
+        return server_groups
 
     @pga_login_required
     def nodes(self, gid=None):
@@ -421,7 +426,7 @@ class ServerGroupView(NodeView):
                     )
                 )
         else:
-            group = ServerGroup.query.filter(ServerGroup.id == gid).first()
+            group = get_server_group(gid)
 
             if not group:
                 return gone(
