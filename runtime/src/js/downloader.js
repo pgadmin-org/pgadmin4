@@ -47,7 +47,7 @@ function updateProgress(callerWindow) {
     return;
   }
   setBadge(Object.keys(downloadQueue).length);
-  let progress = 0;
+  let progress;
   if(Object.values(downloadQueue).some((item) => item.total === null)) {
     // If any of the items in the queue does not have a total, we cannot calculate progress
     // so we return 2 to indicate that the progress is indeterminate.
