@@ -100,17 +100,13 @@ const serverLogFile = path.join(getLocalAppDataPath(), 'pgadmin4.' + (new Date()
 
 // This function is used to read the file and return the content
 export const readServerLog = () => {
-  let data = null;
-
   if (fs.existsSync(serverLogFile)) {
-    data = fs.readFileSync(serverLogFile, 'utf8');
-  } else {
-    let errMsg = 'Unable to read file ' + serverLogFile + '.';
-    console.warn(errMsg);
-    return errMsg;
+    return fs.readFileSync(serverLogFile, 'utf8');
   }
 
-  return data;
+  let errMsg = 'Unable to read file ' + serverLogFile + '.';
+  console.warn(errMsg);
+  return errMsg;
 };
 
 // This function is used to write the data into the log file
