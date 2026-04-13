@@ -587,7 +587,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Post Connection SQL'),
         mode: ['properties', 'edit', 'create'],
         type: 'sql', isFullTab: true,
-        readonly: obj.isConnectedOrShared,
+        readonly: obj.isConnected,
         helpMessage: gettext('Any query specified in the control below will be executed with autocommit mode enabled for each connection to any database on this server.'),
       },
       {
