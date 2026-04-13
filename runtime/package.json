@@ -16,7 +16,7 @@
     "electron": "41.2.0",
     "eslint": "^10.2.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "globals": "^17.4.0"
+    "globals": "^17.5.0"
   },
   "dependencies": {
     "axios": "^1.15.0",
