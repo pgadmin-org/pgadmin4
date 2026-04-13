@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 50
+SCHEMA_VERSION = 51
 
 ##########################################################################
 #
@@ -528,7 +528,6 @@ class SharedServer(db.Model, UserScopedMixin):
         backref=db.backref('sharedserver', cascade=CASCADE_STR),
         lazy='joined'
     )
-    db_res = db.Column(db.Text(), nullable=True)
     bgcolor = db.Column(db.String(10), nullable=True)
     fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
@@ -560,6 +559,13 @@ class SharedServer(db.Model, UserScopedMixin):
     shared = db.Column(db.Boolean(), nullable=False)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
     prepare_threshold = db.Column(db.Integer(), nullable=True)
+    passexec_cmd = db.Column(db.Text(), nullable=True)
+    passexec_expiration = db.Column(db.Integer(), nullable=True)
+    kerberos_conn = db.Column(
+        db.Boolean(), nullable=False, default=False
+    )
+    tags = db.Column(types.JSON)
+    post_connection_sql = db.Column(db.String(), nullable=True)
 
 
 class Macros(db.Model):

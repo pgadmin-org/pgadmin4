@@ -172,9 +172,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         Return shared server properties.
 
         Overlays per-user SharedServer values onto the owner's Server
-        object.  Security-sensitive fields that are absent from the
-        SharedServer model (passexec_cmd, post_connection_sql) are
-        suppressed for non-owners.
+        object so each non-owner sees their own customizations.
 
         The server is expunged from the SQLAlchemy session before
         mutation so that the owner's record is never dirtied.
@@ -182,6 +180,9 @@ class ServerModule(sg.ServerGroupPluginModule):
         :param sharedserver:
         :return: shared server (detached)
         """
+        if sharedserver is None:
+            return server
+
         # Detach from session so in-place mutations are never
         # flushed back to the owner's Server row.
         sess = object_session(server)
@@ -224,13 +225,11 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
         server.prepare_threshold = sharedserver.prepare_threshold
-
-        # Suppress owner-only fields that are absent from SharedServer
-        # and dangerous when inherited (privilege escalation / code
-        # execution).
-        server.passexec_cmd = None
-        server.passexec_expiration = None
-        server.post_connection_sql = None
+        server.passexec_cmd = sharedserver.passexec_cmd
+        server.passexec_expiration = sharedserver.passexec_expiration
+        server.kerberos_conn = sharedserver.kerberos_conn
+        server.tags = sharedserver.tags
+        server.post_connection_sql = sharedserver.post_connection_sql
 
         return server
 
@@ -477,7 +476,12 @@ class ServerModule(sg.ServerGroupPluginModule):
                 tunnel_prompt_password=0,
                 shared=True,
                 connection_params=safe_conn_params,
-                prepare_threshold=data.prepare_threshold
+                prepare_threshold=data.prepare_threshold,
+                passexec_cmd=None,
+                passexec_expiration=None,
+                kerberos_conn=False,
+                tags=None,
+                post_connection_sql=None
             )
             db.session.add(shared_server)
             db.session.commit()
@@ -904,7 +908,7 @@ class ServerNode(PGChildNodeView):
 
         # Update connection parameter if any.
         self.update_connection_parameter(data, server, sharedserver)
-        self.update_tags(data, server)
+        self.update_tags(data, sharedserver or server)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \
@@ -937,7 +941,7 @@ class ServerNode(PGChildNodeView):
 
         # tags is JSON type, sqlalchemy sometimes will not detect change
         if 'tags' in data:
-            flag_modified(server, 'tags')
+            flag_modified(sharedserver or server, 'tags')
 
         try:
             db.session.commit()
@@ -953,6 +957,10 @@ class ServerNode(PGChildNodeView):
         # which will affect the connections.
         if not conn.connected():
             manager.update(server)
+            # Suppress passexec for non-owners so the manager
+            # never holds the owner's password-exec command.
+            if _is_non_owner(server):
+                manager.passexec = None
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -974,7 +982,7 @@ class ServerNode(PGChildNodeView):
                 role=server.role,
                 is_password_saved=bool(server.save_password),
                 description=server.comment,
-                tags=server.tags
+                tags=(sharedserver or server).tags
             )
         )
 
@@ -998,8 +1006,20 @@ class ServerNode(PGChildNodeView):
         if not crypt_key_present:
             raise CryptKeyMissing
 
+        # Fields that non-owners must never set on their
+        # SharedServer — they enable command/SQL execution
+        # or are owner-level concepts not on SharedServer.
+        _owner_only_fields = frozenset({
+            'passexec_cmd', 'passexec_expiration',
+            'db_res', 'db_res_type',
+        })
+
         for arg in config_param_map:
             if arg in data:
+                # Non-owners cannot set dangerous fields.
+                if _is_non_owner(server) and \
+                        arg in _owner_only_fields:
+                    continue
                 value = data[arg]
                 if arg == 'password':
                     value = encrypt(data[arg], crypt_key)
@@ -1159,14 +1179,8 @@ class ServerNode(PGChildNodeView):
             'fgcolor': server.fgcolor,
             'db_res': get_db_restriction(server.db_res_type, server.db_res),
             'db_res_type': server.db_res_type,
-            'passexec_cmd':
-                server.passexec_cmd
-                if server.passexec_cmd and
-                not _is_non_owner(server) else None,
-            'passexec_expiration':
-                server.passexec_expiration
-                if server.passexec_expiration and
-                not _is_non_owner(server) else None,
+            'passexec_cmd': server.passexec_cmd,
+            'passexec_expiration': server.passexec_expiration,
             'service': server.service if server.service else None,
             'use_ssh_tunnel': use_ssh_tunnel,
             'tunnel_host': tunnel_host,
@@ -1186,8 +1200,7 @@ class ServerNode(PGChildNodeView):
             'connection_string': display_connection_str,
             'prepare_threshold': server.prepare_threshold,
             'tags': tags,
-            'post_connection_sql': server.post_connection_sql
-                if not _is_non_owner(server) else None,
+            'post_connection_sql': server.post_connection_sql,
         }
 
         return ajax_response(response)
@@ -1605,6 +1618,12 @@ class ServerNode(PGChildNodeView):
         # the API call is not made from SQL Editor or View/Edit Data tool
         if not manager.connection().connected() and not is_qt:
             manager.update(server)
+            # Re-suppress passexec after update() which rebuilds
+            # from the (overlaid) server object.  Belt-and-suspenders:
+            # the overlay already defaults passexec to None, but this
+            # guards against direct DB edits.
+            if _is_non_owner(server):
+                manager.passexec = None
         conn = manager.connection()
 
         # Get enc key

@@ -84,6 +84,11 @@ def _make_shared_server(**overrides):
             'sslcert': '/home/nonowner/.ssl/cert.pem',
             'connect_timeout': '10',
         },
+        passexec_cmd=None,
+        passexec_expiration=None,
+        kerberos_conn=False,
+        tags=None,
+        post_connection_sql=None,
     )
     defaults.update(overrides)
     ss = MagicMock()
@@ -97,10 +102,12 @@ class TestGetSharedServerProperties(BaseTestGenerator):
     using mock objects."""
 
     scenarios = [
-        ('Merge suppresses passexec_cmd',
-         dict(test_method='test_suppresses_passexec')),
-        ('Merge suppresses post_connection_sql',
-         dict(test_method='test_suppresses_post_sql')),
+        ('Merge overlays passexec_cmd from SharedServer',
+         dict(test_method='test_overlays_passexec')),
+        ('Merge overlays post_connection_sql from SharedServer',
+         dict(test_method='test_overlays_post_sql')),
+        ('Merge overlays kerberos_conn and tags',
+         dict(test_method='test_overlays_kerberos_tags')),
         ('Merge strips owner SSL paths not in SharedServer',
          dict(test_method='test_strips_owner_ssl_paths')),
         ('Merge applies SharedServer SSL paths',
@@ -111,6 +118,8 @@ class TestGetSharedServerProperties(BaseTestGenerator):
          dict(test_method='test_overrides_tunnel')),
         ('Merge handles None connection_params',
          dict(test_method='test_none_conn_params')),
+        ('Merge returns server unchanged when sharedserver is None',
+         dict(test_method='test_null_guard')),
     ]
 
     @patch('pgadmin.browser.server_groups.servers.'
@@ -128,14 +137,41 @@ class TestGetSharedServerProperties(BaseTestGenerator):
         return ServerModule.get_shared_server_properties(
             server, ss)
 
-    def test_suppresses_passexec(self):
+    def test_overlays_passexec(self):
+        # SharedServer defaults have None - overlay copies that.
         result = self._merge()
         self.assertIsNone(result.passexec_cmd)
         self.assertIsNone(result.passexec_expiration)
+        # If SharedServer has a value, it should appear.
+        ss = _make_shared_server(
+            passexec_cmd='/usr/bin/get-pw',
+            passexec_expiration=120)
+        result = self._merge(ss=ss)
+        self.assertEqual(result.passexec_cmd, '/usr/bin/get-pw')
+        self.assertEqual(result.passexec_expiration, 120)
 
-    def test_suppresses_post_sql(self):
+    def test_overlays_post_sql(self):
+        # SharedServer defaults have None - overlay copies that.
         result = self._merge()
         self.assertIsNone(result.post_connection_sql)
+        # If SharedServer has a value, it should appear.
+        ss = _make_shared_server(
+            post_connection_sql='SET role reader;')
+        result = self._merge(ss=ss)
+        self.assertEqual(
+            result.post_connection_sql, 'SET role reader;')
+
+    def test_overlays_kerberos_tags(self):
+        result = self._merge()
+        self.assertFalse(result.kerberos_conn)
+        self.assertIsNone(result.tags)
+        # With values set on SharedServer
+        ss = _make_shared_server(
+            kerberos_conn=True,
+            tags=[{'text': 'prod', 'color': '#f00'}])
+        result = self._merge(ss=ss)
+        self.assertTrue(result.kerberos_conn)
+        self.assertEqual(len(result.tags), 1)
 
     def test_strips_owner_ssl_paths(self):
         result = self._merge()
@@ -179,6 +215,18 @@ class TestGetSharedServerProperties(BaseTestGenerator):
         result = self._merge(server, ss)
         # Should not crash; connection_params becomes {}
         self.assertEqual(result.connection_params, {})
+
+    def test_null_guard(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerModule
+        server = _make_server()
+        # Call directly to bypass _merge's None replacement
+        result = ServerModule.get_shared_server_properties(
+            server, None)
+        # Should return server unchanged
+        self.assertEqual(result.name, 'OwnerServer')
+        self.assertEqual(result.passexec_cmd,
+                         '/usr/bin/vault-get-secret')
 
 
 class TestCreateSharedServerSanitization(BaseTestGenerator):
@@ -291,6 +339,7 @@ class TestMergeExpungesServer(BaseTestGenerator):
             # Should not crash
             result = ServerModule.get_shared_server_properties(
                 server, ss)
+        # SharedServer defaults passexec_cmd to None
         self.assertIsNone(result.passexec_cmd)
 
 
@@ -455,6 +504,165 @@ class TestDeleteSharedServerOwnerGuard(BaseTestGenerator):
 
         node.delete_shared_server.assert_called_once_with(
             1, server.id)
+
+
+class TestOwnerOnlyFieldsGuard(BaseTestGenerator):
+    """Verify _set_valid_attr_value skips owner-only fields
+    for non-owners."""
+
+    scenarios = [
+        ('Non-owner cannot set passexec_cmd',
+         dict(test_method='test_nonowner_passexec_blocked')),
+        ('Non-owner cannot set db_res or db_res_type',
+         dict(test_method='test_nonowner_db_res_blocked')),
+        ('Owner can set passexec_cmd',
+         dict(test_method='test_owner_passexec_allowed')),
+    ]
+
+    def runTest(self):
+        getattr(self, self.test_method)()
+
+    @patch(SRV_MODULE + '.get_crypt_key',
+           return_value=(True, b'key'))
+    @patch(SRV_MODULE + '.current_user')
+    def test_nonowner_passexec_blocked(self, mock_cu, mock_ck):
+        mock_cu.id = 200  # Non-owner
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server()
+        ss = _make_shared_server()
+        node = ServerNode.__new__(ServerNode)
+        node.delete_shared_server = MagicMock()
+
+        data = {
+            'passexec_cmd': '/evil/cmd',
+            'post_connection_sql': 'SET role reader;',
+        }
+        config_map = {
+            'passexec_cmd': 'passexec_cmd',
+            'post_connection_sql': 'post_connection_sql',
+        }
+
+        node._set_valid_attr_value(
+            1, data, config_map, server, ss)
+
+        # passexec_cmd should be blocked for non-owners
+        self.assertIsNone(ss.passexec_cmd)
+        # post_connection_sql is allowed for non-owners
+        self.assertEqual(ss.post_connection_sql,
+                         'SET role reader;')
+
+    @patch(SRV_MODULE + '.get_crypt_key',
+           return_value=(True, b'key'))
+    @patch(SRV_MODULE + '.current_user')
+    def test_nonowner_db_res_blocked(self, mock_cu, mock_ck):
+        mock_cu.id = 200  # Non-owner
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server()
+        ss = _make_shared_server()
+        node = ServerNode.__new__(ServerNode)
+        node.delete_shared_server = MagicMock()
+
+        data = {
+            'db_res': 'secret_db',
+            'db_res_type': 'databases',
+        }
+        config_map = {
+            'db_res': 'db_res',
+            'db_res_type': 'db_res_type',
+        }
+
+        node._set_valid_attr_value(
+            1, data, config_map, server, ss)
+
+        # Neither server nor sharedserver should be modified
+        self.assertIsNone(server.db_res)
+        self.assertIsNone(server.db_res_type)
+
+    @patch(SRV_MODULE + '.get_crypt_key',
+           return_value=(True, b'key'))
+    @patch(SRV_MODULE + '.current_user')
+    def test_owner_passexec_allowed(self, mock_cu, mock_ck):
+        mock_cu.id = 100  # Owner
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server()
+        node = ServerNode.__new__(ServerNode)
+        node.delete_shared_server = MagicMock()
+
+        data = {
+            'passexec_cmd': '/usr/bin/new-cmd',
+            'post_connection_sql': 'SET role dba;',
+        }
+        config_map = {
+            'passexec_cmd': 'passexec_cmd',
+            'post_connection_sql': 'post_connection_sql',
+        }
+
+        node._set_valid_attr_value(
+            1, data, config_map, server, None)
+
+        # Owner should have these set
+        self.assertEqual(server.passexec_cmd, '/usr/bin/new-cmd')
+        self.assertEqual(
+            server.post_connection_sql, 'SET role dba;')
+
+
+class TestUpdateTagsBase(BaseTestGenerator):
+    """Verify update_tags reads from the correct base object."""
+
+    scenarios = [
+        ('Non-owner tag delta uses sharedserver tags',
+         dict(test_method='test_nonowner_tags_base')),
+        ('Owner tag delta uses server tags',
+         dict(test_method='test_owner_tags_base')),
+    ]
+
+    def runTest(self):
+        getattr(self, self.test_method)()
+
+    def test_nonowner_tags_base(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+        ss = _make_shared_server(
+            tags=[{'text': 'my-tag', 'color': '#f00'}])
+
+        data = {'tags': {
+            'deleted': [{'old_text': 'my-tag'}],
+        }}
+
+        # Non-owner: should delete from sharedserver's tags,
+        # not from server's (owner's) tags.
+        ServerNode.update_tags(data, ss)
+
+        # sharedserver had 'my-tag' which was deleted → empty
+        self.assertEqual(data['tags'], [])
+
+    def test_owner_tags_base(self):
+        from pgadmin.browser.server_groups.servers import \
+            ServerNode
+
+        server = _make_server(
+            tags=[{'text': 'owner-tag', 'color': '#000'}])
+
+        data = {'tags': {
+            'added': [{'text': 'new-tag', 'color': '#0f0'}],
+        }}
+
+        ServerNode.update_tags(data, server)
+
+        # owner had 'owner-tag', added 'new-tag' → 2 tags
+        self.assertEqual(len(data['tags']), 2)
+        texts = {t['text'] for t in data['tags']}
+        self.assertIn('owner-tag', texts)
+        self.assertIn('new-tag', texts)
 
 
 class TestGetSharedServerRaisesOnNone(BaseTestGenerator):

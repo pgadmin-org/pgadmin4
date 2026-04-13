@@ -84,13 +84,12 @@ class Driver(BaseDriver):
                 for server in servers:
                     manager = managers[str(server.id)] = \
                         ServerManager(server)
-                    # Suppress owner-only fields for non-owners
-                    # of shared servers so passexec_cmd and
-                    # post_connection_sql don't leak.
-                    if server.shared and \
+                    # Suppress passexec for non-owners of shared
+                    # servers — it runs commands on the client
+                    # machine and must not inherit the owner's.
+                    if config.SERVER_MODE and server.shared and \
                             server.user_id != current_user.id:
                         manager.passexec = None
-                        manager.post_connection_sql = None
                     if server.id in session_managers:
                         manager._restore(
                             session_managers[server.id])
@@ -153,12 +152,12 @@ class Driver(BaseDriver):
             # server_data was already access-checked above;
             # it cannot be None at this point.
             manager = ServerManager(server_data)
-            # Suppress owner-only fields for non-owners of
-            # shared servers.
+            # Suppress passexec for non-owners of shared
+            # servers — it runs commands on the client machine
+            # and must not inherit the owner's.
             if config.SERVER_MODE and server_data.shared and \
                     server_data.user_id != current_user.id:
                 manager.passexec = None
-                manager.post_connection_sql = None
             managers[str(sid)] = manager
 
             return manager
