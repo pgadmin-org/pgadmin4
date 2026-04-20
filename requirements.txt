@@ -12,7 +12,7 @@
 # relevant packages.
 ###############################################################################
 
-Authlib==1.6.9
+Authlib==1.7.0
 azure-identity==1.25.3
 azure-mgmt-rdbms==10.1.1
 azure-mgmt-resource==25.0.0
