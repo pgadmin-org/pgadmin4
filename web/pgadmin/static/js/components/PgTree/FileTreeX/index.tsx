@@ -458,7 +458,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
         if (typeof(label) == 'object' && label.label) {
           label = label.label;
         }
-        label$.innerHTML = label;
+        label$.textContent = label;
       }
 
     }
@@ -476,9 +476,9 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
         ref.style.background = 'none';
         const label$ = ref.querySelector('span.children-count') as HTMLDivElement;
         if(dir.children && dir.children.length > 0) {
-          label$.innerHTML = '(' + dir.children.length + ')';
+          label$.textContent = '(' + dir.children.length + ')';
         } else {
-          label$.innerHTML = '';
+          label$.textContent = '';
         }
       }
     }

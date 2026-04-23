@@ -96,13 +96,13 @@ PolyLine.propTypes = {
 
 function Multitext({currentXpos, currentYpos, label, maxWidth}) {
   const theme = useTheme();
-  let abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let xmlns = 'http://www.w3.org/2000/svg';
   let svgElem = document.createElementNS(xmlns, 'svg');
   svgElem.setAttributeNS(xmlns, 'height', '100%');
   svgElem.setAttributeNS(xmlns, 'width', '100%');
   let text = document.createElementNS(xmlns, 'text');
-  text.innerHTML = abc;
+  text.textContent = abc;
   text.setAttributeNS(xmlns, 'x', 0);
   text.setAttributeNS(xmlns, 'y', 0);
   let attributes={
