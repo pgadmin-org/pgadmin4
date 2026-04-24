@@ -106,6 +106,11 @@ export default class MViewSchema extends BaseUISchema {
         id: 'fillfactor', label: gettext('Fill factor'),
         group: gettext('Definition'), mode: ['edit', 'create'],
         noEmpty: false, type: 'int', controlProps: {min: 10, max: 100}
+      },{
+        id: 'toast_tuple_target', label: gettext('Toast tuple target'),
+        group: gettext('Definition'), mode: ['edit', 'create'],
+        noEmpty: false, type: 'int', controlProps: {min: 128, max: 8160},
+        min_version: 110000,
       },
       {
         id: 'dependsonextensions',
