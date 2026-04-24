@@ -146,19 +146,30 @@ describe('CodeMirrorCustomEditorView', ()=>{
     expect(editor.getQueryAt(30)).toEqual({'value': query, 'from': 0, 'to': query.length});
   });
 
-  it('EXPLAIN ANALYZE with blank lines between clauses',()=>{
-    // The title scenario: EXPLAIN should be included when cursor is on a clause
+  it('EXPLAIN ANALYZE with blank lines, cursor on WHERE',()=>{
     const query = 'EXPLAIN ANALYZE SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
     cmRerender({value: query});
-    // Cursor at WHERE clause (position 42), should return full query including EXPLAIN
     expect(editor.getQueryAt(42)).toEqual({'value': query, 'from': 0, 'to': query.length});
   });
 
   it('EXPLAIN with cursor on FROM clause',()=>{
     const query = 'EXPLAIN SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
     cmRerender({value: query});
-    // Cursor at FROM (position 18), should return full query including EXPLAIN
     expect(editor.getQueryAt(18)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('EXPLAIN with cursor on EXPLAIN keyword returns full query across blank lines',()=>{
+    const query = 'EXPLAIN SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
+    cmRerender({value: query});
+    // Cursor on EXPLAIN (position 4) — must expand past blank lines
+    expect(editor.getQueryAt(4)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('EXPLAIN ANALYZE with cursor on SELECT returns full query',()=>{
+    const query = 'EXPLAIN ANALYZE SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
+    cmRerender({value: query});
+    // Cursor on SELECT (position 16) — before any blank line
+    expect(editor.getQueryAt(16)).toEqual({'value': query, 'from': 0, 'to': query.length});
   });
 
   it('two separate queries with semicolons and blank line are not merged',()=>{
@@ -249,11 +260,14 @@ describe('CodeMirrorCustomEditorView', ()=>{
   it('parser: two queries without semicolons — verify Statement layout',()=>{
     cmRerender({value: 'SELECT * FROM users\n\nSELECT * FROM orders'});
     const stmts = getStatementNodes(editor);
-    // Record whether parser merges or separates — our _needsExpansion
-    // must handle both cases correctly.  The getQueryAt tests above
-    // already verify correct output; this test documents the parser's
-    // actual behavior for future reference.
-    expect(stmts.length).toBeGreaterThanOrEqual(1);
+    // Parser may merge (1 Statement) or separate (2 Statements) — both
+    // are handled by _needsExpansion.  Pin down the exact current behavior
+    // so a parser update is noticed.
+    expect([1, 2]).toContain(stmts.length);
+    if (stmts.length === 1) {
+      expect(stmts[0].from).toBe(0);
+      expect(stmts[0].to).toBe(41);
+    }
   });
 
   it('parser: EXPLAIN SELECT is one Statement',()=>{

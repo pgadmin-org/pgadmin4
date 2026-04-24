@@ -35,6 +35,11 @@ const STATEMENT_STARTERS = new Set([
   'REFRESH', 'SECURITY', 'REASSIGN', 'ABORT', 'START', 'CHECKPOINT',
 ]);
 
+// Wrapper keywords that MUST be followed by another statement —
+// they can never stand alone, so a blank line after them always
+// means the statement was split and needs expansion.
+const WRAPPER_STARTERS = new Set(['EXPLAIN', 'ANALYZE', 'WITH']);
+
 function getAutocompLoading({ bottom, left }, dom) {
   const cmRect = dom.getBoundingClientRect();
   const div = document.createElement('div');
@@ -67,14 +72,16 @@ export default class CustomEditorView extends EditorView {
   /* Check whether a blank-line boundary cut through a SQL statement.
    *
    * Uses two checks:
-   * 1. Syntax tree — does a Statement node straddle startPos (starts
-   *    before AND ends after)?  If not, no expansion is needed.
-   * 2. First-word — does the range start with a keyword that CAN begin
-   *    a standalone SQL statement?  If so, the blank line is a
-   *    legitimate separator (handles the parser merging semicolon-less
-   *    queries into one Statement).  Anything else (clause keywords
-   *    like FROM/WHERE, identifiers, etc.) means the blank line cut
-   *    through a statement and expansion is needed.
+   * 1. Syntax tree — does a Statement node cross either boundary of
+   *    [startPos, endPos]?  "Straddles start" means the range begins
+   *    mid-statement; "extends past end" means the range captured only
+   *    a prefix of the statement.  If neither, no expansion is needed.
+   * 2. First-word heuristic — wrapper keywords (EXPLAIN, ANALYZE, WITH)
+   *    always force expansion when the Statement extends past endPos.
+   *    For the straddle-start case, expansion is skipped only when
+   *    the range starts with a standalone statement-starting keyword
+   *    (handles the parser merging semicolon-less queries into one
+   *    Statement).
    *
    * Returns true when expansion is needed, false otherwise.
    */
@@ -83,35 +90,41 @@ export default class CustomEditorView extends EditorView {
     if (!query) return false;
 
     const tree = syntaxTree(this.state);
-    let statementStartsBefore = false;
+    let statementStraddlesStart = false;
+    let statementExtendsPastEnd = false;
 
     tree.iterate({
       from: startPos,
       to: endPos,
       enter: (node) => {
-        if (node.type.name === 'Statement' && node.from < startPos && node.to > startPos) {
-          statementStartsBefore = true;
+        if (node.type.name !== 'Statement') return;
+        if (node.from < startPos && node.to > startPos) {
+          statementStraddlesStart = true;
+        }
+        if (node.from < endPos && node.to > endPos) {
+          statementExtendsPastEnd = true;
         }
       }
     });
 
-    // No Statement extends before our range — blank line is a
-    // legitimate boundary (e.g. comment blocks, separate queries).
-    if (!statementStartsBefore) return false;
-
-    // A Statement extends before our range, but the parser may have
-    // merged multiple semicolon-less queries into one Statement.
-    // Only skip expansion when the range starts with a keyword that
-    // can begin a standalone SQL statement.  Anything else (clause
-    // keywords like FROM/WHERE, identifiers, expressions, etc.)
-    // means the blank line split a statement — expand.
+    // No Statement crosses either boundary — range is self-contained.
+    if (!statementStraddlesStart && !statementExtendsPastEnd) return false;
 
     // Comment-only blocks are self-contained — don't expand.
     if (query.startsWith('--') || query.startsWith('/*')) return false;
 
-    const firstWord = query.split(/[\s\n\r(;]+/)[0].toUpperCase();
+    const firstWord = query.split(/[\s(;]+/)[0].toUpperCase();
 
-    return !STATEMENT_STARTERS.has(firstWord);
+    // Wrapper keywords (EXPLAIN, ANALYZE, WITH) always need a trailing
+    // statement; expand when the Statement extends past our range.
+    if (statementExtendsPastEnd && WRAPPER_STARTERS.has(firstWord)) return true;
+
+    // Statement straddles startPos — expand unless the range starts
+    // with a standalone statement-starting keyword (which indicates a
+    // new query, not a continuation of the previous one).
+    if (statementStraddlesStart) return !STATEMENT_STARTERS.has(firstWord);
+
+    return false;
   }
 
   /* Internal helper to find query boundaries with blank line as boundary */
