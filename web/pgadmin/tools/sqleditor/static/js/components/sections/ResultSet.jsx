@@ -1300,8 +1300,10 @@ export function ResultSet() {
       }
 
       pageDataOutOfSync.current = true;
-      if(_.size(dataChangeStore.added)) {
-        // Update the rows in a grid after addition
+      // Update the rows in a grid after addition/update.
+      // row_added contains refetched row data with recalculated
+      // generated column values (for both INSERT and UPDATE).
+      if(_.size(dataChangeStore.added) || _.size(dataChangeStore.updated)) {
         respData.data.query_results.forEach((qr)=>{
           if(!_.isNull(qr.row_added)) {
             let rowClientPK = Object.keys(qr.row_added)[0];
