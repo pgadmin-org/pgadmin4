@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 ) PARTITION BY LIST (status);
 
 ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';
@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_pa
     FOR VALUES IN ('ACTIVE');
 
 ALTER TABLE IF EXISTS public.cust_active
-    OWNER to postgres;
+    OWNER to <OWNER>;
 CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('ACTIVE');
 
 ALTER TABLE IF EXISTS public.cust_active
-    OWNER to postgres;
+    OWNER to <OWNER>;
 CREATE TABLE IF NOT EXISTS public.cust_archived PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('EXPIRED');
 
 ALTER TABLE public.cust_archived
-    OWNER to postgres;
+    OWNER to <OWNER>;

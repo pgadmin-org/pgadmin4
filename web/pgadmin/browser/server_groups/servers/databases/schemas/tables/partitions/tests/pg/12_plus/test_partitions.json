@@ -8,7 +8,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "test_table_$%{}[]()&*^!@\"\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "comment_01",
         "coll_inherits": "[]",

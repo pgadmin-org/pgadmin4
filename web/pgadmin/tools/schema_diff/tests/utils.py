@@ -40,6 +40,19 @@ def restore_schema(server, db_name, schema_name, sql_path):
 
         with open(sql_path, 'r') as content_file:
             sql = content_file.read()
+        # Replace hardcoded 'postgres' role with the actual test user
+        # so the restore works on systems without a 'postgres' role.
+        # Use qtIdent to properly quote usernames with special chars.
+        import re
+        from pgadmin.utils.driver.psycopg3 import Driver
+        username = Driver.qtIdent(None, server['username'])
+        sql = re.sub(r'\bOWNER [Tt][Oo] postgres\b',
+                     'OWNER TO ' + username, sql)
+        sql = re.sub(r'\bTO postgres\b', 'TO ' + username, sql)
+        sql = re.sub(r'\bFROM postgres\b', 'FROM ' + username, sql)
+        sql = re.sub(r'\bFOR postgres\b', 'FOR ' + username, sql)
+        sql = sql.replace('Owner: postgres',
+                          'Owner: ' + server['username'])
         pg_cursor.execute(sql)
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()

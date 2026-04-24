@@ -14,7 +14,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';
@@ -26,4 +26,4 @@ CREATE TABLE public.cust_arr_small PARTITION OF public."partition_table_with_col
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.cust_arr_small
-    OWNER to postgres;
+    OWNER to <OWNER>;

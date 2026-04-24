@@ -7,7 +7,7 @@ CREATE DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     COLLATE pg_catalog."C"
     DEFAULT 3;
 
-ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO postgres;
+ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO <OWNER>;
 
 ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     ADD CONSTRAINT constraint_1 CHECK (3 < 5);

@@ -11,4 +11,4 @@ select 1;
 end;
 $BODY$;
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

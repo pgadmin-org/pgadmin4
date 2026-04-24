@@ -9,10 +9,10 @@ CREATE SERVER "FS_$%{}[]()&*^!@""'`\/#"
     OPTIONS (host '192.168.1.1', dbname 'edb', port '5450');
 
 ALTER SERVER "FS_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON SERVER "FS_$%{}[]()&*^!@""'`\/#"
     IS 'Test comment';
 
 GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
-GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT USAGE ON FOREIGN SERVER "FS_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

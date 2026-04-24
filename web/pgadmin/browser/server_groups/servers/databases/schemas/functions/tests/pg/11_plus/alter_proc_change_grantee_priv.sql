@@ -13,7 +13,7 @@ end;
 $BODY$;
 
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
 

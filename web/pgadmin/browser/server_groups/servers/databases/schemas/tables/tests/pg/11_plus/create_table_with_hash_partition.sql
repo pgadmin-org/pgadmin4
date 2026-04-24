@@ -14,7 +14,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_with_hash_patition_$%{}[]()&*^!@\""'`\\/#"
     IS 'hash partition';
@@ -26,4 +26,4 @@ CREATE TABLE public.cust_part11 PARTITION OF public."table_with_hash_patition_$%
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.cust_part11
-    OWNER to postgres;
+    OWNER to <OWNER>;

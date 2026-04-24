@@ -14,7 +14,7 @@ CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
 );
 
 ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
     IS 'test ';

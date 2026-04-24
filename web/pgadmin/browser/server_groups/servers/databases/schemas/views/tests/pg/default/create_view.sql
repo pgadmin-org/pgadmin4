@@ -10,8 +10,8 @@ WITH (
    FROM test_view_table;
 
 ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment';
 
-GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

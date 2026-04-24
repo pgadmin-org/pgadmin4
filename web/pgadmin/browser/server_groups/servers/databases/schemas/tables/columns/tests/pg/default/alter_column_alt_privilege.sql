@@ -10,4 +10,4 @@ COMMENT ON COLUMN testschema."table_2_$%{}[]()&*^!@""'`\/#"."new_col_1_$%{}[]()&
 
 GRANT ALL("new_col_1_$%{}[]()&*^!@""'`\/#") ON testschema."table_2_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
-GRANT INSERT("new_col_1_$%{}[]()&*^!@""'`\/#"), SELECT("new_col_1_$%{}[]()&*^!@""'`\/#") ON testschema."table_2_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT INSERT("new_col_1_$%{}[]()&*^!@""'`\/#"), SELECT("new_col_1_$%{}[]()&*^!@""'`\/#") ON testschema."table_2_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

@@ -3,20 +3,20 @@
 -- DROP SCHEMA IF EXISTS "test_schema_$%{}[]()&*^!@""""'`\/#" ;
 
 CREATE SCHEMA IF NOT EXISTS "test_schema_$%{}[]()&*^!@""""'`\/#"
-    AUTHORIZATION postgres;
+    AUTHORIZATION <OWNER>;
 
 GRANT CREATE ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO PUBLIC;
 
-GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO postgres;
+GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO <OWNER>;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE <OWNER> IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT SELECT, UPDATE ON TABLES TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE <OWNER> IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT SELECT, UPDATE ON SEQUENCES TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE <OWNER> IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT EXECUTE ON FUNCTIONS TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE <OWNER> IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT USAGE ON TYPES TO PUBLIC;

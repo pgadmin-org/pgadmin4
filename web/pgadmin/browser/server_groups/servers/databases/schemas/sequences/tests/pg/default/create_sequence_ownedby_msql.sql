@@ -9,4 +9,4 @@ ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     OWNED BY public.tableforownedby.col1;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

@@ -7,7 +7,7 @@ CREATE SERVER "FS_$%{}[]()&*^!@""'`\/#"
     FOREIGN DATA WRAPPER test_fdw_for_fs;
 
 ALTER SERVER "FS_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON SERVER "FS_$%{}[]()&*^!@""'`\/#"
     IS 'Test comment';

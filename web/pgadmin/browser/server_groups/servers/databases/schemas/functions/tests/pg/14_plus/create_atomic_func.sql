@@ -14,4 +14,4 @@ BEGIN ATOMIC
 END;
 
 ALTER FUNCTION public."Function4_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
