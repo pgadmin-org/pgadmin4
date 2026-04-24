@@ -21,6 +21,25 @@ import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/
 import { autoCompleteCompartment, eol, eolCompartment } from './extensions/extraStates';
 
 
+// Keywords that can begin a standalone SQL statement.  Used by
+// _needsExpansion to distinguish "new query after blank line" from
+// "clause continuation after blank line".
+const STATEMENT_STARTERS = new Set([
+  'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
+  'TRUNCATE', 'GRANT', 'REVOKE', 'COMMIT', 'ROLLBACK', 'BEGIN',
+  'END', 'SAVEPOINT', 'RELEASE', 'SET', 'SHOW', 'EXPLAIN', 'ANALYZE',
+  'VACUUM', 'REINDEX', 'CLUSTER', 'COMMENT', 'COPY', 'DO', 'LOCK',
+  'NOTIFY', 'LISTEN', 'UNLISTEN', 'LOAD', 'RESET', 'DISCARD',
+  'DECLARE', 'FETCH', 'MOVE', 'CLOSE', 'PREPARE', 'EXECUTE',
+  'DEALLOCATE', 'WITH', 'TABLE', 'VALUES', 'CALL', 'IMPORT', 'MERGE',
+  'REFRESH', 'SECURITY', 'REASSIGN', 'ABORT', 'START', 'CHECKPOINT',
+]);
+
+// Wrapper keywords that MUST be followed by another statement —
+// they can never stand alone, so a blank line after them always
+// means the statement was split and needs expansion.
+const WRAPPER_STARTERS = new Set(['EXPLAIN', 'ANALYZE', 'WITH']);
+
 function getAutocompLoading({ bottom, left }, dom) {
   const cmRect = dom.getBoundingClientRect();
   const div = document.createElement('div');
@@ -50,6 +69,187 @@ export default class CustomEditorView extends EditorView {
     return this.state.sliceDoc();
   }
 
+  /* Check whether a blank-line boundary cut through a SQL statement.
+   *
+   * Uses two checks:
+   * 1. Syntax tree — does a Statement node cross either boundary of
+   *    [startPos, endPos]?  "Straddles start" means the range begins
+   *    mid-statement; "extends past end" means the range captured only
+   *    a prefix of the statement.  If neither, no expansion is needed.
+   * 2. First-word heuristic — wrapper keywords (EXPLAIN, ANALYZE, WITH)
+   *    always force expansion when the Statement extends past endPos.
+   *    For the straddle-start case, expansion is skipped only when
+   *    the range starts with a standalone statement-starting keyword
+   *    (handles the parser merging semicolon-less queries into one
+   *    Statement).
+   *
+   * Returns true when expansion is needed, false otherwise.
+   */
+  _needsExpansion(startPos, endPos) {
+    const query = this.state.sliceDoc(startPos, endPos).trim();
+    if (!query) return false;
+
+    const tree = syntaxTree(this.state);
+    let statementStraddlesStart = false;
+    let statementExtendsPastEnd = false;
+
+    tree.iterate({
+      from: startPos,
+      to: endPos,
+      enter: (node) => {
+        if (node.type.name !== 'Statement') return;
+        if (node.from < startPos && node.to > startPos) {
+          statementStraddlesStart = true;
+        }
+        if (node.from < endPos && node.to > endPos) {
+          statementExtendsPastEnd = true;
+        }
+      }
+    });
+
+    // No Statement crosses either boundary — range is self-contained.
+    if (!statementStraddlesStart && !statementExtendsPastEnd) return false;
+
+    // Comment-only blocks are self-contained — don't expand.
+    if (query.startsWith('--') || query.startsWith('/*')) return false;
+
+    const firstWord = query.split(/[\s(;]+/)[0].toUpperCase();
+
+    // Wrapper keywords (EXPLAIN, ANALYZE, WITH) always need a trailing
+    // statement; expand when the Statement extends past our range.
+    if (statementExtendsPastEnd && WRAPPER_STARTERS.has(firstWord)) return true;
+
+    // Statement straddles startPos — expand unless the range starts
+    // with a standalone statement-starting keyword (which indicates a
+    // new query, not a continuation of the previous one).
+    if (statementStraddlesStart) return !STATEMENT_STARTERS.has(firstWord);
+
+    return false;
+  }
+
+  /* Internal helper to find query boundaries with blank line as boundary */
+  _findQueryBoundaries(currPos, tree, stopAtBlankLine = true) {
+    let origLine = this.state.doc.lineAt(currPos);
+    let startPos = currPos;
+
+    // Move the startPos to a known node type or a space
+    for(;startPos<origLine.to; startPos++) {
+      let node = tree.resolve(startPos);
+      if(node.type.name != 'Script') {
+        break;
+      }
+      const currChar = this.state.sliceDoc(startPos, startPos+1);
+      if(currChar == ' ' || currChar == '\t') {
+        break;
+      }
+    }
+
+    let maxEndPos = this.state.doc.length;
+    let statementStartPos = -1;
+    let validTextFound = false;
+
+    // Go in reverse direction to get the start position
+    while(startPos >= 0) {
+      const currLine = this.state.doc.lineAt(startPos);
+
+      // If empty line then start with prev line
+      // If empty line in between then that's it
+      if(currLine.text.trim() == '') {
+        if(origLine.number != currLine.number && stopAtBlankLine) {
+          startPos = currLine.to + 1;
+          break;
+        }
+        startPos = currLine.from - 1;
+        continue;
+      }
+
+      // Script type doesn't give any info, better skip it
+      const currChar = this.state.sliceDoc(startPos, startPos+1);
+      let node = tree.resolve(startPos);
+      if(node.type.name == 'Script' || (currChar == '\n')) {
+        startPos -= 1;
+        continue;
+      }
+
+      // Skip the comments
+      if(node.type.name == 'LineComment' || node.type.name == 'BlockComment') {
+        startPos = node.from - 1;
+        validTextFound = true;
+        continue;
+      }
+
+      // Sometimes, node type is child of statement
+      while(node.type.name != 'Statement' && node.parent) {
+        node = node.parent;
+      }
+
+      // We already had found valid text
+      if(validTextFound) {
+        if(statementStartPos >= 0 && statementStartPos < startPos) {
+          startPos -= 1;
+          continue;
+        }
+        startPos = node.to;
+        break;
+      }
+
+      // Statement found for the first time
+      if(node.type.name == 'Statement') {
+        statementStartPos = node.from;
+        maxEndPos = node.to;
+
+        if(node.from >= currLine.from) {
+          startPos = node.from;
+        }
+      }
+
+      validTextFound = true;
+      startPos -= 1;
+    }
+
+    // Move forward from start position
+    let endPos = startPos + 1;
+    maxEndPos = maxEndPos == -1 ? this.state.doc.length : maxEndPos;
+    while(endPos < maxEndPos) {
+      const currLine = this.state.doc.lineAt(endPos);
+
+      // If empty line in between then that's it
+      if(currLine.text.trim() == '' && stopAtBlankLine) {
+        break;
+      }
+
+      let node = tree.resolve(endPos);
+      // Skip the comments
+      if(node.type.name == 'LineComment' || node.type.name == 'BlockComment') {
+        endPos = node.to + 1;
+        continue;
+      }
+
+      // Skip any other types
+      if(node.type.name != 'Statement') {
+        endPos += 1;
+        continue;
+      }
+
+      // Can't go beyond a statement
+      if(node.type.name == 'Statement') {
+        maxEndPos = node.to;
+      }
+
+      if(currLine.to < maxEndPos) {
+        endPos = currLine.to + 1;
+      } else {
+        endPos += 1;
+      }
+    }
+
+    // Make sure start and end are valid values
+    if(startPos < 0) startPos = 0;
+    if(endPos > this.state.doc.length) endPos = this.state.doc.length;
+
+    return { startPos, endPos };
+  }
+
   /* Function to extract query based on position passed */
   getQueryAt(currPos) {
     try {
@@ -58,128 +258,18 @@ export default class CustomEditorView extends EditorView {
       }
       const tree = syntaxTree(this.state);
 
-      let origLine = this.state.doc.lineAt(currPos);
-      let startPos = currPos;
+      // First pass: find boundaries treating blank lines as boundaries
+      let { startPos, endPos } = this._findQueryBoundaries(currPos, tree, true);
 
-      // Move the startPos a known node type or a space.
-      // We don't want to be in an unknown teritory
-      for(;startPos<origLine.to; startPos++) {
-        let node = tree.resolve(startPos);
-        if(node.type.name != 'Script') {
-          break;
-        }
-        const currChar = this.state.sliceDoc(startPos, startPos+1);
-        if(currChar == ' ' || currChar == '\t') {
-          break;
-        }
+      // If a blank-line boundary cut through a Statement node, the
+      // extracted range is a fragment.  Retry ignoring blank lines so
+      // the full statement (e.g. SELECT … FROM … WHERE across blank
+      // lines, or EXPLAIN followed by SELECT) is returned.
+      if (this._needsExpansion(startPos, endPos)) {
+        const expanded = this._findQueryBoundaries(currPos, tree, false);
+        startPos = expanded.startPos;
+        endPos = expanded.endPos;
       }
-
-      let maxEndPos = this.state.doc.length;
-      let statementStartPos = -1;
-      let validTextFound = false;
-
-      // we'll go in reverse direction to get the start position.
-      while(startPos >= 0) {
-        const currLine = this.state.doc.lineAt(startPos);
-
-        // If empty line then start with prev line
-        // If empty line in between then that's it
-        if(currLine.text.trim() == '') {
-          if(origLine.number != currLine.number) {
-            startPos = currLine.to + 1;
-            break;
-          }
-          startPos = currLine.from - 1;
-          continue;
-        }
-
-        // Script type doesn't give any info, better skip it.
-        const currChar = this.state.sliceDoc(startPos, startPos+1);
-        let node = tree.resolve(startPos);
-        if(node.type.name == 'Script' || (currChar == '\n')) {
-          startPos -= 1;
-          continue;
-        }
-
-        // Skip the comments
-        if(node.type.name == 'LineComment' || node.type.name == 'BlockComment') {
-          startPos = node.from - 1;
-          // comments are valid text
-          validTextFound = true;
-          continue;
-        }
-
-        // sometimes, node type is child of statement.
-        while(node.type.name != 'Statement' && node.parent) {
-          node = node.parent;
-        }
-
-        // We already had found valid text
-        if(validTextFound) {
-          // continue till it reaches start so we can check for empty lines, etc.
-          if(statementStartPos >= 0 && statementStartPos < startPos) {
-            startPos -= 1;
-            continue;
-          }
-          // don't go beyond this
-          startPos = node.to;
-          break;
-        }
-
-        // statement found for the first time
-        if(node.type.name == 'Statement') {
-          statementStartPos = node.from;
-          maxEndPos = node.to;
-
-          // if the statement is on the same line, jump to stmt start
-          if(node.from >= currLine.from) {
-            startPos = node.from;
-          }
-        }
-
-        validTextFound = true;
-        startPos -= 1;
-      }
-
-      // move forward from start position
-      let endPos = startPos+1;
-      maxEndPos = maxEndPos == -1 ? this.state.doc.length : maxEndPos;
-      while(endPos < maxEndPos) {
-        const currLine = this.state.doc.lineAt(endPos);
-
-        // If empty line in between then that's it
-        if(currLine.text.trim() == '') {
-          break;
-        }
-
-        let node = tree.resolve(endPos);
-        // Skip the comments
-        if(node.type.name == 'LineComment' || node.type.name == 'BlockComment') {
-          endPos = node.to + 1;
-          continue;
-        }
-
-        // Skip any other types
-        if(node.type.name != 'Statement') {
-          endPos += 1;
-          continue;
-        }
-
-        // can't go beyond a statement
-        if(node.type.name == 'Statement') {
-          maxEndPos = node.to;
-        }
-
-        if(currLine.to < maxEndPos) {
-          endPos = currLine.to + 1;
-        } else {
-          endPos +=1;
-        }
-      }
-
-      // make sure start and end are valid values;
-      if(startPos < 0) startPos = 0;
-      if(endPos > this.state.doc.length) endPos = this.state.doc.length;
 
       return {
         value: this.state.sliceDoc(startPos, endPos).trim(),
