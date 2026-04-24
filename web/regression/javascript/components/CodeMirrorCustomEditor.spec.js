@@ -10,6 +10,7 @@
 
 import { withTheme } from '../fake_theme';
 import CodeMirror from 'sources/components/ReactCodeMirror';
+import { syntaxTree } from '@codemirror/language';
 
 import { render } from '@testing-library/react';
 
@@ -143,6 +144,166 @@ describe('CodeMirrorCustomEditorView', ()=>{
     cmRerender({value: query});
     // Cursor at WHERE keyword (position 30), should return full query
     expect(editor.getQueryAt(30)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('EXPLAIN ANALYZE with blank lines between clauses',()=>{
+    // The title scenario: EXPLAIN should be included when cursor is on a clause
+    const query = 'EXPLAIN ANALYZE SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
+    cmRerender({value: query});
+    // Cursor at WHERE clause (position 42), should return full query including EXPLAIN
+    expect(editor.getQueryAt(42)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('EXPLAIN with cursor on FROM clause',()=>{
+    const query = 'EXPLAIN SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;';
+    cmRerender({value: query});
+    // Cursor at FROM (position 18), should return full query including EXPLAIN
+    expect(editor.getQueryAt(18)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('two separate queries with semicolons and blank line are not merged',()=>{
+    const text = 'SELECT * FROM users;\n\nSELECT * FROM orders;';
+    cmRerender({value: text});
+    // Cursor on second query (position 22), should return only the second query
+    expect(editor.getQueryAt(22)).toEqual({'value': 'SELECT * FROM orders;', 'from': 22, 'to': 43});
+  });
+
+  it('two separate queries without semicolons and blank line are not merged',()=>{
+    const text = 'SELECT * FROM users\n\nSELECT * FROM orders';
+    cmRerender({value: text});
+    // Cursor on second query, should return only the second query
+    expect(editor.getQueryAt(21)).toEqual({'value': 'SELECT * FROM orders', 'from': 21, 'to': 41});
+  });
+
+  it('comment block between queries does not expand into adjacent query',()=>{
+    const text = 'SELECT 1;\n\n-- This is a comment\n\nSELECT 2;';
+    cmRerender({value: text});
+    // Cursor on comment (position 12), should return only the comment
+    expect(editor.getQueryAt(12)).toEqual({'value': '-- This is a comment', 'from': 11, 'to': 32});
+  });
+
+  it('first query is not expanded into second when cursor on first',()=>{
+    const text = 'SELECT * FROM users;\n\nSELECT * FROM orders;';
+    cmRerender({value: text});
+    // Cursor on first query, should return only the first query
+    expect(editor.getQueryAt(5)).toEqual({'value': 'SELECT * FROM users;', 'from': 0, 'to': 20});
+  });
+
+  it('cursor on blank line between clauses returns nearest query above',()=>{
+    // Cursor exactly on the blank line (position 9 = second \n).
+    // Blank line is a separator — returns the clause above it.
+    const text = 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;';
+    cmRerender({value: text});
+    expect(editor.getQueryAt(9)).toEqual({'value': 'SELECT *', 'from': 0, 'to': 9});
+  });
+
+  it('single-line EXPLAIN without blank lines',()=>{
+    // Regression guard: simple EXPLAIN must still work
+    const query = 'EXPLAIN SELECT * FROM pg_class;';
+    cmRerender({value: query});
+    expect(editor.getQueryAt(10)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  it('multiple consecutive blank lines between clauses',()=>{
+    // 3 blank lines between SELECT and FROM
+    const query = 'SELECT *\n\n\n\nFROM pg_class;';
+    cmRerender({value: query});
+    expect(editor.getQueryAt(12)).toEqual({'value': query, 'from': 0, 'to': query.length});
+  });
+
+  // ----------------------------------------------------------------
+  // Diagnostic: verify Lezer Statement node boundaries for key cases
+  // ----------------------------------------------------------------
+
+  function getStatementNodes(editorView) {
+    const tree = syntaxTree(editorView.state);
+    const stmts = [];
+    tree.iterate({
+      enter: (node) => {
+        if (node.type.name === 'Statement') {
+          stmts.push({ from: node.from, to: node.to });
+        }
+      }
+    });
+    return stmts;
+  }
+
+  it('parser: single query with blank lines between clauses is one Statement',()=>{
+    cmRerender({value: 'SELECT *\n\nFROM pg_class\n\nWHERE id = 1;'});
+    const stmts = getStatementNodes(editor);
+    // Must be a single Statement spanning the entire query
+    expect(stmts.length).toBe(1);
+    expect(stmts[0].from).toBe(0);
+    expect(stmts[0].to).toBe(38);
+  });
+
+  it('parser: two queries with semicolons are separate Statements',()=>{
+    cmRerender({value: 'SELECT 1;\n\nSELECT 2;'});
+    const stmts = getStatementNodes(editor);
+    // Must be two separate Statements
+    expect(stmts.length).toBe(2);
+    // Statement 1 must NOT extend into Statement 2's range
+    expect(stmts[0].to).toBeLessThanOrEqual(stmts[1].from);
+  });
+
+  it('parser: two queries without semicolons — verify Statement layout',()=>{
+    cmRerender({value: 'SELECT * FROM users\n\nSELECT * FROM orders'});
+    const stmts = getStatementNodes(editor);
+    // Record whether parser merges or separates — our _needsExpansion
+    // must handle both cases correctly.  The getQueryAt tests above
+    // already verify correct output; this test documents the parser's
+    // actual behavior for future reference.
+    expect(stmts.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('parser: EXPLAIN SELECT is one Statement',()=>{
+    cmRerender({value: 'EXPLAIN ANALYZE SELECT *\n\nFROM pg_class\n\nWHERE oid > 1000;'});
+    const stmts = getStatementNodes(editor);
+    expect(stmts.length).toBe(1);
+    expect(stmts[0].from).toBe(0);
+  });
+
+  it('parser: Lezer iterate is inclusive at Statement boundary',()=>{
+    // Verify: tree.iterate({from: stmt1End}) DOES visit Statement 1
+    // (Lezer boundaries are inclusive).  Our _needsExpansion guards
+    // against this with an additional node.to > startPos check.
+    cmRerender({value: 'SELECT 1;\n\nSELECT 2;'});
+    const tree = syntaxTree(editor.state);
+    const stmts = getStatementNodes(editor);
+    const stmt1End = stmts[0].to;
+
+    // Raw iterate at stmt1End DOES see Statement 1 (Lezer is inclusive)
+    let seenStmt1AtBoundary = false;
+    tree.iterate({
+      from: stmt1End,
+      to: stmt1End + 10,
+      enter: (node) => {
+        if (node.type.name === 'Statement' && node.from === stmts[0].from) {
+          seenStmt1AtBoundary = true;
+        }
+      }
+    });
+    expect(seenStmt1AtBoundary).toBe(true);  // Lezer IS inclusive
+
+    // But _needsExpansion must NOT treat this as needing expansion.
+    // The query at Statement 2's position should return only Statement 2.
+    const stmt2Start = stmts[1].from;
+    const result = editor.getQueryAt(stmt2Start);
+    expect(result.value).toBe('SELECT 2;');
+  });
+
+  it('query starting exactly at previous Statement boundary is not expanded',()=>{
+    // Edge case: cursor right after the previous Statement.
+    // _needsExpansion must not fire because the previous Statement
+    // does not straddle (contain) startPos.
+    cmRerender({value: 'SELECT 1;\nSELECT 2;'});
+    const stmts = getStatementNodes(editor);
+    expect(stmts.length).toBe(2);
+    // Cursor on second query — must return only the second query
+    const result = editor.getQueryAt(stmts[1].from);
+    expect(result.value).toBe('SELECT 2;');
+    // from may include the preceding newline (trimmed from value)
+    expect(result.to).toBe(stmts[1].to);
   });
 
 });

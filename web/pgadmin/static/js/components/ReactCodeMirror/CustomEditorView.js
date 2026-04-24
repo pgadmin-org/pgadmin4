@@ -21,6 +21,20 @@ import { clearBreakpoints, hasBreakpoint, toggleBreakpoint } from './extensions/
 import { autoCompleteCompartment, eol, eolCompartment } from './extensions/extraStates';
 
 
+// Keywords that can begin a standalone SQL statement.  Used by
+// _needsExpansion to distinguish "new query after blank line" from
+// "clause continuation after blank line".
+const STATEMENT_STARTERS = new Set([
+  'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
+  'TRUNCATE', 'GRANT', 'REVOKE', 'COMMIT', 'ROLLBACK', 'BEGIN',
+  'END', 'SAVEPOINT', 'RELEASE', 'SET', 'SHOW', 'EXPLAIN', 'ANALYZE',
+  'VACUUM', 'REINDEX', 'CLUSTER', 'COMMENT', 'COPY', 'DO', 'LOCK',
+  'NOTIFY', 'LISTEN', 'UNLISTEN', 'LOAD', 'RESET', 'DISCARD',
+  'DECLARE', 'FETCH', 'MOVE', 'CLOSE', 'PREPARE', 'EXECUTE',
+  'DEALLOCATE', 'WITH', 'TABLE', 'VALUES', 'CALL', 'IMPORT', 'MERGE',
+  'REFRESH', 'SECURITY', 'REASSIGN', 'ABORT', 'START', 'CHECKPOINT',
+]);
+
 function getAutocompLoading({ bottom, left }, dom) {
   const cmRect = dom.getBoundingClientRect();
   const div = document.createElement('div');
@@ -50,73 +64,54 @@ export default class CustomEditorView extends EditorView {
     return this.state.sliceDoc();
   }
 
-  /* Helper to check if extracted SQL is a complete/valid query.
-   * Returns true if the query is complete (can stand alone).
-   * Returns false if the query is incomplete (e.g., WHERE without SELECT).
+  /* Check whether a blank-line boundary cut through a SQL statement.
+   *
+   * Uses two checks:
+   * 1. Syntax tree — does a Statement node straddle startPos (starts
+   *    before AND ends after)?  If not, no expansion is needed.
+   * 2. First-word — does the range start with a keyword that CAN begin
+   *    a standalone SQL statement?  If so, the blank line is a
+   *    legitimate separator (handles the parser merging semicolon-less
+   *    queries into one Statement).  Anything else (clause keywords
+   *    like FROM/WHERE, identifiers, etc.) means the blank line cut
+   *    through a statement and expansion is needed.
+   *
+   * Returns true when expansion is needed, false otherwise.
    */
-  isCompleteQuery(startPos, endPos) {
+  _needsExpansion(startPos, endPos) {
     const query = this.state.sliceDoc(startPos, endPos).trim();
-    if (!query) return true; // Empty is considered "complete" (nothing to expand)
+    if (!query) return false;
 
     const tree = syntaxTree(this.state);
-    let hasStatement = false;
-    let hasOnlyComments = true;
-    let hasError = false;
+    let statementStartsBefore = false;
 
     tree.iterate({
       from: startPos,
       to: endPos,
       enter: (node) => {
-        if (node.type.name === 'Statement') {
-          hasStatement = true;
-          hasOnlyComments = false;
-        }
-        if (node.type.isError) {
-          hasError = true;
-        }
-        // Check for non-comment content
-        if (node.type.name !== 'LineComment' &&
-            node.type.name !== 'BlockComment' &&
-            node.type.name !== 'Script') {
-          hasOnlyComments = false;
+        if (node.type.name === 'Statement' && node.from < startPos && node.to > startPos) {
+          statementStartsBefore = true;
         }
       }
     });
 
-    // Comments alone are considered complete (they're a valid block)
-    if (hasOnlyComments && !hasStatement) {
-      return true;
-    }
+    // No Statement extends before our range — blank line is a
+    // legitimate boundary (e.g. comment blocks, separate queries).
+    if (!statementStartsBefore) return false;
 
-    // Check if query starts with a comment - if so, consider it complete
-    // (comments followed by queries should stop at blank line)
-    const trimmedQuery = query.replace(/^\s+/, '');
-    if (trimmedQuery.startsWith('--') || trimmedQuery.startsWith('/*')) {
-      return true;
-    }
+    // A Statement extends before our range, but the parser may have
+    // merged multiple semicolon-less queries into one Statement.
+    // Only skip expansion when the range starts with a keyword that
+    // can begin a standalone SQL statement.  Anything else (clause
+    // keywords like FROM/WHERE, identifiers, expressions, etc.)
+    // means the blank line split a statement — expand.
 
-    // Get the first word/token of the query (ignoring leading whitespace)
-    const firstWord = trimmedQuery.split(/[\s\n\r(;]+/)[0].toUpperCase();
+    // Comment-only blocks are self-contained — don't expand.
+    if (query.startsWith('--') || query.startsWith('/*')) return false;
 
-    // Valid SQL statement starters - a complete query must start with one of these
-    const validStarters = [
-      'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP',
-      'TRUNCATE', 'GRANT', 'REVOKE', 'COMMIT', 'ROLLBACK', 'BEGIN',
-      'END', 'SAVEPOINT', 'RELEASE', 'SET', 'SHOW', 'EXPLAIN', 'ANALYZE',
-      'VACUUM', 'REINDEX', 'CLUSTER', 'COMMENT', 'COPY', 'DO', 'LOCK',
-      'NOTIFY', 'LISTEN', 'UNLISTEN', 'LOAD', 'RESET', 'DISCARD',
-      'DECLARE', 'FETCH', 'MOVE', 'CLOSE', 'PREPARE', 'EXECUTE',
-      'DEALLOCATE', 'WITH', 'TABLE', 'VALUES', 'CALL', 'IMPORT', 'MERGE',
-      'REFRESH', 'SECURITY', 'REASSIGN', 'ABORT', 'START', 'CHECKPOINT',
-    ];
+    const firstWord = query.split(/[\s\n\r(;]+/)[0].toUpperCase();
 
-    // If the query doesn't start with a valid statement starter, it's incomplete
-    if (!validStarters.includes(firstWord)) {
-      return false;
-    }
-
-    // A statement without syntax errors is complete
-    return hasStatement && !hasError;
+    return !STATEMENT_STARTERS.has(firstWord);
   }
 
   /* Internal helper to find query boundaries with blank line as boundary */
@@ -250,12 +245,14 @@ export default class CustomEditorView extends EditorView {
       }
       const tree = syntaxTree(this.state);
 
-      // First pass: find boundaries with blank lines as boundaries
+      // First pass: find boundaries treating blank lines as boundaries
       let { startPos, endPos } = this._findQueryBoundaries(currPos, tree, true);
 
-      // Check if the result is a complete query
-      if (!this.isCompleteQuery(startPos, endPos)) {
-        // Query is incomplete, try expanding by ignoring blank lines
+      // If a blank-line boundary cut through a Statement node, the
+      // extracted range is a fragment.  Retry ignoring blank lines so
+      // the full statement (e.g. SELECT … FROM … WHERE across blank
+      // lines, or EXPLAIN followed by SELECT) is returned.
+      if (this._needsExpansion(startPos, endPos)) {
         const expanded = this._findQueryBoundaries(currPos, tree, false);
         startPos = expanded.startPos;
         endPos = expanded.endPos;
