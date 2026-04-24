@@ -262,7 +262,7 @@
             "lanproc": "plpgsql_call_handler",
             "lanval": null,
             "description": null,
-            "lanowner": "postgres",
+            "lanowner": "<OWNER>",
             "laninl": null,
             "seclabels": null
           }

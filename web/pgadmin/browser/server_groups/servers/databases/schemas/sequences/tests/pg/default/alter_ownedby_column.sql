@@ -13,4 +13,4 @@ ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     OWNED BY public.tableforownedby.col2;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

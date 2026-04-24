@@ -11,7 +11,7 @@ end
 $BODY$;
 
 ALTER FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 ALTER FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
     DEPENDS ON EXTENSION plpgsql;

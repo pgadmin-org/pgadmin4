@@ -6,7 +6,7 @@ CREATE TABLE public."simple_table_comp_$%{}[]()&*^!@""'`\/#"
 );
 
 ALTER TABLE IF EXISTS public."simple_table_comp_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."simple_table_comp_$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

@@ -10,7 +10,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
     OPTIONS (schema_name 'public', table_name 'test_table');
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     ADD CONSTRAINT cons1 CHECK (true) NO INHERIT;

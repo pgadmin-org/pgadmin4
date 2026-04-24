@@ -12,7 +12,7 @@
         "options": [],
         "schema": "public",
         "schema_id": "<SCHEMA_ID>",
-        "owner": "postgres"
+        "owner": "<OWNER>"
       },
       "expected_sql_file": "create_fts_dictionary.sql",
       "expected_msql_file": "msql_create_fts_dictionary.sql"

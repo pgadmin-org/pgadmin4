@@ -9,7 +9,7 @@ CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
     SERVER test_fs_for_foreign_table;
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';

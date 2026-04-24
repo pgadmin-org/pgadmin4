@@ -7,7 +7,7 @@ select 1;
 end;
 
 ALTER PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
     IS 'demo comments';

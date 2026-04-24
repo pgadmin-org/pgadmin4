@@ -8,7 +8,7 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function1_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "postgres",
+        "funcowner": "<OWNER>",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
@@ -61,8 +61,7 @@
       "type": "delete",
       "name": "Drop function",
       "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
+      "data": {}
     },
     {
       "type": "create",
@@ -72,7 +71,7 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "postgres",
+        "funcowner": "<OWNER>",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
@@ -103,7 +102,7 @@
       "msql_endpoint": "NODE-function.msql_id",
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
-        "name":"Function3_$%{}[]()&*^!@\"'`\\/#"
+        "name": "Function3_$%{}[]()&*^!@\"'`\\/#"
       },
       "expected_sql_file": "alter_function_rename.sql",
       "expected_msql_file": "alter_function_rename.msql"
@@ -151,8 +150,7 @@
       "type": "delete",
       "name": "Drop function",
       "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
+      "data": {}
     },
     {
       "type": "create",
@@ -162,7 +160,7 @@
       "sql_endpoint": "NODE-function.sql_id",
       "data": {
         "name": "Function2_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "postgres",
+        "funcowner": "<OWNER>",
         "pronamespace": 2200,
         "prorettypename": "character varying",
         "lanname": "plpgsql",
@@ -196,8 +194,8 @@
         "acl": {
           "added": [
             {
-              "grantee": "postgres",
-              "grantor": "postgres",
+              "grantee": "<OWNER>",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -223,7 +221,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -249,8 +247,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "old_grantee": "postgres",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -276,7 +274,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -286,8 +284,8 @@
               ]
             },
             {
-              "grantee": "postgres",
-              "grantor": "postgres",
+              "grantee": "<OWNER>",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "X",
@@ -306,8 +304,7 @@
       "type": "delete",
       "name": "Drop function",
       "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
+      "data": {}
     },
     {
       "type": "create",
@@ -317,7 +314,7 @@
       "name": "Create function with custom return type.",
       "data": {
         "name": "Function3_$%{}[]()&*^!@\"'`\\/#",
-        "funcowner": "postgres",
+        "funcowner": "<OWNER>",
         "pronamespace": 2200,
         "prorettypename": "table(val character varying)",
         "lanname": "plpgsql",
@@ -353,8 +350,7 @@
       "type": "delete",
       "name": "Drop function",
       "endpoint": "NODE-function.delete_id",
-      "data": {
-      }
+      "data": {}
     }
   ]
 }

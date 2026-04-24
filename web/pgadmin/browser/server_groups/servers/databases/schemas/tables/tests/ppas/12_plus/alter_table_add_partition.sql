@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_pa
     FOR VALUES IN ('ACTIVE');
 
 ALTER TABLE IF EXISTS public.cust_active
-    OWNER to postgres;
+    OWNER to <OWNER>;
 CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('ACTIVE');
 
 ALTER TABLE IF EXISTS public.cust_active
-    OWNER to postgres;
+    OWNER to <OWNER>;
 CREATE TABLE IF NOT EXISTS public.cust_archived PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     FOR VALUES IN ('EXPIRED');
 
 ALTER TABLE public.cust_archived
-    OWNER to postgres;
+    OWNER to <OWNER>;

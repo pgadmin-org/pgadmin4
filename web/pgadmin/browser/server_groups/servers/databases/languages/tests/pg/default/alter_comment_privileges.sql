@@ -15,4 +15,4 @@ COMMENT ON LANGUAGE "Lan2_$%{}[]()&*^!@""'`\/#"
 
 GRANT USAGE ON LANGUAGE "Lan2_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
-GRANT USAGE ON LANGUAGE "Lan2_$%{}[]()&*^!@""'`\/#" TO postgres WITH GRANT OPTION;
+GRANT USAGE ON LANGUAGE "Lan2_$%{}[]()&*^!@""'`\/#" TO <OWNER> WITH GRANT OPTION;

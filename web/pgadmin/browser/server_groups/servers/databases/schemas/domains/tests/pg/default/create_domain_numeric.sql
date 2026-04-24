@@ -7,7 +7,7 @@ CREATE DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     DEFAULT 3
     NOT NULL;
 
-ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO postgres;
+ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO <OWNER>;
 
 COMMENT ON DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     IS 'test_comment';

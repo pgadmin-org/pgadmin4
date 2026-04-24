@@ -12,7 +12,7 @@ end;
 $BODY$;
 
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     DEPENDS ON EXTENSION plpgsql;

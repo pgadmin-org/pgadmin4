@@ -19,7 +19,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

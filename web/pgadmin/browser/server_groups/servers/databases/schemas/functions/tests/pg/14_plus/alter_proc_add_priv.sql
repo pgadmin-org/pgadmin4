@@ -12,11 +12,11 @@ select 1;
 end;
 $BODY$;
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
 
-GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO postgres;
+GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO <OWNER>;
 
 COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     IS 'some comment';

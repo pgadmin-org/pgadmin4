@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."simple_table_with_pk$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

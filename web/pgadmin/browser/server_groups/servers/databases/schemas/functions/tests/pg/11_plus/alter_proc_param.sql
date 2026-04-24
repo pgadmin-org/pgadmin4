@@ -13,7 +13,7 @@ end;
 $BODY$;
 
 ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer)
     IS 'some comment';

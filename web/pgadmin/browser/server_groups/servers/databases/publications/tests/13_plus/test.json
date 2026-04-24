@@ -64,7 +64,7 @@
         "evnt_update": true,
         "evnt_delete": false,
         "evnt_truncate": false,
-        "pubowner": "postgres",
+        "pubowner": "<OWNER>",
         "publish_via_partition_root": false,
         "all_table": true,
         "pubtable": ""
@@ -116,11 +116,13 @@
         "evnt_update": true,
         "evnt_delete": true,
         "evnt_truncate": true,
-        "pubowner": "postgres",
+        "pubowner": "<OWNER>",
         "publish_via_partition_root": false,
         "all_table": false,
         "only_table": false,
-        "pubtable": ["public.test_table_publication"]
+        "pubtable": [
+          "public.test_table_publication"
+        ]
       },
       "expected_sql_file": "create_publication_few_tables.sql",
       "expected_msql_file": "create_publication_few_tables_msql.sql"
@@ -132,7 +134,10 @@
       "sql_endpoint": "NODE-publication.sql_id",
       "msql_endpoint": "NODE-publication.msql_id",
       "data": {
-        "pubtable": ["public.test_table_publication", "public.test_table_publication_2"]
+        "pubtable": [
+          "public.test_table_publication",
+          "public.test_table_publication_2"
+        ]
       },
       "expected_sql_file": "alter_publication_add_tables.sql",
       "expected_msql_file": "alter_publication_add_tables_msql.sql"
@@ -144,7 +149,9 @@
       "sql_endpoint": "NODE-publication.sql_id",
       "msql_endpoint": "NODE-publication.msql_id",
       "data": {
-        "pubtable": ["public.test_table_publication_2"]
+        "pubtable": [
+          "public.test_table_publication_2"
+        ]
       },
       "expected_sql_file": "alter_publication_drop_tables.sql",
       "expected_msql_file": "alter_publication_drop_tables_msql.sql"

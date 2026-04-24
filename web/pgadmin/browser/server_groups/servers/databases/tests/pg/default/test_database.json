@@ -12,7 +12,7 @@
         "deffuncacl": {
           "deleted": [
             {
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "grantee": "PUBLIC",
               "privileges": [
                 {
@@ -41,11 +41,19 @@
         "deftblacl": {
           "deleted": [
             {
-              "grantor": "postgres",
-              "grantee": "postgres",
+              "grantor": "<OWNER>",
+              "grantee": "<OWNER>",
               "privileges": [
-                {"privilege_type":"D","privilege":true,"with_grant":false},
-                {"privilege_type":"w","privilege":true,"with_grant":false}
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                }
               ],
               "acltype": "deftblacl"
             }
@@ -60,7 +68,7 @@
                   "with_grant": false
                 }
               ],
-              "grantor": "postgres"
+              "grantor": "<OWNER>"
             }
           ]
         }
@@ -80,8 +88,8 @@
         "defseqacl": {
           "deleted": [
             {
-              "grantor": "postgres",
-              "grantee": "postgres",
+              "grantor": "<OWNER>",
+              "grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "w",
@@ -92,11 +100,41 @@
               "acltype": "defaultacls"
             }
           ],
-          "added":[
-            {"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false},
-                                                      {"privilege_type":"r","privilege":true,"with_grant":false}],"grantor":"postgres"}]
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
         },
-        "deftblacl": {"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+        "deftblacl": {
+          "deleted": [
+            {
+              "grantor": "<OWNER>",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
       },
       "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_sequences.sql"
@@ -113,7 +151,7 @@
         "deftypeacl": {
           "deleted": [
             {
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "grantee": "PUBLIC",
               "privileges": [
                 {
@@ -126,7 +164,6 @@
             }
           ]
         }
-
       },
       "expected_msql_file": "alter_default_db_privileges_types_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_types.sql"
@@ -139,11 +176,170 @@
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
-        "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "deftblacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
-        "defseqacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+        "deffuncacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
         },
+        "deftypeacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "deftblacl": {
+          "added": [
+            {
+              "grantee": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ],
+          "deleted": [
+            {
+              "grantor": "<OWNER>",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "x",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "t",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        },
+        "defseqacl": {
+          "added": [
+            {
+              "grantee": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ],
+          "deleted": [
+            {
+              "grantor": "<OWNER>",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
+      },
       "expected_sql_file": "alter_default_db_privileges_reset_all.sql"
     },
     {
@@ -155,11 +351,82 @@
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
-        "deffuncacl": {"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "deftypeacl": {"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "deftblacl":{"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
-        "defseqacl":{"added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false}],"grantor":"postgres"}]}
+        "deffuncacl": {
+          "added": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
         },
+        "deftypeacl": {
+          "added": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "deftblacl": {
+          "added": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "a",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "defseqacl": {
+          "added": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        }
+      },
       "expected_msql_file": "alter_default_db_privileges_add_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_add_all.sql",
       "pre_scenario_sql": "CREATE ROLE test_default_priv_user WITH NOLOGIN NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;"
@@ -173,16 +440,106 @@
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
-        "deffuncacl": {"changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "deftypeacl": {"changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "deftblacl":{
-          "added":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"D","privilege":true,"with_grant":false}],"grantor":"postgres"}],
-          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":false}],"grantor":"postgres"}],
-          "changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"d","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "defseqacl":{
-          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}], "grantor":"postgres"}],
-          "changed":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":true}],"grantor":"postgres"}]}
+        "deffuncacl": {
+          "changed": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
         },
+        "deftypeacl": {
+          "changed": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "deftblacl": {
+          "added": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ],
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ],
+          "changed": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "defseqacl": {
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ],
+          "changed": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        }
+      },
       "expected_msql_file": "alter_default_db_privileges_all_msql.sql",
       "expected_sql_file": "alter_default_db_privileges_all.sql"
     },
@@ -195,13 +552,72 @@
       "TEST_DB_NAME": "<TEST_DB_NAME>",
       "REPLACE_LOCALE": true,
       "data": {
-        "deffuncacl": {"deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"X","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "deftypeacl": {"deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"U","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "deftblacl":{
-          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"D","privilege":true,"with_grant":false}, {"privilege_type":"d","privilege":true,"with_grant":true}],"grantor":"postgres"}]},
-        "defseqacl":{
-          "deleted":[{"grantee":"test_default_priv_user","privileges":[{"privilege_type":"w","privilege":true,"with_grant":true}],"grantor":"postgres"}]}
+        "deffuncacl": {
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
         },
+        "deftypeacl": {
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "deftblacl": {
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "D",
+                  "privilege": true,
+                  "with_grant": false
+                },
+                {
+                  "privilege_type": "d",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        },
+        "defseqacl": {
+          "deleted": [
+            {
+              "grantee": "test_default_priv_user",
+              "privileges": [
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": true
+                }
+              ],
+              "grantor": "<OWNER>"
+            }
+          ]
+        }
+      },
       "expected_sql_file": "alter_default_db_privileges_newuser_reset_all.sql",
       "post_scenario_sql": "DROP ROLE IF EXISTS test_default_priv_user;"
     }

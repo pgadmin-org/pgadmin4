@@ -8,6 +8,6 @@ select 1;
 end;
 $BODY$;
 
-REVOKE ALL ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) FROM postgres;
+REVOKE ALL ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) FROM <OWNER>;
 
 GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
