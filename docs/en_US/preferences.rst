@@ -775,6 +775,27 @@ Use the fields on the *Options* panel to specify storage preferences.
 * When the *Show hidden files and folders?* switch is set to *True*, the file
   manager will display hidden files and folders.
 
+.. _the-explain-tensor-node:
+
+The Explain Tensor Node
+***************************
+
+Use the preferences found in the *Explain Tensor* node of the tree control to configure the custom Explain Analyze module.
+
+.. image:: images/preferences_expl_tensor.png
+    :alt: Explain Tensor preferences
+    :align: center
+
+**Note:** Explain Tensor must be enabled in the server configuration (``EXPLAIN_TENSOR_ENABLED = True`` in ``config.py``) for these preferences to be available.
+
+* When the **Explain Plan** switch is set to *True*, the **Explain Analyze** command will use a third-party service to analyze the execution plan.
+
+* Use the **Explain Tensor API** field to specify the API URL.
+
+* When the **Format SQL** switch is set to *True*, the **Format SQL** command will use a third-party service to format the SQL code.
+
+* When the **Private Plans** switch is set to *True*, all analyzed plans will be stored in your personal archive on the third-party service.
+
 
 Using 'setup.py' command line script
 ####################################

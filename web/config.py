@@ -1050,6 +1050,16 @@ DOCKER_API_MODEL = ''
 # Users can override this in their preferences.
 MAX_LLM_TOOL_ITERATIONS = 20
 
+##########################################################################
+# Explain Tensor Settings
+##########################################################################
+
+# Master switch to enable/disable Eplain Tensor features entirely.
+# When False, all Explain Tensor features are disabled and cannot be enabled
+# by users through preferences. When True, users can configure Explain Tensor
+# settings in preferences.
+EXPLAIN_TENSOR_ENABLED = False
+
 #############################################################################
 # Patch the default config with custom config and other manipulations
 #############################################################################

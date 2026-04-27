@@ -21,6 +21,7 @@ import { ResultSetToolbar } from './ResultSetToolbar';
 import { LayoutDockerContext } from '../../../../../../static/js/helpers/Layout';
 import { GeometryViewer } from './GeometryViewer';
 import Explain from '../../../../../../static/js/Explain';
+import ExplainTensor from '../../../../../expl_tensor/static/js';
 import { QuerySources } from './QueryHistory';
 import DownloadUtils from '../../../../../../static/js/DownloadUtils';
 import CopyData from '../QueryToolDataGrid/CopyData';
@@ -769,6 +770,7 @@ export class ResultSetUtils {
       this.setStartData(null);
       let planJson = this.getPlanJson(result, data);
       if(planJson) {
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_PLAN, planJson, this.query);
         onExplain(planJson);
       } else {
         onExplain(null);
@@ -1035,6 +1037,42 @@ export function ResultSet() {
       .catch(()=>{
         // LLM not available - this is fine
       });
+  }, []);
+
+  useEffect(() => {
+    const showExplTensor = (planJson, sql) => {
+      if (!planJson) return;
+      api.get(url_for('expl_tensor.status'))
+        .then((res)=>{
+          if(res.data?.success && res.data?.data?.enabled) {
+            layoutDocker.openTab({
+              id: PANELS.EXPLAIN_TENSOR,
+              title: gettext('Explain Tensor'),
+              content: <ExplainTensor
+                plans={planJson}
+                sql={sql}
+              />,
+              closable: true,
+            }, PANELS.MESSAGES, 'after-tab', true);
+          }
+        })
+        .catch((e)=>{
+          console.error(`Error getting Explain Tensor status: ${e}`);
+        });
+    };
+
+    api.get(url_for('expl_tensor.status'))
+      .then((res)=>{
+        if(res.data?.success && res.data?.data?.system_enabled) {
+          eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplTensor);
+        }
+      })
+      .catch((e)=>{
+        console.error(`Error getting Explain Tensor status: ${e}`);
+      });
+    return () => {
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.QUERY_PLAN, showExplTensor);
+    };
   }, []);
 
   useEffect(()=>{

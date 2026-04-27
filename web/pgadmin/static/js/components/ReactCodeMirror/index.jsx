@@ -19,6 +19,10 @@ import gettext from 'sources/gettext';
 import { PgIconButton } from '../Buttons';
 import { copyToClipboard } from '../../clipboard';
 import { useDelayedCaller } from '../../custom_hooks';
+import explTensorFormatSQL from '../../../../tools/expl_tensor/static/js/formatSQL';
+import getApiInstance from '../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
+import Loader from '../Loader';
 
 import Editor from './components/Editor';
 import CustomPropTypes from '../../custom_prop_types';
@@ -68,10 +72,26 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
   const [[showFind, isReplace, findKey], setShowFind] = useState([false, false, false]);
   const [showGoto, setShowGoto] = useState(false);
   const [showCopy, setShowCopy] = useState(false);
+  const [loading, setLoading] = useState(false);
   const preferences = usePreferences().getPreferencesForModule('sqleditor');
   const editorPrefs = usePreferences().getPreferencesForModule('editor');
+  const explTensorPrefs = usePreferences().getPreferencesForModule('expl_tensor');
+  
+  const api = getApiInstance();
 
-  const formatSQL = (view)=>{
+  let explTensorEnabled = false;
+  api.get(url_for('expl_tensor.status'))
+    .then((res)=>{
+      if(res.data?.success && res.data?.data?.system_enabled) {
+        explTensorEnabled = true;
+      }
+    })
+    .catch((e)=>{
+      console.error(`Error getting Explain Tensor status: ${e}`);
+    });
+
+
+  const formatSQL = async (view)=>{
     let selection = true, sql = view.getSelection();
     /* New library does not support capitalize casing
       so if a user has set capitalize casing we will
@@ -95,7 +115,23 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
       sql = view.getValue();
       selection = false;
     }
-    let formattedSql = format(sql,formatPrefs);
+    let formattedSql;
+    if (explTensorEnabled && explTensorPrefs.explain_tensor_format) {
+      let loadingTimeout = setTimeout(() => {
+        setLoading(true);
+      }, 500);
+      try {
+        formattedSql = await explTensorFormatSQL(sql);
+      } catch (e) {
+        console.error('Error formatting SQL using Explain Tensor API:', e);
+        formattedSql = format(sql,formatPrefs);
+      } finally {
+        clearTimeout(loadingTimeout);
+        setLoading(false);
+      }
+    } else {
+      formattedSql = format(sql,formatPrefs);
+    }
     if(selection) {
       view.replaceSelection(formattedSql);
     } else {
@@ -195,6 +231,7 @@ export default function CodeMirror({className, currEditor, showCopyBtn=false, cu
     <Root className={[className].join(' ')} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
       <Editor currEditor={currEditorWrap} customKeyMap={finalCustomKeyMap} {...props} />
       {showCopy && <CopyButton editor={editor.current} />}
+      {loading && <Loader message={gettext('Loading...')} autoEllipsis />}
       <FindDialog key={findKey} editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} />
       <GotoDialog editor={editor.current} show={showGoto} onClose={closeGoto} />
     </Root>
