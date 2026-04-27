@@ -25,7 +25,7 @@ extras==1.0.0
 fixtures==4.3.2
 linecache2==1.0.0
 pbr==7.0.3
-pycodestyle>=2.5.0
+pycodestyle>=2.14.0
 python-mimeparse==2.0.0
 selenium==4.43.0
 testscenarios==0.5.0; python_version <= '3.9'
