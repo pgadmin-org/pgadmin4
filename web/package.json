@@ -124,7 +124,7 @@
     "notistack": "^3.0.2",
     "papaparse": "^5.5.3",
     "path-fx": "^2.1.2",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.12",
     "rc-dock": "^4.0.0-alpha.2",
     "react": "^19.2.5",
     "react-arborist": "^3.5.0",
