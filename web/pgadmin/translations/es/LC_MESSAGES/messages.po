@@ -11932,7 +11932,7 @@ msgstr "Retroceder"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:31
 msgid "Inserts"
-msgstr "Insersiones"
+msgstr "Inserciones"
 
 #: pgadmin/dashboard/templates/dashboard/sql/default/dashboard_stats.sql:32
 msgid "Updates"
