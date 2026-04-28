@@ -1413,46 +1413,6 @@ WHERE db.datname = current_database()""")
             self.conn = None
         return False
 
-    def connection_ping(self):
-        """
-        Check if the connection is actually alive by executing a lightweight
-        query.  Unlike connected(), which only inspects local state, this
-        sends traffic to the server and will detect stale / half-open TCP
-        connections that were silently dropped by firewalls or the OS while
-        pgAdmin was idle.
-
-        Returns True if alive, False otherwise.
-        """
-        if not self.connected():
-            return False
-
-        try:
-            # Check the transaction status before executing the ping
-            # query.  If a query is already in progress (ACTIVE) or we
-            # are inside a transaction block (INTRANS / INERROR), running
-            # SELECT 1 would fail or disrupt the ongoing operation.  In
-            # those states the connection is evidently alive, so just
-            # return True.
-            txn_status = self.conn.info.transaction_status
-            if txn_status != 0:
-                # 0 = IDLE — safe to send a query
-                # 1 = ACTIVE — command in progress, connection is alive
-                # 2 = INTRANS — in transaction block, connection is alive
-                # 3 = INERROR — in failed transaction, connection is alive
-                return True
-
-            cur = self.conn.cursor()
-            cur.execute("SELECT 1")
-            cur.close()
-            return True
-        except Exception:
-            try:
-                self.conn.close()
-            except Exception:
-                pass
-            self.conn = None
-            return False
-
     def _decrypt_password(self, manager):
         """
         Decrypt password
@@ -1526,7 +1486,43 @@ Failed to reset the connection to the server due to following error:
         return self.__async_query_error
 
     def ping(self):
-        return self.execute_scalar('SELECT 1')
+        """
+        Check if the connection is actually alive by executing a lightweight
+        query.  Unlike connected(), which only inspects local state, this
+        sends traffic to the server and will detect stale / half-open TCP
+        connections that were silently dropped by firewalls or the OS while
+        pgAdmin was idle.
+
+        Returns True if alive, False otherwise.
+        """
+        if not self.connected():
+            return False
+
+        try:
+            # Check the transaction status before executing the ping
+            # query.  If a query is already in progress (ACTIVE) or we
+            # are inside a transaction block (INTRANS / INERROR), running
+            # SELECT 1 would fail or disrupt the ongoing operation.  In
+            # those states the connection is evidently alive, so just
+            # return True.
+            #   0 = IDLE     — safe to send a query
+            #   1 = ACTIVE   — command in progress, connection is alive
+            #   2 = INTRANS  — in transaction block, connection is alive
+            #   3 = INERROR  — in failed transaction, connection is alive
+            if self.conn.info.transaction_status != 0:
+                return True
+
+            cur = self.conn.cursor()
+            cur.execute("SELECT 1")
+            cur.close()
+            return True
+        except Exception:
+            try:
+                self.conn.close()
+            except Exception:
+                pass
+            self.conn = None
+            return False
 
     def _release(self):
         if self.wasConnected:

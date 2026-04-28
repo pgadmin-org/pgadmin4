@@ -433,12 +433,12 @@ class PGChildNodeView(NodeView):
 
         try:
             conn = manager.connection(did=did)
-            # Use connection_ping() instead of connected() to detect
-            # stale / half-open TCP connections that were silently
-            # dropped while pgAdmin was idle.  connected() only checks
-            # local state and would miss these, causing the subsequent
-            # SQL queries to hang indefinitely.
-            if not conn.connection_ping():
+            # Use ping() instead of connected() to detect stale /
+            # half-open TCP connections that were silently dropped while
+            # pgAdmin was idle.  connected() only checks local state and
+            # would miss these, causing the subsequent SQL queries to
+            # hang indefinitely.
+            if not conn.ping():
                 status, msg = conn.connect()
                 if not status:
                     return service_unavailable(
