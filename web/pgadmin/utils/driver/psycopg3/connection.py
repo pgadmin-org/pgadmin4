@@ -17,7 +17,6 @@ import os
 import secrets
 import datetime
 import asyncio
-import copy
 from collections import deque
 import psycopg
 from flask import g, current_app
@@ -281,7 +280,6 @@ class Connection(BaseConnection):
         password, encpass, is_update_password = \
             self._check_user_password(kwargs)
 
-        passfile = kwargs['passfile'] if 'passfile' in kwargs else None
         tunnel_password = kwargs['tunnel_password'] if 'tunnel_password' in \
                                                        kwargs else ''
 
@@ -313,14 +311,21 @@ class Connection(BaseConnection):
         if is_error:
             return False, errmsg
 
-        # If no password credential is found then connect request might
-        # come from Query tool, ViewData grid, debugger etc tools.
-        # we will check for pgpass file availability from connection manager
-        # if it's present then we will use it
-        if not password and not encpass and not passfile:
-            passfile = manager.get_connection_param_value('passfile')
-            if manager.passexec:
-                password = manager.passexec.get()
+        # If no password credential is found then connect request might come
+        # from Query tool, ViewData grid, debugger, etc. In that case, fall
+        # back to using the password returned from manager.passexec.
+        passfile = manager.get_connection_param_value('passfile')
+        if not password and not encpass and not passfile and manager.passexec:
+            password = manager.passexec.get()
+
+        # create_connection_string() automatically picks up the passfile from
+        # connection parameters. Warn if that differs from the passfile kwarg.
+        passfile_kwarg = kwargs.get('passfile', None)
+        if passfile_kwarg and passfile_kwarg != passfile:
+            current_app.logger.warning(
+                'Using the first of two specified passfiles: '
+                f'{passfile!r}, {passfile_kwarg!r}'
+            )
 
         try:
             database = self.db
