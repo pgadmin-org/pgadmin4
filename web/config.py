@@ -1044,6 +1044,19 @@ DOCKER_API_URL = ''
 # Examples: ai/qwen3-coder, ai/llama3.2
 DOCKER_API_MODEL = ''
 
+# Allowed LLM API URLs
+# A list of scheme://host:port entries that LLM API requests are allowed
+# to connect to. Only URLs matching an entry in this list will be permitted.
+# This prevents SSRF attacks via user-controlled API URL fields.
+# Set to an empty list to disable URL restriction (not recommended).
+# Add entries for custom providers (LiteLLM, LM Studio, corporate proxies).
+ALLOWED_LLM_API_URLS = [
+    'https://api.anthropic.com:443',
+    'https://api.openai.com:443',
+    'http://localhost:11434',     # Ollama default
+    'http://localhost:12434',     # Docker Model Runner default
+]
+
 # Maximum Tool Iterations
 # The maximum number of tool call iterations allowed during an AI conversation.
 # This prevents runaway conversations that could consume excessive resources.
