@@ -13,6 +13,7 @@ import sys
 import traceback
 import json
 
+from pgadmin.utils.driver.psycopg3 import Driver
 from regression.python_test_utils.test_utils import get_db_connection,\
     set_isolation_level
 
@@ -61,8 +62,12 @@ def create_user_mapping(server, db_name, fsrv_name):
         old_isolation_level = connection.isolation_level
         set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
+        # Quote the username as an SQL identifier so usernames containing
+        # special characters (e.g. dots like 'ashesh.vashi') do not parse
+        # as schema-qualified names.
+        quoted_username = Driver.qtIdent(None, server['username'])
         query = "CREATE USER MAPPING FOR %s SERVER %s OPTIONS" \
-                " (user '%s', password '%s')" % (server['username'],
+                " (user '%s', password '%s')" % (quoted_username,
                                                  fsrv_name,
                                                  server['username'],
                                                  server['db_password']
