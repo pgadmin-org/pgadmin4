@@ -51,15 +51,21 @@ class EnhancedRotatingFileHandler(handlers.TimedRotatingFileHandler,
     # readable. Pre-existing files keep their permissions; the parent
     # DATA_DIR is already 0o700 on POSIX, so this is defense-in-depth.
     # On Windows the mode arg to os.open is ignored — fall back to the
-    # default behavior there.
+    # default behavior there. O_CLOEXEC matches built-in open()'s default
+    # non-inheritable fd behavior (PEP 446); os.open does not set it
+    # otherwise.
     def _open(self):
         if os.name == 'nt':
             return super()._open()
-        flags = os.O_WRONLY | os.O_CREAT | (
+        flags = os.O_WRONLY | os.O_CREAT | os.O_CLOEXEC | (
             os.O_APPEND if self.mode == 'a' else os.O_TRUNC)
         fd = os.open(self.baseFilename, flags, 0o600)
-        return os.fdopen(fd, self.mode, encoding=self.encoding,
-                         errors=getattr(self, 'errors', None))
+        try:
+            return os.fdopen(fd, self.mode, encoding=self.encoding,
+                             errors=getattr(self, 'errors', None))
+        except Exception:
+            os.close(fd)
+            raise
 
     # Time & Size combined rollover
     def shouldRollover(self, record):
