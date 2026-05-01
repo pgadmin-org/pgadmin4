@@ -68,7 +68,7 @@ class BatchProcessTest(BaseTestGenerator):
     def runTest(self, current_user_mock, server_mock, db_mock,
                 popen_mock, get_server_name_mock, pref_module):
         get_server_name_mock.return_value = self.SERVER_NAME
-        with self.app.app_context():
+        with self.app.test_request_context("/"):
             current_user_mock.id = 1
             current_app.PGADMIN_RUNTIME = False
 
