@@ -197,8 +197,8 @@ class _Preference():
                                   if 'value' in opt and opt['value'] == value),
                                  False)
                 assert (has_value or (self.control_props and
-                                      (self.control_props['tags'] or
-                                       self.control_props['creatable'])))
+                                      (self.control_props.get('tags') or
+                                       self.control_props.get('creatable'))))
             elif self._type == 'date':
                 value = parser_map[self._type](value).date()
             else:

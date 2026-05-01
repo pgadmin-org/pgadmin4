@@ -1266,8 +1266,17 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        connection_params = convert_connection_parameter(
-            data.get('connection_params', []))
+        # convert_connection_parameter() is bidirectional: list->dict for
+        # save (frontend shape), dict->list for display (DB shape). Here
+        # we want the storage shape (dict). If the input is already a
+        # dict (e.g. from internal callers / tests that mimic stored
+        # form), keep it as-is; otherwise assume frontend list shape and
+        # convert.
+        raw_params = data.get('connection_params', [])
+        if isinstance(raw_params, dict):
+            connection_params = raw_params
+        else:
+            connection_params = convert_connection_parameter(raw_params)
 
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):

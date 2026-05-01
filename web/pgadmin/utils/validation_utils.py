@@ -13,6 +13,12 @@ from email_validator import validate_email as email_validate, \
 
 
 def validate_email(email, email_config=None):
+    # email_validator raises TypeError (not EmailNotValidError) when the
+    # input is not str/bytes. Treat anything non-string as invalid so
+    # callers see a clean False, matching the contract that this wrapper
+    # never raises.
+    if not isinstance(email, (str, bytes)):
+        return False
     try:
         if email_config is None:
             email_config = {}

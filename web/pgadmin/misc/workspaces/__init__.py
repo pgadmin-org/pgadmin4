@@ -93,8 +93,14 @@ def adhoc_connect_server():
                 ).format(arg)
             )
 
-    connection_params = convert_connection_parameter(
-        data.get('connection_params', []))
+    # convert_connection_parameter() is bidirectional. For a save path we
+    # want the storage shape (dict). If the input is already a dict, keep
+    # it; otherwise assume frontend list shape and convert.
+    raw_params = data.get('connection_params', [])
+    if isinstance(raw_params, dict):
+        connection_params = raw_params
+    else:
+        connection_params = convert_connection_parameter(raw_params)
 
     if connection_params is not None:
         if 'hostaddr' in connection_params and \

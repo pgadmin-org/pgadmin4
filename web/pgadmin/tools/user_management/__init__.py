@@ -168,7 +168,7 @@ def user(uid):
                                'username': u.username,
                                'email': u.email,
                                'active': u.active,
-                               'role': u.roles[0].id,
+                               'role': u.roles[0].id if u.roles else None,
                                'auth_source': u.auth_source,
                                'locked': u.locked,
                                'canDrop': u.id != current_user.id
