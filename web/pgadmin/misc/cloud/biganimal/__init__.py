@@ -11,7 +11,6 @@
 
 import requests
 import json
-import pickle
 from flask_babel import gettext
 from flask import session, current_app
 from pgadmin.user_login_check import pga_login_required
@@ -49,15 +48,42 @@ blueprint = BigAnimalModule(MODULE_NAME, __name__,
                             static_url_path='/misc/cloud/biganimal')
 
 
+def _get_biganimal_from_session():
+    """Build a BigAnimalProvider from `session['biganimal']['state']`.
+
+    Returns None when no state is in session — callers should treat that
+    as "auth not yet started." Replaces an unsafe deserialization vector
+    that previously persisted the live provider instance.
+    """
+    biganimal = session.get('biganimal')
+    if not biganimal:
+        return None
+    state = biganimal.get('state')
+    if not state:
+        return None
+    return BigAnimalProvider.from_state(state)
+
+
+def _save_biganimal_to_session(biganimal_obj):
+    """Persist BigAnimalProvider state to session as a plain dict."""
+    if 'biganimal' not in session:
+        session['biganimal'] = {}
+    session['biganimal']['state'] = biganimal_obj.to_state()
+
+
 @blueprint.route('/verification_ack/',
                  methods=['GET'], endpoint='verification_ack')
 @pga_login_required
 def biganimal_verification_ack():
     """Check the Verification is done or not."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(
+            success=False,
+            errormsg=gettext('Authentication session expired.'))
     status, error = biganimal_obj.polling_for_token()
     if status:
-        session['biganimal']['provider_obj'] = pickle.dumps(biganimal_obj, -1)
+        _save_biganimal_to_session(biganimal_obj)
     return make_json_response(success=status,
                               errormsg=error)
 
@@ -70,7 +96,7 @@ def verification():
     biganimal = BigAnimalProvider()
     verification_uri = biganimal.get_device_code()
     session['biganimal'] = {}
-    session['biganimal']['provider_obj'] = pickle.dumps(biganimal, -1)
+    _save_biganimal_to_session(biganimal)
 
     return make_json_response(data=verification_uri)
 
@@ -80,7 +106,10 @@ def verification():
 @pga_login_required
 def biganimal_projects():
     """Get Providers."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[],
+                                  errormsg='Authentication is failed.')
     projects, error = biganimal_obj.get_projects()
     return make_json_response(data=projects, errormsg=error)
 
@@ -90,9 +119,12 @@ def biganimal_projects():
 @pga_login_required
 def biganimal_providers(project_id):
     """Get Providers."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[],
+                                  errormsg='Authentication is failed.')
     providers, error = biganimal_obj.get_providers(project_id)
-    session['biganimal']['provider_obj'] = pickle.dumps(biganimal_obj, -1)
+    _save_biganimal_to_session(biganimal_obj)
     return make_json_response(data=providers, errormsg=error)
 
 
@@ -101,9 +133,11 @@ def biganimal_providers(project_id):
 @pga_login_required
 def biganimal_regions():
     """Get Regions."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     _, regions = biganimal_obj.get_regions()
-    session['biganimal']['provider_obj'] = pickle.dumps(biganimal_obj, -1)
+    _save_biganimal_to_session(biganimal_obj)
     return make_json_response(data=regions)
 
 
@@ -112,7 +146,9 @@ def biganimal_regions():
 @pga_login_required
 def biganimal_db_types():
     """Get Database Types."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     pg_types = biganimal_obj.get_postgres_types()
     return make_json_response(data=pg_types)
 
@@ -122,7 +158,9 @@ def biganimal_db_types():
 @pga_login_required
 def biganimal_db_versions(cluster_type, pg_type):
     """Get Database Version."""
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     pg_versions = biganimal_obj.get_postgres_versions(cluster_type, pg_type)
     return make_json_response(data=pg_versions)
 
@@ -134,7 +172,9 @@ def biganimal_instance_types(region_id, provider_id):
     """Get Instance Types."""
     if not region_id or not provider_id:
         return make_json_response(data=[])
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     biganimal_instances = biganimal_obj.get_instance_types(region_id,
                                                            provider_id)
     return make_json_response(data=biganimal_instances)
@@ -147,7 +187,9 @@ def biganimal_volume_types(region_id, provider_id):
     """Get Volume Types."""
     if not region_id or not provider_id:
         return make_json_response(data=[])
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     biganimal_volumes = biganimal_obj.get_volume_types(region_id, provider_id)
     return make_json_response(data=biganimal_volumes)
 
@@ -159,7 +201,9 @@ def biganimal_volume_properties(region_id, provider_id, volume_type):
     """Get Volume Properties."""
     if not region_id or not provider_id:
         return make_json_response(data=[])
-    biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+    biganimal_obj = _get_biganimal_from_session()
+    if biganimal_obj is None:
+        return make_json_response(data=[])
     biganimal_volume_properties = biganimal_obj.get_volume_properties(
         region_id,
         provider_id,
@@ -182,6 +226,46 @@ class BigAnimalProvider():
         self.regions = []
         self.get_auth_provider()
         self.project_id = None
+
+    def to_state(self):
+        """Serialize persistable state to a plain dict for `flask.session`.
+
+        Replaces persisting the live BigAnimalProvider via the unsafe
+        serializer (which represented an insecure-deserialization vector).
+        """
+        return {
+            'provider': self.provider,
+            'device_code': self.device_code,
+            'token': self.token,
+            'raw_access_token': self.raw_access_token,
+            'access_token': self.access_token,
+            'token_error': self.token_error,
+            'token_status': self.token_status,
+            'regions': self.regions,
+            'project_id': self.project_id,
+        }
+
+    @classmethod
+    def from_state(cls, state):
+        """Rebuild a BigAnimalProvider from a previously-serialized dict.
+
+        Bypasses `__init__` (which fetches the auth provider over HTTP) —
+        the persisted `provider` field already has that data, so refetching
+        would be a redundant network call.
+        """
+        if not isinstance(state, dict):
+            return None
+        obj = cls.__new__(cls)
+        obj.provider = state.get('provider', {}) or {}
+        obj.device_code = state.get('device_code', {}) or {}
+        obj.token = state.get('token', {}) or {}
+        obj.raw_access_token = state.get('raw_access_token')
+        obj.access_token = state.get('access_token')
+        obj.token_error = state.get('token_error', {}) or {}
+        obj.token_status = state.get('token_status', -1)
+        obj.regions = state.get('regions', []) or []
+        obj.project_id = state.get('project_id')
+        return obj
 
     def _get_headers(self):
         return {
@@ -525,7 +609,9 @@ def deploy_on_biganimal(data):
         )
 
         env = dict()
-        biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
+        biganimal_obj = _get_biganimal_from_session()
+        if biganimal_obj is None or biganimal_obj.access_token is None:
+            return False, None, 'BigAnimal credentials missing from session.'
         env['BIGANIMAL_ACCESS_KEY'] = biganimal_obj.access_token
 
         if 'password' in data['db_details']:
