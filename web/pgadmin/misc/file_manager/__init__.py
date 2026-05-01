@@ -48,6 +48,25 @@ if _platform == "win32":
     SEM_FAIL = SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS
     file_root = ""
 
+
+def _open_upload_target(path):
+    """Open a file for upload with leaf-symlink protection.
+
+    Returns a binary write-mode file object. The kernel will refuse to
+    follow a symbolic link at the leaf (CWE-61), closing the TOCTOU gap
+    between `check_access_permission` and the actual file write. Mode is
+    intentionally 0o600 (owner-only); see release notes for the
+    behavioral change from the previous umask-default 0o644.
+
+    On Windows, O_NOFOLLOW is unavailable so the flag is a no-op; the
+    residual leaf-component TOCTOU is mitigated by the absence of any
+    in-pgAdmin primitive that creates symlinks.
+    """
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC \
+        | getattr(os, 'O_NOFOLLOW', 0)
+    fd = os.open(path, flags, 0o600)
+    return os.fdopen(fd, 'wb')
+
 MODULE_NAME = 'file_manager'
 global transid
 
@@ -898,9 +917,11 @@ class Filemanager():
         in_dir = '' if in_dir is None else in_dir
         orig_path = Filemanager.get_abs_path(in_dir, path)
 
-        # This translates path with relative path notations
-        # like ./ and ../ to absolute path.
-        orig_path = os.path.abspath(orig_path)
+        # Resolve symbolic links AND .. notation. abspath() alone resolves
+        # only .., leaving a gap where a symlink inside the user's storage
+        # directory could escape the sandbox at the kernel-syscall layer
+        # (CWE-61 / CWE-22). realpath() closes that gap.
+        orig_path = os.path.realpath(orig_path)
 
         if in_dir:
             if _platform == 'win32':
@@ -909,6 +930,10 @@ class Filemanager():
             else:
                 if in_dir[-1] == '/':
                     in_dir = in_dir[:-1]
+            # Resolve in_dir too: a symlinked storage root would otherwise
+            # compare unequal to the resolved target path and break legit
+            # access.
+            in_dir = os.path.realpath(in_dir)
 
         # Do not allow user to access outside his storage dir
         # in server mode.
@@ -1080,17 +1105,18 @@ class Filemanager():
             new_name = "{0}{1}".format(orig_path, file_name)
 
             try:
-                # Check if the new file is inside the users directory
+                # Check the new file's resolved path is inside the user's
+                # storage directory. realpath() resolves symbolic links —
+                # abspath() alone leaves a CWE-61 escape window.
                 if config.SERVER_MODE:
-                    pathlib.Path(
-                        os.path.abspath(
-                            os.path.join(the_dir, new_name)
-                        )
-                    ).relative_to(the_dir)
+                    real_target = os.path.realpath(
+                        os.path.join(the_dir, new_name))
+                    real_in_dir = os.path.realpath(the_dir)
+                    pathlib.Path(real_target).relative_to(real_in_dir)
             except ValueError:
                 return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-            with open(new_name, 'wb') as f:
+            with _open_upload_target(new_name) as f:
                 while True:
                     # 4MB chunk (4 * 1024 * 1024 Bytes)
                     data = file_obj.read(4194304)
@@ -1100,8 +1126,6 @@ class Filemanager():
         except OSError as e:
             return internal_server_error("{0} {1}".format(
                 gettext('There was an error adding the file:'), e.strerror))
-
-        Filemanager.check_access_permission(the_dir, path)
 
         return {
             'Path': path,
