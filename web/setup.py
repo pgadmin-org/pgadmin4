@@ -780,28 +780,37 @@ def setup_db(app: Annotated[str, typer.Argument(
     print("======================================\n")
 
     def run_migration_for_sqlite():
-        with app.app_context():
-            # Run migration for the first time i.e. create database
-            from config import SQLITE_PATH
-            if not os.path.exists(SQLITE_PATH):
-                db_upgrade(app)
-            else:
-                version = Version.query.filter_by(name='ConfigDB').first()
-                schema_version = version.value
-
-                # Run migration if current schema version is greater than the
-                # schema version stored in version table
-                if CURRENT_SCHEMA_VERSION >= schema_version:
+        # See pgadmin/__init__.py:run_migration_for_sqlite — tighten the
+        # umask so SQLite creates the DB file at 0o600 directly rather
+        # than relying on the post-hoc chmod (which has a TOCTOU window
+        # between create and chmod).
+        _saved_umask = os.umask(0o077)
+        try:
+            with app.app_context():
+                # Run migration for the first time i.e. create database
+                from config import SQLITE_PATH
+                if not os.path.exists(SQLITE_PATH):
                     db_upgrade(app)
-
-                # Update schema version to the latest
-                if CURRENT_SCHEMA_VERSION > schema_version:
+                else:
                     version = Version.query.filter_by(name='ConfigDB').first()
-                    version.value = CURRENT_SCHEMA_VERSION
-                    db.session.commit()
+                    schema_version = version.value
 
-            if os.name != 'nt':
-                os.chmod(config.SQLITE_PATH, 0o600)
+                    # Run migration if current schema version is greater
+                    # than the schema version stored in version table
+                    if CURRENT_SCHEMA_VERSION >= schema_version:
+                        db_upgrade(app)
+
+                    # Update schema version to the latest
+                    if CURRENT_SCHEMA_VERSION > schema_version:
+                        version = Version.query.filter_by(
+                            name='ConfigDB').first()
+                        version.value = CURRENT_SCHEMA_VERSION
+                        db.session.commit()
+        finally:
+            os.umask(_saved_umask)
+
+        if os.name != 'nt':
+            os.chmod(config.SQLITE_PATH, 0o600)
 
     def run_migration_for_others():
         with app.app_context():

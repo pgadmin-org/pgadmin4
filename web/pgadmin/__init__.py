@@ -403,50 +403,67 @@ def create_app(app_name=None):
             backup_db_file()
 
     def run_migration_for_sqlite():
-        # Run migration for the first time i.e. create database
-        # If version not available, user must have aborted. Tables are not
-        # created and so its an empty db
-        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
-            # If running in cli mode then don't try to upgrade, just raise
-            # the exception
-            if not cli_mode:
-                upgrade_db()
+        # Tighten the process umask while we may be creating the SQLite
+        # DB file. The post-hoc chmod below sets 0o600, but only AFTER
+        # SQLAlchemy/SQLite has already created the file with the
+        # umask-default mode (0o644 on a typical 0o022 umask). That's a
+        # TOCTOU window — small in practice because the parent dir is
+        # 0o700, but easy to close. With umask 0o077 in effect during
+        # creation, the file is born 0o600.
+        _saved_umask = os.umask(0o077)
+        try:
+            # Run migration for the first time i.e. create database
+            # If version not available, user must have aborted. Tables
+            # are not created and so its an empty db
+            if not os.path.exists(SQLITE_PATH) or get_version() == -1:
+                # If running in cli mode then don't try to upgrade, just
+                # raise the exception
+                if not cli_mode:
+                    upgrade_db()
+                else:
+                    if not os.path.exists(SQLITE_PATH):
+                        raise FileNotFoundError(
+                            'SQLite database file "' + SQLITE_PATH +
+                            '" does not exists.')
+                    raise RuntimeError(
+                        'The configuration database file is not valid.')
             else:
-                if not os.path.exists(SQLITE_PATH):
-                    raise FileNotFoundError(
-                        'SQLite database file "' + SQLITE_PATH +
-                        '" does not exists.')
-                raise RuntimeError(
-                    'The configuration database file is not valid.')
-        else:
-            schema_version = get_version()
+                schema_version = get_version()
 
-            # Run migration if current schema version is greater than the
-            # schema version stored in version table
-            if CURRENT_SCHEMA_VERSION > schema_version:
-                # Take a backup of the old database file.
-                try:
-                    prev_database_file_name = \
-                        "{0}.prev.bak".format(SQLITE_PATH)
-                    shutil.copyfile(SQLITE_PATH, prev_database_file_name)
-                except Exception as e:
-                    app.logger.error(e)
+                # Run migration if current schema version is greater than
+                # the schema version stored in version table
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    # Take a backup of the old database file.
+                    try:
+                        prev_database_file_name = \
+                            "{0}.prev.bak".format(SQLITE_PATH)
+                        shutil.copyfile(
+                            SQLITE_PATH, prev_database_file_name)
+                    except Exception as e:
+                        app.logger.error(e)
 
-                upgrade_db()
-            else:
-                # check all tables are present in the db.
-                is_db_error, invalid_tb_names = check_db_tables()
-                if is_db_error:
-                    app.logger.error(
-                        'Table(s) {0} are missing in the'
-                        ' database'.format(invalid_tb_names))
-                    backup_db_file()
+                    upgrade_db()
+                else:
+                    # check all tables are present in the db.
+                    is_db_error, invalid_tb_names = check_db_tables()
+                    if is_db_error:
+                        app.logger.error(
+                            'Table(s) {0} are missing in the'
+                            ' database'.format(invalid_tb_names))
+                        backup_db_file()
 
-            # Update schema version to the latest
-            if CURRENT_SCHEMA_VERSION > schema_version:
-                set_version(CURRENT_SCHEMA_VERSION)
-                db.session.commit()
+                # Update schema version to the latest
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    set_version(CURRENT_SCHEMA_VERSION)
+                    db.session.commit()
+        finally:
+            # Always restore the prior umask — including the exception
+            # paths above, so a migration failure doesn't leave the
+            # whole process running with 0o077.
+            os.umask(_saved_umask)
 
+        # Belt-and-suspenders: covers the case where the file already
+        # existed at a wider mode from an older install.
         if os.name != 'nt':
             os.chmod(config.SQLITE_PATH, 0o600)
 
