@@ -319,8 +319,9 @@ class BatchProcess:
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
         if config.SERVER_MODE and session and \
-                session['auth_source_manager']['current_source'] == \
-                KERBEROS and 'KRB5CCNAME' in session:
+                session.get('auth_source_manager', {}).get(
+                    'current_source') == KERBEROS and \
+                'KRB5CCNAME' in session:
             env['KRB5CCNAME'] = session['KRB5CCNAME']
 
         if self.env:
