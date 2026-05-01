@@ -52,16 +52,37 @@ def init_app(app):
                      methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     def oauth_authorize():
-        auth_obj = session['auth_obj']
-        auth_obj.set_current_source(auth_obj.source.get_source_name())
+        # Reconstruct the minimal AuthSourceManager state from the session.
+        # The previous design stored a live AuthSourceManager instance,
+        # which required serializable-anything session storage and
+        # presented a deserialization vector. Now we persist only the
+        # OAuth2 provider name and re-look-up the auth-source from
+        # current_app's registry.
+        from pgadmin.authenticate import AuthSourceManager, get_auth_sources
+        oauth2_client = session.get('oauth2_current_client')
+        if not oauth2_client:
+            current_app.logger.warning(
+                "OAuth2 callback received without provider context; "
+                "session may have expired between login and callback")
+            flash(gettext("Login session expired. Please try again."),
+                  MessageType.ERROR)
+            return redirect(get_safe_post_logout_redirect())
+
+        oauth2_source = get_auth_sources(OAUTH2)
+        # Restore the provider selection onto the (process-global) source
+        # instance so login() picks the right OAuth2 client.
+        oauth2_source.oauth2_current_client = oauth2_client
+
+        auth_obj = AuthSourceManager({}, [OAUTH2])
+        auth_obj.set_source(oauth2_source)
+        auth_obj.set_current_source(oauth2_source.get_source_name())
+
         status, msg = auth_obj.login()
         if status:
             session['auth_source_manager'] = auth_obj.as_dict()
-            if 'auth_obj' in session:
-                session.pop('auth_obj')
+            session.pop('oauth2_current_client', None)
             return redirect(get_safe_post_login_redirect())
-        if 'auth_obj' in session:
-            session.pop('auth_obj')
+        session.pop('oauth2_current_client', None)
         logout_user()
         flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
