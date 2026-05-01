@@ -68,11 +68,29 @@ from pgadmin.authenticate import AuthSourceManager
 from pgadmin.utils.exception import CryptKeyMissing
 
 from pgadmin.user_login_check import pga_login_required
-from flask_security.views import default_render_json
 
 MODULE_NAME = 'browser'
 BROWSER_STATIC = 'browser.static'
 BROWSER_INDEX = 'browser.index'
+
+
+def _first_form_error_message(form, default=None):
+    """Extract the first validator error message from a wtforms form,
+    coerced to a plain str.
+
+    Returns `default` if there are no errors. Babel `LazyString`
+    (`LazyProxy`) instances — emitted by wtforms validators with
+    translatable messages — must be force-resolved before they reach
+    `json.dumps`, which otherwise fails with "Circular reference
+    detected" because `LazyProxy` reports itself as iterable. Use this
+    helper any time you return a form-validation error in a JSON
+    envelope.
+    """
+    for errors in form.errors.values():
+        for error in errors:
+            if error:
+                return str(error)
+    return default
 PGADMIN_BROWSER = 'pgAdmin.Browser'
 PASS_ERROR_MSG = gettext('Your password has not been changed.')
 SMTP_SOCKET_ERROR = gettext(
@@ -918,11 +936,8 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
-                # form.errors values may be Babel LazyString (LazyProxy)
-                # objects from wtforms validators with translatable
-                # messages — force resolution to plain str so the JSON
-                # encoder doesn't choke with "Circular reference detected".
-                return bad_request(str(list(form.errors.values())[0][0]))
+                return bad_request(_first_form_error_message(
+                    form, gettext('Invalid input.')))
 
         return make_json_response(
             success=1,
@@ -1014,18 +1029,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         if request.get_json(silent=True) is not None:
             # Flask-Security's default_render_json signature changed
             # (no longer accepts `include_user`); return our standard
-            # JSON envelope. Form validation errors are surfaced as
-            # errormsg, success cases as info.
+            # JSON envelope.
             if has_error or form.errors:
-                err_msg = ''
-                for errors in form.errors.values():
-                    for error in errors:
-                        err_msg = str(error)
-                        break
-                    if err_msg:
-                        break
-                return bad_request(err_msg or
-                                   gettext('Password reset failed.'))
+                return bad_request(_first_form_error_message(
+                    form, gettext('Password reset failed.')))
             return make_json_response(
                 success=1,
                 info=gettext('Password reset instructions sent.'))
