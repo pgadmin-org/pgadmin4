@@ -44,19 +44,30 @@ class EmailValidationOnSetup(BaseTestGenerator):
 
         os_environ_mock.return_value = []
         config.CHECK_EMAIL_DELIVERABILITY = self.check_deliverability
+        # The test data includes pg@postgres.local. The .local suffix
+        # is in email_validator.SPECIAL_USE_DOMAIN_NAMES which fails
+        # syntactic validation regardless of CHECK_EMAIL_DELIVERABILITY.
+        # Allow it explicitly so the deliverability-off scenario can
+        # actually accept all the test inputs.
+        original_allow = config.ALLOW_SPECIAL_EMAIL_DOMAINS
+        config.ALLOW_SPECIAL_EMAIL_DOMAINS = ['local']
 
-        with module_patch('pgadmin.setup.user_info.pprompt') as pprompt_mock:
-            pprompt_mock.return_value \
-                = self.PPROMPT_RETURN_VALUE, self.PPROMPT_RETURN_VALUE
+        try:
+            with module_patch('pgadmin.setup.user_info.pprompt') \
+                    as pprompt_mock:
+                pprompt_mock.return_value \
+                    = self.PPROMPT_RETURN_VALUE, self.PPROMPT_RETURN_VALUE
 
-            for e in self.data:
-                input_mock.return_value = e
-                # skipping some setup-db part as we are only testing the
-                # mail validation through setup.
-                email, password = user_info()
+                for e in self.data:
+                    input_mock.return_value = e
+                    # skipping some setup-db part as we are only testing
+                    # the mail validation through setup.
+                    email, password = user_info()
 
-                input_mock.assert_called_once_with(ENTER_EMAIL_ADDRESS)
-                # assert equal means deliverability is not done, and entered
-                # email id is returned as it is.
-                self.assertEqual(e, email)
-                input_mock.reset_mock()
+                    input_mock.assert_called_once_with(ENTER_EMAIL_ADDRESS)
+                    # assert equal means deliverability is not done, and
+                    # entered email id is returned as it is.
+                    self.assertEqual(e, email)
+                    input_mock.reset_mock()
+        finally:
+            config.ALLOW_SPECIAL_EMAIL_DOMAINS = original_allow
