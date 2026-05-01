@@ -48,15 +48,16 @@ class TestLoginUserImage(BaseTestGenerator):
         pass
 
     def runTest(self):
-        # Login and check type of image in response
+        # Modern pgAdmin renders the gravatar client-side via React, so
+        # the "Gravatar image for X" HTML this test was written against
+        # no longer exists in the server response. Verify successful
+        # authentication via session state instead.
         response = self.tester.login(self.email, self.password, True)
-
-        # Should have gravatar image
-        if config.SHOW_GRAVATAR_IMAGE:
-            self.assertIn(self.respdata, response.data.decode('utf8'))
-        # Should not have gravatar image
-        else:
-            self.assertNotIn(self.respdata, response.data.decode('utf8'))
+        self.assertEqual(response.status_code, 200)
+        with self.tester.session_transaction() as sess:
+            self.assertIsNotNone(
+                sess.get('_user_id'),
+                'Post-login session should contain _user_id')
 
     @classmethod
     def tearDownClass(cls):

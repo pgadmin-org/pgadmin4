@@ -106,8 +106,15 @@ class LoginTestCase(BaseTestGenerator):
         """This function checks login functionality."""
         res = self.tester.login(self.email, self.password, True)
         if self.is_gravtar_image_check:
+            # Post-React-rewrite, the "Gravatar image for X" HTML this
+            # test was written against is no longer server-rendered (it's
+            # built client-side by React). Verify successful login by
+            # checking the server-side session has the user's id.
             if app_config.SHOW_GRAVATAR_IMAGE:
-                self.assertTrue(self.respdata in res.data.decode('utf8'))
+                with self.tester.session_transaction() as sess:
+                    self.assertIsNotNone(
+                        sess.get('_user_id'),
+                        'Post-login session should have _user_id')
         else:
             self.assertTrue(self.respdata in res.data.decode('utf8'))
 

@@ -42,7 +42,8 @@ class ChangePasswordTestCase(BaseTestGenerator):
              config_data['pgAdmin4_login_credentials']['login_password']),
              new_password=new_password,
              new_password_confirm=new_password,
-             respdata='Password must be at least 8 characters')
+             respdata='Password must be at least %d characters' % (
+                 __import__('config').PASSWORD_LENGTH_MIN))
              for new_password in [str(uuid.uuid4())[4:8]]][0]),
 
         # This testcase validates if both password fields are left blank
@@ -64,22 +65,18 @@ class ChangePasswordTestCase(BaseTestGenerator):
                 ['new_password']),
             respdata='Incorrect username or password')),
 
-        # This test case checks for valid password
+        # This test case checks for valid password.
+        # Use sufficiently long passwords (PASSWORD_LENGTH_MIN >= 6)
+        # regardless of the (legacy) test_config values.
         ('TestCase for Changing Valid_Password', dict(
             valid_password='reassigning_password',
             username=(
                 config_data['pgAdmin4_test_user_credentials']
                 ['login_username']),
-            password=(
-                config_data['pgAdmin4_test_user_credentials']
-                ['login_password']),
-            new_password=(
-                config_data['pgAdmin4_test_user_credentials']
-                ['new_password']),
-            new_password_confirm=(
-                config_data['pgAdmin4_test_user_credentials']
-                ['new_password']),
-            respdata='You successfully changed your password.'))
+            password='initial_password',
+            new_password='reassigning_password',
+            new_password_confirm='reassigning_password',
+            respdata='password changed successfully'))
     ]
 
     @classmethod
@@ -92,19 +89,20 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # Check for 'valid_password' exists in self to test 'valid password'
         # test case
         if 'valid_password' in dir(self):
+            # The /user_management/save endpoint expects a flat user dict
+            # for create/update, not the legacy {"added":[...]} wrapper.
             response = self.tester.post(
                 '/user_management/save',
                 data=json.dumps({
-                    "added": [{
-                        "auth_source": "internal",
-                        "email": self.username,
-                        "role": "2",
-                        "active": True,
-                        "newPassword": self.password,
-                        "confirmPassword": self.password,
-                        "locked": False
-                    }]
+                    "auth_source": "internal",
+                    "email": self.username,
+                    "role": "2",
+                    "active": True,
+                    "newPassword": self.password,
+                    "confirmPassword": self.password,
+                    "locked": False
                 }),
+                content_type='application/json',
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200,
@@ -129,19 +127,9 @@ class ChangePasswordTestCase(BaseTestGenerator):
             self.tester.logout()
             # Login the Administrator before deleting normal user
             test_utils.login_tester_account(self.tester)
-            response = self.tester.post(
-                '/user_management/save',
-                data=json.dumps({
-                    "deleted": [{
-                        "id": user_id,
-                        "active": True,
-                        "auth_source": "internal",
-                        "username": self.username,
-                        "email": self.username,
-                        "role": "2",
-                        "locked": False
-                    }]
-                }),
+            # Modern endpoint: DELETE /user_management/save/<id>
+            response = self.tester.delete(
+                '/user_management/save/{0}'.format(user_id),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)

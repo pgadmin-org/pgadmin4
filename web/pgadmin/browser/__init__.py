@@ -918,7 +918,11 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
-                return bad_request(list(form.errors.values())[0][0])
+                # form.errors values may be Babel LazyString (LazyProxy)
+                # objects from wtforms validators with translatable
+                # messages — force resolution to plain str so the JSON
+                # encoder doesn't choke with "Circular reference detected".
+                return bad_request(str(list(form.errors.values())[0][0]))
 
         return make_json_response(
             success=1,
@@ -1007,8 +1011,24 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                 do_flash(*get_message('PASSWORD_RESET_REQUEST',
                                       email=form.user.email))
 
-        if request.get_json(silent=True) and not has_error:
-            return default_render_json(form, include_user=False)
+        if request.get_json(silent=True) is not None:
+            # Flask-Security's default_render_json signature changed
+            # (no longer accepts `include_user`); return our standard
+            # JSON envelope. Form validation errors are surfaced as
+            # errormsg, success cases as info.
+            if has_error or form.errors:
+                err_msg = ''
+                for errors in form.errors.values():
+                    for error in errors:
+                        err_msg = str(error)
+                        break
+                    if err_msg:
+                        break
+                return bad_request(err_msg or
+                                   gettext('Password reset failed.'))
+            return make_json_response(
+                success=1,
+                info=gettext('Password reset instructions sent.'))
 
         for errors in form.errors.values():
             for error in errors:
