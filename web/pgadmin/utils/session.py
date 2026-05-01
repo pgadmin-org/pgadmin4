@@ -68,6 +68,26 @@ def _compute_file_hmac(secret, body):
     return hmac.new(key, body, _FILE_HMAC).hexdigest().encode()
 
 
+def _open_session_file(path):
+    """Open a session file for writing with mode 0o600 (owner-only).
+
+    Session files contain OAuth access/refresh tokens, AWS/Google/Azure/
+    BigAnimal cloud credentials, the Kerberos cache path, MFA OTP material,
+    and `pass_enc_key` (the symmetric KEK used to decrypt the user's saved
+    Postgres server passwords). The default `open(path, 'wb')` uses the
+    process umask, which on most systems leaves files world-readable
+    (0o644). Force 0o600 so that even if the directory permissions are
+    misconfigured (e.g., a volume mount in a container with shared uids),
+    individual session files remain owner-only.
+    """
+    fd = os.open(
+        path,
+        os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+        0o600,
+    )
+    return os.fdopen(fd, 'wb')
+
+
 sess_lock = Lock()
 LAST_CHECK_SESSION_FILES = None
 
@@ -254,8 +274,8 @@ class FileBackedSessionManager(SessionManager):
         if fname is None:
             raise InternalServerError('Failed to create new session')
 
-        # touch the file
-        with open(fname, 'wb'):
+        # touch the file with mode 0o600 — see _open_session_file rationale.
+        with _open_session_file(fname):
             return ManagedSession(sid=sid)
 
         return ManagedSession(sid=sid)
@@ -343,7 +363,7 @@ class FileBackedSessionManager(SessionManager):
             (session.randval, session.hmac_digest, dict(session)), -1
         )
         header = _compute_file_hmac(self.secret, body)
-        with open(fname, 'wb') as f:
+        with _open_session_file(fname) as f:
             f.write(header)
             f.write(body)
 

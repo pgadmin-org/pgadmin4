@@ -452,6 +452,48 @@ class TestRealisticSessionShapeRoundTrip(_SessionTestSetupMixin, BaseTestGenerat
             '/var/lib/pgadmin/storage/alice/')
 
 
+class TestSessionFileMode0o600(_SessionTestSetupMixin, BaseTestGenerator):
+    """Session files must be created with mode 0o600 (owner-only).
+
+    Session contents include OAuth access/refresh tokens, cloud
+    credentials (AWS/Google/Azure/BigAnimal), the Kerberos cache path,
+    MFA OTP material, and `pass_enc_key` (which decrypts the user's
+    saved Postgres server passwords). The default open(path, 'wb') uses
+    the process umask, which on most systems leaves files 0o644
+    (world-readable). Verify both put() and new_session() create files
+    with mode 0o600.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        if os.name == 'nt':
+            self.skipTest("POSIX mode bits not meaningful on Windows")
+
+        # put() path
+        sess = self.manager.new_session()
+        sess.sid = "60606060-6060-6060-6060-606060606060"
+        sess['k'] = 'v'
+        sess.sign(SECRET)
+        self.manager.put(sess)
+        put_path = os.path.join(self.tmpdir, sess.sid)
+        put_mode = os.stat(put_path).st_mode & 0o777
+        self.assertEqual(
+            put_mode, 0o600,
+            "put() must create session file mode 0o600, got 0o%o" % put_mode)
+
+        # new_session() touch path. Force a worktree where new_session
+        # actually writes the placeholder (default skip_paths is empty).
+        new_sess = self.manager.new_session()
+        new_path = os.path.join(self.tmpdir, new_sess.sid)
+        if os.path.exists(new_path):
+            new_mode = os.stat(new_path).st_mode & 0o777
+            self.assertEqual(
+                new_mode, 0o600,
+                "new_session() touch must create file mode 0o600, "
+                "got 0o%o" % new_mode)
+
+
 class TestServerModeFalseDirectUpload(_SessionTestSetupMixin, BaseTestGenerator):
     """Spec T10: Scenario A chain closed at the session-read layer.
 
