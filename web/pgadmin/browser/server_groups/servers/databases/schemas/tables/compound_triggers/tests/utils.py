@@ -13,6 +13,7 @@ import traceback
 import os
 import json
 
+from pgadmin.utils.driver.psycopg3 import Driver
 from regression.python_test_utils import test_utils as utils
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -100,8 +101,12 @@ def create_view(server, db_name, schema_name, sql_query, view_name):
         old_isolation_level = connection.isolation_level
         utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
+        # Quote the username as an SQL identifier so usernames containing
+        # special characters (e.g. dots like 'ashesh.vashi') do not parse
+        # as schema-qualified names.
+        quoted_username = Driver.qtIdent(None, server['username'])
         query = sql_query % (schema_name, view_name, schema_name, view_name,
-                             server['username'])
+                             quoted_username)
         pg_cursor.execute(query)
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
