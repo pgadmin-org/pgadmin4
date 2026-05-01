@@ -56,7 +56,17 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
             cursor.execute("SELECT pg_class.oid AS table_id "
                            "FROM pg_catalog.pg_class "
                            "WHERE pg_class.relname='test_new_role_table'")
-            self.table_id = cursor.fetchone()[0]
+            row = cursor.fetchone()
+            if row is None:
+                # create_table swallows connection errors via try/except.
+                # If the test role couldn't authenticate against PG (e.g.
+                # local pg_hba.conf rejects unknown roles), the table is
+                # never created. Skip rather than fail with an opaque
+                # NoneType subscript error.
+                self.skipTest(
+                    "Test role could not create table; check pg_hba.conf "
+                    "for entries allowing the temporary test role.")
+            self.table_id = row[0]
 
             sql = self.generate_sql(connection)
             cursor.execute(sql)
