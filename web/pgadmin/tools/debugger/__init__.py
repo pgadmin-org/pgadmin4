@@ -1967,7 +1967,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
         return make_json_response(
             status=410,
             success=0,
-            errormsg=e.message
+            errormsg=str(e)
         )
 
     return make_json_response(data={'status': True, 'result': 'Success'})

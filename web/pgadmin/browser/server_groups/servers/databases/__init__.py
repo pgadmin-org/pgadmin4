@@ -871,7 +871,7 @@ class DatabaseView(PGChildNodeView):
             db.session.commit()
         except Exception as e:
             current_app.logger.exception(e)
-            return True, e.message, False
+            return True, str(e), False
         return False, '', can_drop
 
     def _get_data_from_request(self):

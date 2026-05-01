@@ -230,7 +230,7 @@ class ServerGroupView(NodeView):
             except Exception as e:
                 db.session.rollback()
                 return make_json_response(
-                    status=410, success=0, errormsg=e.message
+                    status=410, success=0, errormsg=str(e)
                 )
 
         return make_json_response(result=request.form)
@@ -267,7 +267,7 @@ class ServerGroupView(NodeView):
             except Exception as e:
                 db.session.rollback()
                 return make_json_response(
-                    status=410, success=0, errormsg=e.message
+                    status=410, success=0, errormsg=str(e)
                 )
 
         icon_class, is_shared = get_icon_css_class(gid, servergroup.user_id)
@@ -345,7 +345,7 @@ class ServerGroupView(NodeView):
                 return make_json_response(
                     status=410,
                     success=0,
-                    errormsg=e.message)
+                    errormsg=str(e))
 
         else:
             return make_json_response(

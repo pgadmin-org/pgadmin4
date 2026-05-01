@@ -508,7 +508,7 @@ def msql(sid, did):
         return make_json_response(
             status=410,
             success=0,
-            errormsg=e.message
+            errormsg=str(e)
         )
 
 
@@ -625,4 +625,4 @@ def save(sid, did):
         )
 
     except Exception as e:
-        return internal_server_error(errormsg=e.message)
+        return internal_server_error(errormsg=str(e))

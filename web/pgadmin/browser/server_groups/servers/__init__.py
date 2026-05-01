@@ -798,7 +798,7 @@ class ServerNode(PGChildNodeView):
             current_app.logger.exception(e)
             return make_json_response(
                 success=0,
-                errormsg=e.message)
+                errormsg=str(e))
 
     @pga_login_required
     def delete(self, gid, sid):
@@ -831,7 +831,7 @@ class ServerNode(PGChildNodeView):
                 current_app.logger.exception(e)
                 return make_json_response(
                     success=0,
-                    errormsg=e.message)
+                    errormsg=str(e))
 
         return make_json_response(success=1,
                                   info=gettext("Server deleted"))
@@ -949,7 +949,7 @@ class ServerNode(PGChildNodeView):
             current_app.logger.exception(e)
             return make_json_response(
                 success=0,
-                errormsg=e.message
+                errormsg=str(e)
             )
 
         # When server is connected, we don't require to update the connection
@@ -1057,6 +1057,7 @@ class ServerNode(PGChildNodeView):
                     )
 
     @pga_login_required
+    @with_object_filters
     def list(self, gid, object_filters):
         """
         Return list of attributes of all servers.
@@ -1753,7 +1754,7 @@ class ServerNode(PGChildNodeView):
                     manager.release(database=server.maintenance_db)
                     conn = None
 
-                    return internal_server_error(errormsg=e.message)
+                    return internal_server_error(errormsg=str(e))
 
             if save_tunnel_password and config.ALLOW_SAVE_TUNNEL_PASSWORD:
                 try:
@@ -1770,7 +1771,7 @@ class ServerNode(PGChildNodeView):
                     manager.release(database=server.maintenance_db)
                     conn = None
 
-                    return internal_server_error(errormsg=e.message)
+                    return internal_server_error(errormsg=str(e))
 
             current_app.logger.info('Connection Established for server: \
                 %s - %s' % (server.id, server.name))

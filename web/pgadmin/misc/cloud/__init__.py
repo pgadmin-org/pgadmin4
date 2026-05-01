@@ -180,7 +180,7 @@ def update_server(data):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return False, e.message
+        return False, str(e)
 
     _server = {
         'id': server.id,
