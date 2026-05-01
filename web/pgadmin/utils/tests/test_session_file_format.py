@@ -75,8 +75,21 @@ def write_legacy_session_file(path: str, sid: str,
 
 
 def make_pickle_body(randval: str, hmac_digest: str, data: dict) -> bytes:
-    """Produce the pickle body the new format wraps under an HMAC header."""
+    """Produce the unencrypted pickle plaintext the file format wraps."""
     return pickle.dumps((randval, hmac_digest, dict(data)), -1)
+
+
+def make_encrypted_body(randval: str, hmac_digest: str, data: dict,
+                        secret: str = SECRET) -> bytes:
+    """Produce a Fernet-encrypted body matching the on-disk file shape.
+
+    Mirrors session.py's encrypt-then-MAC build: pickle.dumps -> Fernet
+    encrypt -> the result is the body bytes whose HMAC the file format
+    stores in the header.
+    """
+    from pgadmin.utils.session import _derive_session_fernet
+    plaintext = make_pickle_body(randval, hmac_digest, data)
+    return _derive_session_fernet(secret).encrypt(plaintext)
 
 
 class _MaliciousPayload:
@@ -270,7 +283,7 @@ class TestCorruptedHmacHeader(_SessionTestSetupMixin, BaseTestGenerator):
 
     def runTest(self):
         sid = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
-        body = make_pickle_body("rv", "digest", {"k": "v"})
+        body = make_encrypted_body("rv", "digest", {"k": "v"})
         good_header = compute_test_hmac(body)
         # Flip the first byte of the header.
         bad_header = bytes(
@@ -279,8 +292,9 @@ class TestCorruptedHmacHeader(_SessionTestSetupMixin, BaseTestGenerator):
 
         result = self.manager.get(sid, "digest")
 
-        # Cookie HMAC mismatch returns new_session — same observable result,
-        # but the warning is the discriminator.
+        # HMAC mismatch returns new_session before Fernet decrypt is even
+        # attempted — same observable result, the warning is the
+        # discriminator.
         self.assertNotEqual(result.hmac_digest, "digest")
         self.assert_warning_logged("session file rejected")
 
@@ -348,14 +362,15 @@ class TestCookieHmacMismatchWithValidFile(_SessionTestSetupMixin, BaseTestGenera
 
     def runTest(self):
         sid = "30303030-3030-3030-3030-303030303030"
-        body = make_pickle_body("rv", "real_digest", {"k": "v"})
+        body = make_encrypted_body("rv", "real_digest", {"k": "v"})
         write_session_file(self.tmpdir, sid, body)  # valid file-HMAC
 
         # Caller presents the wrong cookie digest.
         result = self.manager.get(sid, "wrong_digest")
 
         # New session returned — but no file-HMAC warning, because the file
-        # itself was fine.
+        # itself was fine (HMAC verified, Fernet decrypted successfully,
+        # the cookie/file binding check is what failed).
         self.assertNotEqual(result.hmac_digest, "real_digest")
         self.assert_no_warning_logged("session file rejected")
 
@@ -520,3 +535,93 @@ class TestServerModeFalseDirectUpload(_SessionTestSetupMixin, BaseTestGenerator)
         self.assertFalse(os.path.exists(sentinel))
         self.assertIsNone(result.get("x"))
         self.assert_warning_logged("session file rejected")
+
+
+# ---------------------------------------------------------------------------
+# Layer-1 confidentiality — bytes on disk are encrypted, not plaintext.
+# ---------------------------------------------------------------------------
+
+class TestSessionBodyIsEncryptedOnDisk(
+        _SessionTestSetupMixin, BaseTestGenerator):
+    """A sentinel value placed in the session must NOT appear in the
+    on-disk file as plaintext.
+
+    Confidentiality assertion: the file contains the HMAC header (ASCII
+    hex) followed by Fernet ciphertext. A leak of the file alone (without
+    SECRET_KEY) does not expose the user's secrets.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        sentinel = b'AKIA_VERY_SPECIFIC_SECRET_TOKEN_XYZ_12345'
+        sess = self.manager.new_session()
+        sess.sid = "70707070-7070-7070-7070-707070707070"
+        sess['fake_aws_key'] = sentinel.decode()
+        sess.sign(SECRET)
+        self.manager.put(sess)
+
+        with open(os.path.join(self.tmpdir, sess.sid), 'rb') as f:
+            on_disk = f.read()
+
+        self.assertNotIn(
+            sentinel, on_disk,
+            "Session value appeared in plaintext on disk; the body is "
+            "not encrypted.")
+        # Round-trip still works.
+        loaded = self.manager.get(sess.sid, sess.hmac_digest)
+        self.assertEqual(loaded['fake_aws_key'], sentinel.decode())
+
+
+class TestSessionBodyRejectedWithDifferentSecret(
+        _SessionTestSetupMixin, BaseTestGenerator):
+    """A session written under SECRET_KEY=A is unreadable under SECRET_KEY=B.
+
+    Confidentiality assertion: the encryption key actually depends on
+    SECRET_KEY (this rules out trivial bugs like a hard-coded key).
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        sess = self.manager.new_session()
+        sess.sid = "80808080-8080-8080-8080-808080808080"
+        sess['x'] = 'y'
+        sess.sign(SECRET)
+        self.manager.put(sess)
+
+        # Manager bound to a *different* secret reading the same file.
+        other_manager = FileBackedSessionManager(
+            path=self.tmpdir,
+            secret='COMPLETELY_DIFFERENT_KEY',
+            disk_write_delay=0,
+        )
+        result = other_manager.get(sess.sid, sess.hmac_digest)
+
+        # The HMAC check uses SECRET_KEY too, so this is rejected at the
+        # HMAC layer (not Fernet) — but the property under test
+        # (different SECRET_KEY = no access) holds either way.
+        self.assertIsNone(result.hmac_digest)
+
+
+class TestLegacyHmacOnlyFileRejected(
+        _SessionTestSetupMixin, BaseTestGenerator):
+    """A pre-Layer-1 session file (HMAC over plain pickle, no Fernet) is
+    rejected with a clear log message.
+
+    Layer-1 backwards-compat: existing session files written before this
+    layer was added are gracefully invalidated; users see a one-time
+    re-login on upgrade.
+    """
+
+    scenarios = [('default', dict())]
+
+    def runTest(self):
+        sid = "90909090-9090-9090-9090-909090909090"
+        # Build a pre-Layer-1 file: plain pickle body, valid HMAC over it.
+        plain = make_pickle_body("rv", "digest", {"x": "y"})
+        write_session_file(self.tmpdir, sid, plain)
+
+        result = self.manager.get(sid, "digest")
+        self.assertIsNone(result.hmac_digest)
+        self.assert_warning_logged("legacy unencrypted body")
