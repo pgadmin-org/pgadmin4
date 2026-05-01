@@ -86,8 +86,14 @@ class IEQueryParensBalancedTest(BaseTestGenerator):
          dict(query="SELECT ')", expected=False)),
         ('Rejected: unterminated double-quoted identifier',
          dict(query='SELECT "col)', expected=False)),
-        ('Rejected: E-string backslash escape (false positive, safe)',
-         dict(query="SELECT E'\\')'", expected=False)),
+        # The parser handles backslash escapes inside single-quoted
+        # strings unconditionally (matching E-string and scs=off
+        # semantics), so the close paren is correctly identified as
+        # being inside the string literal. Original test labelled this
+        # as a "false positive" expecting over-rejection; in fact the
+        # parser is precise here. Keep the case to document handling.
+        ('Balanced: E-string with escaped quote and paren inside literal',
+         dict(query="SELECT E'\\')'", expected=True)),
         ('Unbalanced: E-string RCE bypass',
          dict(query="E'\\'' ) TO PROGRAM 'cmd' --'",
               expected=False)),

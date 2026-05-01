@@ -31,8 +31,12 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
         with test_utils.Database(self.server) as (connection, database_name):
             cursor = connection.cursor()
             try:
+                # SUPERUSER so the role can CREATE TABLE in runTest.
+                # Without this, a fresh LOGIN role cannot create tables
+                # in the test database (no default CREATE grant), and
+                # the subsequent pg_class lookup returns no row.
                 cursor.execute(
-                    "CREATE ROLE %s LOGIN PASSWORD '%s'"
+                    "CREATE ROLE %s LOGIN SUPERUSER PASSWORD '%s'"
                     % (self.role_name, self.server['db_password']))
             except Exception as exception:
                 print(exception)

@@ -72,7 +72,11 @@ class ServerGroupIsolationTestCase(BaseTestGenerator):
         # Clean up with admin
         if self.sg_id is None:
             return
-        sg = ServerGroup.query.filter_by(id=self.sg_id).first()
-        if sg:
-            db.session.delete(sg)
-            db.session.commit()
+        # Need an application context for SQLAlchemy session access; the
+        # @create_user_wise_test_client wrapper around runTest replaces
+        # the test client and may leave us outside one when tearDown runs.
+        with self.app.app_context():
+            sg = ServerGroup.query.filter_by(id=self.sg_id).first()
+            if sg:
+                db.session.delete(sg)
+                db.session.commit()
