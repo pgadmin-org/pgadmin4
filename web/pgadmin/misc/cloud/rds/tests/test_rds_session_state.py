@@ -146,10 +146,14 @@ class TestUnsafeDeserializerEliminatedFromRdsModule(
     def runTest(self):
         import pgadmin.misc.cloud.rds as rds_mod
         import inspect
+        import re
         src = inspect.getsource(rds_mod)
         forbidden = 'p' + 'i' + 'c' + 'k' + 'l' + 'e'  # avoid hook trip
-        self.assertNotIn(
-            'import ' + forbidden, src,
+        # Catch any of: `import pickle`, `import pickle as p`,
+        # `from pickle import dumps, loads`, indented variants — at any
+        # word-boundary, multiline anchor.
+        self.assertIsNone(
+            re.search(r'(?m)^\s*(import|from)\s+' + forbidden + r'\b', src),
             "cloud.rds must not import the unsafe deserializer")
         self.assertNotIn(
             forbidden + '.dumps(', src,

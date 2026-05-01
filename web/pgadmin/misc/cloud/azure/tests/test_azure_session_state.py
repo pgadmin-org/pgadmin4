@@ -198,9 +198,11 @@ class TestUnsafeDeserializerEliminatedFromAzureModule(
     def runTest(self):
         import pgadmin.misc.cloud.azure as azure_mod
         import inspect
+        import re
         src = inspect.getsource(azure_mod)
         forbidden = 'p' + 'i' + 'c' + 'k' + 'l' + 'e'
-        self.assertNotIn(
-            'import ' + forbidden, src)
+        self.assertIsNone(
+            re.search(r'(?m)^\s*(import|from)\s+' + forbidden + r'\b', src),
+            "cloud.azure must not import the unsafe deserializer")
         self.assertNotIn(forbidden + '.dumps(', src)
         self.assertNotIn(forbidden + '.loads(', src)

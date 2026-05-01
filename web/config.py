@@ -376,8 +376,16 @@ SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
-# Session digest method
-SESSION_DIGEST_METHOD = 'hashlib.sha1'
+# Session digest method.
+# Used as the HMAC algorithm for the session cookie (signing the
+# (sid, randval) pair). HMAC-SHA1 is still cryptographically acceptable
+# for authentication, but SHA-256 is the modern default and aligns with
+# the file-HMAC header introduced for session-on-disk integrity.
+# Operators on existing deployments will see all sessions invalidated on
+# upgrade regardless (the file-HMAC header is new), so we flip this
+# default at the same time rather than leaving SHA-1 as a long-term
+# liability.
+SESSION_DIGEST_METHOD = 'hashlib.sha256'
 
 ##########################################################################
 # Mail server settings

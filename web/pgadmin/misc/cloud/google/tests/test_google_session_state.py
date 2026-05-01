@@ -190,10 +190,11 @@ class TestUnsafeDeserializerEliminatedFromGoogleModule(
     def runTest(self):
         import pgadmin.misc.cloud.google as google_mod
         import inspect
+        import re
         src = inspect.getsource(google_mod)
         forbidden = 'p' + 'i' + 'c' + 'k' + 'l' + 'e'
-        self.assertNotIn(
-            'import ' + forbidden, src,
+        self.assertIsNone(
+            re.search(r'(?m)^\s*(import|from)\s+' + forbidden + r'\b', src),
             "cloud.google must not import the unsafe deserializer")
         self.assertNotIn(
             forbidden + '.dumps(', src,

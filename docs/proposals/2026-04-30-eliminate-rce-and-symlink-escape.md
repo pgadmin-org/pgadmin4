@@ -131,6 +131,26 @@ claim Vulnerability 2 alone is a current authenticated-user RCE primitive in
   file-read access remains out of scope (§1.3 threat model). After this proposal lands, the
   attacker's only remaining path to a session file's contents is host-level access, which
   also yields easier RCE primitives directly.
+- **Residual `pickle.loads` callsites that operate on session-stored bytes (Phase 2 scope).**
+  After PR 1's HMAC-header gate on the session file, no attacker-controlled bytes can reach
+  `pickle.loads` via the session-on-disk path. However, several modules unpickle values that
+  were themselves placed inside `flask.session` by pgAdmin's own write paths. These are safe
+  *as long as the write paths cannot be influenced by attackers*, but they remain
+  insecure-deserialization vectors that should be eliminated in Phase 2 / PR 7. Enumerated
+  here so future reviewers see the surface:
+    - `web/pgadmin/tools/sqleditor/__init__.py`: `import pickle` at line 12; `pickle.loads`
+      at lines 320, 795, 854, 1857, 1935; `pickle.dumps` at lines 334, 628, 962, 1178, 1235,
+      1348, 1642, 1698, 1739, 1783, 1992 (the `command_obj` round-trip).
+    - `web/pgadmin/tools/sqleditor/utils/start_running_query.py`: lines 12, 53, 207.
+    - `web/pgadmin/tools/sqleditor/utils/query_tool_connection_check.py`: lines 11, 33.
+    - `web/pgadmin/tools/sqleditor/utils/filter_dialog.py`: lines 11, 97.
+    - `web/pgadmin/tools/schema_diff/__init__.py`: `import pickle` at line 12; `pickle.loads`
+      at line 184; `pickle.dumps` at lines 197, 225 (the `diff_model_obj` round-trip).
+    - `web/pgadmin/misc/bgprocess/processes.py`: `from pickle import dumps, loads` at line 20;
+      used at lines 162, 164, 251, 704, 706 to round-trip the BatchProcess descriptor stored
+      in the SQLite `process` table. This one is interesting because it deserializes from the
+      database, not the session — same risk class but a different threat surface (host-local
+      DB write access).
 
 ---
 
@@ -359,8 +379,9 @@ gated on resolving this.
 
 #### 4.2.1 `check_access_permission` — realpath both sides
 
-At `web/pgadmin/misc/file_manager/__init__.py:894-918`, replace `os.path.abspath()` with
-`os.path.realpath()` for both `orig_path` and `in_dir`. The `in_dir` argument must also be
+At `web/pgadmin/misc/file_manager/__init__.py:913-940` (definition starts at line 913 in the
+implemented branch), replace `os.path.abspath()` with `os.path.realpath()` for both
+`orig_path` and `in_dir`. The `in_dir` argument must also be
 resolved through `realpath()` — otherwise a symlinked storage root would compare unequal to a
 resolved target path, breaking legitimate access.
 
@@ -378,15 +399,17 @@ the resolved path matches the target. This test must pass on the lowest supporte
 
 #### 4.2.2 Upload handler `add()` — realpath, ordering, and `O_NOFOLLOW`
 
-Three changes at `web/pgadmin/misc/file_manager/__init__.py:1062-1109`:
+Three changes at `web/pgadmin/misc/file_manager/__init__.py:1087-1132` (definition at line
+1087 in the implemented branch):
 
-1. Replace `os.path.abspath` with `os.path.realpath` in the inline check (line 1086), and
-   resolve `the_dir` through `realpath` too.
-2. Delete the dead post-write `Filemanager.check_access_permission(the_dir, path)` call at
-   line 1104. The inline check above already covers it, the file is on disk by the time it
+1. Replace `os.path.abspath` with `os.path.realpath` in the inline check (line 1112), and
+   resolve `the_dir` through `realpath` too (line 1114).
+2. Delete the dead post-write `Filemanager.check_access_permission(the_dir, path)` call.
+   The inline check above already covers it, the file is on disk by the time it
    runs, and replicating the same check at two granularities is bug-prone.
-3. **Replace `open(new_name, 'wb')` with `os.open(...)` + `O_NOFOLLOW`** to close the
-   leaf-component TOCTOU gap between the access check and the syscall:
+3. **Replace `open(new_name, 'wb')` with `os.open(...)` + `O_NOFOLLOW`** (now extracted to
+   the module-level helper `_open_upload_target` at line 52) to close the leaf-component
+   TOCTOU gap between the access check and the syscall:
 
 ```python
 fd = os.open(
@@ -422,20 +445,20 @@ operators relying on cross-user readability of uploaded files (uncommon) can adj
 
 #### 4.2.3 Cover `rename`, `delete`, `download`
 
-These all call `check_access_permission()` (lines 1002-1003, 1049, 1277) and then operate on
-the literal path via `os.rename`, `os.rmdir`/`os.remove`, and `send_from_directory`
-respectively. Once `check_access_permission()` is realpath-based:
+These all call `check_access_permission()` and then operate on the literal path via
+`os.rename`, `os.rmdir`/`os.remove`, and `send_from_directory` respectively. Once
+`check_access_permission()` is realpath-based:
 
-- **`rename` (line 990):** `os.rename` does not follow symlinks at the leaf for either source
+- **`rename` (definition at line 1015 in the implemented branch):** `os.rename` does not follow symlinks at the leaf for either source
   or destination — it renames the link itself, not the target. Intermediate-component symlinks
   in the destination path *would* route through the link at the kernel level (same shape as
   upload TOCTOU). Python's stdlib does not expose `renameat2` flags, so there is no clean
   `O_NOFOLLOW` analog for rename. **Residual TOCTOU on intermediate components is accepted**
   under §1.5 reasoning (no in-pgAdmin symlink primitive). Realpath-based access check at T1 is
   the only layer of defense.
-- **`delete` (line 1037):** `os.rmdir` and `os.remove` operate on the leaf, not the target.
-  No additional change required.
-- **`download` (line 1263):** Werkzeug 3.1.* (`requirements.txt:65`) provides
+- **`delete` (definition at line 1062):** `os.rmdir` and `os.remove` operate on the leaf,
+  not the target. No additional change required.
+- **`download` (definition at line 1287):** Werkzeug 3.1.* (`requirements.txt:65`) provides
   `send_from_directory`, which uses `werkzeug.security.safe_join` for `..`-traversal
   protection. `safe_join` does NOT call `realpath` and does NOT protect against symlinks —
   verified by reading the werkzeug 3.x source. Our `check_access_permission()` (post-§4.2.1)
@@ -443,15 +466,14 @@ respectively. Once `check_access_permission()` is realpath-based:
   `send_from_directory`'s file open is symmetric to upload (§4.2.2) and not closeable from
   Python without bypassing `send_from_directory`. Residual TOCTOU accepted under §1.5.
 
-A separate latent bug at line 1278 — `Filemanager.check_access_permission(the_dir,
-"{}{}".format(path, path))` — concatenates `path` with itself. This is unrelated to the
-security fix and is tracked as a separate cleanup ticket.
+A separate latent bug — `Filemanager.check_access_permission(the_dir,
+"{}{}".format(path, path))` in `download` — concatenates `path` with itself. This is
+unrelated to the security fix and is tracked as a separate cleanup ticket.
 
 #### 4.2.4 `addfolder` (mkdir endpoint)
 
-`addfolder` at `web/pgadmin/misc/file_manager/__init__.py:1232-1260` calls
-`Filemanager.check_access_permission(user_dir, path+name)` (line 1244-1245) before
-`os.mkdir(create_path)` (line 1250). Once §4.2.1 fixes `check_access_permission`, intermediate-
+`addfolder` (definition at line 1256 in the implemented branch) calls
+`Filemanager.check_access_permission(user_dir, path+name)` before `os.mkdir(create_path)`. Once §4.2.1 fixes `check_access_permission`, intermediate-
 symlink resolution is caught at the access-check layer. `os.mkdir` itself does not create
 symlinks — it creates a real directory at the literal path — so even a TOCTOU race cannot
 escalate to symlink creation. No additional change required for this endpoint.
@@ -463,15 +485,19 @@ site in `file_manager/__init__.py`. Other `open()` / `os.path.*` calls in the fi
 encoding detection at line 438, `read_file_generator` at line 108) are not security-relevant
 to Vuln 2 and are out of scope.
 
+Line numbers below are as of the implemented branch (`fix/pickle-rce`).
+
 | Line | Function / Site | Resolution |
 |---|---|---|
-| 903 | `check_access_permission` — `os.path.abspath` | Fixed in §4.2.1 |
-| 1086 | `add` (inline upload check) — `os.path.abspath` | Fixed in §4.2.2 |
-| 1093 | `add` — `open(new_name, 'wb')` | Replaced with `os.open` + `O_NOFOLLOW` in §4.2.2 |
-| 1025 | `rename` — `os.rename(oldpath_sys, newpath_sys)` | Covered by §4.2.1 realpath; intermediate-component TOCTOU accepted (§4.2.3) |
-| 1052-1055 | `delete` — `os.rmdir` / `os.remove` | Leaf-only operation, no additional change (§4.2.3) |
-| 1287 | `download` — `send_from_directory` | Covered by §4.2.1 realpath at access check (§4.2.3) |
-| 1250 | `addfolder` — `os.mkdir` | Covered by §4.2.1 realpath (§4.2.4) |
+| 924 | `check_access_permission` — was `os.path.abspath`, now `os.path.realpath` | §4.2.1 |
+| 936 | `check_access_permission` — `in_dir` realpath | §4.2.1 |
+| 1112 | `add` (inline upload check) — was `os.path.abspath`, now `os.path.realpath` | §4.2.2 |
+| 1119 | `add` — was `open(new_name, 'wb')`, now `_open_upload_target(new_name)` | §4.2.2 |
+| 52 | new module-level `_open_upload_target` helper — `os.open` + `O_NOFOLLOW` + 0o600 | §4.2.2 |
+| (in `rename`, line 1015) | `os.rename(oldpath_sys, newpath_sys)` | Covered by §4.2.1 realpath; intermediate-component TOCTOU accepted (§4.2.3) |
+| (in `delete`, line 1062) | `os.rmdir` / `os.remove` | Leaf-only operation, no additional change (§4.2.3) |
+| (in `download`, line 1287) | `send_from_directory` | Covered by §4.2.1 realpath at access check (§4.2.3) |
+| (in `addfolder`, line 1256) | `os.mkdir` | Covered by §4.2.1 realpath (§4.2.4) |
 
 All identified sites are covered. **Out-of-scope for this proposal:** `os.path.abspath`
 callsites elsewhere in `web/pgadmin/` have not been exhaustively audited. A follow-up
