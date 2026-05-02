@@ -783,9 +783,9 @@ class OpenAIClient(LLMClient):
                 if 'id' in tc_delta:
                     tc['id'] = tc_delta['id']
                 func = tc_delta.get('function', {})
-                if 'name' in func:
+                if 'name' in func and func['name']:
                     tc['name'] = func['name']
-                if 'arguments' in func:
+                if 'arguments' in func and func['arguments']:
                     tc['arguments'] += func['arguments']
 
         # Build final response
