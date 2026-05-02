@@ -10,6 +10,7 @@ import os
 import subprocess
 import signal
 import secrets
+import sys
 
 import time
 from selenium.common.exceptions import WebDriverException
@@ -35,8 +36,13 @@ class AppStarter:
         env.update(os.environ)
 
         # Add OS check for pass value for 'preexec_fn'
+        # Use sys.executable instead of bare "python" — macOS / many
+        # Linux distros do not provide a "python" alias, only "python3"
+        # or a venv-specific binary. sys.executable is the interpreter
+        # currently running the test runner, so the spawned pgAdmin
+        # uses the same Python and venv.
         self.pgadmin_process = subprocess.Popen(
-            ["python", "pgAdmin4.py"],
+            [sys.executable, "pgAdmin4.py"],
             shell=False,
             preexec_fn=None if os.name == 'nt' else os.setsid,
             stderr=open(os.devnull, 'w'),
