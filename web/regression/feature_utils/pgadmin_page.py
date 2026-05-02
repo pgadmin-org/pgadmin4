@@ -106,6 +106,16 @@ class PgadminPage:
 
         self.click_element(modal_button)
 
+        # Wait for the dialog backdrop to fade out so subsequent clicks
+        # are not intercepted by the closing modal. MUI v7 leaves the
+        # backdrop in the DOM for ~300ms while the close animation runs.
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.invisibility_of_element_located(
+                    (By.CSS_SELECTOR, ".MuiDialog-backdrop")))
+        except TimeoutException:
+            pass
+
     def add_server(self, server_config):
         server_group_node = \
             self.find_by_xpath(TreeAreaLocators.server_group_node("Servers"))
@@ -173,11 +183,22 @@ class PgadminPage:
             ), "Timed out waiting for execute query button to appear"
         )
 
-        # Need to add this as by default tool tip is shown for file
-        ActionChains(self.driver).move_to_element(
-            self.driver.find_element(
-                By.CSS_SELECTOR,
-                QueryToolLocators.btn_execute_query_css)).perform()
+        # Need to add this as by default tool tip is shown for file.
+        # Retry on stale-element: the toolbar can re-render between the
+        # visibility wait above and the move_to_element below (Firefox
+        # is particularly sensitive to this). Refetch the element on
+        # each attempt rather than relying on a captured reference.
+        for attempt in range(3):
+            try:
+                ActionChains(self.driver).move_to_element(
+                    self.driver.find_element(
+                        By.CSS_SELECTOR,
+                        QueryToolLocators.btn_execute_query_css)).perform()
+                break
+            except StaleElementReferenceException:
+                if attempt == 2:
+                    raise
+                time.sleep(0.2)
 
     def open_view_data(self, table_name):
         self.click_element(self.find_by_css_selector(
