@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-02 10:58+0530\n"
+"POT-Creation-Date: 2026-05-02 11:11+0530\n"
 "PO-Revision-Date: 2023-08-11 22:06+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language: zh_Hans_CN\n"
@@ -26,16 +26,16 @@ msgstr "用户名或密码错误。"
 msgid "Unauthorised access, permission denied."
 msgstr ""
 
-#: pgadmin/__init__.py:665 pgadmin/__init__.py:714
+#: pgadmin/__init__.py:682 pgadmin/__init__.py:731
 #, python-brace-format
 msgid "Auto-detected {0} installation with the data directory at {1}"
 msgstr "自动检测到{0}安装在数据目录{1}"
 
-#: pgadmin/__init__.py:797
+#: pgadmin/__init__.py:814
 msgid "403 FORBIDDEN"
 msgstr "403已禁止"
 
-#: pgadmin/__init__.py:933
+#: pgadmin/__init__.py:950
 msgid " You need to refresh the page."
 msgstr ""
 
@@ -95,7 +95,8 @@ msgstr "当前用户"
 msgid "Electron Version"
 msgstr ""
 
-#: pgadmin/about/static/js/AboutComponent.jsx:88 pgadmin/browser/__init__.py:88
+#: pgadmin/about/static/js/AboutComponent.jsx:88
+#: pgadmin/browser/__init__.py:106
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:44
 msgid "Browser"
 msgstr "浏览器"
@@ -121,16 +122,16 @@ msgstr ""
 msgid "About %s"
 msgstr "关于 %s"
 
-#: pgadmin/authenticate/__init__.py:132
+#: pgadmin/authenticate/__init__.py:135
 msgid "Your account is locked. Please contact the Administrator."
 msgstr "你的账户已被锁定，请联系管理员。"
 
-#: pgadmin/authenticate/__init__.py:149
+#: pgadmin/authenticate/__init__.py:152
 #, python-brace-format
 msgid "{0} more attempts remaining."
 msgstr "剩余{0}次。"
 
-#: pgadmin/authenticate/__init__.py:153
+#: pgadmin/authenticate/__init__.py:156
 #, python-brace-format
 msgid "{0} more attempt remaining."
 msgstr "剩余{0}次。"
@@ -220,60 +221,64 @@ msgstr "找到多个结果。"
 msgid "Could not find the specified user."
 msgstr "无法找到指定用户。"
 
-#: pgadmin/authenticate/oauth2.py:440
+#: pgadmin/authenticate/oauth2.py:67
+msgid "Login session expired. Please try again."
+msgstr ""
+
+#: pgadmin/authenticate/oauth2.py:461
 msgid "No OAuth2 provider available."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:471
+#: pgadmin/authenticate/oauth2.py:492
 msgid "No profile data found from OIDC provider."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:477
+#: pgadmin/authenticate/oauth2.py:498
 msgid "No profile data found."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:487
+#: pgadmin/authenticate/oauth2.py:508
 msgid ""
 "Could not extract username from OIDC claims. Please ensure your OIDC "
 "provider returns standard claims (email, preferred_username, or sub)."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:493
+#: pgadmin/authenticate/oauth2.py:514
 msgid ""
 "An email id or OAUTH2_USERNAME_CLAIM is required to login into pgAdmin. "
 "Please update your OAuth2 profile for email id or set "
 "OAUTH2_USERNAME_CLAIM config parameter."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:671
+#: pgadmin/authenticate/oauth2.py:692
 msgid "No OAuth2 provider selected."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:676
+#: pgadmin/authenticate/oauth2.py:697
 msgid "Please set the configuration parameters properly."
 msgstr "请正确设置配置参数。"
 
-#: pgadmin/authenticate/oauth2.py:699
+#: pgadmin/authenticate/oauth2.py:720
 msgid "No Email/Username found. Please contact your administrator."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:704
+#: pgadmin/authenticate/oauth2.py:725
 msgid "Additional claim config is None, no check to do."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:708
+#: pgadmin/authenticate/oauth2.py:729
 msgid "Additional claim check config is not a dict."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:711
+#: pgadmin/authenticate/oauth2.py:732
 msgid "Additional claim check config dict is empty."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:723
+#: pgadmin/authenticate/oauth2.py:744
 msgid "Claim match found. Authorized access."
 msgstr ""
 
-#: pgadmin/authenticate/oauth2.py:725
+#: pgadmin/authenticate/oauth2.py:746
 msgid "No match was found."
 msgstr ""
 
@@ -451,11 +456,11 @@ msgstr "两步认证已禁用，无法访问此页面。"
 msgid "Complete the authentication process first"
 msgstr "请先完成认证过程"
 
-#: pgadmin/browser/__init__.py:77
+#: pgadmin/browser/__init__.py:95
 msgid "Your password has not been changed."
 msgstr "您的密码尚未更改。"
 
-#: pgadmin/browser/__init__.py:79
+#: pgadmin/browser/__init__.py:97
 #, python-brace-format
 msgid ""
 "SMTP Socket error: {error}\n"
@@ -464,7 +469,7 @@ msgstr ""
 "SMTP网络错误：{error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:81
+#: pgadmin/browser/__init__.py:99
 #, python-brace-format
 msgid ""
 "SMTP error: {error}\n"
@@ -473,7 +478,7 @@ msgstr ""
 "SMTP错误：{error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:83
+#: pgadmin/browser/__init__.py:101
 #, python-brace-format
 msgid ""
 "Error: {error}\n"
@@ -482,14 +487,14 @@ msgstr ""
 "错误：{error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:315 pgadmin/browser/collection.py:275
+#: pgadmin/browser/__init__.py:333 pgadmin/browser/collection.py:275
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:677
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:44
 msgid "Nodes"
 msgstr "节点"
 
-#: pgadmin/browser/__init__.py:769
+#: pgadmin/browser/__init__.py:787
 #, python-brace-format
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
@@ -497,26 +502,38 @@ msgid ""
 "correctly."
 msgstr ""
 
-#: pgadmin/browser/__init__.py:795
+#: pgadmin/browser/__init__.py:813
 msgid "Incorrect master password"
 msgstr "主密码不正确"
 
-#: pgadmin/browser/__init__.py:841
+#: pgadmin/browser/__init__.py:859
 msgid "Master password cannot be empty"
 msgstr "主密码不能为空"
 
-#: pgadmin/browser/__init__.py:925
+#: pgadmin/browser/__init__.py:940
+msgid "Invalid input."
+msgstr ""
+
+#: pgadmin/browser/__init__.py:944
 msgid "pgAdmin user password changed successfully"
 msgstr "pgAdmin用户密码已成功更改"
 
-#: pgadmin/browser/__init__.py:972
+#: pgadmin/browser/__init__.py:991
 #, python-brace-format
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
 msgstr "您的帐户使用外部  {} 源进行身份验证。如果您需要重置密码，请与此服务的管理员联系。"
 
-#: pgadmin/browser/__init__.py:1084
+#: pgadmin/browser/__init__.py:1035
+msgid "Password reset failed."
+msgstr ""
+
+#: pgadmin/browser/__init__.py:1038
+msgid "Password reset instructions sent."
+msgstr ""
+
+#: pgadmin/browser/__init__.py:1111
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -1187,7 +1204,7 @@ msgid "Could not find the server group."
 msgstr "找不到服务器组。"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:155
-#: pgadmin/browser/server_groups/servers/__init__.py:1172
+#: pgadmin/browser/server_groups/servers/__init__.py:1173
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/__init__.py:46
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_servers.js:22
 msgid "Servers"
@@ -1216,7 +1233,7 @@ msgid "Server deleted"
 msgstr "服务器已经被删除"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:850
-#: pgadmin/misc/workspaces/__init__.py:167
+#: pgadmin/misc/workspaces/__init__.py:173
 #: pgadmin/tools/debugger/__init__.py:1811
 #: pgadmin/tools/debugger/__init__.py:1904
 #: pgadmin/tools/debugger/__init__.py:2002
@@ -1287,8 +1304,8 @@ msgid "Role"
 msgstr "角色"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:919
-#: pgadmin/browser/server_groups/servers/__init__.py:1277
-#: pgadmin/misc/workspaces/__init__.py:105
+#: pgadmin/browser/server_groups/servers/__init__.py:1287
+#: pgadmin/misc/workspaces/__init__.py:111
 msgid "Not a valid Host address"
 msgstr "主机地址无效"
 
@@ -1301,7 +1318,7 @@ msgstr "未更改任何参数。"
 msgid "'{0}' cannot be modified when the server is connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1265
+#: pgadmin/browser/server_groups/servers/__init__.py:1266
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:726
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:395
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:414
@@ -1350,7 +1367,7 @@ msgstr ""
 msgid "Could not find the required parameter ({})."
 msgstr "找不到所需的参数 ({})."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1379
+#: pgadmin/browser/server_groups/servers/__init__.py:1389
 #, python-brace-format
 msgid ""
 "Unable to connect to server:\n"
@@ -1361,52 +1378,52 @@ msgstr ""
 "\n"
 "{}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1468
+#: pgadmin/browser/server_groups/servers/__init__.py:1478
 msgid "Server has no active connection for generating statistics."
 msgstr "服务器没有用于生成统计信息的活动连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1588
+#: pgadmin/browser/server_groups/servers/__init__.py:1598
 msgid "Please enter the server details to connect"
 msgstr "请输入要连接的服务器详细信息"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1778
+#: pgadmin/browser/server_groups/servers/__init__.py:1788
 #: pgadmin/tools/schema_diff/__init__.py:378
 #: pgadmin/tools/sqleditor/__init__.py:2686
 msgid "Server connected."
 msgstr "服务器已连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1820
+#: pgadmin/browser/server_groups/servers/__init__.py:1830
 msgid "Server could not be disconnected."
 msgstr "无法断开连接服务器。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1824
+#: pgadmin/browser/server_groups/servers/__init__.py:1834
 msgid "Server disconnected."
 msgstr "服务器已断开连接。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1844
+#: pgadmin/browser/server_groups/servers/__init__.py:1854
 msgid "Could not reload the server configuration."
 msgstr "无法重新加载服务器配置。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1849
+#: pgadmin/browser/server_groups/servers/__init__.py:1859
 msgid "Server configuration reloaded."
 msgstr "服务器配置已重新加载。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1895
+#: pgadmin/browser/server_groups/servers/__init__.py:1905
 #, python-brace-format
 msgid "Named restore point created: {0}"
 msgstr "命名还原点已创建: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1901
+#: pgadmin/browser/server_groups/servers/__init__.py:1911
 #, python-brace-format
 msgid "Named restore point creation failed ({0})"
 msgstr "命名还原点创建失败 （{0}）"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1958
-#: pgadmin/browser/server_groups/servers/__init__.py:1970
+#: pgadmin/browser/server_groups/servers/__init__.py:1968
+#: pgadmin/browser/server_groups/servers/__init__.py:1980
 msgid "Could not find the required parameter(s)."
 msgstr "未找到所需参数。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1979
+#: pgadmin/browser/server_groups/servers/__init__.py:1989
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:133
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:448
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:381
@@ -1416,29 +1433,29 @@ msgstr "未找到所需参数。"
 msgid "Passwords do not match."
 msgstr "密码不匹配。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1992
+#: pgadmin/browser/server_groups/servers/__init__.py:2002
 msgid "Incorrect password."
 msgstr "密码错误。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2041
+#: pgadmin/browser/server_groups/servers/__init__.py:2051
 msgid "Password changed successfully."
 msgstr "密码已成功更改。"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2076
+#: pgadmin/browser/server_groups/servers/__init__.py:2086
 msgid "WAL replay paused"
 msgstr "WAL 回放已暂停"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2087
+#: pgadmin/browser/server_groups/servers/__init__.py:2097
 msgid "WAL replay resumed"
 msgstr "WAL回放已恢复"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2093
-#: pgadmin/browser/server_groups/servers/__init__.py:2149
+#: pgadmin/browser/server_groups/servers/__init__.py:2103
+#: pgadmin/browser/server_groups/servers/__init__.py:2159
 msgid "Please connect to the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2254
-#: pgadmin/browser/server_groups/servers/__init__.py:2292
+#: pgadmin/browser/server_groups/servers/__init__.py:2264
+#: pgadmin/browser/server_groups/servers/__init__.py:2302
 msgid "The saved password was cleared successfully."
 msgstr ""
 
@@ -4034,7 +4051,7 @@ msgstr "统计信息"
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:51
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:491
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:487
-#: pgadmin/misc/file_manager/__init__.py:166
+#: pgadmin/misc/file_manager/__init__.py:185
 msgid "Storage"
 msgstr "存储"
 
@@ -6103,7 +6120,7 @@ msgstr "区域"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:297
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:309
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:922
-#: pgadmin/misc/file_manager/__init__.py:215
+#: pgadmin/misc/file_manager/__init__.py:234
 msgid "List"
 msgstr "列表"
 
@@ -7398,7 +7415,7 @@ msgstr "刷新物化视图"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:188
 #: pgadmin/tools/backup/__init__.py:118
 #: pgadmin/tools/import_export/__init__.py:104
-#: pgadmin/tools/maintenance/__init__.py:61
+#: pgadmin/tools/maintenance/__init__.py:62
 #: pgadmin/tools/restore/__init__.py:94
 msgid "Not available"
 msgstr "无效"
@@ -7438,7 +7455,7 @@ msgstr "找不到给定的服务器"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2338
 #: pgadmin/llm/static/js/ai_tools.js:257 pgadmin/llm/static/js/ai_tools.js:307
 #: pgadmin/llm/static/js/ai_tools.js:357 pgadmin/tools/backup/__init__.py:450
-#: pgadmin/tools/maintenance/__init__.py:193
+#: pgadmin/tools/maintenance/__init__.py:241
 #: pgadmin/tools/restore/__init__.py:200
 msgid "Please connect to the server first."
 msgstr "请先连接到服务器。"
@@ -12014,77 +12031,77 @@ msgid ""
 " major.minor version number."
 msgstr "PostgreSQL文档的路径。$VERSION$将替换为major.minor版本号。"
 
-#: pgadmin/llm/__init__.py:52 pgadmin/utils/constants.py:35
+#: pgadmin/llm/__init__.py:64 pgadmin/utils/constants.py:35
 msgid "AI"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:56
+#: pgadmin/llm/__init__.py:68
 msgid "None (Disabled)"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:57 pgadmin/llm/__init__.py:111
-#: pgadmin/llm/__init__.py:123 pgadmin/llm/__init__.py:141
+#: pgadmin/llm/__init__.py:69 pgadmin/llm/__init__.py:123
+#: pgadmin/llm/__init__.py:135 pgadmin/llm/__init__.py:153
 msgid "Anthropic"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:58 pgadmin/llm/__init__.py:172
-#: pgadmin/llm/__init__.py:187 pgadmin/llm/__init__.py:205
+#: pgadmin/llm/__init__.py:70 pgadmin/llm/__init__.py:184
+#: pgadmin/llm/__init__.py:199 pgadmin/llm/__init__.py:217
 msgid "OpenAI"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:59 pgadmin/llm/__init__.py:235
-#: pgadmin/llm/__init__.py:249
+#: pgadmin/llm/__init__.py:71 pgadmin/llm/__init__.py:247
+#: pgadmin/llm/__init__.py:261
 msgid "Ollama"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:60 pgadmin/llm/__init__.py:278
-#: pgadmin/llm/__init__.py:295
+#: pgadmin/llm/__init__.py:72 pgadmin/llm/__init__.py:290
+#: pgadmin/llm/__init__.py:307
 msgid "Docker Model Runner"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:68
+#: pgadmin/llm/__init__.py:80
 msgid "Default Provider"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:70 pgadmin/llm/__init__.py:89
+#: pgadmin/llm/__init__.py:82 pgadmin/llm/__init__.py:101
 msgid "AI Configuration"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:73
+#: pgadmin/llm/__init__.py:85
 msgid ""
 "The LLM provider to use for AI features. Select \"None (Disabled)\" to "
 "disable AI features. Note: AI features must also be enabled in the server"
 " configuration (LLM_ENABLED) for this setting to take effect."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:87
+#: pgadmin/llm/__init__.py:99
 msgid "Max Tool Iterations"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:93
+#: pgadmin/llm/__init__.py:105
 msgid ""
 "Maximum number of tool call iterations allowed during an AI conversation."
 " Higher values allow more complex queries but may consume more resources."
 " Default is 20."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:109 pgadmin/llm/__init__.py:170
-#: pgadmin/llm/__init__.py:233 pgadmin/llm/__init__.py:276
+#: pgadmin/llm/__init__.py:121 pgadmin/llm/__init__.py:182
+#: pgadmin/llm/__init__.py:245 pgadmin/llm/__init__.py:288
 msgid "API URL"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:113
+#: pgadmin/llm/__init__.py:125
 msgid ""
 "URL for the Anthropic API endpoint. Leave empty to use the default "
 "(https://api.anthropic.com/v1). Set a custom URL to use an Anthropic-"
 "compatible API provider."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:121 pgadmin/llm/__init__.py:185
+#: pgadmin/llm/__init__.py:133 pgadmin/llm/__init__.py:197
 msgid "API Key File"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:125
+#: pgadmin/llm/__init__.py:137
 msgid ""
 "Path to a file containing your Anthropic API key. This path must be on "
 "the server hosting pgAdmin, e.g. inside the container when using Docker. "
@@ -12093,24 +12110,24 @@ msgid ""
 "authentication."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:139 pgadmin/llm/__init__.py:203
-#: pgadmin/llm/__init__.py:247 pgadmin/llm/__init__.py:293
+#: pgadmin/llm/__init__.py:151 pgadmin/llm/__init__.py:215
+#: pgadmin/llm/__init__.py:259 pgadmin/llm/__init__.py:305
 msgid "Model"
 msgstr ""
 
-#: pgadmin/llm/__init__.py:144
+#: pgadmin/llm/__init__.py:156
 msgid ""
 "The Anthropic model to use. Models are loaded dynamically from your API "
 "key. You can also type a custom model name. Leave empty to use the "
 "default (Claude Sonnet 4)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:152 pgadmin/llm/__init__.py:216
-#: pgadmin/llm/__init__.py:260 pgadmin/llm/__init__.py:306
+#: pgadmin/llm/__init__.py:164 pgadmin/llm/__init__.py:228
+#: pgadmin/llm/__init__.py:272 pgadmin/llm/__init__.py:318
 msgid "Select or type a model name..."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:174
+#: pgadmin/llm/__init__.py:186
 msgid ""
 "URL for the OpenAI API endpoint. Leave empty to use the default "
 "(https://api.openai.com/v1). Set a custom URL to use any OpenAI-"
@@ -12119,7 +12136,7 @@ msgid ""
 "http://localhost:1234/v1)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:189
+#: pgadmin/llm/__init__.py:201
 msgid ""
 "Path to a file containing your OpenAI API key. This path must be on the "
 "server hosting pgAdmin, e.g. inside the container when using Docker. The "
@@ -12128,25 +12145,25 @@ msgid ""
 "authentication."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:208
+#: pgadmin/llm/__init__.py:220
 msgid ""
 "The OpenAI model to use. Models are loaded dynamically from your API key."
 " You can also type a custom model name. Leave empty to use the default "
 "(GPT-4o)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:237
+#: pgadmin/llm/__init__.py:249
 msgid "URL for the Ollama API endpoint (e.g., http://localhost:11434)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:252
+#: pgadmin/llm/__init__.py:264
 msgid ""
 "The Ollama model to use. Models are loaded dynamically from your Ollama "
 "server. You can also type a custom model name. Leave empty to use the "
 "default (llama3.2)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:280
+#: pgadmin/llm/__init__.py:292
 msgid ""
 "URL for the Docker Model Runner API endpoint (e.g., "
 "http://localhost:12434). Available in Docker Desktop 4.40 and later. Tip:"
@@ -12154,48 +12171,48 @@ msgid ""
 "OpenAI-compatible endpoint, including Docker Model Runner."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:298
+#: pgadmin/llm/__init__.py:310
 msgid ""
 "The Docker model to use. Models are loaded dynamically from your Docker "
 "Model Runner. You can also type a custom model name. Leave empty to use "
 "the default (ai/qwen3-coder)."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:889 pgadmin/llm/__init__.py:955
-#: pgadmin/llm/__init__.py:1140 pgadmin/llm/__init__.py:1208
-#: pgadmin/llm/__init__.py:1268 pgadmin/llm/__init__.py:1348
-#: pgadmin/llm/__init__.py:1420 pgadmin/llm/__init__.py:1486
-#: pgadmin/llm/__init__.py:1544 pgadmin/llm/__init__.py:1612
-#: pgadmin/llm/__init__.py:1672 pgadmin/llm/__init__.py:1740
-#: pgadmin/llm/__init__.py:1800 pgadmin/llm/__init__.py:1880
+#: pgadmin/llm/__init__.py:1065 pgadmin/llm/__init__.py:1131
+#: pgadmin/llm/__init__.py:1316 pgadmin/llm/__init__.py:1384
+#: pgadmin/llm/__init__.py:1444 pgadmin/llm/__init__.py:1524
+#: pgadmin/llm/__init__.py:1596 pgadmin/llm/__init__.py:1662
+#: pgadmin/llm/__init__.py:1720 pgadmin/llm/__init__.py:1788
+#: pgadmin/llm/__init__.py:1848 pgadmin/llm/__init__.py:1916
+#: pgadmin/llm/__init__.py:1976 pgadmin/llm/__init__.py:2056
 msgid ""
 "LLM is not configured. Please configure an LLM provider in Preferences > "
 "AI."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:903 pgadmin/llm/__init__.py:968
-#: pgadmin/llm/__init__.py:1434 pgadmin/llm/__init__.py:1499
+#: pgadmin/llm/__init__.py:1079 pgadmin/llm/__init__.py:1144
+#: pgadmin/llm/__init__.py:1610 pgadmin/llm/__init__.py:1675
 msgid "Server is not connected."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:930 pgadmin/llm/__init__.py:1183
-#: pgadmin/llm/__init__.py:1323 pgadmin/llm/__init__.py:1461
-#: pgadmin/llm/__init__.py:1587 pgadmin/llm/__init__.py:1715
-#: pgadmin/llm/__init__.py:1855 pgadmin/llm/reports/generator.py:160
+#: pgadmin/llm/__init__.py:1106 pgadmin/llm/__init__.py:1359
+#: pgadmin/llm/__init__.py:1499 pgadmin/llm/__init__.py:1637
+#: pgadmin/llm/__init__.py:1763 pgadmin/llm/__init__.py:1891
+#: pgadmin/llm/__init__.py:2031 pgadmin/llm/reports/generator.py:160
 #: pgadmin/llm/reports/generator.py:225
 msgid "Failed to generate report: "
 msgstr ""
 
-#: pgadmin/llm/__init__.py:1154 pgadmin/llm/__init__.py:1221
-#: pgadmin/llm/__init__.py:1282 pgadmin/llm/__init__.py:1361
-#: pgadmin/llm/__init__.py:1558 pgadmin/llm/__init__.py:1625
-#: pgadmin/llm/__init__.py:1686 pgadmin/llm/__init__.py:1753
-#: pgadmin/llm/__init__.py:1814 pgadmin/llm/__init__.py:1893
+#: pgadmin/llm/__init__.py:1330 pgadmin/llm/__init__.py:1397
+#: pgadmin/llm/__init__.py:1458 pgadmin/llm/__init__.py:1537
+#: pgadmin/llm/__init__.py:1734 pgadmin/llm/__init__.py:1801
+#: pgadmin/llm/__init__.py:1862 pgadmin/llm/__init__.py:1929
+#: pgadmin/llm/__init__.py:1990 pgadmin/llm/__init__.py:2069
 msgid "Database is not connected."
 msgstr ""
 
-#: pgadmin/llm/__init__.py:1291 pgadmin/llm/__init__.py:1370
-#: pgadmin/llm/__init__.py:1823 pgadmin/llm/__init__.py:1902
+#: pgadmin/llm/__init__.py:1467 pgadmin/llm/__init__.py:1546
+#: pgadmin/llm/__init__.py:1999 pgadmin/llm/__init__.py:2078
 msgid "Schema not found."
 msgstr ""
 
@@ -12562,12 +12579,12 @@ msgstr "进程已被启动。"
 msgid "The process has already finished and cannot be restarted."
 msgstr "该进程已完成并且已经无法重新启动。"
 
-#: pgadmin/misc/bgprocess/processes.py:688
+#: pgadmin/misc/bgprocess/processes.py:689
 #, python-brace-format
 msgid "Could not load status for background process '{0}'."
 msgstr ""
 
-#: pgadmin/misc/bgprocess/processes.py:893
+#: pgadmin/misc/bgprocess/processes.py:894
 #, python-brace-format
 msgid "Unable to kill the background process '{0}'."
 msgstr ""
@@ -12639,7 +12656,7 @@ msgid "Running query"
 msgstr "执行查询"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:168
-#: pgadmin/misc/file_manager/__init__.py:586
+#: pgadmin/misc/file_manager/__init__.py:605
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:52
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:68
 #: pgadmin/tools/user_management/PgAdminPermissions.py:41
@@ -12703,13 +12720,13 @@ msgstr "进程监视器 - %s"
 msgid "Time Taken (sec)"
 msgstr "耗时(秒)"
 
-#: pgadmin/misc/cloud/__init__.py:88 pgadmin/misc/cloud/google/__init__.py:58
-#: pgadmin/misc/file_manager/__init__.py:237 pgadmin/settings/__init__.py:108
+#: pgadmin/misc/cloud/__init__.py:88 pgadmin/misc/cloud/google/__init__.py:83
+#: pgadmin/misc/file_manager/__init__.py:256 pgadmin/settings/__init__.py:108
 #: pgadmin/tools/backup/__init__.py:205 pgadmin/tools/debugger/__init__.py:266
 #: pgadmin/tools/grant_wizard/__init__.py:123
 #: pgadmin/tools/import_export/__init__.py:156
 #: pgadmin/tools/import_export_servers/__init__.py:60
-#: pgadmin/tools/maintenance/__init__.py:130
+#: pgadmin/tools/maintenance/__init__.py:131
 #: pgadmin/tools/restore/__init__.py:147
 #: pgadmin/tools/search_objects/__init__.py:61
 #: pgadmin/tools/user_management/__init__.py:95
@@ -12720,27 +12737,31 @@ msgstr "不能直接调用此 URL。"
 msgid "No cloud implementation."
 msgstr "无云实现。"
 
-#: pgadmin/misc/cloud/biganimal/__init__.py:237
+#: pgadmin/misc/cloud/biganimal/__init__.py:83
+msgid "Authentication session expired."
+msgstr ""
+
+#: pgadmin/misc/cloud/biganimal/__init__.py:321
 msgid "forbidden"
 msgstr "禁止"
 
-#: pgadmin/misc/cloud/biganimal/__init__.py:293
+#: pgadmin/misc/cloud/biganimal/__init__.py:377
 msgid "Project not provided."
 msgstr "未提供项目。"
 
-#: pgadmin/misc/cloud/biganimal/__init__.py:311
+#: pgadmin/misc/cloud/biganimal/__init__.py:395
 msgid "Error retrieving providers."
 msgstr "接收提供者错误。"
 
-#: pgadmin/misc/cloud/biganimal/__init__.py:332
+#: pgadmin/misc/cloud/biganimal/__init__.py:416
 msgid "Error retrieving regions."
 msgstr "接收区域错误。"
 
-#: pgadmin/misc/cloud/biganimal/__init__.py:441
+#: pgadmin/misc/cloud/biganimal/__init__.py:525
 msgid "Error retrieving projects."
 msgstr "接收项目错误。"
 
-#: pgadmin/misc/cloud/rds/__init__.py:94 pgadmin/misc/cloud/rds/__init__.py:126
+#: pgadmin/misc/cloud/rds/__init__.py:99 pgadmin/misc/cloud/rds/__init__.py:131
 msgid "Session has not created yet."
 msgstr "会话尚未创建。"
 
@@ -13547,80 +13568,80 @@ msgstr "面板"
 msgid "No dependent information is available for the selected object."
 msgstr "所选对象没有依赖信息。"
 
-#: pgadmin/misc/file_manager/__init__.py:197
+#: pgadmin/misc/file_manager/__init__.py:216
 msgid "Maximum file upload size (MB)"
 msgstr "最大上传文件限制为 (MB)"
 
-#: pgadmin/misc/file_manager/__init__.py:202
+#: pgadmin/misc/file_manager/__init__.py:221
 msgid "Last directory visited"
 msgstr "上次访问的目录"
 
-#: pgadmin/misc/file_manager/__init__.py:207
+#: pgadmin/misc/file_manager/__init__.py:226
 msgid "Last storage"
 msgstr "上次存储"
 
-#: pgadmin/misc/file_manager/__init__.py:213
+#: pgadmin/misc/file_manager/__init__.py:232
 msgid "File dialog view"
 msgstr "\"文件\" 对话框视图"
 
-#: pgadmin/misc/file_manager/__init__.py:216
+#: pgadmin/misc/file_manager/__init__.py:235
 msgid "Grid"
 msgstr "网格"
 
-#: pgadmin/misc/file_manager/__init__.py:224
+#: pgadmin/misc/file_manager/__init__.py:243
 msgid "Show hidden files and folders?"
 msgstr "显示隐藏文件和文件夹？"
 
-#: pgadmin/misc/file_manager/__init__.py:386
+#: pgadmin/misc/file_manager/__init__.py:405
 msgid "File type not supported"
 msgstr "不支持的文件类型"
 
-#: pgadmin/misc/file_manager/__init__.py:448
+#: pgadmin/misc/file_manager/__init__.py:467
 #, python-brace-format
 msgid "Error: {0}"
 msgstr "错误: {0}"
 
-#: pgadmin/misc/file_manager/__init__.py:475
+#: pgadmin/misc/file_manager/__init__.py:494
 msgid "Not allowed"
 msgstr "不允许"
 
-#: pgadmin/misc/file_manager/__init__.py:561
-#: pgadmin/misc/file_manager/__init__.py:573
+#: pgadmin/misc/file_manager/__init__.py:580
+#: pgadmin/misc/file_manager/__init__.py:592
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:66
 msgid "Select File"
 msgstr "选择文件"
 
-#: pgadmin/misc/file_manager/__init__.py:567
+#: pgadmin/misc/file_manager/__init__.py:586
 msgid "Select Folder"
 msgstr "选择文件夹"
 
-#: pgadmin/misc/file_manager/__init__.py:579
+#: pgadmin/misc/file_manager/__init__.py:598
 msgid "Create File"
 msgstr "创建文件"
 
-#: pgadmin/misc/file_manager/__init__.py:870
+#: pgadmin/misc/file_manager/__init__.py:889
 #, python-brace-format
 msgid "'{0}' file does not exist."
 msgstr "\"{0}\" 文件不存在。"
 
-#: pgadmin/misc/file_manager/__init__.py:887
+#: pgadmin/misc/file_manager/__init__.py:906
 msgid "Permission denied"
 msgstr "拒绝访问"
 
-#: pgadmin/misc/file_manager/__init__.py:918
+#: pgadmin/misc/file_manager/__init__.py:943
 #, python-brace-format
 msgid "Access denied ({0})"
 msgstr "访问被拒绝 ({0})"
 
-#: pgadmin/misc/file_manager/__init__.py:1028
+#: pgadmin/misc/file_manager/__init__.py:1053
 msgid "There was an error renaming the file:"
 msgstr "重命名文件时出错:"
 
-#: pgadmin/misc/file_manager/__init__.py:1058
+#: pgadmin/misc/file_manager/__init__.py:1083
 msgid "There was an error deleting the file:"
 msgstr "删除文件出错："
 
-#: pgadmin/misc/file_manager/__init__.py:1102
+#: pgadmin/misc/file_manager/__init__.py:1128
 msgid "There was an error adding the file:"
 msgstr "添加文件出错："
 
@@ -16343,18 +16364,54 @@ msgstr "导入数据"
 msgid "Export Data"
 msgstr "导出数据"
 
-#: pgadmin/tools/import_export/__init__.py:298
-#: pgadmin/tools/maintenance/__init__.py:181 pgadmin/utils/constants.py:166
+#: pgadmin/tools/import_export/__init__.py:385
+#: pgadmin/tools/maintenance/__init__.py:229 pgadmin/utils/constants.py:166
 msgid "Could not find the specified server."
 msgstr "找不到指定的服务器。"
 
-#: pgadmin/tools/import_export/__init__.py:308
+#: pgadmin/tools/import_export/__init__.py:395
 msgid "Please connect to the server first..."
 msgstr "请先连接到服务器..."
 
-#: pgadmin/tools/import_export/__init__.py:334
-#: pgadmin/tools/import_export/__init__.py:340
+#: pgadmin/tools/import_export/__init__.py:421
+#: pgadmin/tools/import_export/__init__.py:427
 msgid "Please specify a valid file."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:435
+msgid "Format must be a string."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:437
+msgid "Invalid format specified."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:444
+msgid "on_error must be a string."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:448
+msgid "Invalid on_error value."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:456
+msgid "log_verbosity must be a string."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:460
+msgid "Invalid log_verbosity value."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:485
+msgid "Query is required for query-based export."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:491
+msgid "The query contains invalid characters."
+msgstr ""
+
+#: pgadmin/tools/import_export/__init__.py:503
+msgid "The query contains unbalanced parentheses."
 msgstr ""
 
 #: pgadmin/tools/import_export/static/js/import_export.js:48
@@ -16707,77 +16764,94 @@ msgstr "如果此项已选择则pgAdmin将移除已存在的数据库服务器�
 msgid "Import/Export Servers..."
 msgstr "导入/导出 服务器..."
 
-#: pgadmin/tools/maintenance/__init__.py:38
-#: pgadmin/tools/maintenance/__init__.py:114
+#: pgadmin/tools/maintenance/__init__.py:39
+#: pgadmin/tools/maintenance/__init__.py:115
 #: pgadmin/tools/maintenance/static/js/maintenance.js:196
 #: pgadmin/tools/user_management/PgAdminPermissions.py:97
 msgid "Maintenance"
 msgstr "维护"
 
-#: pgadmin/tools/maintenance/__init__.py:73
+#: pgadmin/tools/maintenance/__init__.py:74
 #, python-brace-format
 msgid "on database '{0}'"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:75
+#: pgadmin/tools/maintenance/__init__.py:76
 #, python-brace-format
 msgid "on constraint '{0}/{1}/{2}/{3}'"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:80
+#: pgadmin/tools/maintenance/__init__.py:81
 #, python-brace-format
 msgid "on index '{0}/{1}/{2}/{3}'"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:84
+#: pgadmin/tools/maintenance/__init__.py:85
 #, python-brace-format
 msgid "on table '{0}/{1}/{2}'"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:87
+#: pgadmin/tools/maintenance/__init__.py:88
 #, python-brace-format
 msgid "on schema '{0}/{1}'"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:93
+#: pgadmin/tools/maintenance/__init__.py:94
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:372
 msgid "VACUUM"
 msgstr "VACUUM"
 
-#: pgadmin/tools/maintenance/__init__.py:95
+#: pgadmin/tools/maintenance/__init__.py:96
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:71
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:377
 msgid "ANALYZE"
 msgstr "ANALYZE"
 
-#: pgadmin/tools/maintenance/__init__.py:97
+#: pgadmin/tools/maintenance/__init__.py:98
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:382
 msgid "REINDEX"
 msgstr "REINDEX"
 
-#: pgadmin/tools/maintenance/__init__.py:101
+#: pgadmin/tools/maintenance/__init__.py:102
 msgid "REINDEX INDEX"
 msgstr "REINDEX INDEX"
 
-#: pgadmin/tools/maintenance/__init__.py:103
+#: pgadmin/tools/maintenance/__init__.py:104
 msgid "REINDEX TABLE"
 msgstr "REINDEX TABLE"
 
-#: pgadmin/tools/maintenance/__init__.py:105
+#: pgadmin/tools/maintenance/__init__.py:106
 msgid "REINDEX SCHEMA"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:107
+#: pgadmin/tools/maintenance/__init__.py:108
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:387
 msgid "CLUSTER"
 msgstr "CLUSTER"
 
-#: pgadmin/tools/maintenance/__init__.py:109
+#: pgadmin/tools/maintenance/__init__.py:110
 #, python-brace-format
 msgid "{0} {1} of server {2}"
 msgstr ""
 
-#: pgadmin/tools/maintenance/__init__.py:240
+#: pgadmin/tools/maintenance/__init__.py:171
+msgid "Invalid value for INDEX_CLEANUP option."
+msgstr ""
+
+#: pgadmin/tools/maintenance/__init__.py:178
+#: pgadmin/tools/maintenance/__init__.py:180
+msgid "Invalid value for PARALLEL option."
+msgstr ""
+
+#: pgadmin/tools/maintenance/__init__.py:186
+msgid "Invalid value for BUFFER_USAGE_LIMIT option."
+msgstr ""
+
+#: pgadmin/tools/maintenance/__init__.py:190
+msgid "Invalid value for TABLESPACE option."
+msgstr ""
+
+#: pgadmin/tools/maintenance/__init__.py:288
 msgid "Maintenance job created."
 msgstr "已创建维护作业。"
 
