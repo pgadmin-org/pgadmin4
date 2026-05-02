@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-26 17:05+0530\n"
+"POT-Creation-Date: 2026-05-02 10:58+0530\n"
 "PO-Revision-Date: 2024-11-07 22:12+0100\n"
 "Last-Translator: Nicolas Letellier <nicolas.letellier@mailo.com>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: pgadmin/__init__.py:350 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -506,7 +506,7 @@ msgstr ""
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: pgadmin/browser/__init__.py:766
+#: pgadmin/browser/__init__.py:769
 #, python-brace-format
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
@@ -517,19 +517,19 @@ msgstr ""
 "l'utilitaire MASTER_PASSWORD_HOOK {0}. Veuillez vérifier que l'utilitaire"
 " hook est correctement configuré."
 
-#: pgadmin/browser/__init__.py:792
+#: pgadmin/browser/__init__.py:795
 msgid "Incorrect master password"
 msgstr "Mot de passe maître incorrect"
 
-#: pgadmin/browser/__init__.py:838
+#: pgadmin/browser/__init__.py:841
 msgid "Master password cannot be empty"
 msgstr "Le mot de passe maître ne peut pas être vide"
 
-#: pgadmin/browser/__init__.py:922
+#: pgadmin/browser/__init__.py:925
 msgid "pgAdmin user password changed successfully"
 msgstr "Le mot de passe de l'utilisateur pgAdmin a été modifié avec succès"
 
-#: pgadmin/browser/__init__.py:969
+#: pgadmin/browser/__init__.py:972
 #, python-brace-format
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
@@ -539,7 +539,7 @@ msgstr ""
 "contacter les administrateurs de ce service si vous avez besoin de "
 "réinitialiser votre mot de passe."
 
-#: pgadmin/browser/__init__.py:1081
+#: pgadmin/browser/__init__.py:1084
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -831,14 +831,14 @@ msgstr ""
 #: pgadmin/browser/static/js/collection.js:57
 #: pgadmin/browser/static/js/node.js:215
 #: pgadmin/preferences/static/js/components/PreferencesHelper.jsx:235
-#: pgadmin/tools/sqleditor/__init__.py:92
+#: pgadmin/tools/sqleditor/__init__.py:94
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:103
 #: pgadmin/tools/user_management/PgAdminPermissions.py:57
 msgid "Query Tool"
 msgstr "Éditeur de Requêtes"
 
 #: pgadmin/browser/register_browser_preferences.py:457
-#: pgadmin/tools/debugger/__init__.py:59
+#: pgadmin/tools/debugger/__init__.py:61
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:522
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1117
 #: pgadmin/tools/debugger/static/js/debugger_ui.js:27
@@ -847,7 +847,7 @@ msgid "Debugger"
 msgstr "Debugger"
 
 #: pgadmin/browser/register_browser_preferences.py:458
-#: pgadmin/tools/schema_diff/__init__.py:48
+#: pgadmin/tools/schema_diff/__init__.py:50
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:57
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:65
 #: pgadmin/tools/user_management/PgAdminPermissions.py:102
@@ -1233,9 +1233,9 @@ msgstr "Les caractériqtiques requises sont manquantes."
 #: pgadmin/browser/utils.py:445 pgadmin/static/js/utils.js:434
 #: pgadmin/tools/backup/__init__.py:587
 #: pgadmin/tools/grant_wizard/__init__.py:101
-#: pgadmin/tools/sqleditor/__init__.py:929
-#: pgadmin/tools/sqleditor/__init__.py:1103
-#: pgadmin/tools/sqleditor/__init__.py:1549 pgadmin/utils/exception.py:37
+#: pgadmin/tools/sqleditor/__init__.py:948
+#: pgadmin/tools/sqleditor/__init__.py:1122
+#: pgadmin/tools/sqleditor/__init__.py:1568 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "La connexion au serveur a été perdue."
 
@@ -1244,42 +1244,42 @@ msgstr "La connexion au serveur a été perdue."
 msgid "Could not find the specified {}."
 msgstr "Impossible de trouver {}."
 
-#: pgadmin/browser/server_groups/__init__.py:202
-#: pgadmin/browser/server_groups/__init__.py:211
+#: pgadmin/browser/server_groups/__init__.py:204
+#: pgadmin/browser/server_groups/__init__.py:213
 msgid "The specified server group cannot be deleted."
 msgstr "Le groupe de serveurs ne peut pas être supprimé."
 
-#: pgadmin/browser/server_groups/__init__.py:263
-#: pgadmin/browser/server_groups/__init__.py:337
+#: pgadmin/browser/server_groups/__init__.py:265
+#: pgadmin/browser/server_groups/__init__.py:340
 msgid "The specified server group already exists."
 msgstr "Le groupe de serveurs existe déjà."
 
-#: pgadmin/browser/server_groups/__init__.py:351
+#: pgadmin/browser/server_groups/__init__.py:354
 msgid "No server group name was specified"
 msgstr "Aucun groupe de serveurs n'a été renseigné"
 
-#: pgadmin/browser/server_groups/__init__.py:428
+#: pgadmin/browser/server_groups/__init__.py:433
 msgid "Could not find the server group."
 msgstr "Impossible de trouver le groupe de serveurs."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:137
-#: pgadmin/browser/server_groups/servers/__init__.py:1071
+#: pgadmin/browser/server_groups/servers/__init__.py:155
+#: pgadmin/browser/server_groups/servers/__init__.py:1172
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/__init__.py:46
 #: pgadmin/browser/server_groups/servers/pgd_replication_groups/pgd_replication_servers/static/js/pgd_replication_servers.js:22
 msgid "Servers"
 msgstr "Serveurs"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:622
+#: pgadmin/browser/server_groups/servers/__init__.py:706
 #, python-brace-format
 msgid "The specified server group with id# {0} could not be found."
 msgstr "Le groupe de serveurs avec id# {0} ne peut pas être trouvé."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:643
+#: pgadmin/browser/server_groups/servers/__init__.py:721
 #, python-brace-format
 msgid "Could not find the server with id# {0}."
 msgstr "Impossible de trouver le serveur avec id# {0}."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:729
+#: pgadmin/browser/server_groups/servers/__init__.py:815
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -1288,23 +1288,34 @@ msgstr ""
 "L'utilisateur a-t-il les autorisations nécessaires pour accéder à ce "
 "serveur?"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:751
+#: pgadmin/browser/server_groups/servers/__init__.py:837
 msgid "Server deleted"
 msgstr "Serveur supprimé"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:764
-#: pgadmin/browser/server_groups/servers/__init__.py:2127
+#: pgadmin/browser/server_groups/servers/__init__.py:850
+#: pgadmin/misc/workspaces/__init__.py:167
+#: pgadmin/tools/debugger/__init__.py:1811
+#: pgadmin/tools/debugger/__init__.py:1904
+#: pgadmin/tools/debugger/__init__.py:2002
+#: pgadmin/tools/schema_diff/__init__.py:342
+#: pgadmin/tools/schema_diff/__init__.py:386
+#: pgadmin/tools/schema_diff/__init__.py:403
+#: pgadmin/tools/schema_diff/__init__.py:429
+#: pgadmin/tools/sqleditor/__init__.py:234
+#: pgadmin/tools/sqleditor/__init__.py:526
+#: pgadmin/tools/sqleditor/__init__.py:2364
+#: pgadmin/tools/sqleditor/__init__.py:2677
 msgid "Could not find the required server."
 msgstr "Impossible de trouver le serveur."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:808
+#: pgadmin/browser/server_groups/servers/__init__.py:894
 #: pgadmin/dashboard/static/js/SystemStats/CpuDetails.jsx:158
 #: pgadmin/dashboard/static/js/SystemStats/Memory.jsx:164
 #: pgadmin/dashboard/static/js/SystemStats/Summary.jsx:134
 msgid "name"
 msgstr "nom"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:809
+#: pgadmin/browser/server_groups/servers/__init__.py:895
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:130
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:348
 #: pgadmin/misc/cloud/static/js/aws.js:231
@@ -1313,12 +1324,12 @@ msgstr "nom"
 msgid "Port"
 msgstr "Port"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:810
+#: pgadmin/browser/server_groups/servers/__init__.py:896
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:360
 msgid "Maintenance database"
 msgstr "Base de données de maintenance"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:811
+#: pgadmin/browser/server_groups/servers/__init__.py:897
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:149
 #: pgadmin/browser/server_groups/servers/replica_nodes/static/js/replica_node.ui.js:24
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:364
@@ -1332,7 +1343,7 @@ msgstr "Base de données de maintenance"
 msgid "Username"
 msgstr "Identifiant"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:812
+#: pgadmin/browser/server_groups/servers/__init__.py:898
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:95
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:329
 #: pgadmin/tools/backup/static/js/backup.ui.js:239
@@ -1340,7 +1351,7 @@ msgstr "Identifiant"
 msgid "Comments"
 msgstr "Commentaires"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:813
+#: pgadmin/browser/server_groups/servers/__init__.py:899
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:106
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:411
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:209
@@ -1352,23 +1363,23 @@ msgstr "Commentaires"
 msgid "Role"
 msgstr "Rôle"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:833
-#: pgadmin/browser/server_groups/servers/__init__.py:1179
-#: pgadmin/misc/workspaces/__init__.py:104
+#: pgadmin/browser/server_groups/servers/__init__.py:919
+#: pgadmin/browser/server_groups/servers/__init__.py:1277
+#: pgadmin/misc/workspaces/__init__.py:105
 msgid "Not a valid Host address"
 msgstr "Adresse d'hôte invalide"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:853
+#: pgadmin/browser/server_groups/servers/__init__.py:939
 msgid "No parameters were changed."
 msgstr "Aucun paramètre n'a été modifié."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:949
+#: pgadmin/browser/server_groups/servers/__init__.py:1054
 #, python-brace-format
 msgid "'{0}' cannot be modified when the server is connected."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1167
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:721
+#: pgadmin/browser/server_groups/servers/__init__.py:1265
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:726
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:395
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:414
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:700
@@ -1398,25 +1409,25 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:510
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:485
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:550
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:557
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:556
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:379
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:342
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:598
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:977
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:575
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:576
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:475
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:285
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:317
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:376
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:305
-#: pgadmin/misc/workspaces/__init__.py:91
+#: pgadmin/misc/workspaces/__init__.py:92
 #: pgadmin/tools/import_export_servers/__init__.py:177
 #: pgadmin/tools/sqleditor/utils/macros.py:150
 #, python-brace-format
 msgid "Could not find the required parameter ({})."
 msgstr "Impossible de trouver les paramètres requis ({})."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1281
+#: pgadmin/browser/server_groups/servers/__init__.py:1379
 #, python-brace-format
 msgid ""
 "Unable to connect to server:\n"
@@ -1427,54 +1438,54 @@ msgstr ""
 "\n"
 "{}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1370
+#: pgadmin/browser/server_groups/servers/__init__.py:1468
 msgid "Server has no active connection for generating statistics."
 msgstr ""
 "Le serveur ne dispose pas d'une connexion active pour générer les "
 "statistiques."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1487
+#: pgadmin/browser/server_groups/servers/__init__.py:1588
 msgid "Please enter the server details to connect"
 msgstr "Renseigner les attributs du serveurs afin de pouvoir s'y connecter"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1671
-#: pgadmin/tools/schema_diff/__init__.py:374
-#: pgadmin/tools/sqleditor/__init__.py:2658
+#: pgadmin/browser/server_groups/servers/__init__.py:1778
+#: pgadmin/tools/schema_diff/__init__.py:378
+#: pgadmin/tools/sqleditor/__init__.py:2686
 msgid "Server connected."
 msgstr "Serveur connecté."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1713
+#: pgadmin/browser/server_groups/servers/__init__.py:1820
 msgid "Server could not be disconnected."
 msgstr "Le serveur ne peut pas être déconnecté."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1717
+#: pgadmin/browser/server_groups/servers/__init__.py:1824
 msgid "Server disconnected."
 msgstr "Serveur déconnecté."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1737
+#: pgadmin/browser/server_groups/servers/__init__.py:1844
 msgid "Could not reload the server configuration."
 msgstr "Impossible de recharger la configuration du serveur."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1742
+#: pgadmin/browser/server_groups/servers/__init__.py:1849
 msgid "Server configuration reloaded."
 msgstr "Configuration du serveur rechargée."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1788
+#: pgadmin/browser/server_groups/servers/__init__.py:1895
 #, python-brace-format
 msgid "Named restore point created: {0}"
 msgstr "Point de restauration créé: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1794
+#: pgadmin/browser/server_groups/servers/__init__.py:1901
 #, python-brace-format
 msgid "Named restore point creation failed ({0})"
 msgstr "Échec de création du point de restauration ({0})"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1851
-#: pgadmin/browser/server_groups/servers/__init__.py:1863
+#: pgadmin/browser/server_groups/servers/__init__.py:1958
+#: pgadmin/browser/server_groups/servers/__init__.py:1970
 msgid "Could not find the required parameter(s)."
 msgstr "Impossible de trouver les paramètres requis."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1872
+#: pgadmin/browser/server_groups/servers/__init__.py:1979
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:133
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:448
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:381
@@ -1484,29 +1495,29 @@ msgstr "Impossible de trouver les paramètres requis."
 msgid "Passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1885
+#: pgadmin/browser/server_groups/servers/__init__.py:1992
 msgid "Incorrect password."
 msgstr "Mot de passe incorrect."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1921
+#: pgadmin/browser/server_groups/servers/__init__.py:2041
 msgid "Password changed successfully."
 msgstr "Le mot de passé a bien été modifié."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1958
+#: pgadmin/browser/server_groups/servers/__init__.py:2076
 msgid "WAL replay paused"
 msgstr "Le rejeu des journaux de transactions (WAL) est mis en pause"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1969
+#: pgadmin/browser/server_groups/servers/__init__.py:2087
 msgid "WAL replay resumed"
 msgstr "Le rejeu des journaux de transactions (WAL) a repris"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1975
-#: pgadmin/browser/server_groups/servers/__init__.py:2033
+#: pgadmin/browser/server_groups/servers/__init__.py:2093
+#: pgadmin/browser/server_groups/servers/__init__.py:2149
 msgid "Please connect to the server."
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2154
-#: pgadmin/browser/server_groups/servers/__init__.py:2186
+#: pgadmin/browser/server_groups/servers/__init__.py:2254
+#: pgadmin/browser/server_groups/servers/__init__.py:2292
 msgid "The saved password was cleared successfully."
 msgstr ""
 
@@ -1565,40 +1576,46 @@ msgstr "Impossible de trouver l'utilitaire pour cette opération '%s'"
 msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:43
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:44
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:37
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:529
 msgid "Databases"
 msgstr "Bases de données"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:232
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:224
 #: pgadmin/misc/cloud/__init__.py:169
 msgid "Could not find the server."
 msgstr "Impossible de trouver le serveur."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:576
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:577
 msgid "Database connected."
 msgstr "Base de données connectée."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:596
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:585
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:610
+#: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:91
+msgid "Unknown"
+msgstr "Inconnu"
+
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:599
 msgid "Database could not be disconnected."
 msgstr "Impossible de déconnecter la base de données."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:600
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:603
 msgid "Database disconnected."
 msgstr "Base de données déconnectée."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:838
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:843
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2348
 msgid "Could not find the database on the server."
 msgstr "Impossible de trouver la base de données sur le serveur."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:997
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1002
 msgid "Database could not be deleted."
 msgstr "La base de données ne peut pas être supprimée."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1039
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1044
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:526
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:573
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:378
@@ -1623,26 +1640,26 @@ msgstr "La base de données ne peut pas être supprimée."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:702
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:767
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:755
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:737
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:735
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:773
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:509
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:441
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:678
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1188
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:708
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:709
 #: pgadmin/browser/server_groups/servers/directories/__init__.py:395
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:566
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:444
 msgid "Error: Object not found."
 msgstr "Erreur: Objet non trouvé."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1042
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1047
 msgid "The specified database could not be found.\n"
 msgstr "La base de données ne peut pas être trouvée\n"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1141
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:892
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2013
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1146
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:893
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2014
 msgid " -- definition incomplete"
 msgstr " -- définition incomplète"
 
@@ -3974,7 +3991,7 @@ msgstr "Table distante supprimée"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1716
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1540
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1594
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1703
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1704
 msgid "-- Please create column(s) first..."
 msgstr "-- Veuillez d'abord créer une ou plusieurs colonnes..."
 
@@ -5816,11 +5833,11 @@ msgstr "Les NULL ne sont pas distincts ?"
 msgid "Indexes"
 msgstr "Indexes"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:553
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:552
 msgid "You must provide one or more column to create index."
 msgstr "Vous devez indiquer une ou plusieurs colonnes pour créer l'index."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:757
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:755
 msgid "Index is dropped"
 msgstr "Index supprimé"
 
@@ -7530,55 +7547,55 @@ msgstr "Sous-Type"
 msgid "System type?"
 msgstr "Type système ?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:77
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:78
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:34
 msgid "Views"
 msgstr "Vues"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:165
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:166
 #, python-brace-format
 msgid "Refresh Materialized View ({0})"
 msgstr "Actualiser la vue matérialisée ({0})"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:168
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:169
 msgid "WITH NO DATA"
 msgstr "WITH NO DATA"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:170
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:171
 msgid "WITH DATA"
 msgstr "WITH DATA"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:173
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:174
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:292
 msgid "CONCURRENTLY"
 msgstr "CONCURRENTLY"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:180
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:181
 msgid "Refresh Materialized View"
 msgstr "Actualiser la vue matérialisée"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:188
 #: pgadmin/tools/backup/__init__.py:118
-#: pgadmin/tools/import_export/__init__.py:105
+#: pgadmin/tools/import_export/__init__.py:104
 #: pgadmin/tools/maintenance/__init__.py:61
 #: pgadmin/tools/restore/__init__.py:94
 msgid "Not available"
 msgstr "Indisponible"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:198
 msgid "Refresh MView"
 msgstr "Actualiser MView"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:208
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:209
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:38
 msgid "Materialized Views"
 msgstr "Vues Matérialisées"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:730
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:731
 msgid "View dropped"
 msgstr "Vue supprimée"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1780
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1781
 msgid ""
 "\n"
 "-- Changing the columns in a view requires dropping and re-creating the "
@@ -8672,10 +8689,6 @@ msgstr "Dernière exécution"
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:87
 msgid "Last result"
 msgstr "Dernier résultat"
-
-#: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:91
-msgid "Unknown"
-msgstr "Inconnu"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:96
 msgid "Running at"
@@ -11113,8 +11126,8 @@ msgstr "Déconnexion réussie."
 #: pgadmin/static/js/components/ReactCodeMirror/components/FindDialog.jsx:181
 #: pgadmin/static/js/components/ReactCodeMirror/components/GotoDialog.jsx:83
 #: pgadmin/static/js/helpers/Layout/index.jsx:68
-#: pgadmin/static/js/helpers/Layout/index.jsx:412
-#: pgadmin/static/js/helpers/Layout/index.jsx:511
+#: pgadmin/static/js/helpers/Layout/index.jsx:437
+#: pgadmin/static/js/helpers/Layout/index.jsx:536
 #: pgadmin/static/js/helpers/ModalProvider.jsx:334
 msgid "Close"
 msgstr "Fermer"
@@ -12610,7 +12623,7 @@ msgstr ""
 #: pgadmin/llm/static/js/AIReport.jsx:634
 #: pgadmin/static/js/Explain/AIInsights.jsx:750
 #: pgadmin/static/js/Explain/AIInsights.jsx:891
-#: pgadmin/tools/debugger/__init__.py:80
+#: pgadmin/tools/debugger/__init__.py:82
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:183
 #: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1206
 msgid "Stop"
@@ -12875,12 +12888,12 @@ msgstr "Le processus a déjà démarré."
 msgid "The process has already finished and cannot be restarted."
 msgstr "Le processus est déjà terminé et ne peut pas être relancé."
 
-#: pgadmin/misc/bgprocess/processes.py:696
+#: pgadmin/misc/bgprocess/processes.py:688
 #, python-brace-format
 msgid "Could not load status for background process '{0}'."
 msgstr ""
 
-#: pgadmin/misc/bgprocess/processes.py:905
+#: pgadmin/misc/bgprocess/processes.py:893
 #, python-brace-format
 msgid "Unable to kill the background process '{0}'."
 msgstr ""
@@ -13018,9 +13031,9 @@ msgstr "Durée de l'opération (sec)"
 
 #: pgadmin/misc/cloud/__init__.py:88 pgadmin/misc/cloud/google/__init__.py:58
 #: pgadmin/misc/file_manager/__init__.py:237 pgadmin/settings/__init__.py:108
-#: pgadmin/tools/backup/__init__.py:205 pgadmin/tools/debugger/__init__.py:264
+#: pgadmin/tools/backup/__init__.py:205 pgadmin/tools/debugger/__init__.py:266
 #: pgadmin/tools/grant_wizard/__init__.py:123
-#: pgadmin/tools/import_export/__init__.py:157
+#: pgadmin/tools/import_export/__init__.py:156
 #: pgadmin/tools/import_export_servers/__init__.py:60
 #: pgadmin/tools/maintenance/__init__.py:130
 #: pgadmin/tools/restore/__init__.py:147
@@ -14071,7 +14084,7 @@ msgid "New Folder"
 msgstr "Nouveau dossier"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:822
-#: pgadmin/static/js/helpers/Layout/index.jsx:536
+#: pgadmin/static/js/helpers/Layout/index.jsx:561
 msgid "Rename"
 msgstr "Renommer"
 
@@ -14135,9 +14148,9 @@ msgstr "La taille limite du fichier (par fichier) est de %s MB."
 msgid "The master password is not set."
 msgstr "Le mot de passe principal n'est pas défini."
 
-#: pgadmin/misc/workspaces/__init__.py:53 pgadmin/tools/__init__.py:87
-#: pgadmin/tools/schema_diff/__init__.py:117
-#: pgadmin/tools/sqleditor/__init__.py:182
+#: pgadmin/misc/workspaces/__init__.py:54 pgadmin/tools/__init__.py:87
+#: pgadmin/tools/schema_diff/__init__.py:119
+#: pgadmin/tools/sqleditor/__init__.py:184
 msgid "This URL cannot be requested directly."
 msgstr "Cette URL ne peut pas être appelée directement."
 
@@ -15002,7 +15015,7 @@ msgid "of relation"
 msgstr "de relation"
 
 #: pgadmin/static/js/Explain/Graphical.jsx:424
-#: pgadmin/tools/erd/__init__.py:380
+#: pgadmin/tools/erd/__init__.py:381
 msgid "Zoom in"
 msgstr "Zoom avant"
 
@@ -15012,7 +15025,7 @@ msgid "Zoom to original"
 msgstr "Zoom initial"
 
 #: pgadmin/static/js/Explain/Graphical.jsx:426
-#: pgadmin/tools/erd/__init__.py:398
+#: pgadmin/tools/erd/__init__.py:399
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
@@ -15381,21 +15394,21 @@ msgstr "Connexion perdue"
 msgid "Clear"
 msgstr "Vider"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:442
+#: pgadmin/static/js/helpers/Layout/index.jsx:467
 msgid "Maximise"
 msgstr "Maximiser"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:445
+#: pgadmin/static/js/helpers/Layout/index.jsx:470
 #: pgadmin/tools/restore/__init__.py:45 pgadmin/tools/restore/__init__.py:140
 #: pgadmin/tools/restore/static/js/restore.js:155
 msgid "Restore"
 msgstr "Restaurer"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:519
+#: pgadmin/static/js/helpers/Layout/index.jsx:544
 msgid "Close Others"
 msgstr "Fermer les Autres"
 
-#: pgadmin/static/js/helpers/Layout/index.jsx:527
+#: pgadmin/static/js/helpers/Layout/index.jsx:552
 msgid "Close All"
 msgstr "Fermer Tout"
 
@@ -15870,72 +15883,72 @@ msgid ""
 "format."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:64
+#: pgadmin/tools/debugger/__init__.py:66
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:171
 msgid "Continue/Start"
 msgstr "Continuer / démarrer"
 
-#: pgadmin/tools/debugger/__init__.py:96
+#: pgadmin/tools/debugger/__init__.py:98
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:167
 msgid "Step into"
 msgstr "Étape sélectionnée (step into)"
 
-#: pgadmin/tools/debugger/__init__.py:112
+#: pgadmin/tools/debugger/__init__.py:114
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:169
 msgid "Step over"
 msgstr "Étape sélectionnée et fonctions dépendantes (step over)"
 
-#: pgadmin/tools/debugger/__init__.py:128
+#: pgadmin/tools/debugger/__init__.py:130
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:175
 msgid "Toggle breakpoint"
 msgstr "Activer/désactiver le point d'arrêt"
 
-#: pgadmin/tools/debugger/__init__.py:144
+#: pgadmin/tools/debugger/__init__.py:146
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:177
 msgid "Clear all breakpoints"
 msgstr "Effacer tous les points d'arrêts"
 
-#: pgadmin/tools/debugger/__init__.py:161
+#: pgadmin/tools/debugger/__init__.py:163
 msgid "Edit grid values"
 msgstr "Éditer les données"
 
-#: pgadmin/tools/debugger/__init__.py:179
+#: pgadmin/tools/debugger/__init__.py:181
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:504
 msgid "Previous tab"
 msgstr "Précédent"
 
-#: pgadmin/tools/debugger/__init__.py:197
+#: pgadmin/tools/debugger/__init__.py:199
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:522
 msgid "Next tab"
 msgstr "Suivant"
 
-#: pgadmin/tools/debugger/__init__.py:215
+#: pgadmin/tools/debugger/__init__.py:217
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:540
 msgid "Switch panel"
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:366
+#: pgadmin/tools/debugger/__init__.py:368
 #, python-format
 msgid "The specified %s could not be found."
 msgstr " %s ne peut pas être trouvé."
 
-#: pgadmin/tools/debugger/__init__.py:437
+#: pgadmin/tools/debugger/__init__.py:439
 msgid "is not defined in package body."
 msgstr "n'est pas défini dans le corps du paquet."
 
-#: pgadmin/tools/debugger/__init__.py:445
+#: pgadmin/tools/debugger/__init__.py:447
 msgid "Functions with a colon in the name cannot be debugged."
 msgstr ""
 "Les fonctions avec deux points (:) dans le noms ne peuvent pas être "
 "analysées par le debugger."
 
-#: pgadmin/tools/debugger/__init__.py:450
+#: pgadmin/tools/debugger/__init__.py:452
 msgid "EDB Advanced Server wrapped functions cannot be debugged."
 msgstr ""
 "Les fonctions embarquées de EDB Advanced Server ne peuvent pas être "
 "analysées par le debugger."
 
-#: pgadmin/tools/debugger/__init__.py:457
+#: pgadmin/tools/debugger/__init__.py:459
 msgid ""
 "An 'edbspl' target with a variadic argument is not supported and cannot "
 "be debugged."
@@ -15943,12 +15956,12 @@ msgstr ""
 "Une cible 'edbspl' avec un argument VARIADIC n'est pas supporté et ne "
 "peut pas être analysée par le debugger."
 
-#: pgadmin/tools/debugger/__init__.py:532
-#: pgadmin/tools/debugger/__init__.py:546
+#: pgadmin/tools/debugger/__init__.py:534
+#: pgadmin/tools/debugger/__init__.py:548
 msgid "Failed to find the pldbgapi extension in this database."
 msgstr "Impossible de trouver l'extension pldbgapi dans la base de données."
 
-#: pgadmin/tools/debugger/__init__.py:554
+#: pgadmin/tools/debugger/__init__.py:556
 msgid ""
 "The debugger plugin is not enabled. Please create the pldbgapi extension "
 "in this database."
@@ -15956,7 +15969,7 @@ msgstr ""
 "Le module de débogage n'est pas disponible. Merci de créer l'extension "
 "pldbgapi dans la base de données."
 
-#: pgadmin/tools/debugger/__init__.py:732
+#: pgadmin/tools/debugger/__init__.py:734
 msgid ""
 "You must be a superuser to set a global breakpoint and perform indirect "
 "debugging."
@@ -15964,13 +15977,13 @@ msgstr ""
 "Il faut être administrateur pour définir un point d'arrêt global et "
 "réaliser un débogage indirect."
 
-#: pgadmin/tools/debugger/__init__.py:742
+#: pgadmin/tools/debugger/__init__.py:744
 msgid "Could not fetch debugger plugin information."
 msgstr ""
 "Impossible de de trouver les informations concernant le plugin de "
 "débogage."
 
-#: pgadmin/tools/debugger/__init__.py:749
+#: pgadmin/tools/debugger/__init__.py:751
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
 "shared_preload_libraries setting in the postgresql.conf file and restart "
@@ -15981,37 +15994,37 @@ msgstr ""
 "suivi d'un redémarrage du cluster de données pour effectuer un débogage "
 "indirect."
 
-#: pgadmin/tools/debugger/__init__.py:768
+#: pgadmin/tools/debugger/__init__.py:770
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
 msgstr ""
 "Mettre à jour l'extension pldbgapi vers une version 1.1 ou supérieure et "
 "essayer à nouveau."
 
-#: pgadmin/tools/debugger/__init__.py:814
+#: pgadmin/tools/debugger/__init__.py:816
 msgid ""
 "Once a default value is passed, no subsequent arguments should be "
 "provided."
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:1288
+#: pgadmin/tools/debugger/__init__.py:1290
 msgid "Debugging aborted successfully."
 msgstr "Débogage interrompu avec succès."
 
-#: pgadmin/tools/debugger/__init__.py:1698
+#: pgadmin/tools/debugger/__init__.py:1700
 msgid "Value deposited successfully"
 msgstr "Valeur déposée avec succès"
 
-#: pgadmin/tools/debugger/__init__.py:1700
+#: pgadmin/tools/debugger/__init__.py:1702
 msgid "Error setting the value"
 msgstr ""
 
-#: pgadmin/tools/debugger/__init__.py:2079
-#: pgadmin/tools/debugger/__init__.py:2138
+#: pgadmin/tools/debugger/__init__.py:2106
+#: pgadmin/tools/debugger/__init__.py:2165
 msgid "Execution completed with an error."
 msgstr "Exécution terminée avec erreur."
 
-#: pgadmin/tools/debugger/__init__.py:2093
-#: pgadmin/tools/debugger/__init__.py:2154
+#: pgadmin/tools/debugger/__init__.py:2120
+#: pgadmin/tools/debugger/__init__.py:2181
 msgid "Execution Completed."
 msgstr "Exécution terminée."
 
@@ -16266,85 +16279,85 @@ msgstr "Réinitialiser affichage"
 msgid "Debugger - "
 msgstr "Débogage - "
 
-#: pgadmin/tools/erd/__init__.py:50
+#: pgadmin/tools/erd/__init__.py:51
 msgid "ERD tool"
 msgstr "Éditeur de diagramme entité-association"
 
-#: pgadmin/tools/erd/__init__.py:72
+#: pgadmin/tools/erd/__init__.py:73
 msgid "Open project"
 msgstr "Ouvrir un projet"
 
-#: pgadmin/tools/erd/__init__.py:91
+#: pgadmin/tools/erd/__init__.py:92
 msgid "Save project"
 msgstr "Enregistrer le projet"
 
-#: pgadmin/tools/erd/__init__.py:110
+#: pgadmin/tools/erd/__init__.py:111
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
-#: pgadmin/tools/erd/__init__.py:128
+#: pgadmin/tools/erd/__init__.py:129
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:239
 msgid "Generate SQL"
 msgstr "Générer le code SQL"
 
-#: pgadmin/tools/erd/__init__.py:146
+#: pgadmin/tools/erd/__init__.py:147
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:247
 msgid "Download image"
 msgstr "Télécharger l'image"
 
-#: pgadmin/tools/erd/__init__.py:164
+#: pgadmin/tools/erd/__init__.py:165
 msgid "Search table"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:182
+#: pgadmin/tools/erd/__init__.py:183
 msgid "Add table"
 msgstr "Ajouter une table"
 
-#: pgadmin/tools/erd/__init__.py:200
+#: pgadmin/tools/erd/__init__.py:201
 msgid "Edit table"
 msgstr "Modifier la table"
 
-#: pgadmin/tools/erd/__init__.py:218
+#: pgadmin/tools/erd/__init__.py:219
 msgid "Clone table"
 msgstr "Dupliquer la table"
 
-#: pgadmin/tools/erd/__init__.py:236
+#: pgadmin/tools/erd/__init__.py:237
 msgid "Drop table"
 msgstr "Supprimer la table"
 
-#: pgadmin/tools/erd/__init__.py:254
+#: pgadmin/tools/erd/__init__.py:255
 msgid "Add/Edit note"
 msgstr "Ajouter/Éditer une note"
 
-#: pgadmin/tools/erd/__init__.py:272
+#: pgadmin/tools/erd/__init__.py:273
 msgid "One to one link"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:290
+#: pgadmin/tools/erd/__init__.py:291
 msgid "One to many link"
 msgstr "Relation 1 à n"
 
-#: pgadmin/tools/erd/__init__.py:308
+#: pgadmin/tools/erd/__init__.py:309
 msgid "Many to many link"
 msgstr "Relation de n à n"
 
-#: pgadmin/tools/erd/__init__.py:326
+#: pgadmin/tools/erd/__init__.py:327
 msgid "Auto align"
 msgstr "Alignement auto"
 
-#: pgadmin/tools/erd/__init__.py:344
+#: pgadmin/tools/erd/__init__.py:345
 msgid "Show more/fewer details"
 msgstr "Afficher plus/moins de détails"
 
-#: pgadmin/tools/erd/__init__.py:362
+#: pgadmin/tools/erd/__init__.py:363
 msgid "Zoom to fit"
 msgstr "Ajuster à la fenêtre"
 
-#: pgadmin/tools/erd/__init__.py:416 pgadmin/tools/erd/__init__.py:482
+#: pgadmin/tools/erd/__init__.py:417 pgadmin/tools/erd/__init__.py:483
 msgid "SQL With DROP Table"
 msgstr "SQL Avec DROP TABLE"
 
-#: pgadmin/tools/erd/__init__.py:421 pgadmin/tools/erd/__init__.py:487
+#: pgadmin/tools/erd/__init__.py:422 pgadmin/tools/erd/__init__.py:488
 msgid ""
 "If enabled, the SQL generated by the ERD Tool will add DROP table DDL "
 "before each CREATE table DDL."
@@ -16353,11 +16366,11 @@ msgstr ""
 "entité-association) ajoutera la commande DDL \"DROP TABLE\" avant chaque "
 "commande DDL \"CREATE TABLE\"."
 
-#: pgadmin/tools/erd/__init__.py:429
+#: pgadmin/tools/erd/__init__.py:430
 msgid "Table Relation Depth"
 msgstr "Profondeur des relations entre les tables"
 
-#: pgadmin/tools/erd/__init__.py:434
+#: pgadmin/tools/erd/__init__.py:435
 msgid ""
 "The maximum depth pgAdmin should traverse to find related tables when "
 "generating an ERD for a table. Use -1 for no limit."
@@ -16366,59 +16379,59 @@ msgstr ""
 " associées lors de la génération d'un ERD pour une table. Utilisez -1 "
 "pour aucune limite."
 
-#: pgadmin/tools/erd/__init__.py:443
+#: pgadmin/tools/erd/__init__.py:444
 msgid "Insert Table With Relations"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:448
+#: pgadmin/tools/erd/__init__.py:449
 msgid ""
 "Whether inserting a table via drag and drop should also insert its "
 "relations to the existing tables in the diagram."
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:456
+#: pgadmin/tools/erd/__init__.py:457
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:338
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:385
 msgid "Cardinality Notation"
 msgstr "Notation de Cardinalité"
 
-#: pgadmin/tools/erd/__init__.py:458
+#: pgadmin/tools/erd/__init__.py:459
 msgid "Crow's foot"
 msgstr "Patte d'oie"
 
-#: pgadmin/tools/erd/__init__.py:459
+#: pgadmin/tools/erd/__init__.py:460
 msgid "Chen"
 msgstr "Chen"
 
-#: pgadmin/tools/erd/__init__.py:462
+#: pgadmin/tools/erd/__init__.py:463
 msgid "Notation to be used to present cardinality."
 msgstr "Notation à utiliser pour présenter la cardinalité."
 
-#: pgadmin/tools/erd/__init__.py:468
+#: pgadmin/tools/erd/__init__.py:469
 msgid "Image Download Resolution"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:470
+#: pgadmin/tools/erd/__init__.py:471
 msgid "Good"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:471
+#: pgadmin/tools/erd/__init__.py:472
 msgid "High"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:472
+#: pgadmin/tools/erd/__init__.py:473
 msgid "Very High"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:475
+#: pgadmin/tools/erd/__init__.py:476
 msgid "Higher values will use higher memory and slower rendering."
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:495
+#: pgadmin/tools/erd/__init__.py:496
 msgid "Format ERD Project File?"
 msgstr ""
 
-#: pgadmin/tools/erd/__init__.py:500
+#: pgadmin/tools/erd/__init__.py:501
 msgid ""
 "If enabled, the .pgerd project file of the ERD tool will be formatted "
 "before saving."
@@ -16788,60 +16801,60 @@ msgstr ""
 "Sélectionner une base de donnée, schéma ou objet de schéma dans la "
 "l'explorateur d'objets pour accéder à l'assistant de gestion de droits."
 
-#: pgadmin/tools/import_export/__init__.py:42
+#: pgadmin/tools/import_export/__init__.py:43
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:56
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:56
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:30
 msgid "Import/Export"
 msgstr "Import / Export"
 
-#: pgadmin/tools/import_export/__init__.py:118
+#: pgadmin/tools/import_export/__init__.py:117
 #, python-brace-format
 msgid "Copying table data using query on database '{0}' and server '{1}'"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:123
+#: pgadmin/tools/import_export/__init__.py:122
 #, python-brace-format
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
 msgstr ""
 "Copie des données de la table '{0}.{1}' sur la base de données '{2}' et "
 "le serveur '{3}'."
 
-#: pgadmin/tools/import_export/__init__.py:133
+#: pgadmin/tools/import_export/__init__.py:132
 msgid "Export - Copying table data using query"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Import - "
 msgstr "Import - "
 
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Export - "
 msgstr "Export - "
 
-#: pgadmin/tools/import_export/__init__.py:136
+#: pgadmin/tools/import_export/__init__.py:135
 msgid "Copying table data"
 msgstr "Copie des données de la table"
 
-#: pgadmin/tools/import_export/__init__.py:150
+#: pgadmin/tools/import_export/__init__.py:149
 msgid "Import Data"
 msgstr "Importer des Données"
 
-#: pgadmin/tools/import_export/__init__.py:150
+#: pgadmin/tools/import_export/__init__.py:149
 msgid "Export Data"
 msgstr "Export de données"
 
-#: pgadmin/tools/import_export/__init__.py:300
+#: pgadmin/tools/import_export/__init__.py:298
 #: pgadmin/tools/maintenance/__init__.py:181 pgadmin/utils/constants.py:166
 msgid "Could not find the specified server."
 msgstr "Impossible de trouver le serveur."
 
-#: pgadmin/tools/import_export/__init__.py:310
+#: pgadmin/tools/import_export/__init__.py:308
 msgid "Please connect to the server first..."
 msgstr "Merci de connecter le serveur au préalable..."
 
-#: pgadmin/tools/import_export/__init__.py:336
-#: pgadmin/tools/import_export/__init__.py:342
+#: pgadmin/tools/import_export/__init__.py:334
+#: pgadmin/tools/import_export/__init__.py:340
 msgid "Please specify a valid file."
 msgstr ""
 
@@ -17418,24 +17431,24 @@ msgstr "Opération de maintenance"
 msgid "Verbose Messages"
 msgstr "Messages verbeux"
 
-#: pgadmin/tools/psql/__init__.py:57
+#: pgadmin/tools/psql/__init__.py:58
 msgid "PSQL"
 msgstr "PSQL"
 
-#: pgadmin/tools/psql/__init__.py:322
+#: pgadmin/tools/psql/__init__.py:323
 msgid ""
 "PSQL utility not found. Specify the valid binary path in the preferences "
 "for the appropriate server version, or select \"Set as default\" to use "
 "an existing binary path."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:434
+#: pgadmin/tools/psql/__init__.py:435
 msgid ""
 "Connection terminated. To create a new connection, please open another "
 "psql tool."
 msgstr ""
 
-#: pgadmin/tools/psql/__init__.py:497 pgadmin/tools/psql/__init__.py:531
+#: pgadmin/tools/psql/__init__.py:498 pgadmin/tools/psql/__init__.py:532
 msgid "Invalid session.\r\n"
 msgstr "Session invalide.\r\n"
 
@@ -17538,16 +17551,16 @@ msgstr "Transaction simple"
 msgid "No data for failed tables"
 msgstr "Aucune donnée pour les tables ayant échoué"
 
-#: pgadmin/tools/schema_diff/__init__.py:36
+#: pgadmin/tools/schema_diff/__init__.py:38
 msgid "Comparing objects..."
 msgstr "Compare les objets..."
 
-#: pgadmin/tools/schema_diff/__init__.py:75
+#: pgadmin/tools/schema_diff/__init__.py:77
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:71
 msgid "Ignore Whitespace"
 msgstr "Ignorer les Espaces"
 
-#: pgadmin/tools/schema_diff/__init__.py:77
+#: pgadmin/tools/schema_diff/__init__.py:79
 msgid ""
 "Set ignore whitespace on or off by default in the drop-down menu near the"
 " Compare button in the Schema Diff tab."
@@ -17556,12 +17569,12 @@ msgstr ""
 "menu déroulant disponible au niveau du bouton \"Comparer\" dans l'onglet "
 "Schéma Diff."
 
-#: pgadmin/tools/schema_diff/__init__.py:84
+#: pgadmin/tools/schema_diff/__init__.py:86
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:70
 msgid "Ignore Owner"
 msgstr "Ignorer le Propriétaire"
 
-#: pgadmin/tools/schema_diff/__init__.py:86
+#: pgadmin/tools/schema_diff/__init__.py:88
 msgid ""
 "Set ignore owner on or off by default in the drop-down menu near the "
 "Compare button in the Schema Diff tab."
@@ -17570,12 +17583,12 @@ msgstr ""
 "le menu déroulant disponible au niveau du bouton \"Comparer\" dans "
 "l'onglet Schéma Diff."
 
-#: pgadmin/tools/schema_diff/__init__.py:93
+#: pgadmin/tools/schema_diff/__init__.py:95
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:72
 msgid "Ignore Tablespace"
 msgstr "Ignorer Tablespace"
 
-#: pgadmin/tools/schema_diff/__init__.py:95
+#: pgadmin/tools/schema_diff/__init__.py:97
 msgid ""
 "Set ignore tablespace on or off by default in the drop-down menu near the"
 " Compare button in the Schema Diff tab."
@@ -17584,11 +17597,11 @@ msgstr ""
 "menu déroulant disponible au niveau du bouton \"Comparer\" dans l'onglet "
 "Schéma Diff."
 
-#: pgadmin/tools/schema_diff/__init__.py:102
+#: pgadmin/tools/schema_diff/__init__.py:104
 msgid "Ignore Grants/Revoke"
 msgstr "Ignorer Grants/Revoke"
 
-#: pgadmin/tools/schema_diff/__init__.py:104
+#: pgadmin/tools/schema_diff/__init__.py:106
 msgid ""
 "Set ignore grants/revoke on or off by default in the drop-down menu near "
 "the Compare button in the Schema Diff tab."
@@ -17597,15 +17610,27 @@ msgstr ""
 " menu déroulant disponible au niveau du bouton \"Comparer\" dans l'onglet"
 " Schéma Diff."
 
-#: pgadmin/tools/schema_diff/__init__.py:710
+#: pgadmin/tools/schema_diff/__init__.py:522
+msgid "Failed to fetch schemas from the server."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:739
 msgid "Selected object is not supported for DDL comparison."
 msgstr "L'objet sélectionné n'est pas pris en charge pour la comparaison en LDD."
 
-#: pgadmin/tools/schema_diff/__init__.py:734
+#: pgadmin/tools/schema_diff/__init__.py:756
+msgid "Could not find the source server."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:762
+msgid "Could not find the target server."
+msgstr ""
+
+#: pgadmin/tools/schema_diff/__init__.py:767
 msgid "Server(s) disconnected."
 msgstr "Serveur(s) déconnecté(s)."
 
-#: pgadmin/tools/schema_diff/__init__.py:737
+#: pgadmin/tools/schema_diff/__init__.py:770
 msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
@@ -17613,29 +17638,29 @@ msgstr ""
 "Schéma diff ne gère pas les comparaisons entre Postgresql et les EDB "
 "Advanced server."
 
-#: pgadmin/tools/schema_diff/__init__.py:751
+#: pgadmin/tools/schema_diff/__init__.py:784
 msgid "Source and Target database server must be of the same major version."
 msgstr ""
 "Les serveurs de bases de données source et cible doivent être de la même "
 "version majeure."
 
-#: pgadmin/tools/schema_diff/__init__.py:800
+#: pgadmin/tools/schema_diff/__init__.py:835
 #, python-brace-format
 msgid "Comparing {0}"
 msgstr "Comparaison entre {0}"
 
-#: pgadmin/tools/schema_diff/__init__.py:814
+#: pgadmin/tools/schema_diff/__init__.py:849
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:342
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:346
 msgid "Database Objects"
 msgstr "Objets de la base de données"
 
-#: pgadmin/tools/schema_diff/__init__.py:864
+#: pgadmin/tools/schema_diff/__init__.py:899
 #, python-brace-format
 msgid "Comparing {0} "
 msgstr "Comparaison de {0} "
 
-#: pgadmin/tools/schema_diff/__init__.py:867
+#: pgadmin/tools/schema_diff/__init__.py:902
 #, python-brace-format
 msgid "Comparing {0} of schema '{1}'"
 msgstr "Comparaison de {0} du schéma '{1}'"
@@ -17849,74 +17874,74 @@ msgstr ""
 msgid "Search Objects - "
 msgstr "Recherche d'objets - "
 
-#: pgadmin/tools/sqleditor/__init__.py:79
+#: pgadmin/tools/sqleditor/__init__.py:81
 msgid "Transaction status check failed."
 msgstr "Échec de vérification du statut de transaction."
 
-#: pgadmin/tools/sqleditor/__init__.py:97
+#: pgadmin/tools/sqleditor/__init__.py:99
 msgid "Query tool"
 msgstr "Éditeur de requête"
 
-#: pgadmin/tools/sqleditor/__init__.py:1112
+#: pgadmin/tools/sqleditor/__init__.py:1131
 msgid "******* Error *******"
 msgstr "******* Erreur *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:1531
+#: pgadmin/tools/sqleditor/__init__.py:1550
 msgid "No primary key found for this object, so unable to save records."
 msgstr ""
 "Aucune clé primaires n'a été trouvée, il n'est par conséquent pas "
 "possible de sauvegarder l'enregistrement."
 
-#: pgadmin/tools/sqleditor/__init__.py:1870
+#: pgadmin/tools/sqleditor/__init__.py:1889
 #: pgadmin/tools/sqleditor/utils/query_tool_connection_check.py:67
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:115
 msgid "Either transaction object or session object not found."
 msgstr "Objet de transaction ou de session non trouvé."
 
-#: pgadmin/tools/sqleditor/__init__.py:2112
+#: pgadmin/tools/sqleditor/__init__.py:2131
 msgid "Could not find the required parameter (query)."
 msgstr "Impossible de trouver les paramètres requis (requête)."
 
-#: pgadmin/tools/sqleditor/__init__.py:2222
+#: pgadmin/tools/sqleditor/__init__.py:2241
 msgid "No active result cursor."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2231
+#: pgadmin/tools/sqleditor/__init__.py:2250
 msgid "Could not find the required parameters (rowpos, colpos)."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2239
+#: pgadmin/tools/sqleditor/__init__.py:2258
 msgid "The selected cell contains NULL."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2853
-#: pgadmin/tools/sqleditor/__init__.py:3076
+#: pgadmin/tools/sqleditor/__init__.py:2881
+#: pgadmin/tools/sqleditor/__init__.py:3104
 msgid ""
 "AI features are not configured. Please configure an LLM provider in "
 "Preferences > AI."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2871
+#: pgadmin/tools/sqleditor/__init__.py:2899
 msgid "Database connection not available."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2883
+#: pgadmin/tools/sqleditor/__init__.py:2911
 msgid "Please provide a message."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2895
+#: pgadmin/tools/sqleditor/__init__.py:2923
 msgid "Analyzing your request..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:2937
+#: pgadmin/tools/sqleditor/__init__.py:2965
 msgid "Querying the database..."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3099
+#: pgadmin/tools/sqleditor/__init__.py:3127
 msgid "Please provide an EXPLAIN plan to analyze."
 msgstr ""
 
-#: pgadmin/tools/sqleditor/__init__.py:3108
+#: pgadmin/tools/sqleditor/__init__.py:3136
 msgid "Analyzing query plan..."
 msgstr ""
 
@@ -18014,13 +18039,13 @@ msgstr ""
 "connecté à l'application."
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:235
-msgid "Query History"
-msgstr "Historique"
-
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:236
 #: pgadmin/tools/sqleditor/static/js/components/sections/NLQChatPanel.jsx:1119
 msgid "AI Assistant"
 msgstr ""
+
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:236
+msgid "Query History"
+msgstr "Historique"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:244
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:251
@@ -18839,17 +18864,17 @@ msgstr ""
 "Auto-commit est désactivé. Vous devez encore engager les modifications "
 "dans la base de données."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1502
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1504
 msgid "Geometry Viewer"
 msgstr "Visualisation cartographique"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1657
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1659
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:439
 #: pgadmin/utils/constants.py:32
 msgid "Graph Visualiser"
 msgstr "Aperçu de graphiques"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1674
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1676
 msgid "No data output. Execute a query to get output."
 msgstr "Aucune donnée. Exécuter une requête pour afficher un résultat."
 
@@ -19921,6 +19946,11 @@ msgstr "Le module '{0}' n'a pas de catégorie avec id '{1}'"
 #: pgadmin/utils/preferences.py:675
 msgid "Could not find the specified preference."
 msgstr "Impossible de trouver la préférence."
+
+#: pgadmin/utils/driver/psycopg3/__init__.py:124
+#: pgadmin/utils/driver/psycopg3/__init__.py:127
+msgid "Server not found."
+msgstr ""
 
 #: pgadmin/utils/driver/psycopg3/connection.py:156
 #: pgadmin/utils/driver/psycopg3/server_manager.py:564
