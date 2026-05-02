@@ -42,6 +42,7 @@ export function getToolTabParams(panelId, toolUrl, formParams, tabParams, restor
   if(tabParams?.internal?.orig_title){
     tabParams.title = tabParams.internal.isDirty ? tabParams.internal.title.slice(0, -1): tabParams.internal.title;
   }
+
   return {
     id: panelId,
     title: panelId,
