@@ -114,7 +114,10 @@ class BaseConnection(metaclass=ABCMeta):
 
     * connected()
       - Implement this method to get the status of the connection. It should
-        return True for connected, otherwise False
+        return True for connected, otherwise False.  This is a local check
+        only (e.g. inspecting driver-level state) and may not detect
+        server-side disconnects.  Use ping() when a network-level check is
+        required.
 
     * reset()
       - Implement this method to reconnect the database server (if possible)
@@ -124,9 +127,13 @@ class BaseConnection(metaclass=ABCMeta):
         connection. Range of return values different for each driver type.
 
     * ping()
-      - Implement this method to ping the server. There are times, a connection
-        has been lost, but - the connection driver does not know about it. This
-        can be helpful to figure out the actual reason for query failure.
+      - Implement this method to verify the connection is alive by sending a
+        lightweight query (e.g. SELECT 1) to the server.  Returns True if the
+        server responds, False otherwise.  Unlike connected(), this detects
+        stale or half-open TCP connections that were silently dropped.  When
+        a query is already in progress or the connection is inside a
+        transaction block, the probe is skipped and True is returned (the
+        connection is evidently alive).
 
     * _release()
       - Implement this method to release the connection object. This should not
@@ -217,6 +224,10 @@ class BaseConnection(metaclass=ABCMeta):
 
     @abstractmethod
     def ping(self):
+        """
+        Check if the connection is actually alive by sending a lightweight
+        query to the server.  Returns True if alive, False otherwise.
+        """
         pass
 
     @abstractmethod
