@@ -18,6 +18,7 @@ things:
    made to the config database to upgrade it to the new version.
 """
 
+from flask_babel import gettext
 from flask_security import UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
@@ -33,7 +34,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 51
+SCHEMA_VERSION = 52
 
 ##########################################################################
 #
@@ -210,6 +211,28 @@ class User(db.Model, UserMixin):
                               default=(lambda _: uuid.uuid4().hex))
     login_attempts = db.Column(db.Integer, default=0)
     locked = db.Column(db.Boolean(), default=False)
+
+    @property
+    def is_active(self):
+        # Treat a locked account as inactive so Flask-Login's login_user()
+        # refuses to mint a session, regardless of which view authenticated
+        # the password. Without this, a lockout set by /authenticate/login
+        # is bypassed by a direct POST to Flask-Security's /login.
+        return self.active and not self.locked
+
+    def is_locked(self, form_error=None):
+        # Flask-Security's LoginForm.validate() calls this after password
+        # verification and treats the return value inverted: True means
+        # "not locked, proceed"; False means "locked, fail validation".
+        # The default UserMixin.is_locked unconditionally returns True,
+        # which is what allows the /login bypass on a locked account.
+        if self.locked:
+            if form_error is not None:
+                form_error.append(gettext(
+                    'Your account is locked. Please contact the '
+                    'Administrator.'))
+            return False
+        return True
 
 
 class Setting(db.Model, UserScopedMixin):
