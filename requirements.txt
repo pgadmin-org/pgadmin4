@@ -19,7 +19,7 @@ azure-mgmt-rdbms==10.1.1
 azure-mgmt-resource==25.0.0
 azure-mgmt-subscription==3.1.1
 bcrypt==5.0.*
-boto3==1.42.*
+boto3==1.43.*
 certifi==2026.4.22
 cryptography==47.0.*
 Flask-Babel==4.0.*
@@ -46,7 +46,7 @@ paramiko==3.5.1
 passlib==1.*
 psutil==7.2.*
 psycopg[c]==3.2.13; python_version < '3.10'
-psycopg[c]==3.3.3; python_version >= '3.10'
+psycopg[c]==3.3.4; python_version >= '3.10'
 pyotp==2.*
 python-dateutil==2.*
 pytz==2026.*
