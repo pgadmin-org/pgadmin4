@@ -67,6 +67,7 @@ def _open_upload_target(path):
     fd = os.open(path, flags, 0o600)
     return os.fdopen(fd, 'wb')
 
+
 MODULE_NAME = 'file_manager'
 global transid
 

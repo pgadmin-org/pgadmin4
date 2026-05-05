@@ -66,7 +66,8 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         # in setUp is too late to register the blueprint, so the failure
         # path that redirects to /kerberos/login would 500 with
         # BuildError. Skip when that endpoint isn't reachable.
-        if 'authenticate.kerberos_login' not in self.app.url_map._rules_by_endpoint:
+        endpoint_map = self.app.url_map._rules_by_endpoint
+        if 'authenticate.kerberos_login' not in endpoint_map:
             self.skipTest(
                 "Kerberos blueprint not loaded — set "
                 "AUTHENTICATION_SOURCES=['kerberos'] in config_local.py at "

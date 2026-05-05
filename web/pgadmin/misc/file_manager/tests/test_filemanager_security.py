@@ -75,7 +75,9 @@ class _CheckAccessPermissionMixin:
 # Positive — legitimate paths must continue to be allowed.
 # ---------------------------------------------------------------------------
 
-class TestLegitPathInsideStorage(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestLegitPathInsideStorage(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """A path entirely inside the storage dir must pass."""
 
     scenarios = [('default', dict())]
@@ -85,7 +87,9 @@ class TestLegitPathInsideStorage(_CheckAccessPermissionMixin, BaseTestGenerator)
         Filemanager.check_access_permission(self.in_dir, "/myfile.txt")
 
 
-class TestRelativeNotationResolvingInside(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestRelativeNotationResolvingInside(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """A path with .. that resolves inside the sandbox must pass."""
 
     scenarios = [('default', dict())]
@@ -97,7 +101,9 @@ class TestRelativeNotationResolvingInside(_CheckAccessPermissionMixin, BaseTestG
             self.in_dir, "/subdir/../myfile.txt")
 
 
-class TestSymlinkedStorageRootPassesForRealChild(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestSymlinkedStorageRootPassesForRealChild(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """If the storage root itself is a symlink, legitimate access still works.
 
     Without realpath()ing in_dir, a symlinked storage root would compare
@@ -118,7 +124,9 @@ class TestSymlinkedStorageRootPassesForRealChild(_CheckAccessPermissionMixin, Ba
         Filemanager.check_access_permission(symlinked_root, "/legit.txt")
 
 
-class TestServerModeFalseSkipsCheck(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestServerModeFalseSkipsCheck(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """SERVER_MODE=False: check is a no-op, allowing any path."""
 
     scenarios = [('default', dict())]
@@ -135,7 +143,9 @@ class TestServerModeFalseSkipsCheck(_CheckAccessPermissionMixin, BaseTestGenerat
 # Negative — escapes (symlinks and ..) must be rejected.
 # ---------------------------------------------------------------------------
 
-class TestSymlinkPointingOutsideRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestSymlinkPointingOutsideRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """The core Vuln 2 fix: a symlink whose target is outside in_dir blocks."""
 
     scenarios = [('default', dict())]
@@ -149,7 +159,9 @@ class TestSymlinkPointingOutsideRejected(_CheckAccessPermissionMixin, BaseTestGe
                 self.in_dir, evil_path + "/victim.txt")
 
 
-class TestSymlinkAtLeafRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestSymlinkAtLeafRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """A symlink AS the leaf (not via intermediate) is also rejected."""
 
     scenarios = [('default', dict())]
@@ -188,7 +200,9 @@ class TestDotDotEscapeRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
 # static method so the assertions are about the function behavior, not the
 # wiring — which is verified by reading the code in §4.2.3 / §4.2.4.
 
-class TestRenameTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestRenameTargetSymlinkRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """rename's target path through a symlink → access denied."""
 
     scenarios = [('default', dict())]
@@ -204,7 +218,9 @@ class TestRenameTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGener
                 self.in_dir, evil_path + "/renamed.txt")
 
 
-class TestDeleteTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestDeleteTargetSymlinkRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """delete's target path through a symlink → access denied."""
 
     scenarios = [('default', dict())]
@@ -219,7 +235,9 @@ class TestDeleteTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGener
             Filemanager.check_access_permission(self.in_dir, evil_path)
 
 
-class TestDownloadTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestDownloadTargetSymlinkRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """download's target path through a symlink → access denied."""
 
     scenarios = [('default', dict())]
@@ -234,7 +252,9 @@ class TestDownloadTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGen
             Filemanager.check_access_permission(self.in_dir, evil_path)
 
 
-class TestAddfolderTargetSymlinkRejected(_CheckAccessPermissionMixin, BaseTestGenerator):
+class TestAddfolderTargetSymlinkRejected(
+        _CheckAccessPermissionMixin, BaseTestGenerator
+):
     """addfolder's target path through a symlink → access denied."""
 
     scenarios = [('default', dict())]
@@ -267,7 +287,9 @@ class _OpenUploadTargetMixin:
         shutil.rmtree(self.tmpdir, ignore_errors=True)
 
 
-class TestOpenUploadTargetCreatesNewFile(_OpenUploadTargetMixin, BaseTestGenerator):
+class TestOpenUploadTargetCreatesNewFile(
+        _OpenUploadTargetMixin, BaseTestGenerator
+):
     """Positive: opening a non-existent path creates a regular file."""
 
     scenarios = [('default', dict())]
@@ -282,8 +304,12 @@ class TestOpenUploadTargetCreatesNewFile(_OpenUploadTargetMixin, BaseTestGenerat
             self.assertEqual(f.read(), b"hello")
 
 
-class TestOpenUploadTargetOverwritesRegularFile(_OpenUploadTargetMixin, BaseTestGenerator):
-    """Positive: opening over an existing regular file truncates and rewrites."""
+class TestOpenUploadTargetOverwritesRegularFile(
+        _OpenUploadTargetMixin, BaseTestGenerator
+):
+    """Positive: opening over an existing regular file truncates and
+    rewrites.
+    """
 
     scenarios = [('default', dict())]
 
@@ -299,7 +325,7 @@ class TestOpenUploadTargetOverwritesRegularFile(_OpenUploadTargetMixin, BaseTest
 
 
 class TestOpenUploadTargetMode0600(_OpenUploadTargetMixin, BaseTestGenerator):
-    """Positive: newly-created upload files are mode 0o600 (intentional hardening).
+    """Positive: newly-created upload files are mode 0o600.
 
     Documented behavior change vs. the umask-default 0o644 of the prior
     open(name, 'wb'). Release notes call this out.
@@ -320,7 +346,9 @@ class TestOpenUploadTargetMode0600(_OpenUploadTargetMixin, BaseTestGenerator):
             "Expected 0o600 (owner-only), got 0o%o" % mode)
 
 
-class TestOpenUploadTargetRejectsLeafSymlink(_OpenUploadTargetMixin, BaseTestGenerator):
+class TestOpenUploadTargetRejectsLeafSymlink(
+        _OpenUploadTargetMixin, BaseTestGenerator
+):
     """Negative: a pre-planted symlink at the leaf path raises ELOOP/EMLINK.
 
     This is the TOCTOU-closing property: even if check_access_permission

@@ -91,6 +91,8 @@ def _first_form_error_message(form, default=None):
             if error:
                 return str(error)
     return default
+
+
 PGADMIN_BROWSER = 'pgAdmin.Browser'
 PASS_ERROR_MSG = gettext('Your password has not been changed.')
 SMTP_SOCKET_ERROR = gettext(

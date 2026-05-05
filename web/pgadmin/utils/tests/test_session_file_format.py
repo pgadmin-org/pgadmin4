@@ -193,7 +193,9 @@ class TestSessionRoundTrip(_SessionTestSetupMixin, BaseTestGenerator):
         self.assertEqual(loaded.hmac_digest, sess.hmac_digest)
 
 
-class TestMultipleSessionsAreIndependent(_SessionTestSetupMixin, BaseTestGenerator):
+class TestMultipleSessionsAreIndependent(
+        _SessionTestSetupMixin, BaseTestGenerator
+):
     """Two sessions must not bleed data into each other."""
 
     scenarios = [('default', dict())]
@@ -351,7 +353,9 @@ class TestValidHeaderEmptyBody(_SessionTestSetupMixin, BaseTestGenerator):
         self.assert_no_warning_logged("session file rejected")
 
 
-class TestCookieHmacMismatchWithValidFile(_SessionTestSetupMixin, BaseTestGenerator):
+class TestCookieHmacMismatchWithValidFile(
+        _SessionTestSetupMixin, BaseTestGenerator
+):
     """Spec T8: a legitimate file but a cookie that doesn't bind to it.
 
     The file-HMAC verifies the file is server-written; the cookie-HMAC
@@ -375,7 +379,9 @@ class TestCookieHmacMismatchWithValidFile(_SessionTestSetupMixin, BaseTestGenera
         self.assert_no_warning_logged("session file rejected")
 
 
-class TestUnsafeSidReturnsNewSession(_SessionTestSetupMixin, BaseTestGenerator):
+class TestUnsafeSidReturnsNewSession(
+        _SessionTestSetupMixin, BaseTestGenerator
+):
     """A sid containing path-traversal characters yields safe_join None."""
 
     scenarios = [('default', dict())]
@@ -411,8 +417,10 @@ class TestEmptySecretRaises(BaseTestGenerator):
                     )
 
 
-class TestRealisticSessionShapeRoundTrip(_SessionTestSetupMixin, BaseTestGenerator):
-    """Round-trip a session with realistic pgAdmin contents (MFA, OAuth2, etc.).
+class TestRealisticSessionShapeRoundTrip(
+        _SessionTestSetupMixin, BaseTestGenerator
+):
+    """Round-trip a session with realistic pgAdmin contents.
 
     Spec test 7: MFA fields are JSON-safe but exercise them through put/get
     to confirm the format change preserves the data structures pgAdmin
@@ -509,7 +517,9 @@ class TestSessionFileMode0o600(_SessionTestSetupMixin, BaseTestGenerator):
                 "got 0o%o" % new_mode)
 
 
-class TestServerModeFalseDirectUpload(_SessionTestSetupMixin, BaseTestGenerator):
+class TestServerModeFalseDirectUpload(
+        _SessionTestSetupMixin, BaseTestGenerator
+):
     """Spec T10: Scenario A chain closed at the session-read layer.
 
     Even if SERVER_MODE=False permits an upload directly into the sessions
