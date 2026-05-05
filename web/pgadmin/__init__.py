@@ -337,7 +337,11 @@ def create_app(app_name=None):
     ##########################################################################
     if config.CONFIG_DATABASE_URI is not None and \
             len(config.CONFIG_DATABASE_URI) > 0:
-        app.config['SQLALCHEMY_DATABASE_URI'] = config.CONFIG_DATABASE_URI
+        _db_uri = re.sub(
+            r"^postgres(ql)?://", "postgresql+psycopg://",
+            config.CONFIG_DATABASE_URI, count=1
+        )
+        app.config['SQLALCHEMY_DATABASE_URI'] = _db_uri
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
             .format(config.SQLITE_PATH.replace('\\', '/'),
