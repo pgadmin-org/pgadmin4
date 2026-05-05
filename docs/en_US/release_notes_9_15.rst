@@ -33,6 +33,7 @@ Housekeeping
   | `Issue #9870 <https://github.com/pgadmin-org/pgadmin4/issues/9870>`_ -  Bump runtime and development dependencies.
   | `Issue #9873 <https://github.com/pgadmin-org/pgadmin4/issues/9873>`_ -  Use an ``<OWNER>`` placeholder in resql tests instead of a hardcoded 'postgres' role to support non-default superuser names.
   | `Issue #9893 <https://github.com/pgadmin-org/pgadmin4/issues/9893>`_ -  Update the Spanish translation.
+  | `Issue #9906 <https://github.com/pgadmin-org/pgadmin4/issues/9906>`_ -  Update the Italian translation.
 
 Bug fixes
 *********
@@ -69,8 +70,44 @@ Test-suite stability
   | ``dc61039e9`` - Quote the username in the views/mview test helper for dotted local roles.
   | ``9b29bc203`` - Quote the username in the types/compound-triggers test helpers for dotted local roles.
   | ``504775de8`` - Quote the username in the user-mappings test helper for dotted local roles.
+  | ``208541cc4`` - ``ImportExportServersTestCase`` uses ``sys.executable`` instead of a bare ``python`` and surfaces subprocess errors instead of swallowing them as a misleading JSON-parse failure.
 
 Refactoring
 -----------
 
   | ``6f4f28def`` - Factor the WTForms-error-to-JSON conversion into a helper and drop a dead import.
+
+Documentation
+-------------
+
+  | ``9923eefca`` - Clarify in ``login.rst`` and ``ldap.rst`` that ``MAX_LOGIN_ATTEMPTS`` applies only to the ``INTERNAL`` authentication source. Operators using LDAP, OAuth2, Kerberos, or Webserver auth should rely on the upstream identity provider's lockout policy and reverse-proxy request rate-limiting.
+
+Dependencies
+------------
+
+Non-breaking ``dependabot`` updates aggregated for v9.15.
+
+Python:
+
+  | ``boto3`` 1.42 -> 1.43
+  | ``cryptography`` 46.0 -> 47.0
+  | ``psycopg`` 3.3.3 -> 3.3.4 (``python_version >= '3.10'``)
+  | ``pycodestyle`` >=2.5.0 -> >=2.14.0
+  | ``requests`` >=2.21.0 -> >=2.33.1
+  | ``safety`` >=1.9.0 -> >=3.7.0
+  | ``testtools`` 2.8.7 -> 2.9.1
+  | ``typer`` 0.24 -> 0.25 (``python > '3.9'``)
+
+JavaScript (``web/``):
+
+  | ``@tanstack/react-query`` 5.90 -> 5.100.5
+  | ``axios`` 1.15.2 -> 1.16.0
+  | ``moment-timezone`` 0.6.0 -> 0.6.2
+  | ``postcss`` 8.5.6 -> 8.5.12
+
+JavaScript (``runtime/``):
+
+  | ``axios`` 1.15.2 -> 1.16.0
+  | ``electron`` 41.3.0 -> 41.5.0
+  | ``eslint`` 10.2.1 -> 10.3.0
+  | ``globals`` 17.5.0 -> 17.6.0
