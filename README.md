@@ -9,12 +9,12 @@ tarball or a git checkout.
 
 ## Architecture
 
-pgAdmin 4 is written as a web application with Python(Flask) on the server side
+pgAdmin 4 is written as a web application with Python (Flask) on the server side
 and ReactJS, HTML5 with CSS for the client side processing and UI.
 
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
-subdirectory contains an Electron based runtime application intended to allow this,
+subdirectory contains an Electron-based runtime application intended to allow this,
 which will fork a Python server process and display the UI.
 
 ## Prerequisites
@@ -31,11 +31,11 @@ corepack enable
 
 # Building the Web Assets
 
-pgAdmin is dependent on a number of third party Javascript libraries. These,
-along with it's own Javascript code, CSS code and images must be
+pgAdmin is dependent on a number of third-party JavaScript libraries. These,
+along with its own JavaScript code, CSS code and images must be
 compiled into a "bundle" which is transferred to the browser for execution
 and rendering. This is far more efficient than simply requesting each
-asset as it's needed by the client.
+asset as it is needed by the client.
 
 To create the bundle, you will need the 'yarn' package management tool to be
 installed. Then, you can run the following commands on a *nix system to
@@ -60,7 +60,7 @@ C:\$PGADMIN4_SRC\web> yarn run bundle
 
 In order to run the Python code, a suitable runtime environment is required.
 Python version 3.9 and later are currently supported. It is recommended that a
-Python Virtual Environment is setup for this purpose, rather than using the
+Python virtual environment is set up for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
 
@@ -112,17 +112,17 @@ simple - adapt as required for your distribution:
    # Change pgAdmin data directory
    DATA_DIR = '/Users/myuser/.pgadmin_dev'
 
-   #Change pgAdmin server and port
+   # Change pgAdmin server and port
    DEFAULT_SERVER = '127.0.0.1'
    DEFAULT_SERVER_PORT = 5051
 
    # Switch between server and desktop mode
    SERVER_MODE = True
 
-   #Change pgAdmin config DB path in case external DB is used.
+   # Change pgAdmin config DB path in case an external DB is used.
    CONFIG_DATABASE_URI="postgresql://postgres:postgres@localhost:5436/pgadmin"
 
-   #Setup SMTP
+   # Set up SMTP
    MAIL_SERVER = 'smtp.gmail.com'
    MAIL_PORT = 465
    MAIL_USE_SSL = True
@@ -172,7 +172,7 @@ server or desktop mode, and access it from a web browser using the URL shown in
 the terminal once pgAdmin has started up.
 
 Setup of an environment on Windows is somewhat more complicated unfortunately,
-please see *pkg/win32/README.txt* for complete details.
+please see *pkg/win32/README.md* for complete details.
 
 # Building the documentation
 
@@ -226,9 +226,9 @@ with all the required packages, and then run:
 (venv) $ make pip
 ```
 
-To build the macOS AppBundle, please see *pkg/mac/README*.
+To build the macOS AppBundle, please see *pkg/mac/README.md*.
 
-To build the Windows installer, please see *pkg/win32/README.txt*.
+To build the Windows installer, please see *pkg/win32/README.md*.
 # Create Database Migrations
 
 In order to make changes to the SQLite DB, navigate to the 'web' directory:
