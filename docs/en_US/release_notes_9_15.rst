@@ -89,7 +89,7 @@ Non-breaking ``dependabot`` updates aggregated for v9.15.
 
 Python:
 
-  | ``boto3`` 1.42 -> 1.43
+  | ``boto3`` 1.42 -> 1.43 (``python_version > '3.9'``; Python 3.9 stays on 1.42)
   | ``cryptography`` 46.0 -> 47.0
   | ``psycopg`` 3.3.3 -> 3.3.4 (``python_version >= '3.10'``)
   | ``pycodestyle`` >=2.5.0 -> >=2.14.0
