@@ -186,13 +186,19 @@ class MaintenanceInputValidationAcceptsValidTest(BaseTestGenerator):
                           vacuum_parallel='1024', verbose=True))),
     ]
 
+    @patch('pgadmin.tools.maintenance.does_utility_exist')
     @patch('pgadmin.tools.maintenance.Server')
     @patch('pgadmin.tools.maintenance.Message')
     @patch('pgadmin.tools.maintenance.BatchProcess')
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                message_mock, server_mock):
+                message_mock, server_mock, does_utility_exist_mock):
+        # The route short-circuits with success=0 when the psql binary
+        # is missing on disk; on Windows CI the binary is not at the
+        # path pgAdmin expects, so stub the check out to keep this test
+        # focused on input validation behavior.
+        does_utility_exist_mock.return_value = None
         self.server_id = parent_node_dict["database"][-1]["server_id"]
         self.db_id = parent_node_dict["database"][-1]["db_id"]
         url = MAINTENANCE_URL.format(self.server_id, self.db_id)
