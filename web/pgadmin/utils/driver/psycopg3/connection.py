@@ -315,16 +315,23 @@ class Connection(BaseConnection):
         # from Query tool, ViewData grid, debugger, etc. In that case, fall
         # back to using the password returned from manager.passexec.
         passfile = manager.get_connection_param_value('passfile')
-        if not password and not encpass and not passfile and manager.passexec:
-            password = manager.passexec.get()
+        if not password and not encpass and manager.passexec:
+            if not passfile:
+                password = manager.passexec.get()
+            else:
+                current_app.logger.warning(
+                    'Ignoring passexec in favor of the specified passfile '
+                    f'({passfile!r}).'
+                )
 
         # create_connection_string() automatically picks up the passfile from
         # connection parameters. Warn if that differs from the passfile kwarg.
         passfile_kwarg = kwargs.get('passfile', None)
         if passfile_kwarg and passfile_kwarg != passfile:
             current_app.logger.warning(
-                'Using the first of two specified passfiles: '
-                f'{passfile!r}, {passfile_kwarg!r}'
+                'Conflicting passfiles specified through keyword arguments '
+                f'({passfile_kwarg!r}) and connection parameters '
+                f'({passfile!r}); using the latter.'
             )
 
         try:
