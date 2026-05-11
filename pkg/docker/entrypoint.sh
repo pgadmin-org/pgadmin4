@@ -283,5 +283,9 @@ if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
 fi
 
 # Keep the existing environment variables for backward compatibility.
-exec /venv/bin/granian --interface wsgi --workers 1 --blocking-threads "${GUNICORN_THREADS:-25}" ${ACCESS_LOG_ARGS} ${TLS_ARGS} ${BIND_ARGS} run_pgadmin:app
+GRANIAN_BACKPRESSURE="${GRANIAN_BACKPRESSURE:-${GUNICORN_THREADS:-25}}"
+exec /venv/bin/granian --interface wsgi --workers 1 \
+    --blocking-threads "${GUNICORN_THREADS:-25}" \
+    --backpressure "${GRANIAN_BACKPRESSURE}" \
+    ${ACCESS_LOG_ARGS} ${TLS_ARGS} ${BIND_ARGS} run_pgadmin:app
 
