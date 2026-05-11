@@ -279,7 +279,8 @@ fi
 
 TLS_ARGS=""
 if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-    TLS_ARGS="--ssl-keyfile /certs/server.key --ssl-certificate /certs/server.cert"
+    TLS_ARGS="--ssl-keyfile /certs/server.key --ssl-certificate /certs/server.cert --ssl-protocol-min ${GRANIAN_SSL_PROTOCOL_MIN:-tls1.2}"
+fi
 fi
 
 # Keep the existing environment variables for backward compatibility.
