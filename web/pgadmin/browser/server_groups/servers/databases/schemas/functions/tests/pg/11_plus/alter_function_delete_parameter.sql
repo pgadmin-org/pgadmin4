@@ -16,4 +16,4 @@ end
 $BODY$;
 
 ALTER FUNCTION public."Function3_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

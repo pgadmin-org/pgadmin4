@@ -39,12 +39,30 @@ from pgadmin.browser.server_groups.servers.utils import \
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, RESTRICTION_TYPE_SQL
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import object_session
 from sqlalchemy.orm.attributes import flag_modified
 from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 from pgadmin.settings.utils import with_object_filters
+from pgadmin.utils.server_access import get_server, \
+    get_user_server_query, get_server_group
+
+
+# File-path keys in connection_params that are per-user and must
+# not be copied from the owner to a new SharedServer or leaked
+# through the property merge.
+SENSITIVE_CONN_KEYS = frozenset({
+    'passfile', 'sslcert', 'sslkey',
+    'sslrootcert', 'sslcrl', 'sslcrldir',
+})
+
+
+def _is_non_owner(server):
+    """True if the server is shared and the current user is not
+    the owner.  Centralises the check used in 15+ places."""
+    return server.shared and server.user_id != current_user.id
 
 
 def has_any(data, keys):
@@ -151,15 +169,31 @@ class ServerModule(sg.ServerGroupPluginModule):
     @staticmethod
     def get_shared_server_properties(server, sharedserver):
         """
-        Return shared server properties
+        Return shared server properties.
+
+        Overlays per-user SharedServer values onto the owner's Server
+        object so each non-owner sees their own customizations.
+
+        The server is expunged from the SQLAlchemy session before
+        mutation so that the owner's record is never dirtied.
         :param server:
         :param sharedserver:
-        :return: shared server
+        :return: shared server (detached)
         """
+        if sharedserver is None:
+            return server
+
+        # Detach from session so in-place mutations are never
+        # flushed back to the owner's Server row.
+        sess = object_session(server)
+        if sess is not None:
+            sess.expunge(server)
+
         server.bgcolor = sharedserver.bgcolor
         server.fgcolor = sharedserver.fgcolor
         server.name = sharedserver.name
         server.role = sharedserver.role
+        server.service = sharedserver.service
         server.use_ssh_tunnel = sharedserver.use_ssh_tunnel
         server.tunnel_host = sharedserver.tunnel_host
         server.tunnel_port = sharedserver.tunnel_port
@@ -169,23 +203,33 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.save_password = sharedserver.save_password
         server.tunnel_identity_file = sharedserver.tunnel_identity_file
         server.tunnel_prompt_password = sharedserver.tunnel_prompt_password
-        if hasattr(server, 'connection_params') and \
-            hasattr(sharedserver, 'connection_params') and \
-            'passfile' in server.connection_params and \
-                'passfile' in sharedserver.connection_params:
-            server.connection_params['passfile'] = \
-                sharedserver.connection_params['passfile']
+
+        # Override per-user connection_params keys.  Use the
+        # SharedServer value whenever it is present, regardless of
+        # whether the owner's Server has the same key.
+        s_conn = getattr(server, 'connection_params', None) \
+            or {}
+        ss_conn = getattr(sharedserver, 'connection_params',
+                          None) or {}
+        for key in SENSITIVE_CONN_KEYS:
+            if key in ss_conn:
+                s_conn[key] = ss_conn[key]
+            elif key in s_conn:
+                # Owner has this key but non-owner doesn't —
+                # remove it so the owner's path doesn't leak.
+                del s_conn[key]
+        server.connection_params = s_conn
+
         server.servergroup_id = sharedserver.servergroup_id
-        if hasattr(server, 'connection_params') and \
-            hasattr(sharedserver, 'connection_params') and \
-            'sslcert' in server.connection_params and \
-                'sslcert' in sharedserver.connection_params:
-            server.connection_params['sslcert'] = \
-                sharedserver.connection_params['sslcert']
         server.username = sharedserver.username
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
         server.prepare_threshold = sharedserver.prepare_threshold
+        server.passexec_cmd = sharedserver.passexec_cmd
+        server.passexec_expiration = sharedserver.passexec_expiration
+        server.kerberos_conn = sharedserver.kerberos_conn
+        server.tags = sharedserver.tags
+        server.post_connection_sql = sharedserver.post_connection_sql
 
         return server
 
@@ -203,12 +247,13 @@ class ServerModule(sg.ServerGroupPluginModule):
             if server.discovery_id and \
                 not server.shared and \
                 config.SERVER_MODE and \
-                len(SharedServer.query.filter_by(
+                SharedServer.query.filter_by(
                     user_id=current_user.id,
-                    name=server.name).all()) > 0 and not hide_shared_server:
+                    osid=server.id).first() is not None \
+                    and not hide_shared_server:
                 continue
 
-            if server.shared and server.user_id != current_user.id:
+            if _is_non_owner(server):
 
                 shared_server = self.get_shared_server(server, gid)
 
@@ -245,8 +290,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         """Return a JSON document listing the server groups for the user"""
 
         hide_shared_server = get_preferences()
-        servers = Server.query.filter(
-            or_(Server.user_id == current_user.id, Server.shared),
+        servers = get_user_server_query().filter(
             Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -392,6 +436,18 @@ class ServerModule(sg.ServerGroupPluginModule):
         try:
             db.session.rollback()
             user = User.query.filter_by(id=data.user_id).first()
+
+            # Strip owner's sensitive file paths from
+            # connection_params — each user should configure
+            # their own SSL/passfile paths.
+            safe_conn_params = {}
+            if data.connection_params:
+                safe_conn_params = {
+                    k: v for k, v in
+                    data.connection_params.items()
+                    if k not in SENSITIVE_CONN_KEYS
+                }
+
             shared_server = SharedServer(
                 osid=data.id,
                 user_id=current_user.id,
@@ -410,43 +466,62 @@ class ServerModule(sg.ServerGroupPluginModule):
                 service=data.service if data.service else None,
                 use_ssh_tunnel=data.use_ssh_tunnel,
                 tunnel_host=data.tunnel_host,
-                tunnel_port=22,
+                tunnel_port=data.tunnel_port
+                if data.tunnel_port else 22,
                 tunnel_username=None,
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
-                tunnel_keep_alive=0,
+                tunnel_keep_alive=data.tunnel_keep_alive
+                if data.tunnel_keep_alive else 0,
                 tunnel_prompt_password=0,
                 shared=True,
-                connection_params=data.connection_params,
-                prepare_threshold=data.prepare_threshold
+                connection_params=safe_conn_params,
+                prepare_threshold=data.prepare_threshold,
+                passexec_cmd=None,
+                passexec_expiration=None,
+                kerberos_conn=False,
+                tags=None,
+                post_connection_sql=None
             )
             db.session.add(shared_server)
             db.session.commit()
         except Exception as e:
-            if shared_server:
-                db.session.delete(shared_server)
-                db.session.commit()
-
+            db.session.rollback()
             raise e
 
     @staticmethod
     def get_shared_server(server, gid):
         """
-        return the shared server
+        Return the SharedServer record for the current user,
+        creating one lazily if it doesn't exist.  The unique
+        constraint on (osid, user_id) prevents duplicates from
+        concurrent requests.
         :param server:
         :param gid:
-        :return: shared_server
+        :return: shared_server (never None)
+        :raises: Exception if SharedServer cannot be created
         """
         shared_server = SharedServer.query.filter_by(
-            name=server.name, user_id=current_user.id,
-            servergroup_id=int(gid), osid=server.id).first()
+            user_id=current_user.id,
+            osid=server.id).first()
 
         if shared_server is None:
-            ServerModule.create_shared_server(server, int(gid))
+            try:
+                ServerModule.create_shared_server(
+                    server, int(gid))
+            except IntegrityError:
+                # Unique constraint violation from a concurrent
+                # request — the record now exists.
+                db.session.rollback()
 
             shared_server = SharedServer.query.filter_by(
-                name=server.name, user_id=current_user.id,
-                servergroup_id=int(gid), osid=server.id).first()
+                user_id=current_user.id,
+                osid=server.id).first()
+
+        if shared_server is None:
+            raise Exception(
+                "Failed to create shared server record "
+                "for server {0}".format(server.id))
 
         return shared_server
 
@@ -495,17 +570,28 @@ class ServerNode(PGChildNodeView):
         'clear_sshtunnel_password': [{'put': 'clear_sshtunnel_password'}],
     })
 
-    def update_connection_parameter(self, data, server):
+    def update_connection_parameter(self, data, server, sharedserver=None):
         """
         This function is used to update the connection parameters.
         """
         if 'connection_params' in data and \
                 hasattr(server, 'connection_params'):
-            existing_conn_params = getattr(server, 'connection_params')
+            # For shared servers accessed by non-owners, apply changes
+            # to the SharedServer's connection_params (a copy) so we
+            # don't mutate the owner's Server record in-place.
+            if sharedserver is not None and \
+                    server.shared and \
+                    server.user_id != current_user.id:
+                existing_conn_params = dict(
+                    sharedserver.connection_params or {})
+            else:
+                existing_conn_params = getattr(
+                    server, 'connection_params')
             new_conn_params = data['connection_params']
             if 'deleted' in new_conn_params:
                 for item in new_conn_params['deleted']:
-                    del existing_conn_params[item['name']]
+                    if item['name'] in existing_conn_params:
+                        del existing_conn_params[item['name']]
             if 'added' in new_conn_params:
                 for item in new_conn_params['added']:
                     existing_conn_params[item['name']] = item['value']
@@ -560,15 +646,13 @@ class ServerNode(PGChildNodeView):
         Return a JSON document listing the servers under this server group
         for the user.
         """
-        servers = Server.query.filter(
-            or_(Server.user_id == current_user.id,
-                Server.shared),
+        servers = get_user_server_query().filter(
             Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         for server in servers:
-            if server.shared and server.user_id != current_user.id:
+            if _is_non_owner(server):
                 shared_server = ServerModule.get_shared_server(server, gid)
                 server = \
                     ServerModule.get_shared_server_properties(server,
@@ -627,23 +711,21 @@ class ServerNode(PGChildNodeView):
     @pga_login_required
     def node(self, gid, sid):
         """Return a JSON document listing the server groups for the user"""
-        server = Server.query.filter_by(id=sid).first()
-
-        if server.shared and server.user_id != current_user.id:
-            shared_server = ServerModule.get_shared_server(server, gid)
-            server = ServerModule.get_shared_server_properties(server,
-                                                               shared_server)
+        server = get_server(sid)
 
         if server is None:
             return make_json_response(
                 status=410,
                 success=0,
                 errormsg=gettext(
-                    gettext(
-                        "Could not find the server with id# {0}."
-                    ).format(sid)
-                )
+                    "Could not find the server with id# {0}."
+                ).format(sid)
             )
+
+        if _is_non_owner(server):
+            shared_server = ServerModule.get_shared_server(server, gid)
+            server = ServerModule.get_shared_server_properties(server,
+                                                               shared_server)
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(server.id)
         conn = manager.connection()
@@ -693,16 +775,20 @@ class ServerNode(PGChildNodeView):
             ),
         )
 
-    def delete_shared_server(self, server_name, gid, osid):
+    def delete_shared_server(self, gid, osid, user_id=None):
         """
-        Delete the shared server
-        :param server_name:
-        :return:
+        Delete SharedServer records for a given original server.
+        :param gid: Server group ID
+        :param osid: Original server ID
+        :param user_id: If set, only delete for this user.
+            If None, delete for ALL users (owner unshare/delete).
         """
         try:
-            shared_server = SharedServer.query.filter_by(name=server_name,
-                                                         servergroup_id=gid,
-                                                         osid=osid)
+            filters = dict(servergroup_id=gid, osid=osid)
+            if user_id is not None:
+                filters['user_id'] = user_id
+            shared_server = SharedServer.query.filter_by(
+                **filters)
             for s in shared_server:
                 get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                 db.session.delete(s)
@@ -712,7 +798,7 @@ class ServerNode(PGChildNodeView):
             current_app.logger.exception(e)
             return make_json_response(
                 success=0,
-                errormsg=e.message)
+                errormsg=str(e))
 
     @pga_login_required
     def delete(self, gid, sid):
@@ -738,14 +824,14 @@ class ServerNode(PGChildNodeView):
                     get_driver(PG_DEFAULT_DRIVER).delete_manager(s.id)
                     db.session.delete(s)
                 db.session.commit()
-                self.delete_shared_server(server_name, gid, sid)
+                self.delete_shared_server(gid, sid)
                 QueryHistory.clear_history(current_user.id, sid)
 
             except Exception as e:
                 current_app.logger.exception(e)
                 return make_json_response(
                     success=0,
-                    errormsg=e.message)
+                    errormsg=str(e))
 
         return make_json_response(success=1,
                                   info=gettext("Server deleted"))
@@ -754,7 +840,7 @@ class ServerNode(PGChildNodeView):
     @pga_login_required
     def update(self, gid, sid):
         """Update the server settings"""
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server(sid)
         sharedserver = None
 
         if server is None:
@@ -821,8 +907,8 @@ class ServerNode(PGChildNodeView):
             data['db_res'] = ','.join(data['db_res'])
 
         # Update connection parameter if any.
-        self.update_connection_parameter(data, server)
-        self.update_tags(data, server)
+        self.update_connection_parameter(data, server, sharedserver)
+        self.update_tags(data, sharedserver or server)
 
         if 'connection_params' in data and \
             'hostaddr' in data['connection_params'] and \
@@ -855,7 +941,7 @@ class ServerNode(PGChildNodeView):
 
         # tags is JSON type, sqlalchemy sometimes will not detect change
         if 'tags' in data:
-            flag_modified(server, 'tags')
+            flag_modified(sharedserver or server, 'tags')
 
         try:
             db.session.commit()
@@ -863,7 +949,7 @@ class ServerNode(PGChildNodeView):
             current_app.logger.exception(e)
             return make_json_response(
                 success=0,
-                errormsg=e.message
+                errormsg=str(e)
             )
 
         # When server is connected, we don't require to update the connection
@@ -871,6 +957,10 @@ class ServerNode(PGChildNodeView):
         # which will affect the connections.
         if not conn.connected():
             manager.update(server)
+            # Suppress passexec for non-owners so the manager
+            # never holds the owner's password-exec command.
+            if _is_non_owner(server):
+                manager.passexec = None
 
         return jsonify(
             node=self.blueprint.generate_browser_node(
@@ -878,7 +968,7 @@ class ServerNode(PGChildNodeView):
                 server.name,
                 server_icon_and_background(
                     connected, manager, sharedserver)
-                if server.shared and server.user_id != current_user.id
+                if _is_non_owner(server)
                 else server_icon_and_background(
                     connected, manager, server),
                 True,
@@ -892,7 +982,7 @@ class ServerNode(PGChildNodeView):
                 role=server.role,
                 is_password_saved=bool(server.save_password),
                 description=server.comment,
-                tags=server.tags
+                tags=(sharedserver or server).tags
             )
         )
 
@@ -902,7 +992,7 @@ class ServerNode(PGChildNodeView):
         if value == '':
             value = None
 
-        if server.shared and server.user_id != current_user.id:
+        if _is_non_owner(server):
             setattr(sharedserver, config_param_map[arg], value)
         else:
             setattr(server, config_param_map[arg], value)
@@ -916,22 +1006,37 @@ class ServerNode(PGChildNodeView):
         if not crypt_key_present:
             raise CryptKeyMissing
 
+        # Fields that non-owners must never set on their
+        # SharedServer — they enable command/SQL execution
+        # or are owner-level concepts not on SharedServer.
+        _owner_only_fields = frozenset({
+            'passexec_cmd', 'passexec_expiration',
+            'db_res', 'db_res_type',
+        })
+
         for arg in config_param_map:
             if arg in data:
+                # Non-owners cannot set dangerous fields.
+                if _is_non_owner(server) and \
+                        arg in _owner_only_fields:
+                    continue
                 value = data[arg]
                 if arg == 'password':
                     value = encrypt(data[arg], crypt_key)
-                # sqlite3 do not have boolean type so we need to convert
-                # it manually to integer
-                if 'shared' in data and not data['shared']:
-                    # Delete the shared server from DB if server
-                    # owner uncheck shared property
-                    self.delete_shared_server(server.name, gid, server.id)
+                # sqlite3 do not have boolean type so we need to
+                # convert it manually to integer.
+                # Only the owner may unshare — this deletes ALL
+                # users' SharedServer records.
+                if 'shared' in data and not data['shared'] \
+                        and not _is_non_owner(server):
+                    self.delete_shared_server(gid, server.id)
                 if arg in ('sslcompression', 'use_ssh_tunnel',
-                           'tunnel_authentication', 'kerberos_conn', 'shared'):
+                           'tunnel_authentication',
+                           'kerberos_conn', 'shared'):
                     value = 1 if value else 0
                 self._update_server_details(server, sharedserver,
-                                            config_param_map, arg, value)
+                                            config_param_map, arg,
+                                            value)
                 idx += 1
 
         return idx
@@ -952,23 +1057,21 @@ class ServerNode(PGChildNodeView):
                     )
 
     @pga_login_required
+    @with_object_filters
     def list(self, gid, object_filters):
         """
         Return list of attributes of all servers.
         """
-        servers = Server.query.filter(
-            or_(Server.user_id == current_user.id, Server.shared),
+        servers = get_user_server_query().filter(
             Server.servergroup_id == gid,
             Server.is_adhoc == 0).order_by(Server.name)
-        sg = ServerGroup.query.filter_by(
-            id=gid
-        ).first()
+        sg = get_server_group(gid)
         res = []
 
         driver = get_driver(PG_DEFAULT_DRIVER)
 
         for server in servers:
-            if server.shared and server.user_id != current_user.id:
+            if _is_non_owner(server):
                 shared_server = ServerModule.get_shared_server(server, gid)
                 server = \
                     ServerModule.get_shared_server_properties(server,
@@ -1002,8 +1105,7 @@ class ServerNode(PGChildNodeView):
     def properties(self, gid, sid):
         """Return list of attributes of a server"""
 
-        server = Server.query.filter_by(
-            id=sid).first()
+        server = get_server(sid)
 
         if server is None:
             return make_json_response(
@@ -1026,7 +1128,7 @@ class ServerNode(PGChildNodeView):
         # port and user when server is connected
         display_connection_str = self.update_connection_string(manager, server)
 
-        if server.shared and server.user_id != current_user.id:
+        if _is_non_owner(server):
             shared_server = ServerModule.get_shared_server(server, gid)
             server = ServerModule.get_shared_server_properties(server,
                                                                shared_server)
@@ -1078,11 +1180,8 @@ class ServerNode(PGChildNodeView):
             'fgcolor': server.fgcolor,
             'db_res': get_db_restriction(server.db_res_type, server.db_res),
             'db_res_type': server.db_res_type,
-            'passexec_cmd':
-                server.passexec_cmd if server.passexec_cmd else None,
-            'passexec_expiration':
-                server.passexec_expiration if server.passexec_expiration
-                else None,
+            'passexec_cmd': server.passexec_cmd,
+            'passexec_expiration': server.passexec_expiration,
             'service': server.service if server.service else None,
             'use_ssh_tunnel': use_ssh_tunnel,
             'tunnel_host': tunnel_host,
@@ -1168,8 +1267,17 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        connection_params = convert_connection_parameter(
-            data.get('connection_params', []))
+        # convert_connection_parameter() is bidirectional: list->dict for
+        # save (frontend shape), dict->list for display (DB shape). Here
+        # we want the storage shape (dict). If the input is already a
+        # dict (e.g. from internal callers / tests that mimic stored
+        # form), keep it as-is; otherwise assume frontend list shape and
+        # convert.
+        raw_params = data.get('connection_params', [])
+        if isinstance(raw_params, dict):
+            connection_params = raw_params
+        else:
+            connection_params = convert_connection_parameter(raw_params)
 
         if 'hostaddr' in connection_params and \
                 not is_valid_ipaddress(connection_params['hostaddr']):
@@ -1395,7 +1503,12 @@ class ServerNode(PGChildNodeView):
 
     def connect_status(self, gid, sid):
         """Check and return the connection status."""
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server(sid)
+        if server is None:
+            return make_json_response(
+                status=410, success=0,
+                errormsg=self.not_found_error_msg()
+            )
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
         connected = conn.connected()
@@ -1464,18 +1577,16 @@ class ServerNode(PGChildNodeView):
         # function in that case no need to fetch the server detail based on
         # sid.
         if server is None:
-            server = Server.query.filter_by(id=sid).first()
+            server = get_server(sid)
 
-        shared_server = None
-        if server.shared and server.user_id != current_user.id:
-            shared_server = ServerModule.get_shared_server(server, gid)
-            sess = object_session(server)
-            if sess is not None:
-                sess.expunge(server)
-            server = ServerModule.get_shared_server_properties(server,
-                                                               shared_server)
         if server is None:
             return bad_request(self.not_found_error_msg())
+
+        shared_server = None
+        if _is_non_owner(server):
+            shared_server = ServerModule.get_shared_server(server, gid)
+            server = ServerModule.get_shared_server_properties(server,
+                                                               shared_server)
 
         # Return if username is blank and the server is shared
         if server.username is None and not server.service and \
@@ -1517,6 +1628,12 @@ class ServerNode(PGChildNodeView):
         # the API call is not made from SQL Editor or View/Edit Data tool
         if not manager.connection().connected() and not is_qt:
             manager.update(server)
+            # Re-suppress passexec after update() which rebuilds
+            # from the (overlaid) server object.  Belt-and-suspenders:
+            # the overlay already defaults passexec to None, but this
+            # guards against direct DB edits.
+            if _is_non_owner(server):
+                manager.passexec = None
         conn = manager.connection()
 
         # Get enc key
@@ -1617,12 +1734,8 @@ class ServerNode(PGChildNodeView):
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
-                    # If DB server is running in trust mode then password may
-                    # not be available but we don't need to ask password
-                    # every time user try to connect
                     # 1 is True in SQLite as no boolean type
-                    setattr(server, 'save_password', 1)
-                    if server.shared and server.user_id != current_user.id:
+                    if _is_non_owner(server):
                         setattr(shared_server, 'save_password', 1)
                     else:
                         setattr(server, 'save_password', 1)
@@ -1630,7 +1743,7 @@ class ServerNode(PGChildNodeView):
                     # Save the encrypted password using the user's login
                     # password key, if there is any password to save
                     if password:
-                        if server.shared and server.user_id != current_user.id:
+                        if _is_non_owner(server):
                             setattr(shared_server, 'password', password)
                         else:
                             setattr(server, 'password', password)
@@ -1641,12 +1754,16 @@ class ServerNode(PGChildNodeView):
                     manager.release(database=server.maintenance_db)
                     conn = None
 
-                    return internal_server_error(errormsg=e.message)
+                    return internal_server_error(errormsg=str(e))
 
             if save_tunnel_password and config.ALLOW_SAVE_TUNNEL_PASSWORD:
                 try:
                     # Save the encrypted tunnel password.
-                    setattr(server, 'tunnel_password', tunnel_password)
+                    if _is_non_owner(server):
+                        setattr(shared_server, 'tunnel_password',
+                                tunnel_password)
+                    else:
+                        setattr(server, 'tunnel_password', tunnel_password)
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
@@ -1654,7 +1771,7 @@ class ServerNode(PGChildNodeView):
                     manager.release(database=server.maintenance_db)
                     conn = None
 
-                    return internal_server_error(errormsg=e.message)
+                    return internal_server_error(errormsg=str(e))
 
             current_app.logger.info('Connection Established for server: \
                 %s - %s' % (server.id, server.name))
@@ -1693,7 +1810,7 @@ class ServerNode(PGChildNodeView):
     def disconnect(self, gid, sid):
         """Disconnect the Server."""
 
-        server = Server.query.filter_by(id=sid).first()
+        server = get_server(sid)
         if server is None:
             return bad_request(self.not_found_error_msg())
 
@@ -1818,7 +1935,7 @@ class ServerNode(PGChildNodeView):
                 raise CryptKeyMissing
 
             # Fetch Server Details
-            server = Server.query.filter_by(id=sid).first()
+            server = get_server(sid, only_owned=False)
             if server is None:
                 return bad_request(self.not_found_error_msg())
 
@@ -1905,11 +2022,24 @@ class ServerNode(PGChildNodeView):
             # Store password in sqlite only if no pgpass file
             if not is_passfile:
                 password = encrypt(data['newPassword'], crypt_key)
-                # Check if old password was stored in pgadmin4 sqlite database.
-                # If yes then update that password.
-                if server.password is not None and config.ALLOW_SAVE_PASSWORD:
-                    setattr(server, 'password', password)
-                    db.session.commit()
+                # Check if old password was stored in pgadmin4
+                # sqlite database. If yes then update that password.
+                # For non-owners of shared servers, check the
+                # SharedServer record (not the owner's Server).
+                if config.ALLOW_SAVE_PASSWORD:
+                    if server.shared and \
+                            server.user_id != current_user.id:
+                        shared_server = \
+                            ServerModule.get_shared_server(
+                                server, gid)
+                        if shared_server and \
+                                shared_server.password is not None:
+                            setattr(shared_server, 'password',
+                                    password)
+                            db.session.commit()
+                    elif server.password is not None:
+                        setattr(server, 'password', password)
+                        db.session.commit()
                 # Also update password in connection manager.
                 manager.password = password
                 manager.update_session()
@@ -1929,9 +2059,7 @@ class ServerNode(PGChildNodeView):
         """
         Utility function for wal_replay for resume/pause.
         """
-        server = Server.query.filter_by(
-            user_id=current_user.id, id=sid
-        ).first()
+        server = get_server(sid)
 
         if server is None:
             return make_json_response(
@@ -2015,9 +2143,7 @@ class ServerNode(PGChildNodeView):
             sid: Server id
         """
         is_pgpass = False
-        server = Server.query.filter_by(
-            user_id=current_user.id, id=sid
-        ).first()
+        server = get_server(sid)
 
         if server is None:
             return make_json_response(
@@ -2108,38 +2234,22 @@ class ServerNode(PGChildNodeView):
         :return:
         """
         try:
-            server = Server.query.filter_by(id=sid).first()
-            shared_server = None
+            server = get_server(sid, only_owned=False)
             if server is None:
                 return make_json_response(
                     success=0,
                     info=self.not_found_error_msg()
                 )
 
-            if server.shared and server.user_id != current_user.id:
-                shared_server = SharedServer.query.filter_by(
-                    name=server.name, user_id=current_user.id,
-                    servergroup_id=gid, osid=server.id).first()
-
-                if shared_server is None:
-                    return make_json_response(
-                        success=0,
-                        info=gettext("Could not find the required server.")
-                    )
-                server = ServerModule. \
-                    get_shared_server_properties(server, shared_server)
-
-            if server.shared and server.user_id != current_user.id:
+            if _is_non_owner(server):
+                shared_server = ServerModule.get_shared_server(
+                    server, gid)
                 setattr(shared_server, 'password', None)
+                if shared_server.save_password:
+                    setattr(shared_server, 'save_password', 0)
             else:
                 setattr(server, 'password', None)
-
-            # If password was saved then clear the flag also
-            # 0 is False in SQLite db
-            if server.save_password:
-                if server.shared and server.user_id != current_user.id:
-                    setattr(shared_server, 'save_password', 0)
-                else:
+                if server.save_password:
                     setattr(server, 'save_password', 0)
             db.session.commit()
         except Exception as e:
@@ -2165,13 +2275,19 @@ class ServerNode(PGChildNodeView):
         :return:
         """
         try:
-            server = Server.query.filter_by(id=sid).first()
+            server = get_server(sid, only_owned=False)
             if server is None:
                 return make_json_response(
                     success=0,
                     info=self.not_found_error_msg()
                 )
-            setattr(server, 'tunnel_password', None)
+
+            if _is_non_owner(server):
+                shared_server = ServerModule.get_shared_server(
+                    server, gid)
+                setattr(shared_server, 'tunnel_password', None)
+            else:
+                setattr(server, 'tunnel_password', None)
             db.session.commit()
         except Exception as e:
             current_app.logger.error(

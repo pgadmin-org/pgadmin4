@@ -9,12 +9,12 @@ CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
     OPTIONS (table_name 'test_table');
 
 ALTER FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';
 
-GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO <OWNER>;
 
 
 ALTER FOREIGN TABLE IF EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"

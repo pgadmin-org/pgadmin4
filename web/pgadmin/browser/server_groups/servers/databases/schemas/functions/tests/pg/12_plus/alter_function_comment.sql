@@ -16,7 +16,7 @@ end
 $BODY$;
 
 ALTER FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
     IS 'Some comment';

@@ -110,7 +110,10 @@ def _login():
         # Sending empty form as oauth2 does not require form attribute
         auth_obj = AuthSourceManager({}, copy.deepcopy(
             config.AUTHENTICATION_SOURCES))
-        session['auth_obj'] = auth_obj
+        # Persist only the OAuth2 provider selection across the redirect.
+        # The auth-source instance lives on current_app's registry so we
+        # re-look-up rather than persist a live class instance in session.
+        session['oauth2_current_client'] = request.form.get('oauth2_button')
     else:
         auth_obj = AuthSourceManager(form, copy.deepcopy(
             config.AUTHENTICATION_SOURCES))
@@ -183,16 +186,14 @@ def _login():
             user.login_attempts = 0
         db.session.commit()
 
-        if 'auth_obj' in session:
-            session.pop('auth_obj')
+        session.pop('oauth2_current_client', None)
         return redirect(pga_utils.get_safe_post_login_redirect())
 
     elif isinstance(msg, Response):
         return msg
     elif 'oauth2_button' in request.form and not isinstance(msg, str):
         return msg
-    if 'auth_obj' in session:
-        session.pop('auth_obj')
+    session.pop('oauth2_current_client', None)
     flash(msg, MessageType.ERROR)
     form_class = _security.forms.get('login_form').cls
     form = form_class()

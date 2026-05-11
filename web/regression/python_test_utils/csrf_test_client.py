@@ -74,16 +74,32 @@ class TestClient(testing.FlaskClient):
         return super().open(*args, **kwargs)
 
     def fetch_csrf(self, res):
+        # Modern pgAdmin emits the CSRF token to the SPA frontend in two
+        # JSON shapes:
+        #   * `"csrfToken": "..."` inside a JSON config block embedded in
+        #     the /login HTML (camelCase, used by JS bootstrap).
+        #   * `"csrf_token": "..."` at the top level of pure JSON API
+        #     responses (snake_case, e.g. /browser/change_password).
+        # Match either.
+        for pattern in (
+            rb'"csrfToken":\s*"([^"]*)"',
+            rb'"csrf_token":\s*"([^"]*)"',
+        ):
+            m = re.search(pattern, res.data)
+            if m is not None:
+                return m.group(1).decode("utf-8")
+
+        # Fall back to the legacy hidden-input form for any older or
+        # alternative login templates that still emit it.
         m = re.search(
-            b'<input id="csrf_token" name="csrf_token" type="hidden"'
-            b' value="([^"]*)">', res.data
+            rb'<input id="csrf_token" name="csrf_token" type="hidden"'
+            rb' value="([^"]*)">', res.data
         )
+        if m is not None:
+            return m.group(1).decode("utf-8")
 
-        if m is None:
-            # When login through Kerberos, we won't find the CSRF
-            return None
-
-        return m.group(1).decode("utf-8")
+        # When login through Kerberos, we won't find the CSRF.
+        return None
 
     def generate_csrf_token(self, *args, **kwargs):
         # First, we'll wrap our request shim around the test client, so
@@ -139,7 +155,20 @@ class TestClient(testing.FlaskClient):
             follow_redirects=_follow_redirects,
             headers=headers
         )
-        self.csrf_token = csrf_token
+        # Flask-Paranoid regenerates the session on login (anti-fixation),
+        # which drops the `csrf_token` populated during GET /login. Capture
+        # a fresh token from a post-login authenticated page so subsequent
+        # state-changing API calls aren't rejected with "CSRF session token
+        # is missing."
+        if config.SERVER_MODE is True:
+            post_login = self.get('/browser/', follow_redirects=True)
+            fresh_token = self.fetch_csrf(post_login)
+            if fresh_token is not None:
+                self.csrf_token = fresh_token
+            else:
+                self.csrf_token = csrf_token
+        else:
+            self.csrf_token = csrf_token
 
         return res
 

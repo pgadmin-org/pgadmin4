@@ -44,7 +44,7 @@
       "data": {
         "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b",
         "schema": "testschema",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "description": "Description for extra params",
         "locale": "locale",
         "provider": "icu",
@@ -70,7 +70,7 @@
       "data": {
         "name": "Cl1_$%{}[]()&*^!@\"'`\\/#b",
         "schema": "testschema",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "description": "libc",
         "locale": "C",
         "provider": "libc",

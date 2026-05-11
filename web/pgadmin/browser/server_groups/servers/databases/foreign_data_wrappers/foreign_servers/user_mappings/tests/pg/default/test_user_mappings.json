@@ -27,7 +27,7 @@
       "sql_endpoint": "NODE-user_mapping.sql_id",
       "msql_endpoint": "NODE-user_mapping.msql",
       "data": {
-        "name": "postgres",
+        "name": "<OWNER>",
         "umoptions":[{
           "umoption":"user",
           "umvalue":"test_user"

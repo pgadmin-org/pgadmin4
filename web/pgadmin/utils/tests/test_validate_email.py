@@ -21,9 +21,12 @@ class TestEmailValidate(BaseTestGenerator):
         ('Email validation (no deliverability)',
          dict(
              data=dict(
+                 # Modern email-validator library rejects special-use
+                 # TLDs (.local, .localhost, .invalid, .test) per
+                 # RFC 6761/6762. Drop those from the syntax-valid list.
                  email_list=['postgres@local.dev', 'pg@pgadminrocks.com',
                              'me.pg@demo.dev', 'pg@123.pgcom',
-                             'pg@postgres.local', 'postgres@pg.blah',
+                             'postgres@pg.blah',
                              'john@doe.com', 'punster@tr.co',
                              'admin@example.com'],
                  check_deliverability=False,
@@ -35,8 +38,13 @@ class TestEmailValidate(BaseTestGenerator):
         ('Email validation (with deliverability)',
          dict(
              data=dict(
-                 email_list=['postgres@local.dev', 'pg@pgadminrocks.com',
-                             'pg@postgres.local'],
+                 # Use RFC 6761 special-use domains that are guaranteed
+                 # undeliverable, regardless of the DNS state of the
+                 # test host. (Some `.dev` domains now have real MX
+                 # records, making the previous test data flaky.)
+                 email_list=['admin@example.invalid',
+                             'pg@nonexistent.invalid',
+                             'admin@nonexistent.test'],
                  check_deliverability=True,
                  expected_data=dict(
                      test_result=False

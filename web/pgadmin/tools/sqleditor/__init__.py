@@ -63,6 +63,8 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     ERROR_FETCHING_DATA, MY_STORAGE, ACCESS_DENIED_MESSAGE, \
     ERROR_MSG_FAIL_TO_PROMOTE_QT
 from pgadmin.model import Server, ServerGroup
+from pgadmin.utils.server_access import get_server, \
+    get_server_groups_for_user, get_user_server_query
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
@@ -225,7 +227,12 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
         'password': _data['password'] if 'password' in _data else None
     }
 
-    server = Server.query.filter_by(id=sid).first()
+    server = get_server(sid)
+    if server is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
     if kwargs.get('password', None) is None:
         kwargs['encpass'] = server.password
     else:
@@ -374,7 +381,7 @@ def panel(trans_id):
     params['bgcolor'] = None
     params['fgcolor'] = None
 
-    s = Server.query.filter_by(id=int(params['sid'])).first()
+    s = get_server(int(params['sid']))
     if s:
         if s.shared and s.user_id != current_user.id:
             # Import here to avoid circular dependency
@@ -512,7 +519,12 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
         kwargs.pop('conn_id')
 
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
-    server = Server.query.filter_by(id=sid).first()
+    server = get_server(sid)
+    if server is None:
+        return True, internal_server_error(
+            errormsg=gettext(
+                "Could not find the required server.")
+        ), '', ''
     if server.shared and server.user_id != current_user.id:
         # Import here to avoid circular dependency
         from pgadmin.browser.server_groups.servers import ServerModule
@@ -2344,8 +2356,13 @@ def _check_server_connection_status(sgid, sid=None):
         driver = get_driver(PG_DEFAULT_DRIVER)
         from pgadmin.browser.server_groups.servers import \
             server_icon_and_background
-        server = Server.query.filter_by(
-            id=sid).first()
+        server = get_server(sid)
+        if server is None:
+            return make_json_response(
+                status=410, success=0,
+                errormsg=gettext(
+                    "Could not find the required server.")
+            )
 
         manager = driver.connection_manager(server.id)
         conn = manager.connection()
@@ -2393,11 +2410,10 @@ def get_new_connection_data(sgid=None, sid=None):
         driver = get_driver(PG_DEFAULT_DRIVER)
         from pgadmin.browser.server_groups.servers import \
             server_icon_and_background
-        server_groups = ServerGroup.query.all()
+        server_groups = get_server_groups_for_user()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
-        servers = Server.query.filter(
-            or_(Server.user_id == current_user.id, Server.shared),
+        servers = get_user_server_query().filter(
             Server.is_adhoc == 0)
 
         for server in servers:
@@ -2654,7 +2670,12 @@ def get_new_connection_role(sgid, sid=None):
 @pga_login_required
 def connect_server(sid):
     # Check if server is already connected then no need to reconnect again.
-    server = Server.query.filter_by(id=sid).first()
+    server = get_server(sid)
+    if server is None:
+        return make_json_response(
+            status=410, success=0,
+            errormsg=gettext("Could not find the required server.")
+        )
     driver = get_driver(PG_DEFAULT_DRIVER)
     manager = driver.connection_manager(sid)
 

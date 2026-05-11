@@ -110,3 +110,28 @@ There are 3 ways to configure LDAP:
    "LDAP_BIND_PASSWORD", "Password for simple bind.
    Specify the value if you have set the LDAP_BIND_USER parameter."
 
+
+Brute-force protection
+**********************
+
+pgAdmin's built-in account-lockout setting (``MAX_LOGIN_ATTEMPTS``) applies
+only to accounts using the ``INTERNAL`` authentication source. It does
+**not** rate-limit or lock LDAP-authenticated logins.
+
+When LDAP authentication is enabled, brute-force protection for LDAP
+credentials is the responsibility of:
+
+- **The directory.** Configure account-lockout policy on the LDAP server
+  itself (for example, OpenLDAP's ``ppolicy`` overlay, Active Directory's
+  account-lockout GPO, or the equivalent on FreeIPA / 389 Directory
+  Server). The directory is the credential authority and is the correct
+  place to enforce per-account lockout.
+- **The reverse proxy or WAF in front of pgAdmin.** Configure
+  request-rate limiting on the login endpoint (for example, ``limit_req``
+  in nginx, ``stick-table`` rules in HAProxy, or the equivalent in your
+  WAF) to bound login-attempt volume per source IP. This is independent
+  of pgAdmin and protects against attackers who would otherwise reach the
+  LDAP server through pgAdmin.
+
+See :ref:`Avoiding a bruteforce attack <login>` for the equivalent note
+on the login page.

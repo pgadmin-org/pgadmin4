@@ -13,4 +13,4 @@ COMMENT ON FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#"
     IS 'a comment';
 
 GRANT USAGE ON FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
-GRANT USAGE ON FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#" TO postgres WITH GRANT OPTION;
+GRANT USAGE ON FOREIGN DATA WRAPPER "Fdw2_$%{}[]()&*^!@""'`\/#" TO <OWNER> WITH GRANT OPTION;

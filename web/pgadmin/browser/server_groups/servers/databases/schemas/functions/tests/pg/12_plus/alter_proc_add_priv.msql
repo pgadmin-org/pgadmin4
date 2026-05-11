@@ -1,3 +1,3 @@
 GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO PUBLIC;
 
-GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO postgres;
+GRANT EXECUTE ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(integer) TO <OWNER>;

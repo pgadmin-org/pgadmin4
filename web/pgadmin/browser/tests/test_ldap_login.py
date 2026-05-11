@@ -51,6 +51,13 @@ class LDAPLoginTestCase(BaseTestGenerator):
             ldap_config = config_data['ldap_config'][0][self.config_key_param]
         except (KeyError, TypeError, IndexError):
             self.skipTest("LDAP config not set.")
+        # Skip when the LDAP config is just the template placeholders
+        # (no real LDAP server reachable for the test).
+        if 'IP-ADDRESS' in ldap_config.get('uri', '') or \
+                ldap_config.get('base_dn') in ('', 'BASE-DN'):
+            self.skipTest(
+                "LDAP config is template placeholders — no live LDAP "
+                "server configured for this dev env.")
         app_config.AUTHENTICATION_SOURCES = [LDAP]
         app_config.LDAP_AUTO_CREATE_USER = True
         app_config.LDAP_SERVER_URI = ldap_config['uri']

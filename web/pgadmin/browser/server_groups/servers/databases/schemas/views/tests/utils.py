@@ -13,6 +13,7 @@ import traceback
 import os
 import json
 
+from pgadmin.utils.driver.psycopg3 import Driver
 from regression.python_test_utils import test_utils as utils
 from urllib.parse import urlencode
 
@@ -179,6 +180,16 @@ def create_view(server, db_name, schema_name, view_name, sql_query=None,
         old_isolation_level = connection.isolation_level
         utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
+        # Quote server['username'] as an SQL identifier inside the query
+        # template, so usernames containing special characters (e.g. dots
+        # like 'ashesh.vashi') do not parse as schema-qualified names.
+        # view_test_data.json query strings interpolate server['username']
+        # directly into ALTER TABLE ... OWNER TO and GRANT ... TO clauses
+        # where the identifier must be quoted.
+        sql_query = sql_query.replace(
+            "server['username']",
+            "Driver.qtIdent(None, server['username'])"
+        )
         query = eval(sql_query)
         pg_cursor.execute(query)
         utils.set_isolation_level(connection, old_isolation_level)

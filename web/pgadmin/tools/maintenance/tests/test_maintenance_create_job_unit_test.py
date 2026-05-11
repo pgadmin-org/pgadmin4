@@ -559,7 +559,30 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE pg_default) '
+                                'DATABASE postgres;\n'],
+             server_min_version=140000,
+             message='REINDEX TABLESPACE is not supported by EPAS/PG server '
+                     'less than 14.0'
+         )),
+        ('When reindex_tablespace contains quote, qtIdent escapes it',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='REINDEX',
+                 reindex_tablespace='foo"; DROP TABLE x; --',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE '
+                                '"foo""; DROP TABLE x; --") '
                                 'DATABASE postgres;\n'],
              server_min_version=140000,
              message='REINDEX TABLESPACE is not supported by EPAS/PG server '
@@ -644,7 +667,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE pg_default) '
                                 'TABLE my_schema.my_table;\n'],
              server_min_version=140000,
              message='REINDEX TABLESPACE TABLE is not supported by '
@@ -711,7 +734,7 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  verbose=True
              ),
              url=MAINTENANCE_URL,
-             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE pg_default) '
                                 'INDEX my_schema.my_index;\n'],
              server_min_version=140000,
              message='REINDEX TABLESPACE is not supported by EPAS/PG server '

@@ -27,13 +27,25 @@
       "data": {
         "definition": "select col1 from test_view_table;",
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "local",
         "security_barrier": false,
-        "comment":"Testcomment",
-        "datacl":[{"grantee":"postgres", "old_grantee": "postgres", "grantor":"postgres", "privileges":[{"privilege_type": "a", "privilege": true,
-                  "with_grant":false}]}]
+        "comment": "Testcomment",
+        "datacl": [
+          {
+            "grantee": "<OWNER>",
+            "old_grantee": "<OWNER>",
+            "grantor": "<OWNER>",
+            "privileges": [
+              {
+                "privilege_type": "a",
+                "privilege": true,
+                "with_grant": false
+              }
+            ]
+          }
+        ]
       },
       "expected_sql_file": "create_view.sql",
       "expected_msql_file": "create_view_msql.sql"
@@ -46,13 +58,25 @@
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "cascaded",
         "security_barrier": true,
-        "comment":"Testcomment-updated",
-        "datacl":[{"grantee":"postgres", "grantor":"postgres", "old_grantee": "postgres", "privileges":[{"privilege_type": "a", "privilege": true,
-                  "with_grant":false}]}]
+        "comment": "Testcomment-updated",
+        "datacl": [
+          {
+            "grantee": "<OWNER>",
+            "grantor": "<OWNER>",
+            "old_grantee": "<OWNER>",
+            "privileges": [
+              {
+                "privilege_type": "a",
+                "privilege": true,
+                "with_grant": false
+              }
+            ]
+          }
+        ]
       },
       "expected_sql_file": "alter_view.sql",
       "expected_msql_file": "alter_view_msql.sql"
@@ -77,25 +101,25 @@
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "cascaded",
         "security_barrier": true,
-        "comment":"Testcomment-updated",
-        "datacl":{
-            "added":[
+        "comment": "Testcomment-updated",
+        "datacl": {
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
                 {
-                  "grantee":"PUBLIC",
-                  "grantor":"postgres",
-                  "privileges":[
-                    {
-                      "privilege_type":"r",
-                      "privilege":true,
-                      "with_grant":false
-                    }
-                  ]
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
                 }
-            ]
+              ]
+            }
+          ]
         }
       },
       "expected_sql_file": "alter_view_add_some_priv.sql",
@@ -109,27 +133,26 @@
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "cascaded",
         "security_barrier": true,
-        "comment":"Testcomment-updated",
-        "datacl":
-          {
-            "deleted":[
-              {
-                "grantee":"PUBLIC",
-                "grantor":"postgres",
-                "privileges":[
-                  {
-                    "privilege_type":"r",
-                    "privilege":true,
-                    "with_grant":false
-                  }
-                ]
-              }
-            ]
-          }
+        "comment": "Testcomment-updated",
+        "datacl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
       }
     },
     {
@@ -140,28 +163,27 @@
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "cascaded",
         "security_barrier": true,
-        "comment":"Testcomment-updated",
-        "datacl":
-          {
-            "changed":[
-              {
-                "grantee":"PUBLIC",
-                "grantor":"postgres",
-                "old_grantee": "postgres",
-                "privileges":[
-                  {
-                    "privilege_type":"r",
-                    "privilege":true,
-                    "with_grant":false
-                  }
-                ]
-              }
-            ]
-          }
+        "comment": "Testcomment-updated",
+        "datacl": {
+          "changed": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_view_update_priv.sql",
       "expected_msql_file": "alter_view_update_priv_msql.sql"
@@ -174,27 +196,26 @@
       "msql_endpoint": "NODE-view.msql_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public",
         "check_option": "cascaded",
         "security_barrier": true,
-        "comment":"Testcomment-updated",
-        "datacl":
-          {
-            "deleted":[
-              {
-                "grantee":"PUBLIC",
-                "grantor":"postgres",
-                "privileges":[
-                  {
-                    "privilege_type":"r",
-                    "privilege":true,
-                    "with_grant":false
-                  }
-                ]
-              }
-            ]
-          }
+        "comment": "Testcomment-updated",
+        "datacl": {
+          "deleted": [
+            {
+              "grantee": "PUBLIC",
+              "grantor": "<OWNER>",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ]
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_view_delete_priv.sql",
       "expected_msql_file": "alter_view_delete_priv_msql.sql"
@@ -205,7 +226,7 @@
       "endpoint": "NODE-view.obj_id",
       "data": {
         "name": "testview_$%{}[]()&*^!@\"'`\\/#",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public"
       }
     },
@@ -215,7 +236,7 @@
       "endpoint": "NODE-table.obj_id",
       "data": {
         "name": "test_view_table",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "schema": "public"
       }
     }

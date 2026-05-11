@@ -18,7 +18,7 @@
       "endpoint": "NODE-foreign_server.obj",
       "sql_endpoint": "NODE-foreign_server.sql_id",
       "data": {
-        "name":"test_fs_for_foreign_table_column"
+        "name": "test_fs_for_foreign_table_column"
       },
       "store_object_id": "True"
     },
@@ -33,7 +33,7 @@
         "schema": "public",
         "basensp": "public",
         "ftsrvname": "test_fs_for_foreign_table_column",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "ftoptions": [],
         "inherits": [],
         "relacl": [],
@@ -51,10 +51,10 @@
         "name": "col_1_$%{}[]()&*^!@\"'`\\/#",
         "description": "Comment for create",
         "cltype": "numeric",
-        "attlen":"10",
-        "attprecision":"5",
-        "coloptions":[],
-        "colconstype":"n",
+        "attlen": "10",
+        "attprecision": "5",
+        "coloptions": [],
+        "colconstype": "n",
         "attnotnull": true,
         "attoptions": [],
         "seclabels": [],
@@ -74,7 +74,14 @@
         "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#",
         "description": "Comment for alter",
         "cltype": "real",
-        "coloptions":{"added":[{"option":"column_name","value":"test"}]}
+        "coloptions": {
+          "added": [
+            {
+              "option": "column_name",
+              "value": "test"
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_column_numeric.sql",
       "expected_msql_file": "alter_column_numeric.msql"
@@ -127,4 +134,5 @@
         "name": "col_2_$%{}[]()&*^!@\"'`\\/#"
       }
     }
-  ]}
+  ]
+}

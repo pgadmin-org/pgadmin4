@@ -16,9 +16,9 @@ end
 $BODY$;
 
 ALTER FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO PUBLIC;
 
-GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO postgres;
+GRANT EXECUTE ON FUNCTION public."Function2_$%{}[]()&*^!@""'`\/#"() TO <OWNER>;
 

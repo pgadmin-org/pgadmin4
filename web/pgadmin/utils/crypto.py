@@ -16,7 +16,7 @@ import os
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
-from cryptography.hazmat.primitives.ciphers.modes import CFB8
+from cryptography.hazmat.decrepit.ciphers.modes import CFB8
 
 padding_string = b'}'
 iv_size = AES.block_size // 8

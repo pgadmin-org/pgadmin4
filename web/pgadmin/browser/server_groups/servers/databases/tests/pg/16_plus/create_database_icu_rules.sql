@@ -4,7 +4,7 @@
 
 CREATE DATABASE "test_database_icu_rules_$%{}[]()&*^!@""""""""'`\/#"
     WITH
-    OWNER = postgres
+    OWNER = <OWNER>
     ENCODING = 'UTF8'
     LC_COLLATE = '<LC_COLLATE>'
     LC_CTYPE = '<LC_CTYPE>'

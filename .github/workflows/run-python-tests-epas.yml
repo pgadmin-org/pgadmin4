@@ -33,6 +33,17 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-latest]
         pgver: [14, 15, 16, 17, 18]
+        postgisver: [34]
+        exclude:
+          - pgver: 18
+            postgisver: 34
+        include:
+          - os: ubuntu-22.04
+            pgver: 18
+            postgisver: 36
+          - os: windows-latest
+            pgver: 18
+            postgisver: 36
 
     runs-on: ${{ matrix.os }}
 
@@ -53,7 +64,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-22.04' }}
         run: |
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-postgis34
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-postgis${{ matrix.postgisver }}
 
       - name: Install pgagent on Linux
         if: ${{ matrix.os == 'ubuntu-22.04' &&  matrix.pgver <= 16 }}

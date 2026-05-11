@@ -16,7 +16,7 @@ end;
 $BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
     IS 'some comment';

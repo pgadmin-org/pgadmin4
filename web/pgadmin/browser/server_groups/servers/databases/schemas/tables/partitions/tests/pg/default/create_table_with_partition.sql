@@ -12,7 +12,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."test_table_$%{}[]()&*^!@""""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
     IS 'comment_01';

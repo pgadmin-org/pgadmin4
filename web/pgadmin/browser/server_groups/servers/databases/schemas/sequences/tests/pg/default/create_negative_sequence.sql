@@ -10,4 +10,4 @@ CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     CACHE 1;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

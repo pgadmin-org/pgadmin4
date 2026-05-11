@@ -89,7 +89,9 @@
         "seclabels": [],
         "name": "test_mview_add_",
         "definition": "SELECT 'test_pgadmin';",
-        "dependsonextensions": ["plpgsql"]
+        "dependsonextensions": [
+          "plpgsql"
+        ]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1026,8 +1028,8 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "old_grantee": "postgres",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -1056,7 +1058,9 @@
       },
       "test_data": {
         "comment": "This is test comment",
-        "dependsonextensions": ["plpgsql"]
+        "dependsonextensions": [
+          "plpgsql"
+        ]
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1076,7 +1080,6 @@
       "test_data": {
         "comment": "This is test comment",
         "definition": "select 1"
-
       },
       "mocking_required": false,
       "mock_data": {},

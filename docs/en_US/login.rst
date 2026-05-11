@@ -60,6 +60,18 @@ asking you to contact the LDAP administrator to recover your LDAP password.
 Avoiding a bruteforce attack
 ****************************
 
-You have the possibility to lock an account by setting ``MAX_LOGIN_ATTEMPTS``
-once it has reached the maximum number of login attempts.
-You can disable this feature by setting the value to zero.
+For accounts using the ``INTERNAL`` authentication source, pgAdmin locks
+the account after ``MAX_LOGIN_ATTEMPTS`` consecutive failed logins. The
+default is 3; set it to zero to disable.
+
+For accounts authenticated against an external identity provider
+(``LDAP``, ``OAUTH2``, ``KERBEROS``, ``WEBSERVER``), brute-force protection
+is **not** handled by pgAdmin and ``MAX_LOGIN_ATTEMPTS`` does not apply.
+Operators using these sources should:
+
+- Configure account-lockout policy on the upstream provider (for example,
+  Active Directory's account-lockout GPO, OpenLDAP's ``ppolicy`` overlay,
+  or the OAuth2 provider's rate limits).
+- Configure request rate-limiting (for example, ``limit_req`` in nginx)
+  on the reverse proxy in front of pgAdmin to bound login-attempt volume
+  per source IP.

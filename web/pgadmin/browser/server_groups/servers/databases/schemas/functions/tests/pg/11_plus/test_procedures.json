@@ -8,8 +8,15 @@
       "data": {
         "name": "Proc1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
-        "arguments": [{"argtype": "integer", "argmode": "IN", "argname": "i1", "argdefval": ""}],
-        "funcowner": "postgres",
+        "arguments": [
+          {
+            "argtype": "integer",
+            "argmode": "IN",
+            "argname": "i1",
+            "argdefval": ""
+          }
+        ],
+        "funcowner": "<OWNER>",
         "lanname": "plpgsql",
         "options": [],
         "pronamespace": 2200,
@@ -25,7 +32,8 @@
         "probin": "$libdir/"
       },
       "expected_sql_file": "create_procedure.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure comment",
       "endpoint": "NODE-procedure.obj_id",
@@ -35,14 +43,20 @@
       },
       "expected_sql_file": "alter_proc_comment.sql",
       "expected_msql_file": "alter_proc_comment_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter procedure param",
       "endpoint": "NODE-procedure.obj_id",
       "sql_endpoint": "NODE-procedure.sql_id",
       "data": {
         "variables": {
-          "added": [{"name": "application_name", "value": "pgadmin"}]
+          "added": [
+            {
+              "name": "application_name",
+              "value": "pgadmin"
+            }
+          ]
         }
       },
       "expected_sql_file": "alter_proc_param.sql",
@@ -58,7 +72,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege": true,
@@ -68,8 +82,8 @@
               ]
             },
             {
-              "grantee": "postgres",
-              "grantor": "postgres",
+              "grantee": "<OWNER>",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege": true,
@@ -92,7 +106,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege": true,
@@ -115,8 +129,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "old_grantee": "postgres",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege": true,
@@ -135,8 +149,7 @@
       "type": "delete",
       "name": "Drop procedure",
       "endpoint": "NODE-procedure.delete_id",
-      "data": {
-      }
+      "data": {}
     }
   ]
 }

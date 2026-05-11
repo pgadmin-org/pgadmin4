@@ -86,12 +86,11 @@ class GrantWizardSaveGetSQLTestCase(BaseTestGenerator):
 
         self.test_data['objects'][-1]['nspname'] = self.schema_name
 
-        if self.server_information['type'] == 'ppas':
-            self.test_data['acl'][-1]['grantee'] = 'enterprisedb'
-            self.test_data['acl'][-1]['grantor'] = 'enterprisedb'
-        else:
-            self.test_data['acl'][-1]['grantee'] = 'postgres'
-            self.test_data['acl'][-1]['grantor'] = 'postgres'
+        # Use the test server's actual username instead of a hardcoded
+        # 'postgres'/'enterprisedb' role.
+        owner = self.server['username']
+        self.test_data['acl'][-1]['grantee'] = owner
+        self.test_data['acl'][-1]['grantor'] = owner
 
     def grant_permissions_sql(self):
         response = self.tester.post(

@@ -13,13 +13,14 @@ from ipaddress import ip_address
 import keyring
 from flask_login import current_user
 from werkzeug.exceptions import InternalServerError
-from flask import render_template
+from flask import render_template, has_request_context
 from pgadmin.utils.constants import (
     KEY_RING_USERNAME_FORMAT, KEY_RING_SERVICE_NAME, KEY_RING_TUNNEL_FORMAT,
     KEY_RING_DESKTOP_USER, SSL_MODES, RESTRICTION_TYPE_DATABASES,
     RESTRICTION_TYPE_SQL)
 from pgadmin.utils.crypto import encrypt, decrypt
 from pgadmin.model import db, Server, SharedServer
+from pgadmin.utils.server_access import get_user_server_query
 from flask import current_app
 from pgadmin.utils.master_password import set_masterpass_check_text
 from pgadmin.utils.driver import get_driver
@@ -324,7 +325,10 @@ def migrate_passwords_from_pgadmin_db(servers, old_key, enc_key):
 
 
 def get_servers_with_saved_passwords():
-    all_server = Server.query.filter(Server.is_adhoc == 0)
+    all_server = Server.query.filter(
+        Server.user_id == current_user.id,
+        Server.is_adhoc == 0
+    )
     servers_with_pwd_in_os_secret = []
     servers_with_pwd_in_pgadmin_db = []
     saved_password_servers = []
@@ -648,32 +652,56 @@ def check_ssl_fields(data):
 
 def disconnect_from_all_servers():
     """
-    This function is used to disconnect all the servers
+    This function is used to disconnect all the servers for the
+    current user (owned + shared).
     """
-    all_servers = Server.query.all()
+    all_servers = get_user_server_query().all()
     for server in all_servers:
-        manager = get_driver(config.PG_DEFAULT_DRIVER).connection_manager(
-            server.id)
-        # Check if any psql terminal is running for the current disconnecting
-        # server. If any terminate the psql tool connection.
-        if 'sid_soid_mapping' in current_app.config and str(server.id) in \
-            current_app.config['sid_soid_mapping'] and \
-                str(server.id) in current_app.config['sid_soid_mapping']:
-            for i in current_app.config['sid_soid_mapping'][str(server.id)]:
-                sio.emit('disconnect-psql', namespace='/pty', to=i)
-
-        manager.release()
+        try:
+            manager = get_driver(
+                config.PG_DEFAULT_DRIVER
+            ).connection_manager(server.id)
+            # Only emit disconnect-psql for servers owned by the
+            # current user — shared servers may have other users'
+            # PSQL sessions mapped to the same sid.
+            if server.user_id == current_user.id and \
+                    'sid_soid_mapping' in current_app.config \
+                    and str(server.id) in \
+                    current_app.config['sid_soid_mapping']:
+                for i in current_app.config[
+                        'sid_soid_mapping'][str(server.id)]:
+                    sio.emit(
+                        'disconnect-psql',
+                        namespace='/pty', to=i
+                    )
+            manager.release()
+        except Exception:
+            current_app.logger.warning(
+                'Failed to disconnect server %s',
+                server.id, exc_info=True
+            )
 
 
 def delete_adhoc_servers(sid=None):
     """
-    This function will remove all the adhoc servers.
+    This function will remove adhoc servers. When called with a
+    current_user context, scopes to the current user. When called
+    during app startup (no user context), cleans all adhoc servers.
     """
     try:
+        has_user = (has_request_context() and
+                    current_user and current_user.is_authenticated)
         if sid is not None:
-            db.session.query(Server).filter(Server.id == sid).delete()
+            q = db.session.query(Server).filter(
+                Server.id == sid, Server.is_adhoc == 1)
+            if has_user:
+                q = q.filter(Server.user_id == current_user.id)
+            q.delete()
         else:
-            db.session.query(Server).filter(Server.is_adhoc == 1).delete()
+            q = db.session.query(Server).filter(Server.is_adhoc == 1)
+            if has_user:
+                q = q.filter(Server.user_id == current_user.id)
+            q.delete()
         db.session.commit()
 
         # Reset the sequence again

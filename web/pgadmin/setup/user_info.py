@@ -49,13 +49,33 @@ def user_info_server():
             "pgAdmin user account:\n"
         )
 
+        # Bound the retry loop so a non-interactive caller (mocked
+        # input(), closed stdin, or a typo'd PGADMIN_SETUP_EMAIL='' that
+        # never gets corrected) cannot spin forever printing
+        # "Invalid email address.".
+        MAX_PROMPT_ATTEMPTS = 5
         email = input(ENTER_EMAIL_ADDRESS)
+        attempts = 1
         while not validate_email(email):
+            if attempts >= MAX_PROMPT_ATTEMPTS:
+                raise RuntimeError(
+                    "Failed to obtain a valid email after {} attempts. "
+                    "Set PGADMIN_SETUP_EMAIL/PASSWORD env vars when "
+                    "running non-interactively.".format(
+                        MAX_PROMPT_ATTEMPTS))
             print('Invalid email address. Please try again.')
             email = input(ENTER_EMAIL_ADDRESS)
+            attempts += 1
 
         p1, p2 = pprompt()
+        attempts = 1
         while p1 != p2 or len(p1) < config.PASSWORD_LENGTH_MIN:
+            if attempts >= MAX_PROMPT_ATTEMPTS:
+                raise RuntimeError(
+                    "Failed to obtain a valid password after {} attempts. "
+                    "Set PGADMIN_SETUP_EMAIL/PASSWORD env vars when "
+                    "running non-interactively.".format(
+                        MAX_PROMPT_ATTEMPTS))
             if p1 != p2:
                 print('Passwords do not match. Please try again.')
             else:
@@ -64,6 +84,7 @@ def user_info_server():
                     'Please try again.'.format(config.PASSWORD_LENGTH_MIN)
                 )
             p1, p2 = pprompt()
+            attempts += 1
 
     return email, p1
 

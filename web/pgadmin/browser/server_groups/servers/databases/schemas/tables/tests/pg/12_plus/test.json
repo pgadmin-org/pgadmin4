@@ -8,7 +8,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -288,7 +288,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -528,7 +528,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "create table comment",
         "coll_inherits": "[]",
@@ -664,7 +664,8 @@
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk_chk.sql",
       "expected_msql_file": "create_table_with_pk_chk_msql.sql"
-    },    {
+    },
+    {
       "type": "alter",
       "name": "Alter Table add unique constraint",
       "endpoint": "NODE-table.obj_id",
@@ -797,7 +798,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -1021,7 +1022,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_custom_autovaccum_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "custom auto vacuum",
         "coll_inherits": "[]",
@@ -1208,7 +1209,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "relhasoids": true,
         "description": "test comment",
@@ -1338,7 +1339,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "r",
@@ -1361,7 +1362,8 @@
       "data": {
         "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#"
       }
-    },{
+    },
+    {
       "type": "create",
       "name": "Create Table for like table",
       "endpoint": "NODE-table.obj",
@@ -1405,7 +1407,8 @@
         "spcname": "pg_default"
       },
       "store_object_id": true
-    },{
+    },
+    {
       "type": "create",
       "name": "Create Table using like table",
       "endpoint": "NODE-table.obj",
@@ -1413,7 +1416,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "test ",
         "coll_inherits": "[]",
@@ -1499,14 +1502,16 @@
       "preprocess_data": true,
       "expected_sql_file": "create_table_with_lik_tbl.sql",
       "expected_msql_file": "create_table_with_lik_tbl_msql.sql"
-    },{
+    },
+    {
       "type": "delete",
       "name": "Delete Table with advanced options",
       "endpoint": "NODE-table.obj_id",
       "data": {
         "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#"
       }
-    },{
+    },
+    {
       "type": "create",
       "name": "Create Table with list partition",
       "endpoint": "NODE-table.obj",
@@ -1514,7 +1519,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_patition_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "partition table",
         "coll_inherits": "[]",
@@ -1674,7 +1679,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_range_patition_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "coll_inherits": "[]",
         "hastoasttable": true,
@@ -1834,7 +1839,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_hash_patition_$%{}[]()&*^!@\\\"'`\\\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "hash partition",
         "coll_inherits": "[]",
@@ -1992,7 +1997,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "postgres",
+        "relowner": "<OWNER>",
         "relacl": [],
         "description": "partition table",
         "coll_inherits": "[]",

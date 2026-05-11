@@ -17,7 +17,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."simple_table_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."simple_table_$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

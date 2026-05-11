@@ -14,7 +14,7 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     ENABLE ROW LEVEL SECURITY;

@@ -1324,7 +1324,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "r",

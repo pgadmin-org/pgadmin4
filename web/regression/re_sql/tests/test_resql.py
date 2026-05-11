@@ -259,9 +259,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 self.execute_prepost_sql(
                     scenario['pre_scenario_sql'], False)
 
-            # Preprocessed data to replace any place holder if available
-            if 'preprocess_data' in scenario and \
-                    scenario['preprocess_data'] and 'data' in scenario:
+            # Always preprocess data to replace placeholders like
+            # <OWNER> with the actual test username, and any object
+            # ID references.
+            if 'data' in scenario:
                 scenario['data'] = self.preprocess_data(scenario['data'])
 
             # If msql_endpoint exists then validate the modified sql
@@ -500,8 +501,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
-                sql = self.preprocess_expected_sql(scenario, sql, resp_sql,
-                                                   object_id)
+                sql, resp_sql = self.preprocess_expected_sql(
+                    scenario, sql, resp_sql, object_id)
                 try:
                     self.assertEqual(sql, resp_sql)
                 except Exception as e:
@@ -554,8 +555,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 fp = open(output_file, "r")
                 # Used rstrip to remove trailing \n
                 sql = fp.read().rstrip()
-                sql = self.preprocess_expected_sql(scenario, sql, resp_sql,
-                                                   object_id)
+                sql, resp_sql = self.preprocess_expected_sql(
+                    scenario, sql, resp_sql, object_id)
                 try:
                     self.assertEqual(sql, resp_sql)
                 except Exception as e:
@@ -573,8 +574,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     return False
         elif 'expected_sql' in scenario:
             exp_sql = scenario['expected_sql']
-            exp_sql = self.preprocess_expected_sql(scenario, exp_sql, resp_sql,
-                                                   object_id)
+            exp_sql, resp_sql = self.preprocess_expected_sql(
+                scenario, exp_sql, resp_sql, object_id)
             try:
                 self.assertEqual(exp_sql, resp_sql)
             except Exception as e:
@@ -788,10 +789,19 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         :return:
         """
         # Replace place holder <owner> with the current username
-        # used to connect to the database
+        # used to connect to the database.
         if 'username' in self.server:
-            sql = sql.replace(self.JSON_PLACEHOLDERS['owner'],
-                              self.server['username'])
+            from pgadmin.utils.driver.psycopg3 import Driver
+            quoted = Driver.qtIdent(None, self.server['username'])
+            raw = self.server['username']
+            # Replace <OWNER> with the raw username first
+            sql = sql.replace(self.JSON_PLACEHOLDERS['owner'], raw)
+            # If the username needs quoting, normalize both expected and
+            # response SQL so unquoted occurrences match quoted ones.
+            if quoted != raw:
+                sql = self._normalize_owner(sql, raw, quoted)
+                resp_sql = self._normalize_owner(
+                    resp_sql, raw, quoted)
         # Convert timestamp with timezone from json file to the
         # database server's correct timestamp
         sql = self.convert_timestamptz(scenario, sql)
@@ -850,6 +860,27 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             sql = sql.replace(self.JSON_PLACEHOLDERS['LC_COLLATE'], lc_collate)
             sql = sql.replace(self.JSON_PLACEHOLDERS['LC_CTYPE'], lc_ctype)
 
+        return sql, resp_sql
+
+    @staticmethod
+    def _normalize_owner(sql, raw, quoted):
+        """
+        Normalize owner references in SQL so that both quoted and unquoted
+        forms become consistent. This handles usernames that contain special
+        characters (e.g. dots) where PostgreSQL sometimes quotes and
+        sometimes doesn't (e.g. in SQL comments vs DDL statements).
+        """
+        import re
+        # Replace unquoted raw username with the quoted form everywhere
+        # except inside already-quoted strings. Use word boundary matching
+        # to avoid partial replacements.
+        escaped_raw = re.escape(raw)
+        escaped_quoted = re.escape(quoted)
+        # Don't replace if already quoted
+        sql = re.sub(
+            r'(?<!")' + escaped_raw + r'(?!")',
+            quoted, sql
+        )
         return sql
 
     def replace_placeholder_with_id(self, value):
@@ -863,6 +894,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 value.startswith('<') and value.endswith('>'):
             # Remove < and > from the string
             temp_value = value[1:-1]
+
+            if temp_value == 'OWNER':
+                return self.server['username']
+
             # Find the place holder OID in dictionary
             if temp_value in self.all_object_ids:
                 return self.all_object_ids[temp_value]

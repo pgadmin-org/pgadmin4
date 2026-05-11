@@ -4,7 +4,7 @@ CREATE TABLE public."simple_table_storage_$%{}[]()&*^!@""'`\/#"
 );
 
 ALTER TABLE IF EXISTS public."simple_table_storage_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."simple_table_storage_$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

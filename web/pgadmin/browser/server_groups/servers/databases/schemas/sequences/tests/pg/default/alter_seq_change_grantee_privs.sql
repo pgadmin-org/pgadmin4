@@ -11,7 +11,7 @@ CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     CACHE 2;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     IS 'Some comment';

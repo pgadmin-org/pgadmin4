@@ -101,13 +101,16 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
 
             # Replace multiple spaces with one space and check the expected sql
             sql = re.sub(r'\s+', ' ', orig_sql).strip()
+            from pgadmin.utils.driver.psycopg3 import Driver
             expected_sql = '-- DOMAIN: {0}.{1} -- DROP DOMAIN IF EXISTS ' \
                            '{0}.{1}; CREATE DOMAIN {0}.{1} {2} ' \
                            'ALTER DOMAIN {0}.{1} OWNER' \
                            ' TO {3};'.format(self.schema_name,
                                              self.test_data['domain_name'],
                                              self.test_data['domain_sql'],
-                                             self.server["username"])
+                                             Driver.qtIdent(
+                                                 None,
+                                                 self.server["username"]))
 
             self.assertEqual(sql, expected_sql)
 
