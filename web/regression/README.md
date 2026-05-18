@@ -55,24 +55,21 @@ General Information
     3. test_server_get.py
     4. test_server_update.py
 
-2) The pgAdmin4 source tree includes 2 different configuration file templates.
-   One file template for the server configuration
-   named ‘test_config.json.in' and another for test configuration named
-   'test_advanced_config.json.in' in the ‘pgAdmin4/web/regression’ directory.
-   After completing the pgAdmin4 configuration, you must make a working copy of
-   the templates called test_config.json and test_advance_config.json
-   before modifying the file contents.
+2) The pgAdmin4 source tree includes a configuration file template for the
+   server configuration named 'test_config.json.in' in the
+   'pgAdmin4/web/regression' directory. After completing the pgAdmin4
+   configuration, you must make a working copy of the template called
+   test_config.json before modifying the file contents.
 
     2a) The following command copies the test_config.json.in file, creating a
-        configuration file named test_config.json (same way user can copy
-        test_advance_config.json.in file into test_advance_config.json)
+        configuration file named test_config.json:
 
              $ cp pgadmin4/web/regression/test_config.json.in \
                pgadmin4/web/regression/test_config.json
 
-    2b) After creating the server and test configuration file, add (or modify)
+    2b) After creating the server configuration file, add (or modify)
         parameter values as per requirements. The pgAdmin4 regression framework
-        expects to find the files in the  directory
+        expects to find the file in the  directory
         '/<installation dir>/web/regression/'. If you move the file to another
         location, you must create a symbolic link that specifies the new location.
 
@@ -80,12 +77,6 @@ General Information
 
         Server details and connection properties as per their local setup. The
         test_config file is in JSON format and property values are
-        case-sensitive.
-
-    2d) Specifying the Test Configuration file:
-
-        The user can add/change test data as per their need. The
-        test_advanced_config file is in JSON format and property values are
         case-sensitive.
 
 
