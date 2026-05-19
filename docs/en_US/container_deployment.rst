@@ -104,8 +104,8 @@ of sudo to start Postfix, or if you wish to use an external mail server.
 
 *Default: <null>*
 
-If left un-set, the container will listen on port 5050 for connections in plain
-text. If set to any value, the container will listen on port 443 for TLS
+If left un-set, the container will listen on port 8080 for connections in plain
+text. If set to any value, the container will listen on port 8443 for TLS
 connections.
 
 When TLS is enabled, a certificate and key must be provided. Typically these
@@ -122,7 +122,7 @@ for most users - in IPv4-only environments, this may need to be set to
 
 **PGADMIN_LISTEN_PORT**
 
-*Default: 5050 or 443 (if TLS is enabled)*
+*Default: 8080 or 8443 (if TLS is enabled)*
 
 Allows the port that the server listens on to be set to a specific value rather
 than using the default.
@@ -227,13 +227,13 @@ instances.
 
         sudo chown -R 5050:5050 <host_directory>
 
-    The default listen port is 5050, which does not require any special
-    privileges. If you need to use a different port, specify it when launching
-    the container by adding the environment variable, for example:
+    The default listen port is 8080 (or 8443 with TLS), which does not require
+    any special privileges. If you need to use a different port, specify it when
+    launching the container by adding the environment variable, for example:
 
     .. code-block:: bash
 
-        -e 'PGADMIN_LISTEN_PORT=8080'
+        -e 'PGADMIN_LISTEN_PORT=5050'
 
     Don't forget to adjust any host-container port mapping accordingly.
 
@@ -279,22 +279,22 @@ certificate.
 Examples
 ********
 
-Run a simple container over port 5050:
+Run a simple container over port 8080:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 5050:5050 \
+    docker run -p 8080:8080 \
         -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
         -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
         -d dpage/pgadmin4
 
-Run a simple container over port 5050, setting some configuration options:
+Run a simple container over port 8080, setting some configuration options:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 5050:5050 \
+    docker run -p 8080:8080 \
         -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
         -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
         -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
@@ -309,7 +309,7 @@ Run a TLS secured container using a shared config/storage directory in
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 443:443 \
+    docker run -p 443:8443 \
         -v /private/var/lib/pgadmin:/var/lib/pgadmin \
         -v /path/to/certificate.cert:/certs/server.cert \
         -v /path/to/certificate.key:/certs/server.key \
@@ -326,13 +326,13 @@ Sometimes it's desirable to have users connect to pgAdmin through a reverse
 proxy rather than directly to the container it's running in. The following
 examples show how this can be achieved. With traditional reverse proxy servers
 such as `Nginx <https://www.nginx.com/>`_, pgAdmin is running in a container on
-the same host, with port 5050 on the host mapped to port 5050 on the container,
+the same host, with port 8080 on the host mapped to port 8080 on the container,
 for example:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 5050:5050 \
+    docker run -p 8080:8080 \
         -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
         -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
         -d dpage/pgadmin4
@@ -382,7 +382,7 @@ reverse proxy listening for all hostnames with `Nginx
 
         location / {
             proxy_set_header Host $host;
-            proxy_pass http://localhost:5050/;
+            proxy_pass http://localhost:8080/;
             proxy_redirect off;
         }
     }
@@ -400,7 +400,7 @@ tells the pgAdmin container how to rewrite paths:
         location /pgadmin4/ {
             proxy_set_header X-Script-Name /pgadmin4;
             proxy_set_header Host $host;
-            proxy_pass http://localhost:5050/;
+            proxy_pass http://localhost:8080/;
             proxy_redirect off;
         }
     }
@@ -444,7 +444,7 @@ adjusted as appropriate to the specific deployment:
             proxy_set_header X-Script-Name /pgadmin4;
             proxy_set_header X-Scheme $scheme;
             proxy_set_header Host $host;
-            proxy_pass http://localhost:5050/;
+            proxy_pass http://localhost:8080/;
             proxy_redirect off;
         }
     }

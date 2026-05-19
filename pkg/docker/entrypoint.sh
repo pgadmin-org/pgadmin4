@@ -268,9 +268,9 @@ if [ -n "${PGADMIN_ENABLE_SOCK}" ]; then
     BIND_ADDRESS="unix:/run/pgadmin/pgadmin.sock"
 else
     if [ -n "${PGADMIN_ENABLE_TLS}" ]; then
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-443}"
+        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-8443}"
     else
-        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-5050}"
+        BIND_ADDRESS="${PGADMIN_LISTEN_ADDRESS:-[::]}:${PGADMIN_LISTEN_PORT:-8080}"
     fi
 fi
 
