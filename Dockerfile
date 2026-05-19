@@ -159,6 +159,7 @@ RUN apk update && apk upgrade && \
         bash \
         postfix \
         krb5-libs \
+        libcurl \
         libjpeg-turbo \
         shadow \
         sudo \
@@ -174,7 +175,7 @@ COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/liblz4.so.1.10.0 /usr/lib/
+COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/local/lib/libpq-oauth-18.so /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.18 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.18 /usr/lib/libpq.so && \
