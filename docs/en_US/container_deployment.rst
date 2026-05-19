@@ -104,7 +104,7 @@ of sudo to start Postfix, or if you wish to use an external mail server.
 
 *Default: <null>*
 
-If left un-set, the container will listen on port 80 for connections in plain
+If left un-set, the container will listen on port 5050 for connections in plain
 text. If set to any value, the container will listen on port 443 for TLS
 connections.
 
@@ -122,7 +122,7 @@ for most users - in IPv4-only environments, this may need to be set to
 
 **PGADMIN_LISTEN_PORT**
 
-*Default: 80 or 443 (if TLS is enabled)*
+*Default: 5050 or 443 (if TLS is enabled)*
 
 Allows the port that the server listens on to be set to a specific value rather
 than using the default.
@@ -227,14 +227,13 @@ instances.
 
         sudo chown -R 5050:5050 <host_directory>
 
-    On some filesystems that do not support extended attributes, it may not be
-    possible to run pgAdmin without specifying a value for *PGADMIN_LISTEN_PORT*
-    that is greater than 1024. In such cases, specify an alternate port when
-    launching the container by adding the environment variable, for example:
+    The default listen port is 5050, which does not require any special
+    privileges. If you need to use a different port, specify it when launching
+    the container by adding the environment variable, for example:
 
     .. code-block:: bash
 
-        -e 'PGADMIN_LISTEN_PORT=5050'
+        -e 'PGADMIN_LISTEN_PORT=8080'
 
     Don't forget to adjust any host-container port mapping accordingly.
 
@@ -280,22 +279,22 @@ certificate.
 Examples
 ********
 
-Run a simple container over port 80:
+Run a simple container over port 5050:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 80:80 \
+    docker run -p 5050:5050 \
         -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
         -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
         -d dpage/pgadmin4
 
-Run a simple container over port 80, setting some configuration options:
+Run a simple container over port 5050, setting some configuration options:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 80:80 \
+    docker run -p 5050:5050 \
         -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
         -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
         -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
@@ -327,13 +326,13 @@ Sometimes it's desirable to have users connect to pgAdmin through a reverse
 proxy rather than directly to the container it's running in. The following
 examples show how this can be achieved. With traditional reverse proxy servers
 such as `Nginx <https://www.nginx.com/>`_, pgAdmin is running in a container on
-the same host, with port 5050 on the host mapped to port 80 on the container,
+the same host, with port 5050 on the host mapped to port 5050 on the container,
 for example:
 
 .. code-block:: bash
 
     docker pull dpage/pgadmin4
-    docker run -p 5050:80 \
+    docker run -p 5050:5050 \
         -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
         -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
         -d dpage/pgadmin4
