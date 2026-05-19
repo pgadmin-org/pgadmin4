@@ -18,6 +18,7 @@ import { getBrowser } from '../../../../static/js/utils';
 import SaveSharpIcon from '@mui/icons-material/SaveSharp';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import HTMLReactParser from 'html-react-parser/lib/index';
+import DOMPurify from 'dompurify';
 import getApiInstance from '../../../../static/js/api_instance';
 
 // Cache for dynamically loaded options to avoid repeated API calls
@@ -349,7 +350,7 @@ export function showResetPrefModal(api, pgAdmin, preferencesStore, onReset) {
       return (
         <StyledBox display="flex" flexDirection="column" height="100%">
           <Box flexGrow="1" p={2}>
-            {HTMLReactParser(text)}
+            {HTMLReactParser(DOMPurify.sanitize(text))}
           </Box>
           <Box className='Alert-footer'>
             <DefaultButton className='Alert-margin' startIcon={<CloseIcon />} onClick={modalClose}>

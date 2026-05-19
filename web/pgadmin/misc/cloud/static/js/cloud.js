@@ -90,7 +90,7 @@ define('pgadmin.misc.cloud', [
               axiosApi.post(_url)
                 .then(() => {/*This is intentional (SonarQube)*/})
                 .catch((error) => {
-                  pgAdmin.Browser.notifier.error(gettext(`Error while clearing cloud wizard data: ${error.response.data.errormsg}`));
+                  pgAdmin.Browser.notifier.errorText(gettext(`Error while clearing cloud wizard data: ${error.response.data.errormsg}`));
                 });
               pgAdmin.Browser.docker.default_workspace.close(panelId, true);
             }}/>

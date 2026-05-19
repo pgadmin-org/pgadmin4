@@ -300,12 +300,12 @@ define('pgadmin.browser', [
           }
         } else if(data.outdated) {
           //This is for server mode or auto-update not supported desktop installer or not mentioned auto_update_url
-          pgAdmin.Browser.notifier.warning(
-            `
-            ${gettext('You are currently running version %s of %s, <br/>however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}
-            <br/><br/>
-            ${gettext('Please click <a href="%s" target="_new" style="color:inherit">here</a> for more information.', data.download_url)}
-            `,
+          // Render as plain text so the server-supplied download URL
+          // cannot inject markup into the notification body.
+          pgAdmin.Browser.notifier.warningText(
+            gettext('You are currently running version %s of %s, however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)
+            + '\n\n'
+            + gettext('For more information, please visit: %s', data.download_url),
             null
           );
         }
@@ -316,7 +316,7 @@ define('pgadmin.browser', [
         }
       }).catch((error)=>{
         console.error('Error during version check', error);
-        pgAdmin.Browser.notifier.error(gettext(`${error.response?.data?.errormsg || error?.message}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`${error.response?.data?.errormsg || error?.message}`));
       });
     },
 

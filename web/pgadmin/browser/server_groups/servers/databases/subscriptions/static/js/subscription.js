@@ -107,7 +107,7 @@ define('pgadmin.node.subscription', [
                         );
                       }else if(!_.isNull(res.data.errormsg) && _.isNull(res.data.data)){
                         reject(new Error(res.data.errormsg));
-                        pgAdmin.Browser.notifier.alert(
+                        pgAdmin.Browser.notifier.alertText(
                           gettext('Check connection?'),
                           gettext(res.data.errormsg)
                         );

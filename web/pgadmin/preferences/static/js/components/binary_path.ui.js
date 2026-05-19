@@ -68,7 +68,7 @@ export default class BinaryPathSchema extends BaseUISchema {
             api.post(url_for('misc.validate_binary_path'),
               JSON.stringify({ 'utility_path': data }))
               .then(function (res) {
-                pgAdmin.Browser.notifier.alert(gettext('Validate binary path'), gettext(res.data.data));
+                pgAdmin.Browser.notifier.alertText(gettext('Validate binary path'), gettext(res.data.data));
               })
               .catch(function (error) {
                 pgAdmin.Browser.notifier.pgNotifier('error', error, gettext('Failed to validate binary path.'));

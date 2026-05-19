@@ -730,7 +730,7 @@ export default class ERDTool extends React.Component {
       this.registerModelEvents();
     } else {
       console.error('Failed to load file:', fileData.error);
-      pgAdmin.Browser.notifier.error(fileData.error);
+      pgAdmin.Browser.notifier.errorText(fileData.error);
     }
     this.setLoading(null);
   }

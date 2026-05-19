@@ -141,7 +141,7 @@ export function generateTitle(title_placeholder, title_data) {
  * This function is used refresh the db node after showing alert to the user
  */
 export function refresh_db_node(message, dbNode) {
-  pgAdmin.Browser.notifier.alert(gettext('Database moved/renamed'), gettext(message), ()=>{
+  pgAdmin.Browser.notifier.alertText(gettext('Database moved/renamed'), gettext(message), ()=>{
     pgAdmin.Browser.Nodes.database.callbacks.refresh(undefined, dbNode);
   });
 }

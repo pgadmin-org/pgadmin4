@@ -114,7 +114,7 @@ export default function Permissions({roles, updateRolePermissions}) {
       updateRolePermissions(selectedRole, resp.data.permissions);
       pgAdmin.Browser.notifier.success(gettext('Permissions saved successfully'));
     } catch (error) {
-      pgAdmin.Browser.notifier.error(parseApiError(error));
+      pgAdmin.Browser.notifier.errorText(parseApiError(error));
       console.error(error);
     }
     setLoading('');
@@ -127,7 +127,7 @@ export default function Permissions({roles, updateRolePermissions}) {
         setAllPermissions(response.data);
       })
       .catch(error => {
-        pgAdmin.Browser.notifier.error(parseApiError(error));
+        pgAdmin.Browser.notifier.errorText(parseApiError(error));
         console.error(error);
       });
   }, []);

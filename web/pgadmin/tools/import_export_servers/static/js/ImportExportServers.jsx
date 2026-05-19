@@ -82,7 +82,7 @@ export default function ImportExportServers({onClose}) {
           pgAdmin.Browser.notifier.alert(gettext('Export Servers'), gettext('The selected servers were exported successfully.'));
         })
         .catch((err) => {
-          pgAdmin.Browser.notifier.alert(gettext('Export Error'), err.response.data.errormsg);
+          pgAdmin.Browser.notifier.alertText(gettext('Export Error'), err.response.data.errormsg);
         });
     } else if (selectionFormData.imp_exp == 'i') {
       // Remove the random number added to create unique tree item,
@@ -107,7 +107,7 @@ export default function ImportExportServers({onClose}) {
           pgAdmin.Browser.notifier.alert(gettext('Import Servers'), msg);
         })
         .catch((err) => {
-          pgAdmin.Browser.notifier.alert(gettext('Import Error'), err.response.data.errormsg);
+          pgAdmin.Browser.notifier.alertText(gettext('Import Error'), err.response.data.errormsg);
         });
     }
 

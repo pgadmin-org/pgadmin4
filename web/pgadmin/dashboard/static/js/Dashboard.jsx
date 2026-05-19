@@ -153,7 +153,7 @@ function getTerminateCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
                   }
                 })
                 .catch(function (error) {
-                  pgAdmin.Browser.notifier.alert(
+                  pgAdmin.Browser.notifier.alertText(
                     gettext('Failed to perform the operation.'),
                     parseApiError(error)
                   );
@@ -217,7 +217,7 @@ function getCancelCell(pgAdmin, sid, did, canTakeAction, onSuccess) {
                   }
                 })
                 .catch(function (error) {
-                  pgAdmin.Browser.notifier.alert(
+                  pgAdmin.Browser.notifier.alertText(
                     gettext('Failed to perform the operation.'),
                     parseApiError(error)
                   );
@@ -813,7 +813,7 @@ function Dashboard({
           setLogConfigFormat(_frm);
         })
         .catch((error) => {
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Failed to retrieve data from the server.'),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
@@ -874,7 +874,7 @@ function Dashboard({
               }
             })
             .catch((error) => {
-              pgAdmin.Browser.notifier.alert(
+              pgAdmin.Browser.notifier.alertText(
                 gettext('Failed to retrieve data from the server.'),
                 _.isUndefined(error.response) ? error.message : error.response.data.errormsg
               );
@@ -1009,7 +1009,7 @@ function Dashboard({
           }
         })
         .catch((error) => {
-          pgAdmin.Browser.notifier.alert(
+          pgAdmin.Browser.notifier.alertText(
             gettext('Failed to retrieve data from the server.'),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );

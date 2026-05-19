@@ -96,7 +96,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         }
       })
       .catch((error) => {
-        pgAdmin.Browser.notifier.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
       });
   }, [cloudProvider]);
 
@@ -150,7 +150,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}
         onClose();
       })
       .catch((error) => {
-        pgAdmin.Browser.notifier.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.errorText(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
       });
   };
 

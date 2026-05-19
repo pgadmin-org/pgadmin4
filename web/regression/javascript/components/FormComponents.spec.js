@@ -13,7 +13,7 @@ import { withTheme } from '../fake_theme';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 
-import {FormInputText, FormInputFileSelect, FormInputSQL,
+import {FormInput, FormInputText, FormInputFileSelect, FormInputSQL,
   FormInputSwitch, FormInputCheckbox, FormInputToggle, FormInputSelect,
   FormInputColor,
   FormFooterMessage,
@@ -596,5 +596,151 @@ describe('FormComponents', ()=>{
       });
       expect(ctrl.container).toBeEmptyDOMElement();
     });
+  });
+
+  describe('XSS sanitization', ()=>{
+    let ThemedFormFooterMessage = withTheme(FormFooterMessage);
+    let ThemedFormInput = withTheme(FormInput);
+
+    it('NotifierMessage strips iframe srcdoc payload', ()=>{
+      const xss = '<iframe srcdoc="&lt;script&gt;window.__xss=true&lt;/script&gt;">';
+      const ctrl = render(
+        <ThemedFormFooterMessage
+          type={MESSAGE_TYPE.ERROR}
+          message={'Failed to connect:\n' + xss}
+          closable={false}
+        />);
+      expect(ctrl.container.querySelector('iframe')).toBeNull();
+      expect(ctrl.container.querySelector('script')).toBeNull();
+    });
+
+    it('FormInput strips script tag in errorMessage', ()=>{
+      const xss = '<script>window.__xss=true</script>Bad input';
+      const ctrl = render(
+        <ThemedFormInput label="Field" errorMessage={xss}>
+          <input />
+        </ThemedFormInput>);
+      expect(ctrl.container.querySelector('script')).toBeNull();
+    });
+
+    it('preserves safe HTML formatting', ()=>{
+      const ctrl = render(
+        <ThemedFormFooterMessage
+          type={MESSAGE_TYPE.INFO}
+          message={'Connected to <b>prod</b><br/>OK'}
+          closable={false}
+        />);
+      expect(ctrl.container.querySelector('b')).not.toBeNull();
+      expect(ctrl.container.querySelector('br')).not.toBeNull();
+    });
+
+    it('NotifierMessage in plainText mode renders raw text, no HTML parsing', ()=>{
+      const ctrl = render(
+        <ThemedFormFooterMessage
+          type={MESSAGE_TYPE.ERROR}
+          message={'oops: <b>bold</b><br/>line two'}
+          plainText={true}
+          closable={false}
+        />);
+      // Even <b> and <br> tags must NOT be interpreted as DOM.
+      expect(ctrl.container.querySelector('b')).toBeNull();
+      expect(ctrl.container.querySelector('br')).toBeNull();
+      // The raw characters appear in the text content instead.
+      expect(ctrl.container.textContent)
+        .toContain('oops: <b>bold</b><br/>line two');
+    });
+
+    it('NotifierMessage in plainText mode strips iframe payload', ()=>{
+      const xss = '<iframe srcdoc="&lt;script&gt;alert(1)&lt;/script&gt;">';
+      const ctrl = render(
+        <ThemedFormFooterMessage
+          type={MESSAGE_TYPE.ERROR}
+          message={'Failed to connect:\n' + xss}
+          plainText={true}
+          closable={false}
+        />);
+      expect(ctrl.container.querySelector('iframe')).toBeNull();
+      expect(ctrl.container.querySelector('script')).toBeNull();
+    });
+
+    it('FormInput errorMessage is rendered as plain text', ()=>{
+      // The errorMessage prop is always treated as a validation / driver
+      // error string. Even safe-looking HTML must render literally.
+      const ctrl = render(
+        <ThemedFormInput label="Field" errorMessage={'bad: <b>field</b>'}>
+          <input />
+        </ThemedFormInput>);
+      expect(ctrl.container.querySelector('b')).toBeNull();
+      expect(ctrl.container.textContent).toContain('bad: <b>field</b>');
+    });
+
+    // Exercise common XSS vectors beyond the iframe srcdoc payload cited
+    // in the original report. DOMPurify's default config (used by the
+    // HTML-mode NotifierMessage / AlertContent renderers) should
+    // neutralise all of them — these tests pin that behavior so a
+    // future config tweak (ADD_TAGS, FORBID_* relaxation, etc.) can't
+    // silently re-open the class of bug.
+    const VECTORS = [
+      ['svg onload', '<svg/onload=alert(1)>'],
+      ['img onerror', '<img src=x onerror=alert(1)>'],
+      ['body onload', '<body onload=alert(1)>'],
+      ['math href javascript',
+        '<math href="javascript:alert(1)"><mtext>x</mtext></math>'],
+      ['anchor javascript URI',
+        '<a href="javascript:alert(1)">click</a>'],
+      ['form action javascript',
+        '<form action="javascript:alert(1)"><input></form>'],
+      ['object data javascript',
+        '<object data="javascript:alert(1)"></object>'],
+      ['embed src javascript', '<embed src="javascript:alert(1)">'],
+      ['style expression',
+        '<div style="background:url(javascript:alert(1))">x</div>'],
+      ['data URI in iframe src',
+        '<iframe src="data:text/html,<script>alert(1)</script>"></iframe>'],
+      ['marquee onstart', '<marquee onstart=alert(1)>x</marquee>'],
+      ['details ontoggle', '<details ontoggle=alert(1) open>x</details>'],
+      ['template script',
+        '<template><script>alert(1)</script></template>'],
+      ['xss in noscript',
+        '<noscript><script>alert(1)</script></noscript>'],
+    ];
+
+    for (const [name, payload] of VECTORS) {
+      it(`NotifierMessage neutralises XSS vector: ${name}`, ()=>{
+        window.__xss = undefined;
+        const ctrl = render(
+          <ThemedFormFooterMessage
+            type={MESSAGE_TYPE.ERROR}
+            message={payload}
+            closable={false}
+          />);
+        // No script element should reach the DOM.
+        expect(ctrl.container.querySelector('script')).toBeNull();
+        // No iframe or embed escape.
+        expect(ctrl.container.querySelector('iframe')).toBeNull();
+        expect(ctrl.container.querySelector('embed')).toBeNull();
+        // Inline event handlers stripped — verify nothing fires by
+        // re-checking the global sentinel.
+        expect(window.__xss).toBeUndefined();
+        // No element should keep a javascript: / data: URL in
+        // href / src / action.
+        ctrl.container.querySelectorAll('[href], [src], [action]')
+          .forEach((el) => {
+            for (const attr of ['href', 'src', 'action']) {
+              const v = el.getAttribute(attr);
+              if (v) {
+                expect(v.toLowerCase()).not.toMatch(/^\s*javascript:/);
+                expect(v.toLowerCase()).not.toMatch(/^\s*data:/);
+              }
+            }
+          });
+        // No on* event-handler attributes survive.
+        ctrl.container.querySelectorAll('*').forEach((el) => {
+          for (const attr of el.attributes) {
+            expect(attr.name.toLowerCase()).not.toMatch(/^on/);
+          }
+        });
+      });
+    }
   });
 });

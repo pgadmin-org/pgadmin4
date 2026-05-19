@@ -75,10 +75,10 @@ function raiseErrorOnFail(pgAdmin, alertTitle, xhr) {
       pgAdmin.Browser.notifier.alert(alertTitle, gettext('Unable to get the response text.'));
     } else {
       let err = JSON.parse(xhr.response.data);
-      pgAdmin.Browser.notifier.alert(alertTitle, err.errormsg);
+      pgAdmin.Browser.notifier.alertText(alertTitle, err.errormsg);
     }
   } catch (e) {
-    pgAdmin.Browser.notifier.alert(alertTitle, gettext(e.message));
+    pgAdmin.Browser.notifier.alertText(alertTitle, gettext(e.message));
   }
 }
 
@@ -135,7 +135,7 @@ export function SchemaDiffCompare({ params }) {
 
       setSourceGroupServerList(groupedOptions);
     }).catch((err) => {
-      pgAdmin.Browser.notifier.alert(err.message);
+      pgAdmin.Browser.notifier.alertText(err.message);
     });
   }, []);
 
@@ -341,7 +341,7 @@ export function SchemaDiffCompare({ params }) {
       } catch (error) {
         setLoaderText(null);
         setShowResultGrid(false);
-        pgAdmin.Browser.notifier.alert(gettext('Error'), parseApiError(error));
+        pgAdmin.Browser.notifier.alertText(gettext('Error'), parseApiError(error));
       }
       socket?.disconnect();
     }
@@ -619,7 +619,7 @@ export function SchemaDiffCompare({ params }) {
         }
       }
     }).catch((error) => {
-      pgAdmin.Browser.notifier.error(gettext(`Error in connect database ${error.response.data}`));
+      pgAdmin.Browser.notifier.errorText(gettext(`Error in connect database ${error.response.data}`));
     });
 
   };
@@ -654,7 +654,7 @@ export function SchemaDiffCompare({ params }) {
         showConnectServer(error.response?.data.result, sid, diff_type, serverList);
       });
     } catch (error) {
-      pgAdmin.Browser.notifier.error(gettext(`Error in connect server ${error.response.data}` ));
+      pgAdmin.Browser.notifier.errorText(gettext(`Error in connect server ${error.response.data}` ));
     }
   };
 

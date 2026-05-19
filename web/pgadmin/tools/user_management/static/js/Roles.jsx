@@ -89,7 +89,7 @@ export default function Roles({roles, updateRoles}) {
           pgAdmin.Browser.notifier.success(gettext('Role deleted successfully.'));
           updateRoles();
         } catch (error) {
-          pgAdmin.Browser.notifier.error(parseApiError(error));
+          pgAdmin.Browser.notifier.errorText(parseApiError(error));
         }
         setLoading('');
       });

@@ -319,7 +319,7 @@ define('pgadmin.node.server', [
                     pgAdmin.Browser.notifier.success(res.data.result);
                   }
                   else {
-                    pgAdmin.Browser.notifier.error(res.data.result);
+                    pgAdmin.Browser.notifier.errorText(res.data.result);
                   }
                 }).catch(function(error) {
                   pgAdmin.Browser.notifier.pgRespErrorNotify(error);
@@ -452,7 +452,7 @@ define('pgadmin.node.server', [
                     });
                   }
                   else {
-                    pgAdmin.Browser.notifier.error(res.info);
+                    pgAdmin.Browser.notifier.errorText(res.info);
                   }
                 }).catch(function(error) {
                   pgAdmin.Browser.notifier.pgRespErrorNotify(error);
@@ -486,7 +486,7 @@ define('pgadmin.node.server', [
                     t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
                   }
                   else {
-                    pgAdmin.Browser.notifier.error(res.info);
+                    pgAdmin.Browser.notifier.errorText(res.info);
                   }
                 }).catch(function(error) {
                   pgAdmin.Browser.notifier.pgRespErrorNotify(error);
@@ -701,7 +701,12 @@ define('pgadmin.node.server', [
 
             /* Below code is added to show the error message if
                connection is successful, but there is an error to
-               run the post connection sql queries. */
+               run the post connection sql queries. The backend has
+               already HTML-escaped the driver-returned text in
+               execute_post_connection_sql, so HTML-mode rendering
+               here decodes the entities to literal text. A
+               malicious PostgreSQL ErrorResponse therefore appears
+               as readable text, not executable markup. */
             if (res?.errormsg) {
               pgAdmin.Browser.notifier.error(res.errormsg, null);
             }
@@ -792,7 +797,7 @@ define('pgadmin.node.server', [
             serverInfo[data._id] = _.extend({}, data);
 
             if(data.errmsg) {
-              pgAdmin.Browser.notifier.error(data.errmsg);
+              pgAdmin.Browser.notifier.errorText(data.errmsg);
             }
             // Generate the event that server is connected
             pgBrowser.Events.trigger(
@@ -856,7 +861,7 @@ define('pgadmin.node.server', [
             }
             else {
               try {
-                pgAdmin.Browser.notifier.error(res.errormsg);
+                pgAdmin.Browser.notifier.errorText(res.errormsg);
               } catch (e) {
                 console.warn(e.stack || e);
               }

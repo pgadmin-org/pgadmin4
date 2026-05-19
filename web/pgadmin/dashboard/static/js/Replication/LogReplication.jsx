@@ -153,7 +153,7 @@ export default function LogReplication({treeNodeInfo, pageVisible}) {
       })
       .catch((error)=>{
         console.error(error);
-        pgAdmin.Browser.notifier.error(parseApiError(error));
+        pgAdmin.Browser.notifier.errorText(parseApiError(error));
       });
   };
 
