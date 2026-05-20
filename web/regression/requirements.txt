@@ -27,7 +27,7 @@ linecache2==1.0.0
 pbr==7.0.3
 pycodestyle>=2.14.0
 python-mimeparse==2.0.0
-selenium==4.43.0
+selenium==4.44.0
 testscenarios==0.5.0; python_version <= '3.9'
 testscenarios==0.6.1; python_version > '3.9'
 testtools==2.7.2; python_version <= '3.9'
