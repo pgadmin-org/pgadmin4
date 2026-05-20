@@ -114,15 +114,13 @@ def get_server_groups_for_user():
 
     Includes groups owned by the user plus groups containing shared
     servers (Server.shared=True, visible to all authenticated users).
-    Administrators see all groups.
+    Administrators follow the same visibility rules in browser listings
+    so private server groups owned by other users are not exposed.
     """
     if not config.SERVER_MODE:
         return ServerGroup.query.filter_by(
             user_id=current_user.id
         ).all()
-
-    if _is_admin():
-        return ServerGroup.query.all()
 
     return ServerGroup.query.filter(
         or_(
@@ -146,6 +144,19 @@ def get_user_server_query():
         return Server.query
 
     if _is_admin():
+        return Server.query
+
+    return get_visible_server_query()
+
+
+def get_visible_server_query():
+    """Return a query for servers visible in browser listings.
+
+    This intentionally does not grant Administrator users extra visibility:
+    browser trees and picker dialogs should only expose servers owned by the
+    current user or explicitly shared with all users.
+    """
+    if not config.SERVER_MODE:
         return Server.query
 
     return Server.query.filter(

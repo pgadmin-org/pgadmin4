@@ -46,8 +46,8 @@ from pgadmin.utils.preferences import Preferences
 from .... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 from pgadmin.settings.utils import with_object_filters
-from pgadmin.utils.server_access import get_server, \
-    get_user_server_query, get_server_group
+from pgadmin.utils.server_access import get_server, get_server_group, \
+    get_visible_server_query
 
 
 # File-path keys in connection_params that are per-user and must
@@ -290,7 +290,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         """Return a JSON document listing the server groups for the user"""
 
         hide_shared_server = get_preferences()
-        servers = get_user_server_query().filter(
+        servers = get_visible_server_query().filter(
             Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -646,7 +646,7 @@ class ServerNode(PGChildNodeView):
         Return a JSON document listing the servers under this server group
         for the user.
         """
-        servers = get_user_server_query().filter(
+        servers = get_visible_server_query().filter(
             Server.servergroup_id == gid, Server.is_adhoc == 0)
 
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -1062,7 +1062,7 @@ class ServerNode(PGChildNodeView):
         """
         Return list of attributes of all servers.
         """
-        servers = get_user_server_query().filter(
+        servers = get_visible_server_query().filter(
             Server.servergroup_id == gid,
             Server.is_adhoc == 0).order_by(Server.name)
         sg = get_server_group(gid)

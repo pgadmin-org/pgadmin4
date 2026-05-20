@@ -64,7 +64,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     ERROR_MSG_FAIL_TO_PROMOTE_QT
 from pgadmin.model import Server, ServerGroup
 from pgadmin.utils.server_access import get_server, \
-    get_server_groups_for_user, get_user_server_query
+    get_server_groups_for_user, get_visible_server_query
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
 from pgadmin.utils.preferences import Preferences
@@ -2413,7 +2413,7 @@ def get_new_connection_data(sgid=None, sid=None):
         server_groups = get_server_groups_for_user()
         server_group_data = {server_group.name: [] for server_group in
                              server_groups}
-        servers = get_user_server_query().filter(
+        servers = get_visible_server_query().filter(
             Server.is_adhoc == 0)
 
         for server in servers:
