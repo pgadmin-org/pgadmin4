@@ -165,11 +165,12 @@ class RestoreJobTest(BaseTestGenerator):
         response_data = json.loads(response.data.decode('utf-8'))
         job_id = response_data['data']['job_id']
 
-        cnt = 0
         the_process = None
-        while True:
-            if cnt >= 5:
-                break
+        # Wait up to 30s for the background pg_restore to actually
+        # finish. The completion signal is `exit_code` becoming non-None
+        # — NOT the mere presence of `execution_time`, which is set
+        # while the process is still running.
+        for _ in range(60):
             # Check the process list
             response1 = self.tester.get('/misc/bgprocess/?_={0}'.format(
                 secrets.choice(range(1, 9999999))))
@@ -179,13 +180,12 @@ class RestoreJobTest(BaseTestGenerator):
             try:
                 the_process = next(
                     p for p in process_list if p['id'] == job_id)
-            except Exception:
+            except StopIteration:
                 the_process = None
 
-            if the_process and 'execution_time' in the_process:
+            if the_process and the_process.get('exit_code') is not None:
                 break
             time.sleep(0.5)
-            cnt += 1
 
         self.assertTrue('execution_time' in the_process)
         self.assertTrue('stime' in the_process)
