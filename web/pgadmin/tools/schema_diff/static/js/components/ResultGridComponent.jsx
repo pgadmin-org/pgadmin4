@@ -24,7 +24,7 @@ import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid
 import { usePgAdmin } from '../../../../../static/js/PgAdminProvider';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   paddingTop: '0.5rem',
   display: 'flex',
   height: '100%',

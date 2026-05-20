@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect } from 'react';
-import { Box, styled, useTheme } from '@mui/material';
+import { styled, useTheme } from '@mui/material';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 
@@ -23,7 +23,7 @@ import gettext from 'sources/gettext';
 import { useApplicationState } from '../../../../../settings/static/ApplicationStateProvider';
 import { LAYOUT_EVENTS } from '../../../../../static/js/helpers/Layout';
 
-const Root = styled(Box)(()=>({
+const Root = styled('div')(()=>({
   width: '100%',
   height: '100%',
   display: 'flex',

@@ -15,7 +15,7 @@ import { DefaultButton, PgButtonGroup, PgIconButton } from '../../../../../../st
 import { Box, Tooltip, CircularProgress } from '@mui/material';
 import { ConnectedIcon, DisconnectedIcon } from '../../../../../../static/js/components/ExternalIcon';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   padding: '2px 4px',
   display: 'flex',
   alignItems: 'center',
@@ -77,8 +77,17 @@ export default function ConnectionBar({status, bgcolor, fgcolor, title}) {
         />
         <DefaultButton className='Status-connectionButton' style={{backgroundColor: bgcolor, color: fgcolor}} data-test="btn-conn-title">
           <Tooltip title={title}>
-            <Box display="flex" width="100%">
-              <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">
+            <Box
+              sx={{
+                display: 'flex',
+                width: '100%'
+              }}>
+              <Box
+                sx={{
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  marginRight: 'auto'
+                }}>
                 {status == STATUS.CONNECTING && (gettext('(Obtaining connection...)')+' ')}
                 {status == STATUS.FAILED && (gettext('(Connection failed)')+' ')}
                 {title}

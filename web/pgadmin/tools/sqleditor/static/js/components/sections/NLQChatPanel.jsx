@@ -91,7 +91,7 @@ const MessageBubble = styled(Paper)(({ theme, isuser }) => ({
   }),
 }));
 
-const SQLPreviewBox = styled(Box)(({ theme }) => ({
+const SQLPreviewBox = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(1),
   '& .sql-preview-header': {
     display: 'flex',
@@ -126,14 +126,14 @@ const InputArea = styled('div')(({ theme }) => ({
   alignItems: 'flex-end',
 }));
 
-const ThinkingIndicator = styled(Box)(({ theme }) => ({
+const ThinkingIndicator = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
 
-const MarkdownContent = styled(Box)(({ theme }) => ({
+const MarkdownContent = styled('div')(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   lineHeight: theme.typography.body2.lineHeight,
   '& p': { margin: `${theme.spacing(0.5)} 0` },
@@ -545,7 +545,9 @@ function ChatMessage({ message, onInsertSQL, onReplaceSQL, textColors, cmKey, fo
         isuser="false"
         sx={{ backgroundColor: 'error.light', borderColor: 'error.main' }}
       >
-        <Typography variant="body2" color="error.dark">
+        <Typography variant="body2" sx={{
+          color: 'error.dark'
+        }}>
           {message.content}
         </Typography>
       </MessageBubble>
@@ -1131,17 +1133,17 @@ export function NLQChatPanel() {
           {gettext('Clear')}
         </DefaultButton>
       </HeaderBar>
-
       <MessagesArea>
         {messages.length === 0 ? (
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            height="100%"
-            textAlign="center"
-            p={2}
-          >
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              textAlign: 'center',
+              p: 2
+            }}>
             <Typography variant="body2" style={{ color: textColors.secondary }}>
               {gettext(
                 'Ask a question about your database or describe the SQL you need ' +
@@ -1165,7 +1167,6 @@ export function NLQChatPanel() {
         )}
         <div ref={messagesEndRef} />
       </MessagesArea>
-
       <InputArea>
         <TextField
           inputRef={inputRef}

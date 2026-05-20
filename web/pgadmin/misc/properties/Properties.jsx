@@ -20,7 +20,7 @@ import { usePgAdmin } from '../../static/js/PgAdminProvider';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   height: '100%',
   background: theme.otherVars.emptySpaceBg,
   display: 'flex',
@@ -41,7 +41,9 @@ function Properties(props) {
   if(noPropertyMsg) {
     return (
       <StyledBox>
-        <Box margin={'4px auto'}>
+        <Box sx={{
+          margin: '4px auto'
+        }}>
           <EmptyPanelMessage text={noPropertyMsg} />
         </Box>
       </StyledBox>

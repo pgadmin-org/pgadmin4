@@ -19,7 +19,7 @@ import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/
 import PropTypes from 'prop-types';
 import { getEnterKeyHandler } from '../../../../../../static/js/utils';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   display: 'flex',
   alignItems: 'center',
   ...theme.mixins.panelBorder.top,

@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useState, useEffect } from 'react';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -15,7 +14,7 @@ import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRound
 import { usePgAdmin } from '../../../static/js/PgAdminProvider';
 import usePreferences from '../../../preferences/static/js/store';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'absolute',
   bottom: 0,
   width: 'auto',

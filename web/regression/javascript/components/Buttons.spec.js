@@ -20,7 +20,10 @@ describe('components Buttons', ()=>{
   it('PrimaryButton', ()=>{
     let ThemedBtn = withTheme(PrimaryButton);
     render(<ThemedBtn>Test</ThemedBtn>);
-    expect(screen.getByRole('button').classList.contains('MuiButton-containedPrimary')).toBe(true);
+    // MUI v9 split variant+color into separate classes (was MuiButton-containedPrimary).
+    const btn = screen.getByRole('button');
+    expect(btn.classList.contains('MuiButton-contained')).toBe(true);
+    expect(btn.classList.contains('MuiButton-colorPrimary')).toBe(true);
   });
 
   it('DefaultButton', ()=>{

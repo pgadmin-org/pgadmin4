@@ -21,7 +21,7 @@ import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Bu
 import { FormFooterMessage, InputSelect, InputText, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../static/js/components/PgReactDataGrid';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   display:'flex',
   flexGrow: '1',
   flexDirection:'column',
@@ -409,7 +409,14 @@ export default function SearchObjects({nodeData}) {
         <PrimaryButton style={{width: '120px'}} data-test="search" className='SearchObjects-Btnmargin' startIcon={<SearchRoundedIcon />}
           onClick={onSearch} disabled={search.length < 3}>{gettext('Search')}</PrimaryButton>
       </Box>
-      <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
+      <Box
+        sx={{
+          flexGrow: '1',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
         <PgReactDataGrid
           id="searchobjects"
           className='SearchObjects-grid'

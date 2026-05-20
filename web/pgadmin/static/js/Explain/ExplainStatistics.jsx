@@ -8,14 +8,14 @@
 //////////////////////////////////////////////////////////////
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import Table from '../components/Table';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .ExplainStatistics-title': {
     fontWeight: 'bold',
     padding: '4px',

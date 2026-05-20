@@ -55,13 +55,19 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
 
   return (
     <ModalContent ref={containerRef}>
-      <Box flexGrow="1" p={2}>
+      <Box
+        sx={{
+          flexGrow: '1',
+          p: 2
+        }}>
         <Box>
           <span style={{fontWeight: 'bold'}}>
             {gettext('Enter the name of the restore point to add')}
           </span>
         </Box>
-        <Box marginTop='12px'>
+        <Box sx={{
+          marginTop: '12px'
+        }}>
           <InputText inputRef={firstEleRef} type="text" value={formData['namedRestorePoint']}
             onChange={(e)=>onTextChange(e, 'namedRestorePoint')} onKeyDown={(e)=>onKeyDown(e)}/>
         </Box>

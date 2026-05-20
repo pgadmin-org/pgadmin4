@@ -11,12 +11,12 @@ import { useEffect, useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-import { Box, FormControl } from '@mui/material';
+import { FormControl } from '@mui/material';
 import { InputText } from '../../FormComponents';
 import { PgIconButton } from '../../Buttons';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'absolute',
   zIndex: 99,
   right: '4px',

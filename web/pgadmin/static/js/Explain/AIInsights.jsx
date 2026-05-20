@@ -22,10 +22,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddIcon from '@mui/icons-material/Add';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
@@ -35,7 +35,7 @@ import Loader from '../components/Loader';
 import EmptyPanelMessage from '../components/EmptyPanelMessage';
 import { DefaultButton, PrimaryButton } from '../components/Buttons';
 
-const StyledContainer = styled(Box)(({ theme }) => ({
+const StyledContainer = styled('div')(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -43,7 +43,7 @@ const StyledContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
-const Header = styled(Box)(({ theme }) => ({
+const Header = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -52,7 +52,7 @@ const Header = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ContentArea = styled(Box)({
+const ContentArea = styled('div')({
   flex: 1,
   overflow: 'auto',
   padding: '16px',
@@ -60,21 +60,21 @@ const ContentArea = styled(Box)({
   cursor: 'auto',
 });
 
-const Section = styled(Box)(({ theme }) => ({
+const Section = styled('div')(({ theme }) => ({
   marginBottom: theme.spacing(2),
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.default,
   borderRadius: theme.shape.borderRadius,
 }));
 
-const SectionHeader = styled(Box)(({ theme }) => ({
+const SectionHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
   marginBottom: theme.spacing(1.5),
 }));
 
-const BottleneckItem = styled(Box)(({ theme, severity }) => ({
+const BottleneckItem = styled('div')(({ theme, severity }) => ({
   display: 'flex',
   gap: theme.spacing(1.5),
   padding: theme.spacing(1.5),
@@ -93,7 +93,7 @@ const BottleneckItem = styled(Box)(({ theme, severity }) => ({
   },
 }));
 
-const RecommendationItem = styled(Box)(({ theme }) => ({
+const RecommendationItem = styled('div')(({ theme }) => ({
   padding: theme.spacing(1.5),
   marginBottom: theme.spacing(1),
   borderRadius: theme.shape.borderRadius,
@@ -104,7 +104,7 @@ const RecommendationItem = styled(Box)(({ theme }) => ({
   },
 }));
 
-const SQLBox = styled(Box)(({ theme }) => ({
+const SQLBox = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(1),
   padding: theme.spacing(1),
   backgroundColor: theme.palette.action.hover,
@@ -116,14 +116,14 @@ const SQLBox = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.text.disabled}`,
 }));
 
-const ActionButtons = styled(Box)(({ theme }) => ({
+const ActionButtons = styled('div')(({ theme }) => ({
   display: 'flex',
   gap: theme.spacing(0.5),
   marginTop: theme.spacing(1),
   justifyContent: 'flex-end',
 }));
 
-const LoadingContainer = styled(Box)({
+const LoadingContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',

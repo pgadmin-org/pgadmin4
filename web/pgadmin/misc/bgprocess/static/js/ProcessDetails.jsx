@@ -24,7 +24,7 @@ import pgAdmin from 'sources/pgadmin';
 import FolderSharedRoundedIcon from '@mui/icons-material/FolderSharedRounded';
 
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   backgroundColor: theme.palette.background.default,
   height: '100%',
   display: 'flex',
@@ -161,7 +161,13 @@ export default function ProcessDetails({data}) {
         <Box>{gettext('Running query')}:</Box>
         <Box data-test="process-cmd" className='ProcessDetails-cmd'>{data.details.query}</Box>
       </>}
-      <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap'
+        }}>
         <Box><span><AccessTimeRoundedIcon /> {gettext('Start time')}: {new Date(data.stime).toString()}</span></Box>
         <Box>
           {pgAdmin.server_mode == 'True' && data.current_storage_dir &&
@@ -174,7 +180,7 @@ export default function ProcessDetails({data}) {
           </DefaultButton>
         </Box>
       </Box>
-      <Box flexGrow={1} className='ProcessDetails-logs'>
+      <Box sx={{flexGrow: 1}} className='ProcessDetails-logs'>
         {logs == null && <span data-test="loading-logs">{gettext('Loading process logs...')}</span>}
         {logs?.length == 0 && gettext('No logs available.')}
         {logs?.map((log, i)=>{
@@ -186,7 +192,11 @@ export default function ProcessDetails({data}) {
           }} key={id} className={errRe.test(log) ? 'ProcessDetails-logErr' : ''}>{log}</div>;
         })}
       </Box>
-      <Box display="flex" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center'
+        }}>
         <NotifierMessage type={notifyType} message={notifyText} closable={false} textCenter={true} style={{flexGrow: 1, marginRight: '8px'}} />
         <Box>{gettext('Execution time')}: {timeTaken} {gettext('seconds')}</Box>
       </Box>

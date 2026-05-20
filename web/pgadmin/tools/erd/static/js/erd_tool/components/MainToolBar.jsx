@@ -9,7 +9,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import _ from 'lodash';
 import { styled } from '@mui/material/styles';
-import { Box, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -42,7 +42,7 @@ import { withColorPicker } from '../../../../../../static/js/helpers/withColorPi
 import { useApplicationState } from '../../../../../../settings/static/ApplicationStateProvider';
 import { useDelayDebounce } from '../../../../../../static/js/custom_hooks';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   padding: '2px 4px',
   display: 'flex',
   alignItems: 'center',

@@ -7,7 +7,7 @@ import { FinalNotifyContent } from '../helpers/Notifier';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   display: 'flex',
@@ -78,14 +78,31 @@ export default function BasePage({pageImage, title,  children, messages}) {
   }, [messages]);
   return (
     <StyledBox >
-      <Box display="flex" minWidth="80%" gap="40px" alignItems="center" padding="20px 80px">
-        <Box flexGrow={1} height="80%" textAlign="center">
+      <Box
+        sx={{
+          display: 'flex',
+          minWidth: '80%',
+          gap: '40px',
+          alignItems: 'center',
+          padding: '20px 80px'
+        }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            height: '80%',
+            textAlign: 'center'
+          }}>
           {pageImage}
         </Box>
         <Box className='BasePage-pageContent'>
           <Box className='BasePage-item'><div className='BasePage-logo' /></Box>
           <Box className='BasePage-item'>{title}</Box>
-          <Box display="flex" flexDirection="column" minHeight={0}>{children}</Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0
+            }}>{children}</Box>
         </Box>
       </Box>
     </StyledBox>

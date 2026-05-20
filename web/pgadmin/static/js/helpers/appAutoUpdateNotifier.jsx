@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { DefaultButton, PgIconButton } from '../components/Buttons';
 import pgAdmin from 'sources/pgadmin';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   borderRadius: theme.shape.borderRadius,
   padding: '0.25rem 1rem 1rem',
   minWidth: '325px',
@@ -53,20 +53,38 @@ function UpdateWarningNotifier({desc, title, onClose, onClick, status, uniqueKey
   };
   return (
     <StyledBox className={'UpdateWarningNotifier-containerWarning'} data-test={'Update-popup-warning'}>
-      <Box display="flex" justifyContent="space-between" className='UpdateWarningNotifier-containerHeader'>
-        <Box marginRight={'1rem'}>{title}</Box>
+      <Box
+        className='UpdateWarningNotifier-containerHeader'
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
+        <Box sx={{
+          marginRight: '1rem'
+        }}>{title}</Box>
         <PgIconButton size="xs" noBorder icon={<CloseIcon />} onClick={handleClose} title={'Close'} className={'UpdateWarningNotifier-iconWarning'} />
       </Box>
       <Box className='UpdateWarningNotifier-containerBody'>
         {desc && <Box>{desc}</Box>}
-        <Box display="flex">
-          {onClick && <Box marginTop={'1rem'} display="flex">
+        <Box sx={{
+          display: 'flex'
+        }}>
+          {onClick && <Box
+            sx={{
+              marginTop: '1rem',
+              display: 'flex'
+            }}>
             <DefaultButton color={'warning'} onClick={()=>{
               onClick();
               handleClose();
             }}>{status == 'download_update' ? 'Download Update' : 'Install and Restart'}</DefaultButton>
           </Box>}
-          {status == 'update_downloaded' && <Box marginTop={'1rem'} display="flex" marginLeft={'1rem'}>
+          {status == 'update_downloaded' && <Box
+            sx={{
+              marginTop: '1rem',
+              display: 'flex',
+              marginLeft: '1rem'
+            }}>
             <DefaultButton color={'default'} onClick={()=>{
               handleClose();
             }}>Install Later</DefaultButton>

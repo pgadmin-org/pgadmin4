@@ -33,7 +33,7 @@ registerOptionEvaluator(
   'headerFormVisible', booleanEvaluator, false, ['collection']
 );
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .DataGridFormHeader-border': {
     ...theme.mixins.panelBorder,
     borderBottom: 0,

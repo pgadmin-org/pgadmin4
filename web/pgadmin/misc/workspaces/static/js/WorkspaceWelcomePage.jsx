@@ -73,7 +73,7 @@ const Root = styled('div')(({theme}) => ({
   }
 }));
 
-const BackgroundSVG = styled(Box)(() => ({
+const BackgroundSVG = styled('div')(() => ({
   position: 'absolute',
   top: 0,
   bottom: 0,

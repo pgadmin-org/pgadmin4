@@ -53,8 +53,17 @@ FinalNotifyContent.propTypes = {
 
 function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{HTMLReactParser(text)}</Box>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}>
+      <Box
+        sx={{
+          flexGrow: '1',
+          p: 2
+        }}>{HTMLReactParser(text)}</Box>
       <Box className='Notifier-footer'>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>

@@ -71,7 +71,9 @@ export function InputComponent({ label, serverList, databaseList, schemaList, di
       <Grid
         container
         direction="row"
-        alignItems="center"
+        sx={{
+          alignItems: 'center'
+        }}
       >
         <Grid sx={{padding: '0.3rem'}} size={{ lg: 2, md: 2, sm: 2, xs: 2 }}>
           <Typography id={label}>{label}</Typography>

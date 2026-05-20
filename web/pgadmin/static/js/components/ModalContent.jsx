@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import CustomPropTypes from '../custom_prop_types';
 import { Box } from '@mui/material';
 
-const StyledBox = styled(Box)(({theme})=>({
+const StyledBox = styled('div')(({theme})=>({
   backgroundColor: theme.palette.background.default,
   display: 'flex',
   flexDirection: 'column',

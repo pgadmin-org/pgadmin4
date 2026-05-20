@@ -11,7 +11,7 @@ import { CircularProgress, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'absolute',
   top: 0,
   bottom: 0,

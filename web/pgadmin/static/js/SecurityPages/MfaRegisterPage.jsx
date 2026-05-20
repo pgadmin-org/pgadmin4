@@ -81,14 +81,23 @@ export default function MfaRegisterPage({actionUrl, mfaList, nextUrl, mfaView, .
         {mfaView ? <>
           {mfaView.auth_method == 'email' && <EmailRegisterView mfaView={mfaView} />}
           {mfaView.auth_method == 'authenticator' && <AuthenticatorRegisterView mfaView={mfaView} />}
-          <Box display="flex" gap="15px">
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '15px'
+            }}>
             <SecurityButton name="continue" value="Continue">{gettext('Continue')}</SecurityButton>
             <DefaultButton type="submit" name="cancel" value="Cancel" style={{width: '100%'}}>{gettext('Cancel')}</DefaultButton>
           </Box>
         </>:<>
           {mfaList?.map((m)=>{
             return (
-              <Box display="flex" width="100%" key={m.label}>
+              <Box
+                key={m.label}
+                sx={{
+                  display: 'flex',
+                  width: '100%'
+                }}>
                 <div style={{
                   width: '10%', mask: `url(${m.icon})`, maskRepeat: 'no-repeat',
                   WebkitMask: `url(${m.icon})`, WebkitMaskRepeat: 'no-repeat',

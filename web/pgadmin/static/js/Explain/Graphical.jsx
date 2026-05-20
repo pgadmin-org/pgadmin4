@@ -23,7 +23,7 @@ import CloseIcon from '@mui/icons-material/CloseRounded';
 import PropTypes from 'prop-types';
 import Table from '../components/Table';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .Graphical-explainDetails': {
     minWidth: '200px',
     maxWidth: '300px',
@@ -419,7 +419,14 @@ export default function Graphical({planData, ctx}) {
 
   return (
     <StyledBox ref={graphContainerRef} height="100%" width="100%" overflow="auto">
-      <Box position="absolute" top="4px" left="4px" gap="4px" display="flex">
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '4px',
+          left: '4px',
+          gap: '4px',
+          display: 'flex'
+        }}>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Zoom in')} icon={<ZoomInIcon />} onClick={()=>onCmdClick('in')}/>
           <PgIconButton title={gettext('Zoom to original')} icon={<ZoomOutMapIcon />} onClick={()=>onCmdClick()}/>
@@ -434,9 +441,13 @@ export default function Graphical({planData, ctx}) {
       />
       {Boolean(explainPlanDetails) &&
       <Card className='Graphical-explainDetails' data-label="explain-details">
-        <CardHeader title={<Box display="flex">
+        <CardHeader title={<Box sx={{
+          display: 'flex'
+        }}>
           {explainPlanTitle}
-          <Box marginLeft="auto">
+          <Box sx={{
+            marginLeft: 'auto'
+          }}>
             <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>setExplainPlanDetails([null, null])}/>
           </Box>
         </Box>} />

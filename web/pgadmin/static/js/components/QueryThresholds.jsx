@@ -37,7 +37,9 @@ export default function QueryThresholds({ value, onChange }) {
       <Grid
         container
         direction="row"
-        alignItems="center"
+        sx={{
+          alignItems: 'center'
+        }}
       >
         <Grid size={{ lg: 2, md: 2, sm: 2, xs: 12 }}>
           <Typography>{gettext('Warning')}</Typography>

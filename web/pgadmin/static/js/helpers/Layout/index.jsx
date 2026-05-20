@@ -62,7 +62,14 @@ export function TabTitle({id, closable, defaultInternal}) {
   }, []);
 
   return (
-    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
+    <Box
+      title={attrs.tooltip}
+      onContextMenu={onContextMenu}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%'
+      }}>
       {attrs.icon && <span className={`dock-tab-icon ${attrs.icon}`}></span>}
       <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
@@ -433,7 +440,11 @@ function DialogClose({panelData}) {
   // In a dialog, panelData is the data of the container panel and not the
   // data of actual dialog tab. panelData.activeId gives the id of dialog tab.
   return (
-    <Box display="flex" alignItems="center">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center'
+      }}>
       <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(panelData.activeId);
       }} style={{marginRight: '-4px'}}/>
@@ -469,11 +480,17 @@ export function getDefaultGroup() {
         icon = <MinimizeDialogIcon />;
         title = gettext('Restore');
       }
-      return <Box display="flex" alignItems="center">
-        {Boolean(panelData.maximizable) && <PgIconButton title={title} icon={icon} size="xs" noBorder onClick={()=>{
-          context.dockMove(panelData, null, 'maximize');
-        }} />}
-      </Box>;
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+          {Boolean(panelData.maximizable) && <PgIconButton title={title} icon={icon} size="xs" noBorder onClick={()=>{
+            context.dockMove(panelData, null, 'maximize');
+          }} />}
+        </Box>
+      );
     }
   };
 }
@@ -619,7 +636,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
   return (
     <ApplicationStateProvider>
       <LayoutDockerContext.Provider value={layoutDockerObj}>
-        <Box height="100%" width="100%" display={isLayoutVisible ? 'initial' : 'none'} >
+        <Box
+          sx={{
+            height: '100%',
+            width: '100%',
+            display: isLayoutVisible ? 'initial' : 'none'
+          }}>
           {useMemo(()=>(<DockLayout
             style={{
               height: '100%',

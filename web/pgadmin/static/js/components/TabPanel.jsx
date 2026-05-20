@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
 
-const StyledBox = styled(Box)(({theme})=>({
+const StyledBox = styled('div')(({theme})=>({
   ...theme.mixins.tabPanel,
   '& .TabPanel-content':{
     height: '100%',

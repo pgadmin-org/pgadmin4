@@ -7,9 +7,8 @@ import { QueryToolContext, getRandomName } from '../QueryToolComponent';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
 
-const StyledBox = styled(Box)(() => ({
+const StyledBox = styled('div')(() => ({
   height: '100%',
   '& .MacrosDialog-root': {
     padding: 0 + ' !important',

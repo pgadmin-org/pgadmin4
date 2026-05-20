@@ -78,7 +78,12 @@ export default function ObjectExplorerToolbar() {
   }, []);
 
   return (
-    <Box display="flex" alignItems="center" gap="2px">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2px'
+      }}>
       <PgButtonGroup size="small">
         <ToolbarButton icon={
           <Badge badgeContent=" " overlap="circular" variant='dot' color="success" invisible={!hasFilters}>

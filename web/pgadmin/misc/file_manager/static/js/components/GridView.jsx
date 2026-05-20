@@ -16,7 +16,7 @@ import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   '& .GridView-grid': {
     display: 'flex',
     fontSize: '13px',
@@ -143,7 +143,11 @@ export default function GridView({items, operation, onItemSelect, onItemEnter}) 
             onItemEnter={onItemEnter} onEditComplete={operation.idx==i ? onEditComplete : null} />)
         )}
       </div>
-      {items.length == 0 && <Box textAlign="center" p={1}>{gettext('No files/folders found')}</Box>}
+      {items.length == 0 && <Box
+        sx={{
+          textAlign: 'center',
+          p: 1
+        }}>{gettext('No files/folders found')}</Box>}
     </StyledBox>
   );
 }

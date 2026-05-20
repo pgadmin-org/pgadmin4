@@ -40,7 +40,11 @@ export default function ChartContainer(props) {
 
   return (
     <StyledCard elevation={0} data-testid="chart-container">
-      <CardHeader title={<Box display="flex" justifyContent="space-between">
+      <CardHeader title={<Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between'
+        }}>
         <div id={props.id}>{props.title}</div>
         <div className='ChartContainer-chartLegend'>
           <div style={{display: 'flex', flexWrap: 'wrap'}}>

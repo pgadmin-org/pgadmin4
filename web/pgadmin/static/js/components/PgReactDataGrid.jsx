@@ -159,7 +159,12 @@ export default function PgReactDataGrid({gridRef, className, hasSelectColumn=tru
         renderers={{
           renderRow,
           renderSortStatus,
-          noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>{noRowsIcon}{noRowsText || gettext('No rows found.')}</Box>,
+          noRowsFallback: <Box
+            sx={{
+              textAlign: 'center',
+              gridColumn: '1/-1',
+              p: 1
+            }}>{noRowsIcon}{noRowsText || gettext('No rows found.')}</Box>,
         }}
         {...props}
       />

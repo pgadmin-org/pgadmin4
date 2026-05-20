@@ -133,7 +133,9 @@ export default function WorkspaceToolbar() {
       <WorkspaceButton icon={<QueryToolIcon />} value={WORKSPACES.QUERY_TOOL} title={gettext('Query Tool Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_QUERY_TOOL}} />
       {pgAdmin['enable_psql'] &&  <WorkspaceButton icon={<TerminalRoundedIcon style={{height: '1.4rem'}}/>} value={WORKSPACES.PSQL_TOOL} title={gettext('PSQL Tool Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_PSQL_TOOL}} />}
       <WorkspaceButton icon={<SchemaDiffIcon />} value={WORKSPACES.SCHEMA_DIFF_TOOL} title={gettext('Schema Diff Workspace')} tooltipPlacement="right" options={{permission: AllPermissionTypes.TOOLS_SCHEMA_DIFF}} />
-      <Box marginTop="auto">
+      <Box sx={{
+        marginTop: 'auto'
+      }}>
         <WorkspaceButton icon={<SettingsIcon />} menuItem={menus['settings']} title={gettext('Preferences')} tooltipPlacement="right" />
       </Box>
     </Root>

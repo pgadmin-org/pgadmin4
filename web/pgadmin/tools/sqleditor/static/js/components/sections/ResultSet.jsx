@@ -33,7 +33,7 @@ import pgAdmin from 'sources/pgadmin';
 import { connectServer, connectServerModal } from '../connectServer';
 import { useLatestFunc } from '../../../../../../static/js/custom_hooks';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   display: 'flex',
   height: '100%',
   flexDirection: 'column',
@@ -1680,7 +1680,11 @@ export function ResultSet() {
           canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}
           pagination={queryData?.pagination ?? {}} allRowsSelect={allRowsSelect}
         />
-        <Box flexGrow="1" minHeight="0">
+        <Box
+          sx={{
+            flexGrow: '1',
+            minHeight: '0'
+          }}>
           <QueryToolDataGrid
             columns={columns}
             rows={rows}

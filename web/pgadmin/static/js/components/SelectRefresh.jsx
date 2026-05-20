@@ -21,7 +21,7 @@ import gettext from 'sources/gettext';
 import { usePgAdmin } from '../PgAdminProvider';
 import { clearOptionsCache } from '../../../preferences/static/js/components/PreferencesHelper';
 
-const StyledBox = styled(Box)(() => ({
+const StyledBox = styled('div')(() => ({
   display: 'flex',
   alignItems: 'flex-start',
   '& .SelectRefresh-selectContainer': {

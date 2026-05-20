@@ -17,12 +17,11 @@ import {Buffer} from 'buffer';
 import gettext from 'sources/gettext';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled('div')(({theme}) => ({
   position: 'relative',
   '& .GeometryViewer-mapContainer': {
     backgroundColor: theme.palette.background.default,

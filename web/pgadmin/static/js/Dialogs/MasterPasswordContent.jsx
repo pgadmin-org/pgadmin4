@@ -57,7 +57,11 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
   return (
     <ModalContent ref={containerRef}>
       {isKeyring ?
-        <Box flexGrow="1" p={2}>
+        <Box
+          sx={{
+            flexGrow: '1',
+            p: 2
+          }}>
           <Box>
             <span style={{ fontWeight: 'bold' }}>
               {gettext('Please enter your master password.')}
@@ -67,7 +71,9 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
               <FormNote text={gettext(`Saved passwords are encrypted using encryption key stored in ${keyringName}. Enter the master password for your existing pgAdmin saved passwords and they will be re-encrypted and saved when you click OK.`)}></FormNote>
             </span>
           </Box>
-          <Box marginTop='12px'>
+          <Box sx={{
+            marginTop: '12px'
+          }}>
             <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
               onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)}/>
           </Box>
@@ -75,7 +81,11 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             position: 'unset', padding: '12px 0px 0px'
           }} />
         </Box> :
-        <Box flexGrow="1" p={2}>
+        <Box
+          sx={{
+            flexGrow: '1',
+            p: 2
+          }}>
           <Box>
             <span style={{ fontWeight: 'bold' }}>
               {isPWDPresent ? gettext('Please enter your master password.') : gettext('Please set a master password for pgAdmin.')}
@@ -85,7 +95,9 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
               {isPWDPresent ? gettext('This is required to unlock saved passwords and reconnect to the database server(s).') : gettext('This will be used to secure and later unlock saved passwords and other credentials.')}
             </span>
           </Box>
-          <Box marginTop='12px'>
+          <Box sx={{
+            marginTop: '12px'
+          }}>
             <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
               onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)} controlProps={{autoComplete: 'new-password'}}/>
           </Box>
@@ -129,7 +141,8 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
           {gettext('OK')}
         </PrimaryButton>
       </ModalFooter>
-    </ModalContent>);
+    </ModalContent>
+  );
 }
 
 MasterPasswordContent.propTypes = {
