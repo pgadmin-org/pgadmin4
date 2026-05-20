@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getRandomInt, hasBinariesConfiguration } from 'sources/utils';
+import { getRandomInt, hasBinariesConfiguration, getServerColors } from 'sources/utils';
 import { retrieveAncestorOfTypeServer } from 'sources/tree/tree_utils';
 import { generateTitle } from 'tools/sqleditor/static/js/sqleditor_title';
 import { AllPermissionTypes, BROWSER_PANELS, WORKSPACES } from '../../../../browser/static/js/constants';
@@ -173,12 +173,15 @@ export default class Psql {
 
     const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
+    // Extract bgcolor and fgcolor from server icon
+    const { bgcolor, fgcolor } = getServerColors(parentData?.server?.icon);
+
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
       panelUrl,
       {title: panelTitle, db: db_label, server_name: parentData.server.label, 'user': parentData.server.user.name },
-      {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true},
+      {title: panelTitle, icon: 'pg-font-icon icon-terminal', manualClose: false, renamable: true, bgcolor: bgcolor, fgcolor: fgcolor, server_id: parentData?.server?._id},
       Boolean(open_new_tab?.includes('psql_tool'))
     );
 
