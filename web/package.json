@@ -86,7 +86,7 @@
     "@projectstorm/react-diagrams": "^7.0.4",
     "@simonwep/pickr": "^1.9.1",
     "@szhsin/react-menu": "^4.5.1",
-    "@tanstack/react-query": "^5.100.5",
+    "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.24",
     "@types/react": "^19.2.14",
@@ -113,7 +113,7 @@
     "html-to-image": "1.11.11",
     "immutability-helper": "^3.1.1",
     "insert-if": "^1.2.0",
-    "ip-address": "^10.1.0",
+    "ip-address": "^10.1.1",
     "json-bignumber": "^1.1.1",
     "leaflet": "^1.9.4",
     "lodash": "4.*",
@@ -124,7 +124,7 @@
     "notistack": "^3.0.2",
     "papaparse": "^5.5.3",
     "path-fx": "^2.1.2",
-    "postcss": "^8.5.12",
+    "postcss": "^8.5.14",
     "rc-dock": "^4.0.0-alpha.2",
     "react": "^19.2.5",
     "react-arborist": "^3.5.0",
@@ -180,7 +180,7 @@
     "auditpy": "safety check --full-report -i 51668 -i 52495",
     "audit-all": "yarn run auditjs && yarn run auditpy"
   },
-  "packageManager": "yarn@4.14.0",
+  "packageManager": "yarn@4.15.0",
   "browserslist": [
     "defaults and fully supports es6-module"
   ]
