@@ -41,6 +41,7 @@ from flask_wtf.csrf import CSRFError
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
+from pgadmin.utils.db_utils import normalize_database_uri
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -337,11 +338,8 @@ def create_app(app_name=None):
     ##########################################################################
     if config.CONFIG_DATABASE_URI is not None and \
             len(config.CONFIG_DATABASE_URI) > 0:
-        _db_uri = re.sub(
-            r"^postgres(ql)?://", "postgresql+psycopg://",
-            config.CONFIG_DATABASE_URI, count=1
-        )
-        app.config['SQLALCHEMY_DATABASE_URI'] = _db_uri
+        app.config['SQLALCHEMY_DATABASE_URI'] = \
+            normalize_database_uri(config.CONFIG_DATABASE_URI)
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
             .format(config.SQLITE_PATH.replace('\\', '/'),
