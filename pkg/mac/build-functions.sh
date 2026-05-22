@@ -307,12 +307,15 @@ _complete_bundle() {
         # Jenkins console instead of an empty gap before the trap fires.
         # NODE_ENV mirrors the top-level "bundle" npm script (see
         # web/package.json). NODE_OPTIONS bumps V8's old-space ceiling
-        # past the 3 GB default the npm script uses: the macOS x64 builder
-        # OS-OOM-kills webpack inside TerserPlugin at the 3 GB setting
-        # (build #1294, sealing asset processing at 92%). Other build
+        # past the 3 GB default the npm script uses: at 3 GB the macOS
+        # x64 builder OS-OOM-killed webpack inside TerserPlugin (build
+        # #1294, sealing asset processing at 92%). 6 GB was too much for
+        # the x64 VM's total RAM and pushed earlier steps into low-memory
+        # failures (build #1295), so we land at 4 GB — enough headroom
+        # for Terser without starving the rest of the build. Other build
         # paths still get 3 GB via the npm script.
         export NODE_ENV=production
-        export NODE_OPTIONS=--max-old-space-size=6144
+        export NODE_OPTIONS=--max-old-space-size=4096
         echo "==> Running ESLint..."
         yarn run linter 2>&1
         echo "==> Running webpack bundle..."
