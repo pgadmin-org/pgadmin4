@@ -305,10 +305,14 @@ _complete_bundle() {
         # stderr into stdout, so a crash inside lint/webpack (e.g. an OOM
         # kill or native-module load failure) leaves a trace in the
         # Jenkins console instead of an empty gap before the trap fires.
-        # Env vars match the top-level "bundle" npm script (see web/package.json)
-        # so behavior is identical to `yarn run bundle`.
+        # NODE_ENV mirrors the top-level "bundle" npm script (see
+        # web/package.json). NODE_OPTIONS bumps V8's old-space ceiling
+        # past the 3 GB default the npm script uses: the macOS x64 builder
+        # OS-OOM-kills webpack inside TerserPlugin at the 3 GB setting
+        # (build #1294, sealing asset processing at 92%). Other build
+        # paths still get 3 GB via the npm script.
         export NODE_ENV=production
-        export NODE_OPTIONS=--max-old-space-size=3072
+        export NODE_OPTIONS=--max-old-space-size=6144
         echo "==> Running ESLint..."
         yarn run linter 2>&1
         echo "==> Running webpack bundle..."
