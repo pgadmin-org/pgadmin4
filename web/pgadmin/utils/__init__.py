@@ -601,8 +601,10 @@ def validate_json_data(data, is_admin):
     for server in data["Servers"]:
         obj = data["Servers"][server]
 
+        is_shared = obj.get("Shared", None)
+
         # Check if server is shared.Won't import if user is non-admin
-        if obj.get('Shared', None) and not is_admin:
+        if is_shared and not is_admin:
             print("Won't import the server '%s' as it is shared " %
                   obj["Name"])
             skip_servers.append(server)
@@ -627,14 +629,25 @@ def validate_json_data(data, is_admin):
         is_service_attrib_available = obj.get("Service", None) is not None
 
         if not is_service_attrib_available:
-            for attrib in ("Port", "Username"):
-                errmsg = check_attrib(attrib)
+            errmsg = check_attrib("Port")
+            if errmsg:
+                return errmsg
+            errmsg = check_is_integer(obj["Port"])
+            if errmsg:
+                return errmsg
+
+            if is_shared:
+                # Shared servers may carry either the owner's username
+                # or a per-user override, so accept either attribute.
+                if "Username" not in obj and "SharedUsername" not in obj:
+                    return gettext(
+                        "'Username' or 'SharedUsername' attribute not "
+                        "found for server '%s'" % server
+                    )
+            else:
+                errmsg = check_attrib("Username")
                 if errmsg:
                     return errmsg
-                if attrib == 'Port':
-                    errmsg = check_is_integer(obj[attrib])
-                    if errmsg:
-                        return errmsg
 
         errmsg = check_attrib("MaintenanceDB")
         if errmsg:
