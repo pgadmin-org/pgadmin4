@@ -733,6 +733,11 @@ def load_database_servers(input_file, selected_servers,
                 groups_added = groups_added + 1
                 groups = ServerGroup.query.filter_by(user_id=user_id)
 
+            is_shared = obj.get("Shared", None)
+            username = obj.get("Username", None)
+            if is_shared and not username:
+                username = obj.get("SharedUsername", None)
+
             # Create the server
             new_server = Server()
             new_server.name = obj["Name"]
@@ -744,7 +749,7 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.port = obj.get("Port", None)
 
-            new_server.username = obj.get("Username", None)
+            new_server.username = username
 
             new_server.role = obj.get("Role", None)
 
@@ -798,7 +803,7 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_keep_alive = \
                 obj.get("TunnelKeepAlive", None)
 
-            new_server.shared = obj.get("Shared", None)
+            new_server.shared = is_shared
 
             new_server.shared_username = obj.get("SharedUsername", None)
 
