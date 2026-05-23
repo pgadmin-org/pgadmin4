@@ -44,6 +44,11 @@ let webpackShimConfig = {
     'graphlib': path.join(__dirname, 'node_modules/graphlib'),
     'react': path.join(__dirname, 'node_modules/react'),
     'react-dom': path.join(__dirname, 'node_modules/react-dom'),
+
+    // v2 added "type":"module" to package.json, causing webpack to treat lib/index.js
+    // as ESM (even though it's a UMD bundle) and ignore its module.exports assignment. Force the true
+    // ESM entry instead so webpack reads the proper export statements.
+    'react-checkbox-tree': path.join(__dirname, 'node_modules/react-checkbox-tree/lib/index.esm.js'),
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
 
