@@ -204,7 +204,10 @@ RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
     chmod g=u /etc/passwd && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.[0-9][0-9] && \
+    PYBIN="$(ls /usr/local/bin/python3.[0-9][0-9] 2>/dev/null | head -n1)" && \
+    cp "$PYBIN" /usr/local/bin/python3-cap && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3-cap && \
+    ln -s /usr/local/bin/python3-cap /venv/bin/python3-cap && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
