@@ -320,6 +320,44 @@ Run a TLS secured container using a shared config/storage directory in
         -e 'PGADMIN_ENABLE_TLS=True' \
         -d dpage/pgadmin4
 
+Restricted Security Contexts (OpenShift, ``--cap-drop=ALL``)
+************************************************************
+
+Some platforms refuse to honor Linux file capabilities. The two situations
+the pgAdmin container handles automatically are:
+
+- ``--cap-drop=ALL`` (or an equivalent restricted Kubernetes SecurityContext
+  such as OpenShift's ``restricted-v2`` SCC), which zeros the bounding set
+  and removes ``CAP_NET_BIND_SERVICE``. Exec of a capability-tagged binary
+  then fails with ``Operation not permitted``.
+
+- ``--security-opt=no-new-privileges`` (or
+  ``allowPrivilegeEscalation: false``), which causes the kernel to silently
+  strip file capabilities on exec. The binary runs, but a subsequent
+  ``bind()`` to a port below 1024 fails with ``EPERM``.
+
+The container's entrypoint reads ``/proc/self/status`` at startup, detects
+either condition, switches gunicorn to the non-capability python
+interpreter, and (when *PGADMIN_LISTEN_PORT* is not set) defaults the
+listen port to **8080** for plain HTTP and **8443** for TLS instead of
+80/443. A message is logged so the choice is visible.
+
+In practice this means a typical OpenShift deployment requires no special
+build, no setcap, and no custom configuration — only a Service / Route
+that targets the chosen non-privileged port:
+
+.. code-block:: bash
+
+    docker run --rm -p 8080:8080 \
+        --security-opt=no-new-privileges \
+        --cap-drop=ALL \
+        -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
+        -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
+        dpage/pgadmin4
+
+If you explicitly set *PGADMIN_LISTEN_PORT*, that value is honored in both
+the restricted and unrestricted paths.
+
 Reverse Proxying
 ****************
 
