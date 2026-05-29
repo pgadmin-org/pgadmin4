@@ -863,6 +863,9 @@ def create_app(app_name=None):
 
     @app.after_request
     def after_request(response):
+        if current_user.is_authenticated:
+            response.headers['X-Remote-User'] = current_user.username
+
         if 'key' in request.args:
             domain = dict()
             if config.COOKIE_DEFAULT_DOMAIN and \
