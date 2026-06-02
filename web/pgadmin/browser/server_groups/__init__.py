@@ -389,16 +389,22 @@ class ServerGroupView(NodeView):
 
         server_groups = get_server_groups_for_user()
 
-        if hide_shared_server:
-            groups = []
-            for group in server_groups:
-                if group.user_id != current_user.id and \
-                        ServerGroupModule.has_shared_server(group.id):
-                    continue
-                groups.append(group)
-            return groups
+        def is_owner(group):
+            return group.user_id == current_user.id
 
-        return server_groups
+        def has_shared(group):
+            return ServerGroupModule.has_shared_server(group.id)
+
+        if hide_shared_server:
+            return [
+                group for group in server_groups
+                if is_owner(group) or not has_shared(group)
+            ]
+
+        return [
+            group for group in server_groups
+            if is_owner(group) or has_shared(group)
+        ]
 
     @pga_login_required
     def nodes(self, gid=None):
