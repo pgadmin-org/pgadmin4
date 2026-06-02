@@ -9,7 +9,7 @@ AS
 WITH NO DATA;
 
 ALTER TABLE IF EXISTS public."testmview_am_$%{}[]()&*^!/@`#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON MATERIALIZED VIEW public."testmview_am_$%{}[]()&*^!/@`#"
     IS 'comment1';

@@ -125,6 +125,19 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             profile={},
             id_token_claims=None,
         )),
+        # PR 2 — auth_obj data-only refactor coverage.
+        ('Session After Redirect Has Provider Name Not Live Object', dict(
+            oauth2_provider='github',
+            kind='session_state_after_redirect',
+            profile={},
+            id_token_claims=None,
+        )),
+        ('OAuth2 Callback Without Provider State Redirects', dict(
+            oauth2_provider='github',
+            kind='callback_missing_provider_state',
+            profile={},
+            id_token_claims=None,
+        )),
     ]
 
     @classmethod
@@ -303,6 +316,10 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self._test_oidc_get_user_profile_calls_userinfo(
                 self.oauth2_provider
             )
+        elif self.kind == 'session_state_after_redirect':
+            self._test_session_state_after_redirect(self.oauth2_provider)
+        elif self.kind == 'callback_missing_provider_state':
+            self._test_oauth2_callback_missing_provider_state()
         else:
             self.fail(f'Unknown test kind: {self.kind}')
 
@@ -692,6 +709,72 @@ class Oauth2LoginMockTestCase(BaseTestGenerator):
             self.assertIn('OAUTH2_WORKLOAD_IDENTITY_TOKEN_FILE',
                           str(cm.exception))
             mock_register.assert_not_called()
+
+    def _test_session_state_after_redirect(self, provider):
+        """After OAuth2 button login redirects, session must hold the
+        provider name only — NOT a live AuthSourceManager instance.
+
+        Positive: session['oauth2_current_client'] == provider.
+        Negative: session['auth_obj'] absent (live object eliminated).
+        """
+        from pgadmin.authenticate.oauth2 import OAuth2Authentication
+
+        def _fake_authenticate(self, _form):
+            self.oauth2_current_client = provider
+            return False, redirect('https://example.com/')
+
+        with patch.object(
+            OAuth2Authentication, 'authenticate', new=_fake_authenticate
+        ):
+            try:
+                self.tester.login(
+                    email=None, password=None,
+                    _follow_redirects=True,
+                    headers=None,
+                    extra_form_data=dict(oauth2_button=provider)
+                )
+            except Exception as e:
+                # External-redirect follow fails in the test client; that's
+                # fine, we only care about server-side session state.
+                self.assertEqual(
+                    'Following external redirects is not supported.',
+                    str(e)
+                )
+
+        with self.tester.session_transaction() as sess:
+            # Negative — live AuthSourceManager must NOT be in session.
+            self.assertNotIn(
+                'auth_obj', sess,
+                "session['auth_obj'] should be absent after the refactor; "
+                "live class instances must not be persisted in the session.")
+            # Positive — minimal state (provider name) IS persisted.
+            self.assertEqual(
+                sess.get('oauth2_current_client'), provider,
+                "Expected session['oauth2_current_client']=%r" % provider)
+
+    def _test_oauth2_callback_missing_provider_state(self):
+        """OAuth2 callback must redirect gracefully when provider state is
+        missing from the session (e.g., session expired between login and
+        callback). Must NOT raise KeyError or 500.
+        """
+        # Ensure the provider state is absent.
+        with self.tester.session_transaction() as sess:
+            sess.pop('oauth2_current_client', None)
+            sess.pop('auth_obj', None)
+
+        # Hit the OAuth2 authorize callback directly.
+        res = self.tester.get('/oauth2/authorize',
+                              follow_redirects=False)
+
+        # Negative — must NOT 500. The callback should redirect (to the
+        # logout/error page) instead of crashing with KeyError.
+        self.assertNotEqual(
+            res.status_code, 500,
+            "Callback must handle missing provider state gracefully, "
+            "not raise (got status %d)" % res.status_code)
+        # Allow a redirect (302) or a 4xx error response — anything except
+        # an unhandled exception.
+        self.assertLess(res.status_code, 500)
 
     def tearDown(self):
         self.tester.logout()

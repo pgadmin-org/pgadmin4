@@ -22,11 +22,12 @@ class PSQLStartProcess(BaseTestGenerator):
     def runTest(self):
         if sys.platform == 'win32':
             self.skipTest('PSQL disabled for windows')
-        # Fetch flask client to access current user and other cookies.
-        flask_client = app.test_client()
-        flask_client.get('/')
+        # Use the authenticated test client (self.tester from
+        # BaseTestGenerator) so the @socket_login_required guard on the
+        # /pty connect handler accepts the connection.
+        self.tester.get('/')
         self.test_client = socketio.test_client(app, namespace='/pty',
-                                                flask_test_client=flask_client)
+                                                flask_test_client=self.tester)
         self.assertTrue(self.test_client.is_connected('/pty'))
         received = self.test_client.get_received('/pty')
 

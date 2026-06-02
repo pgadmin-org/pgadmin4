@@ -68,8 +68,12 @@ class WebserverLoginMockTestCase(BaseTestGenerator):
                                 None
                                 )
         self.assertEqual(res.status_code, 200)
-        respdata = 'Gravatar image for %s' % self.username
-        self.assertTrue(respdata in res.data.decode('utf8'))
+        # "Gravatar image for X" was server-rendered HTML; the React SPA
+        # renders it client-side. Verify successful auth via session.
+        with self.tester.session_transaction() as sess:
+            self.assertIsNotNone(
+                sess.get('_user_id'),
+                'Post-webserver-login session should contain _user_id')
 
     def tearDown(self):
         pass

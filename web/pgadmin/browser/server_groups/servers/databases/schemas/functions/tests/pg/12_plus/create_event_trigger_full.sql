@@ -16,9 +16,9 @@ end;
 $BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
-GRANT EXECUTE ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"() TO postgres WITH GRANT OPTION;
+GRANT EXECUTE ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"() TO <OWNER> WITH GRANT OPTION;
 
 REVOKE ALL ON FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"() FROM PUBLIC;
 

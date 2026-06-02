@@ -9,7 +9,7 @@ AS
 WITH NO DATA;
 
 ALTER TABLE IF EXISTS public."testmview_$%{}[]()&*^!/@`#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 ALTER MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
     DEPENDS ON EXTENSION plpgsql;

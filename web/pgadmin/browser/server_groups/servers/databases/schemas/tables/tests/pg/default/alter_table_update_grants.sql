@@ -14,13 +14,13 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 REVOKE ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" FROM PUBLIC;
 
 GRANT SELECT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
-GRANT ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO <OWNER>;
 
 COMMENT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     IS 'test comment';

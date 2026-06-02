@@ -4,7 +4,7 @@
 
 CREATE DATABASE "test_database_builtin_$%{}[]()&*^!@""""""""'`\/#"
     WITH
-    OWNER = postgres
+    OWNER = <OWNER>
     ENCODING = 'UTF8'
     LC_COLLATE = '<LC_COLLATE>'
     LC_CTYPE = '<LC_CTYPE>'

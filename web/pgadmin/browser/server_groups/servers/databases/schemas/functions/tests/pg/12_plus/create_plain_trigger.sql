@@ -14,4 +14,4 @@ end;
 $BODY$;
 
 ALTER FUNCTION public."Trig1_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;

@@ -30,11 +30,16 @@ class TestValidateUser(BaseTestGenerator):
          )),
         ('User email validation (with deliverability)',
          dict(
+             # .invalid is an RFC-reserved TLD that email_validator
+             # consistently rejects regardless of DNS state. The error
+             # message is formatted by validate_user() as
+             # "Invalid email address {addr}.".
              data=dict(
-                 email='postgres@local.dev',
+                 email='postgres@nonexistent.invalid',
                  check_deliverability=True,
                  expected_data=dict(
-                     test_result='Invalid email address.'
+                     test_result='Invalid email address '
+                                 'postgres@nonexistent.invalid.'
                  )
              )
          ))

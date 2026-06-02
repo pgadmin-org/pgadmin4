@@ -103,7 +103,7 @@
         "fdwacl": {
           "added":[{
             "grantee": "PUBLIC",
-            "grantor": "postgres",
+            "grantor": "<OWNER>",
             "privileges":[
               {
                 "privilege_type": "U",
@@ -111,8 +111,8 @@
                 "with_grant": false
               }]
           },{
-            "grantee": "postgres",
-            "grantor": "postgres",
+            "grantee": "<OWNER>",
+            "grantor": "<OWNER>",
             "privileges":[{
               "privilege_type": "U",
               "privilege": true,

@@ -61,6 +61,18 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
             self.skipTest("OS Error: GSSAPI module couldn't be loaded. " +
                           str(e))
 
+        # The kerberos_login endpoint is registered only when KERBEROS is
+        # in AUTHENTICATION_SOURCES at app-init time. Switching auth_source
+        # in setUp is too late to register the blueprint, so the failure
+        # path that redirects to /kerberos/login would 500 with
+        # BuildError. Skip when that endpoint isn't reachable.
+        endpoint_map = self.app.url_map._rules_by_endpoint
+        if 'authenticate.kerberos_login' not in endpoint_map:
+            self.skipTest(
+                "Kerberos blueprint not loaded — set "
+                "AUTHENTICATION_SOURCES=['kerberos'] in config_local.py at "
+                "app-init time to run these tests.")
+
         app_config.AUTHENTICATION_SOURCES = self.auth_source
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = KERBEROS
 
@@ -108,8 +120,12 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
                                 headers={'Authorization': 'Negotiate CTOKEN'}
                                 )
         self.assertEqual(res.status_code, 200)
-        respdata = 'Gravatar image for %s' % del_crads.initiator_name
-        self.assertTrue(respdata in res.data.decode('utf8'))
+        # "Gravatar image for X" was server-rendered HTML; the React SPA
+        # renders it client-side. Verify successful auth via session.
+        with self.tester.session_transaction() as sess:
+            self.assertIsNotNone(
+                sess.get('_user_id'),
+                'Post-Kerberos-login session should contain _user_id')
 
     def mock_negotiate_start(self):
         class delCrads:

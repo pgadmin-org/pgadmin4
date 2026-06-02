@@ -19,6 +19,294 @@ from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
 
+class IEQueryParensBalancedTest(BaseTestGenerator):
+    """Test the _is_query_parens_balanced function"""
+
+    scenarios = [
+        # --- Balanced (should return True) ---
+        # Parser only skips single/double-quoted strings (matching
+        # psql's strtokx). Everything else is treated as literal.
+        ('Balanced: empty query',
+         dict(query='', expected=True)),
+        ('Balanced: simple select',
+         dict(query='SELECT * FROM t', expected=True)),
+        ('Balanced: subquery with parens',
+         dict(query='SELECT * FROM (SELECT 1) AS t', expected=True)),
+        ('Balanced: nested subqueries',
+         dict(query='SELECT * FROM (SELECT * FROM (SELECT 1) s) t',
+              expected=True)),
+        ('Balanced: parens in string literal',
+         dict(query="SELECT ')' FROM t", expected=True)),
+        ('Balanced: parens in double-quoted identifier',
+         dict(query='SELECT "col)" FROM t', expected=True)),
+        ('Balanced: function calls',
+         dict(query='SELECT count(*), max(id) FROM t', expected=True)),
+        ('Balanced: double-dash without paren',
+         dict(query='SELECT 1 -- comment', expected=True)),
+        ('Balanced: block comment without paren',
+         dict(query='SELECT 1 /* comment */ FROM t', expected=True)),
+        ('Balanced: dollar signs without paren',
+         dict(query='SELECT $1 + $2 FROM t', expected=True)),
+        ('Balanced: malicious SQL but balanced parens',
+         dict(query='SELECT (1); DROP TABLE users; --',
+              expected=True)),
+        # --- Unbalanced / rejected (should return False) ---
+        # psql's \copy parser doesn't handle --, /* */, or $tag$.
+        # Parens inside these constructs ARE visible to psql.
+        ('Unbalanced: paren after double-dash (psql sees it)',
+         dict(query='SELECT 1 -- )\nFROM t', expected=False)),
+        ('Unbalanced: double-dash newline injection',
+         dict(query="SELECT 1 --\n) TO PROGRAM 'evil'",
+              expected=False)),
+        ('Unbalanced: paren inside block comment (psql sees it)',
+         dict(query='SELECT 1 /* ) */ FROM t', expected=False)),
+        ('Unbalanced: block comment RCE bypass',
+         dict(query="SELECT /* ) TO PROGRAM 'id' --*/ FROM t",
+              expected=False)),
+        ('Unbalanced: dollar-quote RCE bypass',
+         dict(query="SELECT $$ ) TO PROGRAM 'id' $$ FROM t",
+              expected=False)),
+        ('Unbalanced: paren in dollar-quoted string (psql sees it)',
+         dict(query="SELECT $tag$)$tag$ FROM t", expected=False)),
+        ('Unbalanced: TO PROGRAM injection',
+         dict(query="SELECT 1) TO PROGRAM 'id' --(", expected=False)),
+        ('Unbalanced: arbitrary file write injection',
+         dict(query="SELECT 1) TO '/etc/cron.d/evil' --(",
+              expected=False)),
+        ('Unbalanced: FROM PROGRAM injection',
+         dict(query="SELECT 1) FROM PROGRAM 'cmd' --(",
+              expected=False)),
+        ('Unbalanced: extra closing paren',
+         dict(query='SELECT 1)', expected=False)),
+        ('Unbalanced: single closing paren',
+         dict(query=')', expected=False)),
+        ('Unbalanced: closing before opening',
+         dict(query=') SELECT 1 (', expected=False)),
+        ('Rejected: unterminated string literal with paren',
+         dict(query="SELECT ')", expected=False)),
+        ('Rejected: unterminated double-quoted identifier',
+         dict(query='SELECT "col)', expected=False)),
+        # The parser handles backslash escapes inside single-quoted
+        # strings unconditionally (matching E-string and scs=off
+        # semantics), so the close paren is correctly identified as
+        # being inside the string literal. Original test labelled this
+        # as a "false positive" expecting over-rejection; in fact the
+        # parser is precise here. Keep the case to document handling.
+        ('Balanced: E-string with escaped quote and paren inside literal',
+         dict(query="SELECT E'\\')'", expected=True)),
+        ('Unbalanced: E-string RCE bypass',
+         dict(query="E'\\'' ) TO PROGRAM 'cmd' --'",
+              expected=False)),
+        ('Unbalanced: scs=off backslash escape bypass',
+         dict(query="'\\'' ) TO PROGRAM 'cmd' --'",
+              expected=False)),
+        ('Balanced: backslash-backslash then close quote',
+         dict(query="SELECT '\\\\' FROM t", expected=True)),
+        ('Unbalanced: injection split across lines',
+         dict(query="SELECT 1)\nTO PROGRAM 'id' --(",
+              expected=False)),
+    ]
+
+    def runTest(self):
+        from pgadmin.tools.import_export import _is_query_parens_balanced
+        result = _is_query_parens_balanced(self.query)
+        self.assertEqual(
+            result, self.expected,
+            "Expected {0} for query: {1}".format(self.expected, self.query)
+        )
+
+
+class IECreateJobInjectionTest(BaseTestGenerator):
+    """Test that metacommand injection via query is blocked"""
+
+    import_export_url = '/import_export/job/{0}'
+
+    scenarios = [
+        ('Reject TO PROGRAM injection in query export',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_export_inject.csv',
+                 format='csv',
+                 is_import=False,
+                 is_query_export=True,
+                 database='postgres',
+                 query="SELECT 1) TO PROGRAM 'id' --(",
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
+        ('Reject arbitrary file write injection in query export',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_export_inject.csv',
+                 format='csv',
+                 is_import=False,
+                 is_query_export=True,
+                 database='postgres',
+                 query="SELECT 1) TO '/tmp/evil' --(",
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
+        ('Reject FROM PROGRAM injection in query export',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_export_inject.csv',
+                 format='csv',
+                 is_import=False,
+                 is_query_export=True,
+                 database='postgres',
+                 query="SELECT 1) FROM PROGRAM 'whoami' --(",
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
+        ('Reject dollar-quote bypass injection in query export',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_export_inject.csv',
+                 format='csv',
+                 is_import=False,
+                 is_query_export=True,
+                 database='postgres',
+                 query="SELECT $)$) TO PROGRAM 'id' -- $)$",
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
+        ('Reject invalid format value',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_export_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_export',
+                 username='postgres'
+             ),
+             params=dict(
+                 filename='test_export_inject.csv',
+                 format="csv); \\! id",
+                 is_import=False,
+                 database='postgres',
+                 schema='public',
+                 table='test_table',
+                 columns=[],
+                 not_null_columns=[],
+                 null_columns=[],
+                 force_quote_columns=[],
+             ),
+             url=import_export_url,
+             expected_status_code=400,
+         )),
+    ]
+
+    def setUp(self):
+        if 'default_binary_paths' not in self.server or \
+            self.server['default_binary_paths'] is None or \
+            self.server['type'] not in self.server['default_binary_paths'] or \
+                self.server['default_binary_paths'][self.server['type']] == '':
+            self.skipTest(
+                "default_binary_paths is not set for the server {0}".format(
+                    self.server['name']
+                )
+            )
+
+        bin_p = self.server['default_binary_paths'][self.server['type']]
+
+        binary_path = os.path.join(bin_p, 'psql')
+
+        if os.name == 'nt':
+            binary_path = binary_path + '.exe'
+
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
+
+    @patch('pgadmin.tools.import_export.Server')
+    @patch('pgadmin.tools.import_export.filename_with_file_manager_path')
+    @patch('pgadmin.tools.import_export.BatchProcess')
+    @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
+           'export_password_env'.format(PG_DEFAULT_DRIVER))
+    def runTest(self, export_password_env_mock, batch_process_mock,
+                filename_mock, server_mock):
+        class TestMockServer():
+            def __init__(self, name, host, port, id, username,
+                         maintenance_db):
+                self.name = name
+                self.host = host
+                self.port = port
+                self.id = id
+                self.username = username
+                self.maintenance_db = maintenance_db
+
+        self.server_id = parent_node_dict["server"][-1]["server_id"]
+        mock_obj = TestMockServer(self.class_params['name'],
+                                  self.class_params['host'],
+                                  self.class_params['port'],
+                                  self.server_id,
+                                  self.class_params['username'],
+                                  self.class_params['database']
+                                  )
+        mock_result = server_mock.query.filter_by.return_value
+        mock_result.first.return_value = mock_obj
+
+        filename_mock.return_value = self.params['filename']
+        export_password_env_mock.return_value = True
+
+        server_response = server_utils.connect_server(self, self.server_id)
+        if server_response["info"] == "Server connected.":
+            db_owner = server_response['data']['user']['name']
+            self.data = database_utils.get_db_data(db_owner)
+
+        url = self.url.format(self.server_id)
+
+        response = self.tester.post(url,
+                                    data=json.dumps(self.params),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, self.expected_status_code)
+
+        # BatchProcess should NOT have been called for injection attempts
+        self.assertFalse(batch_process_mock.called)
+
+
 class IECreateJobTest(BaseTestGenerator):
     """Test the IECreateJob class"""
 

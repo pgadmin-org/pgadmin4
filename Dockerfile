@@ -159,13 +159,15 @@ RUN apk update && apk upgrade && \
         bash \
         postfix \
         krb5-libs \
+        libcurl \
         libjpeg-turbo \
         shadow \
         sudo \
         tzdata \
         libedit \
         libldap \
-        libcap && \
+        libcap \
+        su-exec && \
     rm -rf /var/cache/apk/*
 
 # Copy in the Python packages
@@ -173,7 +175,7 @@ COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/lib/liblz4.so.1.10.0 /usr/lib/
+COPY --from=pg18-builder /usr/local/lib/libpq.so.5.18 /usr/local/lib/libpq-oauth-18.so /usr/lib/liblz4.so.1.10.0 /usr/lib/
 
 RUN ln -s libpq.so.5.18 /usr/lib/libpq.so.5 && \
     ln -s libpq.so.5.18 /usr/lib/libpq.so && \
@@ -197,12 +199,15 @@ RUN /venv/bin/python3 -m pip install --no-cache-dir gunicorn==23.0.0 && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /run/pgadmin /var/lib/pgadmin && \
     chown pgadmin:root /run/pgadmin /var/lib/pgadmin && \
-    chmod g=u /var/lib/pgadmin && \
+    chmod g=u /run/pgadmin /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
     chmod g=u /etc/passwd && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3.[0-9][0-9] && \
+    PYBIN="$(ls /usr/local/bin/python3.[0-9][0-9] 2>/dev/null | head -n1)" && \
+    cp "$PYBIN" /usr/local/bin/python3-cap && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/python3-cap && \
+    ln -s /usr/local/bin/python3-cap /venv/bin/python3-cap && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 

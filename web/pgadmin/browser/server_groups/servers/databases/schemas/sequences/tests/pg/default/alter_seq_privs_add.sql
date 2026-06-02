@@ -11,11 +11,11 @@ CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     CACHE 2;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     IS 'Some comment';
 
 GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
-GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO postgres;
+GRANT ALL ON SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#" TO <OWNER>;

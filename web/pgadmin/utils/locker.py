@@ -33,12 +33,20 @@ class ConnectionLocker:
             self.lock.acquire()
             current_app.logger.info("Acquired a lock.")
 
-            if 'auth_source_manager' in session and \
-                session['auth_source_manager']['current_source'] == \
-                KERBEROS and 'KRB5CCNAME' in session \
-                    and self.is_kerberos_conn:
-                environ['KRB5CCNAME'] = session['KRB5CCNAME']
-            else:
+            try:
+                # session access requires a request context. Test code that
+                # calls start() under app_context (no request) would raise
+                # RuntimeError here, leaking the lock since __exit__ is not
+                # called when __enter__ raises.
+                source = session.get('auth_source_manager', {}).get(
+                    'current_source')
+                if source == KERBEROS and 'KRB5CCNAME' in session and \
+                        self.is_kerberos_conn:
+                    environ['KRB5CCNAME'] = session['KRB5CCNAME']
+                else:
+                    environ.pop('KRB5CCNAME', None)
+            except RuntimeError:
+                # No request context — nothing Kerberos-related to set up.
                 environ.pop('KRB5CCNAME', None)
 
         return self

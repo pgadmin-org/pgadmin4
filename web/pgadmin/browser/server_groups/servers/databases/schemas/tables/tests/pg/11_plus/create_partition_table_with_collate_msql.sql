@@ -9,7 +9,7 @@ WITH (
 );
 
 ALTER TABLE IF EXISTS public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';

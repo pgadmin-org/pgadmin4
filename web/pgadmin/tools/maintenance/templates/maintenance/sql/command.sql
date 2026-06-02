@@ -13,7 +13,7 @@
 {% if data.vacuum_index_cleanup %}{{ maintenance_options.append('INDEX_CLEANUP ' + data.vacuum_index_cleanup) or "" }}{% endif %}
 {% if data.vacuum_parallel %}{{ maintenance_options.append('PARALLEL ' + data.vacuum_parallel) or "" }}{% endif %}
 {% if data.buffer_usage_limit %}{{ maintenance_options.append('BUFFER_USAGE_LIMIT "' + data.buffer_usage_limit + '"') or "" }}{% endif %}
-{% if data.reindex_tablespace %}{{ maintenance_options.append('TABLESPACE "' + data.reindex_tablespace + '"') or "" }}{% endif %}
+{% if data.reindex_tablespace %}{{ maintenance_options.append('TABLESPACE ' + conn|qtIdent(data.reindex_tablespace)) or "" }}{% endif %}
 {% if data.reindex_concurrently %}{{ maintenance_options.append('CONCURRENTLY') or "" }}{% endif %}
 {% if data.op == "VACUUM" %}
 VACUUM{% for option in maintenance_options %}{% if loop.first %} ({% endif %}{{ option }}{% if not loop.last %}, {% endif %}{% if loop.last %}){% endif %}{% endfor %}{% if data.schema %} {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.table) }}{% endif %};

@@ -45,60 +45,14 @@ SELECT DISTINCT ON (cls.relname)
         SELECT 1 FROM pg_inherits inh WHERE inh.inhrelid = cls.oid
     ) AS is_inherited,
     -- Options (with defaults per index type)
-    COALESCE(
-        substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int,
-        CASE am.amname
-            WHEN 'btree' THEN 100
-            WHEN 'gist' THEN 90
-            ELSE NULL
-        END
-    ) AS fillfactor,
-    COALESCE(
-        CASE am.amname
-            WHEN 'btree' THEN substring(array_to_string(cls.reloptions, ',') FROM 'deduplicate_items=([a-z]*)')::boolean
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'btree' THEN TRUE ELSE NULL END
-    ) AS deduplicate_items,
-    COALESCE(
-        CASE am.amname
-            WHEN 'gin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'gin_pending_list_limit=([0-9]*)')::int
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'gin' THEN 4096 * 1024 ELSE NULL END
-    ) AS gin_pending_list_limit,
-    COALESCE(
-        CASE am.amname
-            WHEN 'brin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'pages_per_range=([0-9]*)')::int
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'brin' THEN 128 ELSE NULL END
-    ) AS pages_per_range,
-    COALESCE(
-        CASE am.amname
-            WHEN 'gist' THEN substring(array_to_string(cls.reloptions, ',') FROM 'buffering=([a-z]*)')
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'gist' THEN 'auto' ELSE NULL END
-    ) AS buffering,
-    COALESCE(
-        CASE am.amname
-            WHEN 'gin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'fastupdate=([a-z]*)')::boolean
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'gin' THEN TRUE ELSE NULL END
-    ) AS fastupdate,
-    COALESCE(
-        CASE am.amname
-            WHEN 'brin' THEN substring(array_to_string(cls.reloptions, ',') FROM 'autosummarize=([a-z]*)')::boolean
-            ELSE NULL
-        END,
-        CASE am.amname WHEN 'brin' THEN FALSE ELSE NULL END
-    ) AS autosummarize,
-    COALESCE(
-        substring(array_to_string(cls.reloptions, ',') FROM 'lists=([0-9]*)')::int,
-        NULL
-    ) AS lists
+    substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int AS fillfactor,
+    substring(array_to_string(cls.reloptions, ',') FROM 'deduplicate_items=([a-z]*)')::boolean AS deduplicate_items,
+    substring(array_to_string(cls.reloptions, ',') FROM 'gin_pending_list_limit=([0-9]*)')::int AS gin_pending_list_limit,
+    substring(array_to_string(cls.reloptions, ',') FROM 'pages_per_range=([0-9]*)')::int AS pages_per_range,
+    substring(array_to_string(cls.reloptions, ',') FROM 'buffering=([a-z]*)') AS buffering,
+    substring(array_to_string(cls.reloptions, ',') FROM 'fastupdate=([a-z]*)') AS fastupdate,
+    substring(array_to_string(cls.reloptions, ',') FROM 'autosummarize=([a-z]*)')::boolean AS autosummarize,
+    substring(array_to_string(cls.reloptions, ',') FROM 'lists=([0-9]*)')::int AS lists
     {% if datlastsysoid %}
         , (cls.oid <= {{ datlastsysoid }}::oid) AS is_sys_idx
     {% endif %}

@@ -7,23 +7,25 @@
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql",
       "data": {
-          "username": "postgres",
-          "name": "test_create_subscription",
-          "connect": false,
-          "copy_data": false,
-          "create_slot": false,
-          "db": "postgres",
-          "subowner": "postgres",
-          "enabled": false,
-          "host": "localhost",
-          "slot_name": "None",
-          "service": "",
-          "port": 5432,
-          "password": "edb",
-          "sync": "off",
-          "connect_timeout": 10,
-          "sslmode": "prefer",
-          "pub": ["sample__1"]
+        "username": "postgres",
+        "name": "test_create_subscription",
+        "connect": false,
+        "copy_data": false,
+        "create_slot": false,
+        "db": "postgres",
+        "subowner": "<OWNER>",
+        "enabled": false,
+        "host": "localhost",
+        "slot_name": "None",
+        "service": "",
+        "port": 5432,
+        "password": "edb",
+        "sync": "off",
+        "connect_timeout": 10,
+        "sslmode": "prefer",
+        "pub": [
+          "sample__1"
+        ]
       },
       "expected_sql_file": "create_subscription.sql",
       "expected_msql_file": "create_subscription_msql.sql"
@@ -35,7 +37,7 @@
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql_id",
       "data": {
-          "name": "test_alter_subscription"
+        "name": "test_alter_subscription"
       },
       "expected_sql_file": "alter_subscription.sql",
       "expected_msql_file": "alter_subscription_msql.sql"
@@ -47,12 +49,11 @@
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql_id",
       "data": {
-          "sync": "remote_apply"
+        "sync": "remote_apply"
       },
       "expected_sql_file": "alter_sync.sql",
       "expected_msql_file": "alter_sync_msql.sql"
     },
-
     {
       "type": "alter",
       "name": "Alter  maintainance DB in connection string of subscription",
@@ -60,7 +61,7 @@
       "sql_endpoint": "NODE-subscription.sql_id",
       "msql_endpoint": "NODE-subscription.msql_id",
       "data": {
-          "db": "edb"
+        "db": "edb"
       },
       "expected_sql_file": "alter_maintenance_db.sql",
       "expected_msql_file": "alter_maintenance_db_msql.sql"

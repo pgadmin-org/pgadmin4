@@ -12,11 +12,12 @@
         "options": [],
         "schema": "test",
         "schema_id": "<SCHEMA_ID>",
-        "owner": "postgres"
+        "owner": "<OWNER>"
       },
       "expected_sql_file": "create_fts_dictionary.sql",
       "expected_msql_file": "msql_create_fts_dictionary.sql"
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create FTS Configuration",
       "endpoint": "NODE-fts_configuration.obj",
@@ -31,25 +32,37 @@
       },
       "expected_sql_file": "create_fts_conf.sql",
       "expected_msql_file": "msql_create_fts_conf.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter FTS Configuration add token to verify schema qualified names",
       "endpoint": "NODE-fts_configuration.obj_id",
       "sql_endpoint": "NODE-fts_configuration.sql_id",
       "msql_endpoint": "NODE-fts_configuration.msql_id",
       "data": {
-        "tokens": {"added": [{"token": "asciiword", "dictname": ["test.test_dic"]}]}
+        "tokens": {
+          "added": [
+            {
+              "token": "asciiword",
+              "dictname": [
+                "test.test_dic"
+              ]
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_fts_conf_add_token_verify_schema.sql",
       "expected_msql_file": "msql_alter_fts_conf_add_token_verify_schema.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop FTS Configuration",
       "endpoint": "NODE-fts_configuration.delete_id",
       "data": {
         "name": "test_fts_conf_$%{}[]()&*^!@\"'`\\/#"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create FTS Configuration with Parser",
       "endpoint": "NODE-fts_configuration.obj",
@@ -64,7 +77,8 @@
       },
       "expected_sql_file": "create_fts_conf_def1.sql",
       "expected_msql_file": "msql_create_fts_conf_def1.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter FTS Configuration add comment",
       "endpoint": "NODE-fts_configuration.obj_id",
@@ -75,18 +89,29 @@
       },
       "expected_sql_file": "alter_fts_conf_add_comment.sql",
       "expected_msql_file": "msql_alter_fts_conf_add_comment.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter FTS Configuration add token file",
       "endpoint": "NODE-fts_configuration.obj_id",
       "sql_endpoint": "NODE-fts_configuration.sql_id",
       "msql_endpoint": "NODE-fts_configuration.msql_id",
       "data": {
-        "tokens": {"added": [{"token": "file", "dictname": ["english_stem"]}]}
+        "tokens": {
+          "added": [
+            {
+              "token": "file",
+              "dictname": [
+                "english_stem"
+              ]
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_fts_conf_add_token.sql",
       "expected_msql_file": "msql_alter_fts_conf_add_token.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter FTS Configuration Rename",
       "endpoint": "NODE-fts_configuration.obj_id",
@@ -97,14 +122,16 @@
       },
       "expected_sql_file": "alter_fts_conf_rename.sql",
       "expected_msql_file": "msql_alter_fts_conf_rename.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop FTS Configuration with parser",
       "endpoint": "NODE-fts_configuration.delete_id",
       "data": {
         "name": "test_fts_configuration_def1"
       }
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create FTS Configuration with copy config",
       "endpoint": "NODE-fts_configuration.obj",
@@ -118,18 +145,29 @@
       },
       "expected_sql_file": "create_fts_conf_def2.sql",
       "expected_msql_file": "msql_create_fts_conf_def2.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter FTS Configuration remove token file",
       "endpoint": "NODE-fts_configuration.obj_id",
       "sql_endpoint": "NODE-fts_configuration.sql_id",
       "msql_endpoint": "NODE-fts_configuration.msql_id",
       "data": {
-        "tokens": {"deleted": [{"token": "word", "dictname": ["english_stem"]}]}
+        "tokens": {
+          "deleted": [
+            {
+              "token": "word",
+              "dictname": [
+                "english_stem"
+              ]
+            }
+          ]
+        }
       },
       "expected_sql_file": "alter_fts_conf_remove_token.sql",
       "expected_msql_file": "msql_alter_fts_conf_remove_token.sql"
-    }, {
+    },
+    {
       "type": "delete",
       "name": "Drop FTS Configuration with copy config",
       "endpoint": "NODE-fts_configuration.delete_id",

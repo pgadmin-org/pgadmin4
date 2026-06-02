@@ -57,12 +57,13 @@ class GrantWizardSavePermissionsTestCase(BaseTestGenerator):
         self.test_data['objects'][-1]['name_with_args'] = self.table_name
         self.test_data['objects'][-1]['nspname'] = self.schema_name
 
-        if self.server_information['type'] == 'ppas':
-            self.test_data['acl'][-1]['grantee'] = 'enterprisedb'
-            self.test_data['acl'][-1]['grantor'] = 'enterprisedb'
-        else:
-            self.test_data['acl'][-1]['grantee'] = 'postgres'
-            self.test_data['acl'][-1]['grantor'] = 'postgres'
+        # Use the test server's actual username instead of hardcoded
+        # 'postgres'/'enterprisedb' - allows the test to work on clusters
+        # where the superuser is a different role (e.g. 'ashesh.vashi'
+        # on a developer-local Homebrew install).
+        owner = self.server['username']
+        self.test_data['acl'][-1]['grantee'] = owner
+        self.test_data['acl'][-1]['grantor'] = owner
 
     def grant_permissions(self):
         response = self.tester.post(

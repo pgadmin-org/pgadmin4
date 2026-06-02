@@ -1496,11 +1496,13 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
   }, [columns, selectedRows.size]);
 
+  const gvColumnsSignature = React.useMemo(() => columns.map(c => c.key).join(','), [columns]);
+
   const openGeometryViewerTab = React.useCallback((column, rowsData) => {
     layoutDocker.openTab({
       id: PANELS.GEOMETRY,
       title: gettext('Geometry Viewer'),
-      content: <GeometryViewer rows={rowsData} columns={columns} column={column}/>,
+      content: <GeometryViewer key={gvColumnsSignature} rows={rowsData} columns={columns} column={column}/>,
       closable: true,
     }, PANELS.MESSAGES, 'after-tab', true);
   }, [layoutDocker, columns]);

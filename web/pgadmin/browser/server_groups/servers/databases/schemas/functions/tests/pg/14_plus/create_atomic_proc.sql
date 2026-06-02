@@ -12,7 +12,7 @@ BEGIN ATOMIC
 END;
 
 ALTER PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
-    OWNER TO postgres;
+    OWNER TO <OWNER>;
 
 COMMENT ON PROCEDURE public."Proc3_$%{}[]()&*^!@""'`\/#"()
     IS 'demo comments';

@@ -59,5 +59,6 @@ auditpy.txt
 web/coverage/
 web/.coverage
 web/regression/.coverage
+.worktree/
 web/regression/covhtml/
 web/regression/htmlcov/

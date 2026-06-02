@@ -9,7 +9,7 @@ WITH (
 );
 
 ALTER TABLE IF EXISTS public."table_with_patition_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
     IS 'partition table';

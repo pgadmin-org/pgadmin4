@@ -19,7 +19,9 @@ import base64
 import datetime
 import hmac
 import hashlib
+import logging
 import os
+import pickle
 import secrets
 import string
 import time
@@ -29,8 +31,10 @@ from threading import Lock
 from flask import current_app, request, flash, redirect, has_request_context
 from flask_login import login_url
 
-from pickle import dump, load
 from collections import OrderedDict
+from cryptography.fernet import Fernet, InvalidToken
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from itsdangerous import signer
 
 from flask.sessions import SessionInterface, SessionMixin
@@ -47,6 +51,85 @@ def _calc_hmac(body, secret):
             secret.encode(), body.encode(), hashlib.sha256
         ).digest()
     ).decode()
+
+
+# File-HMAC: protects on-disk session files against tampering before
+# deserialization. SHA-256 is hard-coded (not driven by SESSION_DIGEST_METHOD)
+# so the header length is a fixed, format-stable constant.
+_FILE_HMAC = hashlib.sha256
+_HMAC_HEX_LEN = _FILE_HMAC().digest_size * 2  # 64 for SHA-256
+
+logger = logging.getLogger(__name__)
+
+
+def _compute_file_hmac(secret, body):
+    """Compute the hex-encoded HMAC over a session-file body.
+
+    Flask's SECRET_KEY may be str or bytes; both are accepted.
+    """
+    key = secret.encode() if isinstance(secret, str) else secret
+    return hmac.new(key, body, _FILE_HMAC).hexdigest().encode()
+
+
+# HKDF salt + info for the session-body Fernet key. Both fixed and version-
+# tagged so a future format change can derive a fresh key without reusing
+# bytes that may already be in flight on disk.
+_SESSION_FERNET_SALT = b'pga-session-body-v1'
+_SESSION_FERNET_INFO = b'pgadmin session body encryption v1'
+
+
+def _derive_session_fernet(secret):
+    """Derive a Fernet instance from `SECRET_KEY` for session-body
+    confidentiality.
+
+    Layer 1 of the on-disk session protection. The HMAC header (added in
+    PR 1) protects integrity of the on-disk bytes; this Fernet layer
+    additionally protects confidentiality so that a leak of `sessions/`
+    files alone (without the SECRET_KEY in `pgadmin4.db`) does not
+    expose OAuth tokens, cloud credentials, MFA OTPs, `pass_enc_key`
+    (the KEK that decrypts saved server passwords), or any other
+    sensitive material the application places in the session.
+
+    Caveat (real, not theoretical): SECRET_KEY currently lives in
+    `pgadmin4.db` in the same DATA_DIR. A leak that includes BOTH
+    `sessions/` and `pgadmin4.db` recovers the derived Fernet key and
+    can decrypt session bodies. Closing this gap requires moving
+    SECRET_KEY out of DATA_DIR (e.g., into the OS keychain via
+    `USE_OS_SECRET_STORAGE`); tracked as Layer 2 follow-up.
+
+    HKDF with a fixed salt and info string is used so the derivation is
+    deterministic across processes (multiple workers must produce the
+    same key) and so a future format change can swap in a new
+    salt/info without compromising existing files.
+    """
+    key_material = secret.encode() if isinstance(secret, str) else secret
+    derived = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=_SESSION_FERNET_SALT,
+        info=_SESSION_FERNET_INFO,
+    ).derive(key_material)
+    return Fernet(base64.urlsafe_b64encode(derived))
+
+
+def _open_session_file(path):
+    """Open a session file for writing with mode 0o600 (owner-only).
+
+    Session files contain OAuth access/refresh tokens, AWS/Google/Azure/
+    BigAnimal cloud credentials, the Kerberos cache path, MFA OTP material,
+    and `pass_enc_key` (the symmetric KEK used to decrypt the user's saved
+    Postgres server passwords). The default `open(path, 'wb')` uses the
+    process umask, which on most systems leaves files world-readable
+    (0o644). Force 0o600 so that even if the directory permissions are
+    misconfigured (e.g., a volume mount in a container with shared uids),
+    individual session files remain owner-only.
+    """
+    fd = os.open(
+        path,
+        os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+        0o600,
+    )
+    return os.fdopen(fd, 'wb')
 
 
 sess_lock = Lock()
@@ -199,6 +282,10 @@ class CachingSessionManager(SessionManager):
 class FileBackedSessionManager(SessionManager):
 
     def __init__(self, path, secret, disk_write_delay, skip_paths=None):
+        if not secret:
+            # File-HMAC integrity collapses without a secret. Use raise, not
+            # assert: -O strips assertions in production.
+            raise RuntimeError("SECRET_KEY must be non-empty")
         self.path = path
         self.secret = secret
         self.disk_write_delay = disk_write_delay
@@ -231,34 +318,79 @@ class FileBackedSessionManager(SessionManager):
         if fname is None:
             raise InternalServerError('Failed to create new session')
 
-        # touch the file
-        with open(fname, 'wb'):
+        # touch the file with mode 0o600 — see _open_session_file rationale.
+        with _open_session_file(fname):
             return ManagedSession(sid=sid)
 
         return ManagedSession(sid=sid)
 
     def get(self, sid, digest):
-        'Retrieve a managed session by session-id, checking the HMAC digest'
+        """Retrieve a managed session by session-id, verifying integrity
+        and decrypting the body.
 
+        File format:
+            +-------------------------------------------------------+
+            | _HMAC_HEX_LEN bytes : hex HMAC over the ciphertext   |
+            +-------------------------------------------------------+
+            | N bytes : Fernet(pickle((randval, digest, data)))    |
+            +-------------------------------------------------------+
+
+        The HMAC is verified against the ciphertext BEFORE Fernet decrypt
+        and BEFORE pickle.loads, so a malicious file dropped in the
+        sessions directory cannot trigger arbitrary code execution via
+        __reduce__ during deserialization (encrypt-then-MAC; pickle.loads
+        only ever sees Fernet-decrypted plaintext from a server-written
+        file).
+        """
         fname = safe_join(self.path, sid)
-        data = None
-        hmac_digest = None
-        randval = None
+        if fname is None or not os.path.exists(fname):
+            return self.new_session()
 
-        if fname is not None and os.path.exists(fname):
+        try:
+            with open(fname, 'rb') as f:
+                header = f.read(_HMAC_HEX_LEN)
+                body = f.read()
+            if len(header) != _HMAC_HEX_LEN or len(body) == 0:
+                # 0-byte placeholder from new_session(), or pre-fix legacy
+                # file shorter than the header. Silently invalidate; one-time
+                # re-login on upgrade is acceptable and expected.
+                return self.new_session()
+            expected = _compute_file_hmac(self.secret, body)
+            if not hmac.compare_digest(header, expected):
+                logger.warning(
+                    "session file rejected: bad file-HMAC for sid=%s",
+                    sid[:8] if sid else '<empty>',
+                )
+                return self.new_session()
+            # Body integrity verified — decrypt before deserializing.
             try:
-                with open(fname, 'rb') as f:
-                    randval, hmac_digest, data = load(f)
-            except Exception:
-                pass
+                plaintext = _derive_session_fernet(
+                    self.secret).decrypt(body)
+            except InvalidToken:
+                # Pre-Layer-1 (HMAC-only) session files: HMAC is still a
+                # valid HMAC over the legacy plain-pickle body, but
+                # Fernet.decrypt on raw pickle bytes raises InvalidToken.
+                # Silently invalidate; users see a one-time re-login on
+                # the upgrade that introduced this layer.
+                logger.warning(
+                    "session file rejected: legacy unencrypted body for "
+                    "sid=%s", sid[:8] if sid else '<empty>',
+                )
+                return self.new_session()
+            randval, hmac_digest, data = pickle.loads(plaintext)
+        except (pickle.UnpicklingError, EOFError, OSError, MemoryError,
+                ValueError, TypeError):
+            # Narrow catch: silently invalidate corrupted/unreadable files.
+            # Programming errors (AttributeError, NameError, etc.) propagate
+            # so they surface in tests rather than being masked.
+            return self.new_session()
 
         if not data:
             return self.new_session()
 
-        # This assumes the file is correct, if you really want to
-        # make sure the session is good from the server side, you
-        # can re-calculate the hmac
-
+        # Cookie-binding check: the cookie's digest must match the file's
+        # stored digest. Prevents using one session's file with another's
+        # cookie even when both are server-written.
         if hmac_digest != digest:
             return self.new_session()
 
@@ -289,11 +421,17 @@ class FileBackedSessionManager(SessionManager):
         if fname is None:
             raise InternalServerError('Failed to update the session')
 
-        with open(fname, 'wb') as f:
-            dump(
-                (session.randval, session.hmac_digest, dict(session)),
-                f
-            )
+        plaintext = pickle.dumps(
+            (session.randval, session.hmac_digest, dict(session)), -1
+        )
+        # Encrypt-then-MAC: Fernet wrap first, then HMAC over the
+        # ciphertext. pickle.loads on a tampered or unauthenticated body
+        # is therefore unreachable on the read path.
+        body = _derive_session_fernet(self.secret).encrypt(plaintext)
+        header = _compute_file_hmac(self.secret, body)
+        with _open_session_file(fname) as f:
+            f.write(header)
+            f.write(body)
 
 
 class ManagedSessionInterface(SessionInterface):

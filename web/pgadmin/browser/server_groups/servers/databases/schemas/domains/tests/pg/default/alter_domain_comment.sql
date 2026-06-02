@@ -8,7 +8,7 @@ CREATE DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     DEFAULT 5
     NOT NULL;
 
-ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO postgres;
+ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#" OWNER TO <OWNER>;
 
 ALTER DOMAIN public."Dom1_$%{}[]()&*^!@""'`\/#"
     ADD CONSTRAINT constraint_1 CHECK (3 < 5);

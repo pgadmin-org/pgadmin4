@@ -4,7 +4,7 @@ CREATE TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
 ) PARTITION BY RANGE (m_col);
 
 ALTER TABLE IF EXISTS public."test_table_$%{}[]()&*^!@""""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."test_table_$%{}[]()&*^!@""""'`\/#"
     IS 'comment_01';

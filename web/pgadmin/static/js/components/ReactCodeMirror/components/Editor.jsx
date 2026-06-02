@@ -119,9 +119,9 @@ function insertTabWithUnit({ state, dispatch }) {
 /* React wrapper for CodeMirror */
 const defaultExtensions = [
   highlightSpecialChars(),
-  rectangularSelection(),
   dropCursor(),
-  crosshairCursor(),
+  rectangularSelection({ eventFilter: (e) => e.altKey && e.ctrlKey }),
+  crosshairCursor({ key: 'Control' }),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
   syntaxHighlighting,

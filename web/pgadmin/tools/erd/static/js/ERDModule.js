@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import pgWindow from 'sources/window';
 import {getPanelTitle} from 'tools/sqleditor/static/js/sqleditor_title';
-import {getRandomInt} from 'sources/utils';
+import {getRandomInt, getServerColors} from 'sources/utils';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import ReactDOM from 'react-dom/client';
@@ -142,12 +142,15 @@ export default class ERDModule {
     const panelUrl = this.getPanelUrl(transId, parentData, gen);
     const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
+    // Extract bgcolor and fgcolor from server icon
+    const { bgcolor, fgcolor } = getServerColors(parentData?.server?.icon);
+
     pgAdmin.Browser.Events.trigger(
       'pgadmin:tool:show',
       `${BROWSER_PANELS.ERD_TOOL}_${transId}`,
       panelUrl,
       {sql_id: toolDataId, connectionTitle: _.escape(panelTitle), db_name:parentData.database.label, server_name: parentData.server.label, user: parentData.server.user.name, server_type: parentData.server.server_type},
-      {title: 'Untitled', icon: 'fa fa-sitemap'},
+      {title: 'Untitled', icon: 'fa fa-sitemap', bgcolor: bgcolor, fgcolor: fgcolor, server_id: parentData?.server?._id},
       Boolean(open_new_tab?.includes('erd_tool'))
     );
 

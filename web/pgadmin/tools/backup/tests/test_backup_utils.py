@@ -25,11 +25,12 @@ def create_backup_job(tester, url, params, assert_equal):
 
 def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
                    assert_equal):
-    cnt = 0
     the_process = None
-    while True:
-        if cnt >= 5:
-            break
+    # Wait up to 30s for the background pg_dump to actually finish.
+    # The completion signal is `exit_code` becoming non-None — NOT the
+    # mere presence of `execution_time`, which is set while the process
+    # is still running.
+    for _ in range(60):
         # Check the process list
         response1 = tester.get('/misc/bgprocess/?_={0}'.format(
             secrets.choice(range(1, 9999999))))
@@ -39,13 +40,12 @@ def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
         try:
             the_process = next(
                 p for p in process_list if p['id'] == job_id)
-        except Exception:
+        except StopIteration:
             the_process = None
 
-        if the_process and 'execution_time' in the_process:
+        if the_process and the_process.get('exit_code') is not None:
             break
         time.sleep(0.5)
-        cnt += 1
 
     assert_equal('execution_time' in the_process, True)
     assert_equal('stime' in the_process, True)

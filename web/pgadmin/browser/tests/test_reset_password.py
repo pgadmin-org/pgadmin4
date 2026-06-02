@@ -24,17 +24,21 @@ class ResetPasswordTestCase(BaseTestGenerator):
     scenarios = [
         # This test case validates the empty email field
         ('TestCase for Validating Empty Email', dict(
-            email='', respdata='Email not provided')),
+            email='', respdata='Email not provided',
+            expect_status=400)),
 
         # This test case validates the invalid/incorrect email field
         ('TestCase for Validating Invalid_Email', dict(
             email=str(uuid.uuid4())[1:8] + '@xyz.com',
-            respdata='Incorrect username or password')),
+            respdata='Incorrect username or password',
+            expect_status=400)),
 
         # This test case validates the valid email id
         ('TestCase for Validating Valid_Email', dict(
             email=config_data['pgAdmin4_login_credentials']
-            ['login_username'], respdata='pgAdmin 4'))
+            ['login_username'],
+            respdata='Password reset instructions sent',
+            expect_status=200))
     ]
 
     @classmethod
@@ -46,20 +50,30 @@ class ResetPasswordTestCase(BaseTestGenerator):
         pass
 
     def runTest(self):
-        """This function checks reset password functionality."""
+        """This function checks reset password functionality.
 
-        response = self.tester.get('/browser/reset_password')
-        self.assertTrue(
-            'Recover Password' in response.data.decode('utf-8')
-        )
-        self.assertTrue(
-            'Enter the email address for the user account you wish to '
-            'recover the password for' in response.data.decode('utf-8')
-        )
+        The /browser/reset_password endpoint is now a JSON API; the
+        legacy 'Recover Password' HTML form is rendered client-side by
+        the React SPA and not visible to the test client.
+        """
+        import json as _json
+
+        # Get a CSRF token from the SPA shell.
+        get_res = self.tester.get('/browser/reset_password')
+        csrf_token = self.tester.fetch_csrf(get_res)
+
         response = self.tester.post(
-            '/browser/reset_password', data=dict(email=self.email),
+            '/browser/reset_password',
+            data=_json.dumps(dict(
+                email=self.email, csrf_token=csrf_token)),
+            content_type='application/json',
             follow_redirects=True)
-        self.assertTrue(self.respdata in response.data.decode('utf-8'))
+        self.assertEqual(
+            response.status_code, self.expect_status,
+            'Expected status %d, got %d (body: %s)' % (
+                self.expect_status, response.status_code,
+                response.data.decode('utf-8')[:200]))
+        self.assertIn(self.respdata, response.data.decode('utf-8'))
 
     @classmethod
     def tearDownClass(cls):

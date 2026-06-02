@@ -29,6 +29,7 @@ from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
 from pgadmin.authenticate import socket_login_required
 from pgadmin.model import Server
+from pgadmin.utils.server_access import get_server
 
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
@@ -98,7 +99,7 @@ def panel(trans_id):
     if 'sid_soid_mapping' not in app.config:
         app.config['sid_soid_mapping'] = dict()
 
-    s = Server.query.filter_by(id=int(params['sid'])).first()
+    s = get_server(int(params['sid']))
     if s:
         data = _get_database_role(params['sid'], params['did'])
         if data:

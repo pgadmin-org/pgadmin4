@@ -32,11 +32,11 @@
             "fsrvoption":"port",
             "fsrvvalue":"5450"
           }],
-        "fsrvowner":"postgres",
+        "fsrvowner":"<OWNER>",
         "description":"Test comment",
         "fsrvacl":[{
           "grantee":"PUBLIC",
-          "grantor":"postgres",
+          "grantor":"<OWNER>",
           "privileges":[{
             "privilege_type":"U",
             "privilege":true,
@@ -60,7 +60,7 @@
       "sql_endpoint": "NODE-foreign_server.sql_id",
       "data": {
         "name":"FS_$%{}[]()&*^!@\"'`\\/#",
-        "fsrvowner":"postgres"
+        "fsrvowner":"<OWNER>"
       }
     }, {
       "type": "alter",
@@ -96,7 +96,7 @@
         "fsrvacl":{
           "added": [{
             "grantee":"PUBLIC",
-            "grantor":"postgres",
+            "grantor":"<OWNER>",
             "privileges":[{
               "privilege_type":"U",
               "privilege":true,
@@ -129,7 +129,7 @@
         "fsrvacl":{
           "deleted": [{
             "grantee":"PUBLIC",
-            "grantor":"postgres",
+            "grantor":"<OWNER>",
             "privileges":[{
               "privilege_type":"U",
               "privilege":true,

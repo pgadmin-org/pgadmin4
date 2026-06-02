@@ -106,8 +106,22 @@ class LoginTestCase(BaseTestGenerator):
         """This function checks login functionality."""
         res = self.tester.login(self.email, self.password, True)
         if self.is_gravtar_image_check:
+            # Post-React-rewrite, the "Gravatar image for X" HTML this
+            # test was written against is no longer server-rendered (it
+            # is built client-side by React). Verify successful login by
+            # checking the server-side session has the user's id.
+            #
+            # NOTE: This does NOT prove the session was rotated to defeat
+            # fixation. Flask-Paranoid does not rotate the session id on
+            # login — it binds a `_paranoid_token` to UA+IP and validates
+            # it per-request — so a strict sid-rotation assertion would
+            # give false confidence. Stronger fixation testing is owed as
+            # follow-up.
             if app_config.SHOW_GRAVATAR_IMAGE:
-                self.assertTrue(self.respdata in res.data.decode('utf8'))
+                with self.tester.session_transaction() as sess:
+                    self.assertIsNotNone(
+                        sess.get('_user_id'),
+                        'Post-login session should have _user_id')
         else:
             self.assertTrue(self.respdata in res.data.decode('utf8'))
 

@@ -9,7 +9,7 @@
       "data": {
         "spcname": "pg_default",
         "schema": "public",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "datacl": [],
         "seclabels": [],
         "name": "testmview_$%{}[]()&*^!/@`#",
@@ -30,7 +30,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -86,7 +86,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -142,8 +142,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "old_grantee": "postgres",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",

@@ -50,7 +50,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -92,8 +92,8 @@
         "attacl": {
           "changed": [
             {
-              "grantee": "postgres",
-              "grantor": "postgres",
+              "grantee": "<OWNER>",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -162,7 +162,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -239,7 +239,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -324,7 +324,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -403,7 +403,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -534,7 +534,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -747,7 +747,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "r",

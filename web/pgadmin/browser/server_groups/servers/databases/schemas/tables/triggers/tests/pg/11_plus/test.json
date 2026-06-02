@@ -37,7 +37,7 @@
         "name": "Trig1_$%{}[]()&*^!@\"'`\\/#",
         "acl": [],
         "args": [],
-        "funcowner": "postgres",
+        "funcowner": "<OWNER>",
         "lanname": "plpgsql",
         "options": [],
         "pronamespace": 2200,

@@ -15,8 +15,6 @@ Create Date: 2018-08-29 15:33:57.855491
 
 """
 from alembic import op
-from sqlalchemy.orm.session import Session
-from pgadmin.model import DebuggerFunctionArguments
 
 # revision identifiers, used by Alembic.
 revision = 'ca00ec32581b'
@@ -26,11 +24,10 @@ depends_on = None
 
 
 def upgrade():
-    session = Session(bind=op.get_bind())
-
-    debugger_records = session.query(DebuggerFunctionArguments).all()
-    if debugger_records:
-        session.delete(debugger_records)
+    # Use raw SQL instead of importing the model class, because
+    # model changes in later migrations (e.g. adding user_id) would
+    # cause this migration to fail on fresh databases.
+    op.execute('DELETE FROM debugger_function_arguments')
 
 
 def downgrade():

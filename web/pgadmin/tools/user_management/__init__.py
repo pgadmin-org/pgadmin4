@@ -168,7 +168,7 @@ def user(uid):
                                'username': u.username,
                                'email': u.email,
                                'active': u.active,
-                               'role': u.roles[0].id,
+                               'role': u.roles[0].id if u.roles else None,
                                'auth_source': u.auth_source,
                                'locked': u.locked,
                                'canDrop': u.id != current_user.id
@@ -759,7 +759,7 @@ def delete_user(uid):
 
         ServerGroup.query.filter_by(user_id=uid).delete()
 
-        Process.query.filter_by(user_id=uid).delete()
+        Process.for_user(user_id=uid).delete()
         # Delete Shared servers for current user.
         SharedServer.query.filter_by(user_id=uid).delete()
 

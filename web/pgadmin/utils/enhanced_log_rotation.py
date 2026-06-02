@@ -7,6 +7,7 @@
 #
 ##########################################################################
 
+import os
 import re
 from logging import handlers
 
@@ -45,6 +46,26 @@ class EnhancedRotatingFileHandler(handlers.TimedRotatingFileHandler,
                                               maxBytes=max_bytes,
                                               backupCount=backup_count,
                                               encoding=encoding)
+
+    # Create new log files with mode 0o600 so they are not world/group
+    # readable. Pre-existing files keep their permissions; the parent
+    # DATA_DIR is already 0o700 on POSIX, so this is defense-in-depth.
+    # On Windows the mode arg to os.open is ignored — fall back to the
+    # default behavior there. O_CLOEXEC matches built-in open()'s default
+    # non-inheritable fd behavior (PEP 446); os.open does not set it
+    # otherwise.
+    def _open(self):
+        if os.name == 'nt':
+            return super()._open()
+        flags = os.O_WRONLY | os.O_CREAT | os.O_CLOEXEC | (
+            os.O_APPEND if self.mode == 'a' else os.O_TRUNC)
+        fd = os.open(self.baseFilename, flags, 0o600)
+        try:
+            return os.fdopen(fd, self.mode, encoding=self.encoding,
+                             errors=getattr(self, 'errors', None))
+        except Exception:
+            os.close(fd)
+            raise
 
     # Time & Size combined rollover
     def shouldRollover(self, record):

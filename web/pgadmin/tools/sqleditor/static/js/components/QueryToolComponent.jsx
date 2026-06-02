@@ -232,8 +232,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               maximizable: true,
               tabs: [
                 LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query  onTextSelect={(text) => setSelectedText(text)} setQtStatePartial={setQtStatePartial}/>}),
-                LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />}),
                 ...(pgAdmin.llm_enabled ? [LayoutDocker.getPanel({id: PANELS.AI_ASSISTANT, title: gettext('AI Assistant'), content: <NLQChatPanel />})] : []),
+                LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />}),
               ],
             },
             {

@@ -8,7 +8,6 @@
 # ##########################################################################
 
 # Google Cloud Deployment Implementation
-import pickle
 import json
 import os
 from urllib.parse import unquote
@@ -52,6 +51,32 @@ blueprint = GooglePostgresqlModule(MODULE_NAME, __name__,
                                    static_url_path='/misc/cloud/google')
 
 
+def _get_google_from_session():
+    """Build a Google instance from `session['google']['state']`.
+
+    Returns None when no Google state has been seeded yet — callers should
+    treat that as "auth not yet started."
+
+    The previous implementation persisted a live Google instance via an
+    unsafe serializer, which represented an insecure-deserialization
+    vector. We now store only a JSON-safe dict and rebuild on demand.
+    """
+    google = session.get('google')
+    if not google:
+        return None
+    state = google.get('state')
+    if not state:
+        return None
+    return Google.from_state(state)
+
+
+def _save_google_to_session(google_obj):
+    """Persist the given Google instance's state into the session."""
+    if 'google' not in session:
+        session['google'] = {}
+    session['google']['state'] = google_obj.to_state()
+
+
 @blueprint.route("/")
 @pga_login_required
 def index():
@@ -88,11 +113,14 @@ def verify_credentials():
         if 'google' not in session:
             session['google'] = {}
 
-        if 'google_obj' not in session['google'] or \
-                session['google']['client_config'] != client_config:
-            _google = Google(client_config)
+        # Reuse cached Google when client_config hasn't changed; otherwise
+        # start fresh (e.g., the user picked a different secret file).
+        cached_google = _get_google_from_session()
+        if cached_google is not None and \
+                session['google'].get('client_config') == client_config:
+            _google = cached_google
         else:
-            _google = pickle.loads(session['google']['google_obj'])
+            _google = Google(client_config)
 
         # get auth url
         host_url = request.origin + '/'
@@ -105,9 +133,8 @@ def verify_credentials():
         else:
             status = True
             res_data = {'auth_url': auth_url}
-            # save google object
         session['google']['client_config'] = client_config
-        session['google']['google_obj'] = pickle.dumps(_google, -1)
+        _save_google_to_session(_google)
     else:
         error = 'Client secret path not found'
         session.pop('google', None)
@@ -124,9 +151,12 @@ def callback():
     Call back function on google authentication response.
     :return:
     """
-    google_obj = pickle.loads(session['google']['google_obj'])
+    google_obj = _get_google_from_session()
+    if google_obj is None:
+        return plain_text_response(
+            'Authentication session expired. Please try again.')
     res = google_obj.callback(request)
-    session['google']['google_obj'] = pickle.dumps(google_obj, -1)
+    _save_google_to_session(google_obj)
     return plain_text_response(res)
 
 
@@ -139,10 +169,10 @@ def verification_ack():
     :return:
     """
     verified = False
-    if 'google' in session and 'google_obj' in session['google']:
-        google_obj = pickle.loads(session['google']['google_obj'])
+    google_obj = _get_google_from_session()
+    if google_obj is not None:
         verified, error = google_obj.verification_ack()
-        session['google']['google_obj'] = pickle.dumps(google_obj, -1)
+        _save_google_to_session(google_obj)
         return make_json_response(success=verified, errormsg=error)
     else:
         return make_json_response(success=verified,
@@ -157,9 +187,9 @@ def get_projects():
     Lists the projects for authorized user
     :return: list of projects
     """
-    if 'google' in session and 'google_obj' in session['google']:
-        google_obj = pickle.loads(session['google']['google_obj'])
-        projects_list,error = google_obj.get_projects()
+    google_obj = _get_google_from_session()
+    if google_obj is not None:
+        projects_list, error = google_obj.get_projects()
         if error:
             return bad_request(errormsg=error)
         return make_json_response(data=projects_list)
@@ -174,11 +204,10 @@ def get_regions(project_id):
     :param project_id: google project id
     :return: google cloud sql region list
     """
-    if 'google' in session and 'google_obj' in session['google'] \
-            and project_id:
-        google_obj = pickle.loads(session['google']['google_obj'])
-        regions_list,error = google_obj.get_regions(project_id)
-        session['google']['google_obj'] = pickle.dumps(google_obj, -1)
+    google_obj = _get_google_from_session()
+    if google_obj is not None and project_id:
+        regions_list, error = google_obj.get_regions(project_id)
+        _save_google_to_session(google_obj)
         if error:
             return bad_request(errormsg=error)
         return make_json_response(data=regions_list)
@@ -195,8 +224,8 @@ def get_availability_zones(region):
     :param region: google region
     :return: google cloud sql availability zone list
     """
-    if 'google' in session and 'google_obj' in session['google'] and region:
-        google_obj = pickle.loads(session['google']['google_obj'])
+    google_obj = _get_google_from_session()
+    if google_obj is not None and region:
         availability_zone_list = google_obj.get_availability_zones(region)
         return make_json_response(data=availability_zone_list)
     else:
@@ -215,9 +244,8 @@ def get_instance_types(project_id, region, instance_class):
     :param instance_class: google cloud sql instnace class
     :return:
     """
-    if 'google' in session and 'google_obj' in session['google'] and \
-            project_id and region:
-        google_obj = pickle.loads(session['google']['google_obj'])
+    google_obj = _get_google_from_session()
+    if google_obj is not None and project_id and region:
         instance_types_dict = google_obj.get_instance_types(
             project_id, region)
         instance_types_list, error = (
@@ -237,8 +265,8 @@ def get_database_versions():
     Lists the postgresql database versions.
     :return: PostgreSQL version list
     """
-    if 'google' in session and 'google_obj' in session['google']:
-        google_obj = pickle.loads(session['google']['google_obj'])
+    google_obj = _get_google_from_session()
+    if google_obj is not None:
         db_version_list, error = google_obj.get_database_versions()
         if error:
             return bad_request(errormsg=error)
@@ -304,7 +332,9 @@ def deploy_on_google(data):
 
         # Set env variables for background process of deployment
         env = dict()
-        google_obj = pickle.loads(session['google']['google_obj'])
+        google_obj = _get_google_from_session()
+        if google_obj is None or google_obj.credentials_json is None:
+            return False, None, 'Google credentials missing from session.'
         env['GOOGLE_CREDENTIALS'] = json.dumps(google_obj.credentials_json)
 
         if 'db_password' in data['db_details']:
@@ -351,6 +381,60 @@ class Google:
         self._verification_successful = False
         self._verification_error = None
         self._redirect_url = None
+
+    def to_state(self):
+        """Serialize the persistable state of this Google instance to a
+        plain dict for storage in `flask.session`.
+
+        Live SDK objects (like `_credentials`) are intentionally NOT
+        included — they are rebuilt from `credentials_json` in
+        `from_state()`. Storing only data primitives lets the session
+        layer use a safe (non-binary-serializer) format.
+        """
+        return {
+            'client_config': self._client_config,
+            'credentials_json': self.credentials_json,
+            'redirect_url': self._redirect_url,
+            'project_id': self._project_id,
+            'regions': self._regions,
+            'availability_zones': self._availability_zones,
+            'verification_successful': self._verification_successful,
+            'verification_error': self._verification_error,
+        }
+
+    @classmethod
+    def from_state(cls, state):
+        """Rebuild a Google instance from a previously-serialized dict.
+
+        The reverse of `to_state()`. The Google SDK credentials object is
+        reconstructed from the stored token dict so subsequent API calls
+        work without forcing the user back through the OAuth2 flow.
+        """
+        if not isinstance(state, dict):
+            return None
+        obj = cls(client_config=state.get('client_config'))
+        obj.credentials_json = state.get('credentials_json')
+        if obj.credentials_json:
+            # Rebuild google.oauth2.credentials.Credentials from the
+            # persisted token dict. Credentials() ignores unknown kwargs,
+            # so id_token (kept in the dict for API parity) is dropped.
+            from google.oauth2.credentials import Credentials
+            obj._credentials = Credentials(
+                token=obj.credentials_json.get('token'),
+                refresh_token=obj.credentials_json.get('refresh_token'),
+                token_uri=obj.credentials_json.get('token_uri'),
+                client_id=obj.credentials_json.get('client_id'),
+                client_secret=obj.credentials_json.get('client_secret'),
+                scopes=obj.credentials_json.get('scopes'),
+            )
+        obj._redirect_url = state.get('redirect_url')
+        obj._project_id = state.get('project_id')
+        obj._regions = state.get('regions', []) or []
+        obj._availability_zones = state.get('availability_zones', {}) or {}
+        obj._verification_successful = bool(
+            state.get('verification_successful', False))
+        obj._verification_error = state.get('verification_error')
+        return obj
 
     def get_auth_url(self, host_url):
         """

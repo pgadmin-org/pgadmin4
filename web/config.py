@@ -376,8 +376,16 @@ SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
 
 SESSION_COOKIE_NAME = 'pga4_session'
 
-# Session digest method
-SESSION_DIGEST_METHOD = 'hashlib.sha1'
+# Session digest method.
+# Used as the HMAC algorithm for the session cookie (signing the
+# (sid, randval) pair). HMAC-SHA1 is still cryptographically acceptable
+# for authentication, but SHA-256 is the modern default and aligns with
+# the file-HMAC header introduced for session-on-disk integrity.
+# Operators on existing deployments will see all sessions invalidated on
+# upgrade regardless (the file-HMAC header is new), so we flip this
+# default at the same time rather than leaving SHA-1 as a long-term
+# liability.
+SESSION_DIGEST_METHOD = 'hashlib.sha256'
 
 ##########################################################################
 # Mail server settings
@@ -1043,6 +1051,19 @@ DOCKER_API_URL = ''
 # The Docker Model Runner model to use for AI features.
 # Examples: ai/qwen3-coder, ai/llama3.2
 DOCKER_API_MODEL = ''
+
+# Allowed LLM API URLs
+# A list of scheme://host:port entries that LLM API requests are allowed
+# to connect to. Only URLs matching an entry in this list will be permitted.
+# This prevents SSRF attacks via user-controlled API URL fields.
+# Set to an empty list to disable URL restriction (not recommended).
+# Add entries for custom providers (LiteLLM, LM Studio, corporate proxies).
+ALLOWED_LLM_API_URLS = [
+    'https://api.anthropic.com:443',
+    'https://api.openai.com:443',
+    'http://localhost:11434',     # Ollama default
+    'http://localhost:12434',     # Docker Model Runner default
+]
 
 # Maximum Tool Iterations
 # The maximum number of tool call iterations allowed during an AI conversation.

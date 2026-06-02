@@ -62,8 +62,10 @@ def create_app_data_directory(config):
                          getpass.getuser()))
 
     # Create the directory containing the log file (if not present).
+    log_dir_created = False
     try:
-        _create_directory_if_not_exists(os.path.dirname(config.LOG_FILE))
+        log_dir_created = _create_directory_if_not_exists(
+            os.path.dirname(config.LOG_FILE))
     except PermissionError as e:
         print(FAILED_CREATE_DIR.format(os.path.dirname(config.LOG_FILE), e))
         print(
@@ -78,8 +80,9 @@ def create_app_data_directory(config):
         sys.exit(1)
 
     # Create the session directory (if not present).
+    session_dir_created = False
     try:
-        is_directory_created = \
+        session_dir_created = \
             _create_directory_if_not_exists(config.SESSION_DB_PATH)
     except PermissionError as e:
         print(FAILED_CREATE_DIR.format(config.SESSION_DB_PATH, e))
@@ -94,12 +97,11 @@ def create_app_data_directory(config):
                 config.APP_VERSION))
         sys.exit(1)
 
-    if os.name != 'nt' and is_directory_created:
-        os.chmod(config.SESSION_DB_PATH, 0o700)
-
     # Create the storage directory (if not present).
+    storage_dir_created = False
     try:
-        _create_directory_if_not_exists(config.STORAGE_DIR)
+        storage_dir_created = _create_directory_if_not_exists(
+            config.STORAGE_DIR)
     except PermissionError as e:
         print(FAILED_CREATE_DIR.format(config.STORAGE_DIR, e))
         print(
@@ -114,8 +116,10 @@ def create_app_data_directory(config):
         sys.exit(1)
 
     # Create Azure Credential Cache directory (if not present).
+    azure_cache_dir_created = False
     try:
-        _create_directory_if_not_exists(config.AZURE_CREDENTIAL_CACHE_DIR)
+        azure_cache_dir_created = _create_directory_if_not_exists(
+            config.AZURE_CREDENTIAL_CACHE_DIR)
     except PermissionError as e:
         print(FAILED_CREATE_DIR.format(config.AZURE_CREDENTIAL_CACHE_DIR, e))
         print(
@@ -130,9 +134,11 @@ def create_app_data_directory(config):
         sys.exit(1)
 
     # Create Kerberos Credential Cache directory (if not present).
+    kerberos_cache_dir_created = False
     if config.SERVER_MODE and KERBEROS in config.AUTHENTICATION_SOURCES:
         try:
-            _create_directory_if_not_exists(config.KERBEROS_CCACHE_DIR)
+            kerberos_cache_dir_created = _create_directory_if_not_exists(
+                config.KERBEROS_CCACHE_DIR)
         except PermissionError as e:
             print(FAILED_CREATE_DIR.format(config.KERBEROS_CCACHE_DIR, e))
             print(
@@ -145,3 +151,30 @@ def create_app_data_directory(config):
                     getpass.getuser(),
                     config.APP_VERSION))
             sys.exit(1)
+
+    # Tighten ACLs on directories holding sensitive material to 0o700
+    # (owner-only). These all hold credentials, tokens, log content with
+    # potentially sensitive context, or user-uploaded files. SESSION_DB_PATH
+    # was already 0o700; extend the same policy uniformly. POSIX-only.
+    if os.name != 'nt':
+        sensitive_dirs = []
+        if log_dir_created:
+            sensitive_dirs.append(os.path.dirname(config.LOG_FILE))
+        if session_dir_created:
+            sensitive_dirs.append(config.SESSION_DB_PATH)
+        if storage_dir_created:
+            sensitive_dirs.append(config.STORAGE_DIR)
+        if azure_cache_dir_created:
+            sensitive_dirs.append(config.AZURE_CREDENTIAL_CACHE_DIR)
+        if kerberos_cache_dir_created:
+            sensitive_dirs.append(config.KERBEROS_CCACHE_DIR)
+        for _dir in sensitive_dirs:
+            try:
+                os.chmod(_dir, 0o700)
+            except Exception as e:
+                # On a mounted directory (OpenShift, NFS, etc.) chmod may
+                # fail. Surface a hint without aborting; the app still
+                # functions, just at the existing permissions.
+                print(
+                    "WARNING: Failed to set 0o700 ACL on '{}':\n"
+                    "         {}".format(_dir, e))

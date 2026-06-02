@@ -60,7 +60,7 @@ class BatchProcessTest(BaseTestGenerator):
     @patch('pgadmin.misc.bgprocess.processes.current_user')
     def runTest(self, current_user_mock, current_user, db_mock,
                 popen_mock, get_server_name_mock, pref_module):
-        with self.app.app_context():
+        with self.app.test_request_context("/"):
             current_user.id = 1
             current_user_mock.id = 1
             current_app.PGADMIN_RUNTIME = False
@@ -134,6 +134,7 @@ class BatchProcessTest(BaseTestGenerator):
                 self.utility_pid = 123
                 self.server_id = None
 
+        process_mock.for_user = process_mock.query.filter_by
         mock_result = process_mock.query.filter_by.return_value
         mock_result.first.return_value = TestMockProcess(
             restore_obj, self.class_params['args'],
@@ -174,6 +175,7 @@ class BatchProcessTest(BaseTestGenerator):
                 self.utility_pid = 123
                 self.server_id = None
 
+        process_mock.for_user = process_mock.query.filter_by
         process_mock.query.filter_by.return_value = [
             TestMockProcess(restore_obj,
                             self.class_params['args'],

@@ -21,13 +21,16 @@
       "data": {
         "spcname": "pg_default",
         "schema": "public",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "datacl": [],
         "seclabels": [],
         "name": "testmview_$%{}[]()&*^!/@`#",
         "comment": "comment1",
         "definition": "SELECT 1 AS col1",
-        "dependsonextensions": ["plpgsql", "postgres_fdw"]
+        "dependsonextensions": [
+          "plpgsql",
+          "postgres_fdw"
+        ]
       },
       "expected_sql_file": "create_mview_no_depends.sql",
       "expected_msql_file": "create_mview_no_depends.msql"
@@ -39,7 +42,9 @@
       "sql_endpoint": "NODE-mview.sql_id",
       "msql_endpoint": "NODE-mview.msql_id",
       "data": {
-        "dependsonextensions": ["plpgsql"]
+        "dependsonextensions": [
+          "plpgsql"
+        ]
       },
       "expected_sql_file": "alter_mview_no_depends.sql",
       "expected_msql_file": "alter_mview_no_depends.msql"
@@ -48,15 +53,16 @@
       "type": "delete",
       "name": "Drop Materialised Views",
       "endpoint": "NODE-mview.delete_id",
-      "data": {
-      }
-    },   
+      "data": {}
+    },
     {
       "type": "delete",
       "name": "Drop Extension",
       "endpoint": "NODE-extension.delete",
       "data": {
-        "ids": ["<postgres_fdw>"]
+        "ids": [
+          "<postgres_fdw>"
+        ]
       },
       "preprocess_data": true
     },
@@ -69,7 +75,7 @@
       "data": {
         "spcname": "pg_default",
         "schema": "public",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "datacl": [],
         "seclabels": [],
         "name": "testmview_$%{}[]()&*^!/@`#",
@@ -90,7 +96,7 @@
           "added": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -146,7 +152,7 @@
           "deleted": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
+              "grantor": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -202,8 +208,8 @@
           "changed": [
             {
               "grantee": "PUBLIC",
-              "grantor": "postgres",
-              "old_grantee": "postgres",
+              "grantor": "<OWNER>",
+              "old_grantee": "<OWNER>",
               "privileges": [
                 {
                   "privilege_type": "a",
@@ -324,7 +330,7 @@
       "data": {
         "spcname": "pg_default",
         "schema": "public",
-        "owner": "postgres",
+        "owner": "<OWNER>",
         "datacl": [],
         "seclabels": [],
         "name": "testmview_am_$%{}[]()&*^!/@`#",

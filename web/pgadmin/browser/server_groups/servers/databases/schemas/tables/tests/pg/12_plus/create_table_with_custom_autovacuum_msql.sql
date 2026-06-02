@@ -18,7 +18,7 @@ WITH (
 );
 
 ALTER TABLE IF EXISTS public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to <OWNER>;
 
 COMMENT ON TABLE public."table_with_custom_autovaccum_$%{}[]()&*^!@""'`\/#"
     IS 'custom auto vacuum';
