@@ -2,6 +2,6 @@ requests>=2.32.5,<2.33; python_version <= '3.9'
 requests>=2.34.2; python_version > '3.9'
 requests[security]>=2.32.5,<2.33; python_version <= '3.9'
 requests[security]>=2.34.2; python_version > '3.9'
-safety>=3.7.0
+safety>=3.8.1
 Sphinx==7.4.7
 sphinxcontrib-youtube==1.5.0
