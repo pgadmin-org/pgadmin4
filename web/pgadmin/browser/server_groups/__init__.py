@@ -398,7 +398,7 @@ class ServerGroupView(NodeView):
         if hide_shared_server:
             return [
                 group for group in server_groups
-                if is_owner(group) or not has_shared(group)
+                if is_owner(group)
             ]
 
         return [
