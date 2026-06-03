@@ -98,14 +98,17 @@ describe('pathOverlaps', () => {
   });
 });
 
-describe('schemaOptionsEvalulator — full walk (default)', () => {
-  test('without changedPath, every row is visited', () => {
+describe('schemaOptionsEvalulator — full walk fallbacks', () => {
+  test('without changedPath, every row is visited (incremental needs a path)', () => {
     const opts = evalOpts();
     expect(visitedRowIdxs(opts)).toEqual([0, 1, 2]);
   });
 
-  test('changedPath supplied but incrementalOptions=false, still full walk', () => {
-    const opts = evalOpts({ changedPath: ['rows', 1, 'name'] });
+  test('explicit incrementalOptions=false on viewHelperProps opts out, still full walk', () => {
+    const opts = evalOpts({
+      viewHelperProps: { incrementalOptions: false },
+      changedPath: ['rows', 1, 'name'],
+    });
     expect(visitedRowIdxs(opts)).toEqual([0, 1, 2]);
   });
 });
@@ -162,16 +165,20 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
   });
 });
 
-describe('schemaOptionsEvalulator — incremental (window global opt-in)', () => {
-  afterEach(() => { window.__INCREMENTAL_OPTIONS__ = false; });
+describe('schemaOptionsEvalulator — window global escape hatch', () => {
+  // The window flag is the emergency-rollback toggle now that
+  // incremental is the default. Setting it to FALSE disables
+  // incremental everywhere. Unset/undefined leaves the default
+  // (incremental on) in effect.
+  afterEach(() => { delete window.__INCREMENTAL_OPTIONS__; });
 
-  test('window.__INCREMENTAL_OPTIONS__ activates incremental mode', () => {
-    window.__INCREMENTAL_OPTIONS__ = true;
+  test('window.__INCREMENTAL_OPTIONS__ unset → default-on still applies', () => {
+    delete window.__INCREMENTAL_OPTIONS__;
     const opts = evalOpts({ changedPath: ['rows', 1, 'name'] });
     expect(visitedRowIdxs(opts)).toEqual([1]);
   });
 
-  test('window flag off (default) keeps full walk', () => {
+  test('window.__INCREMENTAL_OPTIONS__ = false disables incremental globally', () => {
     window.__INCREMENTAL_OPTIONS__ = false;
     const opts = evalOpts({ changedPath: ['rows', 1, 'name'] });
     expect(visitedRowIdxs(opts)).toEqual([0, 1, 2]);
@@ -206,11 +213,32 @@ describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () =>
     expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
   });
 
-  test('NEGATIVE — schema without incrementalOptions runs full walk', () => {
-    const state = buildState({ optedIn: false });
+  test('schema.incrementalOptions=false opts out (full walk despite default-on)', () => {
+    class OptedOutOuter extends OuterSchema {
+      constructor() { super(); this.incrementalOptions = false; }
+    }
+    const state = new SchemaState(
+      new OptedOutOuter(),
+      () => Promise.resolve(SAMPLE_DATA),
+      {},
+      () => {},
+      { mode: 'create' },
+    );
+    state.setReady(true);
+    state.data = SAMPLE_DATA;
+    state.initData = SAMPLE_DATA;
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
     expect(visitedRowIdxs(state.optionStore.getState())).toEqual([0, 1, 2]);
+  });
+
+  test('schema without any incrementalOptions setting uses default-on', () => {
+    const state = buildState({ optedIn: false });
+    state.__lastChangedPath = ['rows', 1, 'name'];
+    state.validate({ ...SAMPLE_DATA, __changeId: 1 });
+    // Default-on: incremental triggers when changedPath is present and
+    // no opt-out is set. Only the changed row is visited.
+    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
   });
 
   test('viewHelperProps.incrementalOptions still works when schema does not opt in', () => {

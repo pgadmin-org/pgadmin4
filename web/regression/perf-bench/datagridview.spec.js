@@ -111,10 +111,19 @@ test('DataGridView: Register Server > Parameters', async ({ page, context }) => 
   await page.screenshot({ path: './shots/03-parameters-tab.png' });
 
   // --- Enable instrumentation + reset counters ---
-  await page.evaluate(() => {
+  const incrementalOff = process.env.INCREMENTAL_OFF === '1';
+  console.log(`[bench] INCREMENTAL_OFF=${incrementalOff ? 'true (baseline/opt-out)' : 'false (default-on)'}`);
+  await page.evaluate((off) => {
     window.__PERF_SCHEMA__ = true;
     window.__perfReset && window.__perfReset();
-  });
+    if (off) {
+      // Opt out of the default-on incremental walker — gives us the
+      // A side of an A/B (incremental OFF) for perf comparison.
+      window.__INCREMENTAL_OPTIONS__ = false;
+    } else {
+      delete window.__INCREMENTAL_OPTIONS__;
+    }
+  }, incrementalOff);
 
   // --- Add N_ROWS rows (measures ADD_ROW cost) ---
   // The DataGridView header's Add button has data-test="add-row".
@@ -135,7 +144,7 @@ test('DataGridView: Register Server > Parameters', async ({ page, context }) => 
 
   // Snapshot perf after adding rows
   const snapAfterAdd = await page.evaluate(() => window.__perfSnapshot());
-  fs.writeFileSync('./results/01-after-add.json',
+  fs.writeFileSync(`./results/${incrementalOff ? 'off' : 'on'}-01-after-add.json`,
     JSON.stringify(snapAfterAdd, null, 2));
 
   // --- Typing in Parameters tab grid (Connection timeout Value cell) ---
@@ -176,7 +185,7 @@ test('DataGridView: Register Server > Parameters', async ({ page, context }) => 
   console.log('[bench] [GRID] per-keystroke wallclock ms:', perKeystroke.join(','));
 
   const snapAfterGridType = await page.evaluate(() => window.__perfSnapshot());
-  fs.writeFileSync('./results/02-after-grid-type.json',
+  fs.writeFileSync(`./results/${incrementalOff ? 'off' : 'on'}-02-after-grid-type.json`,
     JSON.stringify(snapAfterGridType, null, 2));
   await page.screenshot({ path: './shots/05b-after-grid-type.png' });
 
@@ -210,7 +219,7 @@ test('DataGridView: Register Server > Parameters', async ({ page, context }) => 
   console.log('[bench] [GENERAL] per-keystroke wallclock ms:', perKeystroke2.join(','));
 
   const snapAfterGeneralType = await page.evaluate(() => window.__perfSnapshot());
-  fs.writeFileSync('./results/03-after-general-type.json',
+  fs.writeFileSync(`./results/${incrementalOff ? 'off' : 'on'}-03-after-general-type.json`,
     JSON.stringify(snapAfterGeneralType, null, 2));
   await page.screenshot({ path: './shots/05c-after-general-type.png' });
 

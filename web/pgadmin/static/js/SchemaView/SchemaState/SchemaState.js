@@ -161,16 +161,21 @@ export class SchemaState extends DepListener {
         ? depDestsArg
         : this._collectDepDestsForPath(changedPath);
 
-      // Schemas can opt themselves into incremental option evaluation
-      // by setting `incrementalOptions = true` on the instance. Fold
-      // that into viewHelperProps so the evaluator's opt-in check sees
-      // it without each dialog opener needing to plumb it through.
-      const vhp = (
-        this.viewHelperProps?.incrementalOptions !== true
-        && this.schema?.incrementalOptions === true
-      )
-        ? { ...this.viewHelperProps, incrementalOptions: true }
-        : this.viewHelperProps;
+      // Incremental is the default now. The schema instance can opt
+      // OUT by setting `incrementalOptions = false`; propagate that
+      // through viewHelperProps so the walker (which only reads vhp)
+      // sees it. Explicit viewHelperProps wins if the dialog opener
+      // already set the flag either way.
+      let vhp = this.viewHelperProps;
+      if (this.schema?.incrementalOptions === false
+          && vhp?.incrementalOptions !== false) {
+        vhp = { ...vhp, incrementalOptions: false };
+      } else if (this.schema?.incrementalOptions === true
+                 && vhp?.incrementalOptions !== true) {
+        // Back-compat: legacy schemas that explicitly opted IN keep
+        // working even if the default ever shifts back.
+        vhp = { ...vhp, incrementalOptions: true };
+      }
 
       // Walker returns a NEW options tree built via structural sharing:
       // unvisited collection rows keep their previous object references
@@ -357,12 +362,17 @@ export class SchemaState extends DepListener {
       //     erroried but was eclipsed by an earlier short-circuit
       //     would never be re-validated until a changedPath happened
       //     to overlap it.
-      // null mustVisit = full walk semantics for non-opt-in dialogs.
+      // Incremental walks are now the DEFAULT: any dispatch with a
+      // concrete changedPath gets the pruned walk. Opt-out paths
+      // remain available for the (rare) dialog that needs full-walk
+      // semantics; an explicit `false` on viewHelperProps, the schema
+      // instance, or the global window flag disables it.
       const incremental = (
-        (state.viewHelperProps?.incrementalOptions === true
-         || state.schema?.incrementalOptions === true
-         || (typeof window !== 'undefined' && window.__INCREMENTAL_OPTIONS__ === true))
-        && Array.isArray(changedPath)
+        Array.isArray(changedPath)
+        && state.viewHelperProps?.incrementalOptions !== false
+        && state.schema?.incrementalOptions !== false
+        && (typeof window === 'undefined'
+            || window.__INCREMENTAL_OPTIONS__ !== false)
       );
       // Collect depDests for the primary changedPath, then fold any
       // additional batched paths and THEIR depDests into the same

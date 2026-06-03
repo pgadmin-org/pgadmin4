@@ -104,7 +104,6 @@ export function schemaOptionsEvalulator(opts) {
     // gets eliminated wholesale.
     __evalDepth++;
     try {
-       
       const { runOptionsCanary } = require('./canary');
       return measure(
         'schemaOptionsEvalulator', () => runOptionsCanary(opts)
@@ -157,22 +156,28 @@ function _schemaOptionsEvalulatorImpl({
   // canarying without rebuilding the dialog plumbing).
   //
   // KNOWN LIMITATION — leave incremental off until the host schema has
-  // been audited:
-  //   Rows are pruned by `pathOverlaps(rowGlobalPath, p)` for every `p`
-  //   in `mustVisit` (changedPath + dest paths of DepListener entries
-  //   whose source overlaps changedPath). Cross-row deps that are
-  //   *declared* via `field.deps` are therefore handled correctly — they
-  //   register as DepListener entries and join mustVisit.
-  //   What's NOT handled: a field whose `visible` / `disabled` /
-  //   `readonly` / `editable` evaluator reads data from a SIBLING row
-  //   without declaring those source paths in `field.deps`. That row is
-  //   silently skipped. Audit each schema before flipping incremental
-  //   on and declare cross-row deps as `field.deps`.
+  // Default-on: any dispatch with a concrete changedPath uses the
+  // incremental walk. The audit harness (registered_schemas_audit.spec.js)
+  // is the production gate — it ratchets KNOWN_DIVERGING toward zero,
+  // and we flipped the default once it reached empty. Dialogs/schemas
+  // that genuinely need full-walk semantics can opt out by setting
+  // `incrementalOptions: false` on viewHelperProps or the schema
+  // instance; the global `window.__INCREMENTAL_OPTIONS__ = false`
+  // escape hatch disables it everywhere for emergency rollback.
+  //
+  // What incremental pruning means: rows are skipped by
+  // `pathOverlaps(rowGlobalPath, p)` for every `p` in `mustVisit`
+  // (changedPath + dest paths of DepListener entries whose source
+  // overlaps changedPath). Cross-row deps declared via `field.deps`
+  // are handled correctly — they register as DepListener entries and
+  // join mustVisit. Schemas with UNDECLARED cross-row reads would
+  // silently miss the affected rows; the audit harness catches this
+  // pattern before it ships.
   const incremental = (
-    Array.isArray(changedPath) && (
-      viewHelperProps?.incrementalOptions === true
-      || (typeof window !== 'undefined' && window.__INCREMENTAL_OPTIONS__ === true)
-    )
+    Array.isArray(changedPath)
+    && viewHelperProps?.incrementalOptions !== false
+    && (typeof window === 'undefined'
+        || window.__INCREMENTAL_OPTIONS__ !== false)
   );
 
   const mustVisit = incremental
