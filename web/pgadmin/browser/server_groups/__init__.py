@@ -115,14 +115,23 @@ class ServerGroupModule(BrowserPluginModule):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        groups = ServerGroupView.get_all_server_groups().order_by(ServerGroup.id)
+        groups = list(ServerGroupView.get_all_server_groups().order_by(ServerGroup.id))
 
         # Fetch all shared server group IDs in one query to avoid N+1 queries
         shared_group_ids = ServerGroupView.get_shared_server_group_ids(hide_shared_server)
 
-        for idx, group in enumerate(groups):
+        first_owned_group_id = next(
+            (group.id for group in groups if group.user_id == current_user.id),
+            None
+        )
+
+        for group in groups:
             icon_class, is_shared = get_icon_css_class(
                 group.id, group.user_id, shared_group_ids=shared_group_ids
+            )
+            can_delete = (
+                group.user_id == current_user.id and
+                group.id != first_owned_group_id
             )
             yield self.generate_browser_node(
                 "%d" % (group.id), None,
@@ -130,7 +139,7 @@ class ServerGroupModule(BrowserPluginModule):
                 icon_class,
                 True,
                 self.node_type,
-                can_delete=True if idx > 0 else False,
+                can_delete=can_delete,
                 user_id=group.user_id,
                 is_shared=is_shared
             )
@@ -433,8 +442,10 @@ class ServerGroupView(NodeView):
         :return: Set of server group IDs containing shared servers
         """
         
-        query = get_server_groups_for_user(only_owned=hide_shared_server).filter(Server.shared)
-        
+        query = get_server_groups_for_user(only_owned=hide_shared_server).filter(
+            ServerGroup.servers.any(Server.shared)
+        )
+
         group_ids = {row.id for row in query}
 
         return group_ids
