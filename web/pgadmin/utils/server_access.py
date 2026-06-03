@@ -100,6 +100,8 @@ def get_server_group(gid,only_owned=False):
     if not config.SERVER_MODE:
         return ServerGroup.query.filter_by(id=gid).first()
 
+    # Administrators can access all groups if ADMIN_CAN_SEE_ALL_SERVERS is True
+    # even if they don't own any servers in the group
     if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
         return ServerGroup.query.filter_by(id=gid).first()
 
@@ -120,6 +122,8 @@ def get_server_groups_for_user(only_owned=False):
             user_id=current_user.id
         )
 
+    # Administrators can access all groups if ADMIN_CAN_SEE_ALL_SERVERS is True
+    # even if they don't own any servers in the group
     if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
          return ServerGroup.query
 
