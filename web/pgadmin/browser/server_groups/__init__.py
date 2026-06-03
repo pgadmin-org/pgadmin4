@@ -26,7 +26,8 @@ from pgadmin.model import db, ServerGroup, Server
 import config
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.server_access import get_server_group, \
-    get_server_groups_for_user
+        get_server_groups_for_user, \
+        get_servers_from_group
 
 
 def get_icon_css_class(group_id, group_user_id,
@@ -69,14 +70,35 @@ class ServerGroupModule(BrowserPluginModule):
     @staticmethod
     def has_shared_server(gid):
         """
-        To check whether given server group contains shared server or not
+        To check whether given server group contains shared servers
         :param gid:
-        :return: True if servergroup contains shared server else false
+        :return: True if servergroup contains shared servers else false
         """
-        servers = Server.query.filter_by(servergroup_id=gid)
+        pref = Preferences.module('browser')
+        hide_shared_server = pref.preference('hide_shared_server').get()
+
+        servers = get_servers_from_group(gid, hide_shared_server)
         for s in servers:
             if s.shared:
                 return True
+
+        return False
+
+    @staticmethod
+    def has_not_shared_server(gid):
+        """
+        To check whether given server group contains NOT shared servers
+        :param gid:
+        :return: True if servergroup contains NOT shared servers else false
+        """
+        pref = Preferences.module('browser')
+        hide_shared_server = pref.preference('hide_shared_server').get()
+
+        servers = get_servers_from_group(gid, hide_shared_server)
+        for s in servers:
+            if not s.shared:
+                return True
+
         return False
 
     def get_nodes(self, *arg, **kwargs):
@@ -387,24 +409,9 @@ class ServerGroupView(NodeView):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        server_groups = get_server_groups_for_user()
+        server_groups = get_server_groups_for_user( only_owned=hide_shared_server).all()
 
-        def is_owner(group):
-            return group.user_id == current_user.id
-
-        def has_shared(group):
-            return ServerGroupModule.has_shared_server(group.id)
-
-        if hide_shared_server:
-            return [
-                group for group in server_groups
-                if is_owner(group)
-            ]
-
-        return [
-            group for group in server_groups
-            if is_owner(group) or has_shared(group)
-        ]
+        return server_groups
 
     @pga_login_required
     def nodes(self, gid=None):
