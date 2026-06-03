@@ -21,7 +21,7 @@ from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
     make_response as ajax_response, bad_request
 from pgadmin.utils.menu import MenuItem
-from sqlalchemy import exc
+from sqlalchemy import exc, case
 from pgadmin.model import db, ServerGroup, Server
 import config
 from pgadmin.utils.preferences import Preferences
@@ -115,7 +115,7 @@ class ServerGroupModule(BrowserPluginModule):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        groups = list(ServerGroupView.get_all_server_groups().order_by(ServerGroup.id))
+        groups = list(ServerGroupView.get_all_server_groups()) 
 
         # Fetch all shared server group IDs in one query to avoid N+1 queries
         shared_group_ids = ServerGroupView.get_shared_server_group_ids(hide_shared_server)
@@ -429,7 +429,12 @@ class ServerGroupView(NodeView):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        server_groups = get_server_groups_for_user(only_owned=hide_shared_server)
+        server_groups = ( get_server_groups_for_user(only_owned=hide_shared_server)
+                            .order_by(
+                                        case((ServerGroup.user_id == current_user.id, 0), else_=1),
+                                        ServerGroup.id
+                                    )
+        )
 
         return server_groups
 
@@ -457,8 +462,8 @@ class ServerGroupView(NodeView):
         nodes = []
         if gid is None:
             if config.SERVER_MODE:
-
                 groups = self.get_all_server_groups()
+
             else:
                 groups = ServerGroup.query.filter_by(user_id=current_user.id)
 
