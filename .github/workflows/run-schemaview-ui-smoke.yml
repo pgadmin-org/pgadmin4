@@ -112,6 +112,23 @@ jobs:
           AZURE_CREDENTIAL_CACHE_DIR = ROOT + '/var/azurecredentialcache'
           EOF
 
+      # CI's fresh PG 16 database is empty — no tables, no functions
+      # to "Edit Properties" on. The Edit Table / Edit Function smoke
+      # tests need at least one child of each type under the
+      # default `postgres` database. Pre-create them so the smoke
+      # has real edit-mode targets.
+      - name: Seed schema objects for edit-mode smoke
+        run: |
+          PGPASSWORD= psql -h 127.0.0.1 -p 5916 -U postgres -d postgres -c "
+            CREATE TABLE IF NOT EXISTS audit_smoke_table (
+              id   integer PRIMARY KEY,
+              name text NOT NULL
+            );
+            CREATE OR REPLACE FUNCTION audit_smoke_func() RETURNS integer AS \$\$
+              SELECT 1;
+            \$\$ LANGUAGE sql IMMUTABLE;
+          "
+
       # Initialise pgAdmin's config SQLite. load-servers below needs
       # the DB to already exist — it doesn't auto-create. (Locally
       # verified: load-servers on a missing SQLite path errors with
