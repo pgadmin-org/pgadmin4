@@ -104,12 +104,10 @@ class ServerGroupModule(BrowserPluginModule):
     def get_nodes(self, *arg, **kwargs):
         """Return a JSON document listing the server groups for the user"""
 
-        if config.SERVER_MODE:
-            groups = ServerGroupView.get_all_server_groups()
-        else:
-            groups = ServerGroup.query.filter_by(
-                user_id=current_user.id
-            ).order_by("id")
+        pref = Preferences.module('browser')
+        hide_shared_server = pref.preference('hide_shared_server').get()
+
+        groups = ServerGroupView.get_all_server_groups().order_by("id")
 
         for idx, group in enumerate(groups):
             icon_class, is_shared = get_icon_css_class(group.id, group.user_id)
@@ -409,7 +407,7 @@ class ServerGroupView(NodeView):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        server_groups = get_server_groups_for_user( only_owned=hide_shared_server).all()
+        server_groups = get_server_groups_for_user(only_owned=hide_shared_server)
 
         return server_groups
 
