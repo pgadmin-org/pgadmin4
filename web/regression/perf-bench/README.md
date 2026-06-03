@@ -151,6 +151,90 @@ Anchor numbers on this machine (headless Chromium, Apple Silicon):
 
 Everything in `SchemaState.validate` scales linearly with collection size.
 
+## Audit smoke (`audit-smoke.spec.js`)
+
+Real-browser companion to the Jest-driven `registered_schemas_audit.spec.js`.
+Jest covers 65 of 86 schemas via synthetic instantiation; the remaining 13
+have bespoke constructor quirks (LanguageSchema dereferences
+`node_info['node_info'].user.name` with no guard, etc.) that work fine in a
+real browser where pgAdmin provides full production wiring.
+
+The smoke sets `window.__INCREMENTAL_AUDIT__ = true` and
+`__throw_on_canary_divergence__ = true`, then drives three dialogs:
+
+- **Register Server** — ServerSchema + VariableSchema (Parameters tab via
+  DataGridView). Self-contained: no existing server needed, opens the
+  Register dialog and exercises it without saving. **Verified passing
+  on the local dev setup (no divergences detected).**
+- **Create Table** — TableSchema + ColumnSchema + constraint schemas
+  + partitions. Needs a connected server in the tree.
+- **Create Function** — FunctionSchema + Arguments / Parameters
+  collections. Needs a connected server in the tree.
+
+Any divergence between the incremental walker and the full walk surfaces as
+a `pageerror` event, which the spec collects and asserts is empty.
+
+### Connected-server prerequisites for Table / Function
+
+The Table and Function tests use `ensureServerRegistered` to find a
+connected server. It looks for `PG18` first (override via
+`PGADMIN_SERVER_NAME`); if not found, falls back to the first
+directory under "Servers". Double-clicks the node to trigger connect
+and auto-fills the password prompt with `$PGPASSWORD` (default `edb`).
+
+For the connect step to succeed reliably:
+
+1. Set BOTH `MASTER_PASSWORD_REQUIRED = False` AND
+   `USE_OS_SECRET_STORAGE = False` in `config_local.py` to avoid
+   the macOS keychain prompt + the "Unlock Saved Passwords" flow.
+2. Use a fresh `DATA_DIR` (e.g. `~/.pgadmin/audit-smoke`) so
+   pre-existing saved-password state from the user's main pgAdmin
+   instance doesn't leak in.
+3. Pre-register the server directly in the SQLite DB to skip the
+   Register Server dialog flow (it requires several inline-validated
+   fields to enable Save; auto-driving it is brittle).
+
+Connection password defaults to `edb`; override via `PGPASSWORD`.
+
+### Verified state
+
+- **Register Server smoke**: PASSING (4.5s, zero canary divergences
+  on the local dev setup). This exercises ServerSchema +
+  VariableSchema fully and is the highest-value smoke.
+- **Create Table / Create Function smoke**: spec is wired with
+  correct dialog selectors, but the tree-navigation step from
+  the server node down to `public > Tables` / `public > Functions`
+  is brittle on this codebase. react-aspen tree virtualization
+  and inconsistent expand-on-click vs expand-on-dblclick behavior
+  across tree levels makes selector-driven navigation unreliable
+  (see memory note `project-real-table-bench-tree-nav`). The Jest
+  audit harness already covers TableSchema (incl. the Partition
+  fields fix) and FunctionSchema-derived classes; UI smoke for
+  these is a coverage-extender, not a production blocker.
+
+A robust path forward for Table/Function smoke would be:
+- Use pgAdmin's "Search Objects" feature to navigate (skips tree
+  expansion entirely), or
+- Use direct backend API calls to open dialogs (no DOM nav needed).
+
+### Run
+
+```bash
+# 1. Build with the canary kept in the bundle (default build tree-shakes it):
+cd web && CANARY_BUILD=true yarn run bundle
+
+# 2. Start pgAdmin (web server or desktop runtime, your choice).
+
+# 3. Run the smoke from this dir:
+cd web/regression/perf-bench
+PGADMIN_URL=http://127.0.0.1:5050/browser/ yarn run playwright test audit-smoke
+```
+
+The spec passes vacuously if `CANARY_BUILD` wasn't set (the canary is then
+tree-shaken and the flags are no-ops). To verify the canary actually loaded,
+check `await page.evaluate(() => typeof window.__INCREMENTAL_AUDIT__)`
+returns `'boolean'` — the spec asserts this.
+
 ## Files
 
 | Path | Purpose |
@@ -159,6 +243,9 @@ Everything in `SchemaState.validate` scales linearly with collection size.
 | `playwright.config.js` | Headless, single worker, 3-min default test timeout |
 | `datagridview.spec.js` | Real-dialog benchmark via Register Server > Parameters |
 | `nested.spec.js` | Synthetic 3-layer benchmark via `__mountBenchFixture` |
+| `audit-smoke.spec.js` | Real-browser smoke for the incremental walker + canary (3 dialogs) |
+| `audit-helpers.js` | Shared helpers for audit-smoke specs |
+| `verify-canary-tree-shake.sh` | Production-bundle smoke for canary DCE |
 
 Companion source files (in pgAdmin proper):
 
