@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import OptionsSchema from '../../../../static/js/options.ui';
 
-export default class ForeignDataWrapperSchema extends BaseUISchema {
+class ForeignDataWrapperSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
@@ -89,3 +90,5 @@ export default class ForeignDataWrapperSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(ForeignDataWrapperSchema);
+

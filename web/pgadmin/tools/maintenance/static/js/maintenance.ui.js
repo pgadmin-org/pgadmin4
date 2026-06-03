@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 
 export class VacuumSchema extends BaseUISchema {
@@ -329,7 +330,7 @@ export function getVacuumSchema(fieldOptions) {
 
 
 //Maintenance Schema
-export default class MaintenanceSchema extends BaseUISchema {
+class MaintenanceSchema extends BaseUISchema {
 
   constructor(vacuumSchema, fieldOptions = {}) {
     super({
@@ -415,3 +416,5 @@ export default class MaintenanceSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(MaintenanceSchema);
+

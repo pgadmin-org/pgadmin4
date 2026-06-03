@@ -42,8 +42,14 @@ let _canaryFireCount = 0;
 const DEFAULT_MAX_CANARY_FIRES = 5;
 
 const getMaxCanaryFires = () => {
+  // `typeof === 'number'` instead of Number.isFinite so the audit
+  // harness can pass Infinity to disable the throttle entirely.
+  // isFinite rejects Infinity and silently falls back to the default
+  // cap (5), throttling audit runs and hiding divergences past the
+  // 5th dispatch.
   if (typeof window !== 'undefined'
-      && Number.isFinite(window.__incremental_canary_max_per_session__)) {
+      && typeof window.__incremental_canary_max_per_session__ === 'number'
+      && window.__incremental_canary_max_per_session__ >= 0) {
     return window.__incremental_canary_max_per_session__;
   }
   return DEFAULT_MAX_CANARY_FIRES;

@@ -86,6 +86,16 @@ export class SchemaState extends DepListener {
     // Memoize the path using flatPathGenerator
     this.__pathGenerator = flatPathGenerator(PATH_SEPARATOR);
 
+    // Tracks every path that has reported a validation error during
+    // this state's lifetime, keyed by flat path string. Used to build
+    // mustVisit so incremental validation never silently drops a row
+    // that was previously known to be invalid. Map (not Set) so we
+    // preserve the original path array for re-injection into
+    // mustVisit. Entries are kept across validates — even if a row
+    // clears its error, leaving it in the set means future dispatches
+    // re-check it cheaply, which catches re-errors without a full walk.
+    this._knownErrorPaths = new Map();
+
     this._id = Date.now();
   }
 
@@ -144,6 +154,17 @@ export class SchemaState extends DepListener {
   }
 
   setError(err) {
+    // Mirror the assignment into _knownErrorPaths so any caller —
+    // including external code that constructs an error directly — feeds
+    // the multi-path tracker. Without this, callers that bypass the
+    // validate() callback (e.g. test fixtures that pre-seed an error)
+    // wouldn't get the row revisited under incremental mustVisit.
+    if (err && Array.isArray(err.name) && err.name.length > 0) {
+      const flat = err.name.map((p) => String(p)).join(PATH_SEPARATOR);
+      if (!this._knownErrorPaths.has(flat)) {
+        this._knownErrorPaths.set(flat, [...err.name]);
+      }
+    }
     this.setState('errors', err);
   }
 
@@ -263,8 +284,15 @@ export class SchemaState extends DepListener {
       // and updateOptions. Includes:
       //   - changedPath
       //   - DepListener dest paths whose source overlaps changedPath
-      //   - the current error path (so an erroring row is always
-      //     re-validated and the error eventually clears when fixed)
+      //   - EVERY path that has ever reported an error during this
+      //     state's lifetime (state._knownErrorPaths). Without this,
+      //     incremental validation could silently miss a row that was
+      //     previously invalid: the per-validate short-circuit means
+      //     only ONE error path was visible at a time, and the old
+      //     `state.errors.name` tracker only held that one. A row that
+      //     erroried but was eclipsed by an earlier short-circuit
+      //     would never be re-validated until a changedPath happened
+      //     to overlap it.
       // null mustVisit = full walk semantics for non-opt-in dialogs.
       const incremental = (
         (state.viewHelperProps?.incrementalOptions === true
@@ -276,20 +304,37 @@ export class SchemaState extends DepListener {
       let mustVisit = null;
       if (incremental) {
         mustVisit = [changedPath].concat(Array.isArray(depDests) ? depDests : []);
-        const errPath = state.errors?.name;
-        if (Array.isArray(errPath)) mustVisit.push(errPath);
+        for (const knownPath of state._knownErrorPaths.values()) {
+          mustVisit.push(knownPath);
+        }
       }
 
+      // Capture every error reported across the validate walk into
+      // the long-lived tracker (Map keyed by flat-path string so
+      // duplicates collapse). The displayed error stays the FIRST
+      // one — calling state.setError multiple times would otherwise
+      // make the UI flicker through every error before settling on
+      // the last one. Combined with collectAll=true, the walker
+      // reports every error path it discovers; we record them all
+      // and surface the first to the UI.
       let errorsSet = 0;
+      let firstError = null;
       const hadError = validateSchema(schema, sessData, (path, message) => {
         if (!message) return;
         errorsSet++;
-        measure('SchemaState.validate.setError', () => state.setError({
-          name: state.accessPath(path), message: _.escape(message)
-        }));
-      }, [], null, mustVisit);
+        const flat = (path || []).map((p) => String(p)).join(PATH_SEPARATOR);
+        if (!state._knownErrorPaths.has(flat)) {
+          state._knownErrorPaths.set(flat, [...path]);
+        }
+        if (!firstError) firstError = { path, message };
+      }, [], null, mustVisit, true);
       count('SchemaState.validate.setErrorCalls', errorsSet);
-      if (!hadError) {
+      if (firstError) {
+        measure('SchemaState.validate.setError', () => state.setError({
+          name: state.accessPath(firstError.path),
+          message: _.escape(firstError.message),
+        }));
+      } else if (!hadError) {
         measure('SchemaState.validate.clearError',
           () => state.setError({}));
       }

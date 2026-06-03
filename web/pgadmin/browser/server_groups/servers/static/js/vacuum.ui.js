@@ -1,5 +1,6 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { getNodeAjaxOptions } from '../../../../static/js/node_ajax';
 
 export function getNodeVacuumSettingsSchema(nodeObj, treeNodeInfo, itemNodeData) {
@@ -46,7 +47,7 @@ export class VacuumTableSchema extends BaseUISchema {
   }
 }
 
-export default class VacuumSettingsSchema extends BaseUISchema {
+class VacuumSettingsSchema extends BaseUISchema {
   constructor(tableVars, toastTableVars, nodeInfo) {
     super({
       vacuum_table: [],
@@ -153,3 +154,5 @@ export default class VacuumSettingsSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(VacuumSettingsSchema);
+

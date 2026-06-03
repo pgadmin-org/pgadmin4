@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
 
-export default class RuleSchema extends BaseUISchema {
+class RuleSchema extends BaseUISchema {
   constructor(fieldOptions={}) {
     const schemaNode = fieldOptions?.nodeInfo['schema'];
     const schema = schemaNode?.label || '';
@@ -114,3 +115,5 @@ export default class RuleSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(RuleSchema);
+

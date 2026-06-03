@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class ReplicationStatsSchema extends BaseUISchema {
+class ReplicationStatsSchema extends BaseUISchema {
   constructor(initValues) {
     super({
       ...initValues,
@@ -78,3 +79,5 @@ export default class ReplicationStatsSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(ReplicationStatsSchema);
+

@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import VariableSchema from 'top/browser/server_groups/servers/static/js/variable.ui';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
 import _ from 'lodash';
@@ -30,7 +31,7 @@ export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   );
 }
 
-export default class ColumnSchema extends BaseUISchema {
+class ColumnSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, nodeInfo, cltypeOptions, collspcnameOptions, geometryTypes, inErd=false) {
     super({
       name: undefined,
@@ -753,3 +754,5 @@ export default class ColumnSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(ColumnSchema);
+

@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import OptionsSchema from '../../../../../static/js/options.ui';
 import { isEmptyString } from 'sources/validators';
 import VariableSchema from 'top/browser/server_groups/servers/static/js/variable.ui';
@@ -20,7 +21,7 @@ import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 import { getPrivilegesForTableAndLikeObjects } from '../../../tables/static/js/table.ui';
 
 
-export default class ForeignTableSchema extends BaseUISchema {
+class ForeignTableSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, getVariableSchema, getColumns, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
@@ -248,6 +249,8 @@ export default class ForeignTableSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(ForeignTableSchema);
+
 
 
 export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {

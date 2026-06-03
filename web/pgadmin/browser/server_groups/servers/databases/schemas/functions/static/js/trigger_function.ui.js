@@ -10,10 +10,11 @@
 import gettext from 'sources/gettext';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
 
-export default class TriggerFunctionSchema extends BaseUISchema {
+class TriggerFunctionSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, getVariableSchema, fieldOptions={}, initValues={}) {
     super({
       name: null,
@@ -269,3 +270,5 @@ export default class TriggerFunctionSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(TriggerFunctionSchema);
+

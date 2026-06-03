@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { getNodeListByName } from '../../../../static/js/node_ajax';
 
 
@@ -20,7 +21,7 @@ export function getMembershipSchema(nodeObj, treeNodeInfo, itemNodeData) {
 }
 
 
-export default class MembershipSchema extends BaseUISchema {
+class MembershipSchema extends BaseUISchema {
   constructor(roleMembersOptions, node_info={}) {
     super({
       role: undefined,
@@ -84,3 +85,5 @@ export default class MembershipSchema extends BaseUISchema {
 
 
 }
+export default registerSchema(MembershipSchema);
+

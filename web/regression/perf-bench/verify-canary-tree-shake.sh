@@ -23,13 +23,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEB_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BUNDLE_PATH="${WEB_DIR}/pgadmin/static/js/generated/app.bundle.js"
 
-# Strings unique to the canary modules. If any appears in the
-# production bundle, DCE didn't fire.
+# Strings unique to test-only modules. If any appears in the
+# production bundle, tree-shaking failed for one of:
 #
-# Two canary modules: options/canary.js (incremental options walker)
-# and SchemaState/validation_canary.js (incremental validator walker).
-# Both must tree-shake. Shared sentinels catch either; module-unique
-# sentinels (e.g. "_resetValidationCanaryFireCount") catch one.
+# - options/canary.js (incremental options walker canary)
+# - SchemaState/validation_canary.js (incremental validator canary)
+# - SchemaState/audit_harness.js (per-schema audit utility — only
+#   imported by registered_schemas_audit.spec.js)
+#
+# Note: `_knownErrorPaths` is intentionally NOT a sentinel — it's
+# the multi-path tracker that ships with production SchemaState to
+# guarantee incremental validation never silently misses errors.
 SENTINELS=(
   "canary:incremental-divergence"
   "Incremental walker divergence in"
@@ -39,6 +43,8 @@ SENTINELS=(
   "__incremental_canary_endpoint__"
   "_resetCanaryFireCount"
   "_resetValidationCanaryFireCount"
+  "audit_mutated_a"
+  "tryInstantiate"
 )
 
 echo "Building production bundle (CANARY_BUILD unset)..."

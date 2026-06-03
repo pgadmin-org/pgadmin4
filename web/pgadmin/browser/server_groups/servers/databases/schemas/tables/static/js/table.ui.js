@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
@@ -357,7 +358,7 @@ export class LikeSchema extends BaseUISchema {
   }
 }
 
-export default class TableSchema extends BaseUISchema {
+class TableSchema extends BaseUISchema {
   constructor(fieldOptions={}, nodeInfo={}, schemas={}, getPrivilegeRoleSchema=()=>{/*This is intentional (SonarQube)*/}, getColumns=()=>[],
     getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}, inErd=false) {
     super({
@@ -1068,3 +1069,5 @@ export default class TableSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(TableSchema);
+

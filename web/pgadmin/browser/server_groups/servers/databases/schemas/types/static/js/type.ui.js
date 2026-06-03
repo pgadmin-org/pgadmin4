@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 
 import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
@@ -1137,7 +1138,7 @@ class DataTypeSchema extends BaseUISchema {
   }
 }
 
-export default class TypeSchema extends BaseUISchema {
+class TypeSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, compositeSchema, rangeSchema, externalSchema, dataTypeSchema, fieldOptions = {}, initValues={}) {
     super({
       name: null,
@@ -1484,6 +1485,8 @@ export default class TypeSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(TypeSchema);
+
 
 export {
   CompositeSchema,

@@ -11,6 +11,7 @@ import _ from 'lodash';
 
 import { DataGridFormHeader } from 'sources/SchemaView/DataGridView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import { isEmptyString } from 'sources/validators';
@@ -355,7 +356,7 @@ export class WithSchema extends BaseUISchema {
   }
 }
 
-export default class IndexSchema extends BaseUISchema {
+class IndexSchema extends BaseUISchema {
   constructor(fieldOptions = {}, nodeData = {}, initValues={}) {
     super({
       name: undefined,
@@ -681,3 +682,5 @@ export default class IndexSchema extends BaseUISchema {
     return null;
   }
 }
+export default registerSchema(IndexSchema);
+

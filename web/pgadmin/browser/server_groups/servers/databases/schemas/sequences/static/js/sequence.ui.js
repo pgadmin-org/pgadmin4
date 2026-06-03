@@ -9,6 +9,7 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
@@ -73,7 +74,7 @@ export class OwnedBySchema extends BaseUISchema {
 }
 
 
-export default class SequenceSchema extends BaseUISchema {
+class SequenceSchema extends BaseUISchema {
   constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
@@ -285,3 +286,5 @@ export default class SequenceSchema extends BaseUISchema {
     return null;
   }
 }
+export default registerSchema(SequenceSchema);
+

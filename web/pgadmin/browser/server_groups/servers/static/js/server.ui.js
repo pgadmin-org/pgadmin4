@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import _ from 'lodash';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import pgAdmin from 'sources/pgadmin';
 import {default as supportedServers} from 'pgadmin.server.supported_servers';
 import current_user from 'pgadmin.user_management.current_user';
@@ -174,7 +175,7 @@ export function getConnectionParameters() {
   return conParams;
 };
 
-export default class ServerSchema extends BaseUISchema {
+class ServerSchema extends BaseUISchema {
   constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
       gid: undefined,
@@ -698,3 +699,5 @@ export default class ServerSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(ServerSchema);
+

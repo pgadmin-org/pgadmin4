@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class EDBVarSchema extends BaseUISchema {
+class EDBVarSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
@@ -44,3 +45,5 @@ export default class EDBVarSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(EDBVarSchema);
+

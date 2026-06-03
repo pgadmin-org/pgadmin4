@@ -9,12 +9,13 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 import moment from 'moment';
 import { getActionSchema, getRepeatSchema } from '../../../static/js/dbms_job_scheduler_common.ui';
 
 
-export default class DBMSJobSchema extends BaseUISchema {
+class DBMSJobSchema extends BaseUISchema {
   constructor(fieldOptions={}) {
     super({
       jsjobid: null,
@@ -196,3 +197,5 @@ export default class DBMSJobSchema extends BaseUISchema {
     }
   }
 }
+export default registerSchema(DBMSJobSchema);
+

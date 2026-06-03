@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class PGDIncomingSchema extends BaseUISchema {
+class PGDIncomingSchema extends BaseUISchema {
   constructor(initValues) {
     super({
       ...initValues,
@@ -66,3 +67,5 @@ export default class PGDIncomingSchema extends BaseUISchema {
     ];
   }
 }
+export default registerSchema(PGDIncomingSchema);
+

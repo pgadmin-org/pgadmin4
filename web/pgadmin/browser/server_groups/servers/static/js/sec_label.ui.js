@@ -9,8 +9,9 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 
-export default class SecLabelSchema extends BaseUISchema {
+class SecLabelSchema extends BaseUISchema {
   constructor() {
     super({
       provider: undefined,
@@ -29,3 +30,5 @@ export default class SecLabelSchema extends BaseUISchema {
     }];
   }
 }
+export default registerSchema(SecLabelSchema);
+

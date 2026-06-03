@@ -8,8 +8,9 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
-export default class CastSchema extends BaseUISchema {
+class CastSchema extends BaseUISchema {
   constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,            // Name of the cast
@@ -187,4 +188,6 @@ export default class CastSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(CastSchema);
+
 

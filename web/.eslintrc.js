@@ -14,6 +14,7 @@ const babel = require('@babel/eslint-plugin');
 const babelParser = require('@babel/eslint-parser');
 const ts = require('typescript-eslint');
 const unusedImports = require('eslint-plugin-unused-imports');
+const pgadminLocal = require('./eslint-plugins/local-rules');
 
 
 module.exports = [
@@ -26,6 +27,7 @@ module.exports = [
       '**/templates\\',
       '**/ycache',
       '**/regression/htmlcov',
+      'scripts/',
     ],
   },
   js.configs.recommended,
@@ -65,6 +67,7 @@ module.exports = [
       'react': reactjs,
       '@babel': babel,
       'unused-imports': unusedImports,
+      'pgadmin-local': pgadminLocal,
     },
     'rules': {
       'indent': [
@@ -106,7 +109,8 @@ module.exports = [
           'args': 'after-used',
           'argsIgnorePattern': '^_',
         },
-      ]
+      ],
+      'pgadmin-local/register-schema': 'error',
     },
     'settings': {
       'react': {

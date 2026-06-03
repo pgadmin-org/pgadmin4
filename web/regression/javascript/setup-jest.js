@@ -17,6 +17,16 @@ class BroadcastChannelMock {
 
 global.BroadcastChannel = BroadcastChannelMock;
 
+// ESLint 9's flat-config schema uses `structuredClone` to deep-copy
+// rule option objects in RuleTester. Node's structuredClone lives on
+// the Node globalThis, but jest's jsdom env wraps tests in its own
+// global with no copy of it. Patch the test global so RuleTester
+// specs (regression/javascript/eslint-rules/) work without forcing a
+// node test env that would break the rest of setup-jest.
+if (typeof global.structuredClone !== 'function') {
+  global.structuredClone = (value) => JSON.parse(JSON.stringify(value));
+}
+
 global.__webpack_public_path__ = '';
 
 global.matchMedia =  (query)=>({

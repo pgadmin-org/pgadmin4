@@ -9,9 +9,10 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 
-export default class ExtensionsSchema extends BaseUISchema {
+class ExtensionsSchema extends BaseUISchema {
   constructor(fieldOptions = {}) {
     super({
       name: null,
@@ -181,3 +182,5 @@ export default class ExtensionsSchema extends BaseUISchema {
   }
 
 }
+export default registerSchema(ExtensionsSchema);
+

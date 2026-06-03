@@ -41,8 +41,12 @@ let _canaryFireCount = 0;
 const DEFAULT_MAX_CANARY_FIRES = 5;
 
 const getMaxCanaryFires = () => {
+  // `typeof === 'number'` instead of Number.isFinite so the audit
+  // harness can pass Infinity to disable the throttle. See the
+  // matching note in options/canary.js.
   if (typeof window !== 'undefined'
-      && Number.isFinite(window.__incremental_canary_max_per_session__)) {
+      && typeof window.__incremental_canary_max_per_session__ === 'number'
+      && window.__incremental_canary_max_per_session__ >= 0) {
     return window.__incremental_canary_max_per_session__;
   }
   return DEFAULT_MAX_CANARY_FIRES;
@@ -180,22 +184,56 @@ export const _resetValidationCanaryFireCount = () => { _canaryFireCount = 0; };
 export const runValidationCanary = ({
   schema, sessData, setError,
   accessPath = [], collLabel = null, mustVisit = null,
-  onDivergence = null,
+  collectAll = false, onDivergence = null,
 }) => {
-  // Full walk — authoritative result the caller receives.
+  // Both inner walks force collectAll=true so the diff reflects
+  // ACTUAL missed errors rather than which row each walk happened to
+  // short-circuit on. With short-circuit enabled, full + incremental
+  // would each produce a one-element error map at potentially
+  // different paths — the canary would report that as divergence even
+  // when both walks recognize the schema as invalid. collectAll gives
+  // both walks complete error coverage so the diff is meaningful.
+  //
+  // The caller's `collectAll` flag controls how the caller's setError
+  // is invoked at the end (single-error vs all-errors). The inner
+  // walks ALWAYS use collectAll=true regardless.
   const fullErrors = [];
   const fullCapture = (path, message) => {
     if (!message) return;
     fullErrors.push({ path: [...path], message });
   };
-  const fullHadError = validateSchema(
-    schema, sessData, fullCapture, accessPath, collLabel, null
-  );
+  // If the inner walk throws (a schema's validate() or evaluator
+  // hits a runtime error mid-iteration), we still want to surface
+  // whatever errors WERE collected before the throw. Without this
+  // try-catch, the audit's initial discovery walk loses every
+  // already-collected path because the throw aborts the canary's
+  // own forwarding loop further down.
+  let fullHadError = false;
+  let fullWalkThrew = null;
+  try {
+    fullHadError = validateSchema(
+      schema, sessData, fullCapture, accessPath, collLabel, null, true
+    );
+  } catch (e) {
+    fullWalkThrew = e;
+  }
 
+  // Forward whatever the full walk discovered (even if it threw
+  // mid-walk) so callers get their setError invoked. After
+  // forwarding, re-throw any captured exception below so the audit's
+  // dispatch loop can categorize it.
+  const forwardFull = () => {
+    if (collectAll) {
+      for (const e of fullErrors) setError(e.path, e.message);
+    } else if (fullErrors.length > 0) {
+      setError(fullErrors[0].path, fullErrors[0].message);
+    }
+  };
   // When mustVisit is null, both walks produce identical output —
   // short-circuit. (V3 identity.)
   if (mustVisit === null) {
-    for (const e of fullErrors) setError(e.path, e.message);
+    forwardFull();
+    if (fullWalkThrew) throw fullWalkThrew;
     return fullHadError;
   }
 
@@ -203,21 +241,27 @@ export const runValidationCanary = ({
   // avoid paying the second-walk cost on every keystroke. Tests that
   // supply onDivergence bypass the throttle.
   if (!onDivergence && _canaryFireCount >= getMaxCanaryFires()) {
-    for (const e of fullErrors) setError(e.path, e.message);
+    forwardFull();
+    if (fullWalkThrew) throw fullWalkThrew;
     return fullHadError;
   }
   _canaryFireCount += 1;
 
   // Incremental walk — same inputs, but with the actual mustVisit
-  // array. Captures errors into a separate list.
+  // array. Captures errors into a separate list. Also collectAll=true.
   const incrementalErrors = [];
   const incCapture = (path, message) => {
     if (!message) return;
     incrementalErrors.push({ path: [...path], message });
   };
-  validateSchema(
-    schema, sessData, incCapture, accessPath, collLabel, mustVisit
-  );
+  let incrementalThrew = null;
+  try {
+    validateSchema(
+      schema, sessData, incCapture, accessPath, collLabel, mustVisit, true
+    );
+  } catch (e) {
+    incrementalThrew = e;
+  }
 
   // Diff and report.
   const allowlist = (schema?.constructor?.canaryAllowedValidationDivergences || [])
@@ -236,7 +280,17 @@ export const runValidationCanary = ({
     }
   }
 
-  // Propagate full walk's errors to the caller. Authoritative.
-  for (const e of fullErrors) setError(e.path, e.message);
+  // Propagate the full walk's errors to the caller. When the caller
+  // is collectAll-aware (SchemaState's tracker), forward all of them
+  // so every path is recorded for mustVisit. Otherwise preserve the
+  // legacy single-error contract.
+  forwardFull();
+
+  // Re-throw any exception captured from either walk so the caller
+  // (SchemaState or the audit harness) can surface it. Divergence
+  // wins over walk-failure when both happen — the canary's job is
+  // first to report divergence.
+  if (fullWalkThrew) throw fullWalkThrew;
+  if (incrementalThrew) throw incrementalThrew;
   return fullHadError;
 };

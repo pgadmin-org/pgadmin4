@@ -250,7 +250,13 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_from', label: gettext('From'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      // editable/disabled read this.top.sessData.partition_type (parent
+      // schema) + this.isNew(state) (own row's oid) + state.is_default
+      // (same-row). Without declaring partition_type + oid, the
+      // incremental walker prunes sibling rows whose options would
+      // have changed under a full walk — see audit divergence on
+      // partitions.0.values_from.
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'range');
       },
@@ -260,7 +266,7 @@ export class PartitionsSchema extends BaseUISchema {
     },
     {
       id: 'values_to', label: gettext('To'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'range');
       },
@@ -269,7 +275,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_in', label: gettext('In'), type:'text', cell: 'text',
-      deps: ['is_default'],
+      deps: ['is_default', ['partition_type'], ['oid']],
       editable: function(state) {
         return obj.isEditable(state, 'list');
       },
@@ -278,6 +284,7 @@ export class PartitionsSchema extends BaseUISchema {
       },
     },{
       id: 'values_modulus', label: gettext('Modulus'), type:'int', cell: 'int',
+      deps: [['partition_type'], ['oid'], 'is_default'],
       editable: function(state) {
         return obj.isEditable(state, 'hash');
       },

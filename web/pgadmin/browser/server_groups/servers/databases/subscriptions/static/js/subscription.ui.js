@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
 
@@ -17,7 +18,7 @@ function getDefaultStreaming(version) {
   return false;
 }
 
-export default class SubscriptionSchema extends BaseUISchema{
+class SubscriptionSchema extends BaseUISchema{
   constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
@@ -526,3 +527,5 @@ export default class SubscriptionSchema extends BaseUISchema{
   }
 
 }
+export default registerSchema(SubscriptionSchema);
+

@@ -10,6 +10,7 @@
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
+import { registerSchema } from 'sources/SchemaView/SchemaState';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
 import { getPrivilegesForTableAndLikeObjects } from '../../schemas/tables/static/js/table.ui';
 
@@ -50,7 +51,7 @@ export class DefaultPrivSchema extends BaseUISchema {
   }
 }
 
-export default class DatabaseSchema extends BaseUISchema {
+class DatabaseSchema extends BaseUISchema {
   constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       name: undefined,
@@ -332,3 +333,5 @@ export default class DatabaseSchema extends BaseUISchema {
     return false;
   }
 }
+export default registerSchema(DatabaseSchema);
+
