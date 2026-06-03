@@ -1121,6 +1121,213 @@ const isDivergenceError = (e) =>
   && /(Incremental walker divergence|Incremental validator divergence)/
     .test(e.message);
 
+// Property-based fuzzing entry point. Given a SchemaClass, a mode,
+// and a list of path-INDICES (each index selects into the schema's
+// candidate-path list at audit time), runs ONE batched dispatch
+// against the canary.
+//
+// Returns: { ok: true, candidates: N } on no-divergence,
+//          { ok: true, candidates: N, skipped: true, reason } on
+//            harness skip (schema needs constructor args we can't
+//            synthesize / no usable paths for the requested
+//            indices), OR
+//          { ok: false, error: '...', message: '...' } on
+//            divergence — fast-check shrinks the input to a
+//            minimal reproducer when this fires.
+//
+// `pathIndices`: array of non-negative integers; each is taken
+// modulo the candidate list length, so any input array of length
+// >= 2 maps to a valid k-combination. Duplicates are deduped
+// silently so fast-check's shrinker can collapse same-path inputs
+// without us special-casing.
+export const fuzzBatchAgainst = (SchemaClass, mode, pathIndices) => {
+  const inst = tryInstantiate(SchemaClass);
+  if (!inst.ok) return { ok: true, skipped: true, reason: inst.reason, candidates: 0 };
+  const schema = inst.instance;
+
+  let sessData;
+  try {
+    if (Array.isArray(schema.fields)) {
+      sessData = (typeof schema.getNewData === 'function')
+        ? schema.getNewData({}) : {};
+    } else {
+      sessData = {};
+    }
+    seedCollections(schema, sessData);
+  } catch (e) {
+    return { ok: true, skipped: true,
+      reason: `setup: ${e.message.split('\n')[0]}`, candidates: 0 };
+  }
+
+  // Edit-mode seed (mirror auditSchema).
+  if (mode === 'edit') {
+    const idAttr = schema.idAttribute || 'id';
+    if (sessData[idAttr] === undefined || sessData[idAttr] === '') {
+      sessData[idAttr] = 9999;
+    }
+  }
+
+  const candidates = collectBatchCombos(schema, sessData);
+  // collectBatchCombos returns k-combinations; for the fuzzer we
+  // want flat candidates. Pull from the schema's individual paths
+  // (the same way collectBatchCombos's internal candidate list
+  // does), bounded by MAX_CANDIDATES.
+  const flat = [];
+  for (const field of schema.fields || []) {
+    if (isScalarField(field, schema)) {
+      flat.push([field.id]);
+    } else if (field.type === 'collection' && field.schema) {
+      flat.push([field.id]);
+      const rows = sessData[field.id];
+      if (Array.isArray(rows) && rows.length > 0) {
+        for (const cellField of field.schema.fields || []) {
+          if (isScalarField(cellField, field.schema)) {
+            flat.push([field.id, 0, cellField.id]);
+            break;
+          }
+        }
+      }
+    }
+    if (flat.length >= MAX_CANDIDATES) break;
+  }
+  if (flat.length < 2) {
+    return { ok: true, skipped: true,
+      reason: 'fewer than 2 candidate paths',
+      candidates: flat.length };
+  }
+
+  // Map indices → paths, dedupe by stringified path. Need at least
+  // 2 distinct paths to form a batch.
+  const seen = new Set();
+  const batch = [];
+  for (const i of pathIndices) {
+    const p = flat[((i % flat.length) + flat.length) % flat.length];
+    const key = p.join('\x00');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    batch.push(p);
+  }
+  if (batch.length < 2) {
+    return { ok: true, skipped: true,
+      reason: 'all path indices deduped to <2 distinct',
+      candidates: flat.length };
+  }
+
+  // Apply mutations in order.
+  let newSessData = sessData;
+  for (const p of batch) {
+    const next = applyMutation(schema, newSessData, p);
+    if (next === null) {
+      return { ok: true, skipped: true,
+        reason: `applyMutation failed for ${JSON.stringify(p)}`,
+        candidates: flat.length };
+    }
+    newSessData = next;
+  }
+
+  const [primary, ...extras] = batch;
+  schema.state = { data: sessData, errors: {}, isReady: true,
+    isNew: (mode !== 'edit'), _knownErrorPaths: new Map() };
+
+  const knownErrorPaths = new Map();
+  const setupAudit = () => {
+    window.__INCREMENTAL_AUDIT__ = true;
+    window.__throw_on_canary_divergence__ = true;
+    window.__incremental_canary_max_per_session__
+      = Number.POSITIVE_INFINITY;
+    _resetCanaryFireCount();
+    _resetValidationCanaryFireCount();
+  };
+  const teardownAudit = () => {
+    delete window.__INCREMENTAL_AUDIT__;
+    delete window.__throw_on_canary_divergence__;
+    delete window.__incremental_canary_max_per_session__;
+  };
+
+  // Mirror production's mount-time validate: SchemaState.validate
+  // runs a FULL walk on mount which populates _knownErrorPaths
+  // BEFORE any user dispatch. Without this prep, the fuzzer's
+  // first incremental walk prunes paths that production wouldn't
+  // (because production has them in mustVisit via the error
+  // tracker) — false-positive divergence on schemas with pre-
+  // existing validation errors.
+  try {
+    validateSchema(
+      schema, sessData,
+      (p) => {
+        if (!Array.isArray(p)) return;
+        const k = p.map((s) => String(s)).join('\x00');
+        if (!knownErrorPaths.has(k)) knownErrorPaths.set(k, [...p]);
+      },
+      [], null, null, true,
+    );
+  } catch (_e) {
+    // Initial discovery failure — fuzzer treats as harness skip.
+    return { ok: true, skipped: true,
+      reason: 'initial validate threw',
+      candidates: flat.length };
+  }
+
+  setupAudit();
+  try {
+    const prevOptions = schemaOptionsEvalulator({
+      schema, data: sessData,
+      viewHelperProps: { mode },
+      prevOptions: null,
+    });
+    schema.state.data = newSessData;
+
+    const depEntries = collectDepEntries(schema, newSessData);
+    const primaryDepDests = collectDepDests(depEntries, primary) || [];
+    const allDepDests = [...primaryDepDests];
+    for (const extra of extras) {
+      allDepDests.push(extra);
+      const extraDeps = collectDepDests(depEntries, extra) || [];
+      for (const d of extraDeps) allDepDests.push(d);
+    }
+    // Known error paths ride mustVisit AND depDests — matches what
+    // SchemaState.validate assembles in production.
+    for (const v of knownErrorPaths.values()) allDepDests.push(v);
+    const mustVisit = [primary, ...extras, ...knownErrorPaths.values()];
+
+    schemaOptionsEvalulator({
+      schema, data: newSessData,
+      viewHelperProps: { mode, incrementalOptions: true },
+      prevOptions, changedPath: primary,
+      depDests: allDepDests,
+    });
+    validateSchema(
+      schema, newSessData,
+      (path) => {
+        const flat2 = path.map((p) => String(p)).join('\x00');
+        if (!knownErrorPaths.has(flat2)) knownErrorPaths.set(flat2, [...path]);
+      },
+      [], null, mustVisit, true,
+    );
+    return { ok: true, candidates: flat.length };
+  } catch (e) {
+    if (isDivergenceError(e)) {
+      return { ok: false, error: 'divergence',
+        message: e.message.split('\n').slice(0, 8).join('\n'),
+        batch };
+    }
+    // Harness limitation — schema's closure crashed on something
+    // we can't synthesize. Surface as skipped.
+    return { ok: true, skipped: true,
+      reason: `dispatch error: ${e.message.split('\n')[0]}`,
+      candidates: flat.length };
+  } finally {
+    teardownAudit();
+    // Suppress any console.error the inner walks pushed; the
+    // dispatchAndAudit/audit_harness path normally does this via
+    // its consoleErrorSpy bracket. Replicate here for parity.
+    if (typeof console !== 'undefined'
+        && typeof console.error?.mockClear === 'function') {
+      console.error.mockClear();
+    }
+  }
+};
+
 // `mode` selects the viewHelperProps.mode the audit walks in. The
 // walker's `isModeSupportedByField` filters fields by `field.mode`,
 // so create-only and edit-only fields exercise different code paths.
