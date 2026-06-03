@@ -72,6 +72,48 @@ export function pathOverlaps(currentPath, changedPath) {
 
 let __evalDepth = 0;
 export function schemaOptionsEvalulator(opts) {
+  // Canary gate (build-time eliminated in production). The DefinePlugin
+  // substitutes `process.env.__CANARY_BUILD__` at build time:
+  //   - production build (no CANARY_BUILD env): becomes `false`, the
+  //     entire branch (including the imported runOptionsCanary) is
+  //     dead-code-eliminated, the import is tree-shaken.
+  //   - canary build (CANARY_BUILD=true): becomes `true`, branch kept.
+  //   - test env: process.env is read at runtime; setup-jest.js sets
+  //     CANARY_BUILD=true so the audit path is testable.
+  // Only the OUTERMOST call routes to the canary — recursive calls
+  // from nested-fieldset / collection branches go through this function
+  // again but at __evalDepth > 0, so they skip the canary check and run
+  // normally. This avoids exponential cost on nested schemas.
+  if (
+    process.env.__CANARY_BUILD__
+    && __evalDepth === 0
+    && typeof window !== 'undefined'
+    && window.__INCREMENTAL_AUDIT__
+  ) {
+    // Increment depth BEFORE calling the canary, so the canary's two
+    // inner walks (which call back into this function) see
+    // __evalDepth > 0 and skip the audit branch + the measure
+    // wrapper. Without this guard the canary would recurse infinitely.
+    //
+    // require() inside the conditional rather than a top-level import:
+    // webpack's static analyzer can tree-shake the canary module when
+    // process.env.__CANARY_BUILD__ is substituted to literal `false` at
+    // build time. A top-level `import` would pull canary.js into the
+    // bundle unconditionally because the symbol is referenced from
+    // dead-but-statically-visible code; require() inside a dead branch
+    // gets eliminated wholesale.
+    __evalDepth++;
+    try {
+      // eslint-disable-next-line global-require
+      const { runOptionsCanary } = require('./canary');
+      return measure(
+        'schemaOptionsEvalulator', () => runOptionsCanary(opts)
+      );
+    } finally {
+      __evalDepth--;
+    }
+  }
+
   // Measure only the outermost call; this function recurses through itself
   // for nested schemas and collection rows.
   if (__evalDepth === 0) {

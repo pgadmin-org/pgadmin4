@@ -1,6 +1,13 @@
 import '@testing-library/jest-dom';
 const { TextEncoder, TextDecoder } = require('util');
 
+// Enable the build-time canary gate in test environments. The
+// production wrapper in registry.js reads `process.env.__CANARY_BUILD__`;
+// in canary builds webpack's DefinePlugin substitutes a literal `true`,
+// in production builds it substitutes `false` (and DCE removes the
+// import). Tests don't go through webpack, so set it directly here.
+process.env.__CANARY_BUILD__ = 'true';
+
 class BroadcastChannelMock {
   onmessage() {/* mock */}
   postMessage(data) {

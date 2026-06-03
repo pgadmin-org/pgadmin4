@@ -52,6 +52,19 @@ const providePlugin = new webpack.ProvidePlugin({
   Buffer: ['buffer', 'Buffer'],
 });
 
+// Build-time gate for the incremental-walker divergence canary. When
+// CANARY_BUILD=true is set in the build environment (e.g.,
+// `CANARY_BUILD=true make bundle`), the substitution evaluates to the
+// literal `true` and the canary path stays in the bundle. In the
+// default production build it evaluates to the literal `false` and
+// webpack dead-code-eliminates the canary path AND tree-shakes the
+// canary module's import. Important: substitute a literal boolean —
+// `JSON.stringify(true)` would produce the string "true" which is
+// truthy in JS but defeats DCE in the false branch.
+const canaryDefinePlugin = new webpack.DefinePlugin({
+  'process.env.__CANARY_BUILD__': process.env.CANARY_BUILD === 'true',
+});
+
 // Helps in debugging each single file, it extracts the module files
 // from bundle so that they are accessible by search in Chrome's sources panel.
 // Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
@@ -461,12 +474,14 @@ module.exports = [{
   plugins: PRODUCTION ? [
     extractStyle,
     providePlugin,
+    canaryDefinePlugin,
     sourceMapDevToolPlugin,
     bundleAnalyzer,
     copyFiles,
   ]: [
     extractStyle,
     providePlugin,
+    canaryDefinePlugin,
     sourceMapDevToolPlugin,
     copyFiles,
   ],

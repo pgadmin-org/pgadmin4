@@ -354,6 +354,27 @@ export function validateSchema(
   if (__validateDepth === 0) {
     __validateDepth++;
     try {
+      // Canary gate (build-time eliminated in production). DefinePlugin
+      // substitutes `process.env.__CANARY_BUILD__` at build time:
+      //   - production (no CANARY_BUILD env): becomes `false`, the
+      //     entire branch (including the require'd canary module) is
+      //     dead-code-eliminated and tree-shaken.
+      //   - canary build (CANARY_BUILD=true): becomes `true`, branch
+      //     kept; runtime gate is window.__INCREMENTAL_AUDIT__.
+      //   - test env: setup-jest.js sets CANARY_BUILD=true so the
+      //     audit path is testable.
+      // Depth was just incremented above; the canary's two inner
+      // validateSchema calls enter at depth>0 and skip the gate.
+      if (
+        process.env.__CANARY_BUILD__
+        && typeof window !== 'undefined'
+        && window.__INCREMENTAL_AUDIT__
+      ) {
+        const { runValidationCanary } = require('./validation_canary');
+        return measure('validateSchema', () => runValidationCanary({
+          schema, sessData, setError, accessPath, collLabel, mustVisit,
+        }));
+      }
       return measure('validateSchema', () => _validateSchemaImpl(
         schema, sessData, setError, accessPath, collLabel, mustVisit
       ));
