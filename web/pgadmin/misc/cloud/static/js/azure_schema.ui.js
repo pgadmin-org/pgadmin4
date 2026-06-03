@@ -142,21 +142,43 @@ class AzureCredSchema extends BaseUISchema {
         type: '',
         deps:['auth_btn'],
         deferredDepChange: (state, source)=>{
-          return new Promise((resolve, reject)=>{
-            if(source == 'auth_btn' && state.auth_type == 'interactive_browser_credential' && state.is_authenticating ) {
-              obj.fieldOptions.getAuthCode()
-                .then((res)=>{
-                  resolve(()=>{
-                    return {
-                      is_authenticating: false,
-                      auth_code: res.data.data.user_code,
-                    };
-                  });
-                })
-                .catch((err)=>{
-                  reject(err instanceof Error ? err : Error(gettext('Something went wrong')));
-                });
-            }
+          // Opt out of the queue cleanly when the trigger doesn't match
+          // — returning undefined skips this listener entirely. The
+          // previous version returned a Promise that never resolved in
+          // this branch, leaving a permanent orphan in data.__deferred__.
+          //
+          // `source` is the path of the field that changed (an array).
+          // Compare against the last segment so the guard works for both
+          // a top-level field path (['auth_btn']) and a nested
+          // embedding (['some_parent', 'auth_btn']).
+          const trigger = Array.isArray(source) ? source[source.length - 1] : source;
+          if (trigger !== 'auth_btn'
+              || state.auth_type !== 'interactive_browser_credential'
+              || !state.is_authenticating) {
+            return undefined;
+          }
+          return new Promise((resolve)=>{
+            obj.fieldOptions.getAuthCode()
+              .then((res)=>{
+                resolve(()=>({
+                  is_authenticating: false,
+                  auth_code: res.data.data.user_code,
+                }));
+              })
+              .catch((err)=>{
+                // Surface the failure to the user AND reset both
+                // is_authenticating (so the UI unblocks) and any stale
+                // auth_code from a prior successful attempt (otherwise
+                // the user sees "still authenticated" UI alongside the
+                // failure toast, which is misleading).
+                const msg = err?.response?.data?.errormsg
+                  || err?.message
+                  || gettext('Something went wrong');
+                pgAdmin.Browser.notifier.error(
+                  gettext('Azure authentication failed: ') + msg
+                );
+                resolve(()=>({ is_authenticating: false, auth_code: null }));
+              });
           });
         },
       },

@@ -604,79 +604,57 @@ export default class TableSchema extends BaseUISchema {
         }
       },
       deferredDepChange: (state, source, topState, actionObj)=>{
-        return new Promise((resolve)=>{
-          // current table list and previous table list
-          let newColInherits = state.coll_inherits || [];
-          let oldColInherits = actionObj.oldState.coll_inherits || [];
+        const newColInherits = state.coll_inherits || [];
+        const oldColInherits = actionObj.oldState.coll_inherits || [];
+        const added = _.difference(newColInherits, oldColInherits);
+        const removed = _.difference(oldColInherits, newColInherits);
 
-          let tabName;
-          let tabColsResponse;
+        // REMOVE takes precedence: any removed parent means stale
+        // columns to clean up. Covers pure shrink AND same-length
+        // swap — without this branch a swap would leave the removed
+        // parent's columns sitting in the grid.
+        if(removed.length > 0) {
+          const removeOid = this.getTableOid(removed[0]);
+          // Guard: if inheritedTableList is stale and the removed
+          // table can't be resolved to an OID, opt out. Filtering on
+          // `inheritedid != undefined` would silently drop local
+          // user-added columns (`null == undefined` in JS).
+          if(removeOid == null) return undefined;
+          return Promise.resolve((tmpstate)=>{
+            const finalCols = (tmpstate.columns || [])
+              .filter((col)=>col.inheritedid != removeOid);
+            obj.changeColumnOptions(finalCols);
+            return {
+              adding_inherit_cols: false,
+              columns: finalCols,
+            };
+          });
+        }
 
-          // Add columns logic
-          // If new table is added in list
-          if(newColInherits.length > 1 && newColInherits.length > oldColInherits.length) {
-            // Find newly added table from current list
-            tabName = _.difference(newColInherits, oldColInherits);
-            tabColsResponse = obj.getColumns({tid: this.getTableOid(tabName[0])});
-          } else if (newColInherits.length == 1) {
-            // First table added
-            tabColsResponse = obj.getColumns({tid: this.getTableOid(newColInherits[0])});
-          }
-
-          if(tabColsResponse) {
-            tabColsResponse.then((res)=>{
-              resolve((tmpstate)=>{
-                let finalCols = res.map((col)=>obj.columnsSchema.getNewData(col));
-                let currentSelectedCols = [];
-                if (!_.isEmpty(tmpstate.columns)){
-                  currentSelectedCols = tmpstate.columns;
-                }
-                let colNameList = [];
-                tmpstate.columns.forEach((col=>{
-                  colNameList.push(col.name);
-                }));
-                for (let col of Object.values(finalCols)) {
-                  if(!colNameList.includes(col.name)){
-                    currentSelectedCols.push(col);
-                  }
-                }
-
-                if (!_.isEmpty(currentSelectedCols)){
-                  finalCols = currentSelectedCols;
-                }
-
-                obj.changeColumnOptions(finalCols);
-                return {
-                  adding_inherit_cols: false,
-                  columns: finalCols,
-                };
-              });
-            });
-          }
-
-          // Remove columns logic
-          let removeOid;
-          if(newColInherits.length > 0 && newColInherits.length < oldColInherits.length) {
-            // Find deleted table from previous list
-            tabName = _.difference(oldColInherits, newColInherits);
-            removeOid = this.getTableOid(tabName[0]);
-          } else if (oldColInherits.length === 1 && newColInherits.length < 1) {
-            // We got last table from list
-            tabName = oldColInherits[0];
-            removeOid = this.getTableOid(tabName);
-          }
-          if(removeOid) {
-            resolve((tmpstate)=>{
-              let finalCols = tmpstate.columns;
-              _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
+        // Pure ADD: list grew without any removals.
+        if(added.length > 0) {
+          const fetchOid = this.getTableOid(added[0]);
+          if(fetchOid == null) return undefined;
+          return obj.getColumns({tid: fetchOid}).then((res)=>(
+            (tmpstate)=>{
+              const fetched = res.map((col)=>obj.columnsSchema.getNewData(col));
+              const existing = tmpstate.columns || [];
+              const existingNames = new Set(existing.map((c)=>c.name));
+              const finalCols = [
+                ...existing,
+                ...fetched.filter((c)=>!existingNames.has(c.name)),
+              ];
               obj.changeColumnOptions(finalCols);
               return {
                 adding_inherit_cols: false,
-                columns: finalCols
+                columns: finalCols,
               };
-            });
-          }
-        });
+            }
+          ));
+        }
+
+        // Lists are equivalent — no work to do.
+        return undefined;
       },
     },
     {
@@ -792,49 +770,47 @@ export default class TableSchema extends BaseUISchema {
         obj.ofTypeTables = res;
       },
       deferredDepChange: (state, source, topState, actionObj)=>{
-        const setColumns = (resolve)=>{
-          let finalCols = [];
-          if(!isEmptyString(state.typname)) {
-            let typeTable = _.find(obj.ofTypeTables||[], (t)=>t.label==state.typname);
-            finalCols = typeTable.oftype_columns;
-          }
-          resolve(() => {
-            obj.changeColumnOptions(finalCols);
-            return {
-              columns: finalCols,
-              primary_key: [],
-              foreign_key: [],
-              exclude_constraint: [],
-              unique_constraint: [],
-              partition_keys: [],
-              partitions: [],
-            };
-          });
-        };
+        // No change — opt out of the deferred queue.
+        if(state.typname == actionObj.oldState.typname) return undefined;
+
+        // finalCols depends only on closure-captured state and
+        // obj.ofTypeTables — not on tmpstate. Compute it once here so
+        // the schema-level side effect (changeColumnOptions) can run
+        // BEFORE resolve, matching the protocol's "side effects in the
+        // Promise body, callbacks return pure deltas" rule.
+        let finalCols = [];
+        if(!isEmptyString(state.typname)) {
+          // ofTypeTables can be empty or stale (loaded options not
+          // yet refreshed). Guard against an undefined lookup so the
+          // callback returns an empty column list instead of throwing
+          // into the deferred-queue drain.
+          const typeTable = _.find(obj.ofTypeTables||[], (t)=>t.label==state.typname);
+          finalCols = typeTable?.oftype_columns ?? [];
+        }
+        const deltaCb = ()=>({
+          columns: finalCols,
+          primary_key: [],
+          foreign_key: [],
+          exclude_constraint: [],
+          unique_constraint: [],
+          partition_keys: [],
+          partitions: [],
+        });
         if(!isEmptyString(state.typname) && isEmptyString(actionObj.oldState.typname)) {
           return new Promise((resolve)=>{
             pgAdmin.Browser.notifier.confirm(
               gettext('Remove column definitions?'),
               gettext('Changing \'Of type\' will remove column definitions.'),
-              function () {
-                setColumns(resolve);
+              ()=>{
+                obj.changeColumnOptions(finalCols);
+                resolve(deltaCb);
               },
-              function() {
-                resolve(()=>{
-                  return {
-                    typname: null,
-                  };
-                });
-              }
+              ()=>resolve(()=>({typname: null})),
             );
           });
-        } else if(state.typname != actionObj.oldState.typname) {
-          return new Promise((resolve)=>{
-            setColumns(resolve);
-          });
-        } else {
-          return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
         }
+        obj.changeColumnOptions(finalCols);
+        return Promise.resolve(deltaCb);
       },
     },
     {

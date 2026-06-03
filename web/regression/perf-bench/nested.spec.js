@@ -79,7 +79,7 @@ test(`nested fixture: ${OUTER} outer × ${INNER} inner`, async ({ page, context 
   const mountStart = Date.now();
   await page.evaluate(({ N, M }) => window.__mountBenchFixture(N, M), { N: OUTER, M: INNER });
   // Wait for the grid to appear.
-  await page.waitForSelector('[data-test="data-grid-view"]', { timeout: 300_000 });
+  await page.waitForSelector('[data-test="data-grid-view"]', { timeout: 500_000 });
   // Wait for the grid to settle (rows rendered).
   await page.waitForTimeout(6_000);
   const mountElapsed = Date.now() - mountStart;

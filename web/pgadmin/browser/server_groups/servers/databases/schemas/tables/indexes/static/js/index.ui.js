@@ -485,35 +485,25 @@ export default class IndexSchema extends BaseUISchema {
           };
         },
         deferredDepChange: (state, source, topState, actionObj) => {
-          const setColumns = (resolve)=>{
-            resolve(()=>{
-              state.columns.splice(0, state.columns?.length);
-              return {
-                columns: state.columns,
-              };
-            });
-          };
-          if((state.amname != actionObj?.oldState.amname) && state.columns?.length > 0) {
-            return new Promise((resolve)=>{
-              pgAdmin.Browser.notifier.confirm(
-                gettext('Warning'),
-                gettext('Changing access method will clear columns collection. Do you want to continue?'),
-                function () {
-                  setColumns(resolve);
-                },
-                function() {
-                  resolve(()=>{
-                    state.amname = actionObj?.oldState.amname;
-                    return {
-                      amname: state.amname,
-                    };
-                  });
-                }
-              );
-            });
-          } else {
-            return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
+          // No-op when amname didn't change or there's nothing to clear.
+          // Returning undefined opts out of the deferred queue.
+          // actionObj.oldState is guaranteed by the reducer to be the
+          // pre-dispatch clone; no need for optional chaining (and the
+          // cancel branch below accesses it unconditionally).
+          if (state.amname === actionObj.oldState.amname
+              || !state.columns?.length) {
+            return undefined;
           }
+          return new Promise((resolve)=>{
+            pgAdmin.Browser.notifier.confirm(
+              gettext('Warning'),
+              gettext('Changing access method will clear columns collection. Do you want to continue?'),
+              // Confirmed — clear the columns collection.
+              () => resolve(() => ({ columns: [] })),
+              // Cancelled — revert amname to its previous value.
+              () => resolve(() => ({ amname: actionObj.oldState.amname })),
+            );
+          });
         },
       },
       {
