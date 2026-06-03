@@ -270,6 +270,77 @@ describe('auditSchema — batched-dispatch pass detects divergence', () => {
   });
 });
 
+describe('auditSchema — multi-level nested-fieldset recursion', () => {
+  // Three levels of nested-fieldset chaining with one scalar per
+  // level. The recursion contract: every scalar (depth 1, 2, 3)
+  // gets dispatched against by auditNestedFields. Pre-recursion
+  // (depth=1 only), depth-2 and depth-3 scalars went unexercised.
+  //
+  // We can't easily construct a divergence-only-at-depth-3 case
+  // because the walker doesn't prune within nested-fieldset (all
+  // fields in a group are always walked). The value of multi-level
+  // recursion is COVERAGE — dispatching on deep scalars in case a
+  // future walker change adds pruning, or in case a deep closure
+  // has its own bug we'd otherwise miss. Verify by dispatch count.
+  class L3 extends BaseUISchema {
+    get baseFields() {
+      return [{ id: 'depth3_field', type: 'text' }];
+    }
+  }
+  class L2 extends BaseUISchema {
+    constructor() { super(); this.l3 = new L3(); }
+    get baseFields() {
+      return [
+        { id: 'depth2_field', type: 'text' },
+        { id: 'depth2_group', type: 'nested-fieldset',
+          schema: this.l3, mode: ['create', 'edit'] },
+      ];
+    }
+  }
+  class L1 extends BaseUISchema {
+    constructor() { super(); this.l2 = new L2(); }
+    get baseFields() {
+      return [
+        { id: 'depth1_field', type: 'text' },
+        { id: 'depth1_group', type: 'nested-fieldset',
+          schema: this.l2, mode: ['create', 'edit'] },
+      ];
+    }
+  }
+  class Root extends BaseUISchema {
+    constructor() {
+      super({ depth1_field: '', depth2_field: '', depth3_field: '' });
+      this.l1 = new L1();
+    }
+    get baseFields() {
+      return [
+        { id: 'top_field', type: 'text' },
+        { id: 'top_group', type: 'nested-fieldset',
+          schema: this.l1, mode: ['create', 'edit'] },
+      ];
+    }
+  }
+
+  test('audit dispatches against scalars at every depth', () => {
+    const result = auditSchema(Root);
+    expect(result.skipped).toBe(false);
+    // Counts (no collections in this schema, so collection passes
+    // and batched/MOVE/BULK contribute zero):
+    //   auditScalars       → 1  (top_field)
+    //   auditNestedFields  → 3  (depth1 + depth2 + depth3
+    //                            scalars when recursion works)
+    //   auditSequence      → ~3 (the type-into-top-scalar steps
+    //                            of the 10-step script; the rest
+    //                            skip without collections)
+    //
+    // Pre-recursion total would be 5 (depth-1 only, not 2+3). The
+    // > 5 floor catches "recursion silently regressed to depth 1
+    // only" without overspecifying the exact arithmetic (sequence
+    // pass count drifts on harness changes).
+    expect(result.dispatches).toBeGreaterThan(5);
+  });
+});
+
 describe('auditSchema — multi-step sequence with persisted prev', () => {
   // Trivial schema with a top scalar + a collection of cells: the
   // sequence pass needs both shapes to drive its 10-step script

@@ -532,33 +532,54 @@ const dispatchAndAudit = (schema, sessData, changedPath, newSessData, knownError
 // table.ui (Like block), index.ui (With block), type.ui, sequence.ui
 // (Owned By), pga_schedule.ui, and others.
 //
-// One level of descent is enough for production schemas; deeper
-// nesting is rare and would chain through the same walker case
-// anyway.
+// Recursive descent — production schemas chain group containers
+// arbitrarily deep (e.g. nested-fieldset inside an inline-groups
+// inside another nested-fieldset). MAX_NEST_DEPTH guards against
+// pathological / cyclical schemas; 6 is generous for real shapes.
 const NESTED_GROUP_TYPES = new Set([
   'nested-fieldset', 'nested-tab', 'inline-groups',
 ]);
+const MAX_NEST_DEPTH = 6;
+
+// Yields { fieldDef, ownerSchema } for every scalar field reachable
+// through one or more nested-* group containers from `rootSchema`,
+// excluding the root's own direct scalar fields (those are
+// auditScalars' job).
+const walkNestedScalars = function* (rootSchema, depth = 0) {
+  if (depth >= MAX_NEST_DEPTH) return;
+  for (const groupField of rootSchema?.fields || []) {
+    if (!NESTED_GROUP_TYPES.has(groupField.type)) continue;
+    if (!groupField.schema) continue;
+    if (!groupField.schema.top) {
+      groupField.schema.top = rootSchema.top || rootSchema;
+    }
+    for (const inner of groupField.schema.fields || []) {
+      if (isScalarField(inner, groupField.schema)) {
+        yield { fieldDef: inner, ownerSchema: groupField.schema };
+      }
+    }
+    // Recurse: the group's schema may contain MORE nested groups.
+    yield* walkNestedScalars(groupField.schema, depth + 1);
+  }
+};
 
 const auditNestedFields = (schema, sessData, knownErrorPaths, mode = 'edit') => {
   let n = 0;
-  for (const groupField of schema.fields || []) {
-    if (!NESTED_GROUP_TYPES.has(groupField.type)) continue;
-    if (!groupField.schema) continue;
-    if (!groupField.schema.top) groupField.schema.top = schema.top || schema;
-
-    for (const inner of groupField.schema.fields || []) {
-      if (!isScalarField(inner, groupField.schema)) continue;
-      // Nested-* shares data with the parent, so the field's path
-      // is FLAT at the parent's level (NOT prefixed by the group
-      // field id) — production dispatches read sessData[inner.id]
-      // not sessData[groupField.id][inner.id].
-      const newValue = mutateScalar(inner, sessData[inner.id]);
-      const newSessData = { ...sessData, [inner.id]: newValue };
-      dispatchAndAudit(
-        schema, sessData, [inner.id], newSessData, knownErrorPaths, mode,
-      );
-      n += 1;
-    }
+  for (const { fieldDef, ownerSchema } of walkNestedScalars(schema)) {
+    // Nested-* shares data with the root, so the field's path is
+    // FLAT at the root's level (NOT prefixed by any group field
+    // ids) — production dispatches read sessData[fieldDef.id], not
+    // sessData[group.id][...nested.id][fieldDef.id].
+    const newValue = mutateScalar(fieldDef, sessData[fieldDef.id]);
+    const newSessData = { ...sessData, [fieldDef.id]: newValue };
+    // Mirror production behavior: closures may read `obj.ownerSchema`
+    // / `obj.top` to find their root. Both are wired by walkNestedScalars
+    // above (top stamp + walker-time recursion).
+    void ownerSchema;  // documentation only; helper passes it for clarity
+    dispatchAndAudit(
+      schema, sessData, [fieldDef.id], newSessData, knownErrorPaths, mode,
+    );
+    n += 1;
   }
   return n;
 };

@@ -8,6 +8,12 @@
 //
 //////////////////////////////////////////////////////////////
 
+/* eslint-disable no-console */
+// This is a developer-invoked CLI codemod. `console.log` is the
+// output medium: it reports per-file decisions (modified / skipped /
+// already-wrapped) to stdout for the human running it. There's no
+// alternative reporting channel for a one-shot script of this shape.
+
 // One-shot codemod for design D10: wraps every default-exported
 // BaseUISchema subclass in `registerSchema()` so the audit harness
 // can enumerate it. Idempotent — running twice is a no-op on
@@ -34,7 +40,7 @@ const path = require('path');
 const parser = require('@babel/parser');
 
 const REGISTER_IMPORT = (
-  "import { registerSchema } from 'sources/SchemaView/SchemaState';\n"
+  'import { registerSchema } from \'sources/SchemaView/SchemaState\';\n'
 );
 
 const dryRun = process.argv.includes('--dry');

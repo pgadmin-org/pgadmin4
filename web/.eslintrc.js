@@ -27,7 +27,6 @@ module.exports = [
       '**/templates\\',
       '**/ycache',
       '**/regression/htmlcov',
-      'scripts/',
     ],
   },
   js.configs.recommended,

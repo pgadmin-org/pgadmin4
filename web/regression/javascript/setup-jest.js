@@ -76,28 +76,30 @@ global.beforeAll(() => {
   jest.spyOn(console, 'error');
 });
 
-// Resolve the audit harness's variant-rotation reset ONCE at module
-// load (not inside beforeEach). require()-ing from inside beforeEach
-// loads the audit harness mid-test, which transitively pulls in the
-// zustand mock — whose top-level afterEach() registration then runs
-// in test phase and errors. Capturing the function reference here
-// means non-SchemaView specs pay the import cost too, but the cost
-// is one-time per worker.
+// Reset the audit harness's variant-rotation counter between
+// tests so dispatch ordering is reproducible within a Jest worker.
+//
+// We don't require() the audit harness here — that would pay the
+// import cost on every Jest worker (including the ~80% that don't
+// touch SchemaView) AND require()ing from inside beforeEach trips
+// the zustand-mock's top-level afterEach() registration. Instead,
+// resolve the module path once (no load), then check the require
+// cache in each beforeEach. If a SchemaView spec earlier loaded the
+// audit harness, its cached exports include _resetMutationCounter;
+// non-SchemaView workers see an empty cache hit and skip.
+const _auditHarnessPath = require.resolve(
+  '../../pgadmin/static/js/SchemaView/SchemaState/audit_harness',
+);
 let _resetAuditMutationCounter = null;
-try {
-   
-  const m = require(
-    '../../pgadmin/static/js/SchemaView/SchemaState/audit_harness'
-  );
-  if (typeof m._resetMutationCounter === 'function') {
-    _resetAuditMutationCounter = m._resetMutationCounter;
-  }
-} catch { /* audit harness not in this worker's tree — fine */ }
 
 global.beforeEach(() => {
   console.error.mockClear();
-  // Reset the audit harness's variant-rotation counter between
-  // tests so dispatch ordering is reproducible within a Jest worker.
+  if (!_resetAuditMutationCounter) {
+    const cached = require.cache[_auditHarnessPath];
+    if (cached && typeof cached.exports._resetMutationCounter === 'function') {
+      _resetAuditMutationCounter = cached.exports._resetMutationCounter;
+    }
+  }
   if (_resetAuditMutationCounter) _resetAuditMutationCounter();
 });
 
