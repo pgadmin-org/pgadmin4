@@ -92,17 +92,6 @@ export const expectNoDivergence = (errors) => {
 // is the working reference for tree + dialog interaction on this
 // codebase.
 
-// Open the right-click context menu on a tree directory node by
-// name, then click through Register → Server… or Create → <child>.
-const openTreeContextMenu = async (page, parentName) => {
-  const node = page.locator(
-    '.file-entry.directory', { hasText: parentName }
-  ).first();
-  await node.waitFor({ state: 'visible', timeout: 15_000 });
-  await node.click({ button: 'right' });
-  await page.waitForTimeout(500);
-};
-
 // Ensure a server tree node exists and is connected. Strategy:
 //
 //   1. If the desired server name (env PGADMIN_SERVER_NAME, default

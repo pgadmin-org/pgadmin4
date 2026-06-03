@@ -1,4 +1,11 @@
+/* eslint-disable no-console */
 // DataGridView heavy-load + nested benchmark.
+//
+// `console.log` is intentional throughout — this spec emits
+// per-keystroke wallclock numbers that a human operator reads
+// while doing same-session A/B comparison. The Playwright runner
+// pipes them to stdout. File-level disable is more honest than
+// per-line markers.
 //
 // Uses the synthetic __mountBenchFixture exposed by SchemaView/bench-fixture.js
 // to mount: SchemaView -> DataGridView (outer / 1000 cols) -> SchemaView
@@ -49,7 +56,8 @@ test(`nested fixture: ${OUTER} outer × ${INNER} inner`, async ({ page, context 
         dlg.locator('button:has-text("Cancel")'),
       ];
       for (const c of candidates) {
-        try { await c.click({ timeout: 1_000 }); return; } catch {}
+        try { await c.click({ timeout: 1_000 }); return; }
+        catch { /* try the next candidate selector */ }
       }
       await page.keyboard.press('Escape');
     },

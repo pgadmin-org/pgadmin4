@@ -93,18 +93,20 @@ export function snapshot() {
   return { stats: rows, counts: countRows, actions: actionsLog.slice() };
 }
 
+// console.table/log are the right tools for the dev-invoked
+// diagnostic dump below — they print structured data to devtools
+// in a form the no-console rule's preferred warn/error/trace can't
+// match. Scoped to this function via block-level disable so the
+// rest of the file stays under the rule.
 export function dump() {
   const snap = snapshot();
-  // eslint-disable-next-line no-console
+  /* eslint-disable no-console */
   console.table(snap.stats);
-  // eslint-disable-next-line no-console
   console.log('Counters:');
-  // eslint-disable-next-line no-console
   console.table(snap.counts);
-  // eslint-disable-next-line no-console
   console.log(`Last ${Math.min(snap.actions.length, 25)} actions:`);
-  // eslint-disable-next-line no-console
   console.table(snap.actions.slice(-25));
+  /* eslint-enable no-console */
   return snap;
 }
 

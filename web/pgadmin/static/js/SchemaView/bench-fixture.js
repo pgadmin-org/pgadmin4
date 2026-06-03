@@ -114,18 +114,21 @@ function generateInitial(N, M) {
 function mountBenchFixture(outerRows = 1000, innerRows = 3) {
   const N = parseInt(outerRows, 10) || 1000;
   const M = parseInt(innerRows, 10) || 3;
+  // Bench harness is a dev-invoked module; the mount-time log
+  // confirms the right shape ran. Single line-level disable
+  // rather than a file-level enable so accidental console.log
+  // in non-diagnostic code still trips lint.
   // eslint-disable-next-line no-console
   console.log(`[bench-fixture] mounting ${N} outer × ${M} inner rows`);
 
   const schema = new BenchTopSchema(N, M);
 
-  // pgAdmin is provided as a webpack global via ProvidePlugin.
-  // eslint-disable-next-line no-undef
+  // pgAdmin is provided as a webpack global via ProvidePlugin
+  // and declared in the eslint `globals` config.
   if (!pgAdmin?.Browser?.Events) {
     throw new Error('pgAdmin.Browser.Events not available — is the app loaded?');
   }
 
-  // eslint-disable-next-line no-undef
   pgAdmin.Browser.Events.trigger(
     'pgadmin:utility:show',
     null,

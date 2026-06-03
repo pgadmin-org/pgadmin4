@@ -1,4 +1,8 @@
+/* eslint-disable no-console */
 // DataGridView profiling — Register Server > Parameters
+//
+// `console.log` is intentional throughout — Playwright bench
+// spec emits perf numbers to stdout for a human reader.
 //
 // Scenario:
 //   1. Load pgAdmin

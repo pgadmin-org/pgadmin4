@@ -102,7 +102,6 @@ global.beforeEach(() => {
 });
 
 global.afterEach(() => {
-  // eslint-disable-next-line no-undef
   expect(console.error).not.toHaveBeenCalled();
 });
 

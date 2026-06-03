@@ -28,12 +28,6 @@ module.exports = [
       '**/ycache',
       '**/regression/htmlcov',
       'scripts/',
-      // perf-bench/ contains Playwright benchmark scripts that
-      // intentionally use console.log to emit per-key wallclock
-      // numbers consumed by the operator. These are diagnostic
-      // dev scripts, not production code, and they aren't part
-      // of any user-shipped bundle.
-      'regression/perf-bench/',
     ],
   },
   js.configs.recommended,
@@ -67,6 +61,17 @@ module.exports = [
         'global': 'readonly',
         'jest': 'readonly',
         'process': 'readonly',
+        // `pgAdmin` is provided to the browser bundle via the
+        // ProvidePlugin in webpack.config.js. Lint sees it as
+        // undefined; declare it so source code (e.g.
+        // bench-fixture.js) doesn't need per-line disables.
+        'pgAdmin': 'readonly',
+        // `expect` is a Jest global used at module scope in
+        // setup-jest.js (outside any describe/it block). The
+        // eslint-plugin-jest config supplies it inside test
+        // blocks; module-scope usage in the harness needs an
+        // explicit declaration.
+        'expect': 'readonly',
       },
     },
     'plugins': {
