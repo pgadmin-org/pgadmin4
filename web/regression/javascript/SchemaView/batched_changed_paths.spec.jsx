@@ -120,7 +120,7 @@ const flushReady = async (schemaState) => {
   // Promise to settle and isReady to flip.
   for (let i = 0; i < 50; i++) {
     if (schemaState?.isReady) return;
-    // eslint-disable-next-line no-await-in-loop
+     
     await new Promise((r) => setTimeout(r, 5));
   }
 };

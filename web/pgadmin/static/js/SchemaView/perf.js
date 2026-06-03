@@ -122,6 +122,5 @@ if (typeof window !== 'undefined') {
 
 // Side-effect import to register window.__mountBenchFixture. Kept at the
 // bottom so it can pull in BaseUISchema after perf has set its globals.
-// eslint-disable-next-line import/no-unassigned-import
 import './bench-fixture';
 

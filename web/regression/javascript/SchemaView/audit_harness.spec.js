@@ -245,7 +245,7 @@ describe('auditSchema — batched-dispatch pass detects divergence', () => {
     class TwoColl extends BaseUISchema {
       constructor() {
         super({ coll_a: [{ label: 'a0', value: 'v0' }],
-                coll_b: [{ label: 'b0', value: 'v0' }] });
+          coll_b: [{ label: 'b0', value: 'v0' }] });
         this.cellA = new Cell();
         this.cellB = new Cell();
       }

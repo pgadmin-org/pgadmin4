@@ -12,7 +12,6 @@
 // symbols to exist at module load time — drag-drop interactions are
 // exercised in Playwright, not Jest, so no-op stubs suffice.
 
-import React from 'react';
 
 export const useDrag = () => [
   { isDragging: false }, () => {}, () => {},

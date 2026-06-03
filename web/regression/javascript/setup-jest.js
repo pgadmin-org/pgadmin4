@@ -85,7 +85,7 @@ global.beforeAll(() => {
 // is one-time per worker.
 let _resetAuditMutationCounter = null;
 try {
-  // eslint-disable-next-line global-require
+   
   const m = require(
     '../../pgadmin/static/js/SchemaView/SchemaState/audit_harness'
   );

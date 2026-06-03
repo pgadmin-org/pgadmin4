@@ -66,13 +66,13 @@ Harness.displayName = 'Harness';
 const flushReady = async (schemaState) => {
   for (let i = 0; i < 50; i++) {
     if (schemaState?.isReady) return;
-    // eslint-disable-next-line no-await-in-loop
+     
     await new Promise((r) => setTimeout(r, 5));
   }
 };
 
 afterEach(() => {
-  // eslint-disable-next-line no-undef
+   
   console.error.mockClear();
 });
 
@@ -99,7 +99,7 @@ describe('drainDeferredQueue routes through dispatcher', () => {
     // The bypass guard would have fired console.error on raw
     // sessDispatch. Post-fix, the drain routes through the listener
     // wrapper which stamps __viaListener, so the guard stays silent.
-    // eslint-disable-next-line no-undef
+     
     expect(console.error).not.toHaveBeenCalledWith(
       expect.stringMatching(/dispatcher bypass/),
       expect.anything(),

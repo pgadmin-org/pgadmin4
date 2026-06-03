@@ -73,10 +73,10 @@ export const expectNoDivergence = (errors) => {
       .test(e.message)
   );
   if (divergences.length > 0) {
-    // eslint-disable-next-line no-console
+     
     console.error('CANARY DIVERGENCES DETECTED:');
     for (const d of divergences) {
-      // eslint-disable-next-line no-console
+       
       console.error(`  [${d.kind}] ${d.message}`);
     }
   }
@@ -346,7 +346,7 @@ export const openEditDialogViaApi = async (page, nodeType) => {
     if (!child) {
       throw new Error(
         `openEditDialogViaApi: no child of type "${nodeType}" found `
-        + `under selected node — does the database have any?`
+        + 'under selected node — does the database have any?'
       );
     }
 

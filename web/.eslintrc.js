@@ -28,6 +28,12 @@ module.exports = [
       '**/ycache',
       '**/regression/htmlcov',
       'scripts/',
+      // perf-bench/ contains Playwright benchmark scripts that
+      // intentionally use console.log to emit per-key wallclock
+      // numbers consumed by the operator. These are diagnostic
+      // dev scripts, not production code, and they aren't part
+      // of any user-shipped bundle.
+      'regression/perf-bench/',
     ],
   },
   js.configs.recommended,

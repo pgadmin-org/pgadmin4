@@ -29,8 +29,12 @@ export const ResizeDetector = ({ children }) => <>{children}</>;
 ResizeDetector.displayName = 'ResizeDetectorMock';
 
 // withResizeDetector HOC stub — passes width/height undefined.
-export const withResizeDetector = (Component) => (props) => (
-  <Component {...props} width={undefined} height={undefined} />
-);
+export const withResizeDetector = (Component) => {
+  const Wrapped = (props) => (
+    <Component {...props} width={undefined} height={undefined} />
+  );
+  Wrapped.displayName = `WithResizeDetectorMock(${Component.displayName || Component.name || 'Component'})`;
+  return Wrapped;
+};
 
 export default ResizeDetector;

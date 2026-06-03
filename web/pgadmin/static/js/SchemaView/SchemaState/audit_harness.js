@@ -924,11 +924,11 @@ const auditBulkUpdate = (schema, sessData, knownErrorPaths, mode = 'edit') => {
 // Exhaustive over candidates; bounded by combinatorial explosion via
 // MAX_CANDIDATES + MAX_BATCHES_PER_SCHEMA.
 const MAX_BATCH_SIZE = 4;     // 2, 3, 4 — production fixedRows
-                              // landings rarely batch >4 at once.
+// landings rarely batch >4 at once.
 const MAX_CANDIDATES = 8;     // top-N source candidates per schema
 const MAX_BATCHES_PER_SCHEMA = 60;  // generous cap to keep the
-                                    // full audit under ~30s
-                                    // across 87 schemas × 2 modes.
+// full audit under ~30s
+// across 87 schemas × 2 modes.
 
 const collectBatchCombos = (schema, sessData) => {
   const candidates = [];
@@ -1073,38 +1073,38 @@ const auditBatched = (schema, sessData, knownErrorPaths, mode = 'edit') => {
       });
       schema.state.data = newSessData;
 
-    // Mirror SchemaState.validate's accumulator shape: primary path
-    // is changedPath; each additional path rides depDests AS IS, AND
-    // its own depDests join too. The walker's mustVisit becomes the
-    // union of all k paths + every path's depDests + known error
-    // paths — exactly what production now builds.
-    const depEntries = collectDepEntries(schema, newSessData);
-    const primaryDepDests = collectDepDests(depEntries, primary) || [];
-    const allDepDests = [...primaryDepDests];
-    for (const extra of extras) {
-      allDepDests.push(extra);
-      const extraDeps = collectDepDests(depEntries, extra) || [];
-      for (const d of extraDeps) allDepDests.push(d);
-    }
-    for (const v of knownErrorPaths.values()) allDepDests.push(v);
+      // Mirror SchemaState.validate's accumulator shape: primary path
+      // is changedPath; each additional path rides depDests AS IS, AND
+      // its own depDests join too. The walker's mustVisit becomes the
+      // union of all k paths + every path's depDests + known error
+      // paths — exactly what production now builds.
+      const depEntries = collectDepEntries(schema, newSessData);
+      const primaryDepDests = collectDepDests(depEntries, primary) || [];
+      const allDepDests = [...primaryDepDests];
+      for (const extra of extras) {
+        allDepDests.push(extra);
+        const extraDeps = collectDepDests(depEntries, extra) || [];
+        for (const d of extraDeps) allDepDests.push(d);
+      }
+      for (const v of knownErrorPaths.values()) allDepDests.push(v);
 
-    const mustVisit = [primary, ...extras, ...knownErrorPaths.values()];
+      const mustVisit = [primary, ...extras, ...knownErrorPaths.values()];
 
-    schemaOptionsEvalulator({
-      schema, data: newSessData,
-      viewHelperProps: { mode, incrementalOptions: true },
-      prevOptions, changedPath: primary,
-      depDests: allDepDests,
-    });
-    validateSchema(
-      schema, newSessData,
-      (path) => {
-        const flat = path.map((p) => String(p)).join('\x00');
-        if (!knownErrorPaths.has(flat)) knownErrorPaths.set(flat, [...path]);
-      },
-      [], null, mustVisit, true
-    );
-    n += 1;
+      schemaOptionsEvalulator({
+        schema, data: newSessData,
+        viewHelperProps: { mode, incrementalOptions: true },
+        prevOptions, changedPath: primary,
+        depDests: allDepDests,
+      });
+      validateSchema(
+        schema, newSessData,
+        (path) => {
+          const flat = path.map((p) => String(p)).join('\x00');
+          if (!knownErrorPaths.has(flat)) knownErrorPaths.set(flat, [...path]);
+        },
+        [], null, mustVisit, true
+      );
+      n += 1;
     }  // end rotation loop
   }
   return n;

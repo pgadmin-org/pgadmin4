@@ -32,11 +32,11 @@ import { sessDataReducer, SCHEMA_STATE_ACTIONS } from
 // already-installed global spy so we can call .mock methods.
 let errSpy;
 beforeEach(() => {
-  // eslint-disable-next-line no-undef
+   
   errSpy = console.error;
 });
 afterEach(() => {
-  // eslint-disable-next-line no-undef
+   
   console.error.mockClear();
 });
 

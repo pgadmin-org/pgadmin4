@@ -64,7 +64,7 @@ const addKnownErrorPath = (map, flat, path) => {
     count('SchemaState.knownErrorPaths.evictions');
     if (process.env.__CANARY_BUILD__ && !map.__capWarned) {
       map.__capWarned = true;
-      // eslint-disable-next-line no-console
+       
       console.warn(
         '[schemaview] _knownErrorPaths LRU cap '
         + `(${KNOWN_ERROR_PATHS_CAP}) hit; oldest error paths are `

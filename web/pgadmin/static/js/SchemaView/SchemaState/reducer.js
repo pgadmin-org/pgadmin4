@@ -82,7 +82,7 @@ export const sessDataReducer = (state, action) => {
     // CI log; an error breaks the test, which is the whole point of
     // the guard. In production this is dead-code-eliminated via the
     // `process.env.__CANARY_BUILD__` gate.
-    // eslint-disable-next-line no-console
+     
     console.error(
       `[schemaview] dispatcher bypass: action type "${action.type}" `
       + 'reached the reducer without going through '

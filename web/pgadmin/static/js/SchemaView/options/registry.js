@@ -104,7 +104,7 @@ export function schemaOptionsEvalulator(opts) {
     // gets eliminated wholesale.
     __evalDepth++;
     try {
-      // eslint-disable-next-line global-require
+       
       const { runOptionsCanary } = require('./canary');
       return measure(
         'schemaOptionsEvalulator', () => runOptionsCanary(opts)

@@ -44,6 +44,22 @@ jobs:
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
+      # ubuntu-22.04 runners come with an older PostgreSQL pre-
+      # installed. Dropping its cluster + removing the package
+      # before installing PG 16 ensures /etc/postgresql/16/main/
+      # is created cleanly by the new install (without this step,
+      # the pg_hba.conf path doesn't exist and the next step fails).
+      - name: Uninstall any pre-installed PostgreSQL
+        run: |
+          if [ -n "$(ls /etc/postgresql/*/*/postgresql.conf 2>/dev/null)" ]; then
+            installed_pg_version=$( pg_config --version | cut -d ' ' -f 2 | cut -d '.' -f 1 )
+            echo "Found pre-installed PostgreSQL $installed_pg_version; removing"
+            if [ "$installed_pg_version" != "16" ]; then
+              sudo pg_dropcluster $installed_pg_version main --stop || true
+              sudo apt-get -y remove "postgresql-${installed_pg_version}" || true
+            fi
+          fi
+
       - name: Install PostgreSQL 16
         run: |
           sudo apt update
