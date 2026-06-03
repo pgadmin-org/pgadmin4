@@ -19,7 +19,6 @@
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
-import { SchemaState } from '../../../pgadmin/static/js/SchemaView/SchemaState';
 import { FIELD_OPTIONS } from '../../../pgadmin/static/js/SchemaView/options';
 import { useSchemaState } from '../../../pgadmin/static/js/SchemaView/hooks/useSchemaState';
 
@@ -79,24 +78,6 @@ class FourCollSchema extends BaseUISchema {
     ];
   }
 }
-
-// Drive validate() the way useSchemaState does, but expose the
-// __pendingChangedPaths plumbing directly so tests can simulate
-// React-batched dispatches.
-const buildState = () => {
-  const schema = new TwoCollSchema();
-  schema.top = schema;
-  const state = new SchemaState(
-    schema, () => ({ coll_a: [], coll_b: [] }),
-    false, () => {}, { mode: 'create' }, '',
-  );
-  state.setReady(true);
-  state.viewHelperProps = { mode: 'create', incrementalOptions: true };
-  // Mimic useSchemaState's initial mount option seed.
-  state.data = { coll_a: [], coll_b: [] };
-  state.updateOptions();
-  return state;
-};
 
 // Render-time harness: exercises useSchemaState end-to-end, including
 // the dispatcher that hands paths to validate. This is the only way to

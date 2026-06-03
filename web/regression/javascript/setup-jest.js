@@ -42,7 +42,7 @@ global.define = (...args) => {
   // always the last arg.
   const factory = args[args.length - 1];
   if (typeof factory === 'function') {
-    try { factory(); } catch (_e) { /* swallow registration errors */ }
+    try { factory(); } catch { /* swallow registration errors */ }
   }
 };
 global.define.amd = false;  // some modules check amd capability
@@ -92,7 +92,7 @@ try {
   if (typeof m._resetMutationCounter === 'function') {
     _resetAuditMutationCounter = m._resetMutationCounter;
   }
-} catch (_e) { /* audit harness not in this worker's tree — fine */ }
+} catch { /* audit harness not in this worker's tree — fine */ }
 
 global.beforeEach(() => {
   console.error.mockClear();

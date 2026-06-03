@@ -168,7 +168,7 @@ const defaultReport = (report) => {
           paths: report.diffs.map((d) => d.path.join('.')),
         }),
       );
-    } catch (_e) {
+    } catch {
       // sendBeacon throws synchronously on payload-too-large; swallow.
     }
     return;

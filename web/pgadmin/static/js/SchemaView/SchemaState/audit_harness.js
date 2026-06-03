@@ -235,7 +235,7 @@ const tryInstantiate = (SchemaClass) => {
       // guarantees the constructor ran.
       void instance.fields;
       return { ok: true, instance };
-    } catch (_e) {
+    } catch {
       // Fall through to generic attempts.
     }
   }
@@ -424,7 +424,7 @@ const seedCollections = (schema, sessData) => {
         seeded.push(row);
       }
       sessData[field.id] = seeded;
-    } catch (_e) {
+    } catch {
       // Inner schema needs more setup than we can synthesize.
       // Leave the field empty — collection-cell mutations for this
       // field will be skipped below.
@@ -632,7 +632,7 @@ const auditCollectionStructure = (schema, sessData, knownErrorPaths, mode = 'edi
       try {
         newRow = inner.getNewData({});
         createOk = true;
-      } catch (_e) {
+      } catch {
         // Inner schema needs setup we can't synthesize. Skip; the
         // existing cell-mutation pass already covered as much of
         // this collection as it could.
@@ -778,7 +778,7 @@ const auditSequence = (schema, sessData, knownErrorPaths, mode = 'edit') => {
       const rows2 = [...(cur[collections[0].id] || []), newRow2];
       fire([collections[0].id], { ...cur, [collections[0].id]: rows2 });
       n++;
-    } catch (_e) { /* collection setup mismatch — skip */ }
+    } catch { /* collection setup mismatch — skip */ }
   }
 
   // 5. type into row 0 of a DIFFERENT collection
@@ -1006,7 +1006,7 @@ const applyMutation = (schema, sessData, path) => {
       try {
         return { ...sessData,
           [path[0]]: [...(sessData[path[0]] || []), field.schema.getNewData({})] };
-      } catch (_e) { return null; }
+      } catch { return null; }
     }
     return null;
   }
@@ -1167,11 +1167,10 @@ export const fuzzBatchAgainst = (SchemaClass, mode, pathIndices) => {
     }
   }
 
-  const candidates = collectBatchCombos(schema, sessData);
-  // collectBatchCombos returns k-combinations; for the fuzzer we
-  // want flat candidates. Pull from the schema's individual paths
-  // (the same way collectBatchCombos's internal candidate list
-  // does), bounded by MAX_CANDIDATES.
+  // For the fuzzer we want flat candidate paths (not the
+  // k-combinations collectBatchCombos returns). Pull from the
+  // schema's individual paths the same way collectBatchCombos's
+  // internal candidate list does, bounded by MAX_CANDIDATES.
   const flat = [];
   for (const field of schema.fields || []) {
     if (isScalarField(field, schema)) {
@@ -1261,10 +1260,13 @@ export const fuzzBatchAgainst = (SchemaClass, mode, pathIndices) => {
       },
       [], null, null, true,
     );
-  } catch (_e) {
+  } catch (e) {
     // Initial discovery failure — fuzzer treats as harness skip.
+    // Include the underlying message so a shrunk fast-check
+    // counterexample names WHY the schema's initial validate
+    // failed, not just THAT it failed.
     return { ok: true, skipped: true,
-      reason: 'initial validate threw',
+      reason: `initial validate threw: ${e?.message?.split('\n')[0] || e}`,
       candidates: flat.length };
   }
 
@@ -1447,7 +1449,7 @@ export const auditSchema = (SchemaClass, { mode = 'edit' } = {}) => {
       },
       [], null, null, true
     );
-  } catch (_e) {
+  } catch {
     // Initial discovery failure (schema needs args we can't supply).
     // The dispatch loop will catch the same error and report skip.
   }
