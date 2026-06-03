@@ -252,7 +252,12 @@ class ServerGroup(db.Model, UserScopedMixin):
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
 
-    servers = db.relationship('Server', backref='servergroup', lazy='select')
+    servers = db.relationship(
+        'Server',
+        back_populates='servergroup',
+        lazy='select',
+        cascade=CASCADE_STR
+    )
 
     @property
     def serialize(self):
@@ -295,9 +300,9 @@ class Server(db.Model, UserScopedMixin):
     role = db.Column(db.String(64), nullable=True)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
-    servers = db.relationship(
+    servergroup = db.relationship(
         'ServerGroup',
-        backref=db.backref('server', cascade=CASCADE_STR),
+        back_populates='servers',
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
