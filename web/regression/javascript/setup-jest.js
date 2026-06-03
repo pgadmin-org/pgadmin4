@@ -29,6 +29,24 @@ if (typeof global.structuredClone !== 'function') {
 
 global.__webpack_public_path__ = '';
 
+// AMD-style `define()` calls slip into a handful of pgAdmin browser
+// modules (role.js registers itself with `define('pgadmin.node.role',
+// [...], cb)`). Jest's CommonJS-ish loader doesn't provide it, so any
+// import chain that touches these modules ReferenceErrors out — the
+// registered_schemas_audit harness hits this on roleReassign.js. A
+// no-op stub is enough: the audit doesn't care about side effects of
+// the registration, only that the module can be imported.
+global.define = (...args) => {
+  // AMD signatures: define(factory), define(deps, factory),
+  // define(name, factory), define(name, deps, factory). The factory is
+  // always the last arg.
+  const factory = args[args.length - 1];
+  if (typeof factory === 'function') {
+    try { factory(); } catch (_e) { /* swallow registration errors */ }
+  }
+};
+global.define.amd = false;  // some modules check amd capability
+
 global.matchMedia =  (query)=>({
   matches: false,
   media: query,

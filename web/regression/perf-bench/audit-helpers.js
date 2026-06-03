@@ -177,10 +177,199 @@ export const ensureServerRegistered = async (page, opts = {}) => {
   return name;
 };
 
+// Navigate to a catalog node (coll-table / coll-function / etc.) by
+// driving pgAdmin's JS tree API directly via page.evaluate. This
+// completely bypasses DOM-based tree expansion (which is brittle
+// against react-aspen virtualization + inconsistent click semantics
+// per tree level — see project-real-table-bench-tree-nav memory).
+//
+// Returns the tree-node descriptor (a string id that can be passed
+// to openCreateDialogViaApi).
+export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
+  const db = database || process.env.PGDATABASE || 'postgres';
+  // pgAdmin's tree types follow a `coll-X` / `X` pattern: the
+  // collection (Tables, Functions, etc.) is `coll-table`; individual
+  // items are `table`. For navigating to the CATEGORY, we want the
+  // collection type.
+  const targetType = ({
+    Tables: 'coll-table',
+    Functions: 'coll-function',
+    Views: 'coll-view',
+  })[catalog] || `coll-${catalog.toLowerCase()}`;
+
+  // Walk the aspen tree (the actual virtualized tree, accessible via
+  // `tree.tree.getModel().root`). Each tree level is an aspen
+  // Directory with `.children` and `getMetadata('data')` returning
+  // the pgAdmin node data. tree.open() expects an aspen FileEntry.
+  await page.evaluate(async ({ targetType, db }) => {
+    const tree = window.pgAdmin.Browser.tree;
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    const itemData = (it) => {
+      // aspen FileEntry stores metadata via getMetadata; ManageTreeNodes
+      // TreeNode stores it on `.data` or `.metadata.data`. Try both.
+      if (typeof it.getMetadata === 'function') {
+        return it.getMetadata('data');
+      }
+      return it.data || it._metadata?.data || null;
+    };
+
+    const childByPredicate = (node, pred) => {
+      for (const c of node.children || []) {
+        if (pred(itemData(c), c)) return c;
+      }
+      return null;
+    };
+
+    const openAndFind = async (parent, pred, label) => {
+      await tree.open(parent);
+      for (let i = 0; i < 50; i++) {
+        const found = childByPredicate(parent, pred);
+        if (found) return found;
+        await wait(200);
+      }
+      throw new Error(
+        `navigate: ${label} not found; available: `
+        + (parent.children || []).map((c) => {
+          const d = itemData(c);
+          return (d?._type || '?') + '/' + (d?.label || '?');
+        }).join(', ')
+      );
+    };
+
+    // Start from aspen's root (the actual rendered tree).
+    let node = tree.tree.getModel().root;
+    node = await openAndFind(
+      node, (d) => d?._type === 'server_group', 'server_group'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'server', 'server'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'coll-database', 'coll-database'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'database' && d?.label === db, db
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'coll-schema', 'coll-schema'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'schema' && d?.label === 'public', 'public'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === targetType, targetType
+    );
+    // Select the catalog node so menu actions target it.
+    await tree.select(node, true);
+  }, { targetType, db });
+};
+
+// Trigger a "Create > X" dialog programmatically by invoking the
+// node module's show_obj_properties callback with action='create'.
+// Skips right-click + szh-menu navigation entirely.
+export const openCreateDialogViaApi = async (page, nodeType) => {
+  await page.evaluate((nodeType) => {
+    const tree = window.pgAdmin.Browser.tree;
+    const selected = tree.selected();
+    if (!selected) throw new Error('openCreateDialogViaApi: no node selected');
+    const nodeModule = window.pgAdmin.Browser.Nodes[nodeType];
+    if (!nodeModule) throw new Error(
+      `openCreateDialogViaApi: no node module for "${nodeType}"`
+    );
+    nodeModule.callbacks.show_obj_properties.call(
+      nodeModule, { action: 'create' }, selected
+    );
+  }, nodeType);
+};
+
+// Pick the first child of the currently-selected collection node
+// (e.g. "Tables" -> first table) and open its Properties dialog
+// via the show_obj_properties callback with action='edit'.
+//
+// Edit-mode dialogs follow a different code path from create:
+//   - initialise(force=true) fetches the existing record via REST
+//   - sessData lands with the persisted values + an idAttribute oid
+//   - isNew(state) returns false → closures take the edit branches
+// This exercises the half of every schema that create-mode never
+// touches.
+//
+// Returns the picked child's label so the caller can identify what
+// got opened in test output.
+export const openEditDialogViaApi = async (page, nodeType) => {
+  return await page.evaluate(async (nodeType) => {
+    const tree = window.pgAdmin.Browser.tree;
+    const selected = tree.selected();
+    if (!selected) throw new Error('openEditDialogViaApi: no node selected');
+    const nodeModule = window.pgAdmin.Browser.Nodes[nodeType];
+    if (!nodeModule) throw new Error(
+      `openEditDialogViaApi: no node module for "${nodeType}"`
+    );
+
+    // Expand the collection node so its children populate from REST.
+    // tree.open() is idempotent for already-expanded directories.
+    await tree.open(selected);
+
+    // Find a child whose _type matches the target nodeType. Tree
+    // children are FileEntry instances; getMetadata('data') returns
+    // the node's data including _type.
+    const aspen = tree.tree.getModel();
+    const fileEntry = aspen.root.children.find(
+      (n) => n.path === selected.path
+    ) || (() => {
+      // Walk the tree to find selected — for nested catalog nodes.
+      const walk = (n) => {
+        if (n.path === selected.path) return n;
+        for (const c of (n.children || [])) {
+          const found = walk(c);
+          if (found) return found;
+        }
+        return null;
+      };
+      return walk(aspen.root);
+    })();
+    if (!fileEntry) throw new Error('openEditDialogViaApi: file entry for selected not found');
+
+    // Wait briefly for children to materialise after open(). The
+    // REST call usually completes in <500ms; poll for a few hundred
+    // ms before giving up.
+    let child = null;
+    for (let i = 0; i < 20; i++) {
+      const children = fileEntry.children || [];
+      child = children.find((c) => {
+        const meta = c.getMetadata && c.getMetadata('data');
+        return meta && meta._type === nodeType;
+      });
+      if (child) break;
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    if (!child) {
+      throw new Error(
+        `openEditDialogViaApi: no child of type "${nodeType}" found `
+        + `under selected node — does the database have any?`
+      );
+    }
+
+    // Select the child so the node module's callback fires against
+    // it (show_obj_properties reads the currently-selected item).
+    await tree.select(child);
+    nodeModule.callbacks.show_obj_properties.call(
+      nodeModule, { action: 'edit' }, child
+    );
+
+    const data = child.getMetadata && child.getMetadata('data');
+    return data ? data.label : 'unknown';
+  }, nodeType);
+};
+
 // Drill into the tree from a connected server to reach a target
 // catalog node (Tables / Functions / Views / etc.). Returns once
 // the catalog node is visible. Tree virtualization makes deep
 // navigation brittle; failure here surfaces as a locator timeout.
+//
+// LEGACY DOM-based version. Kept for the Register Server test that
+// doesn't need deep navigation. Use navigateToCatalogNodeViaApi for
+// anything that needs Tables / Functions / etc.
 export const navigateToCatalogNode = async (page, serverName, catalog, database) => {
   const db = database || process.env.PGDATABASE || 'postgres';
 

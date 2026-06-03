@@ -25,6 +25,11 @@ describe('sessDataReducer — deferred queue accumulation', () => {
   // we can identify which actions produced which items.
   const makeDefDepChange = (tag) =>
     (_currPath, _newState, _action) => [{ tag, promise: Promise.resolve(() => ({})) }];
+
+  // Reducer-level tests dispatch directly; in production
+  // sessDispatchWithListener stamps __viaListener so the reducer's
+  // bypass guard stays silent. Tests must do the same.
+  const VIA = { __viaListener: true };
   // Note: the reducer's getDeferredDepChange (top of reducer.js) calls
   // action.deferredDepChange(currPath, newState, {type, path, value,
   // depChange, oldState}). The return value is what becomes
@@ -33,7 +38,7 @@ describe('sessDataReducer — deferred queue accumulation', () => {
 
   test('SET_VALUE installs the deferred list in __deferred__', () => {
     const action = {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['name'], value: 'a',
       deferredDepChange: makeDefDepChange('first'),
     };
@@ -46,14 +51,14 @@ describe('sessDataReducer — deferred queue accumulation', () => {
     // Simulate two synchronous SET_VALUEs in the same React batch: the
     // first leaves a deferred item; the second must preserve it.
     const after1 = sessDataReducer(initial, {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['name'], value: 'a',
       deferredDepChange: makeDefDepChange('first'),
     });
     expect(after1.__deferred__).toHaveLength(1);
 
     const after2 = sessDataReducer(after1, {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['other'], value: 'b',
       deferredDepChange: makeDefDepChange('second'),
     });
@@ -63,7 +68,7 @@ describe('sessDataReducer — deferred queue accumulation', () => {
 
   test('SET_VALUE with no deferredDepChange leaves the existing queue alone', () => {
     const after1 = sessDataReducer(initial, {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['name'], value: 'a',
       deferredDepChange: makeDefDepChange('first'),
     });
@@ -71,7 +76,7 @@ describe('sessDataReducer — deferred queue accumulation', () => {
 
     // No deferredDepChange — should not clobber the queue.
     const after2 = sessDataReducer(after1, {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['other'], value: 'b',
     });
     expect(after2.__deferred__).toHaveLength(1);
@@ -80,7 +85,7 @@ describe('sessDataReducer — deferred queue accumulation', () => {
 
   test('CLEAR_DEFERRED_QUEUE empties __deferred__', () => {
     const after1 = sessDataReducer(initial, {
-      type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+      type: SCHEMA_STATE_ACTIONS.SET_VALUE, ...VIA,
       path: ['name'], value: 'a',
       deferredDepChange: makeDefDepChange('first'),
     });

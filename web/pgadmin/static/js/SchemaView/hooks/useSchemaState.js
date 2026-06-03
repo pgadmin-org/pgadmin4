@@ -117,13 +117,32 @@ export const useSchemaState = ({
       ...action,
       depChange: (...args) => state.getDepChange(...args),
       deferredDepChange: (...args) => state.getDeferredDepChange(...args),
+      // Sentinel for the reducer's path-action guard: any path-bearing
+      // action that reaches the reducer WITHOUT this flag was
+      // dispatched directly via sessDispatch, bypassing the
+      // changedPath accumulator. Under canary builds the reducer
+      // logs that as a warning so the bypass shows up in CI.
+      __viaListener: true,
     };
     /*
-     * Remember which path this action targets so the upcoming validate
-     * cycle can prune its options walk (incremental mode). Cleared by
-     * SchemaState.validate after consumption.
+     * Remember which paths these actions target so the upcoming validate
+     * cycle can prune its options walk (incremental mode). React batches
+     * multiple dispatches into one validate (one __changeId tick), so a
+     * single scalar would lose all but the last path — leading the
+     * incremental walker to prune rows that actually did change.
+     * Accumulate into an array; SchemaState.validate consumes it.
+     *
+     * Real triggering case: two `setUnpreparedData` calls from sibling
+     * fixedRows promises resolving in the same microtask tick (e.g.
+     * VacuumSettingsSchema's vacuum_table + vacuum_toast). One validate
+     * runs with both paths' data already in sessData.
      */
-    state.__lastChangedPath = action.path;
+    if (action.path) {
+      if (!Array.isArray(state.__pendingChangedPaths)) {
+        state.__pendingChangedPaths = [];
+      }
+      state.__pendingChangedPaths.push(action.path);
+    }
     /*
      * All the session changes coming before init should be queued up.
      * They will be processed later when form is ready.
@@ -191,7 +210,14 @@ export const useSchemaState = ({
       type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
     });
 
-    drainDeferredQueue(items, sessDispatch);
+    // Route the drain's DEFERRED_DEPCHANGE dispatches through the
+    // listener wrapper so they (a) carry the __viaListener sentinel
+    // the reducer's bypass guard expects and (b) push their paths
+    // into __pendingChangedPaths so the next validate's mustVisit
+    // includes them. Pre-fix, the drain called sessDispatch directly
+    // — every deferred resolve tripped the bypass guard and
+    // silently skipped the accumulator.
+    drainDeferredQueue(items, sessDispatchWithListener);
     // Depend on the array reference rather than its length. With React
     // automatic batching the queue's length can round-trip through 0 in
     // the same commit (CLEAR followed by a fresh APPEND), and a

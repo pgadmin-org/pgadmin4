@@ -111,7 +111,14 @@ describe('schema registry discovery', () => {
 // incremental walker can be turned on globally.
 const KNOWN_DIVERGING = new Set([]);
 
-describe('audit harness — registered schemas', () => {
+// Modes the audit runs every schema in. The walker's
+// `isModeSupportedByField` filters fields by `field.mode`, so
+// create-only and edit-only fields exercise different code paths.
+// Running both modes per schema catches divergences that only
+// manifest in one branch.
+const MODES = ['edit', 'create'];
+
+describe.each(MODES)('audit harness — registered schemas [%s mode]', (mode) => {
 
   test.each(schemaNames)('%s', (name) => {
     const SchemaClass = getRegisteredSchemas().get(name);
@@ -119,7 +126,7 @@ describe('audit harness — registered schemas', () => {
 
     let err = null;
     let result = null;
-    try { result = auditSchema(SchemaClass); }
+    try { result = auditSchema(SchemaClass, { mode }); }
     catch (e) { err = e; }
 
     if (KNOWN_DIVERGING.has(name)) {
@@ -136,7 +143,7 @@ describe('audit harness — registered schemas', () => {
       // Harness limitation, not a walker bug. Visible in CI logs so
       // the SKIP list can be shrunk by adding fixtures, but does
       // not fail the test.
-      console.warn(`SKIP ${name}: ${result.skipReason}`);
+      console.warn(`SKIP [${mode}] ${name}: ${result.skipReason}`);
       return;
     }
     expect(result.dispatches).toBeGreaterThanOrEqual(0);

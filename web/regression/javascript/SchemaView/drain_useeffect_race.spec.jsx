@@ -57,6 +57,10 @@ Harness.displayName = 'Harness';
 const makeAction = (path, value, tag) => ({
   type: SCHEMA_STATE_ACTIONS.SET_VALUE,
   path, value,
+  // The reducer's dispatcher-bypass guard fires console.error on
+  // path-bearing actions that lack this sentinel. Production sets it
+  // via sessDispatchWithListener; reducer-level unit tests must too.
+  __viaListener: true,
   // The reducer reads `action.deferredDepChange` to populate the queue;
   // we stub it to return a single tagged item per dispatch.
   deferredDepChange: () => [{

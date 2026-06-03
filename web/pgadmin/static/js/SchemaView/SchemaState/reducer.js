@@ -46,9 +46,54 @@ const getDeferredDepChange = (currPath, newState, oldState, action) => {
  * The path for key1 is '[key1]'.
  * The state starts with path '[]'.
  */
+// Action types that carry a `path` and must therefore be dispatched
+// through useSchemaState.sessDispatchWithListener (so the
+// __pendingChangedPaths accumulator catches them). INIT and
+// CLEAR_DEFERRED_QUEUE are exempt — INIT resets everything (so a
+// full walk is the right next move anyway), and CLEAR_DEFERRED_QUEUE
+// is internal plumbing.
+const PATH_BEARING_ACTIONS = new Set([
+  SCHEMA_STATE_ACTIONS.SET_VALUE,
+  SCHEMA_STATE_ACTIONS.ADD_ROW,
+  SCHEMA_STATE_ACTIONS.DELETE_ROW,
+  SCHEMA_STATE_ACTIONS.MOVE_ROW,
+  SCHEMA_STATE_ACTIONS.BULK_UPDATE,
+  SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
+]);
+
 export const sessDataReducer = (state, action) => {
   const reducerStart = performance.now();
   const label = `reducer.${action.type}`;
+
+  // Bypass detection (canary builds only — substituted to literal
+  // `false` in production, so the whole `if` tree-shakes out).
+  // If a path-bearing action arrives without the __viaListener
+  // sentinel, somebody added a sessDispatch call outside
+  // sessDispatchWithListener — they need to switch to the listener
+  // path so changedPath joins the accumulator, otherwise the
+  // incremental walker silently falls back to a full walk for that
+  // dispatch and any pending paths are processed without it.
+  if (process.env.__CANARY_BUILD__
+      && PATH_BEARING_ACTIONS.has(action.type)
+      && !action.__viaListener) {
+    // console.error (not warn) so setup-jest's afterEach assertion
+    // `expect(console.error).not.toHaveBeenCalled()` fails the suite
+    // when a bypass slips in. A warning would be drowned in a noisy
+    // CI log; an error breaks the test, which is the whole point of
+    // the guard. In production this is dead-code-eliminated via the
+    // `process.env.__CANARY_BUILD__` gate.
+    // eslint-disable-next-line no-console
+    console.error(
+      `[schemaview] dispatcher bypass: action type "${action.type}" `
+      + 'reached the reducer without going through '
+      + 'sessDispatchWithListener. The incremental walker will run as '
+      + 'a full walk for this commit; if multiple paths batch, the '
+      + 'accumulator will miss this one. Route the dispatch through '
+      + '`dataDispatch` (the listener-wrapped one returned by '
+      + 'useSchemaState) instead of a raw sessDispatch.',
+      { path: action.path, type: action.type }
+    );
+  }
 
   const cloneStart = performance.now();
   let data = _.cloneDeep(state);

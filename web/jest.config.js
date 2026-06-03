@@ -4,6 +4,15 @@ const webpackAliasToJestModules = ()=>{
   const ret = {
     '\\.svg\\?svgr$': '<rootDir>/regression/javascript/__mocks__/svg.js',
     'react-dom/server': 'react-dom/server.edge',
+    // react-data-grid + react-dnd ship ESM-only; babel-jest can't
+    // transform them in place. Route to local mocks so the schema-ui
+    // files that import them at module load time can be audited under
+    // Jest (instead of being SKIP'd as import failures).
+    '^react-data-grid$': '<rootDir>/regression/javascript/__mocks__/react-data-grid.jsx',
+    '^react-dnd$': '<rootDir>/regression/javascript/__mocks__/react-dnd.jsx',
+    '^react-dnd-html5-backend$': '<rootDir>/regression/javascript/__mocks__/react-dnd-html5-backend.js',
+    '^react-resize-detector$': '<rootDir>/regression/javascript/__mocks__/react-resize-detector.jsx',
+    '^marked$': '<rootDir>/regression/javascript/__mocks__/marked.js',
   };
   Object.keys(webpackShimAlias).forEach((an)=>{
     // eg - sources: ./pgadmin/static/js/ to '^sources/(.*)$': '<rootDir>/pgadmin/static/js/$1'

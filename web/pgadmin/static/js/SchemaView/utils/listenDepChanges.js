@@ -87,11 +87,22 @@ export const listenDepChanges = (
         // the exact accesspath.
         let source = _.isArray(dep) ? dep : parentPath.concat(dep);
 
-        if (field.depChange || field.deferredDepChange) {
-          schemaState.addDepListener(
-            source, accessPath, field.depChange, field.deferredDepChange
-          );
-        }
+        // Register a dep listener for EVERY declared `dep`, even when
+        // the field has no `depChange` callback. The listener body is
+        // only fired when `.callback` is set (see DepListener.getDepChange),
+        // so the no-callback registration is a pure record. Why we
+        // need it: the incremental option walker's
+        // `_collectDepDestsForPath` enumerates the listener registry
+        // to know which dest rows must stay in `mustVisit` when a
+        // source path changes. Without registering a listener for
+        // evaluator-only deps (fields whose `editable`/`disabled`/
+        // `visible`/`readonly` closures read a cross-row source via
+        // `obj.top.sessData.X`), the walker prunes those rows and
+        // their options go stale — the canary catches this on
+        // VacuumSettingsSchema's vacuum_table.*.value.editable.
+        schemaState.addDepListener(
+          source, accessPath, field.depChange, field.deferredDepChange
+        );
 
         if (setRefreshKey)
           schemaState.subscribe(

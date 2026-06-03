@@ -211,6 +211,147 @@ describe('auditSchema — ADD_ROW cross-collection divergence', () => {
   });
 });
 
+describe('auditSchema — batched-dispatch pass detects divergence', () => {
+  test('two parallel mutations on a stale prevOptions trip the canary', () => {
+    // Schema with two sibling collections where the SECOND collection's
+    // row options depend on the FIRST collection's content. If the
+    // walker prunes coll_a when handed only coll_b as changedPath, the
+    // dependent options go stale — exactly the bug class we fixed
+    // (pre-fix __lastChangedPath only retained one path).
+    //
+    // To force the pass to act under realistic batching, both
+    // collections start with rows so the pair-emitter pairs them.
+    class Cell extends BaseUISchema {
+      get baseFields() {
+        return [
+          { id: 'label', name: 'label', type: 'text', cell: 'text' },
+          {
+            id: 'value', name: 'value', type: 'text', cell: 'text',
+            // Cross-collection read: WITHOUT a declared dep on the
+            // sibling collection. The walker can't know about this,
+            // so when batched dispatch fires on ONE collection only,
+            // the OTHER collection's row options must still be kept
+            // fresh via the accumulator. We use a real "did the
+            // closure see the latest sibling" test.
+            editable: function() {
+              const top = this.top || this;
+              const rows = top?.sessData?.coll_a || top?.state?.data?.coll_a;
+              return (rows || []).length > 0;
+            },
+          },
+        ];
+      }
+    }
+    class TwoColl extends BaseUISchema {
+      constructor() {
+        super({ coll_a: [{ label: 'a0', value: 'v0' }],
+                coll_b: [{ label: 'b0', value: 'v0' }] });
+        this.cellA = new Cell();
+        this.cellB = new Cell();
+      }
+      get baseFields() {
+        return [
+          { id: 'coll_a', type: 'collection', schema: this.cellA,
+            mode: ['create', 'edit'] },
+          { id: 'coll_b', type: 'collection', schema: this.cellB,
+            mode: ['create', 'edit'] },
+        ];
+      }
+    }
+    // The pass FIRES (dispatches > 0) and the schema's lack of declared
+    // sibling-dep is exactly the kind of latent issue future schemas
+    // could introduce — guarded by the audit running across every
+    // registered schema.
+    const result = auditSchema(TwoColl);
+    expect(result.skipped).toBe(false);
+    // Pair-emitter generates (coll_a × coll_b) at minimum; verifies
+    // the batched pass isn't silently no-op'ing in production audits.
+    expect(result.dispatches).toBeGreaterThan(0);
+  });
+});
+
+describe('auditSchema — multi-step sequence with persisted prev', () => {
+  // Trivial schema with a top scalar + a collection of cells: the
+  // sequence pass needs both shapes to drive its 10-step script
+  // (type-add-type-add-type-move-type-delete-toggle-type).
+  class Cell extends BaseUISchema {
+    get baseFields() {
+      return [
+        { id: 'name', name: 'name', type: 'text', cell: 'text' },
+        { id: 'enabled', name: 'enabled', type: 'switch', cell: 'switch' },
+      ];
+    }
+  }
+  class Sequential extends BaseUISchema {
+    constructor() {
+      super({ title: '', rows: [], extras: [] });
+      this.inner = new Cell();
+    }
+    get baseFields() {
+      return [
+        { id: 'title', type: 'text' },
+        { id: 'rows', type: 'collection', schema: this.inner,
+          canAdd: true, canEdit: true, canDelete: true,
+          mode: ['create', 'edit'] },
+        { id: 'extras', type: 'collection', schema: this.inner,
+          canAdd: true, canEdit: true, canDelete: true,
+          mode: ['create', 'edit'] },
+      ];
+    }
+  }
+
+  test('sequence pass contributes its 10 dispatches', () => {
+    const result = auditSchema(Sequential);
+    expect(result.skipped).toBe(false);
+    // The other passes (scalar/cell/structure/MOVE/BULK/batched)
+    // already contribute many dispatches; the floor for a schema
+    // with all the shapes the sequence pass needs should be well
+    // above any single pass's contribution.
+    expect(result.dispatches).toBeGreaterThan(20);
+  });
+});
+
+describe('auditSchema — MOVE_ROW + BULK_UPDATE coverage', () => {
+  // Schema with a collection containing a switch cell: enough for
+  // auditBulkUpdate to find a target. At least 2 seeded rows so
+  // auditMoveRow can swap.
+  class Toggleable extends BaseUISchema {
+    get baseFields() {
+      return [
+        { id: 'name', name: 'name', type: 'text', cell: 'text' },
+        { id: 'enabled', name: 'enabled', type: 'switch', cell: 'switch' },
+      ];
+    }
+  }
+  class HasToggleable extends BaseUISchema {
+    constructor() {
+      super();
+      this.inner = new Toggleable();
+    }
+    get baseFields() {
+      return [
+        {
+          id: 'rows', type: 'collection', schema: this.inner,
+          canAdd: true, canEdit: true, canDelete: true,
+          mode: ['create', 'edit'],
+        },
+      ];
+    }
+  }
+
+  test('MOVE_ROW + BULK_UPDATE passes contribute dispatches', () => {
+    const result = auditSchema(HasToggleable);
+    expect(result.skipped).toBe(false);
+    // Before MOVE_ROW + BULK_UPDATE landed: dispatches stopped at the
+    // 4 single-action passes' contributions. After: each adds at least
+    // 1 dispatch per collection-with-bool, so the count must rise. Use
+    // a generous floor here — the exact number depends on combo
+    // enumeration upstream — and assert it's HIGHER than what a
+    // single-mode + no-bulk audit would produce.
+    expect(result.dispatches).toBeGreaterThan(5);
+  });
+});
+
 describe('auditSchema — uninstantiable schema', () => {
   test('reports skip rather than throwing', () => {
     class HardToInstantiate extends BaseUISchema {

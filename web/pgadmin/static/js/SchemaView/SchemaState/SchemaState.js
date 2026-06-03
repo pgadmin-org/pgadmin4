@@ -35,6 +35,47 @@ export const LOADING_STATE = {
 
 const PATH_SEPARATOR = '/';
 
+// Soft cap on the _knownErrorPaths LRU. Empirically a complex form
+// (TableSchema in edit mode w/ 100 columns, each with 4 sub-fields)
+// touches ~400 error paths over a long session; 1024 leaves comfortable
+// headroom while making the worst-case mustVisit traversal bounded.
+const KNOWN_ERROR_PATHS_CAP = 1024;
+
+// `map.__capWarned` is set the first time eviction fires for a given
+// tracker so the warn doesn't repeat for the same dialog. Per-Map
+// (not module-level) so each new SchemaState resets the flag — a
+// long-lived ERD session can still see the warn when a freshly
+// opened sub-dialog hits the cap.
+const addKnownErrorPath = (map, flat, path) => {
+  if (map.has(flat)) {
+    // Refresh recency: delete + re-insert so this entry moves to
+    // the end of the insertion-order traversal (used as LRU).
+    map.delete(flat);
+  } else if (map.size >= KNOWN_ERROR_PATHS_CAP) {
+    // Evict the oldest entry. JS Map iterates in insertion order.
+    const oldest = map.keys().next().value;
+    if (oldest !== undefined) map.delete(oldest);
+    // Telemetry: surface via the perf-counter infrastructure so the
+    // perf overlay shows total evictions per session, and emit a
+    // one-shot console.warn under canary builds so a developer who
+    // hits the cap actually notices. If a real session hits this
+    // repeatedly, the cap may need raising; without a signal there's
+    // no way to know.
+    count('SchemaState.knownErrorPaths.evictions');
+    if (process.env.__CANARY_BUILD__ && !map.__capWarned) {
+      map.__capWarned = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[schemaview] _knownErrorPaths LRU cap '
+        + `(${KNOWN_ERROR_PATHS_CAP}) hit; oldest error paths are `
+        + 'being evicted. If the dialog is short-lived this is fine; '
+        + 'if it persists across many edits, raise the cap.'
+      );
+    }
+  }
+  map.set(flat, path);
+};
+
 export class SchemaState extends DepListener {
   constructor(
     schema, getInitData, immutableData, onDataChange, viewHelperProps,
@@ -94,6 +135,15 @@ export class SchemaState extends DepListener {
     // mustVisit. Entries are kept across validates — even if a row
     // clears its error, leaving it in the set means future dispatches
     // re-check it cheaply, which catches re-errors without a full walk.
+    //
+    // Bounded by KNOWN_ERROR_PATHS_CAP so long-lived dialogs (ERD,
+    // schema diff, etc.) don't leak. JS Map preserves insertion order,
+    // so the oldest entry is keys().next().value — evict that when
+    // we'd exceed the cap. Eviction is safe: a dropped path either
+    // (a) is no longer dirty, in which case the next full walk picks
+    // it up anyway, or (b) is still dirty, in which case the user's
+    // next dispatch on that path re-adds it via the changedPath
+    // route.
     this._knownErrorPaths = new Map();
 
     this._id = Date.now();
@@ -161,9 +211,7 @@ export class SchemaState extends DepListener {
     // wouldn't get the row revisited under incremental mustVisit.
     if (err && Array.isArray(err.name) && err.name.length > 0) {
       const flat = err.name.map((p) => String(p)).join(PATH_SEPARATOR);
-      if (!this._knownErrorPaths.has(flat)) {
-        this._knownErrorPaths.set(flat, [...err.name]);
-      }
+      addKnownErrorPath(this._knownErrorPaths, flat, [...err.name]);
     }
     this.setState('errors', err);
   }
@@ -274,11 +322,27 @@ export class SchemaState extends DepListener {
       // callback, there is no need to validate the current data.
       if(!state.isReady) return;
 
-      // Read+consume the changedPath set by the dispatcher (if any). On
-      // initial mount / INIT / external triggers, this is undefined and
-      // both validateSchema and updateOptions fall back to a full walk.
-      const changedPath = state.__lastChangedPath;
+      // Read+consume the changedPaths set by the dispatcher. React
+      // batches multiple dispatches into one validate cycle, so we
+      // accumulate every path that landed in this batch (see
+      // useSchemaState.sessDispatchWithListener). The first path is
+      // the "primary" changedPath threaded through updateOptions; any
+      // additional paths join depDests so the walker treats them as
+      // must-visit. On initial mount / INIT / external triggers, the
+      // array is empty and both validateSchema and updateOptions fall
+      // back to a full walk.
+      const pendingPaths = Array.isArray(state.__pendingChangedPaths)
+        ? state.__pendingChangedPaths : [];
+      state.__pendingChangedPaths = [];
+      // Back-compat: existing tests and any external callers may still
+      // set the legacy single-path field. Treat it as one pending path
+      // when the accumulator is empty.
+      if (pendingPaths.length === 0 && state.__lastChangedPath) {
+        pendingPaths.push(state.__lastChangedPath);
+      }
       state.__lastChangedPath = undefined;
+      const changedPath = pendingPaths[0];
+      const extraChangedPaths = pendingPaths.slice(1);
 
       // Build the must-visit list once and share it between validateSchema
       // and updateOptions. Includes:
@@ -300,7 +364,23 @@ export class SchemaState extends DepListener {
          || (typeof window !== 'undefined' && window.__INCREMENTAL_OPTIONS__ === true))
         && Array.isArray(changedPath)
       );
-      const depDests = state._collectDepDestsForPath(changedPath);
+      // Collect depDests for the primary changedPath, then fold any
+      // additional batched paths and THEIR depDests into the same
+      // list. The walker's mustVisit is a flat union — adding entries
+      // here keeps the entire batch correctly visited even though the
+      // walker still treats `changedPath` as the primary anchor.
+      const primaryDepDests = state._collectDepDestsForPath(changedPath);
+      let depDests = primaryDepDests;
+      if (extraChangedPaths.length > 0) {
+        depDests = Array.isArray(primaryDepDests) ? [...primaryDepDests] : [];
+        for (const extra of extraChangedPaths) {
+          depDests.push(extra);
+          const extraDeps = state._collectDepDestsForPath(extra);
+          if (Array.isArray(extraDeps)) {
+            for (const d of extraDeps) depDests.push(d);
+          }
+        }
+      }
       let mustVisit = null;
       if (incremental) {
         mustVisit = [changedPath].concat(Array.isArray(depDests) ? depDests : []);
@@ -323,9 +403,7 @@ export class SchemaState extends DepListener {
         if (!message) return;
         errorsSet++;
         const flat = (path || []).map((p) => String(p)).join(PATH_SEPARATOR);
-        if (!state._knownErrorPaths.has(flat)) {
-          state._knownErrorPaths.set(flat, [...path]);
-        }
+        addKnownErrorPath(state._knownErrorPaths, flat, [...path]);
         if (!firstError) firstError = { path, message };
       }, [], null, mustVisit, true);
       count('SchemaState.validate.setErrorCalls', errorsSet);
