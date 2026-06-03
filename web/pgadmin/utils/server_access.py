@@ -51,6 +51,10 @@ def get_server(sid, only_owned=False):
     if not config.SERVER_MODE:
         return Server.query.filter_by(id=sid).first()
 
+    # Administrators can access all servers if ADMIN_CAN_SEE_ALL_SERVERS is True
+    if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
+        return Server.query.filter_by(id=sid).first()
+
     if only_owned:
         return Server.query.filter_by(
             id=sid, user_id=current_user.id).first()
@@ -64,17 +68,25 @@ def get_server(sid, only_owned=False):
         )
     ).first()
 
-    if server is not None:
-        return server
-
-    # Administrators can access all servers
-    if _is_admin():
-        return Server.query.filter_by(id=sid).first()
-
-    return None
+    return server
 
 
-def get_server_group(gid):
+def get_servers_from_group(gid, only_owned=False):
+    """Fetch servers from a group
+
+    Args:
+        gid: Server group ID.
+        only_owned: If True, only return servers owned by the current
+            user.
+    """
+    if only_owned:
+        return Server.query.filter_by(
+            servergroup_id=gid, user_id=current_user.id)
+
+    return Server.query.filter_by(servergroup_id=gid)
+
+
+def get_server_group(gid,only_owned=False):
     """Fetch a server group by ID, verifying user access.
 
     Returns the group if:
@@ -88,64 +100,52 @@ def get_server_group(gid):
     if not config.SERVER_MODE:
         return ServerGroup.query.filter_by(id=gid).first()
 
-    sg = ServerGroup.query.filter(
-        ServerGroup.id == gid,
-        or_(
-            ServerGroup.user_id == current_user.id,
-            ServerGroup.id.in_(
-                db.session.query(Server.servergroup_id).filter(
-                    Server.shared
-                )
-            )
-        )
-    ).first()
-
-    if sg is not None:
-        return sg
-
-    if _is_admin():
+    if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
         return ServerGroup.query.filter_by(id=gid).first()
 
-    return None
+    sg = get_server_groups_for_user(only_owned=only_owned).filter_by(id=gid).first()
+
+    return sg
 
 
-def get_server_groups_for_user():
+def get_server_groups_for_user(only_owned=False):
     """Return server groups visible to the current user.
 
     Includes groups owned by the user plus groups containing shared
     servers (Server.shared=True, visible to all authenticated users).
-    Administrators see all groups.
+    Administrators see all groups if ADMIN_CAN_SEE_ALL_SERVERS is True.
     """
     if not config.SERVER_MODE:
         return ServerGroup.query.filter_by(
             user_id=current_user.id
-        ).all()
-
-    if _is_admin():
-        return ServerGroup.query.all()
-
-    return ServerGroup.query.filter(
-        or_(
-            ServerGroup.user_id == current_user.id,
-            ServerGroup.id.in_(
-                db.session.query(Server.servergroup_id).filter(
-                    Server.shared
-                )
-            )
         )
-    ).all()
+
+    if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
+         return ServerGroup.query
+
+    sg = ServerGroup.query.filter(
+            ServerGroup.user_id == current_user.id
+        )
+
+    if not only_owned:
+        sg = sg.union(
+                ServerGroup.query.join(ServerGroup.servers)
+                .filter(Server.shared)
+            )
+
+    return sg
 
 
 def get_user_server_query():
     """Return a base query for servers accessible to the current user.
 
     Includes owned servers + shared servers (visible to all users).
-    Administrators see all servers.
+    Administrators see all servers if ADMIN_CAN_SEE_ALL_SERVERS is True.
     """
     if not config.SERVER_MODE:
         return Server.query
 
-    if _is_admin():
+    if _is_admin() and config.ADMIN_CAN_SEE_ALL_SERVERS:
         return Server.query
 
     return Server.query.filter(

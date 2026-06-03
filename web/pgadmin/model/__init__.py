@@ -252,6 +252,8 @@ class ServerGroup(db.Model, UserScopedMixin):
     name = db.Column(db.String(128), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'name'),)
 
+    servers = db.relationship('Server', backref='servergroup', lazy='select')
+
     @property
     def serialize(self):
         """Return object data in easily serializable format"""
