@@ -31,19 +31,27 @@ from pgadmin.utils.server_access import get_server_group, \
 
 
 def get_icon_css_class(group_id, group_user_id,
-                       default_val='icon-server_group'):
+                       default_val='icon-server_group',
+                       shared_group_ids=None):
     """
     Returns css value
     :param group_id:
     :param group_user_id:
     :param default_val:
+    :param shared_group_ids: Optional set of group IDs containing shared servers
     :return: default_val
     """
-    if (config.SERVER_MODE and
-        group_user_id != current_user.id and
-            ServerGroupModule.has_shared_server(group_id)):
-        default_val = 'icon-server_group_shared'
-        return default_val, True
+    if config.SERVER_MODE and group_user_id != current_user.id:
+        if shared_group_ids is None:
+            # Fallback to per-group check if not provided
+            has_shared = ServerGroupModule.has_shared_server(group_id)
+        else:
+            # Use pre-fetched set for O(1) membership check
+            has_shared = group_id in shared_group_ids
+        
+        if has_shared:
+            default_val = 'icon-server_group_shared'
+            return default_val, True
 
     return default_val, False
 
@@ -107,10 +115,15 @@ class ServerGroupModule(BrowserPluginModule):
         pref = Preferences.module('browser')
         hide_shared_server = pref.preference('hide_shared_server').get()
 
-        groups = ServerGroupView.get_all_server_groups().order_by("id")
+        groups = ServerGroupView.get_all_server_groups().order_by(ServerGroup.id)
+
+        # Fetch all shared server group IDs in one query to avoid N+1 queries
+        shared_group_ids = ServerGroupView.get_shared_server_group_ids(hide_shared_server)
 
         for idx, group in enumerate(groups):
-            icon_class, is_shared = get_icon_css_class(group.id, group.user_id)
+            icon_class, is_shared = get_icon_css_class(
+                group.id, group.user_id, shared_group_ids=shared_group_ids
+            )
             yield self.generate_browser_node(
                 "%d" % (group.id), None,
                 group.name,
@@ -410,6 +423,22 @@ class ServerGroupView(NodeView):
         server_groups = get_server_groups_for_user(only_owned=hide_shared_server)
 
         return server_groups
+
+    @staticmethod
+    def get_shared_server_group_ids(hide_shared_server=False):
+        """
+        Fetch all server group IDs that contain shared servers in one query.
+        Eliminates N+1 queries when checking multiple groups.
+        :param hide_shared_server: If True, filter by user ownership
+        :return: Set of server group IDs containing shared servers
+        """
+        
+        query = get_server_groups_for_user(only_owned=hide_shared_server).filter(Server.shared)
+        
+        group_ids = {row.id for row in query}
+
+        return group_ids
+
 
     @pga_login_required
     def nodes(self, gid=None):
