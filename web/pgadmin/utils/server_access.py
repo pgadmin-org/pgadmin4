@@ -79,12 +79,12 @@ def get_servers_from_group(gid, only_owned=False):
         only_owned: If True, only return servers owned by the current
             user.
     """
+    query = get_user_server_query().filter(Server.servergroup_id == gid)
+
     if only_owned:
-        return Server.query.filter_by(
-            servergroup_id=gid, user_id=current_user.id)
+        query =  query.filter(Server.user_id == current_user.id)
 
-    return Server.query.filter_by(servergroup_id=gid)
-
+    return query
 
 def get_server_group(gid,only_owned=False):
     """Fetch a server group by ID, verifying user access.
