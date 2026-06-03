@@ -735,8 +735,9 @@ def load_database_servers(input_file, selected_servers,
 
             is_shared = obj.get("Shared", None)
             username = obj.get("Username", None)
+            shared_username = obj.get("SharedUsername", None)
             if is_shared and not username:
-                username = obj.get("SharedUsername", None)
+                username = shared_username
 
             # Create the server
             new_server = Server()
@@ -805,7 +806,7 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.shared = is_shared
 
-            new_server.shared_username = obj.get("SharedUsername", None)
+            new_server.shared_username = shared_username
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
