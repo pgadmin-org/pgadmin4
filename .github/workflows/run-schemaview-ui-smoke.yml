@@ -1,0 +1,196 @@
+name: SchemaView UI smoke (Playwright)
+
+# Runs the audit-smoke.spec.js Playwright tests against a real
+# pgAdmin instance with __INCREMENTAL_AUDIT__ + __throw_on_canary
+# _divergence__ enabled. Asserts no canary divergence across 5
+# dialog flows (3 create + 2 edit).
+#
+# Synthetic Jest tests cover 87 schemas × 3 modes via the harness,
+# but only a real browser exercises the production DepListener
+# wiring + fixedRows async resolution + parallel-promise React
+# batching that triggered three of this branch's bug fixes. This
+# is the last line of defense before flipping the walker on.
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  schemaview-ui-smoke:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # PostgreSQL setup — mirrors run-feature-tests-pg.yml.
+      - name: Setup the PGDG APT repo
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+      - name: Install PostgreSQL 16
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-16
+
+      - name: Start PostgreSQL on port 5916
+        run: |
+          sudo su -c "echo 'local all all trust' > /etc/postgresql/16/main/pg_hba.conf"
+          sudo su -c "echo 'host all all 127.0.0.1/32 trust' >> /etc/postgresql/16/main/pg_hba.conf"
+          sudo sed -i "s/port = 543[0-9]/port = 5916/g" /etc/postgresql/16/main/postgresql.conf
+          sudo su - postgres -c "/usr/lib/postgresql/16/bin/postgres -D /var/lib/postgresql/16/main -c config_file=/etc/postgresql/16/main/postgresql.conf &"
+          until sudo runuser -l postgres -c "pg_isready -p 5916" 2>/dev/null; do
+            >&2 echo "Postgres unavailable - sleeping 2s"
+            sleep 2
+          done
+
+      # pgAdmin Python deps.
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # config_local.py: desktop mode, no master password, no OS
+      # secret storage — so the smoke can drive the
+      # "Connect to Server" password prompt without ever hitting
+      # an Unlock Saved Passwords modal.
+      - name: Create pgAdmin config + test paths
+        run: |
+          mkdir -p var
+          cat <<'EOF' > web/config_local.py
+          from config import *
+
+          DEBUG = True
+          SERVER_MODE = False
+          MASTER_PASSWORD_REQUIRED = False
+          USE_OS_SECRET_STORAGE = False
+          UPGRADE_CHECK_ENABLED = False
+          CONSOLE_LOG_LEVEL = DEBUG
+          FILE_LOG_LEVEL = DEBUG
+          DEFAULT_SERVER = '127.0.0.1'
+
+          import os
+          ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+          LOG_FILE = ROOT + '/var/pgadmin4.log'
+          SESSION_DB_PATH = ROOT + '/var/sessions'
+          STORAGE_DIR = ROOT + '/var/storage'
+          SQLITE_PATH = ROOT + '/var/pgadmin4.db'
+          AZURE_CREDENTIAL_CACHE_DIR = ROOT + '/var/azurecredentialcache'
+          EOF
+
+      # Pre-register a server in pgAdmin's SQLite via setup.py
+      # load-servers. The smoke spec's ensureServerRegistered helper
+      # looks for an existing server in the tree; without this it
+      # falls back to whatever's there (nothing in fresh CI).
+      - name: Seed test server in pgAdmin SQLite
+        run: |
+          cat <<'EOF' > /tmp/servers.json
+          {
+            "Servers": {
+              "1": {
+                "Name": "CI-PG16",
+                "Group": "Servers",
+                "Port": 5916,
+                "Username": "postgres",
+                "Host": "127.0.0.1",
+                "MaintenanceDB": "postgres",
+                "SSLMode": "prefer"
+              }
+            }
+          }
+          EOF
+          . venv/bin/activate
+          cd web && python setup.py load-servers /tmp/servers.json
+
+      # Yarn + Node modules.
+      - name: Upgrade yarn
+        run: |
+          yarn set version berry
+          yarn set version 4
+
+      - name: Install Node modules
+        run: |
+          cd web
+          yarn install
+
+      # CANARY build — keeps the canary IN the bundle for the audit.
+      - name: Build canary bundle
+        run: |
+          cd web
+          CANARY_BUILD=true NODE_ENV=production \
+            NODE_OPTIONS=--max-old-space-size=4096 \
+            ./node_modules/.bin/webpack --config webpack.config.js
+
+      # Start pgAdmin in the background.
+      - name: Start pgAdmin
+        run: |
+          . venv/bin/activate
+          cd web
+          nohup python pgAdmin4.py > ../var/pgadmin-stdout.log 2>&1 &
+          # Wait for /browser/ to respond.
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:5050/browser/; then
+              echo "pgAdmin up"
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS -o /dev/null http://127.0.0.1:5050/browser/
+
+      # Playwright (browser install + smoke run).
+      - name: Install Playwright deps
+        run: |
+          cd web/regression/perf-bench
+          yarn install
+          ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run audit-smoke
+        env:
+          PGADMIN_URL: http://127.0.0.1:5050/browser/
+          PGHOST: 127.0.0.1
+          PGPORT: '5916'
+          PGUSER: postgres
+          PGPASSWORD: ''
+          PGDATABASE: postgres
+          PGADMIN_SERVER_NAME: CI-PG16
+        run: |
+          cd web/regression/perf-bench
+          ./node_modules/.bin/playwright test audit-smoke --reporter=line
+
+      - name: Archive pgAdmin server log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgadmin-smoke-log
+          path: |
+            var/pgadmin4.log
+            var/pgadmin-stdout.log
+          if-no-files-found: ignore
+
+      - name: Archive Playwright trace + screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-smoke-failure
+          path: |
+            web/regression/perf-bench/playwright-report
+            web/regression/perf-bench/test-results
+          if-no-files-found: ignore
