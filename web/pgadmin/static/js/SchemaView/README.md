@@ -151,10 +151,90 @@ the `dataDispatch` returned by `useSchemaState`. That function is
 
 Direct calls to `sessDispatch({ type: SET_VALUE, path: [...] })`
 **bypass** the accumulator. The reducer's bypass guard
-(`reducer.js`, canary-only) logs a `console.warn` if you do this.
+(`reducer.js`, canary-only) calls `console.error` if you do this,
+which fails CI through setup-jest's afterEach assertion.
 
-INIT and CLEAR_DEFERRED_QUEUE dispatches are exempt and may be
-dispatched directly.
+### Action types
+
+The reducer recognizes the following action types
+(`SCHEMA_STATE_ACTIONS` in `common.js`):
+
+| Type | Path-bearing? | Bypass-guarded? | Notes |
+|---|---|---|---|
+| `INIT` | no | no | resets sessData; safe to dispatch directly |
+| `SET_VALUE` | yes | **yes** | scalar / cell mutations |
+| `ADD_ROW` | yes | **yes** | collection append/prepend |
+| `DELETE_ROW` | yes | **yes** | collection splice |
+| `MOVE_ROW` | yes | **yes** | DataGridView drag-reorder |
+| `BULK_UPDATE` | yes | **yes** | clear a column across all rows |
+| `DEFERRED_DEPCHANGE` | yes | **yes** | drainDeferredQueue must use `sessDispatchWithListener` |
+| `CLEAR_DEFERRED_QUEUE` | no | no | internal plumbing |
+| `RERENDER` | unused | reserved | declared in the enum but no reducer case + no production dispatch site. If you start using it, add it to `PATH_BEARING_ACTIONS` in `reducer.js`. |
+
+## Reading canary divergence output
+
+When the canary detects a mismatch between the full and incremental
+walks, it throws (in tests) or logs to `console.error` (in canary
+dev builds). The diff shape:
+
+```
+Incremental walker divergence in TableSchema:
+  vacuum_table.0 — incremental=undefined full={"canEditRow":true,"canDeleteRow":true}
+  vacuum_table.0.label — incremental=undefined full={"disabled":false,"visible":true,"readonly":false,"editable":true}
+  vacuum_table.0.setting — incremental=undefined full={"disabled":false,"visible":true,"readonly":false,"editable":true}
+  vacuum_table.0.value — incremental=undefined full={"disabled":false,"visible":true,"readonly":false,"editable":false}
+  vacuum_table.1 — incremental=undefined full={...}
+  ...
+```
+
+How to read this:
+
+- **`incremental=X full=Y`**: the incremental walker returned `X`
+  for this path, the full walk returned `Y`. They differ; the full
+  walk is the source of truth.
+- **`incremental=undefined`**: the incremental walker DIDN'T VISIT
+  this path — it inherited a `prev[path]` that was undefined. Most
+  common cause: the row was just created (via ADD_ROW or fixedRows
+  resolution) and the prev snapshot doesn't include it, AND the
+  current changedPath doesn't overlap the row's globalPath, so the
+  walker pruned it.
+- **Many rows at the same level (e.g. `vacuum_table.0` through
+  `vacuum_table.N`) all `incremental=undefined`**: structural
+  divergence — the entire collection grew between prev and current
+  but the current dispatch's `mustVisit` doesn't reach that
+  collection. Look for sibling fixedRows / depChange / async data
+  fetch that resolves in the SAME React commit as the current
+  dispatch.
+
+Three production root-cause patterns surfaced by the canary so far,
+all fixed:
+
+1. **Evaluator-only deps not registering listeners**
+   (`utils/listenDepChanges.js`). A field declared
+   `deps: [['sibling']]` but no `depChange` callback registered NO
+   listener — the walker couldn't tell which fields should ride
+   `mustVisit` when `sibling` changed.
+
+2. **Batched changedPath dropped**
+   (`hooks/useSchemaState.js`, `SchemaState/SchemaState.js`).
+   `state.__lastChangedPath` was a single scalar; React batching
+   overwrote the first dispatch's path with the second's. Fixed
+   via `__pendingChangedPaths` accumulator.
+
+3. **Drain bypassed the listener wrapper**
+   (`hooks/useSchemaState.js`). `drainDeferredQueue` dispatched raw
+   `sessDispatch`, dropping the path from the accumulator AND
+   tripping the bypass guard.
+
+When you see a new divergence, your first hypothesis should be one
+of these three patterns. If none fits, check:
+
+- Does the diverging field's closure read a sibling without
+  declaring it as `field.deps`?
+- Does the dispatch chain that produced the diverging state run
+  through `sessDispatchWithListener`?
+- Is the schema instance being reused across dialog lifecycles
+  (carrying stale `top` / `state` references)?
 
 ## Common pitfalls
 

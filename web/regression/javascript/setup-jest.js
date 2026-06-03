@@ -76,8 +76,29 @@ global.beforeAll(() => {
   jest.spyOn(console, 'error');
 });
 
+// Resolve the audit harness's variant-rotation reset ONCE at module
+// load (not inside beforeEach). require()-ing from inside beforeEach
+// loads the audit harness mid-test, which transitively pulls in the
+// zustand mock — whose top-level afterEach() registration then runs
+// in test phase and errors. Capturing the function reference here
+// means non-SchemaView specs pay the import cost too, but the cost
+// is one-time per worker.
+let _resetAuditMutationCounter = null;
+try {
+  // eslint-disable-next-line global-require
+  const m = require(
+    '../../pgadmin/static/js/SchemaView/SchemaState/audit_harness'
+  );
+  if (typeof m._resetMutationCounter === 'function') {
+    _resetAuditMutationCounter = m._resetMutationCounter;
+  }
+} catch (_e) { /* audit harness not in this worker's tree — fine */ }
+
 global.beforeEach(() => {
   console.error.mockClear();
+  // Reset the audit harness's variant-rotation counter between
+  // tests so dispatch ordering is reproducible within a Jest worker.
+  if (_resetAuditMutationCounter) _resetAuditMutationCounter();
 });
 
 global.afterEach(() => {

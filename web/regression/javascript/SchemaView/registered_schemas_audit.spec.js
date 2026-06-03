@@ -113,10 +113,18 @@ const KNOWN_DIVERGING = new Set([]);
 
 // Modes the audit runs every schema in. The walker's
 // `isModeSupportedByField` filters fields by `field.mode`, so
-// create-only and edit-only fields exercise different code paths.
-// Running both modes per schema catches divergences that only
-// manifest in one branch.
-const MODES = ['edit', 'create'];
+// each mode exercises a different field subset:
+//   - 'create' shows fields with mode containing 'create' (or no
+//     mode declared); typical defaults; isNew()=true.
+//   - 'edit' shows fields with mode containing 'edit'; populated
+//     baseline data; isNew()=false.
+//   - 'properties' shows the read-only display fields (mode
+//     containing 'properties'); covers closures that branch on
+//     "rendering for read vs editing." Read-only display doesn't
+//     dispatch user input but the walker still walks the tree on
+//     every prop change, so divergence under properties mode is a
+//     real bug class.
+const MODES = ['edit', 'create', 'properties'];
 
 describe.each(MODES)('audit harness — registered schemas [%s mode]', (mode) => {
 

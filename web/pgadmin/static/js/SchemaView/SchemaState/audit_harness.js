@@ -521,6 +521,48 @@ const dispatchAndAudit = (schema, sessData, changedPath, newSessData, knownError
   );
 };
 
+// Audit fields nested inside `nested-fieldset`, `nested-tab`, or
+// `inline-groups` group containers. These share the PARENT'S data
+// level (sessData is flat across the container boundary) but live
+// in the walker's nested branch — a different code path from
+// top-level scalars. Bugs that manifest only when a scalar is
+// reached via the nested branch would slip past auditScalars.
+//
+// Production users: publication.ui (FOR Events block), trigger.ui,
+// table.ui (Like block), index.ui (With block), type.ui, sequence.ui
+// (Owned By), pga_schedule.ui, and others.
+//
+// One level of descent is enough for production schemas; deeper
+// nesting is rare and would chain through the same walker case
+// anyway.
+const NESTED_GROUP_TYPES = new Set([
+  'nested-fieldset', 'nested-tab', 'inline-groups',
+]);
+
+const auditNestedFields = (schema, sessData, knownErrorPaths, mode = 'edit') => {
+  let n = 0;
+  for (const groupField of schema.fields || []) {
+    if (!NESTED_GROUP_TYPES.has(groupField.type)) continue;
+    if (!groupField.schema) continue;
+    if (!groupField.schema.top) groupField.schema.top = schema.top || schema;
+
+    for (const inner of groupField.schema.fields || []) {
+      if (!isScalarField(inner, groupField.schema)) continue;
+      // Nested-* shares data with the parent, so the field's path
+      // is FLAT at the parent's level (NOT prefixed by the group
+      // field id) — production dispatches read sessData[inner.id]
+      // not sessData[groupField.id][inner.id].
+      const newValue = mutateScalar(inner, sessData[inner.id]);
+      const newSessData = { ...sessData, [inner.id]: newValue };
+      dispatchAndAudit(
+        schema, sessData, [inner.id], newSessData, knownErrorPaths, mode,
+      );
+      n += 1;
+    }
+  }
+  return n;
+};
+
 const auditScalars = (schema, sessData, knownErrorPaths, mode = 'edit') => {
   let n = 0;
   for (const field of schema.fields || []) {
@@ -983,19 +1025,21 @@ const applyMutation = (schema, sessData, path) => {
   return null;
 };
 
-// For each k-combination, generate up to K rotations so each path
-// gets a turn as `primary` (the changedPath threaded through
+// For each k-combination, rotate through ALL k positions so each
+// path gets a turn as `primary` (the changedPath threaded through
 // updateOptions). Production's __pendingChangedPaths.shift() makes
 // the first-pushed path primary, but which dispatch fires first
-// across a React batch isn't always determinable from the source.
-// Rotating exercises every ordering, catching closures whose
-// behavior depends on which path got "primary" treatment.
+// across a React batch isn't determinable from source. Every
+// rotation covers a distinct "this path was primary" scenario.
 //
-// Bounded: only the first 2 rotations per combo (covers
-// "primary=A, extras=[B,C]" vs "primary=B, extras=[A,C]") to keep
-// the audit runtime predictable; for k=4 the full 24 perms would
-// blow out the budget.
-const MAX_ROTATIONS_PER_COMBO = 2;
+// Full K! permutations of the extras would be ideal but blows the
+// runtime budget at k=4 (24 perms × 60 combos × 87 schemas × 3
+// modes). K rotations is the sweet spot: every PATH gets primary
+// coverage; the extras retain their natural order from
+// candidate-emission. Catches the production-realistic
+// "primary=A, extras=[B,C]" vs "primary=B, extras=[A,C]" vs
+// "primary=C, extras=[A,B]" pattern set.
+const MAX_ROTATIONS_PER_COMBO = Number.POSITIVE_INFINITY;
 
 const auditBatched = (schema, sessData, knownErrorPaths, mode = 'edit') => {
   let n = 0;
@@ -1206,6 +1250,9 @@ export const auditSchema = (SchemaClass, { mode = 'edit' } = {}) => {
   try {
     try {
       dispatches += auditScalars(schema, sessData, knownErrorPaths, mode);
+      // Nested-* group containers share the parent's data level but
+      // live in the walker's nested branch — different code path.
+      dispatches += auditNestedFields(schema, sessData, knownErrorPaths, mode);
       dispatches += auditCollectionCells(schema, sessData, knownErrorPaths, mode);
       dispatches += auditCollectionStructure(schema, sessData, knownErrorPaths, mode);
       // MOVE_ROW + BULK_UPDATE passes — exercise the two

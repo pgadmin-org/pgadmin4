@@ -29,6 +29,14 @@ export const SCHEMA_STATE_ACTIONS = {
   ADD_ROW: 'add_row',
   DELETE_ROW: 'delete_row',
   MOVE_ROW: 'move_row',
+  // RERENDER is reserved but currently UNUSED. No `case` in the
+  // reducer (so it falls through to the default __changeId++ which
+  // forces a re-validate without state change), and no production
+  // call site dispatches it. If a future caller starts using it,
+  // they MUST add it to the reducer's PATH_BEARING_ACTIONS set in
+  // reducer.js so the bypass guard catches accidental raw
+  // sessDispatch usage — leaving it out lets dispatches slip past
+  // the __pendingChangedPaths accumulator silently.
   RERENDER: 'rerender',
   CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
   DEFERRED_DEPCHANGE: 'deferred_depchange',
