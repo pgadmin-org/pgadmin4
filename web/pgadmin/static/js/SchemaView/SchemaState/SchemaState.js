@@ -14,7 +14,8 @@ import gettext from 'sources/gettext';
 
 import { prepareData } from '../common';
 import { DepListener }  from '../DepListener';
-import { FIELD_OPTIONS, schemaOptionsEvalulator } from '../options';
+import { FIELD_OPTIONS, pathOverlaps, schemaOptionsEvalulator } from '../options';
+import { count, measure } from '../perf';
 
 import {
   SCHEMA_STATE_ACTIONS,
@@ -74,13 +75,13 @@ export class SchemaState extends DepListener {
     // Pre-ready queue
     this.preReadyQueue = [];
 
-    this.optionStore = createStore({});
-    this.dataStore = createStore({});
+    this.optionStore = createStore({}, 'option');
+    this.dataStore = createStore({}, 'data');
     this.stateStore = createStore({
       isNew: true, isDirty: false, isReady: false,
       isSaving: false, errors: {},
       message: '',
-    });
+    }, 'state');
 
     // Memoize the path using flatPathGenerator
     this.__pathGenerator = flatPathGenerator(PATH_SEPARATOR);
@@ -88,15 +89,54 @@ export class SchemaState extends DepListener {
     this._id = Date.now();
   }
 
-  updateOptions() {
-    let options = _.cloneDeep(this.optionStore.getState());
+  updateOptions(changedPath, depDestsArg) {
+    return measure('SchemaState.updateOptions', () => {
+      const prev = this.optionStore.getState();
 
-    schemaOptionsEvalulator({
-      schema: this.schema, data: this.data, options: options,
-      viewHelperProps: this.viewHelperProps,
+      // Caller (SchemaState.validate) may pre-compute depDests; otherwise
+      // we collect them here. Pull in any DepListener entries whose source
+      // overlaps the changedPath. Their dest paths must also be visited
+      // so cross-row declared deps still re-evaluate options.
+      const depDests = depDestsArg !== undefined
+        ? depDestsArg
+        : this._collectDepDestsForPath(changedPath);
+
+      // Schemas can opt themselves into incremental option evaluation
+      // by setting `incrementalOptions = true` on the instance. Fold
+      // that into viewHelperProps so the evaluator's opt-in check sees
+      // it without each dialog opener needing to plumb it through.
+      const vhp = (
+        this.viewHelperProps?.incrementalOptions !== true
+        && this.schema?.incrementalOptions === true
+      )
+        ? { ...this.viewHelperProps, incrementalOptions: true }
+        : this.viewHelperProps;
+
+      // Walker returns a NEW options tree built via structural sharing:
+      // unvisited collection rows keep their previous object references
+      // (so path-subscribers can short-circuit on Object.is downstream),
+      // visited subtrees are fresh objects. No more upfront cloneDeep of
+      // the whole tree.
+      const next = schemaOptionsEvalulator({
+        schema: this.schema, data: this.data, prevOptions: prev,
+        viewHelperProps: vhp,
+        changedPath, depDests,
+      });
+
+      this.optionStore.setState(next);
     });
+  }
 
-    this.optionStore.setState(options);
+  _collectDepDestsForPath(changedPath) {
+    if (!Array.isArray(changedPath)) return null;
+    const listeners = this._depListeners || [];
+    if (listeners.length === 0) return null;
+    const dests = [];
+    for (const entry of listeners) {
+      if (!entry?.source || !entry?.dest) continue;
+      if (pathOverlaps(entry.source, changedPath)) dests.push(entry.dest);
+    }
+    return dests;
   }
 
   setState(state, value) {
@@ -205,28 +245,73 @@ export class SchemaState extends DepListener {
   }
 
   validate(sessData) {
-    let state = this,
-      schema = state.schema;
+    return measure('SchemaState.validate', () => {
+      let state = this,
+        schema = state.schema;
 
-    // If schema does not have the data or does not have any 'onDataChange'
-    // callback, there is no need to validate the current data.
-    if(!state.isReady) return;
+      // If schema does not have the data or does not have any 'onDataChange'
+      // callback, there is no need to validate the current data.
+      if(!state.isReady) return;
 
-    if(
-      !validateSchema(schema, sessData, (path, message) => {
-        message && state.setError({
+      // Read+consume the changedPath set by the dispatcher (if any). On
+      // initial mount / INIT / external triggers, this is undefined and
+      // both validateSchema and updateOptions fall back to a full walk.
+      const changedPath = state.__lastChangedPath;
+      state.__lastChangedPath = undefined;
+
+      // Build the must-visit list once and share it between validateSchema
+      // and updateOptions. Includes:
+      //   - changedPath
+      //   - DepListener dest paths whose source overlaps changedPath
+      //   - the current error path (so an erroring row is always
+      //     re-validated and the error eventually clears when fixed)
+      // null mustVisit = full walk semantics for non-opt-in dialogs.
+      const incremental = (
+        (state.viewHelperProps?.incrementalOptions === true
+         || state.schema?.incrementalOptions === true
+         || (typeof window !== 'undefined' && window.__INCREMENTAL_OPTIONS__ === true))
+        && Array.isArray(changedPath)
+      );
+      const depDests = state._collectDepDestsForPath(changedPath);
+      let mustVisit = null;
+      if (incremental) {
+        mustVisit = [changedPath].concat(Array.isArray(depDests) ? depDests : []);
+        const errPath = state.errors?.name;
+        if (Array.isArray(errPath)) mustVisit.push(errPath);
+      }
+
+      let errorsSet = 0;
+      const hadError = validateSchema(schema, sessData, (path, message) => {
+        if (!message) return;
+        errorsSet++;
+        measure('SchemaState.validate.setError', () => state.setError({
           name: state.accessPath(path), message: _.escape(message)
-        });
-      })
-    ) state.setError({});
+        }));
+      }, [], null, mustVisit);
+      count('SchemaState.validate.setErrorCalls', errorsSet);
+      if (!hadError) {
+        measure('SchemaState.validate.clearError',
+          () => state.setError({}));
+      }
 
-    state.data = sessData;
-    state._changes = state.changes();
-    state.updateOptions();
-    state.onDataChange && state.onDataChange(state.isDirty, state._changes, state.errors);
+      measure('SchemaState.validate.dataAssign',
+        () => { state.data = sessData; });
+      state._changes = state.changes();
+
+      state.updateOptions(changedPath, depDests);
+
+      if (state.onDataChange) {
+        measure('SchemaState.validate.onDataChange',
+          () => state.onDataChange(state.isDirty, state._changes, state.errors));
+      }
+    });
   }
 
   changes(includeSkipChange=false) {
+    return measure('SchemaState.changes', () => this._changesImpl(includeSkipChange));
+  }
+
+  _changesImpl(includeSkipChange=false) {
     const state = this;
     const sessData = state.data;
     const schema = state.schema;

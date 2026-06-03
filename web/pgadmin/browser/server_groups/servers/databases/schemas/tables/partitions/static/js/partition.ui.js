@@ -124,6 +124,11 @@ export default class PartitionTableSchema extends BaseUISchema {
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, fieldOptions.table_amname_list, getAttachTables);
     this.constraintsObj = this.schemas.constraints();
+
+    // Same audit basis as TableSchema — re-uses the same nested ColumnSchema
+    // + PartitionsSchema + PartitionKeysSchema row schemas, all already
+    // deps-audited.
+    this.incrementalOptions = true;
   }
 
   get idAttribute() {

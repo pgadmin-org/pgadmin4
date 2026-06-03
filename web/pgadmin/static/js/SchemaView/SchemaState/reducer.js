@@ -8,6 +8,8 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
+
+import { logAction, record } from '../perf';
 import {
   SCHEMA_STATE_ACTIONS, getDepChange,
 } from './common';
@@ -45,7 +47,13 @@ const getDeferredDepChange = (currPath, newState, oldState, action) => {
  * The state starts with path '[]'.
  */
 export const sessDataReducer = (state, action) => {
+  const reducerStart = performance.now();
+  const label = `reducer.${action.type}`;
+
+  const cloneStart = performance.now();
   let data = _.cloneDeep(state);
+  record('reducer.cloneDeep', performance.now() - cloneStart);
+
   let rows, cid, deferredList;
   data.__deferred__ = data.__deferred__ || [];
 
@@ -119,6 +127,10 @@ export const sessDataReducer = (state, action) => {
   }
 
   data.__changeId = (data.__changeId || 0) + 1;
+
+  const totalDt = performance.now() - reducerStart;
+  record(label, totalDt);
+  logAction(action.type, totalDt, { path: action.path });
 
   return data;
 };

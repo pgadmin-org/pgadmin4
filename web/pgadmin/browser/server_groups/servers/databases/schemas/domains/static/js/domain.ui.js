@@ -38,6 +38,11 @@ export class DomainConstSchema extends BaseUISchema {
       }, {
         id: 'convalidated', label: gettext('Validate?'), cell: 'checkbox',
         type: 'checkbox',
+        // readonly reads obj.top.origData.constraints — declare the parent
+        // path so incremental option walks re-evaluate this row when the
+        // origData constraints collection changes (e.g. on initialise
+        // after save).
+        deps: [['constraints']],
         readonly: function(state) {
           let currCon = _.find(
             obj.top.origData.constraints, (con) => con.conoid == state.conoid

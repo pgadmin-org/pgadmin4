@@ -51,6 +51,12 @@ export const useSchemaState = ({
       deferredDepChange: (...args) => state.getDeferredDepChange(...args),
     };
     /*
+     * Remember which path this action targets so the upcoming validate
+     * cycle can prune its options walk (incremental mode). Cleared by
+     * SchemaState.validate after consumption.
+     */
+    state.__lastChangedPath = action.path;
+    /*
      * All the session changes coming before init should be queued up.
      * They will be processed later when form is ready.
      */

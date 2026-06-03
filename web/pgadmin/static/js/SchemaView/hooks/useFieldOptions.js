@@ -16,7 +16,8 @@ export const useFieldOptions = (path, schemaState, subscriberManager) => {
     if (!schemaState || !subscriberManager?.current) return;
 
     return subscriberManager.current?.add(schemaState,  path, 'options');
-  });
+    // Pin deps; see useFieldValue for the rationale.
+  }, [path, schemaState, subscriberManager]);
 
   return schemaState?.options(path) || {visible: true};
 };

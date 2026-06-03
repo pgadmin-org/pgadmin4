@@ -184,7 +184,11 @@ class IndexColumnSchema extends BaseUISchema {
         },
         node: 'index',
         url_jump_after_node: 'schema',
-        deps: ['amname'],
+        // The cell-filter reads obj.top?.sessData.amname (the parent Index
+        // row's amname), not a sibling column's amname. Use an absolute
+        // path so the dep registers against the parent field; the relative
+        // form was dead (column rows don't have an `amname` field).
+        deps: [['amname']],
       },{
         id: 'sort_order', label: gettext('Sort order'), type: 'select', cell: 'select',
         options: [
@@ -383,6 +387,11 @@ export default class IndexSchema extends BaseUISchema {
     this.indexColumnSchema = new IndexColumnSchema(this.node_info);
     this.indexHeaderSchema.indexColumnSchema = this.indexColumnSchema;
     this.withSchema = new WithSchema(this.node_info);
+
+    // Opt into SchemaView's incremental option evaluation. Safe after the
+    // op_class parent-amname dep was declared (commit 91fcd6b09 +
+    // e80f9d7ee). See web/regression/perf-bench/README.md.
+    this.incrementalOptions = true;
   }
 
   get idAttribute() {

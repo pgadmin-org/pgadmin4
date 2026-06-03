@@ -411,6 +411,14 @@ export default class TableSchema extends BaseUISchema {
     this.vacuumSettingsSchema = this.schemas.vacuum_settings?.() || {};
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.inErd = inErd;
+
+    // Opt into SchemaView's incremental option evaluation. Safe for this
+    // schema after the column/partition deps audit landed in commits
+    // 91fcd6b09 + e80f9d7ee — all cross-row reads in column/partition row
+    // schemas declare their parent sources via `field.deps`. See
+    // web/regression/perf-bench/README.md "Known limitation" for the
+    // audit criteria.
+    this.incrementalOptions = true;
   }
 
   static getErdSupportedData(data) {

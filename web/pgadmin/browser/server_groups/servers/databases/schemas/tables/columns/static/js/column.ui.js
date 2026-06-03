@@ -176,7 +176,10 @@ export default class ColumnSchema extends BaseUISchema {
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  width: 100, enableResizing: false, deps:['name', ['primary_key']],
+      cell: 'switch', type: 'switch',  width: 100, enableResizing: false,
+      // readonly/editable also read top.sessData['oid'] and ['is_partitioned'];
+      // declare them so option re-eval still fires under incremental walks.
+      deps:['name', ['primary_key'], ['oid'], ['is_partitioned']],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||

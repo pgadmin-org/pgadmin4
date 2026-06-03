@@ -19,6 +19,8 @@ import {
 
 import BaseUISchema from '../base_schema.ui';
 import { isModeSupportedByField, isObjectEqual, isValueEqual } from '../common';
+import { pathOverlaps } from '../options';
+import { measure } from '../perf';
 
 
 export const SCHEMA_STATE_ACTIONS = {
@@ -116,6 +118,15 @@ export function getCollectionDiffInEditMode(
 export function getSchemaDataDiff(
   topSchema, initData, sessData, mode, keepCid,
   stringify=false, includeSkipChange=true
+) {
+  return measure('getSchemaDataDiff', () => _getSchemaDataDiffImpl(
+    topSchema, initData, sessData, mode, keepCid, stringify, includeSkipChange
+  ));
+}
+
+function _getSchemaDataDiffImpl(
+  topSchema, initData, sessData, mode, keepCid,
+  stringify, includeSkipChange
 ) {
   const isEditMode = mode === 'edit';
 
@@ -246,8 +257,43 @@ export function getSchemaDataDiff(
   return res;
 }
 
+// Decide whether `checkUniqueCol` needs to re-run for this collection
+// given the incremental must-visit set.
+//
+// Run if ANY mustVisit path either:
+//   - sits at or above the collection's path (structural change, or a
+//     pre-existing uniqueness error that was added to mustVisit by
+//     SchemaState.validate), OR
+//   - points at a direct row-field whose id is in `field.uniqueCol`
+//     (a change to a uniqueness-participating value).
+//
+// A deep path inside a nested sub-collection (length > currPath+2) does
+// NOT trigger the outer collection's uniqueCol — the value reachable at
+// that path can't be a member of the outer row schema's fields.
+function shouldRunUniqueCol(field, currPath, mustVisit) {
+  if (!Array.isArray(mustVisit)) return true;  // full walk
+  if (!Array.isArray(field.uniqueCol) || field.uniqueCol.length === 0)
+    return false;
+  return mustVisit.some((p) => {
+    if (!Array.isArray(p)) return false;
+    if (p.length <= currPath.length) {
+      // p is a prefix of (or equal to) currPath -> structural or above.
+      for (let i = 0; i < p.length; i++) {
+        if (String(p[i]) !== String(currPath[i])) return false;
+      }
+      return true;
+    }
+    // p deeper than currPath. Must be an immediate row.field path.
+    for (let i = 0; i < currPath.length; i++) {
+      if (String(p[i]) !== String(currPath[i])) return false;
+    }
+    if (p.length !== currPath.length + 2) return false;
+    return field.uniqueCol.includes(p[p.length - 1]);
+  });
+}
+
 export function validateCollectionSchema(
-  field, sessData, accessPath, setError
+  field, sessData, accessPath, setError, mustVisit=null
 ) {
   const rows = sessData[field.id] || [];
   const currPath = accessPath.concat(field.id);
@@ -259,14 +305,25 @@ export function validateCollectionSchema(
 
   // Loop through data.
   for(const [rownum, row] of rows.entries()) {
+    const rowGlobalPath = currPath.concat(rownum);
+    // Incremental prune: skip rows whose path doesn't overlap any
+    // must-visit path. `mustVisit=null` means full walk.
+    if (Array.isArray(mustVisit)
+        && !mustVisit.some((p) => pathOverlaps(rowGlobalPath, p))) {
+      continue;
+    }
     if(validateSchema(
-      field.schema, row, setError, currPath.concat(rownum), field.label
+      field.schema, row, setError, rowGlobalPath, field.label, mustVisit
     )) {
       return true;
     }
   }
 
-  // Validate duplicate rows.
+  // Validate duplicate rows. Skip the O(N) scan when the change can't
+  // affect uniqueness (typing a non-uniqueCol field, or a deep change
+  // inside a nested sub-collection).
+  if (!shouldRunUniqueCol(field, currPath, mustVisit)) return false;
+
   const dupInd = checkUniqueCol(rows, field.uniqueCol);
 
   if(dupInd > 0) {
@@ -288,8 +345,27 @@ export function validateCollectionSchema(
   return false;
 }
 
+let __validateDepth = 0;
 export function validateSchema(
-  schema, sessData, setError, accessPath=[], collLabel=null
+  schema, sessData, setError, accessPath=[], collLabel=null, mustVisit=null
+) {
+  // Only measure the outermost entry. The impl recurses through itself for
+  // nested schemas, and we don't want to double-count.
+  if (__validateDepth === 0) {
+    __validateDepth++;
+    try {
+      return measure('validateSchema', () => _validateSchemaImpl(
+        schema, sessData, setError, accessPath, collLabel, mustVisit
+      ));
+    } finally {
+      __validateDepth--;
+    }
+  }
+  return _validateSchemaImpl(schema, sessData, setError, accessPath, collLabel, mustVisit);
+}
+
+function _validateSchemaImpl(
+  schema, sessData, setError, accessPath=[], collLabel=null, mustVisit=null
 ) {
   sessData = sessData || {};
 
@@ -304,11 +380,11 @@ export function validateSchema(
 
       // A collection is an array.
       if(field.type === 'collection') {
-        if (validateCollectionSchema(field, sessData, accessPath, setError))
+        if (validateCollectionSchema(field, sessData, accessPath, setError, mustVisit))
           return true;
       }
       // A nested schema ? Recurse
-      else if(validateSchema(field.schema, sessData, setError, accessPath)) {
+      else if(validateSchema(field.schema, sessData, setError, accessPath, null, mustVisit)) {
         return true;
       }
     } else {
