@@ -40,18 +40,31 @@
 //        d. Any visual change fails the test with a side-by-side
 //           image diff at test-results/.../.
 //
-// Dialogs covered (5):
-//   1. Edit Table (the heaviest dialog)
-//   2. Create Function (function/trigger schema)
-//   3. Create Type (sub-schema variations — composite default)
-//   4. Edit Role (privileges + membership grids — heavy)
-//   5. Create Index (amname deferred + with-clause nested-fieldset)
+// Dialogs covered (20 — 1:1 with audit-smoke-extended + relevant
+// audit-smoke originals; matches the smoke set's distinct dialogs):
 //
-// NOT covered intentionally — bloats baseline maintenance:
-//   - Every Create variant when Edit covers the same render
-//   - Animated/transient UI states
-//   - Tabs that only differ by sub-collection content (the SQL
-//     preview tab regenerates differently each session)
+//   Schema-level (15):
+//     Edit Table              Create Table           Create Function
+//     Edit Function           Create View            Create MView
+//     Create Sequence         Create Type            Create Domain
+//     Create Procedure        Create Aggregate       Create Foreign Table
+//     Create Collation        Create FTS Config      Create Trigger Function
+//
+//   Server-level (3):
+//     Edit Role               Create Role            Create Tablespace
+//
+//   Sub-catalog (2):
+//     Create Index            Create Trigger
+//
+// NOT covered intentionally:
+//   - Register Server (right-click + multi-tab fills make for a noisy
+//     baseline — covered by audit-smoke.spec.js instead).
+//   - SQL preview tab (CodeMirror state is timing-dependent).
+//   - Animated/transient UI states.
+//
+// Resource note: running all 20 sequentially can exhaust PostgreSQL's
+// max_connections if pgAdmin isn't restarted between back-to-back
+// runs. Restart pgAdmin between capture and verify phases.
 
 import { test, expect } from '@playwright/test';
 import {
@@ -119,91 +132,194 @@ const bootPage = async (page) => {
 const dialogLocator = (page) =>
   page.locator('.dock-panel.dock-style-dialogs').first();
 
-test('Visual: Edit Table dialog', async ({ page }) => {
-  installErrorRecorders(page);
-  await bootPage(page);
-  await ensureServerRegistered(page);
-  await navigateToCatalogNodeViaApi(page, 'Tables');
-  await openEditDialogViaApi(page, 'table');
+// Common dialog-snapshot helpers. The 20 specs converge on the same
+// shape (navigate → open → wait Name → settle → snapshot), so they
+// share helpers rather than 20x copy-paste.
+const waitDialogReady = async (page, settleMs = 1_500) => {
   await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
     state: 'visible', timeout: 20_000,
   });
-  // Settle: any post-mount fixedRows promises (vacuum_table /
-  // vacuum_toast) need to land before snapshotting.
-  await page.waitForTimeout(2_000);
+  await page.waitForTimeout(settleMs);
+};
+
+const snapshotSchemaChild = async (
+  page, catalogLabel, nodeType, snapshotName,
+  { editMode = false, settleMs = 1_500, opts = {} } = {}
+) => {
+  installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToCatalogNodeViaApi(page, catalogLabel);
+  if (editMode) await openEditDialogViaApi(page, nodeType);
+  else await openCreateDialogViaApi(page, nodeType);
+  await waitDialogReady(page, settleMs);
   await expect(dialogLocator(page)).toHaveScreenshot(
-    'edit-table.png', SCREENSHOT_OPTS
+    snapshotName, { ...SCREENSHOT_OPTS, ...opts }
+  );
+};
+
+const snapshotServerChild = async (
+  page, collectionType, nodeType, snapshotName,
+  { editMode = false, settleMs = 1_500, opts = {} } = {}
+) => {
+  installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToServerCollectionViaApi(page, collectionType);
+  if (editMode) await openEditDialogViaApi(page, nodeType);
+  else await openCreateDialogViaApi(page, nodeType);
+  await waitDialogReady(page, settleMs);
+  await expect(dialogLocator(page)).toHaveScreenshot(
+    snapshotName, { ...SCREENSHOT_OPTS, ...opts }
+  );
+};
+
+const snapshotTableChild = async (
+  page, subCollectionType, nodeType, snapshotName,
+  { settleMs = 1_500, opts = {} } = {}
+) => {
+  installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToTableSubCollectionViaApi(page, subCollectionType);
+  await openCreateDialogViaApi(page, nodeType);
+  await waitDialogReady(page, settleMs);
+  await expect(dialogLocator(page)).toHaveScreenshot(
+    snapshotName, { ...SCREENSHOT_OPTS, ...opts }
+  );
+};
+
+// =============================================================
+// Schema-level dialogs (15)
+// =============================================================
+
+test('Visual: Edit Table dialog', async ({ page }) => {
+  // Heaviest dialog. settleMs=2000 so vacuum_table/vacuum_toast
+  // fixedRows promises land before snapshot.
+  await snapshotSchemaChild(
+    page, 'Tables', 'table', 'edit-table.png',
+    { editMode: true, settleMs: 2_000 }
+  );
+});
+
+test('Visual: Create Table dialog', async ({ page }) => {
+  await snapshotSchemaChild(
+    page, 'Tables', 'table', 'create-table.png',
+    { settleMs: 2_000 }
   );
 });
 
 test('Visual: Create Function dialog', async ({ page }) => {
-  installErrorRecorders(page);
-  await bootPage(page);
-  await ensureServerRegistered(page);
-  await navigateToCatalogNodeViaApi(page, 'Functions');
-  await openCreateDialogViaApi(page, 'function');
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.waitForTimeout(1_500);
-  await expect(dialogLocator(page)).toHaveScreenshot(
-    'create-function.png', SCREENSHOT_OPTS
-  );
+  await snapshotSchemaChild(page, 'Functions', 'function', 'create-function.png');
 });
 
-test('Visual: Create Type dialog (composite default)', async ({ page }) => {
-  installErrorRecorders(page);
-  await bootPage(page);
-  await ensureServerRegistered(page);
-  await navigateToCatalogNodeViaApi(page, 'Types');
-  await openCreateDialogViaApi(page, 'type');
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.waitForTimeout(1_500);
-  await expect(dialogLocator(page)).toHaveScreenshot(
-    'create-type.png', SCREENSHOT_OPTS
-  );
-});
-
-test('Visual: Edit Role dialog', async ({ page }) => {
-  installErrorRecorders(page);
-  await bootPage(page);
-  await ensureServerRegistered(page);
-  await navigateToServerCollectionViaApi(page, 'coll-role');
-  // Open Properties on the FIRST role under server. Different test
-  // envs have different first-role names (postgres on a vanilla
-  // install, custom role on a dev box) — so we MASK the Name input
-  // and Comments multiline. Layout-shift regressions still show up
-  // because the surrounding tab/header/grid pixels still diff.
-  await openEditDialogViaApi(page, 'role');
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.waitForTimeout(2_000);
-  await expect(dialogLocator(page)).toHaveScreenshot(
-    'edit-role.png',
+test('Visual: Edit Function dialog', async ({ page }) => {
+  // First function in the schema. Mask Name (env-specific).
+  await snapshotSchemaChild(
+    page, 'Functions', 'function', 'edit-function.png',
     {
-      ...SCREENSHOT_OPTS,
-      mask: [
-        page.getByRole('textbox', { name: 'Name' }).first(),
-        page.getByRole('textbox', { name: 'Comments' }).first(),
-      ],
+      editMode: true,
+      settleMs: 2_000,
+      opts: { mask: [page.getByRole('textbox', { name: 'Name' }).first()] },
     }
   );
 });
 
+test('Visual: Create View dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Views', 'view', 'create-view.png');
+});
+
+test('Visual: Create Materialized View dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Materialized Views', 'mview', 'create-mview.png');
+});
+
+test('Visual: Create Sequence dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Sequences', 'sequence', 'create-sequence.png');
+});
+
+test('Visual: Create Type dialog (composite default)', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Types', 'type', 'create-type.png');
+});
+
+test('Visual: Create Domain dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Domains', 'domain', 'create-domain.png');
+});
+
+test('Visual: Create Procedure dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Procedures', 'procedure', 'create-procedure.png');
+});
+
+test('Visual: Create Aggregate dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Aggregates', 'aggregate', 'create-aggregate.png');
+});
+
+test('Visual: Create Foreign Table dialog', async ({ page }) => {
+  await snapshotSchemaChild(
+    page, 'Foreign Tables', 'foreign_table', 'create-foreign-table.png'
+  );
+});
+
+test('Visual: Create Collation dialog', async ({ page }) => {
+  await snapshotSchemaChild(page, 'Collations', 'collation', 'create-collation.png');
+});
+
+test('Visual: Create FTS Configuration dialog', async ({ page }) => {
+  await snapshotSchemaChild(
+    page, 'FTS Configurations', 'fts_configuration', 'create-fts-config.png'
+  );
+});
+
+test('Visual: Create Trigger Function dialog', async ({ page }) => {
+  await snapshotSchemaChild(
+    page, 'Trigger Functions', 'trigger_function', 'create-trigger-function.png'
+  );
+});
+
+// =============================================================
+// Server-level dialogs (3)
+// =============================================================
+
+test('Visual: Edit Role dialog', async ({ page }) => {
+  // Different test envs have different first-role names — mask Name +
+  // Comments. Layout-shift regressions still show up because the
+  // surrounding tab/header/grid pixels still diff.
+  await snapshotServerChild(
+    page, 'coll-role', 'role', 'edit-role.png',
+    {
+      editMode: true,
+      settleMs: 2_000,
+      opts: {
+        mask: [
+          page.getByRole('textbox', { name: 'Name' }).first(),
+          page.getByRole('textbox', { name: 'Comments' }).first(),
+        ],
+      },
+    }
+  );
+});
+
+test('Visual: Create Role dialog', async ({ page }) => {
+  await snapshotServerChild(page, 'coll-role', 'role', 'create-role.png');
+});
+
+test('Visual: Create Tablespace dialog', async ({ page }) => {
+  await snapshotServerChild(
+    page, 'coll-tablespace', 'tablespace', 'create-tablespace.png'
+  );
+});
+
+// =============================================================
+// Sub-catalog dialogs (2)
+// =============================================================
+
 test('Visual: Create Index dialog (under table)', async ({ page }) => {
-  installErrorRecorders(page);
-  await bootPage(page);
-  await ensureServerRegistered(page);
-  await navigateToTableSubCollectionViaApi(page, 'coll-index');
-  await openCreateDialogViaApi(page, 'index');
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.waitForTimeout(1_500);
-  await expect(dialogLocator(page)).toHaveScreenshot(
-    'create-index.png', SCREENSHOT_OPTS
+  await snapshotTableChild(
+    page, 'coll-index', 'index', 'create-index.png'
+  );
+});
+
+test('Visual: Create Trigger dialog (under table)', async ({ page }) => {
+  await snapshotTableChild(
+    page, 'coll-trigger', 'trigger', 'create-trigger.png'
   );
 });
