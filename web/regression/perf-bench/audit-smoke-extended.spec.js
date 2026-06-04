@@ -73,15 +73,27 @@ const SCHEMA_DIALOG_CLOSE =
 // Without this we'd only be asserting `__INCREMENTAL_AUDIT__` (a flag
 // set by enableAudit itself) — which would pass vacuously on a
 // non-CANARY_BUILD bundle where the canary is tree-shaken away.
-const expectCanaryExecuted = async (page) => {
-  const n = await page.evaluate(() => window.__canary_entry_count__);
-  expect(n, 'canary did not execute — likely a non-CANARY_BUILD bundle')
-    .toBeGreaterThan(0);
+//
+// Caller passes the *baseline* count taken before opening the dialog;
+// we assert it strictly increased. Delta-check (rather than > 0)
+// defends against the case where Playwright reuses a page context
+// across tests (today it doesn't by default — but if `test.use({
+// page: 'serial' })` is ever flipped, > 0 would silently pass on a
+// stale leftover count).
+const readCanaryCount = (page) =>
+  page.evaluate(() => window.__canary_entry_count__ || 0);
+const expectCanaryExecuted = async (page, baselineCount) => {
+  const n = await readCanaryCount(page);
+  expect(
+    n, 'canary did not execute — likely a non-CANARY_BUILD bundle '
+       + 'or the dialog never mounted'
+  ).toBeGreaterThan(baselineCount);
 };
 
 // Try-finally wrappers so a Name-textbox timeout doesn't leave a stale
 // dialog open over the tree for the next spec.
 const openAndAssertClean = async (page, openFn, errors) => {
+  const baseline = await readCanaryCount(page);
   try {
     await openFn();
     await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
@@ -94,7 +106,7 @@ const openAndAssertClean = async (page, openFn, errors) => {
       await close.click().catch(() => {});
     }
   }
-  await expectCanaryExecuted(page);
+  await expectCanaryExecuted(page, baseline);
   expectNoDivergence(errors);
 };
 

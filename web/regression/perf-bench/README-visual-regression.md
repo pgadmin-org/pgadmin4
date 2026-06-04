@@ -44,7 +44,7 @@ baseline-on-master workflow that doesn't require porting the spec first
 cd web
 CANARY_BUILD=true NODE_ENV=production \
   ./node_modules/.bin/webpack --config webpack.config.js
-python pgAdmin4.py &
+python3 pgAdmin4.py &  # or "${PYTHON:-python3}" if running from a venv
 sleep 6
 
 # 2. Capture baselines (writes PNGs).
@@ -68,7 +68,7 @@ Run without `--update-snapshots`. Any pixel diff beyond
 pkill -f pgAdmin4.py 2>/dev/null || true
 cd web && CANARY_BUILD=true NODE_ENV=production \
   ./node_modules/.bin/webpack --config webpack.config.js
-python pgAdmin4.py &
+python3 pgAdmin4.py &  # or "${PYTHON:-python3}" if running from a venv
 sleep 6
 
 # Run the diff.

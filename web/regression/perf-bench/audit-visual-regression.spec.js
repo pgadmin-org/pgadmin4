@@ -91,7 +91,7 @@ const SCREENSHOT_OPTS = {
 // platform without first capturing fresh baselines for it gives
 // guaranteed false positives. Skip the suite on non-darwin until a
 // per-platform snapshot strategy lands (see README-visual-regression.md
-// — "Mitigation: capture baselines in CI itself").
+// — "Limitations to migrate away from").
 test.beforeEach(() => {
   test.skip(
     process.platform !== 'darwin',
