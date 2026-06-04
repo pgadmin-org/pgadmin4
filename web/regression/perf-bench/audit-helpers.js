@@ -180,10 +180,27 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
   // collection (Tables, Functions, etc.) is `coll-table`; individual
   // items are `table`. For navigating to the CATEGORY, we want the
   // collection type.
+  // pgAdmin's tree types are SINGULAR (`coll-table` not
+  // `coll-tables`) and a few are abbreviated (`coll-mview` for
+  // Materialized Views, `coll-foreign_table` for Foreign Tables).
+  // The label-based default fallback only works for labels that
+  // ARE just `coll-<lowercased-label>`; add explicit mappings for
+  // the others.
   const targetType = ({
     Tables: 'coll-table',
     Functions: 'coll-function',
     Views: 'coll-view',
+    'Materialized Views': 'coll-mview',
+    Sequences: 'coll-sequence',
+    Types: 'coll-type',
+    Domains: 'coll-domain',
+    Procedures: 'coll-procedure',
+    Aggregates: 'coll-aggregate',
+    'Foreign Tables': 'coll-foreign_table',
+    Collations: 'coll-collation',
+    'FTS Configurations': 'coll-fts_configuration',
+    'Trigger Functions': 'coll-trigger_function',
+    Operators: 'coll-operator',
   })[catalog] || `coll-${catalog.toLowerCase()}`;
 
   // Walk the aspen tree (the actual virtualized tree, accessible via
@@ -252,6 +269,130 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
     // Select the catalog node so menu actions target it.
     await tree.select(node, true);
   }, { targetType, db });
+};
+
+// Navigate to a SERVER-level collection node (Login/Group Roles,
+// Databases, EventTriggers, ForeignServers, Tablespaces, etc.).
+// Stops at the server tier and opens the requested coll-X.
+//
+// `targetType` is the collection's _type as pgAdmin's tree
+// registers it (e.g. 'coll-role', 'coll-database', 'coll-event_trigger').
+export const navigateToServerCollectionViaApi = async (page, targetType) => {
+  await page.evaluate(async ({ targetType }) => {
+    const tree = window.pgAdmin.Browser.tree;
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const itemData = (it) => (
+      typeof it.getMetadata === 'function'
+        ? it.getMetadata('data')
+        : (it.data || it._metadata?.data || null)
+    );
+    const childByPredicate = (node, pred) => {
+      for (const c of node.children || []) {
+        if (pred(itemData(c), c)) return c;
+      }
+      return null;
+    };
+    const openAndFind = async (parent, pred, label) => {
+      await tree.open(parent);
+      for (let i = 0; i < 50; i++) {
+        const found = childByPredicate(parent, pred);
+        if (found) return found;
+        await wait(200);
+      }
+      throw new Error(
+        `navigate: ${label} not found; available: `
+        + (parent.children || []).map((c) => {
+          const d = itemData(c);
+          return (d?._type || '?') + '/' + (d?.label || '?');
+        }).join(', ')
+      );
+    };
+    let node = tree.tree.getModel().root;
+    node = await openAndFind(
+      node, (d) => d?._type === 'server_group', 'server_group'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'server', 'server'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === targetType, targetType
+    );
+    await tree.select(node, true);
+  }, { targetType });
+};
+
+// Navigate to a SUB-CATALOG node nested under a specific Table
+// (Triggers, Indexes, Rules, Compound Triggers, Foreign Keys, etc.).
+// Picks the FIRST table under public schema and drills down to the
+// requested sub-collection — same "first child of given type" pattern
+// used by openEditDialogViaApi.
+//
+// `subCollectionType` is e.g. 'coll-trigger', 'coll-index',
+// 'coll-compound_trigger'.
+export const navigateToTableSubCollectionViaApi = async (
+  page, subCollectionType, database
+) => {
+  const db = database || process.env.PGDATABASE || 'postgres';
+  await page.evaluate(async ({ subCollectionType, db }) => {
+    const tree = window.pgAdmin.Browser.tree;
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const itemData = (it) => (
+      typeof it.getMetadata === 'function'
+        ? it.getMetadata('data')
+        : (it.data || it._metadata?.data || null)
+    );
+    const childByPredicate = (node, pred) => {
+      for (const c of node.children || []) {
+        if (pred(itemData(c), c)) return c;
+      }
+      return null;
+    };
+    const openAndFind = async (parent, pred, label) => {
+      await tree.open(parent);
+      for (let i = 0; i < 50; i++) {
+        const found = childByPredicate(parent, pred);
+        if (found) return found;
+        await wait(200);
+      }
+      throw new Error(
+        `navigate: ${label} not found; available: `
+        + (parent.children || []).map((c) => {
+          const d = itemData(c);
+          return (d?._type || '?') + '/' + (d?.label || '?');
+        }).join(', ')
+      );
+    };
+    let node = tree.tree.getModel().root;
+    node = await openAndFind(
+      node, (d) => d?._type === 'server_group', 'server_group'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'server', 'server'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'coll-database', 'coll-database'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'database' && d?.label === db, db
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'coll-schema', 'coll-schema'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'schema' && d?.label === 'public', 'public'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === 'coll-table', 'coll-table'
+    );
+    // First table — same shape as openEditDialogViaApi's child lookup.
+    node = await openAndFind(
+      node, (d) => d?._type === 'table', 'any table'
+    );
+    node = await openAndFind(
+      node, (d) => d?._type === subCollectionType, subCollectionType
+    );
+    await tree.select(node, true);
+  }, { subCollectionType, db });
 };
 
 // Trigger a "Create > X" dialog programmatically by invoking the
