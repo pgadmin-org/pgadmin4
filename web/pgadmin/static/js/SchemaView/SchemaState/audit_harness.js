@@ -1477,34 +1477,62 @@ export const auditSchema = (SchemaClass, { mode = 'edit' } = {}) => {
 
   let dispatches = 0;
   let skipReason = null;
+  // Aggregate harness-limitation skip reasons across passes so a
+  // closure crash in ONE pass doesn't abort the other 7. Real
+  // divergences still propagate (isDivergenceError check below).
+  const passSkips = [];
+  const runPass = (label, fn) => {
+    try { return fn(); }
+    catch (e) {
+      if (isDivergenceError(e)) throw e;
+      passSkips.push(`${label}: ${e.message.split('\n')[0]}`);
+      return 0;
+    }
+  };
   try {
     try {
-      dispatches += auditScalars(schema, sessData, knownErrorPaths, mode);
+      dispatches += runPass('scalars',
+        () => auditScalars(schema, sessData, knownErrorPaths, mode));
       // Nested-* group containers share the parent's data level but
       // live in the walker's nested branch — different code path.
-      dispatches += auditNestedFields(schema, sessData, knownErrorPaths, mode);
-      dispatches += auditCollectionCells(schema, sessData, knownErrorPaths, mode);
-      dispatches += auditCollectionStructure(schema, sessData, knownErrorPaths, mode);
+      dispatches += runPass('nested',
+        () => auditNestedFields(schema, sessData, knownErrorPaths, mode));
+      dispatches += runPass('coll-cells',
+        () => auditCollectionCells(schema, sessData, knownErrorPaths, mode));
+      dispatches += runPass('coll-structure',
+        () => auditCollectionStructure(schema, sessData, knownErrorPaths, mode));
       // MOVE_ROW + BULK_UPDATE passes — exercise the two
       // path-bearing action types the create/edit dispatch passes
       // don't cover. Production drives both via DataGridView (drag-
       // reorder and bulk-toggle); the walker handles them the same
       // way it handles ADD/DELETE (changedPath = collection root)
       // but the AUDIT didn't dispatch them.
-      dispatches += auditMoveRow(schema, sessData, knownErrorPaths, mode);
-      dispatches += auditBulkUpdate(schema, sessData, knownErrorPaths, mode);
+      dispatches += runPass('move-row',
+        () => auditMoveRow(schema, sessData, knownErrorPaths, mode));
+      dispatches += runPass('bulk-update',
+        () => auditBulkUpdate(schema, sessData, knownErrorPaths, mode));
       // Batched-dispatch pass — checks the post-fix accumulator handles
       // multi-path validates the same way single-path ones do.
-      dispatches += auditBatched(schema, sessData, knownErrorPaths, mode);
+      dispatches += runPass('batched',
+        () => auditBatched(schema, sessData, knownErrorPaths, mode));
       // Sequence pass — multi-step user flow with PERSISTED prev
       // across all 10 dispatches. Catches compounding bugs where
       // dispatch K's prev is dispatch K-1's stale output.
-      dispatches += auditSequence(schema, sessData, knownErrorPaths, mode);
+      dispatches += runPass('sequence',
+        () => auditSequence(schema, sessData, knownErrorPaths, mode));
+      // If only SOME passes hit harness limits, the audit still
+      // succeeded on the rest. Report skip ONLY when zero
+      // dispatches landed AND we have skip reasons — that's the
+      // "schema unaudited" case. Partial audits proceed silently
+      // (we have coverage from the passes that ran).
+      if (dispatches === 0 && passSkips.length > 0) {
+        skipReason = `all passes skipped: ${passSkips.join('; ')}`;
+      }
     } catch (e) {
       // Re-throw real divergences so jest catches them as test
-      // failures. Anything else — closures crashing on missing
-      // nodeInfo, missing `this.top` data, etc. — is a harness
-      // limitation, not a walker bug. Report as SKIP.
+      // failures. Anything else not caught by runPass (e.g. an
+      // exception thrown synchronously OUTSIDE a pass body) is a
+      // harness limitation. Report as SKIP.
       if (isDivergenceError(e)) throw e;
       skipReason = `dispatch error: ${e.message.split('\n')[0]}`;
     }

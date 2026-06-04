@@ -391,12 +391,23 @@ export class SchemaState extends DepListener {
           }
         }
       }
+      // Known error paths ride mustVisit AND depDests. Pre-fix the
+      // options walker would prune a row that previously erroried,
+      // recomputing wrong options for any closure that branches on
+      // error state. mustVisit was already augmented below; mirror
+      // it into depDests so updateOptions sees the same union.
+      if (incremental && state._knownErrorPaths.size > 0) {
+        if (!Array.isArray(depDests)) depDests = [];
+        else if (depDests === primaryDepDests) depDests = [...primaryDepDests];
+        for (const knownPath of state._knownErrorPaths.values()) {
+          depDests.push(knownPath);
+        }
+      }
       let mustVisit = null;
       if (incremental) {
         mustVisit = [changedPath].concat(Array.isArray(depDests) ? depDests : []);
-        for (const knownPath of state._knownErrorPaths.values()) {
-          mustVisit.push(knownPath);
-        }
+        // depDests now already includes known error paths (above);
+        // no need to re-push here.
       }
 
       // Capture every error reported across the validate walk into
