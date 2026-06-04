@@ -7,10 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
-// Extended UI smoke covering 15 additional dialog types beyond the
-// 5 in audit-smoke.spec.js. Each test opens the dialog with the
-// canary's throw-on-divergence flag enabled, clicks through visible
-// tabs, closes, and asserts no divergence fired.
+// Extended UI smoke covering 15 dialog types beyond the 5 in
+// audit-smoke.spec.js. Each spec opens the dialog, exercises it with
+// real dispatches (SET_VALUE on Name, tab-switch through every tab,
+// ADD_ROW on the first DataGridView, SET_VALUE on the new row's
+// first cell), closes (auto-dismissing any "discard changes?"
+// prompt), and asserts the walker canary stayed quiet.
 //
 // Coverage by category (each = one dialog type, picked from the
 // most production-relevant of create / edit per dialog):
@@ -22,23 +24,26 @@
 //   Server-level  (2): Role, Tablespace
 //   Sub-catalog   (2): Trigger, Index
 //
-// (Note: Database, EventTrigger and CompoundTrigger dialogs were
-// in the original spec list but were dropped — Database needs more
+// (Note: Database, EventTrigger and CompoundTrigger dialogs were in
+// the original spec list but were dropped — Database needs more
 // dialog-shape work, and the other two aren't shown on a vanilla
 // non-superuser PG 16 install. Replaced with Collation, FTS
 // Configuration, Trigger Function which exercise comparable code
 // paths.)
 //
-// Pattern is identical to audit-smoke.spec.js: navigate to the
-// parent collection via the JS tree API, invoke
-// show_obj_properties via openCreateDialogViaApi /
-// openEditDialogViaApi, wait for the dialog, click tabs, close,
-// assert canary clean.
+// Why interaction-level, not mount-only: a walker bug that triggers
+// only on ADD_ROW or tab-switch (i.e. anything beyond initial
+// validation pass) would slip past a mount-only smoke. The
+// `exerciseDialog` helper below fires real dispatches so the canary
+// has something to disagree about. Best-effort — dialogs without a
+// DataGrid or Name field silently skip those steps; validation
+// errors raised by the typed values aren't confused with canary
+// divergences (expectNoDivergence filters on canary-specific
+// messages only).
 //
-// Tests intentionally don't mutate fields or click Save — the
-// goal is "open + traverse + close, canary stays quiet."
-// Mutate-and-save coverage for the heaviest dialog (Table) lives
-// in the table-*.spec.js suite on dev/table-dialog-tests.
+// Does NOT click Save (no DB writes; no teardown). Save-path
+// coverage for the heaviest dialog (Table) lives in the
+// table-*.spec.js suite on dev/table-dialog-tests.
 
 import { test, expect } from '@playwright/test';
 import {
@@ -95,6 +100,65 @@ const expectCanaryExecuted = async (page, baselineCount) => {
   ).toBeGreaterThan(baselineCount);
 };
 
+// Exercise the open dialog beyond just "did it mount" so the walker
+// canary sees real dispatches. Mount-only smoke catches the narrow
+// "schema crashes at construction" regression; the broader walker
+// bugs (collection ADD_ROW, tab-switch field recomputation,
+// cross-tab dep evaluation) only fire when the user actually
+// interacts. Each interaction below maps to a real dispatch type:
+//
+//   - fill Name        → SET_VALUE on top-level scalar
+//   - click each tab   → renders OTHER tab's fields, exercises their
+//                        deps + initial validate pass
+//   - click add-row    → ADD_ROW dispatch on a DataGridView
+//   - fill first cell  → SET_VALUE on a collection row
+//
+// Best-effort: dialogs without a DataGrid skip the add-row step,
+// dialogs without a Name skip the fill. Validation errors raised by
+// the interactions are NOT confused with canary divergences —
+// expectNoDivergence filters to canary-specific messages only.
+const exerciseDialog = async (page) => {
+  const dialog = page.locator('.dock-panel.dock-style-dialogs').first();
+
+  // 1. SET_VALUE on Name. Some dialogs may have a disabled or
+  // missing Name field — silent-skip rather than fail the helper.
+  const nameBox = dialog.getByRole('textbox', { name: 'Name' }).first();
+  if (await nameBox.isEditable().catch(() => false)) {
+    await nameBox.fill('audit_smoke_x').catch(() => {});
+    await page.waitForTimeout(150);
+  }
+
+  // 2. Click each tab button. pgAdmin's SchemaView tabs render as
+  // <button data-test="<TabName>">. Skip action buttons that share
+  // the same selector (Close / Save / Reset / Help / Delete).
+  const SKIP = new Set(['Close', 'Save', 'Reset', 'Help', 'Delete', 'Add']);
+  const tabBtns = await dialog.locator('button[data-test]').all();
+  for (const btn of tabBtns) {
+    const dt = await btn.getAttribute('data-test').catch(() => null);
+    if (!dt || SKIP.has(dt)) continue;
+    if (!(await btn.isVisible().catch(() => false))) continue;
+    await btn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(120);
+  }
+
+  // 3. ADD_ROW on the first DataGridView found anywhere in the
+  // dialog. Dialogs with no grids skip cleanly.
+  const addRow = dialog.locator('[data-test="add-row"]').first();
+  if (await addRow.isVisible().catch(() => false)) {
+    await addRow.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(250);
+
+    // 4. SET_VALUE on the first input that became editable in the
+    // newly-added row. Fully best-effort — many grids render the
+    // first cell as a typeahead/dropdown that needs focus first.
+    const firstInput = dialog.locator('table input').first();
+    if (await firstInput.isVisible().catch(() => false)) {
+      await firstInput.fill('audit_x').catch(() => {});
+      await page.waitForTimeout(150);
+    }
+  }
+};
+
 // Try-finally wrappers so a Name-textbox timeout doesn't leave a stale
 // dialog open over the tree for the next spec.
 const openAndAssertClean = async (page, openFn, errors) => {
@@ -104,11 +168,21 @@ const openAndAssertClean = async (page, openFn, errors) => {
     await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
       state: 'visible', timeout: 20_000,
     });
+    await exerciseDialog(page);
   } finally {
-    // Close even if the Name wait failed — keep workspace clean.
+    // Close even if the Name wait or interaction failed — keep
+    // workspace clean.
     const close = page.locator(SCHEMA_DIALOG_CLOSE).first();
     if (await close.isVisible().catch(() => false)) {
       await close.click().catch(() => {});
+      // Close may pop a "Discard changes?" confirm if we mutated
+      // fields. Auto-accept it so the next spec starts clean.
+      const yes = page.locator(
+        'div[role="dialog"] button:has-text("Yes")'
+      ).first();
+      if (await yes.isVisible().catch(() => false)) {
+        await yes.click({ force: true }).catch(() => {});
+      }
     }
   }
   await expectCanaryExecuted(page, baseline);
@@ -187,12 +261,13 @@ test('Create Aggregate dialog', async ({ page }) => {
   await smokeCreateSchemaChild(page, 'Aggregates', 'aggregate');
 });
 
-test('Create Foreign Table dialog (mount)', async ({ page }) => {
-  // ForeignTable is one of the 5 schemas migrated to the
-  // deferredDepChange protocol in this PR's group 2. Smoke
-  // verifies dialog mount + initial walker pass — does NOT
-  // exercise the Inherits dropdown (that would catch any
-  // deferred-dep regression at dropdown-open time).
+test('Create Foreign Table dialog', async ({ page }) => {
+  // ForeignTable is one of the schemas migrated to the
+  // deferredDepChange protocol. exerciseDialog fires Name SET_VALUE,
+  // tab-switches, and ADD_ROWs the first DataGridView (the Columns
+  // grid) — exercises the schema's collection dispatchers. Does NOT
+  // open the Inherits dropdown (that would catch deferred-dep
+  // regressions at dropdown-open time; out of scope here).
   await smokeCreateSchemaChild(page, 'Foreign Tables', 'foreign_table');
 });
 
@@ -246,12 +321,13 @@ test('Create Trigger dialog (under table)', async ({ page }) => {
   await smokeCreateTableChild(page, 'coll-trigger', 'trigger');
 });
 
-test('Create Index dialog (under table, mount)', async ({ page }) => {
+test('Create Index dialog (under table)', async ({ page }) => {
   // Index.amname is one of the schemas migrated to the
-  // deferredDepChange protocol in group 2 — and listenDepChanges
-  // had to be fixed to register evaluator-only deps for this
-  // schema's column-opclass dep wiring. Smoke verifies dialog
-  // mount + initial walker pass; does NOT toggle amname (which
-  // would catch the deferred-dep change path at runtime).
+  // deferredDepChange protocol — and listenDepChanges had to be
+  // fixed to register evaluator-only deps for this schema's
+  // column-opclass dep wiring. exerciseDialog covers SET_VALUE +
+  // tab-switch + ADD_ROW (Index has a Columns collection). Does
+  // NOT toggle amname directly (that would catch the deferred-dep
+  // change path at runtime; out of scope here).
   await smokeCreateTableChild(page, 'coll-index', 'index');
 });
