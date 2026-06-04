@@ -161,3 +161,11 @@ heaviest single dialog in pgAdmin.
    keyed by `{platform}` so each OS has its own directory.
 2. **Capture is manual**: ideally CI does the capture-on-master step and
    commits the baselines back. Today it's developer-driven.
+3. **Tests still hit a real DB**: each spec opens a pgAdmin session,
+   which opens PostgreSQL connections. Sequential back-to-back runs can
+   exhaust PG's `max_connections` (defaults to 100). Mitigation:
+   `pkill -f pgAdmin4.py` between recording and verifying baselines, or
+   between batches if running all specs in sequence. A mock-harness
+   pivot was investigated 2026-06-04 and parked — pgAdmin's tree state
+   doesn't replay cleanly from raw REST captures. See
+   `docs/scratch/2026-06-04-audit-mock-harness.md`.
