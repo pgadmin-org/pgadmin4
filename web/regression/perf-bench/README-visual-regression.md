@@ -131,17 +131,24 @@ Reviewers can inspect the new baseline PNGs in the diff.
 
 ## Dialog coverage
 
-| Spec | Why this dialog |
-|---|---|
-| Edit Table | Heaviest SchemaView dialog. Vacuum settings, columns, constraints, partition tabs all on one screen. Walker stress + cross-tab data flow. |
-| Create Function | Function/Arguments collection + restricted return types via deps. |
-| Create Type | Composite/Enum/Range/Shell sub-schema routing — default composite shape. |
-| Edit Role | Server-level node (different parent path). Privileges + Membership grids. |
-| Create Index (under table) | Sub-catalog node + `amname` deferredDepChange (one of this PR's protocol-aligned schemas) + with-clause nested-fieldset. |
+20 visual specs, 1-to-1 with the smoke set's distinct dialogs (`audit-smoke.spec.js` + `audit-smoke-extended.spec.js`), minus Register Server (multi-step right-click flow, captured by smoke only).
 
-These five span: schema-level / sub-catalog / server-level node parents,
-deferred-dep schemas, multi-tab + multi-collection layouts, and the
-heaviest single dialog in pgAdmin.
+| Category | Specs |
+|---|---|
+| Schema-level (15) | Edit Table, Create Table, Create Function, Edit Function, Create View, Create MView, Create Sequence, Create Type, Create Domain, Create Procedure, Create Aggregate, Create Foreign Table, Create Collation, Create FTS Config, Create Trigger Function |
+| Server-level (3) | Edit Role, Create Role, Create Tablespace |
+| Sub-catalog (2) | Create Index (under table), Create Trigger (under table) |
+
+Highlights worth knowing about:
+
+- **Edit Table** — heaviest dialog; vacuum/columns/constraints/partition tabs all on one screen.
+- **Create Type** — composite/enum/range/shell sub-schema routing (default composite shape rendered).
+- **Edit Role** — server-level parent; privileges + membership grids; Name + Comments masked because first-role name is env-dependent.
+- **Edit Function** — env-dependent; requires at least one function in `public` (Name masked).
+- **Create Index** — `amname` deferredDepChange protocol; with-clause nested-fieldset.
+- **Create Foreign Table** — deferredDepChange + Inherits dropdown (not opened in spec; mount-only).
+
+Edit-mode specs (Edit Table, Edit Function, Edit Role) require pre-existing objects: a regular table in `public`, at least one function in `public`, and any role under the server respectively. CI seed needs to provide these; on a vanilla local PG, all three usually exist if you've ever connected pgAdmin to a working database.
 
 ## Things that AREN'T covered (intentional)
 
@@ -166,6 +173,12 @@ heaviest single dialog in pgAdmin.
    exhaust PG's `max_connections` (defaults to 100). Mitigation:
    `pkill -f pgAdmin4.py` between recording and verifying baselines, or
    between batches if running all specs in sequence. A mock-harness
-   pivot was investigated 2026-06-04 and parked — pgAdmin's tree state
-   doesn't replay cleanly from raw REST captures. See
-   `docs/scratch/2026-06-04-audit-mock-harness.md`.
+   pivot was investigated and parked — naive HAR replay captures the
+   full bundle (~17 MB/spec), and a custom recorder + URL-normalizer
+   layer (proven to capture/replay individual REST endpoints) couldn't
+   reproduce the JS tree's expansion state from raw REST responses
+   alone. The tree is stateful in ways event-stream replay can't
+   reconstruct from response bytes. Future paths: state-aware mock
+   proxy (~2-3 days) or static-mount harness that bypasses the tree
+   entirely (~4-6 hours, parallel coverage track rather than
+   replacement).

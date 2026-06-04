@@ -387,8 +387,10 @@ export const navigateToTableSubCollectionViaApi = async (
     // `available: ` (empty list). That IS the diagnostic — the
     // children list was definitively empty after the full poll, not
     // racing-with-load. The sub-collection smoke specs require at
-    // least one regular table to exist; if you see this error, the CI
-    // seed step (`create_test_tables_function`) may not have run.
+    // least one regular table to exist; if you see this error, the
+    // CI workflow's pre-spec seed step (see .github/workflows/ for
+    // the schemaview-ui-smoke job) didn't run or didn't create the
+    // expected fixture table.
     node = await openAndFind(
       node, (d) => d?._type === 'table', 'any table (sub-collection '
       + 'smoke needs at least one table in public)'

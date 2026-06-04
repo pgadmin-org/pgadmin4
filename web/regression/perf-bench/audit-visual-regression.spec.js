@@ -69,6 +69,7 @@
 import { test, expect } from '@playwright/test';
 import {
   installErrorRecorders, enableAudit, autoDismissUnlockModal,
+  expectNoDivergence,
   ensureServerRegistered, navigateToCatalogNodeViaApi,
   navigateToServerCollectionViaApi, navigateToTableSubCollectionViaApi,
   openCreateDialogViaApi, openEditDialogViaApi,
@@ -122,6 +123,12 @@ const bootPage = async (page) => {
   });
   await page.waitForTimeout(1_000);
   await enableAudit(page);
+  // Asserts the audit flag survived page load — if pgAdmin reloaded
+  // the SPA between goto and now (rare, but possible after a server
+  // connect prompt), audit would be off, the canary tree-shaken
+  // branch wouldn't run, and the visual snapshot would match an
+  // unaudited render. Fail loud instead.
+  expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
 };
 
 // Locate the dialog content area. pgAdmin uses rc-dock (not a
@@ -135,6 +142,11 @@ const dialogLocator = (page) =>
 // Common dialog-snapshot helpers. The 20 specs converge on the same
 // shape (navigate → open → wait Name → settle → snapshot), so they
 // share helpers rather than 20x copy-paste.
+//
+// Each helper asserts BOTH the pixel diff and the walker-canary
+// cleanliness. Visual diff catches CSS/layout regressions; canary
+// catches walker regressions; the two surfaces are orthogonal and
+// both signals are free to collect once the dialog is open.
 const waitDialogReady = async (page, settleMs = 1_500) => {
   await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
     state: 'visible', timeout: 20_000,
@@ -146,7 +158,7 @@ const snapshotSchemaChild = async (
   page, catalogLabel, nodeType, snapshotName,
   { editMode = false, settleMs = 1_500, opts = {} } = {}
 ) => {
-  installErrorRecorders(page);
+  const errors = installErrorRecorders(page);
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToCatalogNodeViaApi(page, catalogLabel);
@@ -156,13 +168,14 @@ const snapshotSchemaChild = async (
   await expect(dialogLocator(page)).toHaveScreenshot(
     snapshotName, { ...SCREENSHOT_OPTS, ...opts }
   );
+  expectNoDivergence(errors);
 };
 
 const snapshotServerChild = async (
   page, collectionType, nodeType, snapshotName,
   { editMode = false, settleMs = 1_500, opts = {} } = {}
 ) => {
-  installErrorRecorders(page);
+  const errors = installErrorRecorders(page);
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToServerCollectionViaApi(page, collectionType);
@@ -172,13 +185,14 @@ const snapshotServerChild = async (
   await expect(dialogLocator(page)).toHaveScreenshot(
     snapshotName, { ...SCREENSHOT_OPTS, ...opts }
   );
+  expectNoDivergence(errors);
 };
 
 const snapshotTableChild = async (
   page, subCollectionType, nodeType, snapshotName,
   { settleMs = 1_500, opts = {} } = {}
 ) => {
-  installErrorRecorders(page);
+  const errors = installErrorRecorders(page);
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToTableSubCollectionViaApi(page, subCollectionType);
@@ -187,6 +201,7 @@ const snapshotTableChild = async (
   await expect(dialogLocator(page)).toHaveScreenshot(
     snapshotName, { ...SCREENSHOT_OPTS, ...opts }
   );
+  expectNoDivergence(errors);
 };
 
 // =============================================================
@@ -215,12 +230,19 @@ test('Visual: Create Function dialog', async ({ page }) => {
 
 test('Visual: Edit Function dialog', async ({ page }) => {
   // First function in the schema. Mask Name (env-specific).
+  // Locator scoped to the dialog panel — Playwright `.getByRole` at
+  // page level would also match Name fields in unrelated overlays
+  // (none today, but defensive against future schema changes).
   await snapshotSchemaChild(
     page, 'Functions', 'function', 'edit-function.png',
     {
       editMode: true,
       settleMs: 2_000,
-      opts: { mask: [page.getByRole('textbox', { name: 'Name' }).first()] },
+      opts: {
+        mask: [
+          dialogLocator(page).getByRole('textbox', { name: 'Name' }).first(),
+        ],
+      },
     }
   );
 });
@@ -283,6 +305,9 @@ test('Visual: Edit Role dialog', async ({ page }) => {
   // Different test envs have different first-role names — mask Name +
   // Comments. Layout-shift regressions still show up because the
   // surrounding tab/header/grid pixels still diff.
+  // Locators scoped to the dialog panel so privileges/membership
+  // grid headers that happen to be ARIA-labeled "Comments" can't
+  // collide with the actual General-tab Comments textarea.
   await snapshotServerChild(
     page, 'coll-role', 'role', 'edit-role.png',
     {
@@ -290,8 +315,8 @@ test('Visual: Edit Role dialog', async ({ page }) => {
       settleMs: 2_000,
       opts: {
         mask: [
-          page.getByRole('textbox', { name: 'Name' }).first(),
-          page.getByRole('textbox', { name: 'Comments' }).first(),
+          dialogLocator(page).getByRole('textbox', { name: 'Name' }).first(),
+          dialogLocator(page).getByRole('textbox', { name: 'Comments' }).first(),
         ],
       },
     }

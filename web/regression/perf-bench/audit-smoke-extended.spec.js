@@ -61,6 +61,11 @@ const bootPage = async (page) => {
   });
   await page.waitForTimeout(1_000);
   await enableAudit(page);
+  // Mirror audit-smoke.spec.js's bootPage — assert the audit flag
+  // survived page load. (expectCanaryExecuted asserts the canary
+  // RAN; this asserts the audit FLAG is still set — orthogonal
+  // failure modes that both need to be tight.)
+  expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
 };
 
 // Close button scoped to the SchemaView dialog panel — avoids matching
@@ -148,7 +153,7 @@ const smokeCreateTableChild = async (page, subCollectionType, nodeType) => {
 };
 
 // =============================================================
-// Schema-level dialogs (8 tests)
+// Schema-level dialogs (10 tests)
 // =============================================================
 
 test('Create View dialog', async ({ page }) => {
