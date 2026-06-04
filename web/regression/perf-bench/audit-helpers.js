@@ -200,7 +200,6 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
     Collations: 'coll-collation',
     'FTS Configurations': 'coll-fts_configuration',
     'Trigger Functions': 'coll-trigger_function',
-    Operators: 'coll-operator',
   })[catalog] || `coll-${catalog.toLowerCase()}`;
 
   // Walk the aspen tree (the actual virtualized tree, accessible via
@@ -384,9 +383,15 @@ export const navigateToTableSubCollectionViaApi = async (
     node = await openAndFind(
       node, (d) => d?._type === 'coll-table', 'coll-table'
     );
-    // First table — same shape as openEditDialogViaApi's child lookup.
+    // If public has no tables, openAndFind times out after 10s with
+    // `available: ` (empty list). That IS the diagnostic — the
+    // children list was definitively empty after the full poll, not
+    // racing-with-load. The sub-collection smoke specs require at
+    // least one regular table to exist; if you see this error, the CI
+    // seed step (`create_test_tables_function`) may not have run.
     node = await openAndFind(
-      node, (d) => d?._type === 'table', 'any table'
+      node, (d) => d?._type === 'table', 'any table (sub-collection '
+      + 'smoke needs at least one table in public)'
     );
     node = await openAndFind(
       node, (d) => d?._type === subCollectionType, subCollectionType

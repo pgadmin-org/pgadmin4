@@ -46,7 +46,7 @@ import {
   expectNoDivergence, ensureServerRegistered,
   navigateToCatalogNodeViaApi, navigateToServerCollectionViaApi,
   navigateToTableSubCollectionViaApi,
-  openCreateDialogViaApi, openEditDialogViaApi,
+  openCreateDialogViaApi,
 } from './audit-helpers';
 
 const PGADMIN_URL =
@@ -63,6 +63,41 @@ const bootPage = async (page) => {
   await enableAudit(page);
 };
 
+// Close button scoped to the SchemaView dialog panel — avoids matching
+// transient toasts or the Unlock Saved Passwords dialog (rare race;
+// has its own Close affordance) that may briefly co-exist.
+const SCHEMA_DIALOG_CLOSE =
+  '.dock-panel.dock-style-dialogs button[data-test="Close"]';
+
+// Asserts the canary build code actually ran during this dialog mount.
+// Without this we'd only be asserting `__INCREMENTAL_AUDIT__` (a flag
+// set by enableAudit itself) — which would pass vacuously on a
+// non-CANARY_BUILD bundle where the canary is tree-shaken away.
+const expectCanaryExecuted = async (page) => {
+  const n = await page.evaluate(() => window.__canary_entry_count__);
+  expect(n, 'canary did not execute — likely a non-CANARY_BUILD bundle')
+    .toBeGreaterThan(0);
+};
+
+// Try-finally wrappers so a Name-textbox timeout doesn't leave a stale
+// dialog open over the tree for the next spec.
+const openAndAssertClean = async (page, openFn, errors) => {
+  try {
+    await openFn();
+    await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
+      state: 'visible', timeout: 20_000,
+    });
+  } finally {
+    // Close even if the Name wait failed — keep workspace clean.
+    const close = page.locator(SCHEMA_DIALOG_CLOSE).first();
+    if (await close.isVisible().catch(() => false)) {
+      await close.click().catch(() => {});
+    }
+  }
+  await expectCanaryExecuted(page);
+  expectNoDivergence(errors);
+};
+
 // Generic: navigate → open Create dialog for `nodeType` → wait for
 // the dialog → close → assert canary clean. Used for the schema-
 // level Create-mode specs that all share this shape.
@@ -71,13 +106,9 @@ const smokeCreateSchemaChild = async (page, catalogLabel, nodeType) => {
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToCatalogNodeViaApi(page, catalogLabel);
-  await openCreateDialogViaApi(page, nodeType);
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.locator('button:has-text("Close")').first().click();
-  expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
-  expectNoDivergence(errors);
+  await openAndAssertClean(
+    page, () => openCreateDialogViaApi(page, nodeType), errors
+  );
 };
 
 // Same shape but for SERVER-level collections (Roles, Databases,
@@ -87,13 +118,9 @@ const smokeCreateServerChild = async (page, collectionType, nodeType) => {
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToServerCollectionViaApi(page, collectionType);
-  await openCreateDialogViaApi(page, nodeType);
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.locator('button:has-text("Close")').first().click();
-  expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
-  expectNoDivergence(errors);
+  await openAndAssertClean(
+    page, () => openCreateDialogViaApi(page, nodeType), errors
+  );
 };
 
 // Same shape but for SUB-COLLECTIONS under a table (Triggers,
@@ -103,13 +130,9 @@ const smokeCreateTableChild = async (page, subCollectionType, nodeType) => {
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToTableSubCollectionViaApi(page, subCollectionType);
-  await openCreateDialogViaApi(page, nodeType);
-  await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
-    state: 'visible', timeout: 20_000,
-  });
-  await page.locator('button:has-text("Close")').first().click();
-  expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
-  expectNoDivergence(errors);
+  await openAndAssertClean(
+    page, () => openCreateDialogViaApi(page, nodeType), errors
+  );
 };
 
 // =============================================================
@@ -147,11 +170,12 @@ test('Create Aggregate dialog', async ({ page }) => {
   await smokeCreateSchemaChild(page, 'Aggregates', 'aggregate');
 });
 
-test('Create Foreign Table dialog (inherits deferred)', async ({ page }) => {
-  // ForeignTable was one of the 5 schemas migrated to the
+test('Create Foreign Table dialog (mount)', async ({ page }) => {
+  // ForeignTable is one of the 5 schemas migrated to the
   // deferredDepChange protocol in this PR's group 2. Smoke
-  // verifies the dialog mounts and inherits dropdown loads
-  // without canary divergence.
+  // verifies dialog mount + initial walker pass — does NOT
+  // exercise the Inherits dropdown (that would catch any
+  // deferred-dep regression at dropdown-open time).
   await smokeCreateSchemaChild(page, 'Foreign Tables', 'foreign_table');
 });
 
@@ -205,10 +229,12 @@ test('Create Trigger dialog (under table)', async ({ page }) => {
   await smokeCreateTableChild(page, 'coll-trigger', 'trigger');
 });
 
-test('Create Index dialog (under table, amname deferred)', async ({ page }) => {
+test('Create Index dialog (under table, mount)', async ({ page }) => {
   // Index.amname is one of the schemas migrated to the
   // deferredDepChange protocol in group 2 — and listenDepChanges
   // had to be fixed to register evaluator-only deps for this
-  // schema's column-opclass dep wiring.
+  // schema's column-opclass dep wiring. Smoke verifies dialog
+  // mount + initial walker pass; does NOT toggle amname (which
+  // would catch the deferred-dep change path at runtime).
   await smokeCreateTableChild(page, 'coll-index', 'index');
 });

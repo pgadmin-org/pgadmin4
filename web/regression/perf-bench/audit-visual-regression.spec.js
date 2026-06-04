@@ -64,28 +64,41 @@ import {
 const PGADMIN_URL =
   process.env.PGADMIN_URL || 'http://127.0.0.1:5050/browser/';
 
-// Animations + the SQL CodeMirror's blinking cursor make a naive
-// `toHaveScreenshot` non-deterministic. The options below get us
-// to a stable snapshot:
-//   - disableAnimations: 'allow' is the closest Playwright provides
-//     for SchemaView's MUI transitions; the explicit
-//     animations: 'disabled' option works for any CSS animation.
-//   - mask the CodeMirror SQL preview (test runs at varying speeds
-//     so its content varies by single chars). Mask removes that
-//     region from the diff.
-//   - threshold: 0.01 is forgiving enough for sub-pixel font
-//     rendering differences across machines (CI Linux vs macOS).
-// `threshold` controls per-pixel color sensitivity; `maxDiffPixelRatio`
-// caps how many pixels are allowed to diff at all. Even back-to-back
-// runs on identical code show a few px of cursor-blink / focus-ring
-// noise — 0.5% (≈100 px on a 900×550 dialog) absorbs that without
-// missing a real layout shift (which spans thousands of px).
+// Animations + cursor-blink / focus-ring rendering make a naive
+// `toHaveScreenshot` non-deterministic. Two knobs control sensitivity:
+//   - threshold: per-pixel color delta tolerance (0.01 = 1%).
+//   - maxDiffPixels: absolute count of pixels allowed to differ at all.
+//     Calibrated by capturing twice on identical code and adding a
+//     safety margin (~5x measured noise) — not by dialing up until
+//     CI is green. Current: typical dialog renders at ~1200x800;
+//     observed back-to-back drift is 0-15 px on darwin, almost all
+//     cursor blink in the focused field. 100 px lets a small icon or
+//     a few characters of a label move; a real layout shift (label
+//     wraps, field moves) is thousands of pixels.
+//   - SQL preview tab content is non-deterministic (timing-dependent
+//     CodeMirror state). Specs intentionally do NOT navigate to the
+//     SQL tab — they snapshot the General tab only.
 const SCREENSHOT_OPTS = {
   animations: 'disabled',
   threshold: 0.01,
-  maxDiffPixelRatio: 0.005,
+  maxDiffPixels: 100,
   fullPage: false,
 };
+
+// Visual baselines are environment-specific (OS, browser version, PG
+// version all influence font rendering and field-availability). The
+// committed baselines were captured on darwin; running on another
+// platform without first capturing fresh baselines for it gives
+// guaranteed false positives. Skip the suite on non-darwin until a
+// per-platform snapshot strategy lands (see README-visual-regression.md
+// — "Mitigation: capture baselines in CI itself").
+test.beforeEach(() => {
+  test.skip(
+    process.platform !== 'darwin',
+    'Visual baselines are darwin-only; see README-visual-regression.md '
+    + 'for per-platform capture instructions before enabling.'
+  );
+});
 
 const bootPage = async (page) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
@@ -158,14 +171,25 @@ test('Visual: Edit Role dialog', async ({ page }) => {
   await bootPage(page);
   await ensureServerRegistered(page);
   await navigateToServerCollectionViaApi(page, 'coll-role');
-  // Open Properties on the FIRST role under server.
+  // Open Properties on the FIRST role under server. Different test
+  // envs have different first-role names (postgres on a vanilla
+  // install, custom role on a dev box) — so we MASK the Name input
+  // and Comments multiline. Layout-shift regressions still show up
+  // because the surrounding tab/header/grid pixels still diff.
   await openEditDialogViaApi(page, 'role');
   await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
     state: 'visible', timeout: 20_000,
   });
   await page.waitForTimeout(2_000);
   await expect(dialogLocator(page)).toHaveScreenshot(
-    'edit-role.png', SCREENSHOT_OPTS
+    'edit-role.png',
+    {
+      ...SCREENSHOT_OPTS,
+      mask: [
+        page.getByRole('textbox', { name: 'Name' }).first(),
+        page.getByRole('textbox', { name: 'Comments' }).first(),
+      ],
+    }
   );
 });
 

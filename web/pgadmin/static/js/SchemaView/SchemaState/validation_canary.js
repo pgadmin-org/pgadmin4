@@ -186,6 +186,15 @@ export const runValidationCanary = ({
   accessPath = [], collLabel = null, mustVisit = null,
   collectAll = false, onDivergence = null,
 }) => {
+  // Stamp an entry-count on window so canary-build tests can assert the
+  // walker actually executed (not just that __INCREMENTAL_AUDIT__ was set
+  // by the harness — which doesn't prove the dialog mounted or that a
+  // production build was used). Whole runValidationCanary module is
+  // tree-shaken in non-CANARY_BUILD bundles, so this is zero cost in
+  // production.
+  if (typeof window !== 'undefined') {
+    window.__canary_entry_count__ = (window.__canary_entry_count__ || 0) + 1;
+  }
   // Both inner walks force collectAll=true so the diff reflects
   // ACTUAL missed errors rather than which row each walk happened to
   // short-circuit on. With short-circuit enabled, full + incremental
