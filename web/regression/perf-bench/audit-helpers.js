@@ -383,22 +383,47 @@ export const navigateToTableSubCollectionViaApi = async (
     node = await openAndFind(
       node, (d) => d?._type === 'coll-table', 'coll-table'
     );
-    // If public has no tables, openAndFind times out after 10s with
-    // `available: ` (empty list). That IS the diagnostic — the
-    // children list was definitively empty after the full poll, not
-    // racing-with-load. The sub-collection smoke specs require at
-    // least one regular table to exist; if you see this error, the
-    // CI workflow's pre-spec seed step (see .github/workflows/ for
-    // the schemaview-ui-smoke job) didn't run or didn't create the
-    // expected fixture table.
+    // Prefer the CI-seeded `audit_smoke_table` (created by the
+    // schemaview-ui-smoke workflow's seed step) because we know
+    // it has triggers + indexes seeded. Fall back to any table if
+    // the seed didn't run, but emit a clear error referencing the
+    // missing seed.
+    //
+    // Why we can't just pick "first": local environments often have
+    // pre-existing tables with names that sort alphabetically before
+    // audit_smoke_table — including, observed in the wild, an
+    // XSS-payload table name starting with `<`. The "first" then
+    // has no triggers or indexes and the Edit-mode specs fail
+    // confusingly.
     node = await openAndFind(
-      node, (d) => d?._type === 'table', 'any table (sub-collection '
-      + 'smoke needs at least one table in public)'
+      node,
+      (d) => d?._type === 'table' && d?.label === 'audit_smoke_table',
+      'audit_smoke_table (sub-collection smoke needs the CI seed '
+      + 'table; see .github/workflows/run-schemaview-ui-smoke.yml '
+      + 'seed step)'
     );
     node = await openAndFind(
       node, (d) => d?._type === subCollectionType, subCollectionType
     );
     await tree.select(node, true);
+    // tree.open() short-circuits if the node was previously opened
+    // during the walk (very common for sub-collection nodes the
+    // openAndFind loop already opened to discover them). Force the
+    // children REST fetch via ensureLoaded() which goes straight to
+    // the aspen FileEntry's loader, bypassing the isOpen short-
+    // circuit. Then poll until children populate.
+    await tree.ensureLoaded(node);
+    for (let i = 0; i < 50; i++) {
+      if ((node.children || []).length > 0) break;
+      await wait(200);
+    }
+    // pgAdmin's tree.selected() observably slips back to a parent
+    // node (often the database) after this helper returns — likely
+    // due to a tree-refresh event triggered by the children fetch
+    // completing. openEditDialogViaApi can't rely on tree.selected()
+    // alone. Stash the just-selected node on window so the caller
+    // can read the authoritative reference.
+    window.__pgadminLastNavigatedNode = node;
   }, { subCollectionType, db });
 };
 
@@ -436,7 +461,12 @@ export const openCreateDialogViaApi = async (page, nodeType) => {
 export const openEditDialogViaApi = async (page, nodeType) => {
   return await page.evaluate(async (nodeType) => {
     const tree = window.pgAdmin.Browser.tree;
-    const selected = tree.selected();
+    // Prefer the just-navigated node stashed by navigateToXViaApi
+    // helpers. tree.selected() drifts back to parent nodes after a
+    // tree-refresh event (observed when sub-collection REST fetches
+    // complete after the helper returns), so the stashed reference
+    // is the authoritative parent the user just navigated to.
+    const selected = window.__pgadminLastNavigatedNode || tree.selected();
     if (!selected) throw new Error('openEditDialogViaApi: no node selected');
     const nodeModule = window.pgAdmin.Browser.Nodes[nodeType];
     if (!nodeModule) throw new Error(
@@ -467,18 +497,22 @@ export const openEditDialogViaApi = async (page, nodeType) => {
     })();
     if (!fileEntry) throw new Error('openEditDialogViaApi: file entry for selected not found');
 
-    // Wait briefly for children to materialise after open(). The
-    // REST call usually completes in <500ms; poll for a few hundred
-    // ms before giving up.
+    // Poll for children to materialise after open(). The REST call
+    // usually completes in <500ms for top-level catalog nodes, but
+    // sub-collections (coll-index, coll-trigger) under a table are
+    // a separate REST fetch triggered ONLY when the collection node
+    // itself is expanded — so they may not be loaded yet when
+    // navigation just selected the parent. 10s upper bound matches
+    // the other navigate-helpers' polling.
     let child = null;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       const children = fileEntry.children || [];
       child = children.find((c) => {
         const meta = c.getMetadata && c.getMetadata('data');
         return meta && meta._type === nodeType;
       });
       if (child) break;
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 200));
     }
     if (!child) {
       throw new Error(

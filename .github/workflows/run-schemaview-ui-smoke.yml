@@ -113,13 +113,19 @@ jobs:
           EOF
 
       # CI's fresh PG 16 database is empty — no tables, no functions
-      # to "Edit Properties" on. The Edit Table / Edit Function smoke
-      # tests need at least one child of each type under the
-      # default `postgres` database. Pre-create them so the smoke
-      # has real edit-mode targets.
+      # to "Edit Properties" on. The Edit-mode smoke specs need at
+      # least one child of each type under the default `postgres`
+      # database. Pre-create them so the smoke has real edit-mode
+      # targets.
+      #
+      # Covers all 15 Edit-mode specs in audit-smoke-extended.spec.js
+      # plus the 2 in audit-smoke.spec.js (Edit Table, Edit Function).
+      # Edit Role / Edit Tablespace / Edit Type pass without seed
+      # because every PG install ships with at least one of each.
       - name: Seed schema objects for edit-mode smoke
         run: |
           PGPASSWORD= psql -h 127.0.0.1 -p 5916 -U postgres -d postgres -c "
+            -- Original 2 (audit-smoke.spec.js Edit Table / Function)
             CREATE TABLE IF NOT EXISTS audit_smoke_table (
               id   integer PRIMARY KEY,
               name text NOT NULL
@@ -127,6 +133,77 @@ jobs:
             CREATE OR REPLACE FUNCTION audit_smoke_func() RETURNS integer AS \$\$
               SELECT 1;
             \$\$ LANGUAGE sql IMMUTABLE;
+
+            -- Extended Edit-mode prerequisites (12 new):
+
+            CREATE OR REPLACE VIEW audit_smoke_view AS
+              SELECT id, name FROM audit_smoke_table;
+
+            CREATE MATERIALIZED VIEW IF NOT EXISTS audit_smoke_mview AS
+              SELECT id, name FROM audit_smoke_table;
+
+            CREATE SEQUENCE IF NOT EXISTS audit_smoke_seq;
+
+            DO \$\$ BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'audit_smoke_type') THEN
+                CREATE TYPE audit_smoke_type AS (a integer, b text);
+              END IF;
+            END \$\$;
+
+            DO \$\$ BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'audit_smoke_domain') THEN
+                CREATE DOMAIN audit_smoke_domain AS integer CHECK (VALUE >= 0);
+              END IF;
+            END \$\$;
+
+            CREATE OR REPLACE PROCEDURE audit_smoke_proc() LANGUAGE plpgsql
+              AS \$\$ BEGIN NULL; END; \$\$;
+
+            DO \$\$ BEGIN
+              IF NOT EXISTS (
+                SELECT 1 FROM pg_proc WHERE proname = 'audit_smoke_agg'
+              ) THEN
+                CREATE AGGREGATE audit_smoke_agg (integer) (
+                  SFUNC = int4pl, STYPE = integer, INITCOND = '0'
+                );
+              END IF;
+            END \$\$;
+
+            CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+            DO \$\$ BEGIN
+              IF NOT EXISTS (
+                SELECT 1 FROM pg_foreign_server WHERE srvname = 'audit_smoke_fsrv'
+              ) THEN
+                CREATE SERVER audit_smoke_fsrv
+                  FOREIGN DATA WRAPPER postgres_fdw
+                  OPTIONS (host '127.0.0.1', dbname 'postgres');
+              END IF;
+            END \$\$;
+            CREATE FOREIGN TABLE IF NOT EXISTS audit_smoke_ftable (
+              id integer, name text
+            ) SERVER audit_smoke_fsrv OPTIONS (table_name 'audit_smoke_table');
+
+            DO \$\$ BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_collation WHERE collname = 'audit_smoke_coll') THEN
+                CREATE COLLATION audit_smoke_coll (locale = 'C');
+              END IF;
+            END \$\$;
+
+            DO \$\$ BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = 'audit_smoke_fts') THEN
+                CREATE TEXT SEARCH CONFIGURATION audit_smoke_fts (COPY = english);
+              END IF;
+            END \$\$;
+
+            CREATE OR REPLACE FUNCTION audit_smoke_tgfn() RETURNS trigger
+              LANGUAGE plpgsql AS \$\$ BEGIN RETURN NEW; END; \$\$;
+
+            DROP TRIGGER IF EXISTS audit_smoke_trig ON audit_smoke_table;
+            CREATE TRIGGER audit_smoke_trig BEFORE INSERT ON audit_smoke_table
+              FOR EACH ROW EXECUTE FUNCTION audit_smoke_tgfn();
+
+            CREATE INDEX IF NOT EXISTS audit_smoke_idx
+              ON audit_smoke_table (name);
           "
 
       # Initialise pgAdmin's config SQLite. load-servers below needs

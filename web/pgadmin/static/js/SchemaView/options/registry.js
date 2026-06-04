@@ -250,7 +250,19 @@ function _schemaOptionsEvalulatorImpl({
           // points into it) or sits ABOVE it (a structural change at or
           // above the collection — e.g. ADD_ROW with
           // `changedPath = ['columns']`).
-          if (incremental && !mustVisit.some((p) => pathOverlaps(rowGlobalPath, p))) {
+          //
+          // Guard: only prune when prevColl[idx] HAS a prior result we
+          // can inherit. If undefined (typical for the first dispatch
+          // after an Edit-mode mount populated data.columns but the
+          // initial-walk options haven't been propagated as prevOptions
+          // yet, OR for any race between the React state-store write
+          // and the next dispatch), we MUST walk the row — otherwise
+          // nextColl[idx] stays undefined and downstream consumers
+          // (DataGridView features.onRow, canEditRow / canDeleteRow
+          // checks) see missing options for legitimately-present rows.
+          if (incremental
+              && prevColl[idx] !== undefined
+              && !mustVisit.some((p) => pathOverlaps(rowGlobalPath, p))) {
             // nextColl[idx] already === prevColl[idx] via spread; we
             // intentionally do NOTHING so the reference is preserved.
             return;

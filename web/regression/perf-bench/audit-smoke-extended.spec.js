@@ -51,7 +51,7 @@ import {
   expectNoDivergence, ensureServerRegistered,
   navigateToCatalogNodeViaApi, navigateToServerCollectionViaApi,
   navigateToTableSubCollectionViaApi,
-  openCreateDialogViaApi,
+  openCreateDialogViaApi, openEditDialogViaApi,
 } from './audit-helpers';
 
 const PGADMIN_URL =
@@ -226,6 +226,49 @@ const smokeCreateTableChild = async (page, subCollectionType, nodeType) => {
   );
 };
 
+// Edit-mode variants. These open Properties on the FIRST node of the
+// given type under the parent collection. They require the object to
+// already exist — vanilla PG installs are missing most of these in
+// `public` schema, so the spec will fail with "any X not found" if
+// the seed wasn't run. That failure mode IS the diagnostic: re-run
+// CI's seed step (or for local dev, create one instance of each).
+//
+// Why Edit mode matters beyond Create: it exercises
+// `initialise(force=true)` against persisted data, populated dropdowns
+// resolving to specific values, and validators running on real state
+// (not empty defaults). Walker bugs that only trigger when collections
+// start with rows (Edit) vs are empty + grown (Create) slip past
+// Create-only smoke.
+const smokeEditSchemaChild = async (page, catalogLabel, nodeType) => {
+  const errors = installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToCatalogNodeViaApi(page, catalogLabel);
+  await openAndAssertClean(
+    page, () => openEditDialogViaApi(page, nodeType), errors
+  );
+};
+
+const smokeEditServerChild = async (page, collectionType, nodeType) => {
+  const errors = installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToServerCollectionViaApi(page, collectionType);
+  await openAndAssertClean(
+    page, () => openEditDialogViaApi(page, nodeType), errors
+  );
+};
+
+const smokeEditTableChild = async (page, subCollectionType, nodeType) => {
+  const errors = installErrorRecorders(page);
+  await bootPage(page);
+  await ensureServerRegistered(page);
+  await navigateToTableSubCollectionViaApi(page, subCollectionType);
+  await openAndAssertClean(
+    page, () => openEditDialogViaApi(page, nodeType), errors
+  );
+};
+
 // =============================================================
 // Schema-level dialogs (10 tests)
 // =============================================================
@@ -330,4 +373,100 @@ test('Create Index dialog (under table)', async ({ page }) => {
   // NOT toggle amname directly (that would catch the deferred-dep
   // change path at runtime; out of scope here).
   await smokeCreateTableChild(page, 'coll-index', 'index');
+});
+
+// =============================================================
+// Edit-mode variants (15 tests) — each requires one instance of the
+// target type to already exist under the server. CI seed must
+// provide; on a vanilla local PG these may skip with "any X not
+// found" depending on what's been created.
+// =============================================================
+
+// Schema-level edits (10)
+
+test('Edit View dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Views', 'view');
+});
+
+test('Edit Materialized View dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Materialized Views', 'mview');
+});
+
+test('Edit Sequence dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Sequences', 'sequence');
+});
+
+test('Edit Type dialog', async ({ page }) => {
+  // Edit on Type follows the sub-schema routing path picked by the
+  // EXISTING type's variant (composite / enum / range / shell / base).
+  // Walker re-validates the chosen sub-schema's fields against the
+  // saved values — different from Create's default-composite path.
+  await smokeEditSchemaChild(page, 'Types', 'type');
+});
+
+test('Edit Domain dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Domains', 'domain');
+});
+
+test('Edit Procedure dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Procedures', 'procedure');
+});
+
+test('Edit Aggregate dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Aggregates', 'aggregate');
+});
+
+test('Edit Foreign Table dialog', async ({ page }) => {
+  // Edit mode populates Inherits + Columns from persisted state;
+  // exerciseDialog's ADD_ROW on Columns then runs against a non-empty
+  // grid — catches walker regressions specific to "grid already has
+  // entries" path.
+  await smokeEditSchemaChild(page, 'Foreign Tables', 'foreign_table');
+});
+
+test('Edit Collation dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Collations', 'collation');
+});
+
+test('Edit FTS Configuration dialog', async ({ page }) => {
+  // FTS Configuration has a nested token→dictionary mapping grid
+  // that's POPULATED in Edit mode — exerciseDialog's ADD_ROW
+  // appends to that grid, more interesting than Create's empty.
+  await smokeEditSchemaChild(page, 'FTS Configurations', 'fts_configuration');
+});
+
+// Function-like edit (1)
+
+test('Edit Trigger Function dialog', async ({ page }) => {
+  await smokeEditSchemaChild(page, 'Trigger Functions', 'trigger_function');
+});
+
+// Server-level edits (2)
+
+test('Edit Login/Group Role dialog', async ({ page }) => {
+  // Role always has at least `postgres` so this should pass on any
+  // PG install. Privileges + Membership grids start populated.
+  await smokeEditServerChild(page, 'coll-role', 'role');
+});
+
+test('Edit Tablespace dialog', async ({ page }) => {
+  // pg_default + pg_global always exist; openEditDialogViaApi picks
+  // the first child — typically pg_default. Edit dialog's Variables
+  // grid renders the persisted tablespace_options.
+  await smokeEditServerChild(page, 'coll-tablespace', 'tablespace');
+});
+
+// Sub-catalog edits (2)
+
+test('Edit Trigger dialog (under table)', async ({ page }) => {
+  // Requires the seeded table to have a trigger. If not, "any
+  // trigger not found".
+  await smokeEditTableChild(page, 'coll-trigger', 'trigger');
+});
+
+test('Edit Index dialog (under table)', async ({ page }) => {
+  // Most tables with a primary key have at least one index (the PK
+  // itself). Edit dialog's Columns grid is non-empty — ADD_ROW
+  // exercises the "grid has entries" walker path.
+  await smokeEditTableChild(page, 'coll-index', 'index');
 });

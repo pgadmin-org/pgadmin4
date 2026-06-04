@@ -66,15 +66,63 @@ const visitedRowIdxs = (options) => {
   return out.sort((a, b) => a - b);
 };
 
+// After the walker fix (registry.js: only prune when
+// prevColl[idx]!==undefined), a "newly visited" row is one whose
+// options entry has a NEW reference vs prev — because pruned rows
+// now correctly inherit from prev (and thus have FIELD_OPTIONS via
+// the spread). Compare references to detect re-evaluation; this is
+// the right semantic for "incremental walked only the changed row."
+const newlyVisitedRowIdxs = (next, prev) => {
+  const nextRows = next?.rows || {};
+  const prevRows = prev?.rows || {};
+  const out = [];
+  Object.keys(nextRows).forEach((k) => {
+    if (k === FIELD_OPTIONS) return;
+    const idx = Number(k);
+    if (!Number.isInteger(idx)) return;
+    if (nextRows[k] !== prevRows[k]) out.push(idx);
+  });
+  return out.sort((a, b) => a - b);
+};
+
+// Real-world walker invocation: a fresh dialog runs FULL walk first
+// (changedPath=null) which populates prevOptions, then subsequent
+// dispatches run with a concrete changedPath against the now-populated
+// prev. `evalOpts` mirrors this contract so unit tests exercise the
+// SECOND-walk behaviour, not a synthetic empty-prev shape that the
+// production code never sees.
+//
+// Why: an earlier version of these tests passed `prevOptions: {}`
+// directly. That hid a real walker bug — when `prevColl[idx]` is
+// undefined, the incremental prune would skip the row AND leave
+// nextColl[idx] undefined (no prior to inherit), producing the
+// `columns.0 — incremental=undefined full={...}` divergence seen
+// in Edit-mode dialogs against real data. The walker fix in
+// registry.js guards the prune on `prevColl[idx] !== undefined`;
+// these tests now run a warm-up full walk to populate prev so the
+// guard doesn't change the assertion.
+const warmUpPrev = (schema, viewHelperProps = {}) =>
+  schemaOptionsEvalulator({
+    schema, data: SAMPLE_DATA, prevOptions: {},
+    viewHelperProps: { mode: 'create', ...viewHelperProps },
+    // changedPath omitted → full walk (no incremental prune)
+  });
+
 const evalOpts = (extra = {}) => {
   const { viewHelperProps: vhpExtra, ...rest } = extra;
   const schema = new OuterSchema();
+  const vhp = { mode: 'create', ...(vhpExtra || {}) };
+  const prev = warmUpPrev(schema, vhp);
   // The walker is now functional — it returns the new options tree.
-  return schemaOptionsEvalulator({
-    schema, data: SAMPLE_DATA, prevOptions: {},
+  const next = schemaOptionsEvalulator({
+    schema, data: SAMPLE_DATA, prevOptions: prev,
     ...rest,
-    viewHelperProps: { mode: 'create', ...(vhpExtra || {}) },
+    viewHelperProps: vhp,
   });
+  // Tag result with prev so tests that want reference-based
+  // "visited this walk" semantics can pass to newlyVisitedRowIdxs.
+  Object.defineProperty(next, '__prev', { value: prev, enumerable: false });
+  return next;
 };
 
 describe('pathOverlaps', () => {
@@ -114,12 +162,18 @@ describe('schemaOptionsEvalulator — full walk fallbacks', () => {
 });
 
 describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () => {
+  // Assertions use newlyVisitedRowIdxs(opts, opts.__prev) — a row is
+  // "newly visited" when its options entry has a different reference
+  // than prev. This is the right semantic after the walker fix in
+  // registry.js: pruned rows correctly inherit prev's reference (so
+  // structural sharing holds), visited rows get a fresh reference.
+
   test('changedPath inside a row visits only that row', () => {
     const opts = evalOpts({
       viewHelperProps: { incrementalOptions: true },
       changedPath: ['rows', 1, 'name'],
     });
-    expect(visitedRowIdxs(opts)).toEqual([1]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([1]);
   });
 
   test('changedPath at the collection path visits all rows (structural)', () => {
@@ -127,7 +181,7 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
       viewHelperProps: { incrementalOptions: true },
       changedPath: ['rows'],
     });
-    expect(visitedRowIdxs(opts)).toEqual([0, 1, 2]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([0, 1, 2]);
   });
 
   test('changedPath outside the collection visits no rows', () => {
@@ -135,7 +189,7 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
       viewHelperProps: { incrementalOptions: true },
       changedPath: ['title'],
     });
-    expect(visitedRowIdxs(opts)).toEqual([]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([]);
   });
 
   test('depDests force visits of rows they target even when changedPath is unrelated', () => {
@@ -144,7 +198,7 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
       changedPath: ['title'],
       depDests: [['rows', 2, 'val']],
     });
-    expect(visitedRowIdxs(opts)).toEqual([2]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([2]);
   });
 
   test('union of changedPath + depDests', () => {
@@ -153,7 +207,7 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
       changedPath: ['rows', 0, 'name'],
       depDests: [['rows', 2, 'val']],
     });
-    expect(visitedRowIdxs(opts)).toEqual([0, 2]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([0, 2]);
   });
 
   test('null changedPath always falls back to full walk', () => {
@@ -161,7 +215,7 @@ describe('schemaOptionsEvalulator — incremental (viewHelperProps opt-in)', () 
       viewHelperProps: { incrementalOptions: true },
       changedPath: null,
     });
-    expect(visitedRowIdxs(opts)).toEqual([0, 1, 2]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([0, 1, 2]);
   });
 });
 
@@ -175,7 +229,7 @@ describe('schemaOptionsEvalulator — window global escape hatch', () => {
   test('window.__INCREMENTAL_OPTIONS__ unset → default-on still applies', () => {
     delete window.__INCREMENTAL_OPTIONS__;
     const opts = evalOpts({ changedPath: ['rows', 1, 'name'] });
-    expect(visitedRowIdxs(opts)).toEqual([1]);
+    expect(newlyVisitedRowIdxs(opts, opts.__prev)).toEqual([1]);
   });
 
   test('window.__INCREMENTAL_OPTIONS__ = false disables incremental globally', () => {
@@ -188,6 +242,16 @@ describe('schemaOptionsEvalulator — window global escape hatch', () => {
 describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () => {
   // Build a SchemaState ready to validate. We pre-seed __lastChangedPath
   // and call validate, then inspect the resulting option store.
+  //
+  // The state is "warmed up" by a full-walk validate before the per-test
+  // incremental dispatch: this mirrors production where the initial
+  // mount populates optionStore via a no-changedPath walk BEFORE the
+  // first dispatch with a concrete changedPath. Without the warm-up,
+  // the test's first dispatch runs against an empty optionStore — and
+  // the walker's prune-guard (registry.js: prevColl[idx]!==undefined)
+  // correctly visits all rows because none have a prior result to
+  // inherit. That's the right runtime behaviour but the wrong shape
+  // for asserting "incremental visits only the changed row."
   const buildState = ({ optedIn, vhpFlag } = {}) => {
     class OptedInOuter extends OuterSchema {
       constructor() { super(); this.incrementalOptions = true; }
@@ -203,6 +267,12 @@ describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () =>
     state.setReady(true);
     state.data = SAMPLE_DATA;
     state.initData = SAMPLE_DATA;
+    // Warm-up: full walk to populate optionStore so subsequent
+    // dispatches have a real prev to prune against. Captures the
+    // populated tree as `prev` on the state for the per-test helper.
+    state.__lastChangedPath = null;
+    state.validate({ ...SAMPLE_DATA, __changeId: 0 });
+    state.__warmedPrev = state.optionStore.getState();
     return state;
   };
 
@@ -210,7 +280,9 @@ describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () =>
     const state = buildState({ optedIn: true });
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
-    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
+    expect(newlyVisitedRowIdxs(
+      state.optionStore.getState(), state.__warmedPrev
+    )).toEqual([1]);
   });
 
   test('schema.incrementalOptions=false opts out (full walk despite default-on)', () => {
@@ -227,9 +299,18 @@ describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () =>
     state.setReady(true);
     state.data = SAMPLE_DATA;
     state.initData = SAMPLE_DATA;
+    // Warm-up + capture prev so the assertion compares against a
+    // populated baseline (matching the opted-in tests above).
+    state.__lastChangedPath = null;
+    state.validate({ ...SAMPLE_DATA, __changeId: 0 });
+    const warmedPrev = state.optionStore.getState();
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
-    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([0, 1, 2]);
+    // Opt-out: walker is full → ALL rows get fresh references on each
+    // dispatch (no structural sharing).
+    expect(newlyVisitedRowIdxs(
+      state.optionStore.getState(), warmedPrev
+    )).toEqual([0, 1, 2]);
   });
 
   test('schema without any incrementalOptions setting uses default-on', () => {
@@ -237,22 +318,28 @@ describe('schema.incrementalOptions opt-in via SchemaState.updateOptions', () =>
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
     // Default-on: incremental triggers when changedPath is present and
-    // no opt-out is set. Only the changed row is visited.
-    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
+    // no opt-out is set. Only the changed row is re-evaluated.
+    expect(newlyVisitedRowIdxs(
+      state.optionStore.getState(), state.__warmedPrev
+    )).toEqual([1]);
   });
 
   test('viewHelperProps.incrementalOptions still works when schema does not opt in', () => {
     const state = buildState({ optedIn: false, vhpFlag: true });
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
-    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
+    expect(newlyVisitedRowIdxs(
+      state.optionStore.getState(), state.__warmedPrev
+    )).toEqual([1]);
   });
 
   test('both flags set is idempotent (still incremental)', () => {
     const state = buildState({ optedIn: true, vhpFlag: true });
     state.__lastChangedPath = ['rows', 1, 'name'];
     state.validate({ ...SAMPLE_DATA, __changeId: 1 });
-    expect(visitedRowIdxs(state.optionStore.getState())).toEqual([1]);
+    expect(newlyVisitedRowIdxs(
+      state.optionStore.getState(), state.__warmedPrev
+    )).toEqual([1]);
   });
 });
 
