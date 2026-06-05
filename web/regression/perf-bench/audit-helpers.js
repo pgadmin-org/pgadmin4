@@ -267,6 +267,13 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
     );
     // Select the catalog node so menu actions target it.
     await tree.select(node, true);
+    // pgAdmin's tree.selected() observably drifts back to a parent
+    // node (typically the database) after a tree-refresh event fires
+    // when the selected node's REST children land. Stash the
+    // just-selected node so openCreate/EditDialogViaApi have an
+    // authoritative reference instead of falling back to drifted
+    // tree.selected().
+    window.__pgadminLastNavigatedNode = node;
   }, { targetType, db });
 };
 
@@ -317,6 +324,7 @@ export const navigateToServerCollectionViaApi = async (page, targetType) => {
       node, (d) => d?._type === targetType, targetType
     );
     await tree.select(node, true);
+    window.__pgadminLastNavigatedNode = node;
   }, { targetType });
 };
 
@@ -433,7 +441,15 @@ export const navigateToTableSubCollectionViaApi = async (
 export const openCreateDialogViaApi = async (page, nodeType) => {
   await page.evaluate((nodeType) => {
     const tree = window.pgAdmin.Browser.tree;
-    const selected = tree.selected();
+    // Prefer the just-navigated node stashed by navigateToXViaApi.
+    // tree.selected() observably drifts to a parent node after the
+    // tree-refresh event triggered when the selected collection's
+    // REST children land. Without this fallback, openCreate
+    // dispatches show_obj_properties against a drifted parent node;
+    // the Create dialog mounts in a context that can't resolve
+    // dropdown lookups and the Name textbox never renders (20s
+    // wait-for-Name timeout). Same fix the Edit helper already had.
+    const selected = window.__pgadminLastNavigatedNode || tree.selected();
     if (!selected) throw new Error('openCreateDialogViaApi: no node selected');
     const nodeModule = window.pgAdmin.Browser.Nodes[nodeType];
     if (!nodeModule) throw new Error(
