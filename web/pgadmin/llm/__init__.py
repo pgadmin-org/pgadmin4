@@ -1174,7 +1174,7 @@ def _gather_security_config(conn, manager):
     # Get security-related settings from pg_settings
     settings_query = """
         SELECT name, setting, short_desc, context, source
-        FROM pg_settings
+        FROM pg_catalog.pg_settings
         WHERE name IN (
             -- Connection settings
             'listen_addresses', 'port', 'max_connections',
@@ -1215,7 +1215,7 @@ def _gather_security_config(conn, manager):
     hba_query = """
         SELECT line_number, type, database, user_name, address,
                netmask, auth_method, options, error
-        FROM pg_hba_file_rules
+        FROM pg_catalog.pg_hba_file_rules
         ORDER BY line_number
     """
 
@@ -1231,7 +1231,7 @@ def _gather_security_config(conn, manager):
     superusers_query = """
         SELECT rolname, rolcreaterole, rolcreatedb, rolbypassrls,
                rolconnlimit, rolvaliduntil
-        FROM pg_roles
+        FROM pg_catalog.pg_roles
         WHERE rolsuper = true
         ORDER BY rolname
     """
@@ -1246,7 +1246,7 @@ def _gather_security_config(conn, manager):
     special_roles_query = """
         SELECT rolname, rolsuper, rolcreaterole, rolcreatedb,
                rolreplication, rolbypassrls, rolcanlogin, rolconnlimit
-        FROM pg_roles
+        FROM pg_catalog.pg_roles
         WHERE (rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls)
               AND NOT rolsuper
         ORDER BY rolname
@@ -1261,7 +1261,7 @@ def _gather_security_config(conn, manager):
     # Get roles with no password expiry that can login
     no_expiry_query = """
         SELECT rolname, rolvaliduntil
-        FROM pg_roles
+        FROM pg_catalog.pg_roles
         WHERE rolcanlogin = true
           AND (rolvaliduntil IS NULL OR rolvaliduntil = 'infinity')
         ORDER BY rolname
@@ -1276,7 +1276,7 @@ def _gather_security_config(conn, manager):
     # Check for loaded extensions
     extensions_query = """
         SELECT extname, extversion
-        FROM pg_extension
+        FROM pg_catalog.pg_extension
         ORDER BY extname
     """
 
@@ -1459,7 +1459,7 @@ def generate_schema_security_report(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -1538,7 +1538,7 @@ def generate_schema_security_report_stream(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -1991,7 +1991,7 @@ def generate_schema_design_report(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -2070,7 +2070,7 @@ def generate_schema_design_report_stream(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_namespace WHERE oid = %s"
+        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(

@@ -563,14 +563,14 @@ def drop_database(connection, database_name):
         if connection.info.server_version >= 90100:
             pg_cursor.execute(
                 "SELECT pg_terminate_backend(pg_stat_activity.pid) "
-                "FROM pg_stat_activity "
+                "FROM pg_catalog.pg_stat_activity "
                 "WHERE pg_stat_activity.datname ='%s' AND "
                 "pid <> pg_backend_pid();" % database_name
             )
         else:
             pg_cursor.execute(
                 "SELECT pg_terminate_backend(procpid) "
-                "FROM pg_stat_activity "
+                "FROM pg_catalog.pg_stat_activity "
                 "WHERE pg_stat_activity.datname ='%s' "
                 "AND current_query='<IDLE>';" % database_name
             )
@@ -597,14 +597,14 @@ def drop_database_multiple(connection, database_names):
             if get_server_version(connection) >= 90100:
                 pg_cursor.execute(
                     "SELECT pg_terminate_backend(pg_stat_activity.pid) "
-                    "FROM pg_stat_activity "
+                    "FROM pg_catalog.pg_stat_activity "
                     "WHERE pg_stat_activity.datname ='%s' AND "
                     "pid <> pg_backend_pid();" % database_name
                 )
             else:
                 pg_cursor.execute(
                     "SELECT pg_terminate_backend(procpid) "
-                    "FROM pg_stat_activity "
+                    "FROM pg_catalog.pg_stat_activity "
                     "WHERE pg_stat_activity.datname ='%s' "
                     "AND current_query='<IDLE>';" % database_name
                 )
@@ -1907,7 +1907,7 @@ def module_patch(*args):
 
 
 def check_extension_exists(cursor, extension_name):
-    cursor.execute(f"""SELECT COUNT(*) FROM pg_extension
+    cursor.execute(f"""SELECT COUNT(*) FROM pg_catalog.pg_extension
                    WHERE extname='{extension_name}'""")
     res = cursor.fetchone()
     return res

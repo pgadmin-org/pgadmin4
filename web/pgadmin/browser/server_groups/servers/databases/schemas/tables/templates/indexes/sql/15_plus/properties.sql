@@ -33,8 +33,8 @@ SELECT DISTINCT ON (cls.relname)
   END AS description,
   (
       SELECT array_agg(DISTINCT e.extname)
-      FROM pg_depend d
-      JOIN pg_extension e ON d.refobjid = e.oid
+      FROM pg_catalog.pg_depend d
+      JOIN pg_catalog.pg_extension e ON d.refobjid = e.oid
       WHERE d.objid = cls.oid
   ) AS dependsonextensions,
   pg_catalog.pg_get_expr(idx.indpred, idx.indrelid, true) AS indconstraint,
@@ -43,7 +43,7 @@ SELECT DISTINCT ON (cls.relname)
   con.condeferred,
   am.amname,
   EXISTS (
-      SELECT 1 FROM pg_inherits inh WHERE inh.inhrelid = cls.oid
+      SELECT 1 FROM pg_catalog.pg_inherits inh WHERE inh.inhrelid = cls.oid
   ) AS is_inherited,
   -- Options (with defaults per index type)
     substring(array_to_string(cls.reloptions, ',') FROM 'fillfactor=([0-9]*)')::int AS fillfactor,

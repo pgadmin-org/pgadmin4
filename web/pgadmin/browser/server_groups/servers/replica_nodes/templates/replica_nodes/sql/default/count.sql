@@ -1,2 +1,2 @@
 SELECT count(*)
-FROM pg_stat_replication
+FROM pg_catalog.pg_stat_replication

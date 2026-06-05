@@ -9,7 +9,7 @@ SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, 
     CASE WHEN contype IN ('p', 'u', 'x') THEN desp.description
          ELSE des.description END AS description,
     pg_catalog.pg_get_expr(indpred, indrelid, true) as indconstraint, contype, condeferrable, condeferred, amname,
-    (SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited,
+    (SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_catalog.pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor
     {% if datlastsysoid %}, (CASE WHEN cls.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_idx {% endif %}
 FROM pg_catalog.pg_index idx

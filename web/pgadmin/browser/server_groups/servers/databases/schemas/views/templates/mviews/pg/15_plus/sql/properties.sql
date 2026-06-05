@@ -19,8 +19,8 @@ SELECT
     description AS comment,
     (
       SELECT array_agg(DISTINCT e.extname)
-      FROM pg_depend d
-      JOIN pg_extension e ON d.refobjid = e.oid
+      FROM pg_catalog.pg_depend d
+      JOIN pg_catalog.pg_extension e ON d.refobjid = e.oid
       WHERE d.objid = c.oid
     ) AS dependsonextensions,
     pg_catalog.pg_get_viewdef(c.oid, true) AS definition,

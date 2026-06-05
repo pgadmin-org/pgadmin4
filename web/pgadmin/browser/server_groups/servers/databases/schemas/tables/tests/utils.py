@@ -610,7 +610,7 @@ def create_postgis_extension(self):
                                              self.server['sslmode'])
         pg_cursor = connection.cursor()
         # Check if postgis extension is available to install
-        pg_cursor.execute('''SELECT COUNT(*) FROM pg_available_extensions WHERE
+        pg_cursor.execute('''SELECT COUNT(*) FROM pg_catalog.pg_available_extensions WHERE
                             name ='postgis' ''')
         res = pg_cursor.fetchone()
         if res and len(res) > 0 and int(res[0]) == 1:

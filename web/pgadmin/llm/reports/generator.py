@@ -51,7 +51,7 @@ def create_query_executor(conn) -> callable:
         if required_ext:
             check_sql = """
                 SELECT EXISTS (
-                    SELECT 1 FROM pg_extension WHERE extname = %s
+                    SELECT 1 FROM pg_catalog.pg_extension WHERE extname = %s
                 ) as available
             """
             status, result = conn.execute_dict(check_sql, [required_ext])

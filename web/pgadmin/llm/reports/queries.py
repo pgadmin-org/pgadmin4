@@ -28,7 +28,7 @@ QUERIES = {
     'security_settings': {
         'sql': """
             SELECT name, setting, short_desc, context, source
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'listen_addresses', 'port', 'max_connections',
                 'superuser_reserved_connections',
@@ -46,7 +46,7 @@ QUERIES = {
         'sql': """
             SELECT line_number, type, database, user_name, address,
                    netmask, auth_method, options, error
-            FROM pg_hba_file_rules
+            FROM pg_catalog.pg_hba_file_rules
             ORDER BY line_number
             LIMIT 50
         """,
@@ -58,7 +58,7 @@ QUERIES = {
         'sql': """
             SELECT rolname, rolcreaterole, rolcreatedb, rolbypassrls,
                    rolconnlimit, rolvaliduntil
-            FROM pg_roles
+            FROM pg_catalog.pg_roles
             WHERE rolsuper = true
             ORDER BY rolname
         """,
@@ -69,7 +69,7 @@ QUERIES = {
         'sql': """
             SELECT rolname, rolsuper, rolcreaterole, rolcreatedb,
                    rolreplication, rolbypassrls, rolcanlogin, rolconnlimit
-            FROM pg_roles
+            FROM pg_catalog.pg_roles
             WHERE (rolcreaterole OR rolcreatedb
                    OR rolreplication OR rolbypassrls)
                   AND NOT rolsuper
@@ -82,7 +82,7 @@ QUERIES = {
     'roles_no_expiry': {
         'sql': """
             SELECT rolname, rolvaliduntil
-            FROM pg_roles
+            FROM pg_catalog.pg_roles
             WHERE rolcanlogin = true
               AND (rolvaliduntil IS NULL OR rolvaliduntil = 'infinity')
             ORDER BY rolname
@@ -99,7 +99,7 @@ QUERIES = {
                    ARRAY(SELECT b.rolname FROM pg_catalog.pg_auth_members m
                          JOIN pg_catalog.pg_roles b ON m.roleid = b.oid
                          WHERE m.member = r.oid) as member_of
-            FROM pg_roles r
+            FROM pg_catalog.pg_roles r
             WHERE r.rolcanlogin = true
             ORDER BY r.rolname
             LIMIT 30
@@ -112,7 +112,7 @@ QUERIES = {
         'sql': """
             SELECT datname, pg_catalog.pg_get_userbyid(datdba) as owner,
                    datacl, datconnlimit
-            FROM pg_database
+            FROM pg_catalog.pg_database
             WHERE datname = current_database()
         """,
         'scope': ['database'],
@@ -123,7 +123,7 @@ QUERIES = {
             SELECT n.nspname as schema_name,
                    pg_catalog.pg_get_userbyid(n.nspowner) as owner,
                    n.nspacl as acl
-            FROM pg_namespace n
+            FROM pg_catalog.pg_namespace n
             WHERE n.nspname NOT IN (
                 'pg_catalog', 'information_schema',
                 'pg_toast')
@@ -143,8 +143,8 @@ QUERIES = {
                    c.relacl as acl,
                    c.relrowsecurity as row_security,
                    c.relforcerowsecurity as force_row_security
-            FROM pg_class c
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE c.relkind IN ('r', 'p')
               AND n.nspname NOT IN (
                 'pg_catalog', 'information_schema',
@@ -172,9 +172,9 @@ QUERIES = {
                    pg_catalog.pg_get_expr(
                        pol.polwithcheck, pol.polrelid
                    ) as check_expr
-            FROM pg_policy pol
-            JOIN pg_class c ON c.oid = pol.polrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_policy pol
+            JOIN pg_catalog.pg_class c ON c.oid = pol.polrelid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
             ORDER BY n.nspname, c.relname, pol.polname
             LIMIT 30
@@ -188,8 +188,8 @@ QUERIES = {
                    c.relname as table_name,
                    c.relrowsecurity as row_security,
                    c.relforcerowsecurity as force_row_security
-            FROM pg_class c
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE c.relrowsecurity = true
               AND n.nspname NOT IN ('pg_catalog', 'information_schema')
             ORDER BY n.nspname, c.relname
@@ -205,8 +205,8 @@ QUERIES = {
                    p.proname as function_name,
                    pg_catalog.pg_get_userbyid(p.proowner) as owner,
                    p.proacl as acl
-            FROM pg_proc p
-            JOIN pg_namespace n ON n.oid = p.pronamespace
+            FROM pg_catalog.pg_proc p
+            JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
             WHERE p.prosecdef = true
               AND n.nspname NOT IN ('pg_catalog', 'information_schema')
             ORDER BY n.nspname, p.proname
@@ -219,7 +219,7 @@ QUERIES = {
     'logging_settings': {
         'sql': """
             SELECT name, setting, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'log_connections', 'log_disconnections',
                 'log_hostname', 'log_statement', 'log_line_prefix',
@@ -235,7 +235,7 @@ QUERIES = {
     'extensions': {
         'sql': """
             SELECT extname, extversion
-            FROM pg_extension
+            FROM pg_catalog.pg_extension
             ORDER BY extname
         """,
         'scope': ['server', 'database'],
@@ -254,8 +254,8 @@ QUERIES = {
                        WHEN 'n' THEN 'schema'
                    END as object_type,
                    d.defaclacl as default_acl
-            FROM pg_default_acl d
-            LEFT JOIN pg_namespace n ON n.oid = d.defaclnamespace
+            FROM pg_catalog.pg_default_acl d
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = d.defaclnamespace
             ORDER BY role, schema_name, object_type
             LIMIT 30
         """,
@@ -270,7 +270,7 @@ QUERIES = {
     'memory_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc, context, source
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'shared_buffers', 'effective_cache_size', 'work_mem',
                 'maintenance_work_mem', 'wal_buffers', 'temp_buffers',
@@ -285,7 +285,7 @@ QUERIES = {
     'checkpoint_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'checkpoint_completion_target', 'checkpoint_timeout',
                 'max_wal_size', 'min_wal_size'
@@ -298,7 +298,7 @@ QUERIES = {
     'wal_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'wal_level', 'synchronous_commit', 'wal_compression',
                 'wal_writer_delay', 'max_wal_senders'
@@ -314,7 +314,7 @@ QUERIES = {
                    checkpoint_sync_time, buffers_checkpoint, buffers_clean,
                    maxwritten_clean, buffers_backend, buffers_backend_fsync,
                    buffers_alloc, stats_reset
-            FROM pg_stat_bgwriter
+            FROM pg_catalog.pg_stat_bgwriter
         """,
         'scope': ['server'],
     },
@@ -323,7 +323,7 @@ QUERIES = {
     'autovacuum_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'autovacuum', 'autovacuum_max_workers',
                 'autovacuum_naptime',
@@ -348,7 +348,7 @@ QUERIES = {
                    last_autovacuum,
                    last_analyze,
                    last_autoanalyze
-            FROM pg_stat_user_tables
+            FROM pg_catalog.pg_stat_user_tables
             WHERE n_dead_tup > 1000
             ORDER BY n_dead_tup DESC
             LIMIT 15
@@ -360,7 +360,7 @@ QUERIES = {
     'planner_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'random_page_cost', 'seq_page_cost', 'cpu_tuple_cost',
                 'cpu_index_tuple_cost', 'cpu_operator_cost',
@@ -377,7 +377,7 @@ QUERIES = {
     'parallel_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'max_worker_processes', 'max_parallel_workers_per_gather',
                 'max_parallel_workers', 'max_parallel_maintenance_workers'
@@ -391,7 +391,7 @@ QUERIES = {
     'connection_settings': {
         'sql': """
             SELECT name, setting, unit, short_desc
-            FROM pg_settings
+            FROM pg_catalog.pg_settings
             WHERE name IN (
                 'max_connections', 'superuser_reserved_connections',
                 'idle_in_transaction_session_timeout', 'idle_session_timeout',
@@ -405,12 +405,12 @@ QUERIES = {
     'active_connections': {
         'sql': """
             SELECT
-                (SELECT count(*) FROM pg_stat_activity) as total_connections,
-                (SELECT count(*) FROM pg_stat_activity
+                (SELECT count(*) FROM pg_catalog.pg_stat_activity) as total_connections,
+                (SELECT count(*) FROM pg_catalog.pg_stat_activity
                  WHERE state = 'active') as active_queries,
-                (SELECT count(*) FROM pg_stat_activity
+                (SELECT count(*) FROM pg_catalog.pg_stat_activity
                  WHERE state = 'idle in transaction') as idle_in_transaction,
-                (SELECT count(*) FROM pg_stat_activity
+                (SELECT count(*) FROM pg_catalog.pg_stat_activity
                  WHERE state = 'idle') as idle
         """,
         'scope': ['server', 'database'],
@@ -429,7 +429,7 @@ QUERIES = {
                    tup_updated, tup_deleted,
                    conflicts, temp_files, temp_bytes,
                    deadlocks, stats_reset
-            FROM pg_stat_database
+            FROM pg_catalog.pg_stat_database
             WHERE datname NOT IN ('template0', 'template1')
             ORDER BY datname
         """,
@@ -445,7 +445,7 @@ QUERIES = {
                                    (heap_blks_read + heap_blks_hit), 2)
                         ELSE 0 END as cache_hit_ratio,
                    idx_blks_read, idx_blks_hit
-            FROM pg_statio_user_tables
+            FROM pg_catalog.pg_statio_user_tables
             WHERE heap_blks_read + heap_blks_hit > 1000
             ORDER BY heap_blks_read DESC
             LIMIT 15
@@ -462,7 +462,7 @@ QUERIES = {
                    n_live_tup, n_dead_tup,
                    last_vacuum, last_autovacuum,
                    last_analyze, last_autoanalyze
-            FROM pg_stat_user_tables
+            FROM pg_catalog.pg_stat_user_tables
             ORDER BY n_dead_tup DESC
             LIMIT 20
         """,
@@ -475,8 +475,8 @@ QUERIES = {
                    s.indexrelname as index_name,
                    pg_size_pretty(pg_relation_size(s.indexrelid)) as size,
                    s.idx_scan
-            FROM pg_stat_user_indexes s
-            JOIN pg_index i ON s.indexrelid = i.indexrelid
+            FROM pg_catalog.pg_stat_user_indexes s
+            JOIN pg_catalog.pg_index i ON s.indexrelid = i.indexrelid
             WHERE s.idx_scan = 0
               AND NOT i.indisunique
               AND NOT i.indisprimary
@@ -493,7 +493,7 @@ QUERIES = {
                    CASE WHEN seq_scan > 0
                         THEN round(seq_tup_read::numeric / seq_scan, 0)
                         ELSE 0 END as avg_seq_tup_read
-            FROM pg_stat_user_tables
+            FROM pg_catalog.pg_stat_user_tables
             WHERE seq_scan > idx_scan AND seq_scan > 100 AND n_live_tup > 1000
             ORDER BY seq_scan - idx_scan DESC
             LIMIT 15
@@ -505,7 +505,7 @@ QUERIES = {
     'stat_statements_check': {
         'sql': """
             SELECT EXISTS (
-                SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements'
+                SELECT 1 FROM pg_catalog.pg_extension WHERE extname = 'pg_stat_statements'
             ) as available
         """,
         'scope': ['server', 'database'],
@@ -520,7 +520,7 @@ QUERIES = {
                    round(mean_exec_time::numeric, 2)
                        as mean_exec_time_ms,
                    rows
-            FROM pg_stat_statements
+            FROM pg_catalog.pg_stat_statements
             ORDER BY total_exec_time DESC
             LIMIT 10
         """,
@@ -537,7 +537,7 @@ QUERIES = {
                    round(mean_exec_time::numeric, 2)
                        as mean_exec_time_ms,
                    rows
-            FROM pg_stat_statements
+            FROM pg_catalog.pg_stat_statements
             ORDER BY calls DESC
             LIMIT 10
         """,
@@ -553,7 +553,7 @@ QUERIES = {
                    pg_size_pretty(pg_relation_size(relid)) as table_size,
                    pg_size_pretty(pg_indexes_size(relid)) as indexes_size,
                    n_live_tup as row_count
-            FROM pg_stat_user_tables
+            FROM pg_catalog.pg_stat_user_tables
             ORDER BY pg_total_relation_size(relid) DESC
             LIMIT 15
         """,
@@ -576,7 +576,7 @@ QUERIES = {
                    pg_wal_lsn_diff(
                        pg_current_wal_lsn(), replay_lsn
                    ) as replay_lag
-            FROM pg_stat_replication
+            FROM pg_catalog.pg_stat_replication
             LIMIT 10
         """,
         'scope': ['server'],
@@ -595,14 +595,14 @@ QUERIES = {
                    pg_size_pretty(
                        pg_total_relation_size(c.oid)
                    ) as total_size,
-                   (SELECT count(*) FROM pg_attribute a
+                   (SELECT count(*) FROM pg_catalog.pg_attribute a
                     WHERE a.attrelid = c.oid
                       AND a.attnum > 0
                       AND NOT a.attisdropped
                    ) as column_count,
                    obj_description(c.oid) as description
-            FROM pg_class c
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE c.relkind IN ('r', 'p')
               AND n.nspname NOT IN (
                 'pg_catalog', 'information_schema',
@@ -627,10 +627,10 @@ QUERIES = {
                        as default_value,
                    col_description(c.oid, a.attnum)
                        as description
-            FROM pg_attribute a
-            JOIN pg_class c ON c.oid = a.attrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
-            LEFT JOIN pg_attrdef d
+            FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            LEFT JOIN pg_catalog.pg_attrdef d
                 ON d.adrelid = a.attrelid
                 AND d.adnum = a.attnum
             WHERE a.attnum > 0
@@ -656,11 +656,11 @@ QUERIES = {
                        array_position(con.conkey,
                                       a.attnum))
                        as columns
-            FROM pg_constraint con
-            JOIN pg_class c ON c.oid = con.conrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_constraint con
+            JOIN pg_catalog.pg_class c ON c.oid = con.conrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
-            JOIN pg_attribute a
+            JOIN pg_catalog.pg_attribute a
                 ON a.attrelid = c.oid
                 AND a.attnum = ANY(con.conkey)
             WHERE con.contype = 'p'
@@ -679,15 +679,15 @@ QUERIES = {
                    pg_size_pretty(
                        pg_total_relation_size(c.oid)
                    ) as size
-            FROM pg_class c
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE c.relkind = 'r'
               AND n.nspname NOT IN (
                 'pg_catalog', 'information_schema',
                 'pg_toast')
               AND n.nspname NOT LIKE 'pg_temp%'
               AND NOT EXISTS (
-                  SELECT 1 FROM pg_constraint con
+                  SELECT 1 FROM pg_catalog.pg_constraint con
                   WHERE con.conrelid = c.oid AND con.contype = 'p'
               )
             ORDER BY pg_total_relation_size(c.oid) DESC
@@ -712,18 +712,18 @@ QUERIES = {
                        array_position(con.confkey,
                                       fa.attnum))
                        as ref_columns
-            FROM pg_constraint con
-            JOIN pg_class c ON c.oid = con.conrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_constraint con
+            JOIN pg_catalog.pg_class c ON c.oid = con.conrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
-            JOIN pg_class fc
+            JOIN pg_catalog.pg_class fc
                 ON fc.oid = con.confrelid
-            JOIN pg_namespace fn
+            JOIN pg_catalog.pg_namespace fn
                 ON fn.oid = fc.relnamespace
-            JOIN pg_attribute a
+            JOIN pg_catalog.pg_attribute a
                 ON a.attrelid = c.oid
                 AND a.attnum = ANY(con.conkey)
-            JOIN pg_attribute fa
+            JOIN pg_catalog.pg_attribute fa
                 ON fa.attrelid = fc.oid
                 AND fa.attnum = ANY(con.confkey)
             WHERE con.contype = 'f'
@@ -746,11 +746,11 @@ QUERIES = {
                    idx.indisprimary as is_primary,
                    pg_get_indexdef(idx.indexrelid) as definition,
                    pg_size_pretty(pg_relation_size(i.oid)) as size
-            FROM pg_index idx
-            JOIN pg_class c ON c.oid = idx.indrelid
-            JOIN pg_class i ON i.oid = idx.indexrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
-            JOIN pg_am am ON am.oid = i.relam
+            FROM pg_catalog.pg_index idx
+            JOIN pg_catalog.pg_class c ON c.oid = idx.indrelid
+            JOIN pg_catalog.pg_class i ON i.oid = idx.indexrelid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            JOIN pg_catalog.pg_am am ON am.oid = i.relam
             WHERE n.nspname NOT IN (
                 'pg_catalog', 'information_schema',
                 'pg_toast')
@@ -772,11 +772,11 @@ QUERIES = {
                                idx.indkey, a.attnum))
                            as columns,
                        pg_relation_size(i.oid) as size
-                FROM pg_index idx
-                JOIN pg_class c ON c.oid = idx.indrelid
-                JOIN pg_class i ON i.oid = idx.indexrelid
-                JOIN pg_namespace n ON n.oid = c.relnamespace
-                JOIN pg_attribute a ON a.attrelid = c.oid
+                FROM pg_catalog.pg_index idx
+                JOIN pg_catalog.pg_class c ON c.oid = idx.indrelid
+                JOIN pg_catalog.pg_class i ON i.oid = idx.indexrelid
+                JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
                     AND a.attnum = ANY(idx.indkey)
                 WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
                 GROUP BY n.nspname, c.relname, i.relname, idx.indexrelid, i.oid
@@ -803,9 +803,9 @@ QUERIES = {
                    c.relname as table_name,
                    con.conname as constraint_name,
                    pg_get_constraintdef(con.oid) as definition
-            FROM pg_constraint con
-            JOIN pg_class c ON c.oid = con.conrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
+            FROM pg_catalog.pg_constraint con
+            JOIN pg_catalog.pg_class c ON c.oid = con.conrelid
+            JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
             WHERE con.contype = 'c'
               AND n.nspname NOT IN ('pg_catalog', 'information_schema')
             ORDER BY n.nspname, c.relname, con.conname
@@ -823,11 +823,11 @@ QUERIES = {
                        array_position(con.conkey,
                                       a.attnum))
                        as columns
-            FROM pg_constraint con
-            JOIN pg_class c ON c.oid = con.conrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_constraint con
+            JOIN pg_catalog.pg_class c ON c.oid = con.conrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
-            JOIN pg_attribute a
+            JOIN pg_catalog.pg_attribute a
                 ON a.attrelid = c.oid
                 AND a.attnum = ANY(con.conkey)
             WHERE con.contype = 'u'
@@ -847,9 +847,9 @@ QUERIES = {
                    array_agg(DISTINCT
                        n.nspname || '.' || c.relname
                    ) as tables
-            FROM pg_attribute a
-            JOIN pg_class c ON c.oid = a.attrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
             WHERE a.attnum > 0
               AND NOT a.attisdropped
@@ -871,8 +871,8 @@ QUERIES = {
             SELECT 'table' as object_type,
                    n.nspname as schema_name,
                    c.relname as name
-            FROM pg_class c
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_class c
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
             WHERE c.relkind IN ('r', 'p')
               AND n.nspname NOT IN (
@@ -881,9 +881,9 @@ QUERIES = {
             UNION ALL
             SELECT 'column', n.nspname,
                    c.relname || '.' || a.attname
-            FROM pg_attribute a
-            JOIN pg_class c ON c.oid = a.attrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
             WHERE a.attnum > 0
               AND NOT a.attisdropped
@@ -911,9 +911,9 @@ QUERIES = {
                            || a.attname)
                        ELSE NULL
                    END as example_columns
-            FROM pg_attribute a
-            JOIN pg_class c ON c.oid = a.attrelid
-            JOIN pg_namespace n
+            FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+            JOIN pg_catalog.pg_namespace n
                 ON n.oid = c.relnamespace
             WHERE a.attnum > 0
               AND NOT a.attisdropped
@@ -974,7 +974,7 @@ def execute_query(
         # Check if extension is installed
         check_sql = """
             SELECT EXISTS (
-                SELECT 1 FROM pg_extension WHERE extname = %s
+                SELECT 1 FROM pg_catalog.pg_extension WHERE extname = %s
             ) as available
         """
         status, result = conn.execute_dict(check_sql, [required_ext])

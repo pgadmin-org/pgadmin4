@@ -524,7 +524,7 @@ FROM (
     ':schema.'|| ns.oid || ':/' || ns.nspname || '/' || ':aggregate.' || ag.aggfnoid::oid ||':/' || pr.proname AS obj_path,
     ns.nspname AS schema_name,
     {{ show_node_prefs['aggregate'] }} AS show_node, pg_catalog.pg_get_function_arguments(aggfnoid::oid) AS other_info
-    FROM pg_aggregate ag
+    FROM pg_catalog.pg_aggregate ag
     LEFT OUTER JOIN pg_catalog.pg_proc pr ON pr.oid = ag.aggfnoid
     LEFT OUTER JOIN pg_catalog.pg_namespace ns ON ns.oid=pr.pronamespace
     WHERE ({{ CATALOGS.DB_SUPPORT('ns') }})

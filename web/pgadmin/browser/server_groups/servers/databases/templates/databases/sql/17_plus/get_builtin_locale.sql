@@ -1,1 +1,1 @@
-SELECT colllocale as collbuiltinlocale from pg_collation where collprovider = 'b';
+SELECT colllocale as collbuiltinlocale from pg_catalog.pg_collation where collprovider = 'b';

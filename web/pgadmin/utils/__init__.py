@@ -999,7 +999,7 @@ def get_safe_post_logout_redirect():
 
 
 def check_extension_exists(conn, extension_name):
-    sql = f"SELECT * FROM pg_extension WHERE extname = '{extension_name}'"
+    sql = f"SELECT * FROM pg_catalog.pg_extension WHERE extname = '{extension_name}'"
     status, res = conn.execute_scalar(sql)
     if status:
         if res:
