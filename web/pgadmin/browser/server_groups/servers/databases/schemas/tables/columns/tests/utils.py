@@ -193,7 +193,8 @@ def verify_column(server, db_name, col_name):
                                              server['port'],
                                              server['sslmode'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("select * from pg_catalog.pg_attribute where attname='%s'" %
+        pg_cursor.execute("select * from pg_catalog.pg_attribute "
+                          "where attname='%s'" %
                           col_name)
         col = pg_cursor.fetchone()
         connection.close()

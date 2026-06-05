@@ -405,7 +405,8 @@ QUERIES = {
     'active_connections': {
         'sql': """
             SELECT
-                (SELECT count(*) FROM pg_catalog.pg_stat_activity) as total_connections,
+                (SELECT count(*) FROM pg_catalog.pg_stat_activity)
+                    as total_connections,
                 (SELECT count(*) FROM pg_catalog.pg_stat_activity
                  WHERE state = 'active') as active_queries,
                 (SELECT count(*) FROM pg_catalog.pg_stat_activity
@@ -505,7 +506,8 @@ QUERIES = {
     'stat_statements_check': {
         'sql': """
             SELECT EXISTS (
-                SELECT 1 FROM pg_catalog.pg_extension WHERE extname = 'pg_stat_statements'
+                SELECT 1 FROM pg_catalog.pg_extension
+                WHERE extname = 'pg_stat_statements'
             ) as available
         """,
         'scope': ['server', 'database'],

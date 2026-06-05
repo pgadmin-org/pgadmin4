@@ -1459,7 +1459,9 @@ def generate_schema_security_report(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        schema_query = (
+            "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        )
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -1538,7 +1540,9 @@ def generate_schema_security_report_stream(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        schema_query = (
+            "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        )
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -1991,7 +1995,9 @@ def generate_schema_design_report(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        schema_query = (
+            "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        )
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(
@@ -2070,7 +2076,9 @@ def generate_schema_design_report_stream(sid, did, scid):
             )
 
         # Get schema name from scid
-        schema_query = "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        schema_query = (
+            "SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = %s"
+        )
         status, result = conn.execute_dict(schema_query, [scid])
         if not status or not result.get('rows'):
             return make_json_response(

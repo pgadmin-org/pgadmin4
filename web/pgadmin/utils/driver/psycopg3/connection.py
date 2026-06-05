@@ -447,7 +447,8 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            _query = "SELECT rolname from pg_catalog.pg_roles WHERE rolname = {0}" \
+            _query = "SELECT rolname from pg_catalog.pg_roles " \
+                     "WHERE rolname = {0}" \
                      "".format(self.qtLiteral(role, self.conn))
             _status, res = self.execute_scalar(_query)
 
@@ -516,7 +517,8 @@ class Connection(BaseConnection):
 
         status, cur = self.__cursor()
 
-        # Note that we use 'UPDATE pg_catalog.pg_settings' for setting bytea_output as a
+        # Note that we use 'UPDATE pg_catalog.pg_settings' for setting
+        # bytea_output as a
         # convenience hack for those running on old, unsupported versions of
         # PostgreSQL 'cos we're nice like that.
         status = self._execute(

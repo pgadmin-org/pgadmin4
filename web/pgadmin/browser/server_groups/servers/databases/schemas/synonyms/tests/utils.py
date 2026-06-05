@@ -70,7 +70,8 @@ def verify_synonym(server, db_name, synonym_name):
                                              server['host'],
                                              server['port'])
         pg_cursor = connection.cursor()
-        pg_cursor.execute("SELECT * FROM pg_catalog.pg_synonym WHERE synname='%s'" %
+        pg_cursor.execute("SELECT * FROM pg_catalog.pg_synonym "
+                          "WHERE synname='%s'" %
                           synonym_name)
         synonym = pg_cursor.fetchone()
         connection.close()
