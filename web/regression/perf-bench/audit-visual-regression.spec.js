@@ -67,6 +67,9 @@
 // max_connections.
 
 import { test, expect } from '@playwright/test';
+import { existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   installErrorRecorders, enableAudit, autoDismissUnlockModal,
   expectNoDivergence,
@@ -75,6 +78,16 @@ import {
   openCreateDialogViaApi, openEditDialogViaApi,
   disconnectServerViaApi,
 } from './audit-helpers';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Baseline directory for THIS platform. See playwright.config.js's
+// snapshotPathTemplate.
+const PLATFORM_BASELINE_DIR = path.join(
+  __dirname,
+  'audit-visual-regression.spec.js-snapshots',
+  process.platform,
+);
 
 const PGADMIN_URL =
   process.env.PGADMIN_URL || 'http://127.0.0.1:5050/browser/';
@@ -101,17 +114,20 @@ const SCREENSHOT_OPTS = {
 };
 
 // Visual baselines are environment-specific (OS, browser version, PG
-// version all influence font rendering and field-availability). The
-// committed baselines were captured on darwin; running on another
-// platform without first capturing fresh baselines for it gives
-// guaranteed false positives. Skip the suite on non-darwin until a
-// per-platform snapshot strategy lands (see README-visual-regression.md
-// — "Limitations to migrate away from").
+// version all influence font rendering and field-availability).
+// Baselines are stored per-platform under
+// `audit-visual-regression.spec.js-snapshots/<platform>/`. Skip the
+// suite if no baselines exist for the current platform — running
+// would just produce guaranteed-failing diffs against missing files.
+// To enable a new platform: run on that platform with
+// `--update-snapshots` once and commit the resulting directory.
 test.beforeEach(() => {
   test.skip(
-    process.platform !== 'darwin',
-    'Visual baselines are darwin-only; see README-visual-regression.md '
-    + 'for per-platform capture instructions before enabling.'
+    !existsSync(PLATFORM_BASELINE_DIR),
+    'No visual baselines for platform "' + process.platform + '" at '
+    + PLATFORM_BASELINE_DIR
+    + '. Capture with --update-snapshots on this platform '
+    + '+ commit the resulting dir.'
   );
 });
 

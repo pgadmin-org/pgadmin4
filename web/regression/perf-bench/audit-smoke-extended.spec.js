@@ -194,18 +194,20 @@ const exerciseDialog = async (page, { editMode = false } = {}) => {
     await page.waitForTimeout(250);
     addedRow = true;
 
-    // 4. SET_VALUE on whatever `table input` Playwright resolves to
-    // FIRST in the dialog — typically the first cell of the first
-    // grid (NOT necessarily the row just added, which is appended
-    // at the bottom). Best-effort: the goal is a SET_VALUE dispatch
-    // somewhere in a grid; identity of the target cell is
-    // secondary. Many grids render the first cell as a typeahead/
-    // dropdown that swallows the fill — we don't fail if it does.
+    // 4. SET_VALUE on the first input of the row we JUST added.
+    // DataGridView appends new rows to the end of `<tbody>`, so
+    // targeting `tbody tr:last-of-type input:first-of-type` reaches
+    // the newly-added row's first cell — the right surface for the
+    // "ADD_ROW then SET_VALUE on the new row" dispatch sequence.
+    // Many grids render the first cell as a typeahead/dropdown that
+    // swallows the fill — we don't fail if it does.
     auditDebug('exerciseDialog.4 cell fill: start');
     const _t4 = Date.now();
-    const firstInput = dialog.locator('table input').first();
-    if (await firstInput.isVisible().catch(() => false)) {
-      await firstInput.fill('audit_x').catch(() => {});
+    const newRowFirstCell = dialog
+      .locator('table tbody tr').last()
+      .locator('input').first();
+    if (await newRowFirstCell.isVisible().catch(() => false)) {
+      await newRowFirstCell.fill('audit_x').catch(() => {});
       await page.waitForTimeout(150);
     }
     auditDebug(

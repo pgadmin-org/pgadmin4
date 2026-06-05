@@ -4,6 +4,23 @@ export default defineConfig({
   testDir: '.',
   timeout: 180_000,
   reporter: 'line',
+  // Visual-regression snapshots live under a per-platform directory
+  // so darwin and linux baselines can coexist. Playwright's default
+  // `{arg}-{platform}{ext}` glues the platform into the FILENAME,
+  // which made cross-platform support fragile (capturing linux
+  // baselines on a darwin laptop overwrites the darwin files unless
+  // careful). Using {platform} as a directory keeps each platform's
+  // baselines fully isolated.
+  //
+  // To add a new platform: run `playwright test audit-visual-regression
+  // --update-snapshots` on that platform once and commit the resulting
+  // snapshots/<platform>/ directory.
+  //
+  // Path is RELATIVE to the test file's directory because
+  // {testFileDir} resolves empty in Playwright 1.60 unless we leave
+  // it off and let the engine prepend it for us.
+  snapshotPathTemplate:
+    '{snapshotDir}/{testFileName}-snapshots/{platform}/{arg}{ext}',
   // Parallel-by-default after the tree.selected() drift fix landed.
   // Validation runs (workers=1 and workers=4) both hit 10 iterations
   // x 30 specs = 300/300 with zero flakes. workers=4 finishes each
