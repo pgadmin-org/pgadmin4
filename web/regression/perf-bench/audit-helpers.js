@@ -13,11 +13,97 @@
 
 import { expect } from '@playwright/test';
 
+// Debug instrumentation. Set AUDIT_DEBUG=1 to surface phase markers +
+// timing for every spec — useful when a sequential flake-check run
+// produces an intermittent failure and we need to see WHICH phase
+// stalled (page boot vs server connect vs tree navigation vs dialog
+// open vs interaction vs close). Silent by default so production
+// CI runs stay clean.
+const _debugEnabled = () => process.env.AUDIT_DEBUG === '1';
+const _t0 = Date.now();
+const _msSince = () => (Date.now() - _t0).toString().padStart(6, ' ');
+export const auditDebug = (tag, detail = '') => {
+  if (!_debugEnabled()) return;
+  // eslint-disable-next-line no-console
+  console.log(`[audit-debug ${_msSince()}ms] ${tag}${detail ? ': ' + detail : ''}`);
+};
+
+// Tear down a spec's server connection by hitting pgAdmin's REST
+// disconnect endpoint (`DELETE /browser/server/connect/{gid}/{sid}`).
+// Without this, each spec leaves the PG connection pool warm —
+// sequential runs across 30 specs × N iterations exhaust PG's
+// max_connections (defaults to 100) and subsequent fetches return
+// empty children lists, surfacing as the "no child of type X found"
+// flake the smoke specs hit intermittently. Call from
+// `test.afterEach` so cleanup runs even when the spec fails.
+//
+// Best-effort: silently skips if no connected server is in the tree
+// (e.g., spec failed before ensureServerRegistered fired). Errors
+// inside the fetch are swallowed — disconnect is opportunistic and
+// the next spec's ensureServerRegistered will reconnect.
+export const disconnectServerViaApi = async (page) => {
+  try {
+    await page.evaluate(async () => {
+      const tree = window.pgAdmin?.Browser?.tree;
+      if (!tree?.tree?.getModel) return;
+      const itemData = (it) => (
+        typeof it.getMetadata === 'function'
+          ? it.getMetadata('data')
+          : (it.data || it._metadata?.data || null)
+      );
+      const root = tree.tree.getModel().root;
+      const sg = (root.children || []).find(
+        (c) => itemData(c)?._type === 'server_group'
+      );
+      if (!sg) return;
+      const servers = (sg.children || []).filter((c) => {
+        const d = itemData(c);
+        return d?._type === 'server' && !!d?.connected;
+      });
+      // CSRF: pgAdmin requires X-pgA-CSRFToken on non-GET requests.
+      // The token is exposed on window.pgAdmin (set by the page
+      // template at boot). Without it, the DELETE silently 400s and
+      // the server stays connected.
+      const headers = {};
+      const csrfName = window.pgAdmin?.csrf_token_header;
+      const csrfTok = window.pgAdmin?.csrf_token;
+      if (csrfName && csrfTok) headers[csrfName] = csrfTok;
+      for (const sv of servers) {
+        const sd = itemData(sv);
+        if (!sd) continue;
+        const gid = sd._pid;
+        const sid = sd._id;
+        try {
+          await fetch(
+            `/browser/server/connect/${gid}/${sid}`,
+            { method: 'DELETE', credentials: 'same-origin', headers }
+          );
+        } catch { /* swallow */ }
+      }
+    });
+  } catch { /* page may already be torn down — fine */ }
+};
+
 // Records every browser-side error so a divergence (thrown by the
 // canary's defaultReport under the audit flags) is collected and
 // asserted on at the end of the test.
+//
+// Idempotent across calls on the same page — required for the
+// worker-scoped page fixture where a single page is reused across
+// all tests in a worker. First call attaches the listeners and
+// stashes the errors array on `page.__errorRecorder`; subsequent
+// calls find the existing array, CLEAR it (so each test gets a
+// fresh slate), and return the same reference. Without this guard,
+// 30 tests would attach 30 sets of listeners, each pushing to its
+// own array — the spec's expectNoDivergence(errors) would only see
+// the LAST set's events.
 export const installErrorRecorders = (page) => {
+  if (page.__errorRecorder) {
+    page.__errorRecorder.length = 0;
+    return page.__errorRecorder;
+  }
   const errors = [];
+  page.__errorRecorder = errors;
   page.on('pageerror', (err) => {
     errors.push({ kind: 'pageerror', message: err.message });
   });
@@ -106,6 +192,7 @@ export const expectNoDivergence = (errors) => {
 // validation and figuring out which field is missing in a real
 // browser is harder than just reusing whatever's already there.
 export const ensureServerRegistered = async (page, opts = {}) => {
+  auditDebug('ensureServerRegistered: start');
   const preferredName = opts.name
     || process.env.PGADMIN_SERVER_NAME || 'PG18';
   const password = opts.password || process.env.PGPASSWORD || 'edb';
@@ -118,6 +205,7 @@ export const ensureServerRegistered = async (page, opts = {}) => {
   ).first();
   await serversNode.dblclick();
   await page.waitForTimeout(2_000);
+  auditDebug('ensureServerRegistered: Servers expanded');
 
   // Look for the preferred name. If absent, pick whatever's visible
   // (most local installs have a development server pre-registered).
@@ -163,6 +251,7 @@ export const ensureServerRegistered = async (page, opts = {}) => {
   await page.locator(
     '.file-entry.directory', { hasText: 'Databases' }
   ).first().waitFor({ state: 'visible', timeout: 30_000 });
+  auditDebug('ensureServerRegistered: complete', name);
   return name;
 };
 
@@ -175,6 +264,8 @@ export const ensureServerRegistered = async (page, opts = {}) => {
 // Returns the tree-node descriptor (a string id that can be passed
 // to openCreateDialogViaApi).
 export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
+  auditDebug('navigateToCatalogNodeViaApi: start', catalog);
+  const _nav_start = Date.now();
   const db = database || process.env.PGDATABASE || 'postgres';
   // pgAdmin's tree types follow a `coll-X` / `X` pattern: the
   // collection (Tables, Functions, etc.) is `coll-table`; individual
@@ -267,14 +358,18 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
     );
     // Select the catalog node so menu actions target it.
     await tree.select(node, true);
-    // pgAdmin's tree.selected() observably drifts back to a parent
-    // node (typically the database) after a tree-refresh event fires
-    // when the selected node's REST children land. Stash the
-    // just-selected node so openCreate/EditDialogViaApi have an
-    // authoritative reference instead of falling back to drifted
-    // tree.selected().
+    // Stash the just-selected node for openCreate/EditDialogViaApi.
+    // tree.selected() observably drifts back to a parent (typically
+    // the database) after a tree-refresh event triggered when the
+    // selected node's REST children land. The stash gives the open
+    // helpers an authoritative reference — same fix as the
+    // navigateToTableSubCollectionViaApi helper below.
     window.__pgadminLastNavigatedNode = node;
   }, { targetType, db });
+  auditDebug(
+    'navigateToCatalogNodeViaApi: complete',
+    `${catalog} in ${Date.now() - _nav_start}ms`
+  );
 };
 
 // Navigate to a SERVER-level collection node (Login/Group Roles,
@@ -284,6 +379,8 @@ export const navigateToCatalogNodeViaApi = async (page, catalog, database) => {
 // `targetType` is the collection's _type as pgAdmin's tree
 // registers it (e.g. 'coll-role', 'coll-database', 'coll-event_trigger').
 export const navigateToServerCollectionViaApi = async (page, targetType) => {
+  auditDebug('navigateToServerCollectionViaApi: start', targetType);
+  const _nav_start = Date.now();
   await page.evaluate(async ({ targetType }) => {
     const tree = window.pgAdmin.Browser.tree;
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -326,6 +423,10 @@ export const navigateToServerCollectionViaApi = async (page, targetType) => {
     await tree.select(node, true);
     window.__pgadminLastNavigatedNode = node;
   }, { targetType });
+  auditDebug(
+    'navigateToServerCollectionViaApi: complete',
+    `${targetType} in ${Date.now() - _nav_start}ms`
+  );
 };
 
 // Navigate to a SUB-CATALOG node nested under a specific Table
@@ -339,6 +440,8 @@ export const navigateToServerCollectionViaApi = async (page, targetType) => {
 export const navigateToTableSubCollectionViaApi = async (
   page, subCollectionType, database
 ) => {
+  auditDebug('navigateToTableSubCollectionViaApi: start', subCollectionType);
+  const _nav_start = Date.now();
   const db = database || process.env.PGDATABASE || 'postgres';
   await page.evaluate(async ({ subCollectionType, db }) => {
     const tree = window.pgAdmin.Browser.tree;
@@ -432,7 +535,16 @@ export const navigateToTableSubCollectionViaApi = async (
     // alone. Stash the just-selected node on window so the caller
     // can read the authoritative reference.
     window.__pgadminLastNavigatedNode = node;
+    window.__pgadminLastNavigatedChildCount = (node.children || []).length;
   }, { subCollectionType, db });
+  const childCount = await page.evaluate(
+    () => window.__pgadminLastNavigatedChildCount
+  );
+  auditDebug(
+    'navigateToTableSubCollectionViaApi: complete',
+    `${subCollectionType} in ${Date.now() - _nav_start}ms `
+    + `(loaded ${childCount} children under sub-collection)`
+  );
 };
 
 // Trigger a "Create > X" dialog programmatically by invoking the
@@ -441,14 +553,15 @@ export const navigateToTableSubCollectionViaApi = async (
 export const openCreateDialogViaApi = async (page, nodeType) => {
   await page.evaluate((nodeType) => {
     const tree = window.pgAdmin.Browser.tree;
-    // Prefer the just-navigated node stashed by navigateToXViaApi.
-    // tree.selected() observably drifts to a parent node after the
-    // tree-refresh event triggered when the selected collection's
-    // REST children land. Without this fallback, openCreate
-    // dispatches show_obj_properties against a drifted parent node;
-    // the Create dialog mounts in a context that can't resolve
-    // dropdown lookups and the Name textbox never renders (20s
-    // wait-for-Name timeout). Same fix the Edit helper already had.
+    // Prefer the just-navigated node stashed by navigateToXViaApi
+    // helpers. tree.selected() observably drifts back to a parent
+    // node after a tree-refresh event (typically the database node)
+    // — same root cause as the Edit-dialog flake. Without this
+    // fallback, openCreateDialogViaApi sometimes hands
+    // show_obj_properties a parent node, and the Create dialog
+    // mounts in a context that can't resolve dropdown lookups,
+    // failing to render the Name textbox. Surfaces as a 20s
+    // `wait Name textbox` timeout — the iter-8 flake signature.
     const selected = window.__pgadminLastNavigatedNode || tree.selected();
     if (!selected) throw new Error('openCreateDialogViaApi: no node selected');
     const nodeModule = window.pgAdmin.Browser.Nodes[nodeType];

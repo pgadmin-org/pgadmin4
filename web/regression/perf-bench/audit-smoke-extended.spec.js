@@ -52,7 +52,18 @@ import {
   navigateToCatalogNodeViaApi, navigateToServerCollectionViaApi,
   navigateToTableSubCollectionViaApi,
   openCreateDialogViaApi, openEditDialogViaApi,
-} from './audit-helpers';
+  auditDebug, disconnectServerViaApi,
+} from './audit-helpers.js';
+
+// Each spec is self-contained (its own browser context, its own
+// pgAdmin session). The worker-scoped page experiment (per-worker
+// shared page + ensureServerRegistered fast-path) was DROPPED:
+// tests interfered with each other through pgAdmin's per-session
+// tree-state cache (pre-cached collection children invalidated by
+// later spec navigations), surfacing as 30%-50% "no child of type X
+// found" flakes regardless of worker count. Test-scoped page +
+// per-test afterEach disconnect is the working shape.
+test.describe.configure({ mode: 'parallel' });
 
 const PGADMIN_URL =
   process.env.PGADMIN_URL || 'http://127.0.0.1:5050/browser/';
@@ -66,12 +77,20 @@ const bootPage = async (page) => {
   });
   await page.waitForTimeout(1_000);
   await enableAudit(page);
-  // Mirror audit-smoke.spec.js's bootPage — assert the audit flag
-  // survived page load. (expectCanaryExecuted asserts the canary
-  // RAN; this asserts the audit FLAG is still set — orthogonal
-  // failure modes that both need to be tight.)
   expect(await page.evaluate(() => window.__INCREMENTAL_AUDIT__)).toBe(true);
 };
+
+// eslint-disable-next-line no-empty-pattern
+test.beforeEach(({}, testInfo) => {
+  auditDebug(`=== spec start === ${testInfo.title}`);
+});
+test.afterEach(async ({ page }, testInfo) => {
+  await disconnectServerViaApi(page);
+  auditDebug(
+    `=== spec end ===   ${testInfo.title} `
+    + `[${testInfo.status}] in ${testInfo.duration}ms`
+  );
+});
 
 // Close button scoped to the SchemaView dialog panel — avoids matching
 // transient toasts or the Unlock Saved Passwords dialog (rare race;
@@ -118,45 +137,71 @@ const expectCanaryExecuted = async (page, baselineCount) => {
 // the interactions are NOT confused with canary divergences —
 // expectNoDivergence filters to canary-specific messages only.
 const exerciseDialog = async (page) => {
+  auditDebug('exerciseDialog: start');
   const dialog = page.locator('.dock-panel.dock-style-dialogs').first();
 
   // 1. SET_VALUE on Name. Some dialogs may have a disabled or
   // missing Name field — silent-skip rather than fail the helper.
+  auditDebug('exerciseDialog.1 Name fill: start');
+  const _t1 = Date.now();
   const nameBox = dialog.getByRole('textbox', { name: 'Name' }).first();
   if (await nameBox.isEditable().catch(() => false)) {
     await nameBox.fill('audit_smoke_x').catch(() => {});
     await page.waitForTimeout(150);
   }
+  auditDebug('exerciseDialog.1 Name fill: complete', `${Date.now() - _t1}ms`);
 
   // 2. Click each tab button. pgAdmin's SchemaView tabs render as
   // <button data-test="<TabName>">. Skip action buttons that share
   // the same selector (Close / Save / Reset / Help / Delete).
+  auditDebug('exerciseDialog.2 tab-switch: start');
+  const _t2 = Date.now();
   const SKIP = new Set(['Close', 'Save', 'Reset', 'Help', 'Delete', 'Add']);
   const tabBtns = await dialog.locator('button[data-test]').all();
+  let tabsClicked = 0;
   for (const btn of tabBtns) {
     const dt = await btn.getAttribute('data-test').catch(() => null);
     if (!dt || SKIP.has(dt)) continue;
     if (!(await btn.isVisible().catch(() => false))) continue;
     await btn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(120);
+    tabsClicked += 1;
   }
+  auditDebug(
+    'exerciseDialog.2 tab-switch: complete',
+    `${tabsClicked} tabs in ${Date.now() - _t2}ms`
+  );
 
   // 3. ADD_ROW on the first DataGridView found anywhere in the
   // dialog. Dialogs with no grids skip cleanly.
+  auditDebug('exerciseDialog.3 add-row: start');
+  const _t3 = Date.now();
   const addRow = dialog.locator('[data-test="add-row"]').first();
+  let addedRow = false;
   if (await addRow.isVisible().catch(() => false)) {
     await addRow.click({ force: true }).catch(() => {});
     await page.waitForTimeout(250);
+    addedRow = true;
 
     // 4. SET_VALUE on the first input that became editable in the
     // newly-added row. Fully best-effort — many grids render the
     // first cell as a typeahead/dropdown that needs focus first.
+    auditDebug('exerciseDialog.4 cell fill: start');
+    const _t4 = Date.now();
     const firstInput = dialog.locator('table input').first();
     if (await firstInput.isVisible().catch(() => false)) {
       await firstInput.fill('audit_x').catch(() => {});
       await page.waitForTimeout(150);
     }
+    auditDebug(
+      'exerciseDialog.4 cell fill: complete', `${Date.now() - _t4}ms`
+    );
   }
+  auditDebug(
+    'exerciseDialog.3 add-row: complete',
+    `${addedRow ? 'added 1 row' : 'skipped (no grid)'} in `
+    + `${Date.now() - _t3}ms`
+  );
 };
 
 // Try-finally wrappers so a Name-textbox timeout doesn't leave a stale
@@ -164,14 +209,24 @@ const exerciseDialog = async (page) => {
 const openAndAssertClean = async (page, openFn, errors) => {
   const baseline = await readCanaryCount(page);
   try {
+    auditDebug('openFn: start');
+    const _t = Date.now();
     await openFn();
+    auditDebug('openFn: returned', `${Date.now() - _t}ms`);
+    auditDebug('wait Name textbox: start');
+    const _tName = Date.now();
     await page.getByRole('textbox', { name: 'Name' }).first().waitFor({
       state: 'visible', timeout: 20_000,
     });
+    auditDebug('wait Name textbox: complete', `${Date.now() - _tName}ms`);
+    const _tExercise = Date.now();
     await exerciseDialog(page);
+    auditDebug('exerciseDialog: complete', `${Date.now() - _tExercise}ms total`);
   } finally {
     // Close even if the Name wait or interaction failed — keep
     // workspace clean.
+    auditDebug('close: start');
+    const _tClose = Date.now();
     const close = page.locator(SCHEMA_DIALOG_CLOSE).first();
     if (await close.isVisible().catch(() => false)) {
       await close.click().catch(() => {});
@@ -184,7 +239,13 @@ const openAndAssertClean = async (page, openFn, errors) => {
         await yes.click({ force: true }).catch(() => {});
       }
     }
+    auditDebug('close: complete', `${Date.now() - _tClose}ms`);
   }
+  const finalCanaryCount = await readCanaryCount(page);
+  auditDebug(
+    'canary tally', `baseline=${baseline} final=${finalCanaryCount} `
+    + `delta=${finalCanaryCount - baseline}`
+  );
   await expectCanaryExecuted(page, baseline);
   expectNoDivergence(errors);
 };

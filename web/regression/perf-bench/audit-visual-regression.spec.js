@@ -73,6 +73,7 @@ import {
   ensureServerRegistered, navigateToCatalogNodeViaApi,
   navigateToServerCollectionViaApi, navigateToTableSubCollectionViaApi,
   openCreateDialogViaApi, openEditDialogViaApi,
+  disconnectServerViaApi,
 } from './audit-helpers';
 
 const PGADMIN_URL =
@@ -113,6 +114,14 @@ test.beforeEach(() => {
     + 'for per-platform capture instructions before enabling.'
   );
 });
+
+// Per-test disconnect — releases this spec's pgAdmin server-side
+// PG connection pool so 20 specs in sequence don't approach PG's
+// max_connections. Same shape as audit-smoke-extended.
+test.afterEach(async ({ page }) => {
+  await disconnectServerViaApi(page);
+});
+
 
 const bootPage = async (page) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
