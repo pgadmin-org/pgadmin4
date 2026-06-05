@@ -44,6 +44,13 @@ let webpackShimConfig = {
     'graphlib': path.join(__dirname, 'node_modules/graphlib'),
     'react': path.join(__dirname, 'node_modules/react'),
     'react-dom': path.join(__dirname, 'node_modules/react-dom'),
+    // react-checkbox-tree v2 marks the package as "type": "module" but ships
+    // a UMD bundle as its CommonJS entry point. Babel transforms our ESM
+    // imports to require(), so webpack picks the UMD file and then treats it
+    // as ESM (because of "type": "module") — and module.exports never runs,
+    // leaving the default export undefined. Point directly at the ESM bundle
+    // to bypass the broken main entry.
+    'react-checkbox-tree$': path.join(__dirname, 'node_modules/react-checkbox-tree/lib/index.esm.js'),
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
 
