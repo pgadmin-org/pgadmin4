@@ -62,9 +62,9 @@
 //   - SQL preview tab (CodeMirror state is timing-dependent).
 //   - Animated/transient UI states.
 //
-// Resource note: running all 20 sequentially can exhaust PostgreSQL's
-// max_connections if pgAdmin isn't restarted between back-to-back
-// runs. Restart pgAdmin between capture and verify phases.
+// Per-test disconnect in afterEach releases pgAdmin's PG connection
+// pool after each spec, so 20 sequential specs don't approach PG
+// max_connections.
 
 import { test, expect } from '@playwright/test';
 import {

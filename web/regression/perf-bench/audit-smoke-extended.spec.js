@@ -105,10 +105,10 @@ const SCHEMA_DIALOG_CLOSE =
 //
 // Caller passes the *baseline* count taken before opening the dialog;
 // we assert it strictly increased. Delta-check (rather than > 0)
-// defends against the case where Playwright reuses a page context
-// across tests (today it doesn't by default — but if `test.use({
-// page: 'serial' })` is ever flipped, > 0 would silently pass on a
-// stale leftover count).
+// defends against future configurations that share a page across
+// tests (e.g. `test.describe.configure({ mode: 'serial' })` with a
+// worker-scoped page fixture) where a stale leftover count would
+// silently pass a > 0 check.
 const readCanaryCount = (page) =>
   page.evaluate(() => window.__canary_entry_count__ || 0);
 const expectCanaryExecuted = async (page, baselineCount) => {
@@ -136,18 +136,29 @@ const expectCanaryExecuted = async (page, baselineCount) => {
 // dialogs without a Name skip the fill. Validation errors raised by
 // the interactions are NOT confused with canary divergences —
 // expectNoDivergence filters to canary-specific messages only.
-const exerciseDialog = async (page) => {
+const exerciseDialog = async (page, { editMode = false } = {}) => {
   auditDebug('exerciseDialog: start');
   const dialog = page.locator('.dock-panel.dock-style-dialogs').first();
 
   // 1. SET_VALUE on Name. Some dialogs may have a disabled or
   // missing Name field — silent-skip rather than fail the helper.
+  //
+  // Defensive: skip the Name fill in EDIT mode. The seeded objects
+  // (audit_smoke_table, audit_smoke_view, etc.) are looked up by
+  // name by subsequent specs in the same iteration; if the close
+  // path ever shifts from "Discard changes" to "Save" (e.g. a future
+  // pgAdmin change to the confirm-prompt verb), filling Name in
+  // Edit mode would rename the seeded fixture mid-suite and break
+  // every subsequent Edit-mode test. Create mode is safe — the dialog
+  // mounts with no persisted record, save would create a NEW object.
   auditDebug('exerciseDialog.1 Name fill: start');
   const _t1 = Date.now();
-  const nameBox = dialog.getByRole('textbox', { name: 'Name' }).first();
-  if (await nameBox.isEditable().catch(() => false)) {
-    await nameBox.fill('audit_smoke_x').catch(() => {});
-    await page.waitForTimeout(150);
+  if (!editMode) {
+    const nameBox = dialog.getByRole('textbox', { name: 'Name' }).first();
+    if (await nameBox.isEditable().catch(() => false)) {
+      await nameBox.fill('audit_smoke_x').catch(() => {});
+      await page.waitForTimeout(150);
+    }
   }
   auditDebug('exerciseDialog.1 Name fill: complete', `${Date.now() - _t1}ms`);
 
@@ -183,9 +194,13 @@ const exerciseDialog = async (page) => {
     await page.waitForTimeout(250);
     addedRow = true;
 
-    // 4. SET_VALUE on the first input that became editable in the
-    // newly-added row. Fully best-effort — many grids render the
-    // first cell as a typeahead/dropdown that needs focus first.
+    // 4. SET_VALUE on whatever `table input` Playwright resolves to
+    // FIRST in the dialog — typically the first cell of the first
+    // grid (NOT necessarily the row just added, which is appended
+    // at the bottom). Best-effort: the goal is a SET_VALUE dispatch
+    // somewhere in a grid; identity of the target cell is
+    // secondary. Many grids render the first cell as a typeahead/
+    // dropdown that swallows the fill — we don't fail if it does.
     auditDebug('exerciseDialog.4 cell fill: start');
     const _t4 = Date.now();
     const firstInput = dialog.locator('table input').first();
@@ -206,7 +221,7 @@ const exerciseDialog = async (page) => {
 
 // Try-finally wrappers so a Name-textbox timeout doesn't leave a stale
 // dialog open over the tree for the next spec.
-const openAndAssertClean = async (page, openFn, errors) => {
+const openAndAssertClean = async (page, openFn, errors, opts = {}) => {
   const baseline = await readCanaryCount(page);
   try {
     auditDebug('openFn: start');
@@ -220,7 +235,7 @@ const openAndAssertClean = async (page, openFn, errors) => {
     });
     auditDebug('wait Name textbox: complete', `${Date.now() - _tName}ms`);
     const _tExercise = Date.now();
-    await exerciseDialog(page);
+    await exerciseDialog(page, { editMode: opts.editMode === true });
     auditDebug('exerciseDialog: complete', `${Date.now() - _tExercise}ms total`);
   } finally {
     // Close even if the Name wait or interaction failed — keep
@@ -306,7 +321,8 @@ const smokeEditSchemaChild = async (page, catalogLabel, nodeType) => {
   await ensureServerRegistered(page);
   await navigateToCatalogNodeViaApi(page, catalogLabel);
   await openAndAssertClean(
-    page, () => openEditDialogViaApi(page, nodeType), errors
+    page, () => openEditDialogViaApi(page, nodeType), errors,
+    { editMode: true }
   );
 };
 
@@ -316,7 +332,8 @@ const smokeEditServerChild = async (page, collectionType, nodeType) => {
   await ensureServerRegistered(page);
   await navigateToServerCollectionViaApi(page, collectionType);
   await openAndAssertClean(
-    page, () => openEditDialogViaApi(page, nodeType), errors
+    page, () => openEditDialogViaApi(page, nodeType), errors,
+    { editMode: true }
   );
 };
 
@@ -326,7 +343,8 @@ const smokeEditTableChild = async (page, subCollectionType, nodeType) => {
   await ensureServerRegistered(page);
   await navigateToTableSubCollectionViaApi(page, subCollectionType);
   await openAndAssertClean(
-    page, () => openEditDialogViaApi(page, nodeType), errors
+    page, () => openEditDialogViaApi(page, nodeType), errors,
+    { editMode: true }
   );
 };
 

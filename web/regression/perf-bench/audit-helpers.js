@@ -88,15 +88,11 @@ export const disconnectServerViaApi = async (page) => {
 // canary's defaultReport under the audit flags) is collected and
 // asserted on at the end of the test.
 //
-// Idempotent across calls on the same page — required for the
-// worker-scoped page fixture where a single page is reused across
-// all tests in a worker. First call attaches the listeners and
-// stashes the errors array on `page.__errorRecorder`; subsequent
-// calls find the existing array, CLEAR it (so each test gets a
-// fresh slate), and return the same reference. Without this guard,
-// 30 tests would attach 30 sets of listeners, each pushing to its
-// own array — the spec's expectNoDivergence(errors) would only see
-// the LAST set's events.
+// Idempotent across calls on the same page. Each Playwright test gets
+// a fresh browser context so this normally fires once per test, but
+// the guard means callers can re-invoke during a long test (e.g. to
+// reset accumulated noise before a specific assertion) without
+// accumulating duplicate listeners.
 export const installErrorRecorders = (page) => {
   if (page.__errorRecorder) {
     page.__errorRecorder.length = 0;
