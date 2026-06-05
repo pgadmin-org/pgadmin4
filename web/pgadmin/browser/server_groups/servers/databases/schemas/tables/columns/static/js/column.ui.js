@@ -88,15 +88,19 @@ export default class ColumnSchema extends BaseUISchema {
     }
 
     if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
-      if(this.isNew(state)) {
-        return false;
-      }
-
-      // We will disable control if it's system columns
-      // inheritedfrom check is useful when we use this schema in table node
-      // inheritedfrom has value then we should disable it
+      // Parent-table inheritance locks the column in BOTH create and
+      // edit modes — its Name and datatype mirror the parent. The
+      // `isNew(state)` shortcut below must NOT run first, otherwise
+      // inherited columns become editable on a fresh child-table
+      // dialog. (`OF TYPE` inheritance uses `inheritedfromtype` and is
+      // handled by the dedicated `editable` callback further down —
+      // not by this method.)
       if (!isEmptyString(state.inheritedfrom)){
         return true;
+      }
+
+      if(this.isNew(state)) {
+        return false;
       }
 
       // ie: it's position is less than 1
