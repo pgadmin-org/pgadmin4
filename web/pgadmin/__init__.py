@@ -495,7 +495,15 @@ def create_app(app_name=None):
             run_migration_for_sqlite()
 
         # Delete all the adhoc(temporary) servers from the pgAdmin database.
-        delete_adhoc_servers()
+        # Adhoc servers are created by interactive tools (Schema Diff,
+        # Query Tool ad-hoc connections, etc.) — they have no meaning
+        # in CLI sessions (`setup.py update-user`, etc.) and accessing
+        # `current_user` inside the user-scoped cleanup branch would
+        # fail with `AttributeError: 'PgAdmin' object has no attribute
+        # 'login_manager'` because Flask-Security has not yet been
+        # initialised at this point in create_app.
+        if not cli_mode:
+            delete_adhoc_servers()
 
     Mail(app)
 
