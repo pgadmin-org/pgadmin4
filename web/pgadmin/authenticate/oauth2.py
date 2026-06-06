@@ -284,6 +284,31 @@ class OAuth2Authentication(BaseAuthentication):
         return token
 
     def _authorize_access_token(self, provider_name, provider, client):
+        # Pre-flight: if the provider's scope includes 'openid', the
+        # OAuth server will return an id_token that pgAdmin must
+        # verify. Verification requires JWKS, which Authlib fetches
+        # via the discovery document. Without OAUTH2_SERVER_METADATA_URL,
+        # verification fails deep inside Authlib with a cryptic
+        # `Missing "jwks_uri" in metadata` error. Catch the misconfig
+        # here with actionable guidance, before any network round-trip.
+        scope = provider.get('OAUTH2_SCOPE') or ''
+        scope_parts = scope.split() if isinstance(scope, str) else []
+        if 'openid' in scope_parts and \
+                not provider.get('OAUTH2_SERVER_METADATA_URL'):
+            guidance = gettext(
+                "OAuth2 provider '%(name)s' is configured with 'openid' "
+                "in OAUTH2_SCOPE but OAUTH2_SERVER_METADATA_URL is not "
+                "set. pgAdmin needs the provider's OpenID Connect "
+                "discovery URL to verify the id_token. Either set "
+                "OAUTH2_SERVER_METADATA_URL to the discovery URL "
+                "(e.g. https://<issuer>/.well-known/openid-"
+                "configuration), or remove 'openid' from OAUTH2_SCOPE."
+            ) % {'name': provider_name}
+            current_app.logger.error(
+                "OAuth2 (%s): %s", provider_name, guidance
+            )
+            raise RuntimeError(guidance)
+
         client_auth_method = provider.get(
             'OAUTH2_CLIENT_AUTH_METHOD', 'client_secret'
         )

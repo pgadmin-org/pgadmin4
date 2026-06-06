@@ -822,7 +822,10 @@ OAUTH2_CONFIG = [
         # URL is used for authentication,
         # Ex: https://github.com/login/oauth/authorize
         'OAUTH2_AUTHORIZATION_URL': None,
-        # server metadata url might optional for your provider
+        # OpenID Connect discovery URL for the provider. Required when
+        # OAUTH2_SCOPE contains 'openid' (so pgAdmin can fetch the JWKS
+        # to verify the id_token); optional otherwise.
+        # Example: https://<issuer>/.well-known/openid-configuration
         'OAUTH2_SERVER_METADATA_URL': None,
         # Oauth base url, ex: https://api.github.com/
         'OAUTH2_API_BASE_URL': None,
