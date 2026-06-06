@@ -80,3 +80,64 @@ class ServerGroupIsolationTestCase(BaseTestGenerator):
             if sg:
                 db.session.delete(sg)
                 db.session.commit()
+
+
+class AdminCannotSeeOtherUserGroupTestCase(BaseTestGenerator):
+    """Regression test for issue #9933.
+
+    An Administrator must NOT auto-see another user's private server
+    group. Admin role grants management of pgAdmin itself (users,
+    preferences), not inheritance of other users' database
+    connections. Cross-user access requires explicit sharing
+    (Server.shared=True).
+    """
+
+    scenarios = [
+        ('Admin cannot fetch a non-admin user\'s private server group',
+         dict(is_positive_test=False)),
+    ]
+
+    @create_user_wise_test_client(test_user_details)
+    def setUp(self):
+        self.sg_id = None
+        if not config.SERVER_MODE:
+            self.skipTest(
+                'Data isolation tests only apply to server mode.'
+            )
+
+        # Create a server group as the non-admin user
+        url = '/browser/server_group/obj/'
+        response = self.tester.post(
+            url,
+            data=json.dumps({'name': 'non_admin_private_group'}),
+            content_type='html/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.data.decode('utf-8'))
+        self.assertIn('node', response_data)
+        self.sg_id = response_data['node']['_id']
+
+    def runTest(self):
+        """Admin user must NOT access another user's private
+        server group properties."""
+        if not self.sg_id:
+            raise Exception("Server group not created")
+
+        # self.tester is the admin client by default
+        url = '/browser/server_group/obj/{0}'.format(self.sg_id)
+        response = self.tester.get(url, content_type='html/json')
+        self.assertEqual(
+            response.status_code, 410,
+            'Admin user should not access another user\'s private '
+            'server group. Got status {0}'.format(
+                response.status_code)
+        )
+
+    def tearDown(self):
+        if self.sg_id is None:
+            return
+        with self.app.app_context():
+            sg = ServerGroup.query.filter_by(id=self.sg_id).first()
+            if sg:
+                db.session.delete(sg)
+                db.session.commit()
