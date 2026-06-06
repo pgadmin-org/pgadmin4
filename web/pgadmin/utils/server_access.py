@@ -36,7 +36,9 @@ def get_server(sid, only_owned=False):
     - The user owns it, OR
     - The server is shared AND only_owned is False.
 
-    Returns None otherwise (caller should return 404).
+    Returns None otherwise (caller should return HTTP 410 Gone, in
+    line with the rest of the server views — see e.g.
+    web/pgadmin/browser/server_groups/servers/__init__.py).
 
     The Administrator role does not grant access to other users'
     private servers — admins are subject to the same data isolation
