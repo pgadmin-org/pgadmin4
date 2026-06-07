@@ -362,6 +362,24 @@ def create_app(app_name=None):
     from config import SQLITE_PATH
     from pgadmin.setup import db_upgrade
 
+    def _describe_config_db():
+        """
+        Return a human-readable identifier of the configuration database
+        currently in use, for inclusion in error logs. Passwords in an
+        external CONFIG_DATABASE_URI are redacted.
+        """
+        if config.CONFIG_DATABASE_URI is not None and \
+                len(config.CONFIG_DATABASE_URI) > 0:
+            # Redact any password in the URI before logging.
+            import re
+            safe_uri = re.sub(
+                r'(://[^:/@]+:)([^@]+)(@)',
+                r'\1***\3',
+                config.CONFIG_DATABASE_URI
+            )
+            return 'external config DB: {0}'.format(safe_uri)
+        return 'SQLite config DB at: {0}'.format(SQLITE_PATH)
+
     def backup_db_file():
         """
         Create a backup of the current database file
@@ -378,7 +396,8 @@ def create_app(app_name=None):
                 'CORRUPTED_DB_BACKUP_FILE'] = backup_file_name
             app.logger.info('Database migration completed.')
         except Exception:
-            app.logger.error('Database migration failed')
+            app.logger.error(
+                'Database migration failed (%s)', _describe_config_db())
             app.logger.error(traceback.format_exc())
             raise RuntimeError('Migration failed')
 
@@ -390,7 +409,8 @@ def create_app(app_name=None):
             db_upgrade(app)
             os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
         except Exception:
-            app.logger.error('Database migration failed')
+            app.logger.error(
+                'Database migration failed (%s)', _describe_config_db())
             app.logger.error(traceback.format_exc())
             backup_db_file()
 
@@ -398,8 +418,8 @@ def create_app(app_name=None):
         is_db_error, invalid_tb_names = check_db_tables()
         if is_db_error:
             app.logger.error(
-                'Table(s) {0} are missing in the'
-                ' database'.format(invalid_tb_names))
+                'Table(s) {0} are missing in the database ({1})'.format(
+                    invalid_tb_names, _describe_config_db()))
             backup_db_file()
 
     def run_migration_for_sqlite():
