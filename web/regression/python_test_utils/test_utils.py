@@ -1907,7 +1907,7 @@ def module_patch(*args):
 
 
 def check_extension_exists(cursor, extension_name):
-    cursor.execute(f"""SELECT COUNT(*) FROM pg_catalog.pg_extension
-                   WHERE extname='{extension_name}'""")
+    cursor.execute("""SELECT COUNT(*) FROM pg_catalog.pg_extension
+                   WHERE extname=%s""", (extension_name,))
     res = cursor.fetchone()
     return res

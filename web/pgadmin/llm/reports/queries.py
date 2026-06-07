@@ -522,7 +522,7 @@ QUERIES = {
                    round(mean_exec_time::numeric, 2)
                        as mean_exec_time_ms,
                    rows
-            FROM pg_catalog.pg_stat_statements
+            FROM pg_stat_statements
             ORDER BY total_exec_time DESC
             LIMIT 10
         """,
@@ -539,7 +539,7 @@ QUERIES = {
                    round(mean_exec_time::numeric, 2)
                        as mean_exec_time_ms,
                    rows
-            FROM pg_catalog.pg_stat_statements
+            FROM pg_stat_statements
             ORDER BY calls DESC
             LIMIT 10
         """,

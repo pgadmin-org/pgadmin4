@@ -517,10 +517,9 @@ class Connection(BaseConnection):
 
         status, cur = self.__cursor()
 
-        # Note that we use 'UPDATE pg_catalog.pg_settings' for setting
-        # bytea_output as a
-        # convenience hack for those running on old, unsupported versions of
-        # PostgreSQL 'cos we're nice like that.
+        # Note that we use pg_show_all_settings()/set_config for setting
+        # bytea_output as a convenience hack for those running on old,
+        # unsupported versions of PostgreSQL 'cos we're nice like that.
         status = self._execute(
             cur,
             "SET DateStyle=ISO; "

@@ -109,7 +109,7 @@ FROM (
     JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid
     JOIN pg_catalog.pg_class tab ON tab.oid=indrelid
     JOIN pg_catalog.pg_namespace n ON n.oid=tab.relnamespace
-    LEFT JOIN pg_catalog.pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.refclassid=(SELECT oid FROM pg_catalog.pg_class WHERE relname='pg_constraint') AND dep.deptype='i')
+    LEFT JOIN pg_catalog.pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.refclassid='pg_catalog.pg_constraint'::regclass AND dep.deptype='i')
     LEFT OUTER JOIN pg_catalog.pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)
     LEFT OUTER JOIN pg_catalog.pg_description des ON des.objoid=cls.oid
     LEFT OUTER JOIN pg_catalog.pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)
