@@ -479,7 +479,7 @@ class TestSessionFileMode0o600(_SessionTestSetupMixin, BaseTestGenerator):
     """Session files must be created with mode 0o600 (owner-only).
 
     Session contents include OAuth access/refresh tokens, cloud
-    credentials (AWS/Google/Azure/BigAnimal), the Kerberos cache path,
+    credentials (AWS/Google/Azure), the Kerberos cache path,
     MFA OTP material, and `pass_enc_key` (which decrypts the user's
     saved Postgres server passwords). The default open(path, 'wb') uses
     the process umask, which on most systems leaves files 0o644
