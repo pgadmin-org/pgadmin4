@@ -34,13 +34,13 @@ def create_directories(
         old_isolation_level = connection.isolation_level
         utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
-        sql = f"CREATE DIRECTORY %s AS %s"
-        pg_cursor.execute(sql, (directory_name, directory_path))
+        sql = f"CREATE DIRECTORY {directory_name} AS '{directory_path}'"
+        pg_cursor.execute(sql)
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly created directory.
         pg_cursor.execute("SELECT oid FROM pg_catalog.edb_dir WHERE "
-                          " dirname=%s", (directory_name,))
+                          " dirname='%s'" % directory_name)
         directory = pg_cursor.fetchone()
         directory_id = directory[0]
         connection.close()
@@ -62,7 +62,7 @@ def verify_directory(server, directory_name):
                                              server['sslmode'])
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM pg_catalog.edb_dir WHERE "
-                          " dirname=%s", (directory_name,))
+                          " dirname='%s'" % directory_name)
         directory = pg_cursor.fetchone()
         connection.close()
         return directory
@@ -77,12 +77,12 @@ def delete_directories(connection, directory_name):
     try:
         pg_cursor = connection.cursor()
         pg_cursor.execute("SELECT * FROM pg_catalog.edb_dir WHERE"
-                          " dirname=%s", (directory_name,))
+                          " dirname='%s'" % directory_name)
         directory_name_count = len(pg_cursor.fetchall())
         if directory_name_count:
             old_isolation_level = connection.isolation_level
             utils.set_isolation_level(connection, 0)
-            pg_cursor.execute("DROP DIRECTORY IF EXISTS %s", (directory_name,))
+            pg_cursor.execute("DROP DIRECTORY IF EXISTS %s" % directory_name)
             utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         connection.close()
