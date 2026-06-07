@@ -489,7 +489,8 @@ export default class ServerSchema extends BaseUISchema {
         readonly: obj.isConnected,
       },
       {
-        id: 'tunnel_prompt_password', label: gettext('Prompt for password?'),
+        id: 'tunnel_prompt_password',
+        label: gettext('Prompt for identity file password?'),
         type: 'switch', group: gettext('SSH Tunnel'), mode: ['properties', 'edit', 'create'],
         deps: ['tunnel_authentication', 'use_ssh_tunnel'],
         depChange: (state)=>{
@@ -500,7 +501,7 @@ export default class ServerSchema extends BaseUISchema {
         disabled: function(state) {
           return !state.tunnel_authentication || !state.use_ssh_tunnel;
         },
-        helpMessage: gettext('This setting applies only when using an identity file. An identity file may or may not have a password. If set to true the system will prompt for the password.')
+        helpMessage: gettext('Enable if the identity file is passphrase-protected, to be prompted for the passphrase at connection time. This setting applies only to identity-file authentication. When using password authentication for the SSH tunnel, leave the SSH password field empty to be prompted on connection.')
       },
       {
         id: 'save_tunnel_password', label: gettext('Save password?'),
