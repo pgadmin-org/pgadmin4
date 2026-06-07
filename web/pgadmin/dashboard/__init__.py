@@ -699,7 +699,7 @@ def terminate_session(sid=None, did=None, pid=None):
 @check_precondition
 def check_system_statistics(sid=None, did=None):
     sql = (
-        "SELECT * FROM pg_catalog.pg_extension "
+        "SELECT 1 FROM pg_catalog.pg_extension "
         "WHERE extname = 'system_stats';"
     )
     status, res = g.conn.execute_scalar(sql)
