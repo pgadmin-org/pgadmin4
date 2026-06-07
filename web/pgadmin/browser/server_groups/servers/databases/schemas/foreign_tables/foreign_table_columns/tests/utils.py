@@ -112,8 +112,11 @@ def create_column(server, db_name, schema_name, table_name, col_name,
         connection.commit()
         # Get column position of newly added column
         pg_cursor.execute(
-            "select attnum from pg_catalog.pg_attribute where attname=%s",
-            (col_name,)
+            "SELECT a.attnum FROM pg_catalog.pg_attribute a "
+            "JOIN pg_catalog.pg_class c ON c.oid = a.attrelid "
+            "JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE n.nspname=%s AND c.relname=%s AND a.attname=%s",
+            (schema_name, table_name, col_name,)
         )
         col = pg_cursor.fetchone()
         col_pos = ''
@@ -163,8 +166,11 @@ def create_identity_column(server, db_name, schema_name, table_name,
         connection.commit()
         # Get column position of newly added column
         pg_cursor.execute(
-            "select attnum from pg_catalog.pg_attribute where attname=%s",
-            (col_name,)
+            "SELECT a.attnum FROM pg_catalog.pg_attribute a "
+            "JOIN pg_catalog.pg_class c ON c.oid = a.attrelid "
+            "JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE n.nspname=%s AND c.relname=%s AND a.attname=%s",
+            (schema_name, table_name, col_name,)
         )
         col = pg_cursor.fetchone()
         col_pos = ''
