@@ -848,11 +848,13 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
             # Fetch the lc_collate and lc_ctype
             pg_cursor.execute(
-                "SELECT datcollate as cname FROM pg_database WHERE datname = "
+                "SELECT datcollate as cname FROM pg_catalog.pg_database "
+                "WHERE datname = "
                 "'{0}'".format(db_name))
             lc_collate = ''.join(pg_cursor.fetchone())
             pg_cursor.execute(
-                "SELECT datctype as cname FROM pg_database WHERE datname = "
+                "SELECT datctype as cname FROM pg_catalog.pg_database "
+                "WHERE datname = "
                 "'{0}'".format(db_name))
             lc_ctype = ''.join(pg_cursor.fetchone())
             pg_cursor.close()

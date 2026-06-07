@@ -1553,7 +1553,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         # For composite type typrelid is required to fetch dependencies.
         type_where = "WHERE (dep.objid={0}::oid OR dep.objid=(select typrelid \
-            from pg_type where oid = {0}::oid))".format(tid)
+            from pg_catalog.pg_type where oid = {0}::oid))".format(tid)
         dependencies_result = self.get_dependencies(
             self.conn, tid, where=type_where
         )

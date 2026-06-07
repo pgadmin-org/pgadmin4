@@ -105,7 +105,7 @@ class DBMSJobSchedulerModule(CollectionNodeModule):
         # Checking whether both 'edb_job_scheduler' and 'dbms_scheduler'
         # extensions are created or not.
         status, res = conn.execute_scalar("""
-            SELECT COUNT(*) FROM pg_extension WHERE extname IN (
+            SELECT COUNT(*) FROM pg_catalog.pg_extension WHERE extname IN (
                 'edb_job_scheduler', 'dbms_scheduler') """)
         if status and int(res) == 2:
             # Get the list of databases specified for the edb_job_scheduler

@@ -112,8 +112,10 @@ def create_superuser_role(server, role_name):
         utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly created directory
-        pg_cursor.execute("SELECT usename FROM pg_user WHERE "
-                          " usename='%s'" % role_name)
+        pg_cursor.execute(
+            "SELECT usename FROM pg_catalog.pg_user WHERE usename=%s",
+            (role_name,)
+        )
         user_role = pg_cursor.fetchone()
         role_username = user_role[0]
         connection.close()

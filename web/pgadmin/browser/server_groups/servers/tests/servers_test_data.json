@@ -272,7 +272,7 @@
       "url": "/browser/server/obj/",
       "is_positive_test": true,
       "test_data": {
-        "db_res": "SELECT datname FROM pg_database\nWHERE datistemplate = false AND datname ILIKE '%myprefix_%'\nORDER BY datname"
+        "db_res": "SELECT datname FROM pg_catalog.pg_database\nWHERE datistemplate = false AND datname ILIKE '%myprefix_%'\nORDER BY datname"
       },
       "mocking_required": false,
       "mock_data": {},

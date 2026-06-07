@@ -159,7 +159,7 @@
       "url": "/browser/view/obj/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_catalog.pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
         "server_max_version": 159999,
@@ -182,7 +182,7 @@
       "url": "/browser/view/obj/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_catalog.pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {
         "server_min_version": 160000,
@@ -485,7 +485,7 @@
       "url": "/browser/view/nodes/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_catalog.pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {},
       "mocking_required": false,
@@ -616,7 +616,7 @@
       "url": "/browser/view/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_catalog.pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {},
       "mocking_required": false,
@@ -687,7 +687,7 @@
       "url": "/browser/view/sql/",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_catalog.pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
       "test_data": {},
       "mocking_required": false,

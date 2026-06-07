@@ -447,7 +447,8 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            _query = "SELECT rolname from pg_roles WHERE rolname = {0}" \
+            _query = "SELECT rolname from pg_catalog.pg_roles " \
+                     "WHERE rolname = {0}" \
                      "".format(self.qtLiteral(role, self.conn))
             _status, res = self.execute_scalar(_query)
 
@@ -516,9 +517,9 @@ class Connection(BaseConnection):
 
         status, cur = self.__cursor()
 
-        # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
-        # convenience hack for those running on old, unsupported versions of
-        # PostgreSQL 'cos we're nice like that.
+        # Note that we use pg_show_all_settings()/set_config for setting
+        # bytea_output as a convenience hack for those running on old,
+        # unsupported versions of PostgreSQL 'cos we're nice like that.
         status = self._execute(
             cur,
             "SET DateStyle=ISO; "
@@ -627,12 +628,12 @@ WHERE db.datname = current_database()""")
             CASE WHEN roles.rolsuper THEN true
             ELSE roles.rolcreatedb END as can_create_db,
             CASE WHEN 'pg_signal_backend'=ANY(ARRAY(WITH RECURSIVE cte AS (
-            SELECT pg_roles.oid,pg_roles.rolname FROM pg_roles
+            SELECT pg_roles.oid,pg_roles.rolname FROM pg_catalog.pg_roles
                 WHERE pg_roles.oid = roles.oid
             UNION ALL
             SELECT m.roleid,pgr.rolname FROM cte cte_1
-                JOIN pg_auth_members m ON m.member = cte_1.oid
-                JOIN pg_roles pgr ON pgr.oid = m.roleid)
+                JOIN pg_catalog.pg_auth_members m ON m.member = cte_1.oid
+                JOIN pg_catalog.pg_roles pgr ON pgr.oid = m.roleid)
             SELECT rolname  FROM cte)) THEN True
             ELSE False END as can_signal_backend
         FROM
