@@ -27,3 +27,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9892 <https://github.com/pgadmin-org/pgadmin4/issues/9892>`_ -  Fix blank difference counts on the top-level group rows in Schema Diff.
