@@ -6,6 +6,8 @@
 # This software is released under the PostgreSQL Licence
 #
 ##############################################################################
+import unittest
+
 from pgadmin.utils.route import BaseTestGenerator
 import config
 from .test_config import config_scenarios
@@ -26,6 +28,13 @@ class TestMFATests(BaseTestGenerator):
 
     @classmethod
     def setUpClass(cls):
+        # MFA only initialises its blueprint and short-circuits its
+        # mfa_enabled() ternary when SERVER_MODE is True; the scenarios
+        # in this suite all assume that state. Save and force it here
+        # so test_config.json (which defaults to DESKTOP mode) does not
+        # make every scenario take the "disabled" path.
+        cls._original_server_mode = getattr(config, 'SERVER_MODE', False)
+        config.SERVER_MODE = True
         config.MFA_ENABLED = True
         init_dummy_auth_class()
 
@@ -33,6 +42,7 @@ class TestMFATests(BaseTestGenerator):
     def tearDownClass(cls):
         config.MFA_ENABLED = False
         config.MFA_SUPPORTED_METHODS = []
+        config.SERVER_MODE = cls._original_server_mode
 
     def setUp(self):
         config.MFA_SUPPORTED_METHODS = ['tests.utils']
@@ -41,7 +51,13 @@ class TestMFATests(BaseTestGenerator):
         if start is not None:
             start(self)
 
-        super().setUp()
+        # MFA scenarios run against a dummy Flask app (set up by the
+        # 'start' callback) or pure mocks; they do not need -- and the
+        # dummy app cannot provide -- a real PostgreSQL connection.
+        # Skip BaseTestGenerator.setUp which would POST to
+        # /browser/server/connect/... and fail the assertion against
+        # the dummy app's 404 response.
+        unittest.TestCase.setUp(self)
 
     def tearDown(self):
 
@@ -50,7 +66,7 @@ class TestMFATests(BaseTestGenerator):
             finish(self)
 
         config.MFA_SUPPORTED_METHODS = []
-        super().tearDown()
+        unittest.TestCase.tearDown(self)
 
     def runTest(self):
         self.check(self)
