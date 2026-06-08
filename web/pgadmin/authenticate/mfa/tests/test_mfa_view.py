@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##############################################################################
-import unittest
 from unittest.mock import patch, MagicMock
 import config
 
@@ -19,22 +18,8 @@ __AUTH_PACKAGE = '.'.join((__package__.split('.'))[:-2])
 
 
 def check_validation_view_content(test):
-    # The validate.html template extends security/render_page.html and
-    # reads current_app.config inside Jinja, both of which require a
-    # fully-initialised pgAdmin app (Flask-Security registered, default
-    # template context processors, etc.). The dummy Flask app this
-    # scenario boots via setup_mfa_app is intentionally minimal and
-    # does not provide that surface, so the template render fails with
-    # UndefinedError on current_app. Skip the rendering assertion until
-    # the dummy-app harness is reworked to expose the necessary
-    # template globals; see CVE-9.16 follow-up note.
-    raise unittest.SkipTest(
-        "dummy-app template harness does not expose current_app to "
-        "Jinja; see test setup TODO"
-    )
-
-    user_mfa_test_data = [  # noqa: F841 (kept for reference if the
-        MockUserMFA(1, "dummy", ""),   # scenario is re-enabled later)
+    user_mfa_test_data = [
+        MockUserMFA(1, "dummy", ""),
         MockUserMFA(1, "no-present-in-list", None),
     ]
 
