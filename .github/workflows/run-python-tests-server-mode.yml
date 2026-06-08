@@ -1,0 +1,193 @@
+name: Run Python tests in server mode (data isolation)
+
+# This workflow runs the data-isolation tests with SERVER_MODE=True.
+# The main run-python-tests-pg.yml workflow runs everything with
+# SERVER_MODE=False, so any test that gates itself on `config.SERVER_MODE`
+# (notably web/pgadmin/browser/server_groups/tests/test_sg_data_isolation.py
+# and web/pgadmin/browser/server_groups/servers/tests/test_server_data_isolation.py)
+# skips itself in CI. That gap allowed the admin-bypass regression in
+# 9a76ed8 to ship; this workflow exists so regressions to the centralized
+# access-control helpers in web/pgadmin/utils/server_access.py are caught.
+#
+# Scope is intentionally narrow: one OS, one PG version, only the
+# data-isolation modules. Keep it cheap to run on every PR.
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  run-python-tests-server-mode:
+    runs-on: ubuntu-24.04
+
+    env:
+      PG_VER: 18
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # We don't run any authenticated git operations after checkout
+          # (no push, no submodule fetch, no comment back to the PR), so
+          # persisting the token in the local git config only widens the
+          # blast radius of an unrelated step compromise.
+          persist-credentials: false
+
+      - name: Update python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Setup the PGDG APT repo
+        # apt-key is deprecated on Ubuntu 24.04+; install the key into
+        # /etc/apt/keyrings/ and reference it via signed-by= in the
+        # sources.list entry instead.
+        run: |
+          sudo install -d -m 0755 /etc/apt/keyrings
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            | sudo gpg --dearmor -o /etc/apt/keyrings/pgdg.gpg
+          sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+      - name: Uninstall PostgreSQL if already present
+        run: |
+          if [ -n "$(ls /etc/postgresql/*/*/postgresql.conf 2>/dev/null)" ]; then
+            installed_pg_version=$( pg_config --version | cut -d ' ' -f 2 | cut -d '.' -f 1 )
+            echo "Installed PostgreSQL version: $installed_pg_version"
+            if [ $installed_pg_version != ${PG_VER} ]; then
+              sudo pg_dropcluster $installed_pg_version main --stop
+              sudo apt-get -y remove "postgresql-${installed_pg_version}"
+            fi
+          fi
+
+      - name: Install platform dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${PG_VER}
+
+      - name: Start PostgreSQL
+        run: |
+          sudo su -c "echo local all all trust > /etc/postgresql/${PG_VER}/main/pg_hba.conf"
+          sudo sed -i "s/port = 543[0-9]/port = 59${PG_VER}/g" /etc/postgresql/${PG_VER}/main/postgresql.conf
+          sudo su - postgres -c "/usr/lib/postgresql/${PG_VER}/bin/postgres -D /var/lib/postgresql/${PG_VER}/main -c config_file=/etc/postgresql/${PG_VER}/main/postgresql.conf &"
+
+          # Bounded readiness wait: 60 attempts × 2s = 120s cap. If PG
+          # never becomes ready, fail fast with logs rather than hanging
+          # until the job timeout.
+          for attempt in $(seq 1 60); do
+            if sudo runuser -l postgres -c "pg_isready -p 59${PG_VER}" 2>/dev/null; then
+              break
+            fi
+            >&2 echo "Postgres is unavailable (attempt ${attempt}/60) - sleeping for 2 seconds"
+            sleep 2
+            if [ "$attempt" -eq 60 ]; then
+              >&2 echo "Postgres failed to become ready within 120 seconds"
+              sudo tail -n 200 /var/log/postgresql/postgresql-${PG_VER}-main.log || true
+              exit 1
+            fi
+          done
+
+      - name: Install Python dependencies
+        run: make install-python-testing
+
+      - name: Create the test configuration (SERVER_MODE=True)
+        run: |
+          mkdir -p var
+          cat <<EOF > web/config_local.py
+          from config import *
+
+          # Debug mode
+          DEBUG = True
+
+          # App mode — this is the whole point of this workflow.
+          SERVER_MODE = True
+
+          # Log
+          CONSOLE_LOG_LEVEL = DEBUG
+          FILE_LOG_LEVEL = DEBUG
+
+          DEFAULT_SERVER = '127.0.0.1'
+
+          UPGRADE_CHECK_ENABLED = False
+
+          LOG_FILE = "$(pwd)/var/pgadmin4.log"
+          SESSION_DB_PATH = "$(pwd)/var/sessions"
+          STORAGE_DIR = "$(pwd)/var/storage"
+          SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          TEST_SQLITE_PATH = "$(pwd)/var/pgadmin4.db"
+          AZURE_CREDENTIAL_CACHE_DIR = "$(pwd)/var/azurecredentialcache"
+          EOF
+
+          cat <<EOF > web/regression/test_config.json
+          {
+            "pgAdmin4_login_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_user_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER2@EXAMPLE.COM"
+            },
+            "pgAdmin4_test_non_admin_credentials": {
+              "new_password": "NEWPASSWORD",
+              "login_password": "PASSWORD",
+              "login_username": "USER3@EXAMPLE.COM"
+            },
+            "server_group": 1,
+            "server_credentials": [
+              {
+                "name": "PostgreSQL ${{ env.PG_VER }}",
+                "comment": "PostgreSQL ${{ env.PG_VER }} Server",
+                "db_username": "postgres",
+                "host": "/var/run/postgresql",
+                "db_password": "postgres",
+                "db_port": 59${{ env.PG_VER }},
+                "maintenance_db": "postgres",
+                "sslmode": "prefer",
+                "tablespace_path": "/var/lib/postgresql/tablespaces/${{ env.PG_VER }}",
+                "enabled": true,
+                "default_binary_paths": {
+                  "pg": "/usr/lib/postgresql/${{ env.PG_VER }}/bin",
+                  "ppas": ""
+                }
+              }
+            ],
+            "server_update_data": [
+              {
+                "comment": "This is test update comment"
+              }
+            ]
+          }
+          EOF
+
+      - name: Run server-group data isolation tests
+        run: |
+          . venv/bin/activate
+          python web/regression/runtests.py --pkg browser.server_groups.tests --modules test_sg_data_isolation
+
+      - name: Run server data isolation tests
+        run: |
+          . venv/bin/activate
+          python web/regression/runtests.py --pkg browser.server_groups.servers.tests --modules test_server_data_isolation
+
+      - name: Archive server log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log-server-mode
+          path: var/pgadmin4.log
+
+      - name: Archive regression log
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-log-server-mode
+          path: web/regression/regression.log
