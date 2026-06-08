@@ -10,6 +10,7 @@
 
 import base64
 from typing import Union
+from urllib.parse import urljoin, urlparse
 
 from flask import Response, render_template, request, flash, \
     current_app, url_for, redirect, session
@@ -31,6 +32,25 @@ _NO_CACHE_HEADERS = dict({
     "Pragma": "no-cache",
     "Expires": "0",
 })
+
+
+def _is_safe_redirect_url(target: Union[str, None]) -> bool:
+    """Return True only when *target* is a same-origin URL safe to redirect to.
+
+    Allows relative paths and absolute URLs whose scheme is http(s) and whose
+    host matches the current request host. Rejects external hosts, non-http
+    schemes (e.g. ``javascript:``, ``data:``) and targets containing
+    backslashes, which some browsers normalize and can be abused for
+    protocol-relative bypasses such as ``/\\evil.example``.
+    """
+    if not target or '\\' in target:
+        return False
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return (
+        test_url.scheme in ('http', 'https') and
+        ref_url.netloc == test_url.netloc
+    )
 
 
 def __handle_mfa_validation_request(
@@ -90,7 +110,8 @@ def validate_view() -> Response:
     next_url = request.args.get("next", None)
 
     if next_url is None or next_url == url_for('mfa.register') or \
-            next_url == url_for('mfa.validate'):
+            next_url == url_for('mfa.validate') or \
+            not _is_safe_redirect_url(next_url):
         next_url = url_for(_INDEX_URL)
 
     if session.get('mfa_authenticated', False) is True:
@@ -103,7 +124,9 @@ def validate_view() -> Response:
     if request.method == 'POST':
         try:
             form_data = {key: request.form[key] for key in request.form}
-            next_url = form_data.pop('next', url_for(_INDEX_URL))
+            next_url = form_data.pop('next', None)
+            if not _is_safe_redirect_url(next_url):
+                next_url = url_for(_INDEX_URL)
             mfa_method = form_data.pop('mfa_method', None)
 
             __handle_mfa_validation_request(
@@ -253,7 +276,9 @@ def __handle_registration_view_for_post_method(
 
     next_url = request.form.get("next", None)
 
-    if next_url is None or next_url == url_for('mfa.validate'):
+    if next_url is None or next_url == url_for('mfa.validate') or \
+            (next_url != 'internal' and
+             not _is_safe_redirect_url(next_url)):
         next_url = url_for(_INDEX_URL)
 
     if request.form.get('cancel', None) is None:

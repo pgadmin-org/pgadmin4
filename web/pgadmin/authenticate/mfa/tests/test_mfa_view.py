@@ -6,11 +6,12 @@
 # This software is released under the PostgreSQL Licence
 #
 ##############################################################################
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import config
 
 from .utils import setup_mfa_app, MockCurrentUserId, MockUserMFA
 from pgadmin.authenticate.mfa.utils import ValidationException
+from pgadmin.authenticate.mfa.views import _is_safe_redirect_url
 
 
 __MFA_PACKAGE = '.'.join((__package__.split('.'))[:-1])
@@ -58,9 +59,105 @@ def check_validation_view_content(test):
     # End of test case - check_validation_view_content
 
 
+def check_safe_redirect_url_classification(test):
+    """Unit-test the _is_safe_redirect_url helper across allowed and
+    disallowed URL shapes. The helper is the single gate protecting the
+    MFA flow from open-redirect abuse, so it deserves direct coverage
+    independent of the view-level wiring.
+    """
+    with test.app.test_request_context(base_url="http://localhost/"):
+        # Allowed: relative paths and same-host absolute URLs.
+        test.assertTrue(_is_safe_redirect_url("/browser/"))
+        test.assertTrue(_is_safe_redirect_url("/mfa/register"))
+        test.assertTrue(_is_safe_redirect_url("http://localhost/browser/"))
+
+        # Rejected: external hosts in absolute and protocol-relative form.
+        test.assertFalse(
+            _is_safe_redirect_url("https://attacker.example/path")
+        )
+        test.assertFalse(_is_safe_redirect_url("//attacker.example/path"))
+        test.assertFalse(_is_safe_redirect_url("http://attacker.example"))
+
+        # Rejected: non-http schemes that browsers would still follow.
+        test.assertFalse(_is_safe_redirect_url("javascript:alert(1)"))
+        test.assertFalse(_is_safe_redirect_url("data:text/html,<script>"))
+
+        # Rejected: backslash variants browsers normalize to forward
+        # slashes, enabling protocol-relative bypasses.
+        test.assertFalse(_is_safe_redirect_url("/\\attacker.example"))
+        test.assertFalse(_is_safe_redirect_url("\\\\attacker.example"))
+
+        # Rejected: empty / missing target.
+        test.assertFalse(_is_safe_redirect_url(None))
+        test.assertFalse(_is_safe_redirect_url(""))
+
+
+def _setup_mfa_app_with_routes(test):
+    """Bring up the dummy MFA app with SERVER_MODE on so that the
+    ``mfa.validate`` blueprint gets registered. ``mfa_enabled`` short-
+    circuits when SERVER_MODE is False, leaving the route unregistered
+    and producing 404s instead of the redirect we want to assert on.
+    """
+    prior_server_mode = getattr(config, 'SERVER_MODE', False)
+    config.SERVER_MODE = True
+    try:
+        setup_mfa_app(test)
+    finally:
+        config.SERVER_MODE = prior_server_mode
+
+
+def check_validate_view_rejects_external_next(test):
+    """When the MFA session is already authenticated, /mfa/validate
+    short-circuits to a redirect to ``next``. An attacker-supplied
+    external ``next`` must be replaced with the internal index URL --
+    otherwise the endpoint is an open redirect inside the auth flow.
+    """
+    user_mfa_test_data = [
+        MockUserMFA(1, "dummy", ""),
+    ]
+
+    fake_session = MagicMock()
+    fake_session.get.return_value = True
+
+    with patch(
+        __MFA_PACKAGE + ".utils.current_user", return_value=MockCurrentUserId()
+    ):
+        with patch(__MFA_PACKAGE + ".utils.UserMFA") as mock_user_mfa:
+            mock_user_mfa.query.filter_by.return_value \
+                .all.return_value = user_mfa_test_data
+
+            with patch(
+                __MFA_PACKAGE + ".views.session", new=fake_session
+            ):
+                response = test.tester.get(
+                    "/mfa/validate?next=https://attacker.example/path",
+                    follow_redirects=False,
+                )
+
+    test.assertEqual(response.status_code, 302)
+    location = response.headers.get("Location", "")
+    test.assertNotIn("attacker.example", location)
+    test.assertTrue(
+        location.endswith("/browser") or location.endswith("/browser/"),
+        "expected redirect to internal browser index, got: " + location,
+    )
+
+
 validation_view_scenarios = [
     (
         "Validation view of a MFA method should return a HTML tags",
         dict(start=setup_mfa_app, check=check_validation_view_content),
+    ),
+    (
+        "_is_safe_redirect_url accepts internal targets and rejects "
+        "external/non-http/backslash variants",
+        dict(start=setup_mfa_app,
+             check=check_safe_redirect_url_classification),
+    ),
+    (
+        "/mfa/validate must not honor an external 'next' parameter "
+        "(open-redirect regression)",
+        dict(start=_setup_mfa_app_with_routes,
+             check=check_validate_view_rejects_external_next),
     ),
 ]
