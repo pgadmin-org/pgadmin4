@@ -33,6 +33,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # We don't run any authenticated git operations after checkout
+          # (no push, no submodule fetch, no comment back to the PR), so
+          # persisting the token in the local git config only widens the
+          # blast radius of an unrelated step compromise.
+          persist-credentials: false
 
       - name: Update python version
         uses: actions/setup-python@v5
@@ -71,9 +77,20 @@ jobs:
           sudo sed -i "s/port = 543[0-9]/port = 59${PG_VER}/g" /etc/postgresql/${PG_VER}/main/postgresql.conf
           sudo su - postgres -c "/usr/lib/postgresql/${PG_VER}/bin/postgres -D /var/lib/postgresql/${PG_VER}/main -c config_file=/etc/postgresql/${PG_VER}/main/postgresql.conf &"
 
-          until sudo runuser -l postgres -c "pg_isready -p 59${PG_VER}" 2>/dev/null; do
-            >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
+          # Bounded readiness wait: 60 attempts × 2s = 120s cap. If PG
+          # never becomes ready, fail fast with logs rather than hanging
+          # until the job timeout.
+          for attempt in $(seq 1 60); do
+            if sudo runuser -l postgres -c "pg_isready -p 59${PG_VER}" 2>/dev/null; then
+              break
+            fi
+            >&2 echo "Postgres is unavailable (attempt ${attempt}/60) - sleeping for 2 seconds"
             sleep 2
+            if [ "$attempt" -eq 60 ]; then
+              >&2 echo "Postgres failed to become ready within 120 seconds"
+              sudo tail -n 200 /var/log/postgresql/postgresql-${PG_VER}-main.log || true
+              exit 1
+            fi
           done
 
       - name: Install Python dependencies
