@@ -157,7 +157,15 @@
     "zustand": "^5.0.12"
   },
   "resolutions": {
-    "rc-resize-observer": "1.4.0"
+    "rc-resize-observer": "1.4.0",
+    "@xmldom/xmldom": "^0.8.13",
+    "serialize-javascript": "^7.0.5",
+    "ip-address": "^10.1.1",
+    "postcss": "^8.5.10",
+    "ws": "^8.20.1",
+    "qs": "^6.15.2",
+    "@tootallnate/once": "^2.0.1",
+    "tar@npm:^7.5.4": "^7.5.15"
   },
   "scripts": {
     "linter": "yarn run eslint -c .eslintrc.js .",
