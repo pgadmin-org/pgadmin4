@@ -736,7 +736,7 @@ def load_database_servers(input_file, selected_servers,
             is_shared = obj.get("Shared", None)
             username = obj.get("Username", None)
             shared_username = obj.get("SharedUsername", None)
-            if is_shared and not username:
+            if is_shared and username is None:
                 username = shared_username
 
             # Create the server
