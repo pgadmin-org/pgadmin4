@@ -1885,13 +1885,15 @@ class ServerNode(PGChildNodeView):
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
 
-            # Execute SQL to create named restore point
+            # Execute SQL to create named restore point. The name is
+            # passed as a bound parameter rather than string-formatted
+            # into the SQL, so a malicious value cannot escape the
+            # quoted literal and inject additional statements.
             if conn.connected():
                 if restore_point_name:
                     status, res = conn.execute_scalar(
-                        "SELECT pg_create_restore_point('{0}');".format(
-                            restore_point_name
-                        )
+                        "SELECT pg_catalog.pg_create_restore_point(%s);",
+                        (restore_point_name,)
                     )
                     if not status:
                         return internal_server_error(
