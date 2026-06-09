@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9806 <https://github.com/pgadmin-org/pgadmin4/issues/9806>`_ -  Fixed an issue where generated font and image filenames contained a double dot (e.g. ``Roboto-Bold..ttf``) due to the webpack asset filename template.
