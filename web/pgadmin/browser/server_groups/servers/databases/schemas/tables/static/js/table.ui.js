@@ -200,9 +200,24 @@ export class ConstraintsSchema extends BaseUISchema {
       disabled: this.inCatalog,
       canAddRow: obj.anyColumnAdded,
       expandEditOnAdd: true,
-      depChange: (state)=>{
+      depChange: (state, source, topState, actionObj)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {foreign_key: []};
+        }
+        /* If a column is renamed, sync the foreign key local column references. #9060 */
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[0] == 'columns' &&
+        actionObj.path[actionObj.path.length-1] == 'name' && state.oid === undefined &&
+        state.foreign_key?.length) {
+          let oldName = actionObj.oldState.columns[actionObj.path[1]]?.name,
+            newName = _.get(state, _.slice(actionObj.path, 0, -1))?.name;
+          if(oldName && newName && oldName !== newName) {
+            return {foreign_key: state.foreign_key.map((fk)=>({
+              ...fk,
+              columns: fk.columns?.map((c)=>(
+                c.local_column === oldName ? {...c, local_column: newName} : c
+              )),
+            }))};
+          }
         }
       }
     },{
@@ -223,7 +238,7 @@ export class ConstraintsSchema extends BaseUISchema {
       schema: this.uniqueConsObj,
       editable: false, type: 'collection',
       group: 'unique_group', mode: ['edit', 'create'],
-      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
+      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname', 'columns'],
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
@@ -231,9 +246,24 @@ export class ConstraintsSchema extends BaseUISchema {
       },
       canAddRow: obj.anyColumnAdded,
       expandEditOnAdd: true,
-      depChange: (state)=>{
+      depChange: (state, source, topState, actionObj)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {unique_constraint: []};
+        }
+        /* If a column is renamed, sync the unique constraint column references. #9060 */
+        if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[0] == 'columns' &&
+        actionObj.path[actionObj.path.length-1] == 'name' && state.oid === undefined &&
+        state.unique_constraint?.length) {
+          let oldName = actionObj.oldState.columns[actionObj.path[1]]?.name,
+            newName = _.get(state, _.slice(actionObj.path, 0, -1))?.name;
+          if(oldName && newName && oldName !== newName) {
+            return {unique_constraint: state.unique_constraint.map((uc)=>({
+              ...uc,
+              columns: uc.columns?.map((c)=>(
+                c.column === oldName ? {...c, column: newName} : c
+              )),
+            }))};
+          }
         }
       }
     },{

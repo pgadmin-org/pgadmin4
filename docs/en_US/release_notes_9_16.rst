@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9060 <https://github.com/pgadmin-org/pgadmin4/issues/9060>`_ -  Fixed an issue in the Create/Edit Table dialog where renaming a column did not update the column references in foreign key and unique constraint definitions for the new table.
