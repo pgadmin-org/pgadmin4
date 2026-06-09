@@ -185,15 +185,21 @@ class DictCursor(_cursor):
             self._ordered_description()
         return self._odt_desc
 
-    def execute(self, query, params=None):
+    def execute(self, query, params=None, *, prepare=None, binary=None):
         """
         Execute function
+
+        ``prepare`` and ``binary`` are forwarded so this cursor stays
+        substitutable for ``psycopg.Cursor``. ``psycopg.Connection.execute``
+        passes ``prepare=...`` through to its underlying cursor; without
+        accepting it here that high-level call raises ``TypeError``.
         """
         self._odt_desc = None
         if params is not None and len(params) == 0:
             params = None
 
-        return _cursor.execute(self, query, params)
+        return _cursor.execute(self, query, params,
+                               prepare=prepare, binary=binary)
 
     def fetchone(self):
         """
@@ -273,23 +279,30 @@ class AsyncDictCursor(_async_cursor):
         self._ordered_description()
         return self._odt_desc
 
-    def execute(self, query, params=None):
+    def execute(self, query, params=None, *, prepare=None, binary=None):
         """
         Execute function
+
+        Mirrors ``DictCursor.execute`` so this cursor stays substitutable
+        for ``psycopg.AsyncCursor`` when used via ``AsyncConnection.execute``.
         """
         try:
-            return asyncio.run(self._execute(query, params))
+            return asyncio.run(
+                self._execute(query, params, prepare=prepare, binary=binary)
+            )
         except RuntimeError as e:
             current_app.logger.exception(e)
 
-    async def _execute(self, query, params=None):
+    async def _execute(self, query, params=None, *,
+                       prepare=None, binary=None):
         """
         Execute function
         """
         if params is not None and len(params) == 0:
             params = None
 
-        return await self.cursor.execute(self, query, params)
+        return await self.cursor.execute(self, query, params,
+                                         prepare=prepare, binary=binary)
 
     def executemany(self, query, params=None):
         """
