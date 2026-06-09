@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #9829 <https://github.com/pgadmin-org/pgadmin4/issues/9829>`_ -  Fixed installation on Python 3.9 (e.g. RHEL/Rocky/AlmaLinux 8 and 9) failing with "No module named 'pkg_resources'" by pinning setuptools below the version that dropped pkg_resources for Python 3.9.
