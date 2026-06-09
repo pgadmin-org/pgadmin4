@@ -25,3 +25,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #6481 <https://github.com/pgadmin-org/pgadmin4/issues/6481>`_ -  Fixed an issue where an index or exclusion constraint column was not shown in the Properties panel (and reported as empty) when the column name required quoting (e.g. it contained a double quote or special characters).
