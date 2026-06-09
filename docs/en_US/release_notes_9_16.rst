@@ -24,6 +24,7 @@ Housekeeping
 ************
 
   | `Issue #10018 <https://github.com/pgadmin-org/pgadmin4/issues/10018>`_ -  Remove the EDB BigAnimal cloud deployment support.
+  | `Issue #10049 <https://github.com/pgadmin-org/pgadmin4/issues/10049>`_ -  Bump vulnerable transitive dependencies (tar, flatted) to clear security advisories.
 
 Bug fixes
 *********
